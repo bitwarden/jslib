@@ -1,0 +1,7 @@
+.vs
+.idea
+node_modules
+npm-debug.log
+*.crx
+*.pem
+package-lock.json
