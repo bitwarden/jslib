@@ -1,6 +1,12 @@
 {
   "name": "@bitwarden/jslib",
   "version": "0.0.10",
+  "scripts": {
+    "dev": "tsc",
+    "dev:watch": "tsc --watch",
+    "lint": "tslint src/**/*.ts || true",
+    "lint:fix": "tslint src/**/*.ts --fix"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "devDependencies": {
