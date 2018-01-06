@@ -1,10 +1,35 @@
 {
   "name": "@bitwarden/jslib",
   "version": "0.0.5",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "description": "",
+  "keywords": [],
+  "main": "dist/index.umd.js",
+  "module": "dist/index.es5.js",
+  "typings": "dist/types/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "license": "GPL-3.0",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "scripts": {
+    "lint": "tslint 'src/**/*.ts'",
+    "prebuild": "rimraf dist",
+    "build": "tsc && tsc --module commonjs --outDir dist/lib && rollup -c rollup.config.ts && typedoc --out dist/docs --target es6 --theme minimal --mode file src",
+    "start": "concurrently \"tsc -w\" \"rollup -c rollup.config.ts -w\""
+  },
   "devDependencies": {
+    "@types/node": "^8.0.0",
+    "concurrently": "^3.5.1",
+    "lodash.camelcase": "^4.3.0",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.53.0",
+    "rollup-plugin-commonjs": "^8.2.6",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-sourcemaps": "^0.4.2",
     "tslint": "^5.8.0",
-    "typescript": "^2.5.3"
+    "typedoc": "^0.9.0",
+    "typescript": "^2.6.2"
   }
 }
