@@ -1,16 +1,22 @@
 {
   "name": "@bitwarden/jslib",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "Common code used across bitwarden JavaScript projects.",
   "keywords": [
     "bitwarden"
   ],
+  "author": "8bit Solutions LLC",
+  "homepage": "https://bitwarden.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bitwarden/jslib"
+  },
+  "license": "GPL-3.0",
   "module": "dist/es/index.js",
   "typings": "dist/types/index.d.ts",
   "files": [
     "dist"
   ],
-  "license": "GPL-3.0",
   "scripts": {
     "prebuild": "rimraf dist/**/*",
     "build": "tsc && typedoc --out dist/docs --target es6 --theme minimal --mode file src",
