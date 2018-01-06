@@ -1,12 +1,25 @@
 {
   "compilerOptions": {
-    "noImplicitAny": true,
-    "module": "commonjs",
+    "moduleResolution": "node",
     "target": "ES2016",
+    "module": "es6",
+    "strict": true,
+    "sourceMap": true,
     "declaration": true,
-    "outDir": "./dist"
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "declarationDir": "dist/types",
+    "outDir": "dist/es",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "include": [
-    "src/**/*"
+    "src"
   ]
 }

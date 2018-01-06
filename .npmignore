@@ -1,7 +1,0 @@
-.vs
-.idea
-.editorconfig
-tsconfig.json
-tslint.json
-*.sln
-src
