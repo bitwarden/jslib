@@ -2,7 +2,9 @@
   "name": "@bitwarden/jslib",
   "version": "0.0.11",
   "description": "Common code used across bitwarden JavaScript projects.",
-  "keywords": [ "bitwarden" ],
+  "keywords": [
+    "bitwarden"
+  ],
   "main": "dist/index.umd.js",
   "module": "dist/index.es5.js",
   "typings": "dist/types/index.d.ts",
@@ -15,7 +17,7 @@
   },
   "scripts": {
     "lint": "tslint 'src/**/*.ts'",
-    "prebuild": "rimraf dist",
+    "prebuild": "rimraf dist/**/*",
     "build": "tsc && tsc --module commonjs --outDir dist/lib && rollup -c rollup.config.ts && typedoc --out dist/docs --target es6 --theme minimal --mode file src",
     "start": "concurrently \"tsc -w\" \"rollup -c rollup.config.ts -w\""
   },
