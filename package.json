@@ -1,6 +1,6 @@
 {
   "name": "@bitwarden/jslib",
-  "version": "0.0.7",
+  "version": "0.0.10",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "devDependencies": {
