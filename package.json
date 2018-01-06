@@ -1,17 +1,10 @@
 {
   "name": "@bitwarden/jslib",
-  "version": "0.0.3",
-  "scripts": {
-
-  },
-  "main": "src/index.ts",
+  "version": "0.0.5",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "devDependencies": {
     "tslint": "^5.8.0",
-    "typescript": "^2.6.2"
-  },
-  "dependencies": {
-    "@types/node-forge": "0.7.1",
-    "@types/webcrypto": "0.0.28",
-    "node-forge": "0.7.1"
+    "typescript": "^2.5.3"
   }
 }

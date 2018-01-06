@@ -1,2 +1,2 @@
-export { BrowserType } from './enums/browserType.enum';
 export { CipherType } from './enums/cipherType.enum';
+export { EncryptionType } from './enums/encryptionType.enum';
