@@ -1,6 +1,5 @@
 // Based upon https://github.com/alexjoverm/typescript-library-starter/blob/master/rollup.config.ts
 
-import camelCase from 'lodash.camelcase';
 import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 import sourceMaps from 'rollup-plugin-sourcemaps';
@@ -12,7 +11,7 @@ const libraryName = 'index';
 export default {
   input: `dist/es/${libraryName}.js`,
   output: [
-    { file: pkg.main, name: camelCase(libraryName), format: 'umd' },
+    { file: pkg.main, name: libraryName, format: 'umd' },
     { file: pkg.module, format: 'es' },
   ],
   sourcemap: true,
