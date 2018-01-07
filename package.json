@@ -1,6 +1,6 @@
 {
   "name": "@bitwarden/jslib",
-  "version": "0.0.14",
+  "version": "0.0.18",
   "description": "Common code used across bitwarden JavaScript projects.",
   "keywords": [
     "bitwarden"
@@ -23,7 +23,7 @@
     "start": "tsc -watch",
     "lint": "tslint src/**/*.ts || true",
     "lint:fix": "tslint src/**/*.ts --fix",
-    "publish": "npm run build && npm publish --access public"
+    "pub": "npm run build && npm publish --access public"
   },
   "devDependencies": {
     "rimraf": "^2.6.2",
