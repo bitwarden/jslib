@@ -1,10 +1,5 @@
-export { CipherType } from './enums/cipherType.enum';
-export { DeviceType } from './enums/deviceType.enum';
-export { EncryptionType } from './enums/encryptionType.enum';
-export { FieldType } from './enums/fieldType.enum';
-export { SecureNoteType } from './enums/secureNoteType.enum';
+import * as Abstractions from './abstractions';
+import * as Enums from './enums';
+import * as Services from './services';
 
-export { MessagingService } from './services/abstractions/messaging.service';
-export { PlatformUtilsService } from './services/abstractions/platformUtils.service';
-export { StorageService } from './services/abstractions/storage.service';
-export { UtilsService } from './services/abstractions/utils.service';
+export { Abstractions, Enums, Services };

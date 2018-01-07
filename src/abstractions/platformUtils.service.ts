@@ -1,4 +1,4 @@
-import { DeviceType } from '../../enums/deviceType.enum';
+import { DeviceType } from '../enums/deviceType.enum';
 
 export interface PlatformUtilsService {
     getDevice(): DeviceType;
