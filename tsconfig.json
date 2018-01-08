@@ -12,11 +12,7 @@
     "outDir": "dist/es",
     "typeRoots": [
       "node_modules/@types"
-    ],
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true
+    ]
   },
   "include": [
     "src"

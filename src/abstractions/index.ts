@@ -1,3 +1,4 @@
+export { CryptoService } from './crypto.service';
 export { MessagingService } from './messaging.service';
 export { PlatformUtilsService } from './platformUtils.service';
 export { StorageService } from './storage.service';
