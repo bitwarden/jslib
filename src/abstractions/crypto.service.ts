@@ -15,6 +15,11 @@ export interface CryptoService {
     getPrivateKey(): Promise<ArrayBuffer>;
     getOrgKeys(): Promise<Map<string, SymmetricCryptoKey>>;
     getOrgKey(orgId: string): Promise<SymmetricCryptoKey>;
+    clearKey(): Promise<any>;
+    clearKeyHash(): Promise<any>;
+    clearEncKey(memoryOnly?: boolean): Promise<any>;
+    clearPrivateKey(memoryOnly?: boolean): Promise<any>;
+    clearOrgKeys(memoryOnly?: boolean): Promise<any>;
     clearKeys(): Promise<any>;
     toggleKey(): Promise<any>;
     makeKey(password: string, salt: string): SymmetricCryptoKey;
