@@ -12,10 +12,10 @@
     "url": "https://github.com/bitwarden/jslib"
   },
   "license": "GPL-3.0",
-  "module": "dist/es/index.js",
-  "typings": "dist/types/index.d.ts",
+  "module": "src/index.ts",
+  "typings": "src/index.ts",
   "files": [
-    "dist"
+    "src"
   ],
   "scripts": {
     "prebuild": "rimraf dist/**/*",
