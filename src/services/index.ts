@@ -3,5 +3,6 @@ export { AppIdService } from './appId.service';
 export { ConstantsService } from './constants.service';
 export { CryptoService } from './crypto.service';
 export { TokenService } from './token.service';
+export { TotpService } from './totp.service';
 export { UserService } from './user.service';
 export { UtilsService } from './utils.service';
