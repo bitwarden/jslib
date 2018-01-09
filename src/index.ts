@@ -7,5 +7,3 @@ import * as Response from './models/response';
 import * as Services from './services';
 
 export { Abstractions, Enums, Data, Domain, Request, Response, Services };
-
-export { UnusedService } from './services/unused.service';
