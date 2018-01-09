@@ -5,4 +5,5 @@ export { MessagingService } from './messaging.service';
 export { PlatformUtilsService } from './platformUtils.service';
 export { StorageService } from './storage.service';
 export { TokenService } from './token.service';
+export { UserService } from './user.service';
 export { UtilsService } from './utils.service';
