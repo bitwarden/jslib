@@ -1,5 +1,3 @@
-import * as forge from 'node-forge';
-
 import { EncryptionType } from '../../enums/encryptionType';
 
 import { SymmetricCryptoKeyBuffers } from './symmetricCryptoKeyBuffers';
@@ -13,17 +11,20 @@ export class SymmetricCryptoKey {
     macKey: string;
     encType: EncryptionType;
     keyBuf: SymmetricCryptoKeyBuffers;
+    forge: any;
 
     constructor(keyBytes: string, b64KeyBytes?: boolean, encType?: EncryptionType) {
+        this.forge = (window as any).forge;
+
         if (b64KeyBytes) {
-            keyBytes = forge.util.decode64(keyBytes);
+            keyBytes = this.forge.util.decode64(keyBytes);
         }
 
         if (!keyBytes) {
             throw new Error('Must provide keyBytes');
         }
 
-        const buffer = (forge as any).util.createBuffer(keyBytes);
+        const buffer = this.forge.util.createBuffer(keyBytes);
         if (!buffer || buffer.length() === 0) {
             throw new Error('Couldn\'t make buffer');
         }
@@ -41,7 +42,7 @@ export class SymmetricCryptoKey {
         }
 
         this.key = keyBytes;
-        this.keyB64 = forge.util.encode64(keyBytes);
+        this.keyB64 = this.forge.util.encode64(keyBytes);
         this.encType = encType;
 
         if (encType === EncryptionType.AesCbc256_B64 && bufferLength === 32) {
