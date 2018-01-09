@@ -18,7 +18,7 @@ export interface ApiService {
     identityBaseUrl: string;
     deviceType: string;
     logoutCallback: Function;
-    setUrls(urls: EnvironmentUrls);
+    setUrls(urls: EnvironmentUrls): void;
     postIdentityToken(request: TokenRequest): Promise<IdentityTokenResponse | any>;
     refreshIdentityToken(): Promise<any>;
     postTwoFactorEmail(request: TwoFactorEmailRequest): Promise<any>;

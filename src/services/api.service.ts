@@ -32,7 +32,7 @@ export class ApiService implements ApiServiceInterface {
         this.deviceType = platformUtilsService.getDevice().toString();
     }
 
-    setUrls(urls: EnvironmentUrls) {
+    setUrls(urls: EnvironmentUrls): void {
         this.urlsSet = true;
 
         if (urls.base != null) {
