@@ -1,6 +1,6 @@
 {
   "name": "@bitwarden/jslib",
-  "version": "0.0.18",
+  "version": "0.0.20",
   "description": "Common code used across bitwarden JavaScript projects.",
   "keywords": [
     "bitwarden"
@@ -15,7 +15,8 @@
   "module": "src/index.ts",
   "typings": "src/index.ts",
   "files": [
-    "src"
+    "src",
+    "dist"
   ],
   "scripts": {
     "prebuild": "rimraf dist/**/*",
