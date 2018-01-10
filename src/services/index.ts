@@ -1,6 +1,7 @@
 export { ApiService } from './api.service';
 export { AppIdService } from './appId.service';
 export { CipherService } from './cipher.service';
+export { CollectionService } from './collection.service';
 export { ConstantsService } from './constants.service';
 export { ContainerService } from './container.service';
 export { CryptoService } from './crypto.service';
