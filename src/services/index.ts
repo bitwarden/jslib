@@ -7,6 +7,7 @@ export { ContainerService } from './container.service';
 export { CryptoService } from './crypto.service';
 export { EnvironmentService } from './environment.service';
 export { FolderService } from './folder.service';
+export { LockService } from './lock.service';
 export { PasswordGenerationService } from './passwordGeneration.service';
 export { SettingsService } from './settings.service';
 export { TokenService } from './token.service';
