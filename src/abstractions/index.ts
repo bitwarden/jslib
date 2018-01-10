@@ -2,6 +2,7 @@ export { ApiService } from './api.service';
 export { AppIdService } from './appId.service';
 export { CryptoService } from './crypto.service';
 export { EnvironmentService } from './environment.service';
+export { FolderService } from './folder.service';
 export { MessagingService } from './messaging.service';
 export { PasswordGenerationService } from './passwordGeneration.service';
 export { PlatformUtilsService } from './platformUtils.service';
