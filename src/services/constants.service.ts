@@ -11,16 +11,15 @@ export class ConstantsService {
     static readonly lockOptionKey: string = 'lockOption';
     static readonly lastActiveKey: string = 'lastActive';
 
-    // TODO: remove these instance properties once all references are reading from the static properties
-    readonly environmentUrlsKey: string = 'environmentUrls';
-    readonly disableGaKey: string = 'disableGa';
-    readonly disableAddLoginNotificationKey: string = 'disableAddLoginNotification';
-    readonly disableContextMenuItemKey: string = 'disableContextMenuItem';
-    readonly disableFaviconKey: string = 'disableFavicon';
-    readonly disableAutoTotpCopyKey: string = 'disableAutoTotpCopy';
-    readonly enableAutoFillOnPageLoadKey: string = 'enableAutoFillOnPageLoad';
-    readonly lockOptionKey: string = 'lockOption';
-    readonly lastActiveKey: string = 'lastActive';
+    readonly environmentUrlsKey: string = ConstantsService.environmentUrlsKey;
+    readonly disableGaKey: string = ConstantsService.disableGaKey;
+    readonly disableAddLoginNotificationKey: string = ConstantsService.disableAddLoginNotificationKey;
+    readonly disableContextMenuItemKey: string = ConstantsService.disableContextMenuItemKey;
+    readonly disableFaviconKey: string = ConstantsService.disableFaviconKey;
+    readonly disableAutoTotpCopyKey: string = ConstantsService.disableAutoTotpCopyKey;
+    readonly enableAutoFillOnPageLoadKey: string = ConstantsService.enableAutoFillOnPageLoadKey;
+    readonly lockOptionKey: string = ConstantsService.lockOptionKey;
+    readonly lastActiveKey: string = ConstantsService.lastActiveKey;
 
     // TODO: Convert these objects to enums
     readonly encType: any = {
