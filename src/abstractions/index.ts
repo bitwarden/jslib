@@ -6,6 +6,7 @@ export { FolderService } from './folder.service';
 export { MessagingService } from './messaging.service';
 export { PasswordGenerationService } from './passwordGeneration.service';
 export { PlatformUtilsService } from './platformUtils.service';
+export { SettingsService } from './settings.service';
 export { StorageService } from './storage.service';
 export { TokenService } from './token.service';
 export { TotpService } from './totp.service';

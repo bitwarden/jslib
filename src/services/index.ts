@@ -6,6 +6,7 @@ export { CryptoService } from './crypto.service';
 export { EnvironmentService } from './environment.service';
 export { FolderService } from './folder.service';
 export { PasswordGenerationService } from './passwordGeneration.service';
+export { SettingsService } from './settings.service';
 export { TokenService } from './token.service';
 export { TotpService } from './totp.service';
 export { UserService } from './user.service';
