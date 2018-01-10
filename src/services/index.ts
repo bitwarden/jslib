@@ -1,6 +1,7 @@
 export { ApiService } from './api.service';
 export { AppIdService } from './appId.service';
 export { ConstantsService } from './constants.service';
+export { ContainerService } from './container.service';
 export { CryptoService } from './crypto.service';
 export { EnvironmentService } from './environment.service';
 export { PasswordGenerationService } from './passwordGeneration.service';
