@@ -1,8 +1,8 @@
-import { CipherData } from '../models/data';
+import { CipherData } from '../models/data/cipherData';
 
-import { Cipher } from '../models/domain';
-import { Field } from '../models/domain';
-import { SymmetricCryptoKey } from '../models/domain';
+import { Cipher } from '../models/domain/cipher';
+import { Field } from '../models/domain/field';
+import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
 export interface CipherService {
     decryptedCipherCache: any[];

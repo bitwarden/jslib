@@ -7,7 +7,7 @@ const Keys = {
     equivalentDomains: 'equivalentDomains',
 };
 
-export class SettingsService {
+export class SettingsService implements SettingsServiceInterface {
     private settingsCache: any;
 
     constructor(private userService: UserService, private storageService: StorageService) {

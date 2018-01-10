@@ -2,6 +2,7 @@ import { CollectionData } from '../models/data/collectionData';
 
 import { Collection } from '../models/domain/collection';
 
+import { CollectionService as CollectionServiceInterface } from '../abstractions/collection.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
@@ -10,7 +11,7 @@ const Keys = {
     collectionsPrefix: 'collections_',
 };
 
-export class CollectionService {
+export class CollectionService implements CollectionServiceInterface {
     decryptedCollectionCache: any[];
 
     constructor(private cryptoService: CryptoService, private userService: UserService,

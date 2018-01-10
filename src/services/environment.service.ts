@@ -6,7 +6,7 @@ import { ApiService } from '../abstractions/api.service';
 import { EnvironmentService as EnvironmentServiceInterface } from '../abstractions/environment.service';
 import { StorageService } from '../abstractions/storage.service';
 
-export class EnvironmentService {
+export class EnvironmentService implements EnvironmentServiceInterface {
     baseUrl: string;
     webVaultUrl: string;
     apiUrl: string;
