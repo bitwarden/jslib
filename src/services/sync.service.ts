@@ -33,7 +33,7 @@ export class SyncService implements SyncServiceInterface {
         private messagingService: MessagingService, private logoutCallback: Function) {
     }
 
-    async getLastSync() {
+    async getLastSync(): Promise<Date> {
         const userId = await this.userService.getUserId();
         const lastSync = await this.storageService.get<any>(Keys.lastSyncPrefix + userId);
         if (lastSync) {
@@ -43,7 +43,7 @@ export class SyncService implements SyncServiceInterface {
         return null;
     }
 
-    async setLastSync(date: Date) {
+    async setLastSync(date: Date): Promise<any> {
         const userId = await this.userService.getUserId();
         await this.storageService.save(Keys.lastSyncPrefix + userId, date.toJSON());
     }
@@ -58,7 +58,7 @@ export class SyncService implements SyncServiceInterface {
         this.messagingService.send('syncCompleted', { successfully: successfully });
     }
 
-    async fullSync(forceSync: boolean) {
+    async fullSync(forceSync: boolean): Promise<boolean> {
         this.syncStarted();
         const isAuthenticated = await this.userService.isAuthenticated();
         if (!isAuthenticated) {
