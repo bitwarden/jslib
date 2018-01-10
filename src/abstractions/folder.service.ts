@@ -1,6 +1,6 @@
-import { FolderData } from '../models/data';
+import { FolderData } from '../models/data/folderData';
 
-import { Folder } from '../models/domain';
+import { Folder } from '../models/domain/folder';
 
 export interface FolderService {
     decryptedFolderCache: any[];

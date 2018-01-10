@@ -1,10 +1,10 @@
-import { FolderData } from '../models/data';
+import { FolderData } from '../models/data/folderData';
 
-import { Folder } from '../models/domain';
+import { Folder } from '../models/domain/folder';
 
-import { FolderRequest } from '../models/request';
+import { FolderRequest } from '../models/request/folderRequest';
 
-import { FolderResponse } from '../models/response';
+import { FolderResponse } from '../models/response/folderResponse';
 
 import { ApiService } from '../abstractions/api.service';
 import { CryptoService } from '../abstractions/crypto.service';

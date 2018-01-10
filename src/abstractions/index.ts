@@ -1,5 +1,6 @@
 export { ApiService } from './api.service';
 export { AppIdService } from './appId.service';
+export { CipherService } from './cipher.service';
 export { CryptoService } from './crypto.service';
 export { EnvironmentService } from './environment.service';
 export { FolderService } from './folder.service';
