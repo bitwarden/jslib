@@ -11,6 +11,7 @@ export { PasswordGenerationService } from './passwordGeneration.service';
 export { PlatformUtilsService } from './platformUtils.service';
 export { SettingsService } from './settings.service';
 export { StorageService } from './storage.service';
+export { SyncService } from './sync.service';
 export { TokenService } from './token.service';
 export { TotpService } from './totp.service';
 export { UserService } from './user.service';
