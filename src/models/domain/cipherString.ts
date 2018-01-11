@@ -93,11 +93,11 @@ class CipherString {
         }
 
         let cryptoService: CryptoService;
-        const containerService = (window as any).BitwardenContainerService;
+        const containerService = (window as any).bitwardenContainerService;
         if (containerService) {
             cryptoService = containerService.getCryptoService();
         } else {
-            throw new Error('window.BitwardenContainerService not initialized.');
+            throw new Error('window.bitwardenContainerService not initialized.');
         }
 
         return cryptoService.getOrgKey(orgId).then((orgKey: any) => {

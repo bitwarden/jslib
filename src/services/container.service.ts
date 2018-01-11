@@ -7,8 +7,8 @@ export class ContainerService {
     }
 
     attachToWindow(win: any) {
-        if (!win.BitwardenContainerService) {
-            win.BitwardenContainerService = this;
+        if (!win.bitwardenContainerService) {
+            win.bitwardenContainerService = this;
         }
     }
 

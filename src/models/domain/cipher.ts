@@ -117,13 +117,13 @@ class Cipher extends Domain {
                 model.login = await this.login.decrypt(this.organizationId);
                 model.subTitle = model.login.username;
                 if (model.login.uri) {
-                    const containerService = (window as any).BitwardenContainerService;
+                    const containerService = (window as any).bitwardenContainerService;
                     if (containerService) {
                         const platformUtilsService: PlatformUtilsService =
                             containerService.getPlatformUtilsService();
                         model.login.domain = platformUtilsService.getDomain(model.login.uri);
                     } else {
-                        throw new Error('window.BitwardenContainerService not initialized.');
+                        throw new Error('window.bitwardenContainerService not initialized.');
                     }
                 }
                 break;
