@@ -7,6 +7,7 @@ export interface PlatformUtilsService {
     isChrome(): boolean;
     isEdge(): boolean;
     isOpera(): boolean;
+    isSafari(): boolean;
     analyticsId(): string;
     getDomain(uriString: string): string;
     isViewOpen(): boolean;
