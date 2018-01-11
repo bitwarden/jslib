@@ -8,7 +8,6 @@ export interface PlatformUtilsService {
     isEdge(): boolean;
     isOpera(): boolean;
     analyticsId(): string;
-    initListSectionItemListeners(doc: Document, angular: any): void;
     getDomain(uriString: string): string;
     inSidebar(theWindow: Window): boolean;
     inTab(theWindow: Window): boolean;
