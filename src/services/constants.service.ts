@@ -56,12 +56,12 @@ export class ConstantsService {
 
     twoFactorProviderInfo: any[];
 
-    constructor(i18nService: any, platformUtilsService: PlatformUtilsService) {
-        if (platformUtilsService.isEdge()) {
+    constructor(i18nService: any, delayLoad: number) {
+        if (delayLoad && delayLoad > 0) {
             // delay for i18n fetch
             setTimeout(() => {
                 this.bootstrap(i18nService);
-            }, 1000);
+            }, delayLoad);
         } else {
             this.bootstrap(i18nService);
         }

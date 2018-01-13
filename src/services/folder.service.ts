@@ -20,7 +20,7 @@ export class FolderService implements FolderServiceInterface {
     decryptedFolderCache: any[];
 
     constructor(private cryptoService: CryptoService, private userService: UserService,
-        private noneFolder: string, private apiService: ApiService,
+        private noneFolder: () => string, private apiService: ApiService,
         private storageService: StorageService) {
     }
 
@@ -66,7 +66,7 @@ export class FolderService implements FolderServiceInterface {
 
         const decFolders: any[] = [{
             id: null,
-            name: this.noneFolder,
+            name: this.noneFolder(),
         }];
 
         const key = await this.cryptoService.getKey();
