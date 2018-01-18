@@ -148,8 +148,7 @@ export class CryptoService implements CryptoServiceInterface {
             return null;
         }
 
-        const privateKey = await this.decrypt(new CipherString(encPrivateKey), null, 'raw');
-        const privateKeyB64 = forge.util.encode64(privateKey);
+        const privateKeyB64 = await this.decrypt(new CipherString(encPrivateKey), null, 'b64');
         this.privateKey = UtilsService.fromB64ToArray(privateKeyB64).buffer;
         return this.privateKey;
     }
@@ -327,8 +326,13 @@ export class CryptoService implements CryptoServiceInterface {
 
         if (outputEncoding === 'utf8') {
             return decipher.output.toString('utf8');
+        }
+
+        const decipherBytes = decipher.output.getBytes();
+        if (outputEncoding === 'b64') {
+            return forge.util.encode64(decipherBytes);
         } else {
-            return decipher.output.getBytes();
+            return decipherBytes;
         }
     }
 
