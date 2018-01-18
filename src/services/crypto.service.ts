@@ -483,6 +483,7 @@ export class CryptoService implements CryptoServiceInterface {
         const theKey = this.resolveLegacyKey(encType, keyForEnc);
 
         if (theKey.macKey != null && macBytes == null) {
+            // tslint:disable-next-line
             console.error('macBytes required.');
             return null;
         }
