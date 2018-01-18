@@ -482,6 +482,11 @@ export class CryptoService implements CryptoServiceInterface {
         const keyForEnc = await this.getKeyForEncryption(key);
         const theKey = this.resolveLegacyKey(encType, keyForEnc);
 
+        if (theKey.macKey != null && macBytes == null) {
+            console.error('macBytes required.');
+            return null;
+        }
+
         if (encType !== theKey.encType) {
             // tslint:disable-next-line
             console.error('encType unavailable.');
