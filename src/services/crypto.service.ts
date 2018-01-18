@@ -414,7 +414,7 @@ export class CryptoService implements CryptoServiceInterface {
             const ctBytes: string = forge.util.decode64(encPieces[0]);
             const macBytes: string = forge.util.decode64(encPieces[1]);
             const computedMacBytes = await this.computeMac(ctBytes, key.macKey, false);
-            const macsEqual = await this.macsEqual(key.macKey, macBytes, computedMacBytes);
+            const macsEqual = await this.macsEqual(macBytes, computedMacBytes);
             if (!macsEqual) {
                 throw new Error('MAC failed.');
             }
@@ -495,7 +495,7 @@ export class CryptoService implements CryptoServiceInterface {
 
         if (theKey.macKey != null && macBytes != null) {
             const computedMacBytes = this.computeMac(ivBytes + ctBytes, theKey.macKey, false);
-            if (!this.macsEqual(theKey.macKey, computedMacBytes, macBytes)) {
+            if (!this.macsEqual(computedMacBytes, macBytes)) {
                 // tslint:disable-next-line
                 console.error('MAC failed.');
                 return null;
@@ -528,7 +528,7 @@ export class CryptoService implements CryptoServiceInterface {
             return null;
         }
 
-        const macsMatch = await this.macsEqualWC(keyBuf.macKey, macBuf, computedMacBuf);
+        const macsMatch = await this.macsEqualWC(macBuf, computedMacBuf);
         if (macsMatch === false) {
             // tslint:disable-next-line
             console.error('MAC failed.');
@@ -553,10 +553,11 @@ export class CryptoService implements CryptoServiceInterface {
 
     // Safely compare two MACs in a way that protects against timing attacks (Double HMAC Verification).
     // ref: https://www.nccgroup.trust/us/about-us/newsroom-and-events/blog/2011/february/double-hmac-verification/
-    private macsEqual(macKey: string, mac1: string, mac2: string): boolean {
+    // ref: https://paragonie.com/blog/2015/11/preventing-timing-attacks-on-string-comparison-with-double-hmac-strategy
+    private macsEqual(mac1: string, mac2: string): boolean {
         const hmac = (forge as any).hmac.create();
 
-        hmac.start('sha256', macKey);
+        hmac.start('sha256', this.getRandomBytes(32));
         hmac.update(mac1);
         const mac1Bytes = hmac.digest().getBytes();
 
@@ -567,8 +568,10 @@ export class CryptoService implements CryptoServiceInterface {
         return mac1Bytes === mac2Bytes;
     }
 
-    private async macsEqualWC(macKeyBuf: ArrayBuffer, mac1Buf: ArrayBuffer, mac2Buf: ArrayBuffer): Promise<boolean> {
-        const macKey = await Subtle.importKey('raw', macKeyBuf, SigningAlgorithm, false, ['sign']);
+    private async macsEqualWC(mac1Buf: ArrayBuffer, mac2Buf: ArrayBuffer): Promise<boolean> {
+        const compareKey = new Uint8Array(32);
+        Crypto.getRandomValues(compareKey);
+        const macKey = await Subtle.importKey('raw', compareKey.buffer, SigningAlgorithm, false, ['sign']);
         const mac1 = await Subtle.sign(SigningAlgorithm, macKey, mac1Buf);
         const mac2 = await Subtle.sign(SigningAlgorithm, macKey, mac2Buf);
 
@@ -607,5 +610,15 @@ export class CryptoService implements CryptoServiceInterface {
         }
 
         return key;
+    }
+
+    private getRandomBytes(byteLength: number): string {
+        const bytes = new Uint32Array(byteLength / 4);
+        Crypto.getRandomValues(bytes);
+        const buffer = forge.util.createBuffer();
+        for (let i = 0; i < bytes.length; i++) {
+            buffer.putInt32(bytes[i]);
+        }
+        return buffer.getBytes();
     }
 }
