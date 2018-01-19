@@ -150,13 +150,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceInter
     optionsCache: any;
     history: PasswordHistory[] = [];
 
-    constructor(private cryptoService: CryptoService,
-        private storageService: StorageService) {
-        storageService.get<PasswordHistory[]>(Keys.history).then((encrypted) => {
-            return this.decryptHistory(encrypted);
-        }).then((history) => {
-            this.history = history;
-        });
+    constructor(private cryptoService: CryptoService, private storageService: StorageService) {
     }
 
     generatePassword(options: any) {
@@ -181,24 +175,42 @@ export class PasswordGenerationService implements PasswordGenerationServiceInter
         this.optionsCache = options;
     }
 
-    getHistory() {
+    async getHistory(): Promise<PasswordHistory[]> {
+        const hasKey = (await this.cryptoService.getKey()) != null;
+        if (!hasKey) {
+            return new Array<PasswordHistory>();
+        }
+
+        if (!this.history) {
+            const encrypted = await this.storageService.get<PasswordHistory[]>(Keys.history);
+            this.history = await this.decryptHistory(encrypted);
+        }
+
         return this.history || new Array<PasswordHistory>();
     }
 
     async addHistory(password: string): Promise<any> {
-        // Prevent duplicates
-        if (this.matchesPrevious(password)) {
+        // Cannot add new history if no key is available
+        const hasKey = (await this.cryptoService.getKey()) != null;
+        if (!hasKey) {
             return;
         }
 
-        this.history.push(new PasswordHistory(password, Date.now()));
+        const currentHistory = await this.getHistory();
 
-        // Remove old items.
-        if (this.history.length > MaxPasswordsInHistory) {
-            this.history.shift();
+        // Prevent duplicates
+        if (this.matchesPrevious(password, currentHistory)) {
+            return;
         }
 
-        const newHistory = await this.encryptHistory();
+        currentHistory.push(new PasswordHistory(password, Date.now()));
+
+        // Remove old items.
+        if (currentHistory.length > MaxPasswordsInHistory) {
+            currentHistory.shift();
+        }
+
+        const newHistory = await this.encryptHistory(currentHistory);
         return await this.storageService.save(Keys.history, newHistory);
     }
 
@@ -207,12 +219,12 @@ export class PasswordGenerationService implements PasswordGenerationServiceInter
         return await this.storageService.remove(Keys.history);
     }
 
-    private async encryptHistory(): Promise<PasswordHistory[]> {
-        if (this.history == null || this.history.length === 0) {
+    private async encryptHistory(history: PasswordHistory[]): Promise<PasswordHistory[]> {
+        if (history == null || history.length === 0) {
             return Promise.resolve([]);
         }
 
-        const promises = this.history.map(async (item) => {
+        const promises = history.map(async (item) => {
             const encrypted = await this.cryptoService.encrypt(item.password);
             return new PasswordHistory(encrypted.encryptedString, item.date);
         });
@@ -233,11 +245,11 @@ export class PasswordGenerationService implements PasswordGenerationServiceInter
         return await Promise.all(promises);
     }
 
-    private matchesPrevious(password: string): boolean {
-        if (this.history == null || this.history.length === 0) {
+    private matchesPrevious(password: string, history: PasswordHistory[]): boolean {
+        if (history == null || history.length === 0) {
             return false;
         }
 
-        return this.history[this.history.length - 1].password === password;
+        return history[history.length - 1].password === password;
     }
 }

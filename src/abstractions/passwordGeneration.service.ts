@@ -6,7 +6,7 @@ export interface PasswordGenerationService {
     generatePassword(options: any): string;
     getOptions(): any;
     saveOptions(options: any): Promise<any>;
-    getHistory(): PasswordHistory[];
+    getHistory(): Promise<PasswordHistory[]>;
     addHistory(password: string): Promise<any>;
     clear(): Promise<any>;
 }
