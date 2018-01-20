@@ -3,7 +3,7 @@ import { CardData } from '../data/cardData';
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
-class Card extends Domain {
+export class Card extends Domain {
     cardholderName: CipherString;
     brand: CipherString;
     number: CipherString;
@@ -38,6 +38,3 @@ class Card extends Domain {
         }, orgId);
     }
 }
-
-export { Card };
-(window as any).Card = Card;

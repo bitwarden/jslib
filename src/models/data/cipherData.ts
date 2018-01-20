@@ -9,7 +9,7 @@ import { SecureNoteData } from './secureNoteData';
 
 import { CipherResponse } from '../response/cipherResponse';
 
-class CipherData {
+export class CipherData {
     id: string;
     organizationId: string;
     folderId: string;
@@ -82,6 +82,3 @@ class CipherData {
         }
     }
 }
-
-export { CipherData };
-(window as any).CipherData = CipherData;

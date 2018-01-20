@@ -1,4 +1,4 @@
-class GlobalDomainResponse {
+export class GlobalDomainResponse {
     type: number;
     domains: string[];
     excluded: number[];
@@ -9,6 +9,3 @@ class GlobalDomainResponse {
         this.excluded = response.Excluded;
     }
 }
-
-export { GlobalDomainResponse };
-(window as any).GlobalDomainResponse = GlobalDomainResponse;

@@ -1,4 +1,4 @@
-class FolderResponse {
+export class FolderResponse {
     id: string;
     name: string;
     revisionDate: string;
@@ -9,6 +9,3 @@ class FolderResponse {
         this.revisionDate = response.RevisionDate;
     }
 }
-
-export { FolderResponse };
-(window as any).FolderResponse = FolderResponse;

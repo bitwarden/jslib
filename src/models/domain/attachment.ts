@@ -3,7 +3,7 @@ import { AttachmentData } from '../data/attachmentData';
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
-class Attachment extends Domain {
+export class Attachment extends Domain {
     id: string;
     url: string;
     size: number;
@@ -38,6 +38,3 @@ class Attachment extends Domain {
         }, orgId);
     }
 }
-
-export { Attachment };
-(window as any).Attachment = Attachment;

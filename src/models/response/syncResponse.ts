@@ -4,7 +4,7 @@ import { DomainsResponse } from './domainsResponse';
 import { FolderResponse } from './folderResponse';
 import { ProfileResponse } from './profileResponse';
 
-class SyncResponse {
+export class SyncResponse {
     profile?: ProfileResponse;
     folders: FolderResponse[] = [];
     collections: CollectionResponse[] = [];
@@ -39,6 +39,3 @@ class SyncResponse {
         }
     }
 }
-
-export { SyncResponse };
-(window as any).SyncResponse = SyncResponse;

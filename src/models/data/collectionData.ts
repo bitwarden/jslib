@@ -1,6 +1,6 @@
 import { CollectionResponse } from '../response/collectionResponse';
 
-class CollectionData {
+export class CollectionData {
     id: string;
     organizationId: string;
     name: string;
@@ -11,6 +11,3 @@ class CollectionData {
         this.name = response.name;
     }
 }
-
-export { CollectionData };
-(window as any).CollectionData = CollectionData;

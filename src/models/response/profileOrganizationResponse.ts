@@ -1,4 +1,4 @@
-class ProfileOrganizationResponse {
+export class ProfileOrganizationResponse {
     id: string;
     name: string;
     useGroups: boolean;
@@ -25,6 +25,3 @@ class ProfileOrganizationResponse {
         this.type = response.Type;
     }
 }
-
-export { ProfileOrganizationResponse };
-(window as any).ProfileOrganizationResponse = ProfileOrganizationResponse;

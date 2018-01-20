@@ -1,4 +1,4 @@
-class CollectionResponse {
+export class CollectionResponse {
     id: string;
     organizationId: string;
     name: string;
@@ -9,6 +9,3 @@ class CollectionResponse {
         this.name = response.Name;
     }
 }
-
-export { CollectionResponse };
-(window as any).CollectionResponse = CollectionResponse;

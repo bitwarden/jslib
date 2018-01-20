@@ -1,4 +1,4 @@
-class IdentityTokenResponse {
+export class IdentityTokenResponse {
     accessToken: string;
     expiresIn: number;
     refreshToken: string;
@@ -19,6 +19,3 @@ class IdentityTokenResponse {
         this.twoFactorToken = response.TwoFactorToken;
     }
 }
-
-export { IdentityTokenResponse };
-(window as any).IdentityTokenResponse = IdentityTokenResponse;

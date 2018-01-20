@@ -4,7 +4,7 @@ import { SecureNoteData } from '../data/secureNoteData';
 
 import Domain from './domain';
 
-class SecureNote extends Domain {
+export class SecureNote extends Domain {
     type: SecureNoteType;
 
     constructor(obj?: SecureNoteData, alreadyEncrypted: boolean = false) {
@@ -22,6 +22,3 @@ class SecureNote extends Domain {
         };
     }
 }
-
-export { SecureNote };
-(window as any).SecureNote = SecureNote;

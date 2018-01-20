@@ -3,7 +3,7 @@ import { LoginData } from '../data/loginData';
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
-class Login extends Domain {
+export class Login extends Domain {
     uri: CipherString;
     username: CipherString;
     password: CipherString;
@@ -32,6 +32,3 @@ class Login extends Domain {
         }, orgId);
     }
 }
-
-export { Login };
-(window as any).Login = Login;

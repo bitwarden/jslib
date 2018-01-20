@@ -1,6 +1,6 @@
 import { CipherType } from '../../enums/cipherType';
 
-class CipherRequest {
+export class CipherRequest {
     type: CipherType;
     folderId: string;
     organizationId: string;
@@ -84,6 +84,3 @@ class CipherRequest {
         }
     }
 }
-
-export { CipherRequest };
-(window as any).CipherRequest = CipherRequest;

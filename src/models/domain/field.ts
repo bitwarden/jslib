@@ -5,7 +5,7 @@ import { FieldData } from '../data/fieldData';
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
-class Field extends Domain {
+export class Field extends Domain {
     name: CipherString;
     vault: CipherString;
     type: FieldType;
@@ -34,6 +34,3 @@ class Field extends Domain {
         }, orgId);
     }
 }
-
-export { Field };
-(window as any).Field = Field;

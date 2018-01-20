@@ -1,6 +1,6 @@
 import { FieldType } from '../../enums/fieldType';
 
-class FieldData {
+export class FieldData {
     type: FieldType;
     name: string;
     value: string;
@@ -11,6 +11,3 @@ class FieldData {
         this.value = response.Value;
     }
 }
-
-export { FieldData };
-(window as any).FieldData = FieldData;

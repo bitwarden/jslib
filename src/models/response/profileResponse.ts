@@ -1,6 +1,6 @@
 import { ProfileOrganizationResponse } from './profileOrganizationResponse';
 
-class ProfileResponse {
+export class ProfileResponse {
     id: string;
     name: string;
     email: string;
@@ -34,6 +34,3 @@ class ProfileResponse {
         }
     }
 }
-
-export { ProfileResponse };
-(window as any).ProfileResponse = ProfileResponse;

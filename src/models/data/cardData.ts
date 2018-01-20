@@ -1,4 +1,4 @@
-class CardData {
+export class CardData {
     cardholderName: string;
     brand: string;
     number: string;
@@ -15,6 +15,3 @@ class CardData {
         this.code = data.Code;
     }
 }
-
-export { CardData };
-(window as any).CardData = CardData;

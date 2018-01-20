@@ -1,6 +1,6 @@
 import { DeviceType } from '../../enums/deviceType';
 
-class DeviceResponse {
+export class DeviceResponse {
     id: string;
     name: number;
     identifier: string;
@@ -15,6 +15,3 @@ class DeviceResponse {
         this.creationDate = response.CreationDate;
     }
 }
-
-export { DeviceResponse };
-(window as any).DeviceResponse = DeviceResponse;

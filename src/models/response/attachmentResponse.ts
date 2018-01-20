@@ -1,4 +1,4 @@
-class AttachmentResponse {
+export class AttachmentResponse {
     id: string;
     url: string;
     fileName: string;
@@ -13,6 +13,3 @@ class AttachmentResponse {
         this.sizeName = response.SizeName;
     }
 }
-
-export { AttachmentResponse };
-(window as any).AttachmentResponse = AttachmentResponse;

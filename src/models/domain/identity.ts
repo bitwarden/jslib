@@ -3,7 +3,7 @@ import { IdentityData } from '../data/identityData';
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
-class Identity extends Domain {
+export class Identity extends Domain {
     title: CipherString;
     firstName: CipherString;
     middleName: CipherString;
@@ -74,6 +74,3 @@ class Identity extends Domain {
         }, orgId);
     }
 }
-
-export { Identity };
-(window as any).Identity = Identity;

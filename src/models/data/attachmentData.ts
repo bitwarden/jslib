@@ -1,6 +1,6 @@
 import { AttachmentResponse } from '../response/attachmentResponse';
 
-class AttachmentData {
+export class AttachmentData {
     id: string;
     url: string;
     fileName: string;
@@ -15,6 +15,3 @@ class AttachmentData {
         this.sizeName = response.sizeName;
     }
 }
-
-export { AttachmentData };
-(window as any).AttachmentData = AttachmentData;

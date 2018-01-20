@@ -1,4 +1,4 @@
-class LoginData {
+export class LoginData {
     uri: string;
     username: string;
     password: string;
@@ -11,6 +11,3 @@ class LoginData {
         this.totp = data.Totp;
     }
 }
-
-export { LoginData };
-(window as any).LoginData = LoginData;

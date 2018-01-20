@@ -1,4 +1,4 @@
-class KeysResponse {
+export class KeysResponse {
     privateKey: string;
     publicKey: string;
 
@@ -7,6 +7,3 @@ class KeysResponse {
         this.publicKey = response.PublicKey;
     }
 }
-
-export { KeysResponse };
-(window as any).KeysResponse = KeysResponse;

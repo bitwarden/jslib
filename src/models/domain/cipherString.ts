@@ -2,7 +2,7 @@ import { EncryptionType } from '../../enums/encryptionType';
 
 import { CryptoService } from '../../abstractions/crypto.service';
 
-class CipherString {
+export class CipherString {
     encryptedString?: string;
     encryptionType?: EncryptionType;
     decryptedValue?: string;
@@ -111,6 +111,3 @@ class CipherString {
         });
     }
 }
-
-export { CipherString };
-(window as any).CipherString = CipherString;

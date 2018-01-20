@@ -1,4 +1,4 @@
-class IdentityData {
+export class IdentityData {
     title: string;
     firstName: string;
     middleName: string;
@@ -39,6 +39,3 @@ class IdentityData {
         this.licenseNumber = data.LicenseNumber;
     }
 }
-
-export { IdentityData };
-(window as any).IdentityData = IdentityData;

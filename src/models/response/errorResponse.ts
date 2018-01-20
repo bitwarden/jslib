@@ -1,4 +1,4 @@
-class ErrorResponse {
+export class ErrorResponse {
     message: string;
     validationErrors: { [key: string]: string[]; };
     statusCode: number;
@@ -32,6 +32,3 @@ class ErrorResponse {
         return this.message;
     }
 }
-
-export { ErrorResponse };
-(window as any).ErrorResponse = ErrorResponse;

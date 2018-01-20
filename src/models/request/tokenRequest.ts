@@ -1,6 +1,6 @@
 import { DeviceRequest } from './deviceRequest';
 
-class TokenRequest {
+export class TokenRequest {
     email: string;
     masterPasswordHash: string;
     token: string;
@@ -44,6 +44,3 @@ class TokenRequest {
         return obj;
     }
 }
-
-export { TokenRequest };
-(window as any).TokenRequest = TokenRequest;

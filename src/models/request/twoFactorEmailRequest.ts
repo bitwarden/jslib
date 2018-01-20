@@ -1,4 +1,4 @@
-class TwoFactorEmailRequest {
+export class TwoFactorEmailRequest {
     email: string;
     masterPasswordHash: string;
 
@@ -7,6 +7,3 @@ class TwoFactorEmailRequest {
         this.masterPasswordHash = masterPasswordHash;
     }
 }
-
-export { TwoFactorEmailRequest };
-(window as any).TwoFactorEmailRequest = TwoFactorEmailRequest;

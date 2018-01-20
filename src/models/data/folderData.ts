@@ -1,6 +1,6 @@
 import { FolderResponse } from '../response/folderResponse';
 
-class FolderData {
+export class FolderData {
     id: string;
     userId: string;
     name: string;
@@ -13,6 +13,3 @@ class FolderData {
         this.revisionDate = response.revisionDate;
     }
 }
-
-export { FolderData };
-(window as any).FolderData = FolderData;

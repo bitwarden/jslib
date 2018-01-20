@@ -3,7 +3,7 @@ import { CollectionData } from '../data/collectionData';
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
-class Collection extends Domain {
+export class Collection extends Domain {
     id: string;
     organizationId: string;
     name: CipherString;
@@ -32,6 +32,3 @@ class Collection extends Domain {
         }, this.organizationId);
     }
 }
-
-export { Collection };
-(window as any).Collection = Collection;

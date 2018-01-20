@@ -2,7 +2,7 @@ import { DeviceType } from '../../enums/deviceType';
 
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
-class DeviceRequest {
+export class DeviceRequest {
     type: DeviceType;
     name: string;
     identifier: string;
@@ -15,6 +15,3 @@ class DeviceRequest {
         this.pushToken = null;
     }
 }
-
-export { DeviceRequest };
-(window as any).DeviceRequest = DeviceRequest;

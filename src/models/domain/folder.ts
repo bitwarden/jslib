@@ -3,7 +3,7 @@ import { FolderData } from '../data/folderData';
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
-class Folder extends Domain {
+export class Folder extends Domain {
     id: string;
     name: CipherString;
 
@@ -29,6 +29,3 @@ class Folder extends Domain {
         }, null);
     }
 }
-
-export { Folder };
-(window as any).Folder = Folder;

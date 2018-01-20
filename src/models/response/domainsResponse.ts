@@ -1,6 +1,6 @@
 import { GlobalDomainResponse } from './globalDomainResponse';
 
-class DomainsResponse {
+export class DomainsResponse {
     equivalentDomains: string[][];
     globalEquivalentDomains: GlobalDomainResponse[] = [];
 
@@ -15,6 +15,3 @@ class DomainsResponse {
         }
     }
 }
-
-export { DomainsResponse };
-(window as any).DomainsResponse = DomainsResponse;

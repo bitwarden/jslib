@@ -1,6 +1,6 @@
 import { AttachmentResponse } from './attachmentResponse';
 
-class CipherResponse {
+export class CipherResponse {
     id: string;
     organizationId: string;
     folderId: string;
@@ -39,6 +39,3 @@ class CipherResponse {
         }
     }
 }
-
-export { CipherResponse };
-(window as any).CipherResponse = CipherResponse;

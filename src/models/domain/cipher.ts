@@ -13,7 +13,7 @@ import { Identity } from './identity';
 import { Login } from './login';
 import { SecureNote } from './secureNote';
 
-class Cipher extends Domain {
+export class Cipher extends Domain {
     id: string;
     organizationId: string;
     folderId: string;
@@ -187,6 +187,3 @@ class Cipher extends Domain {
         return model;
     }
 }
-
-export { Cipher };
-(window as any).Cipher = Cipher;

@@ -1,4 +1,4 @@
-class RegisterRequest {
+export class RegisterRequest {
     name: string;
     email: string;
     masterPasswordHash: string;
@@ -13,6 +13,3 @@ class RegisterRequest {
         this.key = key;
     }
 }
-
-export { RegisterRequest };
-(window as any).RegisterRequest = RegisterRequest;
