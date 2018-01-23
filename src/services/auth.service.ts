@@ -13,7 +13,7 @@ import { UserService } from '../abstractions/user.service';
 
 export class AuthService {
     constructor(public cryptoService: CryptoService, public apiService: ApiService, public userService: UserService,
-        public tokenService: TokenService, public $rootScope: any, public appIdService: AppIdService,
+        public tokenService: TokenService, public appIdService: AppIdService,
         public platformUtilsService: PlatformUtilsService, public constantsService: ConstantsService,
         public messagingService: MessagingService) {
     }

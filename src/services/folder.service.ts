@@ -8,7 +8,7 @@ import { FolderResponse } from '../models/response/folderResponse';
 
 import { ApiService } from '../abstractions/api.service';
 import { CryptoService } from '../abstractions/crypto.service';
-import { FolderService as FolderServiceInterface } from '../abstractions/folder.service';
+import { FolderService as FolderServiceAbstraction } from '../abstractions/folder.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
@@ -16,7 +16,7 @@ const Keys = {
     foldersPrefix: 'folders_',
 };
 
-export class FolderService implements FolderServiceInterface {
+export class FolderService implements FolderServiceAbstraction {
     decryptedFolderCache: any[];
 
     constructor(private cryptoService: CryptoService, private userService: UserService,

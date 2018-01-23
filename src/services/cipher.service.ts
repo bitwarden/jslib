@@ -15,7 +15,7 @@ import { ErrorResponse } from '../models/response/errorResponse';
 import { ConstantsService } from './constants.service';
 
 import { ApiService } from '../abstractions/api.service';
-import { CipherService as CipherServiceInterface } from '../abstractions/cipher.service';
+import { CipherService as CipherServiceAbstraction } from '../abstractions/cipher.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
@@ -27,7 +27,7 @@ const Keys = {
     neverDomains: 'neverDomains',
 };
 
-export class CipherService implements CipherServiceInterface {
+export class CipherService implements CipherServiceAbstraction {
     static sortCiphersByLastUsed(a: any, b: any): number {
         const aLastUsed = a.localData && a.localData.lastUsedDate ? a.localData.lastUsedDate as number : null;
         const bLastUsed = b.localData && b.localData.lastUsedDate ? b.localData.lastUsedDate as number : null;
