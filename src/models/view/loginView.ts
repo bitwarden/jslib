@@ -5,17 +5,35 @@ import { Login } from '../domain/login';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 export class LoginView implements View {
-    uri: string;
     username: string;
-    password: string;
-    maskedPassword: string;
     totp: string;
 
-    // tslint:disable-next-line
+    // tslint:disable
+    private _uri: string;
+    private _username: string;
+    private _password: string;
     private _domain: string;
+    private _maskedPassword: string;
+    // tslint:enable
 
     constructor(l?: Login) {
         // ctor
+    }
+
+    get uri(): string {
+        return this._uri;
+    }
+    set uri(value: string) {
+        this._uri = value;
+        this._domain = null;
+    }
+
+    get password(): string {
+        return this._password;
+    }
+    set password(value: string) {
+        this._password = value;
+        this._maskedPassword = null;
     }
 
     get domain(): string {
@@ -30,5 +48,20 @@ export class LoginView implements View {
         }
 
         return this._domain;
+    }
+
+    get maskedPassword(): string {
+        if (this._maskedPassword == null && this.password != null) {
+            this._maskedPassword = '';
+            for (var i = 0; i < this.password.length; i++) {
+                this._maskedPassword += '•';
+            }
+        }
+
+        return this._maskedPassword;
+    }
+
+    get subTitle(): string {
+        return this.username;
     }
 }

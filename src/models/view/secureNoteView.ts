@@ -10,4 +10,8 @@ export class SecureNoteView implements View {
     constructor(n: SecureNote) {
         this.type = n.type;
     }
+
+    get subTitle(): string {
+        return null;
+    }
 }

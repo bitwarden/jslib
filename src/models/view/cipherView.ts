@@ -27,9 +27,6 @@ export class CipherView implements View {
     fields: FieldView[];
     collectionIds: string[];
 
-    // tslint:disable-next-line
-    private _subTitle: string;
-
     constructor(c?: Cipher) {
         if (!c) {
             return;
@@ -45,40 +42,19 @@ export class CipherView implements View {
     }
 
     get subTitle(): string {
-        if (this._subTitle == null) {
-            switch (this.type) {
-                case CipherType.Login:
-                    this._subTitle = this.login.username;
-                    break;
-                case CipherType.SecureNote:
-                    this._subTitle = null;
-                    break;
-                case CipherType.Card:
-                    this._subTitle = this.card.brand;
-                    if (this.card.number != null && this.card.number.length >= 4) {
-                        if (this._subTitle !== '') {
-                            this._subTitle += ', ';
-                        }
-                        this._subTitle += ('*' + this.card.number.substr(this.card.number.length - 4));
-                    }
-                    break;
-                case CipherType.Identity:
-                    this._subTitle = '';
-                    if (this.identity.firstName != null) {
-                        this._subTitle = this.identity.firstName;
-                    }
-                    if (this.identity.lastName != null) {
-                        if (this._subTitle !== '') {
-                            this._subTitle += ' ';
-                        }
-                        this._subTitle += this.identity.lastName;
-                    }
-                    break;
-                default:
-                    break;
-            }
+        switch (this.type) {
+            case CipherType.Login:
+                return this.login.subTitle;
+            case CipherType.SecureNote:
+                return this.secureNote.subTitle;
+            case CipherType.Card:
+                return this.card.subTitle;
+            case CipherType.Identity:
+                return this.identity.subTitle;
+            default:
+                break;
         }
 
-        return this._subTitle;
+        return null;
     }
 }
