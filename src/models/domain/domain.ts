@@ -1,22 +1,25 @@
 import { CipherString } from '../domain/cipherString';
 
+import { View } from '../view/view';
+
 export default abstract class Domain {
-    protected buildDomainModel(model: any, obj: any, map: any, alreadyEncrypted: boolean, notEncList: any[] = []) {
+    protected buildDomainModel<D extends Domain>(domain: D, dataObj: any, map: any,
+        alreadyEncrypted: boolean, notEncList: any[] = []) {
         for (const prop in map) {
             if (!map.hasOwnProperty(prop)) {
                 continue;
             }
 
-            const objProp = obj[(map[prop] || prop)];
+            const objProp = dataObj[(map[prop] || prop)];
             if (alreadyEncrypted === true || notEncList.indexOf(prop) > -1) {
-                model[prop] = objProp ? objProp : null;
+                (domain as any)[prop] = objProp ? objProp : null;
             } else {
-                model[prop] = objProp ? new CipherString(objProp) : null;
+                (domain as any)[prop] = objProp ? new CipherString(objProp) : null;
             }
         }
     }
 
-    protected async decryptObj(model: any, map: any, orgId: string) {
+    protected async decryptObj<T extends View>(viewModel: T, map: any, orgId: string): Promise<T> {
         const promises = [];
         const self: any = this;
 
@@ -34,13 +37,13 @@ export default abstract class Domain {
                     }
                     return null;
                 }).then((val: any) => {
-                    model[theProp] = val;
+                    (viewModel as any)[theProp] = val;
                 });
                 promises.push(p);
             })(prop);
         }
 
         await Promise.all(promises);
-        return model;
+        return viewModel;
     }
 }

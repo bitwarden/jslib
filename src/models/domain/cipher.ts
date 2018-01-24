@@ -1,8 +1,8 @@
 import { CipherType } from '../../enums/cipherType';
 
-import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
-
 import { CipherData } from '../data/cipherData';
+
+import { CipherView } from '../view/cipherView';
 
 import { Attachment } from './attachment';
 import { Card } from './card';
@@ -89,23 +89,8 @@ export class Cipher extends Domain {
         }
     }
 
-    async decrypt(): Promise<any> {
-        const model = {
-            id: this.id,
-            organizationId: this.organizationId,
-            folderId: this.folderId,
-            favorite: this.favorite,
-            type: this.type,
-            localData: this.localData,
-            login: null as any,
-            card: null as any,
-            identity: null as any,
-            secureNote: null as any,
-            subTitle: null as string,
-            attachments: null as any[],
-            fields: null as any[],
-            collectionIds: this.collectionIds,
-        };
+    async decrypt(): Promise<CipherView> {
+        const model = new CipherView(this);
 
         await this.decryptObj(model, {
             name: null,
@@ -115,44 +100,15 @@ export class Cipher extends Domain {
         switch (this.type) {
             case CipherType.Login:
                 model.login = await this.login.decrypt(this.organizationId);
-                model.subTitle = model.login.username;
-                if (model.login.uri) {
-                    const containerService = (window as any).bitwardenContainerService;
-                    if (containerService) {
-                        const platformUtilsService: PlatformUtilsService =
-                            containerService.getPlatformUtilsService();
-                        model.login.domain = platformUtilsService.getDomain(model.login.uri);
-                    } else {
-                        throw new Error('window.bitwardenContainerService not initialized.');
-                    }
-                }
                 break;
             case CipherType.SecureNote:
                 model.secureNote = await this.secureNote.decrypt(this.organizationId);
-                model.subTitle = null;
                 break;
             case CipherType.Card:
                 model.card = await this.card.decrypt(this.organizationId);
-                model.subTitle = model.card.brand;
-                if (model.card.number && model.card.number.length >= 4) {
-                    if (model.subTitle !== '') {
-                        model.subTitle += ', ';
-                    }
-                    model.subTitle += ('*' + model.card.number.substr(model.card.number.length - 4));
-                }
                 break;
             case CipherType.Identity:
                 model.identity = await this.identity.decrypt(this.organizationId);
-                model.subTitle = '';
-                if (model.identity.firstName) {
-                    model.subTitle = model.identity.firstName;
-                }
-                if (model.identity.lastName) {
-                    if (model.subTitle !== '') {
-                        model.subTitle += ' ';
-                    }
-                    model.subTitle += model.identity.lastName;
-                }
                 break;
             default:
                 break;

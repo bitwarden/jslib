@@ -4,6 +4,7 @@ import { CipherData } from '../models/data/cipherData';
 
 import { Cipher } from '../models/domain/cipher';
 import { CipherString } from '../models/domain/cipherString';
+import Domain from '../models/domain/domain';
 import { Field } from '../models/domain/field';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
@@ -11,6 +12,13 @@ import { CipherRequest } from '../models/request/cipherRequest';
 
 import { CipherResponse } from '../models/response/cipherResponse';
 import { ErrorResponse } from '../models/response/errorResponse';
+
+import { CardView } from '../models/view/cardView';
+import { CipherView } from '../models/view/cipherView';
+import { FieldView } from '../models/view/fieldView';
+import { IdentityView } from '../models/view/identityView';
+import { LoginView } from '../models/view/loginView';
+import { View } from '../models/view/view';
 
 import { ConstantsService } from './constants.service';
 
@@ -68,7 +76,7 @@ export class CipherService implements CipherServiceAbstraction {
         return 0;
     }
 
-    decryptedCipherCache: any[];
+    decryptedCipherCache: CipherView[];
 
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private settingsService: SettingsService, private apiService: ApiService,
@@ -79,7 +87,7 @@ export class CipherService implements CipherServiceAbstraction {
         this.decryptedCipherCache = null;
     }
 
-    async encrypt(model: any): Promise<Cipher> {
+    async encrypt(model: CipherView): Promise<Cipher> {
         const cipher = new Cipher();
         cipher.id = model.id;
         cipher.folderId = model.folderId;
@@ -94,7 +102,7 @@ export class CipherService implements CipherServiceAbstraction {
                 name: null,
                 notes: null,
             }, key),
-            this.encryptCipherData(model, cipher, key),
+            this.encryptCipherData(cipher, model, key),
             this.encryptFields(model.fields, key).then((fields) => {
                 cipher.fields = fields;
             }),
@@ -103,7 +111,7 @@ export class CipherService implements CipherServiceAbstraction {
         return cipher;
     }
 
-    async encryptFields(fieldsModel: any[], key: SymmetricCryptoKey): Promise<Field[]> {
+    async encryptFields(fieldsModel: FieldView[], key: SymmetricCryptoKey): Promise<Field[]> {
         if (!fieldsModel || !fieldsModel.length) {
             return null;
         }
@@ -121,7 +129,7 @@ export class CipherService implements CipherServiceAbstraction {
         return encFields;
     }
 
-    async encryptField(fieldModel: any, key: SymmetricCryptoKey): Promise<Field> {
+    async encryptField(fieldModel: FieldView, key: SymmetricCryptoKey): Promise<Field> {
         const field = new Field();
         field.type = fieldModel.type;
 
@@ -159,12 +167,12 @@ export class CipherService implements CipherServiceAbstraction {
         return response;
     }
 
-    async getAllDecrypted(): Promise<any[]> {
+    async getAllDecrypted(): Promise<CipherView[]> {
         if (this.decryptedCipherCache != null) {
             return this.decryptedCipherCache;
         }
 
-        const decCiphers: any[] = [];
+        const decCiphers: CipherView[] = [];
         const key = await this.cryptoService.getKey();
         if (key == null) {
             throw new Error('No key.');
@@ -173,9 +181,7 @@ export class CipherService implements CipherServiceAbstraction {
         const promises: any[] = [];
         const ciphers = await this.getAll();
         ciphers.forEach((cipher) => {
-            promises.push(cipher.decrypt().then((c: any) => {
-                decCiphers.push(c);
-            }));
+            promises.push(cipher.decrypt().then((c) => decCiphers.push(c)));
         });
 
         await Promise.all(promises);
@@ -183,22 +189,21 @@ export class CipherService implements CipherServiceAbstraction {
         return this.decryptedCipherCache;
     }
 
-    async getAllDecryptedForGrouping(groupingId: string, folder: boolean = true): Promise<any[]> {
+    async getAllDecryptedForGrouping(groupingId: string, folder: boolean = true): Promise<CipherView[]> {
         const ciphers = await this.getAllDecrypted();
-        const ciphersToReturn: any[] = [];
 
-        ciphers.forEach((cipher) => {
+        return ciphers.filter((cipher) => {
             if (folder && cipher.folderId === groupingId) {
-                ciphersToReturn.push(cipher);
+                return true;
             } else if (!folder && cipher.collectionIds != null && cipher.collectionIds.indexOf(groupingId) > -1) {
-                ciphersToReturn.push(cipher);
+                return true;
             }
-        });
 
-        return ciphersToReturn;
+            return false;
+        });
     }
 
-    async getAllDecryptedForDomain(domain: string, includeOtherTypes?: any[]): Promise<any[]> {
+    async getAllDecryptedForDomain(domain: string, includeOtherTypes?: any[]): Promise<CipherView[]> {
         if (domain == null && !includeOtherTypes) {
             return Promise.resolve([]);
         }
@@ -222,21 +227,20 @@ export class CipherService implements CipherServiceAbstraction {
         const result = await Promise.all([eqDomainsPromise, this.getAllDecrypted()]);
         const matchingDomains = result[0];
         const ciphers = result[1];
-        const ciphersToReturn: any[] = [];
 
-        ciphers.forEach((cipher) => {
+        return ciphers.filter((cipher) => {
             if (domain && cipher.type === CipherType.Login && cipher.login.domain &&
                 matchingDomains.indexOf(cipher.login.domain) > -1) {
-                ciphersToReturn.push(cipher);
+                return true;
             } else if (includeOtherTypes && includeOtherTypes.indexOf(cipher.type) > -1) {
-                ciphersToReturn.push(cipher);
+                return true;
             }
-        });
 
-        return ciphersToReturn;
+            return false;
+        });
     }
 
-    async getLastUsedForDomain(domain: string): Promise<any> {
+    async getLastUsedForDomain(domain: string): Promise<CipherView> {
         const ciphers = await this.getAllDecryptedForDomain(domain);
         if (ciphers.length === 0) {
             return null;
@@ -437,7 +441,8 @@ export class CipherService implements CipherServiceAbstraction {
 
     // Helpers
 
-    private encryptObjProperty(model: any, obj: any, map: any, key: SymmetricCryptoKey): Promise<void[]> {
+    private async encryptObjProperty<V extends View, D extends Domain>(model: V, obj: D,
+        map: any, key: SymmetricCryptoKey): Promise<void> {
         const promises = [];
         const self = this;
 
@@ -449,39 +454,40 @@ export class CipherService implements CipherServiceAbstraction {
             // tslint:disable-next-line
             (function (theProp, theObj) {
                 const p = Promise.resolve().then(() => {
-                    const modelProp = model[(map[theProp] || theProp)];
+                    const modelProp = (model as any)[(map[theProp] || theProp)];
                     if (modelProp && modelProp !== '') {
                         return self.cryptoService.encrypt(modelProp, key);
                     }
                     return null;
                 }).then((val: CipherString) => {
-                    theObj[theProp] = val;
+                    (theObj as any)[theProp] = val;
                 });
                 promises.push(p);
             })(prop, obj);
         }
 
-        return Promise.all(promises);
+        await Promise.all(promises);
     }
 
-    private encryptCipherData(cipher: Cipher, model: any, key: SymmetricCryptoKey): Promise<any> {
+    private async encryptCipherData(cipher: Cipher, model: CipherView, key: SymmetricCryptoKey) {
         switch (cipher.type) {
             case CipherType.Login:
-                model.login = {};
-                return this.encryptObjProperty(cipher.login, model.login, {
+                model.login = new LoginView();
+                await this.encryptObjProperty(model.login, cipher.login, {
                     uri: null,
                     username: null,
                     password: null,
                     totp: null,
                 }, key);
+                return;
             case CipherType.SecureNote:
                 model.secureNote = {
                     type: cipher.secureNote.type,
                 };
-                return Promise.resolve();
+                return;
             case CipherType.Card:
-                model.card = {};
-                return this.encryptObjProperty(cipher.card, model.card, {
+                model.card = new CardView();
+                await this.encryptObjProperty(model.card, cipher.card, {
                     cardholderName: null,
                     brand: null,
                     number: null,
@@ -489,9 +495,10 @@ export class CipherService implements CipherServiceAbstraction {
                     expYear: null,
                     code: null,
                 }, key);
+                return;
             case CipherType.Identity:
-                model.identity = {};
-                return this.encryptObjProperty(cipher.identity, model.identity, {
+                model.identity = new IdentityView();
+                await this.encryptObjProperty(model.identity, cipher.identity, {
                     title: null,
                     firstName: null,
                     middleName: null,
@@ -511,6 +518,7 @@ export class CipherService implements CipherServiceAbstraction {
                     passportNumber: null,
                     licenseNumber: null,
                 }, key);
+                return;
             default:
                 throw new Error('Unknown cipher type.');
         }

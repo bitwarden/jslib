@@ -1,5 +1,7 @@
 import { LoginData } from '../data/loginData';
 
+import { LoginView } from '../view/loginView';
+
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
@@ -23,8 +25,8 @@ export class Login extends Domain {
         }, alreadyEncrypted, []);
     }
 
-    decrypt(orgId: string): Promise<any> {
-        return this.decryptObj({}, {
+    decrypt(orgId: string): Promise<LoginView> {
+        return this.decryptObj(new LoginView(this), {
             uri: null,
             username: null,
             password: null,

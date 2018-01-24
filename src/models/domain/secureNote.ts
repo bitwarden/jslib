@@ -4,6 +4,8 @@ import { SecureNoteData } from '../data/secureNoteData';
 
 import Domain from './domain';
 
+import { SecureNoteView } from '../view/secureNoteView';
+
 export class SecureNote extends Domain {
     type: SecureNoteType;
 
@@ -16,9 +18,7 @@ export class SecureNote extends Domain {
         this.type = obj.type;
     }
 
-    decrypt(orgId: string): any {
-        return {
-            type: this.type,
-        };
+    decrypt(orgId: string): Promise<SecureNoteView> {
+        return Promise.resolve(new SecureNoteView(this));
     }
 }

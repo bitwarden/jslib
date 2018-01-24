@@ -3,6 +3,8 @@ import { AttachmentData } from '../data/attachmentData';
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
+import { AttachmentView } from '../view/attachmentView';
+
 export class Attachment extends Domain {
     id: string;
     url: string;
@@ -25,15 +27,8 @@ export class Attachment extends Domain {
         }, alreadyEncrypted, ['id', 'url', 'sizeName']);
     }
 
-    decrypt(orgId: string): Promise<any> {
-        const model = {
-            id: this.id,
-            size: this.size,
-            sizeName: this.sizeName,
-            url: this.url,
-        };
-
-        return this.decryptObj(model, {
+    decrypt(orgId: string): Promise<AttachmentView> {
+        return this.decryptObj(new AttachmentView(this), {
             fileName: null,
         }, orgId);
     }

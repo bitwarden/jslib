@@ -3,6 +3,8 @@ import { IdentityData } from '../data/identityData';
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
+import { IdentityView } from '../view/identityView';
+
 export class Identity extends Domain {
     title: CipherString;
     firstName: CipherString;
@@ -51,8 +53,8 @@ export class Identity extends Domain {
         }, alreadyEncrypted, []);
     }
 
-    decrypt(orgId: string): Promise<any> {
-        return this.decryptObj({}, {
+    decrypt(orgId: string): Promise<IdentityView> {
+        return this.decryptObj(new IdentityView(this), {
             title: null,
             firstName: null,
             middleName: null,

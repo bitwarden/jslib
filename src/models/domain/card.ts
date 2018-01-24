@@ -3,6 +3,8 @@ import { CardData } from '../data/cardData';
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
+import { CardView } from '../view/cardView';
+
 export class Card extends Domain {
     cardholderName: CipherString;
     brand: CipherString;
@@ -27,8 +29,8 @@ export class Card extends Domain {
         }, alreadyEncrypted, []);
     }
 
-    decrypt(orgId: string): Promise<any> {
-        return this.decryptObj({}, {
+    decrypt(orgId: string): Promise<CardView> {
+        return this.decryptObj(new CardView(this), {
             cardholderName: null,
             brand: null,
             number: null,
