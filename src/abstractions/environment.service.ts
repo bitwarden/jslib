@@ -5,6 +5,6 @@ export abstract class EnvironmentService {
     identityUrl: string;
     iconsUrl: string;
 
-    setUrlsFromStorage:() => Promise<void>;
+    setUrlsFromStorage: () => Promise<void>;
     setUrls: (urls: any) => Promise<any>;
 }
