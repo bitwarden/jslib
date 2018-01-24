@@ -2,10 +2,14 @@ import { CipherType } from '../enums/cipherType';
 
 import { CipherData } from '../models/data/cipherData';
 
+import { Card } from '../models/domain/card';
 import { Cipher } from '../models/domain/cipher';
 import { CipherString } from '../models/domain/cipherString';
 import Domain from '../models/domain/domain';
 import { Field } from '../models/domain/field';
+import { Identity } from '../models/domain/identity';
+import { Login } from '../models/domain/login';
+import { SecureNote } from '../models/domain/secureNote';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
 import { CipherRequest } from '../models/request/cipherRequest';
@@ -472,7 +476,7 @@ export class CipherService implements CipherServiceAbstraction {
     private async encryptCipherData(cipher: Cipher, model: CipherView, key: SymmetricCryptoKey) {
         switch (cipher.type) {
             case CipherType.Login:
-                model.login = new LoginView();
+                cipher.login = new Login();
                 await this.encryptObjProperty(model.login, cipher.login, {
                     uri: null,
                     username: null,
@@ -481,12 +485,11 @@ export class CipherService implements CipherServiceAbstraction {
                 }, key);
                 return;
             case CipherType.SecureNote:
-                model.secureNote = {
-                    type: cipher.secureNote.type,
-                };
+                cipher.secureNote = new SecureNote();
+                cipher.secureNote.type = model.secureNote.type;
                 return;
             case CipherType.Card:
-                model.card = new CardView();
+                cipher.card = new Card();
                 await this.encryptObjProperty(model.card, cipher.card, {
                     cardholderName: null,
                     brand: null,
@@ -497,7 +500,7 @@ export class CipherService implements CipherServiceAbstraction {
                 }, key);
                 return;
             case CipherType.Identity:
-                model.identity = new IdentityView();
+                cipher.identity = new Identity();
                 await this.encryptObjProperty(model.identity, cipher.identity, {
                     title: null,
                     firstName: null,

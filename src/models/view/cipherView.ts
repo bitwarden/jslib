@@ -30,7 +30,11 @@ export class CipherView implements View {
     // tslint:disable-next-line
     private _subTitle: string;
 
-    constructor(c: Cipher) {
+    constructor(c?: Cipher) {
+        if (!c) {
+            return;
+        }
+
         this.id = c.id;
         this.organizationId = c.organizationId;
         this.folderId = c.folderId;
