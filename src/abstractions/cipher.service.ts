@@ -4,19 +4,22 @@ import { Cipher } from '../models/domain/cipher';
 import { Field } from '../models/domain/field';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
+import { CipherView } from '../models/view/cipherView';
+import { FieldView } from '../models/view/fieldView';
+
 export abstract class CipherService {
-    decryptedCipherCache: any[];
+    decryptedCipherCache: CipherView[];
 
     clearCache: () => void;
-    encrypt: (model: any) => Promise<Cipher>;
-    encryptFields: (fieldsModel: any[], key: SymmetricCryptoKey) => Promise<Field[]>;
-    encryptField: (fieldModel: any, key: SymmetricCryptoKey) => Promise<Field>;
+    encrypt: (model: CipherView) => Promise<Cipher>;
+    encryptFields: (fieldsModel: FieldView[], key: SymmetricCryptoKey) => Promise<Field[]>;
+    encryptField: (fieldModel: FieldView, key: SymmetricCryptoKey) => Promise<Field>;
     get: (id: string) => Promise<Cipher>;
     getAll: () => Promise<Cipher[]>;
-    getAllDecrypted: () => Promise<any[]>;
-    getAllDecryptedForGrouping: (groupingId: string, folder?: boolean) => Promise<any[]>;
-    getAllDecryptedForDomain: (domain: string, includeOtherTypes?: any[]) => Promise<any[]>;
-    getLastUsedForDomain: (domain: string) => Promise<any>;
+    getAllDecrypted: () => Promise<CipherView[]>;
+    getAllDecryptedForGrouping: (groupingId: string, folder?: boolean) => Promise<CipherView[]>;
+    getAllDecryptedForDomain: (domain: string, includeOtherTypes?: any[]) => Promise<CipherView[]>;
+    getLastUsedForDomain: (domain: string) => Promise<CipherView>;
     updateLastUsedDate: (id: string) => Promise<void>;
     saveNeverDomain: (domain: string) => Promise<void>;
     saveWithServer: (cipher: Cipher) => Promise<any>;
