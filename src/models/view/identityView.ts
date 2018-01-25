@@ -3,7 +3,7 @@ import { View } from './view';
 import { Identity } from '../domain/identity';
 
 export class IdentityView implements View {
-    title: string;
+    title: string = null;
     middleName: string;
     address1: string;
     address2: string;

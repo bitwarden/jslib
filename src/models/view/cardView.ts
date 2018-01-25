@@ -4,12 +4,12 @@ import { Card } from '../domain/card';
 
 export class CardView implements View {
     cardholderName: string;
-    expMonth: string;
+    expMonth: string = null;
     expYear: string;
     code: string;
 
     // tslint:disable
-    private _brand: string;
+    private _brand: string = null;
     private _number: string;
     private _subTitle: string;
     // tslint:enable
