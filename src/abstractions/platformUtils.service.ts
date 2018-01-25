@@ -12,7 +12,7 @@ export abstract class PlatformUtilsService {
     analyticsId: () => string;
     getDomain: (uriString: string) => string;
     isViewOpen: () => boolean;
-    launchUri: (uri: string) => void;
+    launchUri: (uri: string, options?: any) => void;
     saveFile: (win: Window, blobData: any, blobOptions: any, fileName: string) => void;
     alertError: (title: string, message: string) => void;
 }
