@@ -25,7 +25,8 @@ export abstract class CryptoService {
     makeKey: (password: string, salt: string) => SymmetricCryptoKey;
     hashPassword: (password: string, key: SymmetricCryptoKey) => Promise<string>;
     makeEncKey: (key: SymmetricCryptoKey) => Promise<CipherString>;
-    encrypt: (plainValue: string | Uint8Array, key?: SymmetricCryptoKey, plainValueEncoding?: string) => Promise<CipherString>;
+    encrypt: (plainValue: string | Uint8Array, key?: SymmetricCryptoKey,
+        plainValueEncoding?: string) => Promise<CipherString>;
     encryptToBytes: (plainValue: ArrayBuffer, key?: SymmetricCryptoKey) => Promise<ArrayBuffer>;
     decrypt: (cipherString: CipherString, key?: SymmetricCryptoKey, outputEncoding?: string) => Promise<string>;
     decryptFromBytes: (encBuf: ArrayBuffer, key: SymmetricCryptoKey) => Promise<ArrayBuffer>;

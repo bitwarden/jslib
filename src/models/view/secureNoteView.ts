@@ -7,7 +7,11 @@ import { SecureNote } from '../domain/secureNote';
 export class SecureNoteView implements View {
     type: SecureNoteType;
 
-    constructor(n: SecureNote) {
+    constructor(n?: SecureNote) {
+        if (!n) {
+            return;
+        }
+
         this.type = n.type;
     }
 

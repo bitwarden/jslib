@@ -1,5 +1,7 @@
 import { CollectionData } from '../data/collectionData';
 
+import { CollectionView } from '../view/collectionView';
+
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
@@ -21,13 +23,8 @@ export class Collection extends Domain {
         }, alreadyEncrypted, ['id', 'organizationId']);
     }
 
-    decrypt(): Promise<any> {
-        const model = {
-            id: this.id,
-            organizationId: this.organizationId,
-        };
-
-        return this.decryptObj(model, {
+    decrypt(): Promise<CollectionView> {
+        return this.decryptObj(new CollectionView(this), {
             name: null,
         }, this.organizationId);
     }

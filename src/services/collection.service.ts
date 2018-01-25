@@ -2,6 +2,8 @@ import { CollectionData } from '../models/data/collectionData';
 
 import { Collection } from '../models/domain/collection';
 
+import { CollectionView } from '../models/view/collectionView';
+
 import { CollectionService as CollectionServiceAbstraction } from '../abstractions/collection.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { StorageService } from '../abstractions/storage.service';
@@ -12,7 +14,7 @@ const Keys = {
 };
 
 export class CollectionService implements CollectionServiceAbstraction {
-    decryptedCollectionCache: any[];
+    decryptedCollectionCache: CollectionView[];
 
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private storageService: StorageService) {
@@ -46,7 +48,7 @@ export class CollectionService implements CollectionServiceAbstraction {
         return response;
     }
 
-    async getAllDecrypted(): Promise<any[]> {
+    async getAllDecrypted(): Promise<CollectionView[]> {
         if (this.decryptedCollectionCache != null) {
             return this.decryptedCollectionCache;
         }
@@ -56,17 +58,15 @@ export class CollectionService implements CollectionServiceAbstraction {
             throw new Error('No key.');
         }
 
-        const decFolders: any[] = [];
+        const decCollections: CollectionView[] = [];
         const promises: Array<Promise<any>> = [];
-        const folders = await this.getAll();
-        folders.forEach((folder) => {
-            promises.push(folder.decrypt().then((f: any) => {
-                decFolders.push(f);
-            }));
+        const collections = await this.getAll();
+        collections.forEach((collection) => {
+            promises.push(collection.decrypt().then((c) => decCollections.push(c)));
         });
 
         await Promise.all(promises);
-        this.decryptedCollectionCache = decFolders;
+        this.decryptedCollectionCache = decCollections;
         return this.decryptedCollectionCache;
     }
 

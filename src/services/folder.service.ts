@@ -6,6 +6,8 @@ import { FolderRequest } from '../models/request/folderRequest';
 
 import { FolderResponse } from '../models/response/folderResponse';
 
+import { FolderView } from '../models/view/folderView';
+
 import { ApiService } from '../abstractions/api.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { FolderService as FolderServiceAbstraction } from '../abstractions/folder.service';
@@ -17,7 +19,7 @@ const Keys = {
 };
 
 export class FolderService implements FolderServiceAbstraction {
-    decryptedFolderCache: any[];
+    decryptedFolderCache: FolderView[];
 
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private noneFolder: () => string, private apiService: ApiService,
@@ -28,7 +30,7 @@ export class FolderService implements FolderServiceAbstraction {
         this.decryptedFolderCache = null;
     }
 
-    async encrypt(model: any): Promise<Folder> {
+    async encrypt(model: FolderView): Promise<Folder> {
         const folder = new Folder();
         folder.id = model.id;
         folder.name = await this.cryptoService.encrypt(model.name);
@@ -59,12 +61,12 @@ export class FolderService implements FolderServiceAbstraction {
         return response;
     }
 
-    async getAllDecrypted(): Promise<any[]> {
+    async getAllDecrypted(): Promise<FolderView[]> {
         if (this.decryptedFolderCache != null) {
             return this.decryptedFolderCache;
         }
 
-        const decFolders: any[] = [{
+        const decFolders: FolderView[] = [{
             id: null,
             name: this.noneFolder(),
         }];
@@ -77,9 +79,7 @@ export class FolderService implements FolderServiceAbstraction {
         const promises: Array<Promise<any>> = [];
         const folders = await this.getAll();
         folders.forEach((folder) => {
-            promises.push(folder.decrypt().then((f: any) => {
-                decFolders.push(f);
-            }));
+            promises.push(folder.decrypt().then((f) => decFolders.push(f)));
         });
 
         await Promise.all(promises);

@@ -1,5 +1,7 @@
 import { FolderData } from '../data/folderData';
 
+import { FolderView } from '../view/folderView';
+
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
@@ -19,12 +21,8 @@ export class Folder extends Domain {
         }, alreadyEncrypted, ['id']);
     }
 
-    decrypt(): Promise<any> {
-        const model = {
-            id: this.id,
-        };
-
-        return this.decryptObj(model, {
+    decrypt(): Promise<FolderView> {
+        return this.decryptObj(new FolderView(this), {
             name: null,
         }, null);
     }
