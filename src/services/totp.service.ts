@@ -1,7 +1,7 @@
 import { ConstantsService } from './constants.service';
 
 import { StorageService } from '../abstractions/storage.service';
-import { TotpService as TotpServiceInterface } from '../abstractions/totp.service';
+import { TotpService as TotpServiceAbstraction } from '../abstractions/totp.service';
 
 const b32Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 
@@ -10,7 +10,7 @@ const TotpAlgorithm = {
     hash: { name: 'SHA-1' },
 };
 
-export class TotpService implements TotpServiceInterface {
+export class TotpService implements TotpServiceAbstraction {
     constructor(private storageService: StorageService) {
     }
 

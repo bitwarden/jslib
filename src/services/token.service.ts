@@ -2,7 +2,7 @@ import { ConstantsService } from './constants.service';
 import { UtilsService } from './utils.service';
 
 import { StorageService } from '../abstractions/storage.service';
-import { TokenService as TokenServiceInterface } from '../abstractions/token.service';
+import { TokenService as TokenServiceAbstraction } from '../abstractions/token.service';
 
 const Keys = {
     accessToken: 'accessToken',
@@ -10,7 +10,7 @@ const Keys = {
     twoFactorTokenPrefix: 'twoFactorToken_',
 };
 
-export class TokenService implements TokenServiceInterface {
+export class TokenService implements TokenServiceAbstraction {
     token: string;
     decodedToken: any;
     refreshToken: string;

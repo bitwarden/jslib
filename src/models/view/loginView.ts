@@ -53,7 +53,7 @@ export class LoginView implements View {
     get maskedPassword(): string {
         if (this._maskedPassword == null && this.password != null) {
             this._maskedPassword = '';
-            for (var i = 0; i < this.password.length; i++) {
+            for (let i = 0; i < this.password.length; i++) {
                 this._maskedPassword += '•';
             }
         }
@@ -63,5 +63,17 @@ export class LoginView implements View {
 
     get subTitle(): string {
         return this.username;
+    }
+
+    get domainOrUri(): string {
+        return this.domain != null ? this.domain : this.uri;
+    }
+
+    get isWebsite(): boolean {
+        return this.uri != null && (this.uri.indexOf('http://') > -1 || this.uri.indexOf('https://') > -1);
+    }
+
+    get canLaunch(): boolean {
+        return this.uri != null && this.uri.indexOf('://') > -1;
     }
 }

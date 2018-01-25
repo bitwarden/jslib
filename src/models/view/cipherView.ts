@@ -57,4 +57,12 @@ export class CipherView implements View {
 
         return null;
     }
+
+    get hasAttachments(): boolean {
+        return this.attachments && this.attachments.length > 0;
+    }
+
+    get hasFields(): boolean {
+        return this.fields && this.fields.length > 0;
+    }
 }
