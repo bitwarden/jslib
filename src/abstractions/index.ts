@@ -6,6 +6,7 @@ export { CollectionService } from './collection.service';
 export { CryptoService } from './crypto.service';
 export { EnvironmentService } from './environment.service';
 export { FolderService } from './folder.service';
+export { I18nService } from './i18n.service';
 export { LockService } from './lock.service';
 export { MessagingService } from './messaging.service';
 export { PasswordGenerationService } from './passwordGeneration.service';

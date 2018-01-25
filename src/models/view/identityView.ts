@@ -62,4 +62,25 @@ export class IdentityView implements View {
 
         return this._subTitle;
     }
+
+    get fullName(): string {
+        if (this.title != null || this.firstName != null || this.middleName != null || this.lastName != null) {
+            let name = '';
+            if (this.title != null) {
+                name += (this.title + ' ');
+            }
+            if (this.firstName != null) {
+                name += (this.firstName + ' ');
+            }
+            if (this.middleName != null) {
+                name += (this.middleName + ' ');
+            }
+            if (this.lastName != null) {
+                name += this.lastName;
+            }
+            return name.trim();
+        }
+
+        return null;
+    }
 }

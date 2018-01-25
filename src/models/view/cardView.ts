@@ -48,4 +48,18 @@ export class CardView implements View {
         }
         return this._subTitle;
     }
+
+    get expiration(): string {
+        if (!this.expMonth && !this.expYear) {
+            return null;
+        }
+
+        let exp = this.expMonth != null ? ('0' + this.expMonth).slice(-2) : '__';
+        exp += (' / ' + (this.expYear != null ? this.formatYear(this.expYear) : '____'));
+        return exp;
+    }
+
+    private formatYear(year: string): string {
+        return year.length === 2 ? '20' + year : year;
+    }
 }

@@ -7,7 +7,7 @@ import { EncryptedObject } from '../models/domain/encryptedObject';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 import { ProfileOrganizationResponse } from '../models/response/profileOrganizationResponse';
 
-import { CryptoService as CryptoServiceInterface } from '../abstractions/crypto.service';
+import { CryptoService as CryptoServiceAbstraction } from '../abstractions/crypto.service';
 import { StorageService as StorageServiceInterface } from '../abstractions/storage.service';
 
 import { ConstantsService } from './constants.service';
@@ -33,7 +33,7 @@ const AesAlgorithm = {
 const Crypto = window.crypto;
 const Subtle = Crypto.subtle;
 
-export class CryptoService implements CryptoServiceInterface {
+export class CryptoService implements CryptoServiceAbstraction {
     private key: SymmetricCryptoKey;
     private encKey: SymmetricCryptoKey;
     private legacyEtmKey: SymmetricCryptoKey;

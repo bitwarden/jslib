@@ -1,4 +1,4 @@
-export interface UtilsService {
-    copyToClipboard(text: string, doc?: Document): void;
-    getHostname(uriString: string): string;
+export abstract class UtilsService {
+    copyToClipboard: (text: string, doc?: Document) => void;
+    getHostname: (uriString: string) => string;
 }
