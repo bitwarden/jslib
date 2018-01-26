@@ -13,7 +13,11 @@ export class FieldView implements View {
     private _maskedValue: string;
     // tslint:enable
 
-    constructor(f: Field) {
+    constructor(f?: Field) {
+        if (!f) {
+            return;
+        }
+
         this.type = f.type;
     }
 
