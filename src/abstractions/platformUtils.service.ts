@@ -14,6 +14,5 @@ export abstract class PlatformUtilsService {
     isViewOpen: () => boolean;
     launchUri: (uri: string, options?: any) => void;
     saveFile: (win: Window, blobData: any, blobOptions: any, fileName: string) => void;
-    alertError: (title: string, message: string) => void;
     getApplicationVersion: () => string;
 }
