@@ -29,6 +29,7 @@ import { ConstantsService } from './constants.service';
 import { ApiService } from '../abstractions/api.service';
 import { CipherService as CipherServiceAbstraction } from '../abstractions/cipher.service';
 import { CryptoService } from '../abstractions/crypto.service';
+import { I18nService } from '../abstractions/i18n.service';
 import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
@@ -84,7 +85,7 @@ export class CipherService implements CipherServiceAbstraction {
 
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private settingsService: SettingsService, private apiService: ApiService,
-        private storageService: StorageService) {
+        private storageService: StorageService, private i18nService: I18nService) {
     }
 
     clearCache(): void {
@@ -189,6 +190,7 @@ export class CipherService implements CipherServiceAbstraction {
         });
 
         await Promise.all(promises);
+        decCiphers.sort(this.getLocaleSortingFunction())
         this.decryptedCipherCache = decCiphers;
         return this.decryptedCipherCache;
     }
@@ -444,6 +446,13 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     // Helpers
+
+    private getLocaleSortingFunction(): (a: CipherView, b: CipherView) => number {
+        return (a, b) => {
+            return this.i18nService.collator ? this.i18nService.collator.compare(a.name, b.name) :
+                a.name.localeCompare(b.name);
+        };
+    }
 
     private async encryptObjProperty<V extends View, D extends Domain>(model: V, obj: D,
         map: any, key: SymmetricCryptoKey): Promise<void> {

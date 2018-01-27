@@ -11,6 +11,7 @@ import { FolderView } from '../models/view/folderView';
 import { ApiService } from '../abstractions/api.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { FolderService as FolderServiceAbstraction } from '../abstractions/folder.service';
+import { I18nService } from '../abstractions/i18n.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
@@ -23,7 +24,7 @@ export class FolderService implements FolderServiceAbstraction {
 
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private noneFolder: () => string, private apiService: ApiService,
-        private storageService: StorageService) {
+        private storageService: StorageService, private i18nService: I18nService) {
     }
 
     clearCache(): void {
@@ -83,6 +84,7 @@ export class FolderService implements FolderServiceAbstraction {
         });
 
         await Promise.all(promises);
+        decFolders.sort(this.getLocaleSortingFunction());
         this.decryptedFolderCache = decFolders;
         return this.decryptedFolderCache;
     }
@@ -159,5 +161,17 @@ export class FolderService implements FolderServiceAbstraction {
     async deleteWithServer(id: string): Promise<any> {
         await this.apiService.deleteFolder(id);
         await this.delete(id);
+    }
+
+    private getLocaleSortingFunction(): (a: FolderView, b: FolderView) => number {
+        return (a, b) => {
+            if (a.id == null) {
+                // No folder is always last
+                return Number.MAX_SAFE_INTEGER;
+            }
+
+            return this.i18nService.collator ? this.i18nService.collator.compare(a.name, b.name) :
+                a.name.localeCompare(b.name);
+        };
     }
 }
