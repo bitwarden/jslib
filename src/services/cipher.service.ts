@@ -41,46 +41,6 @@ const Keys = {
 };
 
 export class CipherService implements CipherServiceAbstraction {
-    static sortCiphersByLastUsed(a: any, b: any): number {
-        const aLastUsed = a.localData && a.localData.lastUsedDate ? a.localData.lastUsedDate as number : null;
-        const bLastUsed = b.localData && b.localData.lastUsedDate ? b.localData.lastUsedDate as number : null;
-
-        if (aLastUsed != null && bLastUsed != null && aLastUsed < bLastUsed) {
-            return 1;
-        }
-        if (aLastUsed != null && bLastUsed == null) {
-            return -1;
-        }
-
-        if (bLastUsed != null && aLastUsed != null && aLastUsed > bLastUsed) {
-            return -1;
-        }
-        if (bLastUsed != null && aLastUsed == null) {
-            return 1;
-        }
-
-        return 0;
-    }
-
-    static sortCiphersByLastUsedThenName(a: any, b: any): number {
-        const result = CipherService.sortCiphersByLastUsed(a, b);
-        if (result !== 0) {
-            return result;
-        }
-
-        const nameA = (a.name + '_' + a.username).toUpperCase();
-        const nameB = (b.name + '_' + b.username).toUpperCase();
-
-        if (nameA < nameB) {
-            return -1;
-        }
-        if (nameA > nameB) {
-            return 1;
-        }
-
-        return 0;
-    }
-
     decryptedCipherCache: CipherView[];
 
     constructor(private cryptoService: CryptoService, private userService: UserService,
@@ -252,7 +212,7 @@ export class CipherService implements CipherServiceAbstraction {
             return null;
         }
 
-        const sortedCiphers = ciphers.sort(CipherService.sortCiphersByLastUsed);
+        const sortedCiphers = ciphers.sort(this.sortCiphersByLastUsed);
         return sortedCiphers[0];
     }
 
@@ -437,20 +397,60 @@ export class CipherService implements CipherServiceAbstraction {
         await this.deleteAttachment(id, attachmentId);
     }
 
-    sortCiphersByLastUsed(a: any, b: any): number {
-        return CipherService.sortCiphersByLastUsed(a, b);
+    sortCiphersByLastUsed(a: CipherView, b: CipherView): number {
+        const aLastUsed = a.localData && a.localData.lastUsedDate ? a.localData.lastUsedDate as number : null;
+        const bLastUsed = b.localData && b.localData.lastUsedDate ? b.localData.lastUsedDate as number : null;
+
+        if (aLastUsed != null && bLastUsed != null && aLastUsed < bLastUsed) {
+            return 1;
+        }
+        if (aLastUsed != null && bLastUsed == null) {
+            return -1;
+        }
+
+        if (bLastUsed != null && aLastUsed != null && aLastUsed > bLastUsed) {
+            return -1;
+        }
+        if (bLastUsed != null && aLastUsed == null) {
+            return 1;
+        }
+
+        return 0;
     }
 
-    sortCiphersByLastUsedThenName(a: any, b: any): number {
-        return CipherService.sortCiphersByLastUsedThenName(a, b);
+    sortCiphersByLastUsedThenName(a: CipherView, b: CipherView): number {
+        const result = this.sortCiphersByLastUsed(a, b);
+        if (result !== 0) {
+            return result;
+        }
+
+        return this.getLocaleSortingFunction()(a, b);
     }
 
     // Helpers
 
     private getLocaleSortingFunction(): (a: CipherView, b: CipherView) => number {
         return (a, b) => {
-            return this.i18nService.collator ? this.i18nService.collator.compare(a.name, b.name) :
-                a.name.localeCompare(b.name);
+            let aName = a.name;
+            let bName = b.name;
+
+            let result = this.i18nService.collator ? this.i18nService.collator.compare(aName, bName) :
+                aName.localeCompare(bName);
+
+            if (result !== 0 || a.type !== CipherType.Login || b.type !== CipherType.Login) {
+                return result;
+            }
+
+            if (a.login.username != null) {
+                aName += a.login.username;
+            }
+
+            if (b.login.username != null) {
+                bName += b.login.username;
+            }
+
+            return this.i18nService.collator ? this.i18nService.collator.compare(aName, bName) :
+                aName.localeCompare(bName);
         };
     }
 
