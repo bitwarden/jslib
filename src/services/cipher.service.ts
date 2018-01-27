@@ -190,7 +190,7 @@ export class CipherService implements CipherServiceAbstraction {
         });
 
         await Promise.all(promises);
-        decCiphers.sort(this.getLocaleSortingFunction())
+        decCiphers.sort(this.getLocaleSortingFunction());
         this.decryptedCipherCache = decCiphers;
         return this.decryptedCipherCache;
     }
