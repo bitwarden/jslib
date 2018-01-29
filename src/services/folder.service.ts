@@ -67,10 +67,9 @@ export class FolderService implements FolderServiceAbstraction {
             return this.decryptedFolderCache;
         }
 
-        const decFolders: FolderView[] = [{
-            id: null,
-            name: this.noneFolder(),
-        }];
+        const noneFolder = new FolderView();
+        noneFolder.name = this.noneFolder();
+        const decFolders: FolderView[] = [noneFolder];
 
         const key = await this.cryptoService.getKey();
         if (key == null) {

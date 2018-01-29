@@ -5,7 +5,7 @@ import { UtilsService } from './utils.service';
 
 import { CryptoService } from '../abstractions/crypto.service';
 import {
-    PasswordGenerationService as PasswordGenerationServiceInterface,
+    PasswordGenerationService as PasswordGenerationServiceAbstraction,
 } from '../abstractions/passwordGeneration.service';
 import { StorageService } from '../abstractions/storage.service';
 
@@ -29,7 +29,7 @@ const Keys = {
 
 const MaxPasswordsInHistory = 100;
 
-export class PasswordGenerationService implements PasswordGenerationServiceInterface {
+export class PasswordGenerationService implements PasswordGenerationServiceAbstraction {
     static generatePassword(options: any): string {
         // overload defaults with given options
         const o = Object.assign({}, DefaultOptions, options);
@@ -147,8 +147,8 @@ export class PasswordGenerationService implements PasswordGenerationServiceInter
         return password;
     }
 
-    optionsCache: any;
-    history: PasswordHistory[] = [];
+    private optionsCache: any;
+    private history: PasswordHistory[] = [];
 
     constructor(private cryptoService: CryptoService, private storageService: StorageService) {
     }

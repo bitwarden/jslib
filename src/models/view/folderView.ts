@@ -3,7 +3,7 @@ import { View } from './view';
 import { Folder } from '../domain/folder';
 
 export class FolderView implements View {
-    id: string;
+    id: string = null;
     name: string;
 
     constructor(f?: Folder) {
