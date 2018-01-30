@@ -42,6 +42,9 @@ export class LoginView implements View {
             if (containerService) {
                 const platformUtilsService: PlatformUtilsService = containerService.getPlatformUtilsService();
                 this._domain = platformUtilsService.getDomain(this.uri);
+                if (this._domain === '') {
+                    this._domain = null;
+                }
             } else {
                 throw new Error('window.bitwardenContainerService not initialized.');
             }
@@ -70,7 +73,7 @@ export class LoginView implements View {
     }
 
     get isWebsite(): boolean {
-        return this.uri != null && (this.uri.indexOf('http://') > -1 || this.uri.indexOf('https://') > -1);
+        return this.uri != null && (this.uri.indexOf('http://') === 0 || this.uri.indexOf('https://') === 0);
     }
 
     get canLaunch(): boolean {
