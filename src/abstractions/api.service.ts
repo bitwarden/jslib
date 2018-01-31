@@ -12,26 +12,27 @@ import { FolderResponse } from '../models/response/folderResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 
-export interface ApiService {
+export abstract class ApiService {
     urlsSet: boolean;
     baseUrl: string;
     identityBaseUrl: string;
     deviceType: string;
     logoutCallback: Function;
-    setUrls(urls: EnvironmentUrls): void;
-    postIdentityToken(request: TokenRequest): Promise<IdentityTokenResponse | any>;
-    refreshIdentityToken(): Promise<any>;
-    postTwoFactorEmail(request: TwoFactorEmailRequest): Promise<any>;
-    getAccountRevisionDate(): Promise<number>;
-    postPasswordHint(request: PasswordHintRequest): Promise<any>;
-    postRegister(request: RegisterRequest): Promise<any>;
-    postFolder(request: FolderRequest): Promise<FolderResponse>;
-    putFolder(id: string, request: FolderRequest): Promise<FolderResponse>;
-    deleteFolder(id: string): Promise<any>;
-    postCipher(request: CipherRequest): Promise<CipherResponse>;
-    putCipher(id: string, request: CipherRequest): Promise<CipherResponse>;
-    deleteCipher(id: string): Promise<any>;
-    postCipherAttachment(id: string, data: FormData): Promise<CipherResponse>;
-    deleteCipherAttachment(id: string, attachmentId: string): Promise<any>;
-    getSync(): Promise<SyncResponse>;
+
+    setUrls: (urls: EnvironmentUrls) => void;
+    postIdentityToken: (request: TokenRequest) => Promise<IdentityTokenResponse | any>;
+    refreshIdentityToken: () => Promise<any>;
+    postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
+    getAccountRevisionDate: () => Promise<number>;
+    postPasswordHint: (request: PasswordHintRequest) => Promise<any>;
+    postRegister: (request: RegisterRequest) => Promise<any>;
+    postFolder: (request: FolderRequest) => Promise<FolderResponse>;
+    putFolder: (id: string, request: FolderRequest) => Promise<FolderResponse>;
+    deleteFolder: (id: string) => Promise<any>;
+    postCipher: (request: CipherRequest) => Promise<CipherResponse>;
+    putCipher: (id: string, request: CipherRequest) => Promise<CipherResponse>;
+    deleteCipher: (id: string) => Promise<any>;
+    postCipherAttachment: (id: string, data: FormData) => Promise<CipherResponse>;
+    deleteCipherAttachment: (id: string, attachmentId: string) => Promise<any>;
+    getSync: () => Promise<SyncResponse>;
 }

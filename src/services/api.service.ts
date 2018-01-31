@@ -1,6 +1,6 @@
 import { ConstantsService } from './constants.service';
 
-import { ApiService as ApiServiceInterface } from '../abstractions/api.service';
+import { ApiService as ApiServiceAbstraction } from '../abstractions/api.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { TokenService } from '../abstractions/token.service';
 
@@ -19,7 +19,7 @@ import { FolderResponse } from '../models/response/folderResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 
-export class ApiService implements ApiServiceInterface {
+export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
     baseUrl: string;
     identityBaseUrl: string;
