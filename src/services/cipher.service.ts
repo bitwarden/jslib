@@ -434,7 +434,7 @@ export class CipherService implements CipherServiceAbstraction {
             let aName = a.name;
             let bName = b.name;
 
-            let result = this.i18nService.collator ? this.i18nService.collator.compare(aName, bName) :
+            const result = this.i18nService.collator ? this.i18nService.collator.compare(aName, bName) :
                 aName.localeCompare(bName);
 
             if (result !== 0 || a.type !== CipherType.Login || b.type !== CipherType.Login) {

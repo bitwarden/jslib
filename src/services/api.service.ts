@@ -17,6 +17,7 @@ import { CipherResponse } from '../models/response/cipherResponse';
 import { ErrorResponse } from '../models/response/errorResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
+import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 
 export class ApiService implements ApiServiceAbstraction {
@@ -72,7 +73,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     // Auth APIs
 
-    async postIdentityToken(request: TokenRequest): Promise<IdentityTokenResponse | any> {
+    async postIdentityToken(request: TokenRequest): Promise<IdentityTokenResponse | IdentityTwoFactorResponse> {
         const response = await fetch(new Request(this.identityBaseUrl + '/connect/token', {
             body: this.qsStringify(request.toIdentityToken()),
             cache: 'no-cache',
@@ -96,7 +97,7 @@ export class ApiService implements ApiServiceAbstraction {
             } else if (response.status === 400 && responseJson.TwoFactorProviders2 &&
                 Object.keys(responseJson.TwoFactorProviders2).length) {
                 await this.tokenService.clearTwoFactorToken(request.email);
-                return responseJson.TwoFactorProviders2;
+                return new IdentityTwoFactorResponse(responseJson);
             }
         }
 

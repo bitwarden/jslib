@@ -10,6 +10,7 @@ import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
 import { CipherResponse } from '../models/response/cipherResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
+import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 
 export abstract class ApiService {
@@ -20,7 +21,7 @@ export abstract class ApiService {
     logoutCallback: Function;
 
     setUrls: (urls: EnvironmentUrls) => void;
-    postIdentityToken: (request: TokenRequest) => Promise<IdentityTokenResponse | any>;
+    postIdentityToken: (request: TokenRequest) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse>;
     refreshIdentityToken: () => Promise<any>;
     postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
     getAccountRevisionDate: () => Promise<number>;

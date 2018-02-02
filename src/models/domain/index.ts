@@ -1,4 +1,5 @@
 export { Attachment } from './attachment';
+export { AuthResult } from './authResult';
 export { Card } from './card';
 export { Cipher } from './cipher';
 export { CipherString } from './cipherString';

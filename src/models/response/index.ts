@@ -7,6 +7,7 @@ export { ErrorResponse } from './errorResponse';
 export { FolderResponse } from './folderResponse';
 export { GlobalDomainResponse } from './globalDomainResponse';
 export { IdentityTokenResponse } from './identityTokenResponse';
+export { IdentityTwoFactorResponse } from './identityTwoFactorResponse';
 export { KeysResponse } from './keysResponse';
 export { ListResponse } from './listResponse';
 export { ProfileOrganizationResponse } from './profileOrganizationResponse';
