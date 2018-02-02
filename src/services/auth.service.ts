@@ -22,43 +22,33 @@ import { UserService } from '../abstractions/user.service';
 
 export const TwoFactorProviders = {
     [TwoFactorProviderType.Authenticator]: {
+        type: TwoFactorProviderType.Authenticator,
         name: null as string,
         description: null as string,
-        active: true,
-        free: true,
-        displayOrder: 0,
         priority: 1,
     },
     [TwoFactorProviderType.Yubikey]: {
+        type: TwoFactorProviderType.Yubikey,
         name: null as string,
         description: null as string,
-        active: true,
-        free: false,
-        displayOrder: 1,
         priority: 3,
     },
     [TwoFactorProviderType.Duo]: {
+        type: TwoFactorProviderType.Duo,
         name: 'Duo',
         description: null as string,
-        active: true,
-        free: false,
-        displayOrder: 2,
         priority: 2,
     },
     [TwoFactorProviderType.U2f]: {
+        type: TwoFactorProviderType.U2f,
         name: null as string,
         description: null as string,
-        active: true,
-        free: false,
-        displayOrder: 3,
         priority: 4,
     },
     [TwoFactorProviderType.Email]: {
+        type: TwoFactorProviderType.Email,
         name: null as string,
         description: null as string,
-        active: true,
-        free: false,
-        displayOrder: 4,
         priority: 0,
     },
 };
@@ -119,7 +109,7 @@ export class AuthService {
         let providerPriority = -1;
         this.twoFactorProviders.forEach((value, type) => {
             const provider = (TwoFactorProviders as any)[type];
-            if (provider != null && provider.active && provider.priority > providerPriority) {
+            if (provider != null && provider.priority > providerPriority) {
                 if (type === TwoFactorProviderType.U2f && !u2fSupported) {
                     return;
                 }
