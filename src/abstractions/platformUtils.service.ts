@@ -16,4 +16,6 @@ export abstract class PlatformUtilsService {
     saveFile: (win: Window, blobData: any, blobOptions: any, fileName: string) => void;
     getApplicationVersion: () => string;
     supportsU2f: (win: Window) => boolean;
+    showDialog: (text: string, title?: string, confirmText?: string, cancelText?: string,
+        type?: string) => Promise<boolean>;
 }
