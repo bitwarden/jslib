@@ -6,7 +6,7 @@ import { FolderService } from '../abstractions/folder.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
-import { SyncService as SyncServiceInterface } from '../abstractions/sync.service';
+import { SyncService as SyncServiceAbstraction } from '../abstractions/sync.service';
 import { UserService } from '../abstractions/user.service';
 
 import { CipherData } from '../models/data/cipherData';
@@ -23,7 +23,7 @@ const Keys = {
     lastSyncPrefix: 'lastSync_',
 };
 
-export class SyncService implements SyncServiceInterface {
+export class SyncService implements SyncServiceAbstraction {
     syncInProgress: boolean = false;
 
     constructor(private userService: UserService, private apiService: ApiService,
