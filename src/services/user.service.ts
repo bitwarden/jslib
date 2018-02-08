@@ -1,6 +1,6 @@
 import { StorageService } from '../abstractions/storage.service';
 import { TokenService } from '../abstractions/token.service';
-import { UserService as UserServiceInterface } from '../abstractions/user.service';
+import { UserService as UserServiceAbsrtaction } from '../abstractions/user.service';
 
 const Keys = {
     userId: 'userId',
@@ -8,7 +8,7 @@ const Keys = {
     stamp: 'securityStamp',
 };
 
-export class UserService implements UserServiceInterface {
+export class UserService implements UserServiceAbsrtaction {
     userId: string;
     email: string;
     stamp: string;

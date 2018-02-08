@@ -1,4 +1,4 @@
-import { SettingsService as SettingsServiceInterface } from '../abstractions/settings.service';
+import { SettingsService as SettingsServiceAbstraction } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
@@ -7,7 +7,7 @@ const Keys = {
     equivalentDomains: 'equivalentDomains',
 };
 
-export class SettingsService implements SettingsServiceInterface {
+export class SettingsService implements SettingsServiceAbstraction {
     private settingsCache: any;
 
     constructor(private userService: UserService, private storageService: StorageService) {
