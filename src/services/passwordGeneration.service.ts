@@ -15,9 +15,9 @@ const DefaultOptions = {
     number: true,
     minNumber: 1,
     uppercase: true,
-    minUppercase: 1,
+    minUppercase: 0,
     lowercase: true,
-    minLowercase: 1,
+    minLowercase: 0,
     special: false,
     minSpecial: 1,
 };
@@ -35,16 +35,16 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         const o = Object.assign({}, DefaultOptions, options);
 
         // sanitize
-        if (o.uppercase && o.minUppercase < 0) {
+        if (o.uppercase && o.minUppercase <= 0) {
             o.minUppercase = 1;
         }
-        if (o.lowercase && o.minLowercase < 0) {
+        if (o.lowercase && o.minLowercase <= 0) {
             o.minLowercase = 1;
         }
-        if (o.number && o.minNumber < 0) {
+        if (o.number && o.minNumber <= 0) {
             o.minNumber = 1;
         }
-        if (o.special && o.minSpecial < 0) {
+        if (o.special && o.minSpecial <= 0) {
             o.minSpecial = 1;
         }
 
