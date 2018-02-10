@@ -1,4 +1,4 @@
-export interface LockService {
-    checkLock(): Promise<void>;
-    lock(): Promise<void>;
+export abstract class LockService {
+    checkLock: () => Promise<void>;
+    lock: () => Promise<void>;
 }

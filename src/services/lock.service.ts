@@ -4,16 +4,16 @@ import { CipherService } from '../abstractions/cipher.service';
 import { CollectionService } from '../abstractions/collection.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { FolderService } from '../abstractions/folder.service';
-import { LockService as LockServiceInterface } from '../abstractions/lock.service';
+import { LockService as LockServiceAbstraction } from '../abstractions/lock.service';
+import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { StorageService } from '../abstractions/storage.service';
 
-export class LockService implements LockServiceInterface {
+export class LockService implements LockServiceAbstraction {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private cryptoService: CryptoService,
-        private platformUtilsService: PlatformUtilsService,
-        private storageService: StorageService,
-        private setIcon: Function, private refreshBadgeAndMenu: Function) {
+        private platformUtilsService: PlatformUtilsService, private storageService: StorageService,
+        private messagingService: MessagingService) {
         this.checkLock();
         setInterval(() => this.checkLock(), 10 * 1000); // check every 10 seconds
     }
@@ -54,12 +54,11 @@ export class LockService implements LockServiceInterface {
             this.cryptoService.clearOrgKeys(true),
             this.cryptoService.clearPrivateKey(true),
             this.cryptoService.clearEncKey(true),
-            this.setIcon(),
-            this.refreshBadgeAndMenu(),
         ]);
 
         this.folderService.clearCache();
         this.cipherService.clearCache();
         this.collectionService.clearCache();
+        this.messagingService.send('locked');
     }
 }
