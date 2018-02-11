@@ -61,4 +61,9 @@ export class LockService implements LockServiceAbstraction {
         this.collectionService.clearCache();
         this.messagingService.send('locked');
     }
+
+    async setLockOption(lockOption: number): Promise<void> {
+        await this.storageService.save(ConstantsService.lockOptionKey, lockOption);
+        await this.cryptoService.toggleKey();
+    }
 }
