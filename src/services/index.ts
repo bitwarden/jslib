@@ -11,6 +11,7 @@ export { FolderService } from './folder.service';
 export { LockService } from './lock.service';
 export { PasswordGenerationService } from './passwordGeneration.service';
 export { SettingsService } from './settings.service';
+export { StateService } from './state.service';
 export { SyncService } from './sync.service';
 export { TokenService } from './token.service';
 export { TotpService } from './totp.service';
