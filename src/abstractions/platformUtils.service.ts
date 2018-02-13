@@ -18,4 +18,5 @@ export abstract class PlatformUtilsService {
     supportsU2f: (win: Window) => boolean;
     showDialog: (text: string, title?: string, confirmText?: string, cancelText?: string,
         type?: string) => Promise<boolean>;
+    isDev: () => boolean;
 }
