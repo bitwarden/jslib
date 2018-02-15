@@ -98,6 +98,7 @@ export class AuthService {
 
     logOut(callback: Function) {
         callback();
+        this.messagingService.send('loggedOut');
     }
 
     getDefaultTwoFactorProvider(u2fSupported: boolean): TwoFactorProviderType {
