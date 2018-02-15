@@ -35,6 +35,10 @@ export class SyncService implements SyncServiceAbstraction {
 
     async getLastSync(): Promise<Date> {
         const userId = await this.userService.getUserId();
+        if (userId == null) {
+            return null;
+        }
+
         const lastSync = await this.storageService.get<any>(Keys.lastSyncPrefix + userId);
         if (lastSync) {
             return new Date(lastSync);
@@ -45,6 +49,10 @@ export class SyncService implements SyncServiceAbstraction {
 
     async setLastSync(date: Date): Promise<any> {
         const userId = await this.userService.getUserId();
+        if (userId == null) {
+            return;
+        }
+
         await this.storageService.save(Keys.lastSyncPrefix + userId, date.toJSON());
     }
 
