@@ -11,6 +11,7 @@ export class ConstantsService {
     static readonly lockOptionKey: string = 'lockOption';
     static readonly lastActiveKey: string = 'lastActive';
     static readonly neverDomainsKey: string = 'neverDomains';
+    static readonly installedVersionKey: string = 'installedVersion';
 
     readonly environmentUrlsKey: string = ConstantsService.environmentUrlsKey;
     readonly disableGaKey: string = ConstantsService.disableGaKey;
@@ -22,6 +23,7 @@ export class ConstantsService {
     readonly lockOptionKey: string = ConstantsService.lockOptionKey;
     readonly lastActiveKey: string = ConstantsService.lastActiveKey;
     readonly neverDomainsKey: string = ConstantsService.neverDomainsKey;
+    readonly installedVersionKey: string = ConstantsService.installedVersionKey;
 
     // TODO: Convert these objects to enums
     readonly encType: any = {
