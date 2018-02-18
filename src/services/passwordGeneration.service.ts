@@ -148,7 +148,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     }
 
     private optionsCache: any;
-    private history: PasswordHistory[] = [];
+    private history: PasswordHistory[];
 
     constructor(private cryptoService: CryptoService, private storageService: StorageService) {
     }
@@ -203,11 +203,11 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             return;
         }
 
-        currentHistory.push(new PasswordHistory(password, Date.now()));
+        currentHistory.unshift(new PasswordHistory(password, Date.now()));
 
         // Remove old items.
         if (currentHistory.length > MaxPasswordsInHistory) {
-            currentHistory.shift();
+            currentHistory.pop();
         }
 
         const newHistory = await this.encryptHistory(currentHistory);
