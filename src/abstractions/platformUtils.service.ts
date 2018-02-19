@@ -1,4 +1,4 @@
-import { DeviceType } from '../enums/deviceType';
+import { DeviceType } from '../enums';
 
 export abstract class PlatformUtilsService {
     getDevice: () => DeviceType;

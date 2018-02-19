@@ -1,6 +1,6 @@
 import { View } from './view';
 
-import { Card } from '../domain/card';
+import { Card } from '../domain';
 
 export class CardView implements View {
     cardholderName: string;

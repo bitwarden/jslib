@@ -1,9 +1,9 @@
-import { AttachmentData } from '../data/attachmentData';
+import { AttachmentData } from '../data';
 
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
-import { AttachmentView } from '../view/attachmentView';
+import { AttachmentView } from '../view';
 
 export class Attachment extends Domain {
     id: string;

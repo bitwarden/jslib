@@ -1,6 +1,6 @@
-import { CollectionData } from '../data/collectionData';
+import { CollectionData } from '../data';
 
-import { CollectionView } from '../view/collectionView';
+import { CollectionView } from '../view';
 
 import { CipherString } from './cipherString';
 import Domain from './domain';

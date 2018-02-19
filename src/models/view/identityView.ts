@@ -1,6 +1,6 @@
 import { View } from './view';
 
-import { Identity } from '../domain/identity';
+import { Identity } from '../domain';
 
 export class IdentityView implements View {
     title: string = null;

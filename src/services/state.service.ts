@@ -1,4 +1,4 @@
-import { StateService as StateServiceAbstraction } from '../abstractions/state.service';
+import { StateService as StateServiceAbstraction } from '../abstractions';
 
 export class StateService implements StateServiceAbstraction {
     private state: any = {};

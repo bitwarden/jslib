@@ -1,8 +1,8 @@
 import { View } from './view';
 
-import { Login } from '../domain/login';
+import { Login } from '../domain';
 
-import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
+import { PlatformUtilsService } from '../../abstractions';
 
 export class LoginView implements View {
     username: string;

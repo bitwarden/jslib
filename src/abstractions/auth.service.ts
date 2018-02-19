@@ -1,6 +1,6 @@
-import { TwoFactorProviderType } from '../enums/twoFactorProviderType';
+import { TwoFactorProviderType } from '../enums';
 
-import { AuthResult } from '../models/domain/authResult';
+import { AuthResult } from '../models/domain';
 
 export abstract class AuthService {
     email: string;

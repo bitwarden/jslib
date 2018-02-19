@@ -1,6 +1,6 @@
-import { LoginData } from '../data/loginData';
+import { LoginData } from '../data';
 
-import { LoginView } from '../view/loginView';
+import { LoginView } from '../view';
 
 import { CipherString } from './cipherString';
 import Domain from './domain';

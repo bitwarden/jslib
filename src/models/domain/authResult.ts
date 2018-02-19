@@ -1,4 +1,4 @@
-import { TwoFactorProviderType } from '../../enums/twoFactorProviderType';
+import { TwoFactorProviderType } from '../../enums';
 
 export class AuthResult {
     twoFactor: boolean = false;

@@ -1,17 +1,21 @@
-import { EnvironmentUrls } from '../models/domain/environmentUrls';
+import { EnvironmentUrls } from '../models/domain';
 
-import { CipherRequest } from '../models/request/cipherRequest';
-import { FolderRequest } from '../models/request/folderRequest';
-import { PasswordHintRequest } from '../models/request/passwordHintRequest';
-import { RegisterRequest } from '../models/request/registerRequest';
-import { TokenRequest } from '../models/request/tokenRequest';
-import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
+import {
+    CipherRequest,
+    FolderRequest,
+    PasswordHintRequest,
+    RegisterRequest,
+    TokenRequest,
+    TwoFactorEmailRequest,
+} from '../models/request';
 
-import { CipherResponse } from '../models/response/cipherResponse';
-import { FolderResponse } from '../models/response/folderResponse';
-import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
-import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
-import { SyncResponse } from '../models/response/syncResponse';
+import {
+    CipherResponse,
+    FolderResponse,
+    IdentityTokenResponse,
+    IdentityTwoFactorResponse,
+    SyncResponse,
+} from '../models/response';
 
 export abstract class ApiService {
     urlsSet: boolean;

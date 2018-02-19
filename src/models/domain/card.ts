@@ -1,9 +1,9 @@
-import { CardData } from '../data/cardData';
+import { CardData } from '../data';
 
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
-import { CardView } from '../view/cardView';
+import { CardView } from '../view';
 
 export class Card extends Domain {
     cardholderName: CipherString;

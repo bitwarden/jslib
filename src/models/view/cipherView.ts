@@ -1,6 +1,6 @@
-import { CipherType } from '../../enums/cipherType';
+import { CipherType } from '../../enums';
 
-import { Cipher } from '../domain/cipher';
+import { Cipher } from '../domain';
 
 import { AttachmentView } from './attachmentView';
 import { CardView } from './cardView';

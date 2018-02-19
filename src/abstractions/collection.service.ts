@@ -1,8 +1,8 @@
-import { CollectionData } from '../models/data/collectionData';
+import { CollectionData } from '../models/data';
 
-import { Collection } from '../models/domain/collection';
+import { Collection } from '../models/domain';
 
-import { CollectionView } from '../models/view/collectionView';
+import { CollectionView } from '../models/view';
 
 export abstract class CollectionService {
     decryptedCollectionCache: CollectionView[];

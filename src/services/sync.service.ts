@@ -1,23 +1,29 @@
-import { ApiService } from '../abstractions/api.service';
-import { CipherService } from '../abstractions/cipher.service';
-import { CollectionService } from '../abstractions/collection.service';
-import { CryptoService } from '../abstractions/crypto.service';
-import { FolderService } from '../abstractions/folder.service';
-import { MessagingService } from '../abstractions/messaging.service';
-import { SettingsService } from '../abstractions/settings.service';
-import { StorageService } from '../abstractions/storage.service';
-import { SyncService as SyncServiceAbstraction } from '../abstractions/sync.service';
-import { UserService } from '../abstractions/user.service';
+import {
+    ApiService,
+    CipherService,
+    CollectionService,
+    CryptoService,
+    FolderService,
+    MessagingService,
+    SettingsService,
+    StorageService,
+    SyncService as SyncServiceAbstraction,
+    UserService,
+} from '../abstractions';
 
-import { CipherData } from '../models/data/cipherData';
-import { CollectionData } from '../models/data/collectionData';
-import { FolderData } from '../models/data/folderData';
+import {
+    CipherData,
+    CollectionData,
+    FolderData,
+} from '../models/data';
 
-import { CipherResponse } from '../models/response/cipherResponse';
-import { CollectionResponse } from '../models/response/collectionResponse';
-import { DomainsResponse } from '../models/response/domainsResponse';
-import { FolderResponse } from '../models/response/folderResponse';
-import { ProfileResponse } from '../models/response/profileResponse';
+import {
+    CipherResponse,
+    CollectionResponse,
+    DomainsResponse,
+    FolderResponse,
+    ProfileResponse,
+} from '../models/response';
 
 const Keys = {
     lastSyncPrefix: 'lastSync_',

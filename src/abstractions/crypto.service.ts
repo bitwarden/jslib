@@ -1,7 +1,9 @@
-import { CipherString } from '../models/domain/cipherString';
-import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
+import {
+    CipherString,
+    SymmetricCryptoKey,
+} from '../models/domain';
 
-import { ProfileOrganizationResponse } from '../models/response/profileOrganizationResponse';
+import { ProfileOrganizationResponse } from '../models/response';
 
 export abstract class CryptoService {
     setKey: (key: SymmetricCryptoKey) => Promise<any>;

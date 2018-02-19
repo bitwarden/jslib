@@ -1,8 +1,10 @@
 import { ConstantsService } from './constants.service';
 import { UtilsService } from './utils.service';
 
-import { StorageService } from '../abstractions/storage.service';
-import { TokenService as TokenServiceAbstraction } from '../abstractions/token.service';
+import {
+    StorageService,
+    TokenService as TokenServiceAbstraction,
+} from '../abstractions';
 
 const Keys = {
     accessToken: 'accessToken',

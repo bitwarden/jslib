@@ -1,6 +1,6 @@
-import { EncryptionType } from '../../enums/encryptionType';
+import { EncryptionType } from '../../enums';
 
-import { CryptoService } from '../../abstractions/crypto.service';
+import { CryptoService } from '../../abstractions';
 
 export class CipherString {
     encryptedString?: string;

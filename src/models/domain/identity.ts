@@ -1,9 +1,9 @@
-import { IdentityData } from '../data/identityData';
+import { IdentityData } from '../data';
 
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
-import { IdentityView } from '../view/identityView';
+import { IdentityView } from '../view';
 
 export class Identity extends Domain {
     title: CipherString;

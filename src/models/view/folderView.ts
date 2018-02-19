@@ -1,6 +1,6 @@
 import { View } from './view';
 
-import { Folder } from '../domain/folder';
+import { Folder } from '../domain';
 
 export class FolderView implements View {
     id: string = null;

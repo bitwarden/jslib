@@ -1,8 +1,8 @@
-import { FieldType } from '../../enums/fieldType';
+import { FieldType } from '../../enums';
 
 import { View } from './view';
 
-import { Field } from '../domain/field';
+import { Field } from '../domain';
 
 export class FieldView implements View {
     name: string;

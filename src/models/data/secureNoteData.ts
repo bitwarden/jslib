@@ -1,4 +1,4 @@
-import { SecureNoteType } from '../../enums/secureNoteType';
+import { SecureNoteType } from '../../enums';
 
 export class SecureNoteData {
     type: SecureNoteType;

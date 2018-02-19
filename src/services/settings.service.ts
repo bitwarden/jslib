@@ -1,6 +1,8 @@
-import { SettingsService as SettingsServiceAbstraction } from '../abstractions/settings.service';
-import { StorageService } from '../abstractions/storage.service';
-import { UserService } from '../abstractions/user.service';
+import {
+    SettingsService as SettingsServiceAbstraction,
+    StorageService,
+    UserService,
+} from '../abstractions';
 
 const Keys = {
     settingsPrefix: 'settings_',
