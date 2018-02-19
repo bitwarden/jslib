@@ -1,4 +1,4 @@
-import { CipherType } from '../../enums';
+import { CipherType } from '../../enums/cipherType';
 
 import { AttachmentData } from './attachmentData';
 import { CardData } from './cardData';
@@ -7,7 +7,7 @@ import { IdentityData } from './identityData';
 import { LoginData } from './loginData';
 import { SecureNoteData } from './secureNoteData';
 
-import { CipherResponse } from '../response';
+import { CipherResponse } from '../response/cipherResponse';
 
 export class CipherData {
     id: string;

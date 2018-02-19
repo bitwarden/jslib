@@ -1,15 +1,13 @@
 import { ConstantsService } from './constants.service';
 
-import {
-    CipherService,
-    CollectionService,
-    CryptoService,
-    FolderService,
-    LockService as LockServiceAbstraction,
-    MessagingService,
-    PlatformUtilsService,
-    StorageService,
-} from '../abstractions';
+import { CipherService } from '../abstractions/cipher.service';
+import { CollectionService } from '../abstractions/collection.service';
+import { CryptoService } from '../abstractions/crypto.service';
+import { FolderService } from '../abstractions/folder.service';
+import { LockService as LockServiceAbstraction } from '../abstractions/lock.service';
+import { MessagingService } from '../abstractions/messaging.service';
+import { PlatformUtilsService } from '../abstractions/platformUtils.service';
+import { StorageService } from '../abstractions/storage.service';
 
 export class LockService implements LockServiceAbstraction {
     constructor(private cipherService: CipherService, private folderService: FolderService,

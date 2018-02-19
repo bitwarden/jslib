@@ -1,9 +1,7 @@
 export { AttachmentView } from './attachmentView';
 export { CardView } from './cardView';
 export { CipherView } from './cipherView';
-export { CollectionView } from './collectionView';
 export { FieldView } from './fieldView';
-export { FolderView } from './folderView';
 export { IdentityView } from './identityView';
 export { LoginView } from './loginView';
 export { SecureNoteView } from './secureNoteView';

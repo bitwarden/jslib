@@ -1,15 +1,11 @@
-import { CipherData } from '../models/data';
+import { CipherData } from '../models/data/cipherData';
 
-import {
-    Cipher,
-    Field,
-    SymmetricCryptoKey,
-} from '../models/domain';
+import { Cipher } from '../models/domain/cipher';
+import { Field } from '../models/domain/field';
+import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
-import {
-    CipherView,
-    FieldView,
-} from '../models/view';
+import { CipherView } from '../models/view/cipherView';
+import { FieldView } from '../models/view/fieldView';
 
 export abstract class CipherService {
     decryptedCipherCache: CipherView[];

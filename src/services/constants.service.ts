@@ -1,4 +1,4 @@
-import { PlatformUtilsService } from '../abstractions';
+import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 
 export class ConstantsService {
     static readonly environmentUrlsKey: string = 'environmentUrls';

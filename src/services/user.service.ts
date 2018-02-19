@@ -1,8 +1,6 @@
-import {
-    StorageService,
-    TokenService,
-    UserService as UserServiceAbsrtaction,
-} from '../abstractions';
+import { StorageService } from '../abstractions/storage.service';
+import { TokenService } from '../abstractions/token.service';
+import { UserService as UserServiceAbsrtaction } from '../abstractions/user.service';
 
 const Keys = {
     userId: 'userId',

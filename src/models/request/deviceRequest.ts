@@ -1,6 +1,6 @@
-import { DeviceType } from '../../enums';
+import { DeviceType } from '../../enums/deviceType';
 
-import { PlatformUtilsService } from '../../abstractions';
+import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 export class DeviceRequest {
     type: DeviceType;

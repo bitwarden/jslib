@@ -1,32 +1,24 @@
-import { TwoFactorProviderType } from '../enums';
+import { TwoFactorProviderType } from '../enums/twoFactorProviderType';
 
-import {
-    AuthResult,
-    SymmetricCryptoKey,
-} from '../models/domain';
+import { AuthResult } from '../models/domain/authResult';
+import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
-import {
-    DeviceRequest,
-    TokenRequest,
-} from '../models/request';
+import { DeviceRequest } from '../models/request/deviceRequest';
+import { TokenRequest } from '../models/request/tokenRequest';
 
-import {
-    IdentityTokenResponse,
-    IdentityTwoFactorResponse,
-} from '../models/response';
+import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
+import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 
 import { ConstantsService } from '../services/constants.service';
 
-import {
-    ApiService,
-    AppIdService,
-    CryptoService,
-    I18nService,
-    MessagingService,
-    PlatformUtilsService,
-    TokenService,
-    UserService,
-} from '../abstractions';
+import { ApiService } from '../abstractions/api.service';
+import { AppIdService } from '../abstractions/appId.service';
+import { CryptoService } from '../abstractions/crypto.service';
+import { I18nService } from '../abstractions/i18n.service';
+import { MessagingService } from '../abstractions/messaging.service';
+import { PlatformUtilsService } from '../abstractions/platformUtils.service';
+import { TokenService } from '../abstractions/token.service';
+import { UserService } from '../abstractions/user.service';
 
 export const TwoFactorProviders = {
     [TwoFactorProviderType.Authenticator]: {

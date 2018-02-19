@@ -1,4 +1,4 @@
-import { UtilsService as UtilsServiceAbstraction } from '../abstractions';
+import { UtilsService as UtilsServiceAbstraction } from '../abstractions/utils.service';
 
 export class UtilsService implements UtilsServiceAbstraction {
     static copyToClipboard(text: string, doc?: Document): void {

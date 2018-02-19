@@ -1,6 +1,6 @@
 import * as forge from 'node-forge';
 
-import { EncryptionType } from '../../enums';
+import { EncryptionType } from '../../enums/encryptionType';
 
 import { SymmetricCryptoKeyBuffers } from './symmetricCryptoKeyBuffers';
 

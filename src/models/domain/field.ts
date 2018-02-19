@@ -1,11 +1,11 @@
-import { FieldType } from '../../enums';
+import { FieldType } from '../../enums/fieldType';
 
-import { FieldData } from '../data';
+import { FieldData } from '../data/fieldData';
 
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
-import { FieldView } from '../view';
+import { FieldView } from '../view/fieldView';
 
 export class Field extends Domain {
     name: CipherString;

@@ -1,30 +1,24 @@
 import { ConstantsService } from './constants.service';
 
-import {
-    ApiService as ApiServiceAbstraction,
-    PlatformUtilsService,
-    TokenService,
-} from '../abstractions';
+import { ApiService as ApiServiceAbstraction } from '../abstractions/api.service';
+import { PlatformUtilsService } from '../abstractions/platformUtils.service';
+import { TokenService } from '../abstractions/token.service';
 
-import { EnvironmentUrls } from '../models/domain';
+import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
-import {
-    CipherRequest,
-    FolderRequest,
-    PasswordHintRequest,
-    RegisterRequest,
-    TokenRequest,
-    TwoFactorEmailRequest,
-} from '../models/request';
+import { CipherRequest } from '../models/request/cipherRequest';
+import { FolderRequest } from '../models/request/folderRequest';
+import { PasswordHintRequest } from '../models/request/passwordHintRequest';
+import { RegisterRequest } from '../models/request/registerRequest';
+import { TokenRequest } from '../models/request/tokenRequest';
+import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
 
-import {
-    CipherResponse,
-    ErrorResponse,
-    FolderResponse,
-    IdentityTokenResponse,
-    IdentityTwoFactorResponse,
-    SyncResponse,
-} from '../models/response';
+import { CipherResponse } from '../models/response/cipherResponse';
+import { ErrorResponse } from '../models/response/errorResponse';
+import { FolderResponse } from '../models/response/folderResponse';
+import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
+import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
+import { SyncResponse } from '../models/response/syncResponse';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;

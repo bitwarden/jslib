@@ -1,8 +1,8 @@
-import { CipherType } from '../../enums';
+import { CipherType } from '../../enums/cipherType';
 
-import { CipherData } from '../data';
+import { CipherData } from '../data/cipherData';
 
-import { CipherView } from '../view';
+import { CipherView } from '../view/cipherView';
 
 import { Attachment } from './attachment';
 import { Card } from './card';

@@ -1,15 +1,13 @@
-import {
-    CipherString,
-    PasswordHistory,
-} from '../models/domain';
+import { CipherString } from '../models/domain/cipherString';
+import { PasswordHistory } from '../models/domain/passwordHistory';
 
 import { UtilsService } from './utils.service';
 
+import { CryptoService } from '../abstractions/crypto.service';
 import {
-    CryptoService,
     PasswordGenerationService as PasswordGenerationServiceAbstraction,
-    StorageService,
-} from '../abstractions';
+} from '../abstractions/passwordGeneration.service';
+import { StorageService } from '../abstractions/storage.service';
 
 const DefaultOptions = {
     length: 14,

@@ -1,4 +1,4 @@
-import { PasswordHistory } from '../models/domain';
+import { PasswordHistory } from '../models/domain/passwordHistory';
 
 export abstract class PasswordGenerationService {
     generatePassword: (options: any) => string;

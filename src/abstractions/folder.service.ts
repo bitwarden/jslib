@@ -1,8 +1,8 @@
-import { FolderData } from '../models/data';
+import { FolderData } from '../models/data/folderData';
 
-import { Folder } from '../models/domain';
+import { Folder } from '../models/domain/folder';
 
-import { FolderView } from '../models/view';
+import { FolderView } from '../models/view/folderView';
 
 export abstract class FolderService {
     decryptedFolderCache: FolderView[];

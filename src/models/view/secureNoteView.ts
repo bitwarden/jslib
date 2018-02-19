@@ -1,8 +1,8 @@
-import { SecureNoteType } from '../../enums';
+import { SecureNoteType } from '../../enums/secureNoteType';
 
 import { View } from './view';
 
-import { SecureNote } from '../domain';
+import { SecureNote } from '../domain/secureNote';
 
 export class SecureNoteView implements View {
     type: SecureNoteType;

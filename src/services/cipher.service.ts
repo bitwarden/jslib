@@ -1,47 +1,38 @@
-import { CipherType } from '../enums';
+import { CipherType } from '../enums/cipherType';
 
-import { CipherData } from '../models/data';
+import { CipherData } from '../models/data/cipherData';
 
-import {
-    Card,
-    Cipher,
-    CipherString,
-    Field,
-    Identity,
-    Login,
-    SecureNote,
-    SymmetricCryptoKey,
-} from '../models/domain';
-
+import { Card } from '../models/domain/card';
+import { Cipher } from '../models/domain/cipher';
+import { CipherString } from '../models/domain/cipherString';
 import Domain from '../models/domain/domain';
+import { Field } from '../models/domain/field';
+import { Identity } from '../models/domain/identity';
+import { Login } from '../models/domain/login';
+import { SecureNote } from '../models/domain/secureNote';
+import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
-import { CipherRequest } from '../models/request';
+import { CipherRequest } from '../models/request/cipherRequest';
 
-import {
-    CipherResponse,
-    ErrorResponse,
-} from '../models/response';
+import { CipherResponse } from '../models/response/cipherResponse';
+import { ErrorResponse } from '../models/response/errorResponse';
 
-import {
-    CardView,
-    CipherView,
-    FieldView,
-    IdentityView,
-    LoginView,
-    View,
-} from '../models/view';
+import { CardView } from '../models/view/cardView';
+import { CipherView } from '../models/view/cipherView';
+import { FieldView } from '../models/view/fieldView';
+import { IdentityView } from '../models/view/identityView';
+import { LoginView } from '../models/view/loginView';
+import { View } from '../models/view/view';
 
 import { ConstantsService } from './constants.service';
 
-import {
-    ApiService,
-    CipherService as CipherServiceAbstraction,
-    CryptoService,
-    I18nService,
-    SettingsService,
-    StorageService,
-    UserService,
-} from '../abstractions';
+import { ApiService } from '../abstractions/api.service';
+import { CipherService as CipherServiceAbstraction } from '../abstractions/cipher.service';
+import { CryptoService } from '../abstractions/crypto.service';
+import { I18nService } from '../abstractions/i18n.service';
+import { SettingsService } from '../abstractions/settings.service';
+import { StorageService } from '../abstractions/storage.service';
+import { UserService } from '../abstractions/user.service';
 
 const Keys = {
     ciphersPrefix: 'ciphers_',

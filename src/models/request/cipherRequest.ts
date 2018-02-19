@@ -1,4 +1,4 @@
-import { CipherType } from '../../enums';
+import { CipherType } from '../../enums/cipherType';
 
 export class CipherRequest {
     type: CipherType;

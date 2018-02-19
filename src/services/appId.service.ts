@@ -1,9 +1,7 @@
 import { UtilsService } from './utils.service';
 
-import {
-    AppIdService as AppIdServiceInterface,
-    StorageService,
-} from '../abstractions';
+import { AppIdService as AppIdServiceInterface } from '../abstractions/appId.service';
+import { StorageService } from '../abstractions/storage.service';
 
 export class AppIdService implements AppIdServiceInterface {
     constructor(private storageService: StorageService) {

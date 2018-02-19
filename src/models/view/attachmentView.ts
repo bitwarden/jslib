@@ -1,6 +1,6 @@
 import { View } from './view';
 
-import { Attachment } from '../domain';
+import { Attachment } from '../domain/attachment';
 
 export class AttachmentView implements View {
     id: string;

@@ -1,6 +1,6 @@
 import { View } from './view';
 
-import { Collection } from '../domain';
+import { Collection } from '../domain/collection';
 
 export class CollectionView implements View {
     id: string;

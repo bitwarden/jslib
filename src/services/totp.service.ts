@@ -1,9 +1,7 @@
 import { ConstantsService } from './constants.service';
 
-import {
-    StorageService,
-    TotpService as TotpServiceAbstraction,
-} from '../abstractions';
+import { StorageService } from '../abstractions/storage.service';
+import { TotpService as TotpServiceAbstraction } from '../abstractions/totp.service';
 
 const b32Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 

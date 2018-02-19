@@ -1,6 +1,6 @@
-import { CipherString } from './cipherString';
+import { CipherString } from '../domain/cipherString';
 
-import { View } from '../view';
+import { View } from '../view/view';
 
 export default abstract class Domain {
     protected buildDomainModel<D extends Domain>(domain: D, dataObj: any, map: any,

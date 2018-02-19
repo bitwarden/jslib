@@ -1,12 +1,10 @@
-import { EnvironmentUrls } from '../models/domain';
+import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
 import { ConstantsService } from './constants.service';
 
-import {
-    ApiService,
-    EnvironmentService as EnvironmentServiceAbstraction,
-    StorageService,
-} from '../abstractions';
+import { ApiService } from '../abstractions/api.service';
+import { EnvironmentService as EnvironmentServiceAbstraction } from '../abstractions/environment.service';
+import { StorageService } from '../abstractions/storage.service';
 
 export class EnvironmentService implements EnvironmentServiceAbstraction {
     baseUrl: string;

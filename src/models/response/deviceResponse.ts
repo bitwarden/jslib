@@ -1,4 +1,4 @@
-import { DeviceType } from '../../enums';
+import { DeviceType } from '../../enums/deviceType';
 
 export class DeviceResponse {
     id: string;

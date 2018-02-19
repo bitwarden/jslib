@@ -1,8 +1,6 @@
-import {
-    AppIdService,
-    PlatformUtilsService,
-    StorageService,
-} from '../abstractions';
+import { AppIdService } from '../abstractions/appId.service';
+import { PlatformUtilsService } from '../abstractions/platformUtils.service';
+import { StorageService } from '../abstractions/storage.service';
 
 import { ConstantsService } from '../services/constants.service';
 

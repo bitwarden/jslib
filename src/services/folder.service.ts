@@ -1,21 +1,19 @@
-import { FolderData } from '../models/data';
+import { FolderData } from '../models/data/folderData';
 
-import { Folder } from '../models/domain';
+import { Folder } from '../models/domain/folder';
 
-import { FolderRequest } from '../models/request';
+import { FolderRequest } from '../models/request/folderRequest';
 
-import { FolderResponse } from '../models/response';
+import { FolderResponse } from '../models/response/folderResponse';
 
-import { FolderView } from '../models/view';
+import { FolderView } from '../models/view/folderView';
 
-import {
-    ApiService,
-    CryptoService,
-    FolderService as FolderServiceAbstraction,
-    I18nService,
-    StorageService,
-    UserService,
-} from '../abstractions';
+import { ApiService } from '../abstractions/api.service';
+import { CryptoService } from '../abstractions/crypto.service';
+import { FolderService as FolderServiceAbstraction } from '../abstractions/folder.service';
+import { I18nService } from '../abstractions/i18n.service';
+import { StorageService } from '../abstractions/storage.service';
+import { UserService } from '../abstractions/user.service';
 
 const Keys = {
     foldersPrefix: 'folders_',

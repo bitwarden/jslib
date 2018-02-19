@@ -1,4 +1,4 @@
-import { AttachmentResponse } from '../response';
+import { AttachmentResponse } from '../response/attachmentResponse';
 
 export class AttachmentData {
     id: string;

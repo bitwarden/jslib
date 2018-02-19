@@ -1,19 +1,14 @@
 import * as forge from 'node-forge';
 
-import { EncryptionType } from '../enums';
+import { EncryptionType } from '../enums/encryptionType';
 
-import {
-    CipherString,
-    EncryptedObject,
-    SymmetricCryptoKey,
-} from '../models/domain';
+import { CipherString } from '../models/domain/cipherString';
+import { EncryptedObject } from '../models/domain/encryptedObject';
+import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
+import { ProfileOrganizationResponse } from '../models/response/profileOrganizationResponse';
 
-import { ProfileOrganizationResponse } from '../models/response';
-
-import {
-    CryptoService as CryptoServiceAbstraction,
-    StorageService as StorageServiceAbstraction,
-} from '../abstractions';
+import { CryptoService as CryptoServiceAbstraction } from '../abstractions/crypto.service';
+import { StorageService as StorageServiceInterface } from '../abstractions/storage.service';
 
 import { ConstantsService } from './constants.service';
 import { UtilsService } from './utils.service';
@@ -46,8 +41,8 @@ export class CryptoService implements CryptoServiceAbstraction {
     private privateKey: ArrayBuffer;
     private orgKeys: Map<string, SymmetricCryptoKey>;
 
-    constructor(private storageService: StorageServiceAbstraction,
-        private secureStorageService: StorageServiceAbstraction) {
+    constructor(private storageService: StorageServiceInterface,
+        private secureStorageService: StorageServiceInterface) {
     }
 
     async setKey(key: SymmetricCryptoKey): Promise<any> {

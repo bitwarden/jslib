@@ -1,10 +1,10 @@
-import { SecureNoteType } from '../../enums';
+import { SecureNoteType } from '../../enums/secureNoteType';
 
-import { SecureNoteData } from '../data';
+import { SecureNoteData } from '../data/secureNoteData';
 
 import Domain from './domain';
 
-import { SecureNoteView } from '../view';
+import { SecureNoteView } from '../view/secureNoteView';
 
 export class SecureNote extends Domain {
     type: SecureNoteType;

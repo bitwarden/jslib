@@ -1,7 +1,5 @@
-import {
-    CryptoService,
-    PlatformUtilsService,
-} from '../abstractions';
+import { CryptoService } from '../abstractions/crypto.service';
+import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 
 export class ContainerService {
     constructor(private cryptoService: CryptoService,

@@ -1,6 +1,6 @@
-import { FolderData } from '../data';
+import { FolderData } from '../data/folderData';
 
-import { FolderView } from '../view';
+import { FolderView } from '../view/folderView';
 
 import { CipherString } from './cipherString';
 import Domain from './domain';

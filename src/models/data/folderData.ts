@@ -1,4 +1,4 @@
-import { FolderResponse } from '../response';
+import { FolderResponse } from '../response/folderResponse';
 
 export class FolderData {
     id: string;

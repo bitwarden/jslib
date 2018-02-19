@@ -1,4 +1,4 @@
-import { FieldType } from '../../enums';
+import { FieldType } from '../../enums/fieldType';
 
 export class FieldData {
     type: FieldType;
