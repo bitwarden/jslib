@@ -1,6 +1,6 @@
 import { CollectionData } from '../models/data/collectionData';
 
-import { Collection } from '../models/domain/collection';
+import { Collection } from '../models/domain';
 
 import { CollectionView } from '../models/view/collectionView';
 
