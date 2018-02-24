@@ -8,6 +8,7 @@ export { EnvironmentService } from './environment.service';
 export { FolderService } from './folder.service';
 export { I18nService } from './i18n.service';
 export { LockService } from './lock.service';
+export { LogService } from './log.service';
 export { MessagingService } from './messaging.service';
 export { PasswordGenerationService } from './passwordGeneration.service';
 export { PlatformUtilsService } from './platformUtils.service';
