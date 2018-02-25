@@ -452,6 +452,12 @@ export class CryptoService implements CryptoServiceAbstraction {
         return b64DecValue;
     }
 
+    sha1(password: string) {
+        const md = forge.md.sha1.create();
+        md.update(password);
+        return md.digest().toHex().toUpperCase();
+    }
+
     // Helpers
 
     private async aesEncrypt(plainValue: ArrayBuffer, key: SymmetricCryptoKey): Promise<EncryptedObject> {
