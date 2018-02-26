@@ -1,4 +1,4 @@
-import { CryptoService } from 'jslib/abstractions/crypto.service';
+import { CryptoService } from '../abstractions/crypto.service';
 
 export class AuditService {
 
@@ -8,7 +8,7 @@ export class AuditService {
     }
 
     async passwordLeaked(password: string) {
-        const hash = this.cryptoService.sha1(password);
+        const hash = (await this.cryptoService.sha1(password)).toUpperCase();
 
         const response = await fetch(this.url + hash.substr(0, 5));
         const leakedHashes = await response.text();
@@ -23,5 +23,4 @@ export class AuditService {
 
         return match ? match.split(':')[1] : 0;
     }
-
 }
