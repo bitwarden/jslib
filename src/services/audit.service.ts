@@ -1,8 +1,8 @@
 import { CryptoService } from '../abstractions/crypto.service';
 
-export class AuditService {
+const PwnedPasswordsApi = 'https://api.pwnedpasswords.com/range/';
 
-    private url = 'https://api.pwnedpasswords.com/range/';
+export class AuditService {
 
     constructor(private cryptoService: CryptoService) {
     }
@@ -10,7 +10,7 @@ export class AuditService {
     async passwordLeaked(password: string): Promise<number> {
         const hash = (await this.cryptoService.sha1(password)).toUpperCase();
 
-        const response = await fetch(this.url + hash.substr(0, 5));
+        const response = await fetch(PwnedPasswordsApi + hash.substr(0, 5));
         const leakedHashes = await response.text();
 
         const hashEnding = hash.substr(5);
