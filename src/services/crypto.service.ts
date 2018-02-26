@@ -457,7 +457,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             {
                 name: 'SHA-1',
             },
-            UtilsService.fromB64ToArray(window.btoa(password)),
+            UtilsService.fromUtf8ToArray(password),
         );
 
         return UtilsService.fromBufferToHex(hash);
