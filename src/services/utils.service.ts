@@ -125,24 +125,13 @@ export class UtilsService implements UtilsServiceAbstraction {
         return decodeURIComponent(escape(encodedString));
     }
 
-    // From: https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest
+    // Source: Frxstrem, https://stackoverflow.com/questions/40031688/javascript-arraybuffer-to-hex
     static fromBufferToHex(buffer: ArrayBuffer): string {
-        const hexCodes = [];
-        const view = new DataView(buffer);
-        for (let i = 0; i < view.byteLength; i += 4) {
-          // Using getUint32 reduces the number of iterations needed (we process 4 bytes each time)
-          const value = view.getUint32(i);
-          // toString(16) will give the hex representation of the number without padding
-          const stringValue = value.toString(16);
-          // We use concatenation and slice for padding
-          const padding = '00000000';
-          const paddedValue = (padding + stringValue).slice(-padding.length);
-          hexCodes.push(paddedValue);
-        }
-
-        // Join all the hex strings into one
-        return hexCodes.join('');
-      }
+        return Array.prototype.map.call(
+            new Uint8Array(buffer),
+            (x) => ('00' + x.toString(16)).slice(-2),
+        ).join('');
+    }
 
     static getHostname(uriString: string): string {
         if (uriString == null) {
