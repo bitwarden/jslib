@@ -7,7 +7,7 @@ export class AuditService {
     constructor(private cryptoService: CryptoService) {
     }
 
-    async passwordLeaked(password: string) {
+    async passwordLeaked(password: string): Promise<number> {
         const hash = (await this.cryptoService.sha1(password)).toUpperCase();
 
         const response = await fetch(this.url + hash.substr(0, 5));
@@ -21,6 +21,6 @@ export class AuditService {
                 return v.split(':')[0] === hashEnding;
             });
 
-        return match ? match.split(':')[1] : 0;
+        return match ? parseInt(match.split(':')[1], 10) : 0;
     }
 }
