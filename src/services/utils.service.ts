@@ -129,7 +129,7 @@ export class UtilsService implements UtilsServiceAbstraction {
     static fromBufferToHex(buffer: ArrayBuffer): string {
         return Array.prototype.map.call(
             new Uint8Array(buffer),
-            (x) => ('00' + x.toString(16)).slice(-2),
+            (x: number) => ('00' + x.toString(16)).slice(-2),
         ).join('');
     }
 
