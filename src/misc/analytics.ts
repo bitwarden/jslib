@@ -8,7 +8,7 @@ const GaObj = 'ga';
 
 export class Analytics {
     private gaTrackingId: string = null;
-    private isFirefox = false;
+    private defaultDisabled = false;
     private appVersion: string;
 
     constructor(win: Window, private gaFilter?: () => boolean,
@@ -28,7 +28,7 @@ export class Analytics {
         }
 
         this.appVersion = this.platformUtilsService.getApplicationVersion();
-        this.isFirefox = this.platformUtilsService.isFirefox();
+        this.defaultDisabled = this.platformUtilsService.isFirefox() || this.platformUtilsService.isMacAppStore();
         this.gaTrackingId = this.platformUtilsService.analyticsId();
 
         (win as any).GoogleAnalyticsObject = GaObj;
@@ -43,8 +43,7 @@ export class Analytics {
         }
 
         const disabled = await this.storageService.get<boolean>(ConstantsService.disableGaKey);
-        // Default for Firefox is disabled.
-        if ((this.isFirefox && disabled == null) || disabled != null && disabled) {
+        if ((this.defaultDisabled && disabled == null) || disabled != null && disabled) {
             return;
         }
 
