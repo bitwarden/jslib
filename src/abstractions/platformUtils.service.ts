@@ -9,6 +9,7 @@ export abstract class PlatformUtilsService {
     isOpera: () => boolean;
     isVivaldi: () => boolean;
     isSafari: () => boolean;
+    isMacAppStore: () => boolean;
     analyticsId: () => string;
     getDomain: (uriString: string) => string;
     isViewOpen: () => boolean;
