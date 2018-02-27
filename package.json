@@ -1,7 +1,7 @@
 {
   "name": "@bitwarden/jslib",
   "version": "0.0.20",
-  "description": "Common code used across bitwarden JavaScript projects.",
+  "description": "Common code used across Bitwarden JavaScript projects.",
   "keywords": [
     "bitwarden"
   ],
