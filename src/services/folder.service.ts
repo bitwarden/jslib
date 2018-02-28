@@ -67,15 +67,12 @@ export class FolderService implements FolderServiceAbstraction {
             return this.decryptedFolderCache;
         }
 
-        const noneFolder = new FolderView();
-        noneFolder.name = this.noneFolder();
-        const decFolders: FolderView[] = [noneFolder];
-
         const key = await this.cryptoService.getKey();
         if (key == null) {
             throw new Error('No key.');
         }
 
+        const decFolders: FolderView[] = [];
         const promises: Array<Promise<any>> = [];
         const folders = await this.getAll();
         folders.forEach((folder) => {
@@ -84,6 +81,11 @@ export class FolderService implements FolderServiceAbstraction {
 
         await Promise.all(promises);
         decFolders.sort(this.getLocaleSortingFunction());
+
+        const noneFolder = new FolderView();
+        noneFolder.name = this.noneFolder();
+        decFolders.push(noneFolder);
+
         this.decryptedFolderCache = decFolders;
         return this.decryptedFolderCache;
     }
@@ -164,11 +166,6 @@ export class FolderService implements FolderServiceAbstraction {
 
     private getLocaleSortingFunction(): (a: FolderView, b: FolderView) => number {
         return (a, b) => {
-            if (a.id == null) {
-                // No folder is always last
-                return Number.MAX_SAFE_INTEGER;
-            }
-
             return this.i18nService.collator ? this.i18nService.collator.compare(a.name, b.name) :
                 a.name.localeCompare(b.name);
         };
