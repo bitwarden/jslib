@@ -33,7 +33,9 @@
     "typescript": "^2.7.1"
   },
   "dependencies": {
+    "lunr": "2.1.6",
     "node-forge": "0.7.1",
+    "@types/lunr": "2.1.5",
     "@types/node-forge": "0.7.1",
     "@types/webcrypto": "0.0.28"
   }

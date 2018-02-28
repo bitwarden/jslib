@@ -1,8 +1,9 @@
+import { AuditService as AuditServiceAbstraction } from '../abstractions/audit.service';
 import { CryptoService } from '../abstractions/crypto.service';
 
 const PwnedPasswordsApi = 'https://api.pwnedpasswords.com/range/';
 
-export class AuditService {
+export class AuditService implements AuditServiceAbstraction {
     constructor(private cryptoService: CryptoService) {
     }
 

@@ -65,4 +65,12 @@ export class CipherView implements View {
     get hasFields(): boolean {
         return this.fields && this.fields.length > 0;
     }
+
+    get login_username(): string {
+        return this.login != null ? this.login.username : null;
+    }
+
+    get login_uri(): string {
+        return this.login != null ? this.login.uri : null;
+    }
 }
