@@ -31,4 +31,5 @@ export abstract class CryptoService {
     decrypt: (cipherString: CipherString, key?: SymmetricCryptoKey, outputEncoding?: string) => Promise<string>;
     decryptFromBytes: (encBuf: ArrayBuffer, key: SymmetricCryptoKey) => Promise<ArrayBuffer>;
     rsaDecrypt: (encValue: string) => Promise<string>;
+    sha1: (password: string) => Promise<string>;
 }

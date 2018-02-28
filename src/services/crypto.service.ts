@@ -452,6 +452,17 @@ export class CryptoService implements CryptoServiceAbstraction {
         return b64DecValue;
     }
 
+    async sha1(password: string): Promise<string> {
+        const hash = await Crypto.subtle.digest(
+            {
+                name: 'SHA-1',
+            },
+            UtilsService.fromUtf8ToArray(password),
+        );
+
+        return UtilsService.fromBufferToHex(hash);
+    }
+
     // Helpers
 
     private async aesEncrypt(plainValue: ArrayBuffer, key: SymmetricCryptoKey): Promise<EncryptedObject> {
