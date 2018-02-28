@@ -125,12 +125,10 @@ export class UtilsService implements UtilsServiceAbstraction {
         return decodeURIComponent(escape(encodedString));
     }
 
-    // Source: Frxstrem, https://stackoverflow.com/questions/40031688/javascript-arraybuffer-to-hex
+    // ref: https://stackoverflow.com/a/40031979/1090359
     static fromBufferToHex(buffer: ArrayBuffer): string {
-        return Array.prototype.map.call(
-            new Uint8Array(buffer),
-            (x: number) => ('00' + x.toString(16)).slice(-2),
-        ).join('');
+        const bytes = new Uint8Array(buffer);
+        return Array.prototype.map.call(bytes, (x: number) => ('00' + x.toString(16)).slice(-2)).join('');
     }
 
     static getHostname(uriString: string): string {
