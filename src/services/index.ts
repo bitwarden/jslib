@@ -1,5 +1,6 @@
 export { ApiService } from './api.service';
 export { AppIdService } from './appId.service';
+export { AuditService } from './audit.service';
 export { AuthService } from './auth.service';
 export { CipherService } from './cipher.service';
 export { CollectionService } from './collection.service';
@@ -10,6 +11,7 @@ export { EnvironmentService } from './environment.service';
 export { FolderService } from './folder.service';
 export { LockService } from './lock.service';
 export { PasswordGenerationService } from './passwordGeneration.service';
+export { SearchService } from './search.service';
 export { SettingsService } from './settings.service';
 export { StateService } from './state.service';
 export { SyncService } from './sync.service';
