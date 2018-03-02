@@ -53,7 +53,7 @@ export class SearchService implements SearchServiceAbstraction {
 
     private transformQuery(query: string) {
         if (query.indexOf('>') === 0) {
-            return query.substr(1).trimLeft();
+            return query.substr(1);
         }
         return '*' + query + '*';
     }

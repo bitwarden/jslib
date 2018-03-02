@@ -20,8 +20,8 @@ export abstract class CipherService {
     getAll: () => Promise<Cipher[]>;
     getAllDecrypted: () => Promise<CipherView[]>;
     getAllDecryptedForGrouping: (groupingId: string, folder?: boolean) => Promise<CipherView[]>;
-    getAllDecryptedForDomain: (domain: string, includeOtherTypes?: CipherType[]) => Promise<CipherView[]>;
-    getLastUsedForDomain: (domain: string) => Promise<CipherView>;
+    getAllDecryptedForUrl: (url: string, includeOtherTypes?: CipherType[]) => Promise<CipherView[]>;
+    getLastUsedForUrl: (url: string) => Promise<CipherView>;
     updateLastUsedDate: (id: string) => Promise<void>;
     saveNeverDomain: (domain: string) => Promise<void>;
     saveWithServer: (cipher: Cipher) => Promise<any>;

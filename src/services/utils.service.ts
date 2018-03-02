@@ -132,6 +132,16 @@ export class UtilsService implements UtilsServiceAbstraction {
     }
 
     static getHostname(uriString: string): string {
+        const url = UtilsService.getUrl(uriString);
+        return url != null ? url.hostname : null;
+    }
+
+    static getHost(uriString: string): string {
+        const url = UtilsService.getUrl(uriString);
+        return url != null ? url.host : null;
+    }
+
+    private static getUrl(uriString: string): URL {
         if (uriString == null) {
             return null;
         }
@@ -143,8 +153,7 @@ export class UtilsService implements UtilsServiceAbstraction {
 
         if (uriString.startsWith('http://') || uriString.startsWith('https://')) {
             try {
-                const url = new URL(uriString);
-                return url.hostname;
+                return new URL(uriString);
             } catch (e) { }
         }
 
@@ -153,6 +162,10 @@ export class UtilsService implements UtilsServiceAbstraction {
 
     getHostname(uriString: string): string {
         return UtilsService.getHostname(uriString);
+    }
+
+    getHost(uriString: string): string {
+        return UtilsService.getHost(uriString);
     }
 
     copyToClipboard(text: string, doc?: Document) {
