@@ -151,6 +151,10 @@ export class UtilsService implements UtilsServiceAbstraction {
             return null;
         }
 
+        if (uriString.indexOf('://') === -1) {
+            uriString = 'http://' + uriString;
+        }
+
         if (uriString.startsWith('http://') || uriString.startsWith('https://')) {
             try {
                 return new URL(uriString);
