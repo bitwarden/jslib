@@ -215,7 +215,7 @@ export class CipherService implements CipherServiceAbstraction {
                     switch (u.match) {
                         case null:
                         case undefined:
-                        case UriMatchType.BaseDomain:
+                        case UriMatchType.Domain:
                             if (domain != null && u.domain != null && matchingDomains.indexOf(u.domain) > -1) {
                                 return true;
                             }

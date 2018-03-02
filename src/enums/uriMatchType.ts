@@ -1,5 +1,5 @@
 export enum UriMatchType {
-    BaseDomain = 0,
+    Domain = 0,
     Host = 1,
     StartsWith = 2,
     Exact = 3,
