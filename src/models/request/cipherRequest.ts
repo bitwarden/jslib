@@ -44,7 +44,7 @@ export class CipherRequest {
                     cipher.login.uris.forEach((u) => {
                         this.login.uris.push({
                             uri: u.uri ? u.uri.encryptedString : null,
-                            match: u.match ? u.match : null,
+                            match: u.match != null ? u.match : null,
                         });
                     });
                 }

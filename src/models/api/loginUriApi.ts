@@ -6,6 +6,6 @@ export class LoginUriApi {
 
     constructor(data: any) {
         this.uri = data.Uri;
-        this.match = data.Match ? data.Match : null;
+        this.match = data.Match != null ? data.Match : null;
     }
 }
