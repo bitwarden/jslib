@@ -196,12 +196,13 @@ export class CipherService implements CipherServiceAbstraction {
         const ciphers = result[1];
 
         return ciphers.filter((cipher) => {
-            if (domain && cipher.type === CipherType.Login && cipher.login.domain &&
-                matchingDomains.indexOf(cipher.login.domain) > -1) {
-                return true;
-            } else if (includeOtherTypes && includeOtherTypes.indexOf(cipher.type) > -1) {
-                return true;
-            }
+            // TODO: uris
+            //if (domain && cipher.type === CipherType.Login && cipher.login.domain &&
+            //    matchingDomains.indexOf(cipher.login.domain) > -1) {
+            //    return true;
+            //} else if (includeOtherTypes && includeOtherTypes.indexOf(cipher.type) > -1) {
+            //    return true;
+            //}
 
             return false;
         });
