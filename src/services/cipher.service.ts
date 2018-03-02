@@ -219,24 +219,29 @@ export class CipherService implements CipherServiceAbstraction {
                             if (domain != null && u.domain != null && matchingDomains.indexOf(u.domain) > -1) {
                                 return true;
                             }
+                            break;
                         case UriMatchType.Host:
                             const urlHost = this.utilsService.getHost(url);
                             if (urlHost != null && urlHost === this.utilsService.getHost(u.uri)) {
                                 return true;
                             }
+                            break;
                         case UriMatchType.Exact:
                             if (url === u.uri) {
                                 return true;
                             }
+                            break;
                         case UriMatchType.StartsWith:
                             if (url.startsWith(u.uri)) {
                                 return true;
                             }
+                            break;
                         case UriMatchType.RegularExpression:
                             const regex = new RegExp(u.uri, 'i');
                             if (regex.test(url)) {
                                 return true;
                             }
+                            break;
                         case UriMatchType.Never:
                         default:
                             break;
