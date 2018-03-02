@@ -1,12 +1,15 @@
+import { LoginUri } from './loginUri';
+
 import { LoginData } from '../data/loginData';
 
+import { LoginUriView } from '../view/loginUriView';
 import { LoginView } from '../view/loginView';
 
 import { CipherString } from './cipherString';
 import Domain from './domain';
 
 export class Login extends Domain {
-    uri: CipherString;
+    uris: LoginUri[];
     username: CipherString;
     password: CipherString;
     totp: CipherString;
@@ -18,19 +21,34 @@ export class Login extends Domain {
         }
 
         this.buildDomainModel(this, obj, {
-            uri: null,
             username: null,
             password: null,
             totp: null,
         }, alreadyEncrypted, []);
+
+        if (obj.uris) {
+            this.uris = [];
+            obj.uris.forEach((u) => {
+                this.uris.push(new LoginUri(u, alreadyEncrypted));
+            });
+        }
     }
 
-    decrypt(orgId: string): Promise<LoginView> {
-        return this.decryptObj(new LoginView(this), {
-            uri: null,
+    async decrypt(orgId: string): Promise<LoginView> {
+        const view = await this.decryptObj(new LoginView(this), {
             username: null,
             password: null,
             totp: null,
         }, orgId);
+
+        if (this.uris != null) {
+            view.uris = [];
+            for (let i = 0; i < this.uris.length; i++) {
+                const uri = await this.uris[i].decrypt(orgId);
+                view.uris.push(uri);
+            }
+        }
+
+        return view;
     }
 }

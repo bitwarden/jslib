@@ -9,6 +9,7 @@ import Domain from '../models/domain/domain';
 import { Field } from '../models/domain/field';
 import { Identity } from '../models/domain/identity';
 import { Login } from '../models/domain/login';
+import { LoginUri } from '../models/domain/loginUri';
 import { SecureNote } from '../models/domain/secureNote';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
@@ -487,11 +488,22 @@ export class CipherService implements CipherServiceAbstraction {
             case CipherType.Login:
                 cipher.login = new Login();
                 await this.encryptObjProperty(model.login, cipher.login, {
-                    uri: null,
                     username: null,
                     password: null,
                     totp: null,
                 }, key);
+
+                if (model.login.uris != null) {
+                    cipher.login.uris = [];
+                    for (let i = 0; i < model.login.uris.length; i++) {
+                        const loginUri = new LoginUri();
+                        loginUri.match = model.login.uris[i].match;
+                        await this.encryptObjProperty(model.login.uris[i], loginUri, {
+                            uri: null,
+                        }, key);
+                        cipher.login.uris.push(loginUri);
+                    }
+                }
                 return;
             case CipherType.SecureNote:
                 cipher.secureNote = new SecureNote();

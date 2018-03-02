@@ -1,13 +1,24 @@
+import { LoginApi } from '../api/loginApi';
+import { LoginUriApi } from '../api/loginUriApi';
+
+import { LoginUriData } from './loginUriData';
+
 export class LoginData {
-    uri: string;
+    uris: LoginUriData[];
     username: string;
     password: string;
     totp: string;
 
-    constructor(data: any) {
-        this.uri = data.Uri;
-        this.username = data.Username;
-        this.password = data.Password;
-        this.totp = data.Totp;
+    constructor(data: LoginApi) {
+        this.username = data.username;
+        this.password = data.password;
+        this.totp = data.totp;
+
+        if (data.uris) {
+            this.uris = [];
+            data.uris.forEach((u) => {
+                this.uris.push(new LoginUriData(u));
+            });
+        }
     }
 }

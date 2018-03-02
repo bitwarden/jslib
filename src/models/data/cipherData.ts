@@ -40,6 +40,8 @@ export class CipherData {
         this.favorite = response.favorite;
         this.revisionDate = response.revisionDate;
         this.type = response.type;
+        this.name = response.name;
+        this.notes = response.notes;
 
         if (collectionIds != null) {
             this.collectionIds = collectionIds;
@@ -47,29 +49,26 @@ export class CipherData {
             this.collectionIds = response.collectionIds;
         }
 
-        this.name = response.data.Name;
-        this.notes = response.data.Notes;
-
         switch (this.type) {
             case CipherType.Login:
-                this.login = new LoginData(response.data);
+                this.login = new LoginData(response.login);
                 break;
             case CipherType.SecureNote:
-                this.secureNote = new SecureNoteData(response.data);
+                this.secureNote = new SecureNoteData(response.secureNote);
                 break;
             case CipherType.Card:
-                this.card = new CardData(response.data);
+                this.card = new CardData(response.card);
                 break;
             case CipherType.Identity:
-                this.identity = new IdentityData(response.data);
+                this.identity = new IdentityData(response.identity);
                 break;
             default:
                 break;
         }
 
-        if (response.data.Fields != null) {
+        if (response.fields != null) {
             this.fields = [];
-            response.data.Fields.forEach((field: any) => {
+            response.fields.forEach((field) => {
                 this.fields.push(new FieldData(field));
             });
         }

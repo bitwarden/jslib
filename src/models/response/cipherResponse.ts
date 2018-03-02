@@ -1,14 +1,26 @@
 import { AttachmentResponse } from './attachmentResponse';
 
+import { CardApi } from '../api/cardApi';
+import { FieldApi } from '../api/fieldApi';
+import { IdentityApi } from '../api/identityApi';
+import { LoginApi } from '../api/loginApi';
+import { SecureNoteApi } from '../api/secureNoteApi';
+
 export class CipherResponse {
     id: string;
     organizationId: string;
     folderId: string;
     type: number;
+    name: string;
+    notes: string;
+    fields: FieldApi[];
+    login: LoginApi;
+    card: CardApi;
+    identity: IdentityApi;
+    secureNote: SecureNoteApi;
     favorite: boolean;
     edit: boolean;
     organizationUseTotp: boolean;
-    data: any;
     revisionDate: string;
     attachments: AttachmentResponse[];
     collectionIds: string[];
@@ -18,11 +30,35 @@ export class CipherResponse {
         this.organizationId = response.OrganizationId;
         this.folderId = response.FolderId;
         this.type = response.Type;
+        this.name = response.Name;
+        this.notes = response.Notes;
         this.favorite = response.Favorite;
         this.edit = response.Edit;
         this.organizationUseTotp = response.OrganizationUseTotp;
-        this.data = response.Data;
         this.revisionDate = response.RevisionDate;
+
+        if (response.Login != null) {
+            this.login = new LoginApi(response.Login);
+        }
+
+        if (response.Card != null) {
+            this.card = new CardApi(response.Card);
+        }
+
+        if (response.Identity != null) {
+            this.identity = new IdentityApi(response.Identity);
+        }
+
+        if (response.SecureNote != null) {
+            this.secureNote = new SecureNoteApi(response.SecureNote);
+        }
+
+        if (response.Fields != null) {
+            this.fields = [];
+            response.Fields.forEach((field: any) => {
+                this.fields.push(new FieldApi(field));
+            });
+        }
 
         if (response.Attachments != null) {
             this.attachments = [];

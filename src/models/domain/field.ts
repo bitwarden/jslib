@@ -9,7 +9,7 @@ import { FieldView } from '../view/fieldView';
 
 export class Field extends Domain {
     name: CipherString;
-    vault: CipherString;
+    value: CipherString;
     type: FieldType;
 
     constructor(obj?: FieldData, alreadyEncrypted: boolean = false) {

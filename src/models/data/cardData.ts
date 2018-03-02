@@ -1,3 +1,5 @@
+import { CardApi } from '../api/cardApi';
+
 export class CardData {
     cardholderName: string;
     brand: string;
@@ -6,12 +8,12 @@ export class CardData {
     expYear: string;
     code: string;
 
-    constructor(data: any) {
-        this.cardholderName = data.CardholderName;
-        this.brand = data.Brand;
-        this.number = data.Number;
-        this.expMonth = data.ExpMonth;
-        this.expYear = data.ExpYear;
-        this.code = data.Code;
+    constructor(data: CardApi) {
+        this.cardholderName = data.cardholderName;
+        this.brand = data.brand;
+        this.number = data.number;
+        this.expMonth = data.expMonth;
+        this.expYear = data.expYear;
+        this.code = data.code;
     }
 }

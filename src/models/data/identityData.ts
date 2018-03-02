@@ -1,3 +1,5 @@
+import { IdentityApi } from '../api/identityApi';
+
 export class IdentityData {
     title: string;
     firstName: string;
@@ -18,24 +20,24 @@ export class IdentityData {
     passportNumber: string;
     licenseNumber: string;
 
-    constructor(data: any) {
-        this.title = data.Title;
-        this.firstName = data.FirstName;
-        this.middleName = data.MiddleName;
-        this.lastName = data.LastName;
-        this.address1 = data.Address1;
-        this.address2 = data.Address2;
-        this.address3 = data.Address3;
-        this.city = data.City;
-        this.state = data.State;
-        this.postalCode = data.PostalCode;
-        this.country = data.Country;
-        this.company = data.Company;
-        this.email = data.Email;
-        this.phone = data.Phone;
-        this.ssn = data.SSN;
-        this.username = data.Username;
-        this.passportNumber = data.PassportNumber;
-        this.licenseNumber = data.LicenseNumber;
+    constructor(data: IdentityApi) {
+        this.title = data.title;
+        this.firstName = data.firstName;
+        this.middleName = data.middleName;
+        this.lastName = data.lastName;
+        this.address1 = data.address1;
+        this.address2 = data.address2;
+        this.address3 = data.address3;
+        this.city = data.city;
+        this.state = data.state;
+        this.postalCode = data.postalCode;
+        this.country = data.country;
+        this.company = data.company;
+        this.email = data.email;
+        this.phone = data.phone;
+        this.ssn = data.ssn;
+        this.username = data.username;
+        this.passportNumber = data.passportNumber;
+        this.licenseNumber = data.licenseNumber;
     }
 }

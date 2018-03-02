@@ -69,8 +69,4 @@ export class CipherView implements View {
     get login_username(): string {
         return this.login != null ? this.login.username : null;
     }
-
-    get login_uri(): string {
-        return this.login != null ? this.login.uri : null;
-    }
 }

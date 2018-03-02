@@ -1,9 +1,11 @@
 import { SecureNoteType } from '../../enums/secureNoteType';
 
+import { SecureNoteApi } from '../api/secureNoteApi';
+
 export class SecureNoteData {
     type: SecureNoteType;
 
-    constructor(data: any) {
-        this.type = data.Type;
+    constructor(data: SecureNoteApi) {
+        this.type = data.type;
     }
 }

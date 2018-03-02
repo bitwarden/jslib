@@ -1,5 +1,14 @@
 import { CipherType } from '../../enums/cipherType';
 
+import { Cipher } from '../domain/cipher';
+import { Field } from '../domain/field';
+
+import { CardApi } from '../api/cardApi';
+import { FieldApi } from '../api/fieldApi';
+import { IdentityApi } from '../api/identityApi';
+import { LoginApi } from '../api/loginApi';
+import { SecureNoteApi } from '../api/secureNoteApi';
+
 export class CipherRequest {
     type: CipherType;
     folderId: string;
@@ -7,13 +16,13 @@ export class CipherRequest {
     name: string;
     notes: string;
     favorite: boolean;
-    login: any;
-    secureNote: any;
-    card: any;
-    identity: any;
-    fields: any[];
+    login: LoginApi;
+    secureNote: SecureNoteApi;
+    card: CardApi;
+    identity: IdentityApi;
+    fields: FieldApi[];
 
-    constructor(cipher: any) {
+    constructor(cipher: Cipher) {
         this.type = cipher.type;
         this.folderId = cipher.folderId;
         this.organizationId = cipher.organizationId;
@@ -24,11 +33,21 @@ export class CipherRequest {
         switch (this.type) {
             case CipherType.Login:
                 this.login = {
-                    uri: cipher.login.uri ? cipher.login.uri.encryptedString : null,
+                    uris: null,
                     username: cipher.login.username ? cipher.login.username.encryptedString : null,
                     password: cipher.login.password ? cipher.login.password.encryptedString : null,
                     totp: cipher.login.totp ? cipher.login.totp.encryptedString : null,
                 };
+
+                if (cipher.login.uris) {
+                    this.login.uris = [];
+                    cipher.login.uris.forEach((u) => {
+                        this.login.uris.push({
+                            uri: u.uri ? u.uri.encryptedString : null,
+                            match: u.match ? u.match : null,
+                        });
+                    });
+                }
                 break;
             case CipherType.SecureNote:
                 this.secureNote = {
@@ -74,7 +93,7 @@ export class CipherRequest {
 
         if (cipher.fields) {
             this.fields = [];
-            cipher.fields.forEach((field: any) => {
+            cipher.fields.forEach((field) => {
                 this.fields.push({
                     type: field.type,
                     name: field.name ? field.name.encryptedString : null,

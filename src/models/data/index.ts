@@ -6,4 +6,5 @@ export { FieldData } from './fieldData';
 export { FolderData } from './folderData';
 export { IdentityData } from './identityData';
 export { LoginData } from './loginData';
+export { LoginUriData } from './loginUriData';
 export { SecureNoteData } from './secureNoteData';

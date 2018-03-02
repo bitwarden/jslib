@@ -1,3 +1,4 @@
+import { LoginUriView } from './loginUriView';
 import { View } from './view';
 
 import { Login } from '../domain/login';
@@ -7,25 +8,16 @@ import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 export class LoginView implements View {
     username: string;
     totp: string;
+    uris: LoginUriView[];
 
     // tslint:disable
-    private _uri: string;
     private _username: string;
     private _password: string;
-    private _domain: string;
     private _maskedPassword: string;
     // tslint:enable
 
     constructor(l?: Login) {
         // ctor
-    }
-
-    get uri(): string {
-        return this._uri;
-    }
-    set uri(value: string) {
-        this._uri = value;
-        this._domain = null;
     }
 
     get password(): string {
@@ -36,21 +28,8 @@ export class LoginView implements View {
         this._maskedPassword = null;
     }
 
-    get domain(): string {
-        if (this._domain == null && this.uri != null) {
-            const containerService = (window as any).bitwardenContainerService;
-            if (containerService) {
-                const platformUtilsService: PlatformUtilsService = containerService.getPlatformUtilsService();
-                this._domain = platformUtilsService.getDomain(this.uri);
-                if (this._domain === '') {
-                    this._domain = null;
-                }
-            } else {
-                throw new Error('window.bitwardenContainerService not initialized.');
-            }
-        }
-
-        return this._domain;
+    get uri(): string {
+        return this.hasUris ? this.uris[0].uri : null;
     }
 
     get maskedPassword(): string {
@@ -68,15 +47,11 @@ export class LoginView implements View {
         return this.username;
     }
 
-    get domainOrUri(): string {
-        return this.domain != null ? this.domain : this.uri;
-    }
-
-    get isWebsite(): boolean {
-        return this.uri != null && (this.uri.indexOf('http://') === 0 || this.uri.indexOf('https://') === 0);
-    }
-
     get canLaunch(): boolean {
-        return this.uri != null && this.uri.indexOf('://') > -1;
+        return this.hasUris && this.uris[0].canLaunch;
+    }
+
+    get hasUris(): boolean {
+        return this.uris != null && this.uris.length > 0;
     }
 }
