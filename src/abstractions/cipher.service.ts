@@ -1,3 +1,5 @@
+import { CipherType } from '../enums/cipherType';
+
 import { CipherData } from '../models/data/cipherData';
 
 import { Cipher } from '../models/domain/cipher';
@@ -18,7 +20,7 @@ export abstract class CipherService {
     getAll: () => Promise<Cipher[]>;
     getAllDecrypted: () => Promise<CipherView[]>;
     getAllDecryptedForGrouping: (groupingId: string, folder?: boolean) => Promise<CipherView[]>;
-    getAllDecryptedForDomain: (domain: string, includeOtherTypes?: any[]) => Promise<CipherView[]>;
+    getAllDecryptedForDomain: (domain: string, includeOtherTypes?: CipherType[]) => Promise<CipherView[]>;
     getLastUsedForDomain: (domain: string) => Promise<CipherView>;
     updateLastUsedDate: (id: string) => Promise<void>;
     saveNeverDomain: (domain: string) => Promise<void>;

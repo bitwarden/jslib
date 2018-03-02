@@ -170,7 +170,7 @@ export class CipherService implements CipherServiceAbstraction {
         });
     }
 
-    async getAllDecryptedForDomain(domain: string, includeOtherTypes?: any[]): Promise<CipherView[]> {
+    async getAllDecryptedForDomain(domain: string, includeOtherTypes?: CipherType[]): Promise<CipherView[]> {
         if (domain == null && !includeOtherTypes) {
             return Promise.resolve([]);
         }
