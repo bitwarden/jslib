@@ -7,25 +7,16 @@ import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 export class LoginView implements View {
     username: string;
+    password: string;
     totp: string;
     uris: LoginUriView[];
 
     // tslint:disable
     private _username: string;
-    private _password: string;
-    private _maskedPassword: string;
     // tslint:enable
 
     constructor(l?: Login) {
         // ctor
-    }
-
-    get password(): string {
-        return this._password;
-    }
-    set password(value: string) {
-        this._password = value;
-        this._maskedPassword = null;
     }
 
     get uri(): string {
@@ -33,14 +24,7 @@ export class LoginView implements View {
     }
 
     get maskedPassword(): string {
-        if (this._maskedPassword == null && this.password != null) {
-            this._maskedPassword = '';
-            for (let i = 0; i < this.password.length; i++) {
-                this._maskedPassword += '•';
-            }
-        }
-
-        return this._maskedPassword;
+        return this.password != null ? '••••••••' : null;
     }
 
     get subTitle(): string {
