@@ -127,6 +127,16 @@ export class CollectionService implements CollectionServiceAbstraction {
 
     private getLocaleSortingFunction(): (a: CollectionView, b: CollectionView) => number {
         return (a, b) => {
+            if (a.name == null && b.name != null) {
+                return -1;
+            }
+            if (a.name != null && b.name == null) {
+                return 1;
+            }
+            if (a.name == null && b.name == null) {
+                return 0;
+            }
+
             return this.i18nService.collator ? this.i18nService.collator.compare(a.name, b.name) :
                 a.name.localeCompare(b.name);
         };

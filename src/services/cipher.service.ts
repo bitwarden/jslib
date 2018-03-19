@@ -481,6 +481,16 @@ export class CipherService implements CipherServiceAbstraction {
             let aName = a.name;
             let bName = b.name;
 
+            if (aName == null && bName != null) {
+                return -1;
+            }
+            if (aName != null && bName == null) {
+                return 1;
+            }
+            if (aName == null && bName == null) {
+                return 0;
+            }
+
             const result = this.i18nService.collator ? this.i18nService.collator.compare(aName, bName) :
                 aName.localeCompare(bName);
 
