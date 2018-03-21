@@ -27,7 +27,7 @@ export class ApiService implements ApiServiceAbstraction {
     deviceType: string;
     logoutCallback: Function;
 
-    constructor(private tokenService: TokenService, platformUtilsService: PlatformUtilsService,
+    constructor(private tokenService: TokenService, private platformUtilsService: PlatformUtilsService,
         logoutCallback: Function) {
         this.logoutCallback = logoutCallback;
         this.deviceType = platformUtilsService.getDevice().toString();
@@ -75,7 +75,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async postIdentityToken(request: TokenRequest): Promise<IdentityTokenResponse | IdentityTwoFactorResponse> {
         const response = await fetch(new Request(this.identityBaseUrl + '/connect/token', {
-            body: this.qsStringify(request.toIdentityToken()),
+            body: this.qsStringify(request.toIdentityToken(this.platformUtilsService.identityClientId)),
             cache: 'no-cache',
             headers: new Headers({
                 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',

@@ -18,13 +18,13 @@ export class TokenRequest {
         this.device = device != null ? device : null;
     }
 
-    toIdentityToken() {
+    toIdentityToken(clientId: string) {
         const obj: any = {
             grant_type: 'password',
             username: this.email,
             password: this.masterPasswordHash,
             scope: 'api offline_access',
-            client_id: 'browser',
+            client_id: clientId,
         };
 
         if (this.device) {

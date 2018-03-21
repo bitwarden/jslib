@@ -1,6 +1,7 @@
 import { DeviceType } from '../enums/deviceType';
 
 export abstract class PlatformUtilsService {
+    identityClientId: string;
     getDevice: () => DeviceType;
     getDeviceString: () => string;
     isFirefox: () => boolean;
