@@ -414,10 +414,11 @@ export class ApiService implements ApiServiceAbstraction {
             throw new Error();
         }
 
+        const decodedToken = this.tokenService.decodeToken();
         const response = await fetch(new Request(this.identityBaseUrl + '/connect/token', {
             body: this.qsStringify({
                 grant_type: 'refresh_token',
-                client_id: this.platformUtilsService.identityClientId,
+                client_id: decodedToken.client_id,
                 refresh_token: refreshToken,
             }),
             cache: 'no-cache',
