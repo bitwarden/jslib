@@ -56,6 +56,7 @@ export class ConstantsService {
         authenticator: 0,
         email: 1,
         remember: 5,
+        organizationDuo: 6,
     };
 
     twoFactorProviderInfo: any[];
@@ -113,6 +114,14 @@ export class ConstantsService {
                 active: true,
                 displayOrder: 4,
                 priority: 0,
+            },
+            {
+                type: 6,
+                name: 'Duo (' + i18nService.organization + ')',
+                description: i18nService.duoOrganizationDesc,
+                active: true,
+                displayOrder: -1,
+                priority: 10,
             },
         ];
     }
