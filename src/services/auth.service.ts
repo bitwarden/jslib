@@ -51,6 +51,12 @@ export const TwoFactorProviders = {
         description: null as string,
         priority: 0,
     },
+    [TwoFactorProviderType.OrganizationDuo]: {
+        type: TwoFactorProviderType.OrganizationDuo,
+        name: 'Duo (Organization)',
+        description: null as string,
+        priority: 10,
+    },
 };
 
 export class AuthService {
@@ -75,6 +81,11 @@ export class AuthService {
             this.i18nService.t('authenticatorAppDesc');
 
         TwoFactorProviders[TwoFactorProviderType.Duo].description = this.i18nService.t('duoDesc');
+
+        TwoFactorProviders[TwoFactorProviderType.OrganizationDuo].name =
+            'Duo (' + this.i18nService.t('organization') + ')';
+        TwoFactorProviders[TwoFactorProviderType.OrganizationDuo].description =
+            this.i18nService.t('duoOrganizationDesc');
 
         TwoFactorProviders[TwoFactorProviderType.U2f].name = this.i18nService.t('u2fTitle');
         TwoFactorProviders[TwoFactorProviderType.U2f].description = this.i18nService.t('u2fDesc');
