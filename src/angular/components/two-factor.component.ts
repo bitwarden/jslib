@@ -114,6 +114,10 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 break;
             case TwoFactorProviderType.Duo:
             case TwoFactorProviderType.OrganizationDuo:
+                if (this.platformUtilsService.isSafari()) {
+                    break;
+                }
+
                 setTimeout(() => {
                     (window as any).Duo.init({
                         host: params.Host,
