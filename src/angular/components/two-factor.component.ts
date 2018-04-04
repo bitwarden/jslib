@@ -1,4 +1,7 @@
-import { OnInit } from '@angular/core';
+import {
+    OnDestroy,
+    OnInit,
+} from '@angular/core';
 import { Router } from '@angular/router';
 
 import { ToasterService } from 'angular2-toaster';
@@ -12,13 +15,16 @@ import { TwoFactorEmailRequest } from '../../models/request/twoFactorEmailReques
 
 import { ApiService } from '../../abstractions/api.service';
 import { AuthService } from '../../abstractions/auth.service';
+import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { SyncService } from '../../abstractions/sync.service';
 
 import { TwoFactorProviders } from '../../services/auth.service';
 
-export class TwoFactorComponent implements OnInit {
+import { U2f } from '../../misc/u2f';
+
+export class TwoFactorComponent implements OnInit, OnDestroy {
     token: string = '';
     remember: boolean = false;
     u2fReady: boolean = false;
@@ -26,7 +32,7 @@ export class TwoFactorComponent implements OnInit {
     providerType = TwoFactorProviderType;
     selectedProviderType: TwoFactorProviderType = TwoFactorProviderType.Authenticator;
     u2fSupported: boolean = false;
-    u2f: any = null;
+    u2f: U2f = null;
     title: string = '';
     twoFactorEmail: string = null;
     formPromise: Promise<any>;
@@ -37,7 +43,8 @@ export class TwoFactorComponent implements OnInit {
     constructor(protected authService: AuthService, protected router: Router,
         protected analytics: Angulartics2, protected toasterService: ToasterService,
         protected i18nService: I18nService, protected apiService: ApiService,
-        protected platformUtilsService: PlatformUtilsService, protected syncService: SyncService) {
+        protected platformUtilsService: PlatformUtilsService, protected syncService: SyncService,
+        protected win: Window, protected environmentService: EnvironmentService) {
         this.u2fSupported = this.platformUtilsService.supportsU2f(window);
     }
 
@@ -48,8 +55,34 @@ export class TwoFactorComponent implements OnInit {
             return;
         }
 
+        if (this.win != null && this.u2fSupported) {
+            let customWebVaultUrl: string = null;
+            if (this.environmentService.baseUrl) {
+                customWebVaultUrl = this.environmentService.baseUrl;
+            }
+            else if (this.environmentService.webVaultUrl) {
+                customWebVaultUrl = this.environmentService.webVaultUrl;
+            }
+
+            this.u2f = new U2f(this.win, customWebVaultUrl, (token: string) => {
+                this.token = token;
+                this.submit();
+            }, (error: string) => {
+                this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'), error);
+            }, (info: string) => {
+                if (info === 'ready') {
+                    this.u2fReady = true;
+                }
+            });
+        }
+
         this.selectedProviderType = this.authService.getDefaultTwoFactorProvider(this.u2fSupported);
         await this.init();
+    }
+
+    ngOnDestroy(): void {
+        this.cleanupU2f();
+        this.u2f = null;
     }
 
     async init() {
@@ -58,16 +91,26 @@ export class TwoFactorComponent implements OnInit {
             return;
         }
 
+        this.cleanupU2f();
         this.title = (TwoFactorProviders as any)[this.selectedProviderType].name;
         const params = this.authService.twoFactorProviders.get(this.selectedProviderType);
         switch (this.selectedProviderType) {
             case TwoFactorProviderType.U2f:
-                if (!this.u2fSupported) {
+                if (!this.u2fSupported || this.u2f == null) {
                     break;
                 }
 
                 const challenges = JSON.parse(params.Challenges);
-                // TODO: init u2f
+                if (challenges.length > 0) {
+                    this.u2f.init({
+                        appId: challenges[0].appId,
+                        challenge: challenges[0].challenge,
+                        keys: [{
+                            version: challenges[0].version,
+                            keyHandle: challenges[0].keyHandle
+                        }],
+                    });
+                }
                 break;
             case TwoFactorProviderType.Duo:
             case TwoFactorProviderType.OrganizationDuo:
@@ -104,7 +147,11 @@ export class TwoFactorComponent implements OnInit {
         }
 
         if (this.selectedProviderType === TwoFactorProviderType.U2f) {
-            // TODO: stop U2f
+            if (this.u2f != null) {
+                this.u2f.stop();
+            } else {
+                return;
+            }
         } else if (this.selectedProviderType === TwoFactorProviderType.Email ||
             this.selectedProviderType === TwoFactorProviderType.Authenticator) {
             this.token = this.token.replace(' ', '').trim();
@@ -116,9 +163,11 @@ export class TwoFactorComponent implements OnInit {
             this.syncService.fullSync(true);
             this.analytics.eventTrack.next({ action: 'Logged In From Two-step' });
             this.router.navigate([this.successRoute]);
-        } catch {
-            if (this.selectedProviderType === TwoFactorProviderType.U2f) {
-                // TODO: start U2F again
+        } catch (e) {
+            if (this.selectedProviderType === TwoFactorProviderType.U2f && this.u2f != null) {
+                this.u2f.start();
+            } else {
+                throw e;
             }
         }
     }
@@ -143,5 +192,12 @@ export class TwoFactorComponent implements OnInit {
         } catch { }
 
         this.emailPromise = null;
+    }
+
+    private cleanupU2f() {
+        if (this.u2f != null) {
+            this.u2f.stop();
+            this.u2f.cleanup();
+        }
     }
 }
