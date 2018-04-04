@@ -1,8 +1,4 @@
-import {
-    Component,
-    EventEmitter,
-    Input,
-} from '@angular/core';
+import { Input } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { ToasterService } from 'angular2-toaster';
