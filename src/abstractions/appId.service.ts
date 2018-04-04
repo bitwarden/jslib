@@ -1,4 +1,4 @@
-export interface AppIdService {
-    getAppId(): Promise<string>;
-    getAnonymousAppId(): Promise<string>;
+export abstract class AppIdService {
+    getAppId: () => Promise<string>;
+    getAnonymousAppId: () => Promise<string>;
 }
