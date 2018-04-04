@@ -1,6 +1,6 @@
 {
   "name": "@bitwarden/jslib",
-  "version": "0.0.20",
+  "version": "0.0.0",
   "description": "Common code used across Bitwarden JavaScript projects.",
   "keywords": [
     "bitwarden"
@@ -27,16 +27,28 @@
     "pub": "npm run build && npm publish --access public"
   },
   "devDependencies": {
-    "rimraf": "^2.6.2",
-    "tslint": "^5.8.0",
-    "typedoc": "^0.9.0",
-    "typescript": "^2.7.1"
-  },
-  "dependencies": {
-    "lunr": "2.1.6",
-    "node-forge": "0.7.1",
+    "@angular/animations": "5.2.0",
+    "@angular/common": "5.2.0",
+    "@angular/compiler": "5.2.0",
+    "@angular/core": "5.2.0",
+    "@angular/forms": "5.2.0",
+    "@angular/http": "5.2.0",
+    "@angular/platform-browser": "5.2.0",
+    "@angular/platform-browser-dynamic": "5.2.0",
+    "@angular/router": "5.2.0",
+    "@angular/upgrade": "5.2.0",
     "@types/lunr": "2.1.5",
     "@types/node-forge": "0.7.1",
-    "@types/webcrypto": "0.0.28"
+    "@types/webcrypto": "0.0.28",
+    "angular2-toaster": "4.0.2",
+    "core-js": "2.4.1",
+    "lunr": "2.1.6",
+    "node-forge": "0.7.1",
+    "rimraf": "^2.6.2",
+    "rxjs": "5.5.6",
+    "tslint": "^5.8.0",
+    "typedoc": "^0.9.0",
+    "typescript": "^2.7.1",
+    "zone.js": "0.8.19"
   }
 }
