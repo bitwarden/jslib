@@ -41,6 +41,7 @@
     "@types/node-forge": "0.7.1",
     "@types/webcrypto": "0.0.28",
     "angular2-toaster": "4.0.2",
+    "angulartics2": "5.0.1",
     "core-js": "2.4.1",
     "lunr": "2.1.6",
     "node-forge": "0.7.1",
