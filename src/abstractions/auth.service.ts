@@ -6,6 +6,7 @@ export abstract class AuthService {
     email: string;
     masterPasswordHash: string;
     twoFactorProviders: Map<TwoFactorProviderType, { [key: string]: string; }>;
+    selectedTwoFactorProviderType: TwoFactorProviderType;
 
     logIn: (email: string, masterPassword: string) => Promise<AuthResult>;
     logInTwoFactor: (twoFactorProvider: TwoFactorProviderType, twoFactorToken: string,

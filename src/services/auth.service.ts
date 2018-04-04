@@ -63,6 +63,7 @@ export class AuthService {
     email: string;
     masterPasswordHash: string;
     twoFactorProviders: Map<TwoFactorProviderType, { [key: string]: string; }>;
+    selectedTwoFactorProviderType: TwoFactorProviderType = null;
 
     private key: SymmetricCryptoKey;
 
@@ -95,6 +96,7 @@ export class AuthService {
     }
 
     async logIn(email: string, masterPassword: string): Promise<AuthResult> {
+        this.selectedTwoFactorProviderType = null;
         email = email.toLowerCase();
         const key = this.cryptoService.makeKey(masterPassword, email);
         const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
@@ -115,6 +117,11 @@ export class AuthService {
     getDefaultTwoFactorProvider(u2fSupported: boolean): TwoFactorProviderType {
         if (this.twoFactorProviders == null) {
             return null;
+        }
+
+        if (this.selectedTwoFactorProviderType != null &&
+            this.twoFactorProviders.has(this.selectedTwoFactorProviderType)) {
+            return this.selectedTwoFactorProviderType;
         }
 
         let providerType: TwoFactorProviderType = null;
@@ -188,5 +195,6 @@ export class AuthService {
         this.email = null;
         this.masterPasswordHash = null;
         this.twoFactorProviders = null;
+        this.selectedTwoFactorProviderType = null;
     }
 }
