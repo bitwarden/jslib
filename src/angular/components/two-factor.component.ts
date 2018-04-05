@@ -38,6 +38,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     formPromise: Promise<any>;
     emailPromise: Promise<any>;
 
+    protected loginRoute = 'login';
     protected successRoute = 'vault';
 
     constructor(protected authService: AuthService, protected router: Router,
@@ -51,7 +52,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     async ngOnInit() {
         if (this.authService.email == null || this.authService.masterPasswordHash == null ||
             this.authService.twoFactorProviders == null) {
-            this.router.navigate(['login']);
+            this.router.navigate([this.loginRoute]);
             return;
         }
 
