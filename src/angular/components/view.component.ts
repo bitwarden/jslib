@@ -25,7 +25,7 @@ import { CipherView } from '../../models/view/cipherView';
 import { FieldView } from '../../models/view/fieldView';
 import { LoginUriView } from '../../models/view/loginUriView';
 
-export class ViewComponent implements OnChanges, OnDestroy {
+export class ViewComponent implements OnDestroy {
     @Input() cipherId: string;
     @Output() onEditCipher = new EventEmitter<CipherView>();
 
@@ -48,7 +48,11 @@ export class ViewComponent implements OnChanges, OnDestroy {
         protected i18nService: I18nService, protected analytics: Angulartics2,
         protected auditService: AuditService) { }
 
-    async ngOnChanges() {
+    ngOnDestroy() {
+        this.cleanUp();
+    }
+
+    async load() {
         this.cleanUp();
 
         const cipher = await this.cipherService.get(this.cipherId);
@@ -65,10 +69,6 @@ export class ViewComponent implements OnChanges, OnDestroy {
                 await this.totpTick();
             }, 1000);
         }
-    }
-
-    ngOnDestroy() {
-        this.cleanUp();
     }
 
     edit() {

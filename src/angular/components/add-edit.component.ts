@@ -1,7 +1,6 @@
 import {
     EventEmitter,
     Input,
-    OnChanges,
     Output,
 } from '@angular/core';
 
@@ -28,7 +27,7 @@ import { LoginUriView } from '../../models/view/loginUriView';
 import { LoginView } from '../../models/view/loginView';
 import { SecureNoteView } from '../../models/view/secureNoteView';
 
-export class AddEditComponent implements OnChanges {
+export class AddEditComponent {
     @Input() folderId: string;
     @Input() cipherId: string;
     @Input() type: CipherType;
@@ -116,7 +115,7 @@ export class AddEditComponent implements OnChanges {
         ];
     }
 
-    async ngOnChanges() {
+    async load() {
         this.editMode = this.cipherId != null;
 
         if (this.editMode) {
@@ -140,11 +139,11 @@ export class AddEditComponent implements OnChanges {
         this.folders = await this.folderService.getAllDecrypted();
     }
 
-    async submit() {
+    async submit(): Promise<boolean> {
         if (this.cipher.name == null || this.cipher.name === '') {
             this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('nameRequired'));
-            return;
+            return false;
         }
 
         const cipher = await this.cipherService.encrypt(this.cipher);
@@ -157,7 +156,10 @@ export class AddEditComponent implements OnChanges {
             this.toasterService.popAsync('success', null,
                 this.i18nService.t(this.editMode ? 'editedItem' : 'addedItem'));
             this.onSavedCipher.emit(this.cipher);
+            return true;
         } catch { }
+
+        return false;
     }
 
     addUri() {
