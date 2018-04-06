@@ -1,5 +1,3 @@
-import * as template from './password-generator.component.html';
-
 import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
 
