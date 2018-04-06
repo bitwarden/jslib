@@ -1,5 +1,3 @@
-import * as template from './icon.component.html';
-
 import {
     Component,
     Input,
@@ -15,7 +13,7 @@ import { ConstantsService } from '../../services/constants.service';
 
 @Component({
     selector: 'app-vault-icon',
-    template: template,
+    templateUrl: 'icon.component.html',
 })
 export class IconComponent implements OnChanges {
     @Input() cipher: any;
