@@ -46,7 +46,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         protected i18nService: I18nService, protected apiService: ApiService,
         protected platformUtilsService: PlatformUtilsService, protected syncService: SyncService,
         protected win: Window, protected environmentService: EnvironmentService) {
-        this.u2fSupported = this.platformUtilsService.supportsU2f(window);
+        this.u2fSupported = this.platformUtilsService.supportsU2f(win);
     }
 
     async ngOnInit() {
@@ -119,7 +119,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 }
 
                 setTimeout(() => {
-                    (window as any).Duo.init({
+                    (this.win as any).Duo.init({
                         host: params.Host,
                         sig_request: params.Signature,
                         submit_callback: async (f: HTMLFormElement) => {

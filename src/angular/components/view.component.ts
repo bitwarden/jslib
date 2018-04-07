@@ -46,7 +46,7 @@ export class ViewComponent implements OnDestroy {
         protected tokenService: TokenService, protected toasterService: ToasterService,
         protected cryptoService: CryptoService, protected platformUtilsService: PlatformUtilsService,
         protected i18nService: I18nService, protected analytics: Angulartics2,
-        protected auditService: AuditService) { }
+        protected auditService: AuditService, protected win: Window) { }
 
     ngOnDestroy() {
         this.cleanUp();
@@ -145,7 +145,7 @@ export class ViewComponent implements OnDestroy {
             const buf = await response.arrayBuffer();
             const key = await this.cryptoService.getOrgKey(this.cipher.organizationId);
             const decBuf = await this.cryptoService.decryptFromBytes(buf, key);
-            this.platformUtilsService.saveFile(window, decBuf, null, attachment.fileName);
+            this.platformUtilsService.saveFile(this.win, decBuf, null, attachment.fileName);
         } catch (e) {
             this.toasterService.popAsync('error', null, this.i18nService.t('errorOccurred'));
         }

@@ -25,7 +25,8 @@ export class TwoFactorOptionsComponent implements OnInit {
 
     constructor(protected authService: AuthService, protected router: Router,
         protected analytics: Angulartics2, protected toasterService: ToasterService,
-        protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService) { }
+        protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
+        protected win: Window) { }
 
     ngOnInit() {
         if (this.authService.twoFactorProviders.has(TwoFactorProviderType.OrganizationDuo)) {
@@ -45,7 +46,7 @@ export class TwoFactorOptionsComponent implements OnInit {
         }
 
         if (this.authService.twoFactorProviders.has(TwoFactorProviderType.U2f) &&
-            this.platformUtilsService.supportsU2f(window)) {
+            this.platformUtilsService.supportsU2f(this.win)) {
             this.providers.push(TwoFactorProviders[TwoFactorProviderType.U2f]);
         }
 
