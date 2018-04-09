@@ -17,6 +17,7 @@ import { CipherService } from '../../abstractions/cipher.service';
 import { FolderService } from '../../abstractions/folder.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
+import { StateService } from '../../abstractions/state.service';
 
 import { CardView } from '../../models/view/cardView';
 import { CipherView } from '../../models/view/cipherView';
@@ -58,7 +59,7 @@ export class AddEditComponent {
     constructor(protected cipherService: CipherService, protected folderService: FolderService,
         protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected analytics: Angulartics2, protected toasterService: ToasterService,
-        protected auditService: AuditService) {
+        protected auditService: AuditService, protected stateService: StateService) {
         this.typeOptions = [
             { name: i18nService.t('typeLogin'), value: CipherType.Login },
             { name: i18nService.t('typeCard'), value: CipherType.Card },
@@ -117,23 +118,30 @@ export class AddEditComponent {
 
     async load() {
         this.editMode = this.cipherId != null;
-
         if (this.editMode) {
             this.editMode = true;
             this.title = this.i18nService.t('editItem');
-            const cipher = await this.cipherService.get(this.cipherId);
-            this.cipher = await cipher.decrypt();
         } else {
             this.title = this.i18nService.t('addItem');
-            this.cipher = new CipherView();
-            this.cipher.folderId = this.folderId;
-            this.cipher.type = this.type == null ? CipherType.Login : this.type;
-            this.cipher.login = new LoginView();
-            this.cipher.login.uris = [new LoginUriView()];
-            this.cipher.card = new CardView();
-            this.cipher.identity = new IdentityView();
-            this.cipher.secureNote = new SecureNoteView();
-            this.cipher.secureNote.type = SecureNoteType.Generic;
+        }
+
+        this.cipher = await this.stateService.get<CipherView>('addEditCipher');
+        await this.stateService.remove('addEditCipher');
+        if (this.cipher == null) {
+            if (this.editMode) {
+                const cipher = await this.cipherService.get(this.cipherId);
+                this.cipher = await cipher.decrypt();
+            } else {
+                this.cipher = new CipherView();
+                this.cipher.folderId = this.folderId;
+                this.cipher.type = this.type == null ? CipherType.Login : this.type;
+                this.cipher.login = new LoginView();
+                this.cipher.login.uris = [new LoginUriView()];
+                this.cipher.card = new CardView();
+                this.cipher.identity = new IdentityView();
+                this.cipher.secureNote = new SecureNoteView();
+                this.cipher.secureNote.type = SecureNoteType.Generic;
+            }
         }
 
         this.folders = await this.folderService.getAllDecrypted();

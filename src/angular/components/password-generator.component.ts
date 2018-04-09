@@ -2,10 +2,8 @@ import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
 
 import {
-    ChangeDetectorRef,
     EventEmitter,
     Input,
-    NgZone,
     OnInit,
     Output,
 } from '@angular/core';
@@ -25,8 +23,7 @@ export class PasswordGeneratorComponent implements OnInit {
 
     constructor(protected passwordGenerationService: PasswordGenerationService, protected analytics: Angulartics2,
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
-        protected toasterService: ToasterService, protected ngZone: NgZone,
-        protected changeDetectorRef: ChangeDetectorRef) { }
+        protected toasterService: ToasterService) { }
 
     async ngOnInit() {
         this.options = await this.passwordGenerationService.getOptions();
@@ -115,12 +112,5 @@ export class PasswordGeneratorComponent implements OnInit {
         if (this.options.minSpecial + this.options.minNumber > this.options.length) {
             this.options.minSpecial = this.options.length - this.options.minNumber;
         }
-    }
-
-    private functionWithChangeDetection(func: Function) {
-        this.ngZone.run(async () => {
-            func();
-            this.changeDetectorRef.detectChanges();
-        });
     }
 }
