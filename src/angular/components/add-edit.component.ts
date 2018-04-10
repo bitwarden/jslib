@@ -29,7 +29,7 @@ import { LoginView } from '../../models/view/loginView';
 import { SecureNoteView } from '../../models/view/secureNoteView';
 
 export class AddEditComponent {
-    @Input() folderId: string;
+    @Input() folderId: string = null;
     @Input() cipherId: string;
     @Input() type: CipherType;
     @Output() onSavedCipher = new EventEmitter<CipherView>();
