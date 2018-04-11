@@ -218,12 +218,12 @@ export class AddEditComponent {
         this.onEditAttachments.emit(this.cipher);
     }
 
-    async delete() {
+    async delete(): Promise<boolean> {
         const confirmed = await this.platformUtilsService.showDialog(
             this.i18nService.t('deleteItemConfirmation'), this.i18nService.t('deleteItem'),
             this.i18nService.t('yes'), this.i18nService.t('no'), 'warning');
         if (!confirmed) {
-            return;
+            return false;
         }
 
         try {
@@ -233,6 +233,8 @@ export class AddEditComponent {
             this.toasterService.popAsync('success', null, this.i18nService.t('deletedItem'));
             this.onDeletedCipher.emit(this.cipher);
         } catch { }
+
+        return true;
     }
 
     async generatePassword(): Promise<boolean> {
