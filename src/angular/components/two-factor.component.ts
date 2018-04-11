@@ -107,7 +107,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                         challenge: challenges[0].challenge,
                         keys: [{
                             version: challenges[0].version,
-                            keyHandle: challenges[0].keyHandle
+                            keyHandle: challenges[0].keyHandle,
                         }],
                     });
                 }
