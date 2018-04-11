@@ -11,7 +11,8 @@ export class I18nService implements I18nServiceAbstraction {
     protected defaultMessages: any = {};
     protected localeMessages: any = {};
 
-    constructor(protected systemLanguage: string, protected localesDirectory: string) { }
+    constructor(protected systemLanguage: string, protected localesDirectory: string,
+        protected getLocalesJson: (formattedLocale: string) => Promise<any>) { }
 
     async init(locale?: string) {
         if (this.inited) {
@@ -34,10 +35,9 @@ export class I18nService implements I18nServiceAbstraction {
         }
 
         if (this.localesDirectory != null) {
-            await this.loadMessages(this.localesDirectory, this.translationLocale, this.localeMessages);
+            await this.loadMessages(this.translationLocale, this.localeMessages);
             if (this.translationLocale !== this.supportedTranslationLocales[0]) {
-                await this.loadMessages(this.localesDirectory, this.supportedTranslationLocales[0],
-                    this.defaultMessages);
+                await this.loadMessages(this.supportedTranslationLocales[0], this.defaultMessages);
             }
         }
     }
@@ -71,10 +71,9 @@ export class I18nService implements I18nServiceAbstraction {
         return result;
     }
 
-    private async loadMessages(localesDir: string, locale: string, messagesObj: any): Promise<any> {
+    private async loadMessages(locale: string, messagesObj: any): Promise<any> {
         const formattedLocale = locale.replace('-', '_');
-        const file = await fetch(localesDir + formattedLocale + '/messages.json');
-        const locales = await file.json();
+        const locales = await this.getLocalesJson(formattedLocale);
         for (const prop in locales) {
             if (!locales.hasOwnProperty(prop)) {
                 continue;
