@@ -11,10 +11,6 @@ export class LoginView implements View {
     totp: string;
     uris: LoginUriView[];
 
-    // tslint:disable
-    private _username: string;
-    // tslint:enable
-
     constructor(l?: Login) {
         // ctor
     }
