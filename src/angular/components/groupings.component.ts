@@ -35,10 +35,13 @@ export class GroupingsComponent {
 
     constructor(protected collectionService: CollectionService, protected folderService: FolderService) { }
 
-    async load() {
+    async load(setLoaded = true) {
         await this.loadFolders();
         await this.loadCollections();
-        this.loaded = true;
+
+        if (setLoaded) {
+            this.loaded = true;
+        }
     }
 
     async loadCollections() {
