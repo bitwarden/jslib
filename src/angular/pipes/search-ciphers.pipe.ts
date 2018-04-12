@@ -5,10 +5,18 @@ import {
 
 import { CipherView } from '../../models/view/cipherView';
 
+import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
+
 @Pipe({
     name: 'searchCiphers',
 })
 export class SearchCiphersPipe implements PipeTransform {
+    private onlySearchName = false;
+
+    constructor(private platformUtilsService: PlatformUtilsService) {
+        this.onlySearchName = platformUtilsService.isEdge();
+    }
+
     transform(ciphers: CipherView[], searchText: string): CipherView[] {
         if (ciphers == null || ciphers.length === 0) {
             return [];
@@ -22,6 +30,9 @@ export class SearchCiphersPipe implements PipeTransform {
         return ciphers.filter((c) => {
             if (c.name != null && c.name.toLowerCase().indexOf(searchText) > -1) {
                 return true;
+            }
+            if (this.onlySearchName) {
+                return false;
             }
             if (c.subTitle != null && c.subTitle.toLowerCase().indexOf(searchText) > -1) {
                 return true;
