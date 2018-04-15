@@ -270,14 +270,19 @@ export class CryptoService implements CryptoServiceAbstraction {
         return forge.util.encode64(hashBits);
     }
 
-    makeEncKey(key: SymmetricCryptoKey): Promise<CipherString> {
+    makeEncKey(key: SymmetricCryptoKey, mixin?: Uint8Array): Promise<CipherString> {
         const bytes = new Uint8Array(512 / 8);
         Crypto.getRandomValues(bytes);
-        return this.encrypt(bytes, key, 'raw');
+        if (mixin) {
+            for (var i = 0; i < bytes.length; i++) {
+                bytes[i] = bytes[i] ^ mixin[i % mixin.length]
+            }
+        }
+        return this.encrypt(bytes, key, 'raw', mixin);
     }
 
     async encrypt(plainValue: string | Uint8Array, key?: SymmetricCryptoKey,
-        plainValueEncoding: string = 'utf8'): Promise<CipherString> {
+        plainValueEncoding: string = 'utf8', mixin?: Uint8Array): Promise<CipherString> {
         if (!plainValue) {
             return Promise.resolve(null);
         }
@@ -289,7 +294,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             plainValueArr = plainValue as Uint8Array;
         }
 
-        const encValue = await this.aesEncrypt(plainValueArr.buffer, key);
+        const encValue = await this.aesEncrypt(plainValueArr.buffer, key, mixin);
         const iv = UtilsService.fromBufferToB64(encValue.iv.buffer);
         const ct = UtilsService.fromBufferToB64(encValue.ct.buffer);
         const mac = encValue.mac ? UtilsService.fromBufferToB64(encValue.mac.buffer) : null;
@@ -460,13 +465,20 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     // Helpers
 
-    private async aesEncrypt(plainValue: ArrayBuffer, key: SymmetricCryptoKey): Promise<EncryptedObject> {
+    private async aesEncrypt(plainValue: ArrayBuffer, key: SymmetricCryptoKey,
+                              mixin?: Uint8Array): Promise<EncryptedObject> {
         const obj = new EncryptedObject();
         obj.key = await this.getKeyForEncryption(key);
         const keyBuf = obj.key.getBuffers();
 
         obj.iv = new Uint8Array(16);
         Crypto.getRandomValues(obj.iv);
+        
+        if (mixin) {
+            for (var i = 0; i < obj.iv.length; i++) {
+                obj.iv[i] = obj.iv[i] ^ mixin[i % mixin.length]
+            }
+        }
 
         const encKey = await Subtle.importKey('raw', keyBuf.encKey, AesAlgorithm, false, ['encrypt']);
         const encValue = await Subtle.encrypt({ name: 'AES-CBC', iv: obj.iv }, encKey, plainValue);
