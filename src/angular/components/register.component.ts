@@ -1,4 +1,5 @@
 import { Router } from '@angular/router';
+import * as crypto from 'crypto';
 
 import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
@@ -70,7 +71,8 @@ export class RegisterComponent {
     private async register() {
         this.email = this.email.toLowerCase();
         const key = this.cryptoService.makeKey(this.masterPassword, this.email);
-        const encKey = await this.cryptoService.makeEncKey(key);
+        const mixin = crypto.createHmac('sha512', this.email).update(this.masterPassword).digest();
+        const encKey = await this.cryptoService.makeEncKey(key, mixin);
         const hashedPassword = await this.cryptoService.hashPassword(this.masterPassword, key);
         const request = new RegisterRequest(this.email, hashedPassword, this.hint, encKey.encryptedString);
         await this.apiService.postRegister(request);
