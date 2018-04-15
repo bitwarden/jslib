@@ -12,7 +12,9 @@ export class I18nService implements I18nServiceAbstraction {
     protected localeMessages: any = {};
 
     constructor(protected systemLanguage: string, protected localesDirectory: string,
-        protected getLocalesJson: (formattedLocale: string) => Promise<any>) { }
+        protected getLocalesJson: (formattedLocale: string) => Promise<any>) {
+        this.systemLanguage = systemLanguage.replace('_', '-');
+    }
 
     async init(locale?: string) {
         if (this.inited) {
