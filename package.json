@@ -38,6 +38,7 @@
     "@angular/router": "5.2.0",
     "@angular/upgrade": "5.2.0",
     "@types/lunr": "2.1.5",
+    "@types/node": "8.0.19",
     "@types/node-forge": "0.7.1",
     "@types/papaparse": "4.1.31",
     "@types/webcrypto": "0.0.28",
