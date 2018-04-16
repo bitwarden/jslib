@@ -1,3 +1,4 @@
 export abstract class CryptoFunctionService {
-    pbkdf2: (password: Buffer, salt: Buffer, iterations: number, length: number) => Promise<ArrayBuffer>
+    pbkdf2: (password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
+        iterations: number, length: number) => Promise<ArrayBuffer>;
 }

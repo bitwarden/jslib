@@ -3,6 +3,8 @@ import * as forge from 'node-forge';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 
+import { UtilsService } from '../services/utils.service';
+
 export class WebCryptoFunctionService implements CryptoFunctionService {
     private crypto: Crypto;
     private subtle: SubtleCrypto;
@@ -12,15 +14,35 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         this.subtle = win.crypto.subtle;
     }
 
-    async pbkdf2(password: Buffer, salt: Buffer, iterations: number, length: number): Promise<ArrayBuffer> {
-        const importedKey = await this.subtle.importKey('raw', password, { name: 'PBKDF2' },
+    async pbkdf2(password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
+        iterations: number, length: number): Promise<ArrayBuffer> {
+        if (this.platformUtilsService.isEdge()) {
+            // TODO
+            return new Uint8Array([]).buffer;
+        }
+
+        let passwordBuf: ArrayBuffer;
+        if (typeof (password) === 'string') {
+            passwordBuf = UtilsService.fromUtf8ToArray(password).buffer;
+        } else {
+            passwordBuf = password;
+        }
+
+        let saltBuf: ArrayBuffer;
+        if (typeof (salt) === 'string') {
+            saltBuf = UtilsService.fromUtf8ToArray(salt).buffer;
+        } else {
+            saltBuf = salt;
+        }
+
+        const importedKey = await this.subtle.importKey('raw', passwordBuf, { name: 'PBKDF2' },
             false, ['deriveKey', 'deriveBits']);
 
         const alg: Pbkdf2Params = {
             name: 'PBKDF2',
-            salt: salt,
+            salt: saltBuf,
             iterations: iterations,
-            hash: { name: 'SHA-256' },
+            hash: { name: algorithm === 'sha256' ? 'SHA-256' : 'SHA-512' },
         };
 
         const keyType: AesDerivedKeyParams = {
@@ -32,11 +54,21 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return await this.subtle.exportKey('raw', derivedKey);
     }
 
-    async sha1(value: Buffer): Promise<ArrayBuffer> {
+    async hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256'): Promise<ArrayBuffer> {
         if (this.platformUtilsService.isEdge()) {
-            return new Uint8Array([1]).buffer; // TODO: sha1 with forge
-        } else {
-            return await this.subtle.digest({ name: 'SHA-1' }, value);
+            // TODO
+            return new Uint8Array([]).buffer;
         }
+
+        let valueBuf: ArrayBuffer;
+        if (typeof (value) === 'string') {
+            valueBuf = UtilsService.fromUtf8ToArray(value).buffer;
+        } else {
+            valueBuf = value;
+        }
+
+        return await this.subtle.digest({
+            name: algorithm === 'sha256' ? 'SHA-256' : 'SHA-1'
+        }, valueBuf);
     }
 }
