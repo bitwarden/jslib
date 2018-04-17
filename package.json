@@ -15,7 +15,7 @@
   "scripts": {
     "prebuild": "rimraf dist/**/*",
     "build": "tsc",
-    "start": "tsc -watch",
+    "build:watch": "tsc -watch",
     "lint": "tslint src/**/*.ts || true",
     "lint:fix": "tslint src/**/*.ts --fix",
     "test": "karma start --single-run",
