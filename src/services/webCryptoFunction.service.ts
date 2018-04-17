@@ -8,15 +8,17 @@ import { UtilsService } from '../services/utils.service';
 export class WebCryptoFunctionService implements CryptoFunctionService {
     private crypto: Crypto;
     private subtle: SubtleCrypto;
+    private isEdge: boolean;
 
     constructor(private win: Window, private platformUtilsService: PlatformUtilsService) {
         this.crypto = win.crypto;
         this.subtle = win.crypto.subtle;
+        this.isEdge = platformUtilsService.isEdge();
     }
 
     async pbkdf2(password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
         iterations: number, length: number): Promise<ArrayBuffer> {
-        if (this.platformUtilsService.isEdge()) {
+        if (this.isEdge) {
             const passwordBytes = this.toForgeBytes(password);
             const saltBytes = this.toForgeBytes(salt);
             const derivedKeyBytes = (forge as any).pbkdf2(passwordBytes, saltBytes, iterations, length / 8, algorithm);
@@ -46,7 +48,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     }
 
     async hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
-        if (this.platformUtilsService.isEdge()) {
+        if (this.isEdge) {
             let md: forge.md.MessageDigest;
             if (algorithm === 'sha1') {
                 md = forge.md.sha1.create();
