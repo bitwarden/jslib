@@ -6,3 +6,4 @@ vwd.webinfo
 *.crx
 *.pem
 dist
+coverage

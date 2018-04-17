@@ -12,21 +12,36 @@
     "url": "https://github.com/bitwarden/jslib"
   },
   "license": "GPL-3.0",
-  "module": "src/index.ts",
-  "typings": "src/index.ts",
-  "files": [
-    "src",
-    "dist"
-  ],
   "scripts": {
     "prebuild": "rimraf dist/**/*",
-    "build": "tsc && typedoc --out dist/docs --target es6 --theme minimal --mode file src",
+    "build": "tsc",
     "start": "tsc -watch",
     "lint": "tslint src/**/*.ts || true",
     "lint:fix": "tslint src/**/*.ts --fix",
-    "pub": "npm run build && npm publish --access public"
+    "test": "karma start --single-run",
+    "test:watch": "karma start"
   },
   "devDependencies": {
+    "@types/jasmine": "^2.8.2",
+    "@types/lunr": "2.1.5",
+    "@types/node": "8.0.19",
+    "@types/node-forge": "0.7.1",
+    "@types/papaparse": "4.1.31",
+    "@types/webcrypto": "0.0.28",
+    "jasmine-core": "^2.8.0",
+    "jasmine-spec-reporter": "^4.2.1",
+    "karma": "^1.7.1",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-cli": "^1.0.1",
+    "karma-coverage-istanbul-reporter": "^1.3.0",
+    "karma-jasmine": "^1.1.0",
+    "karma-jasmine-html-reporter": "^0.2.2",
+    "karma-typescript": "^3.0.8",
+    "rimraf": "^2.6.2",
+    "tslint": "^5.8.0",
+    "typescript": "^2.7.1"
+  },
+  "dependencies": {
     "@angular/animations": "5.2.0",
     "@angular/common": "5.2.0",
     "@angular/compiler": "5.2.0",
@@ -37,21 +52,12 @@
     "@angular/platform-browser-dynamic": "5.2.0",
     "@angular/router": "5.2.0",
     "@angular/upgrade": "5.2.0",
-    "@types/lunr": "2.1.5",
-    "@types/node": "8.0.19",
-    "@types/node-forge": "0.7.1",
-    "@types/papaparse": "4.1.31",
-    "@types/webcrypto": "0.0.28",
     "angular2-toaster": "4.0.2",
     "angulartics2": "5.0.1",
     "core-js": "2.4.1",
     "lunr": "2.1.6",
     "node-forge": "0.7.1",
-    "rimraf": "^2.6.2",
     "rxjs": "5.5.6",
-    "tslint": "^5.8.0",
-    "typedoc": "^0.9.0",
-    "typescript": "^2.7.1",
     "zone.js": "0.8.19"
   }
 }
