@@ -5,20 +5,8 @@ import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 export class NodeCryptoFunctionService implements CryptoFunctionService {
     async pbkdf2(password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
         iterations: number, length: number): Promise<ArrayBuffer> {
-        let nodePassword: string | Buffer;
-        if (typeof (password) === 'string') {
-            nodePassword = password;
-        } else {
-            nodePassword = Buffer.from(new Uint8Array(password) as any);
-        }
-
-        let nodeSalt: string | Buffer;
-        if (typeof (salt) === 'string') {
-            nodeSalt = salt;
-        } else {
-            nodeSalt = Buffer.from(new Uint8Array(salt) as any);
-        }
-
+        const nodePassword = this.toNodeValue(password);
+        const nodeSalt = this.toNodeValue(salt);
         return new Promise<ArrayBuffer>((resolve, reject) => {
             crypto.pbkdf2(nodePassword, nodeSalt, iterations, length, algorithm, (error, key) => {
                 if (error != null) {
@@ -28,5 +16,22 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
                 }
             });
         });
+    }
+
+    async hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
+        const nodeValue = this.toNodeValue(value);
+        const hash = crypto.createHash(algorithm);
+        hash.update(nodeValue);
+        return hash.digest().buffer;
+    }
+
+    private toNodeValue(value: string | ArrayBuffer): string | Buffer {
+        let nodeValue: string | Buffer;
+        if (typeof (value) === 'string') {
+            nodeValue = value;
+        } else {
+            nodeValue = Buffer.from(new Uint8Array(value) as any);
+        }
+        return nodeValue;
     }
 }

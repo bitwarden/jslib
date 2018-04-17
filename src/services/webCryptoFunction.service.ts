@@ -17,23 +17,14 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     async pbkdf2(password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
         iterations: number, length: number): Promise<ArrayBuffer> {
         if (this.platformUtilsService.isEdge()) {
-            // TODO
-            return new Uint8Array([]).buffer;
+            const passwordBytes = this.toForgeBytes(password);
+            const saltBytes = this.toForgeBytes(salt);
+            const derivedKeyBytes = (forge as any).pbkdf2(passwordBytes, saltBytes, iterations, length / 8, algorithm);
+            return this.fromForgeBytesToBuf(derivedKeyBytes);
         }
 
-        let passwordBuf: ArrayBuffer;
-        if (typeof (password) === 'string') {
-            passwordBuf = UtilsService.fromUtf8ToArray(password).buffer;
-        } else {
-            passwordBuf = password;
-        }
-
-        let saltBuf: ArrayBuffer;
-        if (typeof (salt) === 'string') {
-            saltBuf = UtilsService.fromUtf8ToArray(salt).buffer;
-        } else {
-            saltBuf = salt;
-        }
+        const passwordBuf = this.toBuf(password);
+        const saltBuf = this.toBuf(salt);
 
         const importedKey = await this.subtle.importKey('raw', passwordBuf, { name: 'PBKDF2' },
             false, ['deriveKey', 'deriveBits']);
@@ -54,21 +45,51 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return await this.subtle.exportKey('raw', derivedKey);
     }
 
-    async hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256'): Promise<ArrayBuffer> {
+    async hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
         if (this.platformUtilsService.isEdge()) {
-            // TODO
-            return new Uint8Array([]).buffer;
+            let md: forge.md.MessageDigest;
+            if (algorithm === 'sha1') {
+                md = forge.md.sha1.create();
+            } else if (algorithm === 'sha256') {
+                md = forge.md.sha256.create();
+            } else {
+                md = (forge as any).md.sha512.create();
+            }
+
+            const valueBytes = this.toForgeBytes(value);
+            md.update(valueBytes, 'raw');
+            return this.fromForgeBytesToBuf(md.digest().data);
         }
 
-        let valueBuf: ArrayBuffer;
-        if (typeof (value) === 'string') {
-            valueBuf = UtilsService.fromUtf8ToArray(value).buffer;
-        } else {
-            valueBuf = value;
-        }
-
+        const valueBuf = this.toBuf(value);
         return await this.subtle.digest({
-            name: algorithm === 'sha256' ? 'SHA-256' : 'SHA-1'
+            name: algorithm === 'sha1' ? 'SHA-1' : algorithm === 'sha256' ? 'SHA-256' : 'SHA-512'
         }, valueBuf);
+    }
+
+    private toBuf(value: string | ArrayBuffer): ArrayBuffer {
+        let buf: ArrayBuffer;
+        if (typeof (value) === 'string') {
+            buf = UtilsService.fromUtf8ToArray(value).buffer;
+        } else {
+            buf = value;
+        }
+        return buf;
+    }
+
+    private toForgeBytes(value: string | ArrayBuffer): string {
+        let bytes: string;
+        if (typeof (value) === 'string') {
+            bytes = forge.util.encodeUtf8(value);
+        } else {
+            const value64 = UtilsService.fromBufferToB64(value);
+            bytes = forge.util.encode64(value64);
+        }
+        return bytes;
+    }
+
+    private fromForgeBytesToBuf(byteString: string): ArrayBuffer {
+        const b64 = forge.util.decode64(byteString);
+        return UtilsService.fromB64ToArray(b64).buffer;
     }
 }
