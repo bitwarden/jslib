@@ -58,7 +58,8 @@ module.exports = function(config) {
                 module: 'CommonJS'
             },
             bundlerOptions: {
-                entrypoints: /\.spec\.ts$/
+                entrypoints: /\.spec\.ts$/,
+                sourceMap: true
             }
         },
     })

@@ -83,13 +83,13 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
             bytes = forge.util.encodeUtf8(value);
         } else {
             const value64 = UtilsService.fromBufferToB64(value);
-            bytes = forge.util.encode64(value64);
+            bytes = forge.util.decode64(value64);
         }
         return bytes;
     }
 
     private fromForgeBytesToBuf(byteString: string): ArrayBuffer {
-        const b64 = forge.util.decode64(byteString);
+        const b64 = forge.util.encode64(byteString);
         return UtilsService.fromB64ToArray(b64).buffer;
     }
 }
