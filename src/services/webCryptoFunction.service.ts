@@ -35,7 +35,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
             name: 'PBKDF2',
             salt: saltBuf,
             iterations: iterations,
-            hash: { name: algorithm === 'sha256' ? 'SHA-256' : 'SHA-512' },
+            hash: { name: this.toWebCryptoAlgorithm(algorithm) },
         };
 
         const keyType: AesDerivedKeyParams = {
@@ -65,8 +65,27 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
 
         const valueBuf = this.toBuf(value);
         return await this.subtle.digest({
-            name: algorithm === 'sha1' ? 'SHA-1' : algorithm === 'sha256' ? 'SHA-256' : 'SHA-512'
+            name: this.toWebCryptoAlgorithm(algorithm)
         }, valueBuf);
+    }
+
+    async hmac(value: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
+        if (this.isEdge) {
+            const valueBytes = this.toForgeBytes(value);
+            const keyBytes = this.toForgeBytes(key);
+            const hmac = (forge as any).hmac.create();
+            hmac.start(algorithm, keyBytes);
+            hmac.update(valueBytes);
+            return this.fromForgeBytesToBuf(hmac.digest().getBytes());
+        }
+
+        const signingAlgorithm = {
+            name: 'HMAC',
+            hash: { name: this.toWebCryptoAlgorithm(algorithm) },
+        };
+
+        const importedKey = await this.subtle.importKey('raw', key, signingAlgorithm, false, ['sign']);
+        return await this.subtle.sign(signingAlgorithm, importedKey, value);
     }
 
     private toBuf(value: string | ArrayBuffer): ArrayBuffer {
@@ -93,5 +112,9 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     private fromForgeBytesToBuf(byteString: string): ArrayBuffer {
         const b64 = forge.util.encode64(byteString);
         return UtilsService.fromB64ToArray(b64).buffer;
+    }
+
+    private toWebCryptoAlgorithm(algorithm: 'sha1' | 'sha256' | 'sha512'): string {
+        return algorithm === 'sha1' ? 'SHA-1' : algorithm === 'sha256' ? 'SHA-256' : 'SHA-512';
     }
 }

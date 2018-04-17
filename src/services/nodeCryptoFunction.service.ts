@@ -25,6 +25,10 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         return hash.digest().buffer;
     }
 
+    async hmac(value: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
+        return new Uint8Array([]).buffer;
+    }
+
     private toNodeValue(value: string | ArrayBuffer): string | Buffer {
         let nodeValue: string | Buffer;
         if (typeof (value) === 'string') {

@@ -47,6 +47,21 @@ describe('WebCrypto Function Service', () => {
         testHash(true, 'sha256', regular256Hash, utf8256Hash, unicode256Hash);
         testHash(true, 'sha512', regular512Hash, utf8512Hash, unicode512Hash);
     });
+
+    describe('hmac', () => {
+        const sha1Mac = '4d4c223f95dc577b665ec4ccbcb680b80a397038';
+        const sha256Mac = '6be3caa84922e12aaaaa2f16c40d44433bb081ef323db584eb616333ab4e874f';
+        const sha512Mac = '21910e341fa12106ca35758a2285374509326c9fbe0bd64e7b99c898f841dc948c58ce66d3504d8883c' +
+            '5ea7817a0b7c5d4d9b00364ccd214669131fc17fe4aca';
+
+        testHmac(false, 'sha1', sha1Mac);
+        testHmac(false, 'sha256', sha256Mac);
+        testHmac(false, 'sha512', sha512Mac);
+
+        testHmac(true, 'sha1', sha1Mac);
+        testHmac(true, 'sha256', sha256Mac);
+        testHmac(true, 'sha512', sha512Mac);
+    });
 });
 
 function testPbkdf2ValidKey(edge: boolean, algorithm: 'sha256' | 'sha512', regularKey: string,
@@ -114,6 +129,15 @@ function testHash(edge: boolean, algorithm: 'sha1' | 'sha256' | 'sha512', regula
         const webCryptoFunctionService = getWebCryptoFunctionService(edge);
         const hash = await webCryptoFunctionService.hash(UtilsService.fromUtf8ToArray(regularValue).buffer, algorithm);
         expect(UtilsService.fromBufferToHex(hash)).toBe(regularHash);
+    });
+}
+
+function testHmac(edge: boolean, algorithm: 'sha1' | 'sha256' | 'sha512', mac: string) {
+    it('should create valid ' + algorithm + ' hmac' + (edge ? ' for edge' : ''), async () => {
+        const webCryptoFunctionService = getWebCryptoFunctionService(edge);
+        const computedMac = await webCryptoFunctionService.hmac(UtilsService.fromUtf8ToArray('SignMe!!').buffer,
+            UtilsService.fromUtf8ToArray('secretkey').buffer, algorithm);
+        expect(UtilsService.fromBufferToHex(computedMac)).toBe(mac);
     });
 }
 
