@@ -67,7 +67,7 @@ describe('WebCrypto Function Service', () => {
     });
 
     describe('aesEncrypt', () => {
-        it('should successfully aes 256 encrypt data', async () => {
+        it('should successfully aes encrypt data', async () => {
             const webCryptoFunctionService = getWebCryptoFunctionService();
             const iv = makeStaticByteArray(16);
             const key = makeStaticByteArray(32);
@@ -78,7 +78,7 @@ describe('WebCrypto Function Service', () => {
     });
 
     describe('aesDecryptSmall', () => {
-        it('should successfully aes 256 decrypt data', async () => {
+        it('should successfully aes decrypt data', async () => {
             const webCryptoFunctionService = getWebCryptoFunctionService();
             const iv = makeStaticByteArray(16);
             const key = makeStaticByteArray(32);
@@ -89,7 +89,7 @@ describe('WebCrypto Function Service', () => {
     });
 
     describe('aesDecryptLarge', () => {
-        it('should successfully aes 256 decrypt data', async () => {
+        it('should successfully aes decrypt data', async () => {
             const webCryptoFunctionService = getWebCryptoFunctionService();
             const iv = makeStaticByteArray(16);
             const key = makeStaticByteArray(32);
