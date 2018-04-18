@@ -20,10 +20,10 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         iterations: number): Promise<ArrayBuffer> {
         if (this.isEdge) {
             const len = algorithm === 'sha256' ? 32 : 64;
-            const passwordBytes = this.toForgeBytes(password);
-            const saltBytes = this.toForgeBytes(salt);
+            const passwordBytes = this.toByteString(password);
+            const saltBytes = this.toByteString(salt);
             const derivedKeyBytes = (forge as any).pbkdf2(passwordBytes, saltBytes, iterations, len, algorithm);
-            return this.fromForgeBytesToBuf(derivedKeyBytes);
+            return this.fromByteStringToBuf(derivedKeyBytes);
         }
 
         const len = algorithm === 'sha256' ? 256 : 512;
@@ -52,9 +52,9 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
                 md = (forge as any).md.sha512.create();
             }
 
-            const valueBytes = this.toForgeBytes(value);
+            const valueBytes = this.toByteString(value);
             md.update(valueBytes, 'raw');
-            return this.fromForgeBytesToBuf(md.digest().data);
+            return this.fromByteStringToBuf(md.digest().data);
         }
 
         const valueBuf = this.toBuf(value);
@@ -63,12 +63,12 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
 
     async hmac(value: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
         if (this.isEdge) {
-            const valueBytes = this.toForgeBytes(value);
-            const keyBytes = this.toForgeBytes(key);
+            const valueBytes = this.toByteString(value);
+            const keyBytes = this.toByteString(key);
             const hmac = (forge as any).hmac.create();
             hmac.start(algorithm, keyBytes);
             hmac.update(valueBytes);
-            return this.fromForgeBytesToBuf(hmac.digest().getBytes());
+            return this.fromByteStringToBuf(hmac.digest().getBytes());
         }
 
         const signingAlgorithm = {
@@ -90,20 +90,22 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return buf;
     }
 
-    private toForgeBytes(value: string | ArrayBuffer): string {
+    private toByteString(value: string | ArrayBuffer): string {
         let bytes: string;
         if (typeof (value) === 'string') {
             bytes = forge.util.encodeUtf8(value);
         } else {
-            const value64 = UtilsService.fromBufferToB64(value);
-            bytes = forge.util.decode64(value64);
+            bytes = String.fromCharCode.apply(null, new Uint8Array(value));
         }
         return bytes;
     }
 
-    private fromForgeBytesToBuf(byteString: string): ArrayBuffer {
-        const b64 = forge.util.encode64(byteString);
-        return UtilsService.fromB64ToArray(b64).buffer;
+    private fromByteStringToBuf(byteString: string): ArrayBuffer {
+        const arr = new Uint8Array(byteString.length);
+        for (let i = 0; i < byteString.length; i++) {
+            arr[i] = byteString.charCodeAt(i);
+        }
+        return arr.buffer;
     }
 
     private toWebCryptoAlgorithm(algorithm: 'sha1' | 'sha256' | 'sha512'): string {
