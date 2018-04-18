@@ -4,7 +4,8 @@ import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 
 export class NodeCryptoFunctionService implements CryptoFunctionService {
     async pbkdf2(password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
-        iterations: number, length: number): Promise<ArrayBuffer> {
+        iterations: number): Promise<ArrayBuffer> {
+        const len = algorithm === 'sha256' ? 256 : 512;
         const nodePassword = this.toNodeValue(password);
         const nodeSalt = this.toNodeValue(salt);
         return new Promise<ArrayBuffer>((resolve, reject) => {

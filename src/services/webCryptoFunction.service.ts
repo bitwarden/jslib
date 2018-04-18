@@ -17,19 +17,18 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     }
 
     async pbkdf2(password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
-        iterations: number, length: number): Promise<ArrayBuffer> {
+        iterations: number): Promise<ArrayBuffer> {
         if (this.isEdge) {
+            const len = algorithm === 'sha256' ? 32 : 64;
             const passwordBytes = this.toForgeBytes(password);
             const saltBytes = this.toForgeBytes(salt);
-            const derivedKeyBytes = (forge as any).pbkdf2(passwordBytes, saltBytes, iterations, length / 8, algorithm);
+            const derivedKeyBytes = (forge as any).pbkdf2(passwordBytes, saltBytes, iterations, len, algorithm);
             return this.fromForgeBytesToBuf(derivedKeyBytes);
         }
 
+        const len = algorithm === 'sha256' ? 256 : 512;
         const passwordBuf = this.toBuf(password);
         const saltBuf = this.toBuf(salt);
-
-        const importedKey = await this.subtle.importKey('raw', passwordBuf, { name: 'PBKDF2' },
-            false, ['deriveKey', 'deriveBits']);
 
         const alg: Pbkdf2Params = {
             name: 'PBKDF2',
@@ -38,13 +37,8 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
             hash: { name: this.toWebCryptoAlgorithm(algorithm) },
         };
 
-        const keyType: AesDerivedKeyParams = {
-            name: 'AES-CBC',
-            length: length,
-        };
-
-        const derivedKey = await this.subtle.deriveKey(alg, importedKey, keyType, true, ['encrypt', 'decrypt']);
-        return await this.subtle.exportKey('raw', derivedKey);
+        const impKey = await this.subtle.importKey('raw', passwordBuf, { name: 'PBKDF2' }, false, ['deriveBits']);
+        return await window.crypto.subtle.deriveBits(alg, impKey, len);
     }
 
     async hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
@@ -64,9 +58,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         }
 
         const valueBuf = this.toBuf(value);
-        return await this.subtle.digest({
-            name: this.toWebCryptoAlgorithm(algorithm)
-        }, valueBuf);
+        return await this.subtle.digest({ name: this.toWebCryptoAlgorithm(algorithm) }, valueBuf);
     }
 
     async hmac(value: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
@@ -84,8 +76,8 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
             hash: { name: this.toWebCryptoAlgorithm(algorithm) },
         };
 
-        const importedKey = await this.subtle.importKey('raw', key, signingAlgorithm, false, ['sign']);
-        return await this.subtle.sign(signingAlgorithm, importedKey, value);
+        const impKey = await this.subtle.importKey('raw', key, signingAlgorithm, false, ['sign']);
+        return await this.subtle.sign(signingAlgorithm, impKey, value);
     }
 
     private toBuf(value: string | ArrayBuffer): ArrayBuffer {
