@@ -79,6 +79,6 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
     }
 
     private toNodeBuffer(value: ArrayBuffer): Buffer {
-        return Buffer.from(new Uint8Array(value) as any);;
+        return Buffer.from(new Uint8Array(value) as any);
     }
 }

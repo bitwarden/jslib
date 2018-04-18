@@ -59,4 +59,3 @@ function makeStaticByteArray(length: number) {
     }
     return arr;
 }
-

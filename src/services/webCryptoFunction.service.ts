@@ -19,14 +19,14 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     async pbkdf2(password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
         iterations: number): Promise<ArrayBuffer> {
         if (this.isEdge) {
-            const len = algorithm === 'sha256' ? 32 : 64;
+            const forgeLen = algorithm === 'sha256' ? 32 : 64;
             const passwordBytes = this.toByteString(password);
             const saltBytes = this.toByteString(salt);
-            const derivedKeyBytes = (forge as any).pbkdf2(passwordBytes, saltBytes, iterations, len, algorithm);
+            const derivedKeyBytes = (forge as any).pbkdf2(passwordBytes, saltBytes, iterations, forgeLen, algorithm);
             return this.fromByteStringToBuf(derivedKeyBytes);
         }
 
-        const len = algorithm === 'sha256' ? 256 : 512;
+        const wcLen = algorithm === 'sha256' ? 256 : 512;
         const passwordBuf = this.toBuf(password);
         const saltBuf = this.toBuf(salt);
 
@@ -38,7 +38,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         };
 
         const impKey = await this.subtle.importKey('raw', passwordBuf, { name: 'PBKDF2' }, false, ['deriveBits']);
-        return await window.crypto.subtle.deriveBits(alg, impKey, len);
+        return await window.crypto.subtle.deriveBits(alg, impKey, wcLen);
     }
 
     async hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
