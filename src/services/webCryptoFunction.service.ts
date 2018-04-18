@@ -80,6 +80,34 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return await this.subtle.sign(signingAlgorithm, impKey, value);
     }
 
+    async aesEncrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
+        const impKey = await this.subtle.importKey('raw', key, { name: 'AES-CBC' }, false, ['encrypt']);
+        return await this.subtle.encrypt({ name: 'AES-CBC', iv: iv }, impKey, data);
+    }
+
+    async aesDecryptSmall(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
+        const dataBytes = this.toByteString(data);
+        const ivBytes = this.toByteString(iv);
+        const keyBytes = this.toByteString(key);
+        const dataBuffer = (forge as any).util.createBuffer(dataBytes);
+        const decipher = (forge as any).cipher.createDecipher('AES-CBC', keyBytes);
+        decipher.start({ iv: ivBytes });
+        decipher.update(dataBuffer);
+        decipher.finish();
+        return this.fromByteStringToBuf(decipher.output.getBytes());
+    }
+
+    async aesDecryptLarge(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
+        const impKey = await this.subtle.importKey('raw', key, { name: 'AES-CBC' }, false, ['decrypt']);
+        return await this.subtle.decrypt({ name: 'AES-CBC', iv: iv }, impKey, data);
+    }
+
+    randomBytes(length: number): ArrayBuffer {
+        const arr = new Uint8Array(length);
+        this.crypto.getRandomValues(arr);
+        return arr.buffer;
+    }
+
     private toBuf(value: string | ArrayBuffer): ArrayBuffer {
         let buf: ArrayBuffer;
         if (typeof (value) === 'string') {

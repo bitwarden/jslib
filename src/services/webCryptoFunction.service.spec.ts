@@ -65,6 +65,54 @@ describe('WebCrypto Function Service', () => {
         testHmac(true, 'sha256', sha256Mac);
         testHmac(true, 'sha512', sha512Mac);
     });
+
+    describe('aesEncrypt', () => {
+        it('should successfully aes 256 encrypt data', async () => {
+            const webCryptoFunctionService = getWebCryptoFunctionService();
+            const iv = makeStaticByteArray(16);
+            const key = makeStaticByteArray(32);
+            const data = UtilsService.fromUtf8ToArray('EncryptMe!');
+            const encValue = await webCryptoFunctionService.aesEncrypt(data.buffer, iv.buffer, key.buffer);
+            expect(UtilsService.fromBufferToB64(encValue)).toBe('ByUF8vhyX4ddU9gcooznwA==');
+        });
+    });
+
+    describe('aesDecryptSmall', () => {
+        it('should successfully aes 256 decrypt data', async () => {
+            const webCryptoFunctionService = getWebCryptoFunctionService();
+            const iv = makeStaticByteArray(16);
+            const key = makeStaticByteArray(32);
+            const data = UtilsService.fromB64ToArray('ByUF8vhyX4ddU9gcooznwA==');
+            const decValue = await webCryptoFunctionService.aesDecryptSmall(data.buffer, iv.buffer, key.buffer);
+            expect(UtilsService.fromBufferToUtf8(decValue)).toBe('EncryptMe!');
+        });
+    });
+
+    describe('aesDecryptLarge', () => {
+        it('should successfully aes 256 decrypt data', async () => {
+            const webCryptoFunctionService = getWebCryptoFunctionService();
+            const iv = makeStaticByteArray(16);
+            const key = makeStaticByteArray(32);
+            const data = UtilsService.fromB64ToArray('ByUF8vhyX4ddU9gcooznwA==');
+            const decValue = await webCryptoFunctionService.aesDecryptLarge(data.buffer, iv.buffer, key.buffer);
+            expect(UtilsService.fromBufferToUtf8(decValue)).toBe('EncryptMe!');
+        });
+    });
+
+    describe('randomBytes', () => {
+        it('should make a value of the correct length', async () => {
+            const webCryptoFunctionService = getWebCryptoFunctionService();
+            const randomData = await webCryptoFunctionService.randomBytes(16);
+            expect(randomData.byteLength).toBe(16);
+        });
+
+        it('should not make the same value twice', async () => {
+            const webCryptoFunctionService = getWebCryptoFunctionService();
+            const randomData = await webCryptoFunctionService.randomBytes(16);
+            const randomData2 = await webCryptoFunctionService.randomBytes(16);
+            expect(randomData.byteLength === randomData2.byteLength && randomData !== randomData2).toBeTruthy();
+        });
+    });
 });
 
 function testPbkdf2(edge: boolean, algorithm: 'sha256' | 'sha512', regularKey: string,
@@ -147,6 +195,14 @@ function testHmac(edge: boolean, algorithm: 'sha1' | 'sha256' | 'sha512', mac: s
 function getWebCryptoFunctionService(edge = false) {
     const platformUtilsService = new BrowserPlatformUtilsService(edge);
     return new WebCryptoFunctionService(window, platformUtilsService);
+}
+
+function makeStaticByteArray(length: number) {
+    const arr = new Uint8Array(length);
+    for (let i = 0; i < length; i++) {
+        arr[i] = i;
+    }
+    return arr;
 }
 
 class BrowserPlatformUtilsService implements PlatformUtilsService {
