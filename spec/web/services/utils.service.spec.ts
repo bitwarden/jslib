@@ -1,4 +1,4 @@
-import { UtilsService } from './utils.service';
+import { UtilsService } from '../../../src/services/utils.service';
 
 describe('Utils Service', () => {
     describe('getHostname', () => {

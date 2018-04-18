@@ -1,10 +1,10 @@
-import { DeviceType } from '../enums/deviceType';
+import { DeviceType } from '../../../src/enums/deviceType';
 
-import { PlatformUtilsService } from '../abstractions/platformUtils.service';
+import { PlatformUtilsService } from '../../../src/abstractions/platformUtils.service';
 
-import { WebCryptoFunctionService } from './webCryptoFunction.service';
+import { WebCryptoFunctionService } from '../../../src/services/webCryptoFunction.service';
 
-import { UtilsService } from './utils.service';
+import { UtilsService } from '../../../src/services/utils.service';
 
 describe('WebCrypto Function Service', () => {
     describe('pbkdf2', () => {

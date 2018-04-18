@@ -1,7 +1,7 @@
 module.exports = function(config) {
     config.set({
         // base path that will be used to resolve all patterns (eg. files, exclude)
-        basePath: '',
+        basePath: '../../',
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
@@ -9,6 +9,8 @@ module.exports = function(config) {
 
         // list of files / patterns to load in the browser
         files: [
+            'spec/common/**/*.ts',
+            'spec/web/**/*.ts',
             'src/abstractions/**/*.ts',
             'src/enums/**/*.ts',
             'src/models/**/*.ts',
@@ -54,9 +56,6 @@ module.exports = function(config) {
 
         karmaTypescriptConfig: {
             tsconfig: './tsconfig.json',
-            compilerOptions: {
-                module: 'CommonJS'
-            },
             bundlerOptions: {
                 entrypoints: /\.spec\.ts$/,
                 sourceMap: true
