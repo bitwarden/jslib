@@ -13,9 +13,9 @@
   },
   "license": "GPL-3.0",
   "scripts": {
-    "prebuild": "rimraf dist/**/*",
-    "build": "tsc",
-    "build:watch": "tsc -watch",
+    "clean": "rimraf dist/**/*",
+    "build": "npm run clean && tsc",
+    "build:watch": "npm run clean && tsc -watch",
     "lint": "tslint src/**/*.ts spec/**/*.ts || true",
     "lint:fix": "tslint src/**/*.ts spec/**/*.ts --fix",
     "test": "karma start ./spec/support/karma.conf.js --single-run",
