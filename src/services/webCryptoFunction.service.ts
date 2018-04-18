@@ -102,10 +102,10 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return await this.subtle.decrypt({ name: 'AES-CBC', iv: iv }, impKey, data);
     }
 
-    randomBytes(length: number): ArrayBuffer {
+    randomBytes(length: number): Promise<ArrayBuffer> {
         const arr = new Uint8Array(length);
         this.crypto.getRandomValues(arr);
-        return arr.buffer;
+        return Promise.resolve(arr.buffer);
     }
 
     private toBuf(value: string | ArrayBuffer): ArrayBuffer {

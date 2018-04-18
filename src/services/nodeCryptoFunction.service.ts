@@ -3,7 +3,7 @@ import * as crypto from 'crypto';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 
 export class NodeCryptoFunctionService implements CryptoFunctionService {
-    async pbkdf2(password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
+    pbkdf2(password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
         iterations: number): Promise<ArrayBuffer> {
         const len = algorithm === 'sha256' ? 256 : 512;
         const nodePassword = this.toNodeValue(password);
@@ -19,15 +19,53 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         });
     }
 
-    async hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
+    hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
         const nodeValue = this.toNodeValue(value);
         const hash = crypto.createHash(algorithm);
         hash.update(nodeValue);
-        return hash.digest().buffer;
+        return Promise.resolve(hash.digest().buffer);
     }
 
-    async hmac(value: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
-        return new Uint8Array([]).buffer;
+    hmac(value: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
+        const nodeValue = this.toNodeBuffer(value);
+        const nodeKey = this.toNodeBuffer(value);
+        const hmac = crypto.createHmac(algorithm, nodeKey);
+        hmac.update(nodeValue);
+        return Promise.resolve(hmac.digest().buffer);
+    }
+
+    aesEncrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
+        const nodeData = this.toNodeBuffer(data);
+        const nodeIv = this.toNodeBuffer(iv);
+        const nodeKey = this.toNodeBuffer(key);
+        const cipher = crypto.createCipheriv('aes-256-cbc', nodeKey, nodeIv);
+        const encBuf = Buffer.concat([cipher.update(nodeData), cipher.final()]);
+        return Promise.resolve(encBuf.buffer);
+    }
+
+    aesDecryptSmall(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
+        return this.aesDecryptLarge(data, iv, key);
+    }
+
+    aesDecryptLarge(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
+        const nodeData = this.toNodeBuffer(data);
+        const nodeIv = this.toNodeBuffer(iv);
+        const nodeKey = this.toNodeBuffer(key);
+        const decipher = crypto.createDecipheriv('aes-256-cbc', nodeKey, nodeIv);
+        const decBuf = Buffer.concat([decipher.update(nodeData), decipher.final()]);
+        return Promise.resolve(decBuf.buffer);
+    }
+
+    randomBytes(length: number): Promise<ArrayBuffer> {
+        return new Promise<ArrayBuffer>((resolve, reject) => {
+            crypto.randomBytes(length, (error, bytes) => {
+                if (error != null) {
+                    reject(error);
+                } else {
+                    resolve(bytes.buffer);
+                }
+            });
+        });
     }
 
     private toNodeValue(value: string | ArrayBuffer): string | Buffer {
@@ -35,8 +73,12 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         if (typeof (value) === 'string') {
             nodeValue = value;
         } else {
-            nodeValue = Buffer.from(new Uint8Array(value) as any);
+            nodeValue = this.toNodeBuffer(value);
         }
         return nodeValue;
+    }
+
+    private toNodeBuffer(value: ArrayBuffer): Buffer {
+        return Buffer.from(new Uint8Array(value) as any);;
     }
 }
