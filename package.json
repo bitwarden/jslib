@@ -21,7 +21,7 @@
     "test": "karma start ./spec/support/karma.conf.js --single-run",
     "test:watch": "karma start ./spec/support/karma.conf.js",
     "test:node": "npm run build && jasmine",
-    "test:node:watch": "npm run build:watch & nodemon -w ./dist jasmine"
+    "test:node:watch": "concurrently -k -n \"TSC,Node\" -c \"yellow,cyan\" \"npm run build:watch\" \"nodemon -w ./dist --delay 500ms --exec jasmine\""
   },
   "devDependencies": {
     "@types/jasmine": "^2.8.2",
@@ -30,6 +30,7 @@
     "@types/node-forge": "0.7.1",
     "@types/papaparse": "4.1.31",
     "@types/webcrypto": "0.0.28",
+    "concurrently": "3.5.1",
     "jasmine": "^3.1.0",
     "jasmine-ts-console-reporter": "^3.1.1",
     "jasmine-core": "^2.8.0",
