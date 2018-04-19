@@ -14,7 +14,7 @@ export class PasswordGeneratorHistoryComponent implements OnInit {
 
     constructor(protected passwordGenerationService: PasswordGenerationService, protected analytics: Angulartics2,
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
-        protected toasterService: ToasterService) { }
+        protected toasterService: ToasterService, private win: Window) { }
 
     async ngOnInit() {
         this.history = await this.passwordGenerationService.getHistory();
@@ -27,7 +27,8 @@ export class PasswordGeneratorHistoryComponent implements OnInit {
 
     copy(password: string) {
         this.analytics.eventTrack.next({ action: 'Copied Historical Password' });
-        this.platformUtilsService.copyToClipboard(password);
+        const copyOptions = this.win != null ? { doc: this.win.document } : null;
+        this.platformUtilsService.copyToClipboard(password, copyOptions);
         this.toasterService.popAsync('info', null, this.i18nService.t('valueCopied', this.i18nService.t('password')));
     }
 }

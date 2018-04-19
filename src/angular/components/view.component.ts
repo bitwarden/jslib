@@ -116,7 +116,8 @@ export class ViewComponent implements OnDestroy {
         }
 
         this.analytics.eventTrack.next({ action: 'Copied ' + aType });
-        this.platformUtilsService.copyToClipboard(value);
+        const copyOptions = this.win != null ? { doc: this.win.document } : null;
+        this.platformUtilsService.copyToClipboard(value, copyOptions);
         this.toasterService.popAsync('info', null,
             this.i18nService.t('valueCopied', this.i18nService.t(typeI18nKey)));
     }
