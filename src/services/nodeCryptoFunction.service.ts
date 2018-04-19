@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import * as constants from 'constants';
 
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 
@@ -56,6 +57,20 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         return Promise.resolve(decBuf.buffer);
     }
 
+    rsaDecrypt(data: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256'): Promise<ArrayBuffer> {
+        if (algorithm !== 'sha1') {
+            throw new Error('only sha1 is supported on this platform.');
+        }
+
+        const nodeData = this.toNodeBuffer(data);
+        const rsaKey: crypto.RsaPrivateKey = {
+            key: this.toPem(key),
+            padding: constants.RSA_PKCS1_OAEP_PADDING,
+        };
+        const decBuf = crypto.publicDecrypt(rsaKey, nodeData);
+        return Promise.resolve(decBuf.buffer);
+    }
+
     randomBytes(length: number): Promise<ArrayBuffer> {
         return new Promise<ArrayBuffer>((resolve, reject) => {
             crypto.randomBytes(length, (error, bytes) => {
@@ -80,5 +95,10 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
 
     private toNodeBuffer(value: ArrayBuffer): Buffer {
         return Buffer.from(new Uint8Array(value) as any);
+    }
+
+    private toPem(key: ArrayBuffer): string {
+        const b64Key = ''; // TODO: key to b84
+        return '-----BEGIN PRIVATE KEY-----\n' + b64Key + '\n-----END PRIVATE KEY-----';
     }
 }

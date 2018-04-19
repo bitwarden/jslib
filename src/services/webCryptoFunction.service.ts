@@ -30,7 +30,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         const passwordBuf = this.toBuf(password);
         const saltBuf = this.toBuf(salt);
 
-        const alg: Pbkdf2Params = {
+        const pbkdf2Params: Pbkdf2Params = {
             name: 'PBKDF2',
             salt: saltBuf,
             iterations: iterations,
@@ -38,7 +38,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         };
 
         const impKey = await this.subtle.importKey('raw', passwordBuf, { name: 'PBKDF2' }, false, ['deriveBits']);
-        return await window.crypto.subtle.deriveBits(alg, impKey, wcLen);
+        return await window.crypto.subtle.deriveBits(pbkdf2Params, impKey, wcLen);
     }
 
     async hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
@@ -100,6 +100,17 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     async aesDecryptLarge(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
         const impKey = await this.subtle.importKey('raw', key, { name: 'AES-CBC' }, false, ['decrypt']);
         return await this.subtle.decrypt({ name: 'AES-CBC', iv: iv }, impKey, data);
+    }
+
+    async rsaDecrypt(data: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256'): Promise<ArrayBuffer> {
+        // Note: Edge browser requires that we specify name and hash for both key import and decrypt.
+        // We cannot use the proper types here.
+        const rsaParams = {
+            name: 'RSA-OAEP',
+            hash: { name: this.toWebCryptoAlgorithm(algorithm) },
+        };
+        const impKey = await this.subtle.importKey('pkcs8', key, rsaParams, false, ['decrypt']);
+        return await this.subtle.decrypt(rsaParams, impKey, data);
     }
 
     randomBytes(length: number): Promise<ArrayBuffer> {
