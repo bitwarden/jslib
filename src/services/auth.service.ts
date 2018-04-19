@@ -9,8 +9,6 @@ import { TokenRequest } from '../models/request/tokenRequest';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 
-import { ConstantsService } from '../services/constants.service';
-
 import { ApiService } from '../abstractions/api.service';
 import { AppIdService } from '../abstractions/appId.service';
 import { CryptoService } from '../abstractions/crypto.service';
@@ -69,8 +67,7 @@ export class AuthService {
 
     constructor(private cryptoService: CryptoService, private apiService: ApiService, private userService: UserService,
         private tokenService: TokenService, private appIdService: AppIdService, private i18nService: I18nService,
-        private platformUtilsService: PlatformUtilsService, private constantsService: ConstantsService,
-        private messagingService: MessagingService) {
+        private platformUtilsService: PlatformUtilsService, private messagingService: MessagingService) {
     }
 
     init() {
@@ -152,7 +149,7 @@ export class AuthService {
             request = new TokenRequest(email, hashedPassword, twoFactorProvider, twoFactorToken, remember,
                 deviceRequest);
         } else if (storedTwoFactorToken != null) {
-            request = new TokenRequest(email, hashedPassword, this.constantsService.twoFactorProvider.remember,
+            request = new TokenRequest(email, hashedPassword, TwoFactorProviderType.Remember,
                 storedTwoFactorToken, false, deviceRequest);
         } else {
             request = new TokenRequest(email, hashedPassword, null, null, false, deviceRequest);
