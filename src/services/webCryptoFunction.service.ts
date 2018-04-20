@@ -23,7 +23,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
             const passwordBytes = this.toByteString(password);
             const saltBytes = this.toByteString(salt);
             const derivedKeyBytes = (forge as any).pbkdf2(passwordBytes, saltBytes, iterations, forgeLen, algorithm);
-            return this.fromByteStringToBuf(derivedKeyBytes);
+            return Utils.fromByteStringToArray(derivedKeyBytes).buffer;
         }
 
         const wcLen = algorithm === 'sha256' ? 256 : 512;
@@ -54,7 +54,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
 
             const valueBytes = this.toByteString(value);
             md.update(valueBytes, 'raw');
-            return this.fromByteStringToBuf(md.digest().data);
+            return Utils.fromByteStringToArray(md.digest().data).buffer;
         }
 
         const valueBuf = this.toBuf(value);
@@ -68,7 +68,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
             const hmac = (forge as any).hmac.create();
             hmac.start(algorithm, keyBytes);
             hmac.update(valueBytes);
-            return this.fromByteStringToBuf(hmac.digest().getBytes());
+            return Utils.fromByteStringToArray(hmac.digest().getBytes()).buffer;
         }
 
         const signingAlgorithm = {
@@ -94,7 +94,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         decipher.start({ iv: ivBytes });
         decipher.update(dataBuffer);
         decipher.finish();
-        return this.fromByteStringToBuf(decipher.output.getBytes());
+        return Utils.fromByteStringToArray(decipher.output.getBytes()).buffer;
     }
 
     async aesDecryptLarge(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
@@ -102,14 +102,25 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return await this.subtle.decrypt({ name: 'AES-CBC', iv: iv }, impKey, data);
     }
 
-    async rsaDecrypt(data: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256'): Promise<ArrayBuffer> {
+    async rsaEncrypt(data: ArrayBuffer, publicKey: ArrayBuffer, algorithm: 'sha1' | 'sha256'): Promise<ArrayBuffer> {
         // Note: Edge browser requires that we specify name and hash for both key import and decrypt.
         // We cannot use the proper types here.
         const rsaParams = {
             name: 'RSA-OAEP',
             hash: { name: this.toWebCryptoAlgorithm(algorithm) },
         };
-        const impKey = await this.subtle.importKey('pkcs8', key, rsaParams, false, ['decrypt']);
+        const impKey = await this.subtle.importKey('spki', publicKey, rsaParams, false, ['encrypt']);
+        return await this.subtle.encrypt(rsaParams, impKey, data);
+    }
+
+    async rsaDecrypt(data: ArrayBuffer, privateKey: ArrayBuffer, algorithm: 'sha1' | 'sha256'): Promise<ArrayBuffer> {
+        // Note: Edge browser requires that we specify name and hash for both key import and decrypt.
+        // We cannot use the proper types here.
+        const rsaParams = {
+            name: 'RSA-OAEP',
+            hash: { name: this.toWebCryptoAlgorithm(algorithm) },
+        };
+        const impKey = await this.subtle.importKey('pkcs8', privateKey, rsaParams, false, ['decrypt']);
         return await this.subtle.decrypt(rsaParams, impKey, data);
     }
 
@@ -134,17 +145,9 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         if (typeof (value) === 'string') {
             bytes = forge.util.encodeUtf8(value);
         } else {
-            bytes = String.fromCharCode.apply(null, new Uint8Array(value));
+            bytes = Utils.fromBufferToByteString(value);
         }
         return bytes;
-    }
-
-    private fromByteStringToBuf(byteString: string): ArrayBuffer {
-        const arr = new Uint8Array(byteString.length);
-        for (let i = 0; i < byteString.length; i++) {
-            arr[i] = byteString.charCodeAt(i);
-        }
-        return arr.buffer;
     }
 
     private toWebCryptoAlgorithm(algorithm: 'sha1' | 'sha256' | 'sha512'): string {

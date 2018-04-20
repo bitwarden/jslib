@@ -1,7 +1,10 @@
 import * as constants from 'constants';
 import * as crypto from 'crypto';
+import * as forge from 'node-forge';
 
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
+
+import { Utils } from '../misc/utils';
 
 export class NodeCryptoFunctionService implements CryptoFunctionService {
     pbkdf2(password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
@@ -57,18 +60,32 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         return Promise.resolve(this.toArrayBuffer(decBuf));
     }
 
-    rsaDecrypt(data: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256'): Promise<ArrayBuffer> {
-        if (algorithm !== 'sha1') {
-            throw new Error('only sha1 is supported on this platform.');
+    rsaEncrypt(data: ArrayBuffer, publicKey: ArrayBuffer, algorithm: 'sha1' | 'sha256'): Promise<ArrayBuffer> {
+        let md: forge.md.MessageDigest;
+        if (algorithm === 'sha256') {
+            md = forge.md.sha256.create();
+        } else {
+            md = forge.md.sha1.create();
         }
 
-        const nodeData = this.toNodeBuffer(data);
-        const rsaKey: crypto.RsaPrivateKey = {
-            key: this.toPem(key),
-            padding: constants.RSA_PKCS1_OAEP_PADDING,
-        };
-        const decBuf = crypto.publicDecrypt(rsaKey, nodeData);
-        return Promise.resolve(this.toArrayBuffer(decBuf));
+        const dataBytes = Utils.fromBufferToByteString(data);
+        const key = this.toForgePublicKey(publicKey);
+        const decBytes: string = key.encrypt(dataBytes, 'RSA-OAEP', { md: md });
+        return Promise.resolve(Utils.fromByteStringToArray(decBytes).buffer);
+    }
+
+    rsaDecrypt(data: ArrayBuffer, privateKey: ArrayBuffer, algorithm: 'sha1' | 'sha256'): Promise<ArrayBuffer> {
+        let md: forge.md.MessageDigest;
+        if (algorithm === 'sha256') {
+            md = forge.md.sha256.create();
+        } else {
+            md = forge.md.sha1.create();
+        }
+
+        const dataBytes = Utils.fromBufferToByteString(data);
+        const key = this.toForgePrivateKey(privateKey);
+        const decBytes: string = key.decrypt(dataBytes, 'RSA-OAEP', { md: md });
+        return Promise.resolve(Utils.fromByteStringToArray(decBytes).buffer);
     }
 
     randomBytes(length: number): Promise<ArrayBuffer> {
@@ -101,8 +118,15 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         return new Uint8Array(buf).buffer;
     }
 
-    private toPem(key: ArrayBuffer): string {
-        const b64Key = ''; // TODO: key to b84
-        return '-----BEGIN PRIVATE KEY-----\n' + b64Key + '\n-----END PRIVATE KEY-----';
+    private toForgePrivateKey(key: ArrayBuffer): any {
+        const byteString = Utils.fromBufferToByteString(key);
+        const asn1 = forge.asn1.fromDer(byteString);
+        return (forge as any).pki.privateKeyFromAsn1(asn1);
+    }
+
+    private toForgePublicKey(key: ArrayBuffer): any {
+        const byteString = Utils.fromBufferToByteString(key);
+        const asn1 = forge.asn1.fromDer(byteString);
+        return (forge as any).pki.publicKeyFromAsn1(asn1);
     }
 }

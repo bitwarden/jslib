@@ -39,6 +39,14 @@ export class Utils {
         }
     }
 
+    static fromByteStringToArray(str: string): Uint8Array {
+        const arr = new Uint8Array(str.length);
+        for (let i = 0; i < str.length; i++) {
+            arr[i] = str.charCodeAt(i);
+        }
+        return arr;
+    }
+
     static fromBufferToB64(buffer: ArrayBuffer): string {
         if (Utils.isNode) {
             return new Buffer(buffer).toString('base64');
@@ -60,6 +68,10 @@ export class Utils {
             const encodedString = String.fromCharCode.apply(null, bytes);
             return decodeURIComponent(escape(encodedString));
         }
+    }
+
+    static fromBufferToByteString(buffer: ArrayBuffer): string {
+        return String.fromCharCode.apply(null, new Uint8Array(buffer));
     }
 
     // ref: https://stackoverflow.com/a/40031979/1090359
