@@ -1,6 +1,6 @@
 import { NodeCryptoFunctionService } from '../../../src/services/nodeCryptoFunction.service';
 
-import { UtilsService } from '../../../src/services/utils.service';
+import { Utils } from '../../../src/misc/utils';
 
 describe('NodeCrypto Function Service', () => {
     describe('aesEncrypt', () => {
@@ -8,9 +8,9 @@ describe('NodeCrypto Function Service', () => {
             const nodeCryptoFunctionService = new NodeCryptoFunctionService();
             const iv = makeStaticByteArray(16);
             const key = makeStaticByteArray(32);
-            const data = UtilsService.fromUtf8ToArray('EncryptMe!');
+            const data = Utils.fromUtf8ToArray('EncryptMe!');
             const encValue = await nodeCryptoFunctionService.aesEncrypt(data.buffer, iv.buffer, key.buffer);
-            expect(UtilsService.fromBufferToB64(encValue)).toBe('ByUF8vhyX4ddU9gcooznwA==');
+            expect(Utils.fromBufferToB64(encValue)).toBe('ByUF8vhyX4ddU9gcooznwA==');
         });
     });
 
@@ -19,9 +19,9 @@ describe('NodeCrypto Function Service', () => {
             const nodeCryptoFunctionService = new NodeCryptoFunctionService();
             const iv = makeStaticByteArray(16);
             const key = makeStaticByteArray(32);
-            const data = UtilsService.fromB64ToArray('ByUF8vhyX4ddU9gcooznwA==');
-            const decValue = await nodeCryptoFunctionService.aesDecryptLarge(data.buffer, iv.buffer, key.buffer);
-            expect(UtilsService.fromBufferToUtf8(decValue)).toBe('EncryptMe!');
+            const data = Utils.fromB64ToArray('ByUF8vhyX4ddU9gcooznwA==');
+            const decValue = await nodeCryptoFunctionService.aesDecryptSmall(data.buffer, iv.buffer, key.buffer);
+            expect(Utils.fromBufferToUtf8(decValue)).toBe('EncryptMe!');
         });
     });
 
@@ -30,9 +30,9 @@ describe('NodeCrypto Function Service', () => {
             const nodeCryptoFunctionService = new NodeCryptoFunctionService();
             const iv = makeStaticByteArray(16);
             const key = makeStaticByteArray(32);
-            const data = UtilsService.fromB64ToArray('ByUF8vhyX4ddU9gcooznwA==');
+            const data = Utils.fromB64ToArray('ByUF8vhyX4ddU9gcooznwA==');
             const decValue = await nodeCryptoFunctionService.aesDecryptLarge(data.buffer, iv.buffer, key.buffer);
-            expect(UtilsService.fromBufferToUtf8(decValue)).toBe('EncryptMe!');
+            expect(Utils.fromBufferToUtf8(decValue)).toBe('EncryptMe!');
         });
     });
 

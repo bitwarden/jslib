@@ -3,7 +3,7 @@ import * as forge from 'node-forge';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 
-import { UtilsService } from '../services/utils.service';
+import { Utils } from '../misc/utils';
 
 export class WebCryptoFunctionService implements CryptoFunctionService {
     private crypto: Crypto;
@@ -122,7 +122,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     private toBuf(value: string | ArrayBuffer): ArrayBuffer {
         let buf: ArrayBuffer;
         if (typeof (value) === 'string') {
-            buf = UtilsService.fromUtf8ToArray(value).buffer;
+            buf = Utils.fromUtf8ToArray(value).buffer;
         } else {
             buf = value;
         }
