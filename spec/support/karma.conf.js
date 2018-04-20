@@ -14,6 +14,7 @@ module.exports = function(config) {
             'src/abstractions/**/*.ts',
             'src/enums/**/*.ts',
             'src/models/**/*.ts',
+            'src/misc/**/*.ts',
             'src/services/**/*.ts'
         ],
 
