@@ -1,3 +1,5 @@
+import * as TypeMoq from 'typemoq';
+
 import { DeviceType } from '../../../src/enums/deviceType';
 
 import { PlatformUtilsService } from '../../../src/abstractions/platformUtils.service';
@@ -265,8 +267,9 @@ function testHmac(edge: boolean, algorithm: 'sha1' | 'sha256' | 'sha512', mac: s
 }
 
 function getWebCryptoFunctionService(edge = false) {
-    const platformUtilsService = new BrowserPlatformUtilsService(edge);
-    return new WebCryptoFunctionService(window, platformUtilsService);
+    const platformUtilsMock = TypeMoq.Mock.ofType<PlatformUtilsService>(PlatformUtilsServiceMock);
+    platformUtilsMock.setup((x) => x.isEdge()).returns(() => edge);
+    return new WebCryptoFunctionService(window, platformUtilsMock.object);
 }
 
 function makeStaticByteArray(length: number) {
@@ -277,31 +280,6 @@ function makeStaticByteArray(length: number) {
     return arr;
 }
 
-class BrowserPlatformUtilsService implements PlatformUtilsService {
-    identityClientId: string;
-    getDevice: () => DeviceType;
-    getDeviceString: () => string;
-    isFirefox: () => boolean;
-    isChrome: () => boolean;
-    isOpera: () => boolean;
-    isVivaldi: () => boolean;
-    isSafari: () => boolean;
-    isMacAppStore: () => boolean;
-    analyticsId: () => string;
-    getDomain: (uriString: string) => string;
-    isViewOpen: () => boolean;
-    launchUri: (uri: string, options?: any) => void;
-    saveFile: (win: Window, blobData: any, blobOptions: any, fileName: string) => void;
-    getApplicationVersion: () => string;
-    supportsU2f: (win: Window) => boolean;
-    showDialog: (text: string, title?: string, confirmText?: string, cancelText?: string,
-        type?: string) => Promise<boolean>;
-    isDev: () => boolean;
-    copyToClipboard: (text: string, options?: any) => void;
-
-    constructor(private edge: boolean) { }
-
-    isEdge() {
-        return this.edge;
-    }
+class PlatformUtilsServiceMock extends PlatformUtilsService {
+    isEdge = () => false;
 }

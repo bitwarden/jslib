@@ -45,6 +45,7 @@
     "nodemon": "^1.17.3",
     "rimraf": "^2.6.2",
     "tslint": "^5.8.0",
+    "typemoq": "^2.1.0",
     "typescript": "^2.7.1"
   },
   "dependencies": {
