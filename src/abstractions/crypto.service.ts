@@ -30,5 +30,4 @@ export abstract class CryptoService {
     decrypt: (cipherString: CipherString, key?: SymmetricCryptoKey) => Promise<ArrayBuffer>;
     decryptToUtf8: (cipherString: CipherString, key?: SymmetricCryptoKey) => Promise<string>;
     decryptFromBytes: (encBuf: ArrayBuffer, key: SymmetricCryptoKey) => Promise<ArrayBuffer>;
-    sha1: (password: string) => Promise<string>;
 }

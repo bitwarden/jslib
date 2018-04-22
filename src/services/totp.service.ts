@@ -1,23 +1,20 @@
 import { ConstantsService } from './constants.service';
 
+import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 import { StorageService } from '../abstractions/storage.service';
 import { TotpService as TotpServiceAbstraction } from '../abstractions/totp.service';
 
+import { Utils } from '../misc/utils';
+
 const b32Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 
-const TotpAlgorithm = {
-    name: 'HMAC',
-    hash: { name: 'SHA-1' },
-};
-
 export class TotpService implements TotpServiceAbstraction {
-    constructor(private storageService: StorageService) {
-    }
+    constructor(private storageService: StorageService, private cryptoFunctionService: CryptoFunctionService) {}
 
     async getCode(keyb32: string): Promise<string> {
         const epoch = Math.round(new Date().getTime() / 1000.0);
         const timeHex = this.leftpad(this.dec2hex(Math.floor(epoch / 30)), 16, '0');
-        const timeBytes = this.hex2bytes(timeHex);
+        const timeBytes = Utils.fromHexToArray(timeHex);
         const keyBytes = this.b32tobytes(keyb32);
 
         if (!keyBytes.length || !timeBytes.length) {
@@ -57,26 +54,6 @@ export class TotpService implements TotpServiceAbstraction {
         return parseInt(s, 16);
     }
 
-    private hex2bytes(s: string): Uint8Array {
-        const bytes = new Uint8Array(s.length / 2);
-        for (let i = 0; i < s.length; i += 2) {
-            bytes[i / 2] = parseInt(s.substr(i, 2), 16);
-        }
-        return bytes;
-    }
-
-    private buff2hex(buff: ArrayBuffer): string {
-        const bytes = new Uint8Array(buff);
-        const hex: string[] = [];
-        bytes.forEach((b) => {
-            // tslint:disable-next-line
-            hex.push((b >>> 4).toString(16));
-            // tslint:disable-next-line
-            hex.push((b & 0xF).toString(16));
-        });
-        return hex.join('');
-    }
-
     private b32tohex(s: string): string {
         s = s.toUpperCase();
         let cleanedInput = '';
@@ -107,12 +84,11 @@ export class TotpService implements TotpServiceAbstraction {
     }
 
     private b32tobytes(s: string): Uint8Array {
-        return this.hex2bytes(this.b32tohex(s));
+        return Utils.fromHexToArray(this.b32tohex(s));
     }
 
     private async sign(keyBytes: Uint8Array, timeBytes: Uint8Array) {
-        const key = await window.crypto.subtle.importKey('raw', keyBytes, TotpAlgorithm, false, ['sign']);
-        const signature = await window.crypto.subtle.sign(TotpAlgorithm, key, timeBytes);
-        return this.buff2hex(signature);
+        const signature = await this.cryptoFunctionService.hmac(timeBytes.buffer, keyBytes.buffer, 'sha1');
+        return Utils.fromBufferToHex(signature);
     }
 }

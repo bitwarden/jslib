@@ -26,6 +26,18 @@ export class Utils {
         }
     }
 
+    static fromHexToArray(str: string): Uint8Array {
+        if (Utils.isNode) {
+            return new Uint8Array(Buffer.from(str, 'hex'));
+        } else {
+            const bytes = new Uint8Array(str.length / 2);
+            for (let i = 0; i < str.length; i += 2) {
+                bytes[i / 2] = parseInt(str.substr(i, 2), 16);
+            }
+            return bytes;
+        }
+    }
+
     static fromUtf8ToArray(str: string): Uint8Array {
         if (Utils.isNode) {
             return new Uint8Array(Buffer.from(str, 'utf8'));

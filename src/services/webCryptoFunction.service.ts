@@ -38,7 +38,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         };
 
         const impKey = await this.subtle.importKey('raw', passwordBuf, { name: 'PBKDF2' }, false, ['deriveBits']);
-        return await window.crypto.subtle.deriveBits(pbkdf2Params, impKey, wcLen);
+        return await this.subtle.deriveBits(pbkdf2Params, impKey, wcLen);
     }
 
     async hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {

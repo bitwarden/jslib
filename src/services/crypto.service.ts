@@ -355,11 +355,6 @@ export class CryptoService implements CryptoServiceAbstraction {
             macBytes != null ? macBytes.buffer : null, key);
     }
 
-    async sha1(password: string): Promise<string> {
-        const hash = await this.cryptoFunctionService.hash(password, 'sha1');
-        return Utils.fromBufferToHex(hash);
-    }
-
     // Helpers
 
     private async aesEncrypt(plainValue: ArrayBuffer, key: SymmetricCryptoKey): Promise<EncryptedObject> {
