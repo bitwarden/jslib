@@ -1,80 +1,45 @@
-import * as forge from 'node-forge';
-
 import { EncryptionType } from '../../enums/encryptionType';
 
-import { SymmetricCryptoKeyBuffers } from './symmetricCryptoKeyBuffers';
-
-import { UtilsService } from '../../services/utils.service';
+import { Utils } from '../../misc/utils';
 
 export class SymmetricCryptoKey {
-    key: string;
-    keyB64: string;
-    encKey: string;
-    macKey: string;
+    key: ArrayBuffer;
+    encKey?: ArrayBuffer;
+    macKey?: ArrayBuffer;
     encType: EncryptionType;
-    keyBuf: SymmetricCryptoKeyBuffers;
 
-    constructor(keyBytes: string, b64KeyBytes?: boolean, encType?: EncryptionType) {
-        if (b64KeyBytes) {
-            keyBytes = forge.util.decode64(keyBytes);
+    keyB64: string;
+
+    constructor(key: ArrayBuffer, encType?: EncryptionType) {
+        if (key == null) {
+            throw new Error('Must provide key');
         }
-
-        if (!keyBytes) {
-            throw new Error('Must provide keyBytes');
-        }
-
-        const buffer = (forge as any).util.createBuffer(keyBytes);
-        if (!buffer || buffer.length() === 0) {
-            throw new Error('Couldn\'t make buffer');
-        }
-
-        const bufferLength: number = buffer.length();
 
         if (encType == null) {
-            if (bufferLength === 32) {
+            if (key.byteLength === 32) {
                 encType = EncryptionType.AesCbc256_B64;
-            } else if (bufferLength === 64) {
+            } else if (key.byteLength === 64) {
                 encType = EncryptionType.AesCbc256_HmacSha256_B64;
             } else {
                 throw new Error('Unable to determine encType.');
             }
         }
 
-        this.key = keyBytes;
-        this.keyB64 = forge.util.encode64(keyBytes);
+        this.key = key;
+        this.keyB64 = Utils.fromBufferToB64(key);
         this.encType = encType;
 
-        if (encType === EncryptionType.AesCbc256_B64 && bufferLength === 32) {
-            this.encKey = keyBytes;
+        if (encType === EncryptionType.AesCbc256_B64 && key.byteLength === 32) {
+            this.encKey = key;
             this.macKey = null;
-        } else if (encType === EncryptionType.AesCbc128_HmacSha256_B64 && bufferLength === 32) {
-            this.encKey = buffer.getBytes(16); // first half
-            this.macKey = buffer.getBytes(16); // second half
-        } else if (encType === EncryptionType.AesCbc256_HmacSha256_B64 && bufferLength === 64) {
-            this.encKey = buffer.getBytes(32); // first half
-            this.macKey = buffer.getBytes(32); // second half
+        } else if (encType === EncryptionType.AesCbc128_HmacSha256_B64 && key.byteLength === 32) {
+            this.encKey = key.slice(0, 16);
+            this.macKey = key.slice(16, 32);
+        } else if (encType === EncryptionType.AesCbc256_HmacSha256_B64 && key.byteLength === 64) {
+            this.encKey = key.slice(0, 32);
+            this.macKey = key.slice(32, 64);
         } else {
             throw new Error('Unsupported encType/key length.');
         }
-    }
-
-    getBuffers(): SymmetricCryptoKeyBuffers {
-        if (this.keyBuf) {
-            return this.keyBuf;
-        }
-
-        const key = UtilsService.fromB64ToArray(this.keyB64);
-        const keys = new SymmetricCryptoKeyBuffers(key.buffer);
-
-        if (this.macKey) {
-            keys.encKey = key.slice(0, key.length / 2).buffer;
-            keys.macKey = key.slice(key.length / 2).buffer;
-        } else {
-            keys.encKey = key.buffer;
-            keys.macKey = null;
-        }
-
-        this.keyBuf = keys;
-        return this.keyBuf;
     }
 }

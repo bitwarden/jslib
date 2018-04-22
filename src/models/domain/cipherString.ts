@@ -87,7 +87,7 @@ export class CipherString {
         }
     }
 
-    decrypt(orgId: string): Promise<string> {
+    async decrypt(orgId: string): Promise<string> {
         if (this.decryptedValue) {
             return Promise.resolve(this.decryptedValue);
         }
@@ -100,14 +100,12 @@ export class CipherString {
             throw new Error('window.bitwardenContainerService not initialized.');
         }
 
-        return cryptoService.getOrgKey(orgId).then((orgKey: any) => {
-            return cryptoService.decrypt(this, orgKey);
-        }).then((decValue: any) => {
-            this.decryptedValue = decValue;
-            return this.decryptedValue;
-        }).catch(() => {
+        try {
+            const orgKey = await cryptoService.getOrgKey(orgId);
+            this.decryptedValue = await cryptoService.decryptToUtf8(this, orgKey);
+        } catch (e) {
             this.decryptedValue = '[error: cannot decrypt]';
-            return this.decryptedValue;
-        });
+        }
+        return this.decryptedValue;
     }
 }

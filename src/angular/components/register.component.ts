@@ -69,7 +69,7 @@ export class RegisterComponent {
 
     private async register() {
         this.email = this.email.toLowerCase();
-        const key = this.cryptoService.makeKey(this.masterPassword, this.email);
+        const key = await this.cryptoService.makeKey(this.masterPassword, this.email);
         const encKey = await this.cryptoService.makeEncKey(key);
         const hashedPassword = await this.cryptoService.hashPassword(this.masterPassword, key);
         const request = new RegisterRequest(this.email, hashedPassword, this.hint, encKey.encryptedString);

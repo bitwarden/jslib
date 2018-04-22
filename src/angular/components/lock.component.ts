@@ -28,7 +28,7 @@ export class LockComponent {
         }
 
         const email = await this.userService.getEmail();
-        const key = this.cryptoService.makeKey(this.masterPassword, email);
+        const key = await this.cryptoService.makeKey(this.masterPassword, email);
         const keyHash = await this.cryptoService.hashPassword(this.masterPassword, key);
         const storedKeyHash = await this.cryptoService.getKeyHash();
 

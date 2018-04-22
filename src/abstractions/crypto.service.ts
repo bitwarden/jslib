@@ -22,14 +22,13 @@ export abstract class CryptoService {
     clearOrgKeys: (memoryOnly?: boolean) => Promise<any>;
     clearKeys: () => Promise<any>;
     toggleKey: () => Promise<any>;
-    makeKey: (password: string, salt: string) => SymmetricCryptoKey;
+    makeKey: (password: string, salt: string) => Promise<SymmetricCryptoKey>;
     hashPassword: (password: string, key: SymmetricCryptoKey) => Promise<string>;
     makeEncKey: (key: SymmetricCryptoKey) => Promise<CipherString>;
-    encrypt: (plainValue: string | Uint8Array, key?: SymmetricCryptoKey,
-        plainValueEncoding?: string) => Promise<CipherString>;
+    encrypt: (plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey) => Promise<CipherString>;
     encryptToBytes: (plainValue: ArrayBuffer, key?: SymmetricCryptoKey) => Promise<ArrayBuffer>;
-    decrypt: (cipherString: CipherString, key?: SymmetricCryptoKey, outputEncoding?: string) => Promise<string>;
+    decrypt: (cipherString: CipherString, key?: SymmetricCryptoKey) => Promise<ArrayBuffer>;
+    decryptToUtf8: (cipherString: CipherString, key?: SymmetricCryptoKey) => Promise<string>;
     decryptFromBytes: (encBuf: ArrayBuffer, key: SymmetricCryptoKey) => Promise<ArrayBuffer>;
-    rsaDecrypt: (encValue: string) => Promise<string>;
     sha1: (password: string) => Promise<string>;
 }

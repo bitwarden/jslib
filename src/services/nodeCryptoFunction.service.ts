@@ -32,7 +32,7 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
 
     hmac(value: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
         const nodeValue = this.toNodeBuffer(value);
-        const nodeKey = this.toNodeBuffer(value);
+        const nodeKey = this.toNodeBuffer(key);
         const hmac = crypto.createHmac(algorithm, nodeKey);
         hmac.update(nodeValue);
         return Promise.resolve(this.toArrayBuffer(hmac.digest()));

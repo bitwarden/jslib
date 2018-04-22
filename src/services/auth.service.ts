@@ -95,7 +95,7 @@ export class AuthService {
     async logIn(email: string, masterPassword: string): Promise<AuthResult> {
         this.selectedTwoFactorProviderType = null;
         email = email.toLowerCase();
-        const key = this.cryptoService.makeKey(masterPassword, email);
+        const key = await this.cryptoService.makeKey(masterPassword, email);
         const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
         return await this.logInHelper(email, hashedPassword, key);
     }
