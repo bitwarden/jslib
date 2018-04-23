@@ -140,7 +140,6 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
                     positionChars = allCharSet;
                     break;
                 default:
-                    console.log('unknown position at ' + i + ': ' + positions[i]);
                     break;
             }
 
