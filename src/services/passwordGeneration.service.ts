@@ -1,8 +1,6 @@
 import { CipherString } from '../models/domain/cipherString';
 import { PasswordHistory } from '../models/domain/passwordHistory';
 
-import { UtilsService } from './utils.service';
-
 import { CryptoService } from '../abstractions/crypto.service';
 import {
     PasswordGenerationService as PasswordGenerationServiceAbstraction,
@@ -30,7 +28,12 @@ const Keys = {
 const MaxPasswordsInHistory = 100;
 
 export class PasswordGenerationService implements PasswordGenerationServiceAbstraction {
-    static generatePassword(options: any): string {
+    private optionsCache: any;
+    private history: PasswordHistory[];
+
+    constructor(private cryptoService: CryptoService, private storageService: StorageService) { }
+
+    async generatePassword(options: any): Promise<string> {
         // overload defaults with given options
         const o = Object.assign({}, DefaultOptions, options);
 
@@ -83,9 +86,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         }
 
         // shuffle
-        positions.sort(() => {
-            return UtilsService.secureRandomNumber(0, 1) * 2 - 1;
-        });
+        await this.shuffleArray(positions);
 
         // build out the char sets
         let allCharSet = '';
@@ -138,23 +139,16 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
                 case 'a':
                     positionChars = allCharSet;
                     break;
+                default:
+                    console.log('unknown position at ' + i + ': ' + positions[i]);
+                    break;
             }
 
-            const randomCharIndex = UtilsService.secureRandomNumber(0, positionChars.length - 1);
+            const randomCharIndex = await this.cryptoService.randomNumber(0, positionChars.length - 1);
             password += positionChars.charAt(randomCharIndex);
         }
 
         return password;
-    }
-
-    private optionsCache: any;
-    private history: PasswordHistory[];
-
-    constructor(private cryptoService: CryptoService, private storageService: StorageService) {
-    }
-
-    generatePassword(options: any) {
-        return PasswordGenerationService.generatePassword(options);
     }
 
     async getOptions() {
@@ -251,5 +245,13 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         }
 
         return history[history.length - 1].password === password;
+    }
+
+    // ref: https://stackoverflow.com/a/12646864/1090359
+    private async shuffleArray(array: string[]) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = await this.cryptoService.randomNumber(0, i);
+            [array[i], array[j]] = [array[j], array[i]];
+        }
     }
 }

@@ -21,4 +21,3 @@ export { SyncService } from './sync.service';
 export { TokenService } from './token.service';
 export { TotpService } from './totp.service';
 export { UserService } from './user.service';
-export { UtilsService } from './utils.service';

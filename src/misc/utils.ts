@@ -95,6 +95,68 @@ export class Utils {
             return Array.prototype.map.call(bytes, (x: number) => ('00' + x.toString(16)).slice(-2)).join('');
         }
     }
+
+    static urlBase64Decode(str: string): string {
+        let output = str.replace(/-/g, '+').replace(/_/g, '/');
+        switch (output.length % 4) {
+            case 0:
+                break;
+            case 2:
+                output += '==';
+                break;
+            case 3:
+                output += '=';
+                break;
+            default:
+                throw new Error('Illegal base64url string!');
+        }
+
+        return decodeURIComponent(escape(window.atob(output)));
+    }
+
+    // ref: http://stackoverflow.com/a/2117523/1090359
+    static newGuid(): string {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+            // tslint:disable-next-line
+            const r = Math.random() * 16 | 0;
+            // tslint:disable-next-line
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    static getHostname(uriString: string): string {
+        const url = Utils.getUrl(uriString);
+        return url != null ? url.hostname : null;
+    }
+
+    static getHost(uriString: string): string {
+        const url = Utils.getUrl(uriString);
+        return url != null ? url.host : null;
+    }
+
+    private static getUrl(uriString: string): URL {
+        if (uriString == null) {
+            return null;
+        }
+
+        uriString = uriString.trim();
+        if (uriString === '') {
+            return null;
+        }
+
+        if (uriString.indexOf('://') === -1 && uriString.indexOf('.') > -1) {
+            uriString = 'http://' + uriString;
+        }
+
+        if (uriString.startsWith('http://') || uriString.startsWith('https://')) {
+            try {
+                return new URL(uriString);
+            } catch (e) { }
+        }
+
+        return null;
+    }
 }
 
 Utils.init();

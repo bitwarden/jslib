@@ -36,7 +36,8 @@ import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
-import { UtilsService } from '../abstractions/utils.service';
+
+import { Utils } from '../misc/utils';
 
 const Keys = {
     ciphersPrefix: 'ciphers_',
@@ -50,7 +51,7 @@ export class CipherService implements CipherServiceAbstraction {
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private settingsService: SettingsService, private apiService: ApiService,
         private storageService: StorageService, private i18nService: I18nService,
-        private platformUtilsService: PlatformUtilsService, private utilsService: UtilsService) {
+        private platformUtilsService: PlatformUtilsService) {
     }
 
     clearCache(): void {
@@ -221,8 +222,8 @@ export class CipherService implements CipherServiceAbstraction {
                             }
                             break;
                         case UriMatchType.Host:
-                            const urlHost = this.utilsService.getHost(url);
-                            if (urlHost != null && urlHost === this.utilsService.getHost(u.uri)) {
+                            const urlHost = Utils.getHost(url);
+                            if (urlHost != null && urlHost === Utils.getHost(u.uri)) {
                                 return true;
                             }
                             break;

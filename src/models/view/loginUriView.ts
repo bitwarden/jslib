@@ -6,7 +6,7 @@ import { LoginUri } from '../domain/loginUri';
 
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
-import { UtilsService } from '../../services/utils.service';
+import { Utils } from '../../misc/utils';
 
 export class LoginUriView implements View {
     match: UriMatchType = null;
@@ -52,7 +52,7 @@ export class LoginUriView implements View {
 
     get hostname(): string {
         if (this._hostname == null && this.uri != null) {
-            this._hostname = UtilsService.getHostname(this.uri);
+            this._hostname = Utils.getHostname(this.uri);
             if (this._hostname === '') {
                 this._hostname = null;
             }

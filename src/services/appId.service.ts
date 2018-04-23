@@ -1,4 +1,4 @@
-import { UtilsService } from './utils.service';
+import { Utils } from '../misc/utils';
 
 import { AppIdService as AppIdServiceAbstraction } from '../abstractions/appId.service';
 import { StorageService } from '../abstractions/storage.service';
@@ -21,7 +21,7 @@ export class AppIdService implements AppIdServiceAbstraction {
             return existingId;
         }
 
-        const guid = UtilsService.newGuid();
+        const guid = Utils.newGuid();
         await this.storageService.save(key, guid);
         return guid;
     }

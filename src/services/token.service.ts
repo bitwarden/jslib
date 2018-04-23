@@ -1,8 +1,9 @@
 import { ConstantsService } from './constants.service';
-import { UtilsService } from './utils.service';
 
 import { StorageService } from '../abstractions/storage.service';
 import { TokenService as TokenServiceAbstraction } from '../abstractions/token.service';
+
+import { Utils } from '../misc/utils';
 
 const Keys = {
     accessToken: 'accessToken',
@@ -94,7 +95,7 @@ export class TokenService implements TokenServiceAbstraction {
             throw new Error('JWT must have 3 parts');
         }
 
-        const decoded = UtilsService.urlBase64Decode(parts[1]);
+        const decoded = Utils.urlBase64Decode(parts[1]);
         if (decoded == null) {
             throw new Error('Cannot decode the token');
         }

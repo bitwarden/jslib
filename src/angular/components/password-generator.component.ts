@@ -28,7 +28,7 @@ export class PasswordGeneratorComponent implements OnInit {
     async ngOnInit() {
         this.options = await this.passwordGenerationService.getOptions();
         this.avoidAmbiguous = !this.options.ambiguous;
-        this.password = this.passwordGenerationService.generatePassword(this.options);
+        this.password = await this.passwordGenerationService.generatePassword(this.options);
         this.analytics.eventTrack.next({ action: 'Generated Password' });
         await this.passwordGenerationService.addHistory(this.password);
     }
@@ -41,7 +41,7 @@ export class PasswordGeneratorComponent implements OnInit {
 
     async sliderInput() {
         this.normalizeOptions();
-        this.password = this.passwordGenerationService.generatePassword(this.options);
+        this.password = await this.passwordGenerationService.generatePassword(this.options);
     }
 
     async saveOptions(regenerate: boolean = true) {
@@ -54,7 +54,7 @@ export class PasswordGeneratorComponent implements OnInit {
     }
 
     async regenerate() {
-        this.password = this.passwordGenerationService.generatePassword(this.options);
+        this.password = await this.passwordGenerationService.generatePassword(this.options);
         await this.passwordGenerationService.addHistory(this.password);
         this.analytics.eventTrack.next({ action: 'Regenerated Password' });
     }

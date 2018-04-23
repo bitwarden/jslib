@@ -1,7 +1,7 @@
 import { PasswordHistory } from '../models/domain/passwordHistory';
 
 export abstract class PasswordGenerationService {
-    generatePassword: (options: any) => string;
+    generatePassword: (options: any) => Promise<string>;
     getOptions: () => any;
     saveOptions: (options: any) => Promise<any>;
     getHistory: () => Promise<PasswordHistory[]>;
