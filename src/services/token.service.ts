@@ -95,7 +95,7 @@ export class TokenService implements TokenServiceAbstraction {
             throw new Error('JWT must have 3 parts');
         }
 
-        const decoded = Utils.urlBase64Decode(parts[1]);
+        const decoded = Utils.fromUrlB64ToUtf8(parts[1]);
         if (decoded == null) {
             throw new Error('Cannot decode the token');
         }

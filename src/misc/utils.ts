@@ -96,8 +96,8 @@ export class Utils {
         }
     }
 
-    static urlBase64Decode(str: string): string {
-        let output = str.replace(/-/g, '+').replace(/_/g, '/');
+    static fromUrlB64ToUtf8(b64Str: string): string {
+        let output = b64Str.replace(/-/g, '+').replace(/_/g, '/');
         switch (output.length % 4) {
             case 0:
                 break;
@@ -111,7 +111,15 @@ export class Utils {
                 throw new Error('Illegal base64url string!');
         }
 
-        return decodeURIComponent(escape(window.atob(output)));
+        return Utils.fromB64ToUtf8(output);
+    }
+
+    static fromB64ToUtf8(b64Str: string): string {
+        if (Utils.isNode) {
+            return new Buffer(b64Str, 'base64').toString('utf8');
+        } else {
+            return decodeURIComponent(escape(window.atob(b64Str)));
+        }
     }
 
     // ref: http://stackoverflow.com/a/2117523/1090359
