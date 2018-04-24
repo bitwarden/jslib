@@ -4,7 +4,21 @@ import { StorageService } from '../abstractions/storage.service';
 
 import { ConstantsService } from '../services/constants.service';
 
+import { DeviceType } from '../enums/deviceType';
+
 const GaObj = 'ga';
+
+export const AnalyticsIds = {
+    [DeviceType.Chrome]: 'UA-81915606-6',
+    [DeviceType.Firefox]: 'UA-81915606-7',
+    [DeviceType.Opera]: 'UA-81915606-8',
+    [DeviceType.Edge]: 'UA-81915606-9',
+    [DeviceType.Vivaldi]: 'UA-81915606-15',
+    [DeviceType.Safari]: 'UA-81915606-16',
+    [DeviceType.Windows]: 'UA-81915606-17',
+    [DeviceType.Linux]: 'UA-81915606-19',
+    [DeviceType.MacOs]: 'UA-81915606-18',
+};
 
 export class Analytics {
     private gaTrackingId: string = null;
