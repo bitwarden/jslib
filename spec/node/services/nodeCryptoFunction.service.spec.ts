@@ -43,6 +43,38 @@ describe('NodeCrypto Function Service', () => {
         testPbkdf2('sha512', regular512Key, utf8512Key, unicode512Key);
     });
 
+    describe('hash', () => {
+        const regular1Hash = '2a241604fb921fad12bf877282457268e1dccb70';
+        const utf81Hash = '85672798dc5831e96d6c48655d3d39365a9c88b6';
+        const unicode1Hash = '39c975935054a3efc805a9709b60763a823a6ad4';
+
+        const regular256Hash = '2b8e96031d352a8655d733d7a930b5ffbea69dc25cf65c7bca7dd946278908b2';
+        const utf8256Hash = '25fe8440f5b01ed113b0a0e38e721b126d2f3f77a67518c4a04fcde4e33eeb9d';
+        const unicode256Hash = 'adc1c0c2afd6e92cefdf703f9b6eb2c38e0d6d1a040c83f8505c561fea58852e';
+
+        const regular512Hash = 'c15cf11d43bde333647e3f559ec4193bb2edeaa0e8b902772f514cdf3f785a3f49a6e02a4b87b3' +
+            'b47523271ad45b7e0aebb5cdcc1bc54815d256eb5dcb80da9d';
+        const utf8512Hash = '035c31a877a291af09ed2d3a1a293e69c3e079ea2cecc00211f35e6bce10474ca3ad6e30b59e26118' +
+            '37463f20969c5bc95282965a051a88f8cdf2e166549fcdd';
+        const unicode512Hash = '2b16a5561af8ad6fe414cc103fc8036492e1fc6d9aabe1b655497054f760fe0e34c5d100ac773d' +
+            '9f3030438284f22dbfa20cb2e9b019f2c98dfe38ce1ef41bae';
+
+        testHash('sha1', regular1Hash, utf81Hash, unicode1Hash);
+        testHash('sha256', regular256Hash, utf8256Hash, unicode256Hash);
+        testHash('sha512', regular512Hash, utf8512Hash, unicode512Hash);
+    });
+
+    describe('hmac', () => {
+        const sha1Mac = '4d4c223f95dc577b665ec4ccbcb680b80a397038';
+        const sha256Mac = '6be3caa84922e12aaaaa2f16c40d44433bb081ef323db584eb616333ab4e874f';
+        const sha512Mac = '21910e341fa12106ca35758a2285374509326c9fbe0bd64e7b99c898f841dc948c58ce66d3504d8883c' +
+            '5ea7817a0b7c5d4d9b00364ccd214669131fc17fe4aca';
+
+        testHmac('sha1', sha1Mac);
+        testHmac('sha256', sha256Mac);
+        testHmac('sha512', sha512Mac);
+    });
+
     describe('aesEncrypt', () => {
         it('should successfully encrypt data', async () => {
             const nodeCryptoFunctionService = new NodeCryptoFunctionService();
@@ -160,6 +192,45 @@ function testPbkdf2(algorithm: 'sha256' | 'sha512', regularKey: string, utf8Key:
         const key = await cryptoFunctionService.pbkdf2(Utils.fromUtf8ToArray(regularPassword).buffer,
             Utils.fromUtf8ToArray(regularEmail).buffer, algorithm, 5000);
         expect(Utils.fromBufferToB64(key)).toBe(regularKey);
+    });
+}
+
+function testHash(algorithm: 'sha1' | 'sha256' | 'sha512', regularHash: string, utf8Hash: string, unicodeHash: string) {
+    const regularValue = 'HashMe!!';
+    const utf8Value = 'HǻshMe!!';
+    const unicodeValue = '😀HashMe!!!🙏';
+
+    it('should create valid ' + algorithm + ' hash from regular input', async () => {
+        const cryptoFunctionService = new NodeCryptoFunctionService();
+        const hash = await cryptoFunctionService.hash(regularValue, algorithm);
+        expect(Utils.fromBufferToHex(hash)).toBe(regularHash);
+    });
+
+    it('should create valid ' + algorithm + ' hash from utf8 input', async () => {
+        const cryptoFunctionService = new NodeCryptoFunctionService();
+        const hash = await cryptoFunctionService.hash(utf8Value, algorithm);
+        expect(Utils.fromBufferToHex(hash)).toBe(utf8Hash);
+    });
+
+    it('should create valid ' + algorithm + ' hash from unicode input', async () => {
+        const cryptoFunctionService = new NodeCryptoFunctionService();
+        const hash = await cryptoFunctionService.hash(unicodeValue, algorithm);
+        expect(Utils.fromBufferToHex(hash)).toBe(unicodeHash);
+    });
+
+    it('should create valid ' + algorithm + ' hash from array buffer input', async () => {
+        const cryptoFunctionService = new NodeCryptoFunctionService();
+        const hash = await cryptoFunctionService.hash(Utils.fromUtf8ToArray(regularValue).buffer, algorithm);
+        expect(Utils.fromBufferToHex(hash)).toBe(regularHash);
+    });
+}
+
+function testHmac(algorithm: 'sha1' | 'sha256' | 'sha512', mac: string) {
+    it('should create valid ' + algorithm + ' hmac', async () => {
+        const cryptoFunctionService = new NodeCryptoFunctionService();
+        const computedMac = await cryptoFunctionService.hmac(Utils.fromUtf8ToArray('SignMe!!').buffer,
+            Utils.fromUtf8ToArray('secretkey').buffer, algorithm);
+        expect(Utils.fromBufferToHex(computedMac)).toBe(mac);
     });
 }
 
