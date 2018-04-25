@@ -37,6 +37,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     twoFactorEmail: string = null;
     formPromise: Promise<any>;
     emailPromise: Promise<any>;
+    onSuccessfullLogin: () => Promise<any>;
 
     protected loginRoute = 'login';
     protected successRoute = 'vault';
@@ -44,8 +45,8 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     constructor(protected authService: AuthService, protected router: Router,
         protected analytics: Angulartics2, protected toasterService: ToasterService,
         protected i18nService: I18nService, protected apiService: ApiService,
-        protected platformUtilsService: PlatformUtilsService, protected syncService: SyncService,
-        protected win: Window, protected environmentService: EnvironmentService) {
+        protected platformUtilsService: PlatformUtilsService, protected win: Window,
+        protected environmentService: EnvironmentService) {
         this.u2fSupported = this.platformUtilsService.supportsU2f(win);
     }
 
@@ -164,7 +165,9 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         try {
             this.formPromise = this.authService.logInTwoFactor(this.selectedProviderType, this.token, this.remember);
             await this.formPromise;
-            this.syncService.fullSync(true);
+            if (this.onSuccessfullLogin != null) {
+                this.onSuccessfullLogin();
+            }
             this.analytics.eventTrack.next({ action: 'Logged In From Two-step' });
             this.router.navigate([this.successRoute]);
         } catch (e) {

@@ -16,13 +16,14 @@ export class LoginComponent {
     masterPassword: string = '';
     showPassword: boolean = false;
     formPromise: Promise<AuthResult>;
+    onSuccessfullLogin: () => Promise<any>;
 
     protected twoFactorRoute = '2fa';
     protected successRoute = 'vault';
 
     constructor(protected authService: AuthService, protected router: Router,
         protected analytics: Angulartics2, protected toasterService: ToasterService,
-        protected i18nService: I18nService, protected syncService: SyncService) { }
+        protected i18nService: I18nService) { }
 
     async submit() {
         if (this.email == null || this.email === '') {
@@ -48,7 +49,9 @@ export class LoginComponent {
                 this.analytics.eventTrack.next({ action: 'Logged In To Two-step' });
                 this.router.navigate([this.twoFactorRoute]);
             } else {
-                this.syncService.fullSync(true);
+                if (this.onSuccessfullLogin != null) {
+                    this.onSuccessfullLogin();
+                }
                 this.analytics.eventTrack.next({ action: 'Logged In' });
                 this.router.navigate([this.successRoute]);
             }
