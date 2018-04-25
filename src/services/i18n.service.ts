@@ -2,11 +2,11 @@ import { I18nService as I18nServiceAbstraction } from '../abstractions/i18n.serv
 
 export class I18nService implements I18nServiceAbstraction {
     locale: string;
+    // First locale is the default (English)
+    supportedTranslationLocales: string[] = ['en'];
     translationLocale: string;
     collator: Intl.Collator;
 
-    // First locale is the default (English)
-    protected supportedTranslationLocales: string[] = ['en'];
     protected inited: boolean;
     protected defaultMessages: any = {};
     protected localeMessages: any = {};
