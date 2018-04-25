@@ -1,3 +1,6 @@
+// tslint:disable-next-line
+const nodeURL = typeof window === 'undefined' ? require('url').URL : null;
+
 export class Utils {
     static inited = false;
     static isNode = false;
@@ -159,7 +162,7 @@ export class Utils {
 
         if (uriString.startsWith('http://') || uriString.startsWith('https://')) {
             try {
-                return new URL(uriString);
+                return nodeURL != null ? new nodeURL(uriString) : new URL(uriString);
             } catch (e) { }
         }
 
