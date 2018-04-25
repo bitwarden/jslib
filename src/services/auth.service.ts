@@ -65,10 +65,11 @@ export class AuthService {
 
     private key: SymmetricCryptoKey;
 
-    constructor(private cryptoService: CryptoService, private apiService: ApiService, private userService: UserService,
-        private tokenService: TokenService, private appIdService: AppIdService, private i18nService: I18nService,
-        private platformUtilsService: PlatformUtilsService, private messagingService: MessagingService) {
-    }
+    constructor(private cryptoService: CryptoService, private apiService: ApiService,
+        private userService: UserService, private tokenService: TokenService,
+        private appIdService: AppIdService, private i18nService: I18nService,
+        private platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
+        private setCryptoKeys = true) { }
 
     init() {
         TwoFactorProviders[TwoFactorProviderType.Email].name = this.i18nService.t('emailTitle');
@@ -166,7 +167,7 @@ export class AuthService {
             const twoFactorResponse = response as IdentityTwoFactorResponse;
             this.email = email;
             this.masterPasswordHash = hashedPassword;
-            this.key = key;
+            this.key = this.setCryptoKeys ? key : null;
             this.twoFactorProviders = twoFactorResponse.twoFactorProviders2;
             result.twoFactorProviders = twoFactorResponse.twoFactorProviders2;
             return result;
@@ -178,11 +179,13 @@ export class AuthService {
         }
 
         await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken);
-        await this.cryptoService.setKey(key);
-        await this.cryptoService.setKeyHash(hashedPassword);
         await this.userService.setUserIdAndEmail(this.tokenService.getUserId(), this.tokenService.getEmail());
-        await this.cryptoService.setEncKey(tokenResponse.key);
-        await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
+        if (this.setCryptoKeys) {
+            await this.cryptoService.setKey(key);
+            await this.cryptoService.setKeyHash(hashedPassword);
+            await this.cryptoService.setEncKey(tokenResponse.key);
+            await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
+        }
 
         this.messagingService.send('loggedIn');
         return result;
