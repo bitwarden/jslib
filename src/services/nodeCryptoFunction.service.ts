@@ -9,11 +9,11 @@ import { Utils } from '../misc/utils';
 export class NodeCryptoFunctionService implements CryptoFunctionService {
     pbkdf2(password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
         iterations: number): Promise<ArrayBuffer> {
-        const len = algorithm === 'sha256' ? 256 : 512;
+        const len = algorithm === 'sha256' ? 32 : 64;
         const nodePassword = this.toNodeValue(password);
         const nodeSalt = this.toNodeValue(salt);
         return new Promise<ArrayBuffer>((resolve, reject) => {
-            crypto.pbkdf2(nodePassword, nodeSalt, iterations, length, algorithm, (error, key) => {
+            crypto.pbkdf2(nodePassword, nodeSalt, iterations, len, algorithm, (error, key) => {
                 if (error != null) {
                     reject(error);
                 } else {
