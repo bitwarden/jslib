@@ -1,20 +1,21 @@
 import { StorageService } from '../../abstractions/storage.service';
 
-import { ConstantsService } from '../../services/constants.service';
-
 // tslint:disable-next-line
 const Store = require('electron-store');
 
 export class ElectronStorageService implements StorageService {
     private store: any;
 
-    constructor() {
+    constructor(defaults?: any) {
         const storeConfig: any = {
             defaults: {} as any,
             name: 'data',
         };
-        // Default lock options to "on restart".
-        storeConfig.defaults[ConstantsService.lockOptionKey] = -1;
+
+        if (defaults != null) {
+            storeConfig.defaults = Object.assign({}, storeConfig.defaults, defaults);
+        }
+
         this.store = new Store(storeConfig);
     }
 
