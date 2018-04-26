@@ -19,7 +19,7 @@ export class InputVerbatimDirective {
 
     ngOnInit() {
         if (this.disableComplete && !this.el.nativeElement.hasAttribute('autocomplete')) {
-            this.renderer.setAttribute(this.el.nativeElement, 'autocomplete', 'nope');
+            this.renderer.setAttribute(this.el.nativeElement, 'autocomplete', 'off');
         }
         if (!this.el.nativeElement.hasAttribute('autocapitalize')) {
             this.renderer.setAttribute(this.el.nativeElement, 'autocapitalize', 'none');
