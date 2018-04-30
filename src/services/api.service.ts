@@ -8,6 +8,7 @@ import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
 import { CipherRequest } from '../models/request/cipherRequest';
 import { FolderRequest } from '../models/request/folderRequest';
+import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
@@ -374,6 +375,26 @@ export class ApiService implements ApiServiceAbstraction {
             const responseJson = await response.json();
             return new SyncResponse(responseJson);
         } else {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
+    async postImportDirectory(organizationId: string, request: ImportDirectoryRequest): Promise<any> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.baseUrl + '/organizations/' + organizationId + '/import', {
+            body: JSON.stringify(request),
+            cache: 'no-cache',
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Authorization': authHeader,
+                'Content-Type': 'application/json; charset=utf-8',
+                'Device-Type': this.deviceType,
+            }),
+            method: 'POST',
+        }));
+
+        if (response.status !== 200) {
             const error = await this.handleError(response, false);
             return Promise.reject(error);
         }

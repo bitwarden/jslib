@@ -2,6 +2,7 @@ import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
 import { CipherRequest } from '../models/request/cipherRequest';
 import { FolderRequest } from '../models/request/folderRequest';
+import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
@@ -36,4 +37,5 @@ export abstract class ApiService {
     postCipherAttachment: (id: string, data: FormData) => Promise<CipherResponse>;
     deleteCipherAttachment: (id: string, attachmentId: string) => Promise<any>;
     getSync: () => Promise<SyncResponse>;
+    postImportDirectory: (organizationId: string, request: ImportDirectoryRequest) => Promise<any>;
 }
