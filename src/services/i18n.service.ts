@@ -28,7 +28,7 @@ export class I18nService implements I18nServiceAbstraction {
         this.locale = this.translationLocale = locale != null ? locale : this.systemLanguage;
 
         try {
-            this.collator = new Intl.Collator(this.locale);
+            this.collator = new Intl.Collator(this.locale, { numeric: true, sensitivity: 'base' });
         } catch {
             this.collator = null;
         }
