@@ -12,7 +12,9 @@ export class ValidationService {
         const defaultErrorMessage = this.i18nService.t('unexpectedError');
         const errors: string[] = [];
 
-        if (data == null || typeof data !== 'object') {
+        if (data != null && typeof data === 'string') {
+            errors.push(data);
+        } else if (data == null || typeof data !== 'object') {
             errors.push(defaultErrorMessage);
         } else if (data.validationErrors == null) {
             errors.push(data.message ? data.message : defaultErrorMessage);
