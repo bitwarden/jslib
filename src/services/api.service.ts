@@ -19,6 +19,7 @@ import { ErrorResponse } from '../models/response/errorResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
+import { ProfileResponse } from '../models/response/profileResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 
 export class ApiService implements ApiServiceAbstraction {
@@ -133,6 +134,26 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     // Account APIs
+
+    async getProfile(): Promise<ProfileResponse> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.baseUrl + '/accounts/profile', {
+            cache: 'no-cache',
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Authorization': authHeader,
+                'Device-Type': this.deviceType,
+            }),
+        }));
+
+        if (response.status === 200) {
+            const responseJson = await response.json();
+            return new ProfileResponse(responseJson);
+        } else {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
 
     async getAccountRevisionDate(): Promise<number> {
         const authHeader = await this.handleTokenState();
