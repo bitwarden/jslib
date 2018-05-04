@@ -17,7 +17,7 @@ export class WindowMain {
     private windowStateChangeTimer: NodeJS.Timer;
     private windowStates: { [key: string]: any; } = {};
 
-    constructor(private storageService: StorageService, private defaultWidth = 950, private defaultHeight: 600) { }
+    constructor(private storageService: StorageService, private defaultWidth = 950, private defaultHeight = 600) { }
 
     init(): Promise<any> {
         return new Promise((resolve, reject) => {
