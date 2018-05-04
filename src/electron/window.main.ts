@@ -17,7 +17,7 @@ export class WindowMain {
     private windowStateChangeTimer: NodeJS.Timer;
     private windowStates: { [key: string]: any; } = {};
 
-    constructor(private storageService: StorageService) { }
+    constructor(private storageService: StorageService, private defaultWidth = 950, private defaultHeight: 600) { }
 
     init(): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -73,7 +73,8 @@ export class WindowMain {
     }
 
     private async createWindow() {
-        this.windowStates[Keys.mainWindowSize] = await this.getWindowState(Keys.mainWindowSize, 950, 600);
+        this.windowStates[Keys.mainWindowSize] = await this.getWindowState(Keys.mainWindowSize, this.defaultWidth,
+            this.defaultHeight);
 
         // Create the browser window.
         this.win = new BrowserWindow({
