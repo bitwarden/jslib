@@ -73,6 +73,10 @@ module.exports = (config) => {
                 removeBrowser('Opera');
                 removeBrowser('SafariTechPreview');
 
+                if (process.env.APPVEYOR === 'True') {
+                    removeBrowser('Edge');
+                }
+
                 return result;
             }
         },
