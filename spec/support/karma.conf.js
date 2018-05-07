@@ -1,11 +1,11 @@
-module.exports = function(config) {
+module.exports = (config) => {
     config.set({
         // base path that will be used to resolve all patterns (eg. files, exclude)
         basePath: '../../',
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-        frameworks: ['jasmine', 'karma-typescript'],
+        frameworks: ['jasmine', 'karma-typescript', 'detectBrowsers'],
 
         // list of files / patterns to load in the browser
         files: [
@@ -43,15 +43,11 @@ module.exports = function(config) {
         // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
         logLevel: config.LOG_INFO,
 
-        // start these browsers
-        // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['Chrome'],
-
         // Concurrency level
         // how many browser should be started simultaneous
         concurrency: Infinity,
 
-        client:{
+        client: {
             clearContext: false // leave Jasmine Spec Runner output visible in browser
         },
 
@@ -60,6 +56,24 @@ module.exports = function(config) {
             bundlerOptions: {
                 entrypoints: /\.spec\.ts$/,
                 sourceMap: true
+            }
+        },
+
+        detectBrowsers: {
+            usePhantomJS: false,
+            postDetection: (availableBrowsers) => {
+                const result = availableBrowsers;
+                function removeBrowser(browser) {
+                    if (availableBrowsers.length > 1 && availableBrowsers.indexOf(browser) > -1) {
+                        result.splice(result.indexOf(browser), 1);
+                    }
+                }
+
+                removeBrowser('IE');
+                removeBrowser('Opera');
+                removeBrowser('SafariTechPreview');
+
+                return result;
             }
         },
     })

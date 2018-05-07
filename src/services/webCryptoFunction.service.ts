@@ -45,16 +45,8 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     }
 
     async hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
-        if (this.isEdge) {
-            let md: forge.md.MessageDigest;
-            if (algorithm === 'sha1') {
-                md = forge.md.sha1.create();
-            } else if (algorithm === 'sha256') {
-                md = forge.md.sha256.create();
-            } else {
-                md = (forge as any).md.sha512.create();
-            }
-
+        if (this.isEdge && algorithm === 'sha1') {
+            const md = forge.md.sha1.create();
             const valueBytes = this.toByteString(value);
             md.update(valueBytes, 'raw');
             return Utils.fromByteStringToArray(md.digest().data).buffer;
@@ -65,15 +57,6 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     }
 
     async hmac(value: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
-        if (this.isEdge) {
-            const valueBytes = this.toByteString(value);
-            const keyBytes = this.toByteString(key);
-            const hmac = (forge as any).hmac.create();
-            hmac.start(algorithm, keyBytes);
-            hmac.update(valueBytes);
-            return Utils.fromByteStringToArray(hmac.digest().getBytes()).buffer;
-        }
-
         const signingAlgorithm = {
             name: 'HMAC',
             hash: { name: this.toWebCryptoAlgorithm(algorithm) },

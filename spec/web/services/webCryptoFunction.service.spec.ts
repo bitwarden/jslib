@@ -46,11 +46,8 @@ describe('WebCrypto Function Service', () => {
         const unicode512Key = 'FE+AnUJaxv8jh+zUDtZz4mjjcYk0/PZDZm+SLJe3XtxtnpdqqpblX6JjuMZt/dYYNMOrb2+mD' +
             'L3FiQDTROh1lg==';
 
-        testPbkdf2(false, 'sha256', regular256Key, utf8256Key, unicode256Key);
-        testPbkdf2(false, 'sha512', regular512Key, utf8512Key, unicode512Key);
-
-        testPbkdf2(true, 'sha256', regular256Key, utf8256Key, unicode256Key);
-        testPbkdf2(true, 'sha512', regular512Key, utf8512Key, unicode512Key);
+        testPbkdf2('sha256', regular256Key, utf8256Key, unicode256Key);
+        testPbkdf2('sha512', regular512Key, utf8512Key, unicode512Key);
     });
 
     describe('hash', () => {
@@ -69,13 +66,9 @@ describe('WebCrypto Function Service', () => {
         const unicode512Hash = '2b16a5561af8ad6fe414cc103fc8036492e1fc6d9aabe1b655497054f760fe0e34c5d100ac773d' +
             '9f3030438284f22dbfa20cb2e9b019f2c98dfe38ce1ef41bae';
 
-        testHash(false, 'sha1', regular1Hash, utf81Hash, unicode1Hash);
-        testHash(false, 'sha256', regular256Hash, utf8256Hash, unicode256Hash);
-        testHash(false, 'sha512', regular512Hash, utf8512Hash, unicode512Hash);
-
-        testHash(true, 'sha1', regular1Hash, utf81Hash, unicode1Hash);
-        testHash(true, 'sha256', regular256Hash, utf8256Hash, unicode256Hash);
-        testHash(true, 'sha512', regular512Hash, utf8512Hash, unicode512Hash);
+        testHash('sha1', regular1Hash, utf81Hash, unicode1Hash);
+        testHash('sha256', regular256Hash, utf8256Hash, unicode256Hash);
+        testHash('sha512', regular512Hash, utf8512Hash, unicode512Hash);
     });
 
     describe('hmac', () => {
@@ -84,120 +77,199 @@ describe('WebCrypto Function Service', () => {
         const sha512Mac = '21910e341fa12106ca35758a2285374509326c9fbe0bd64e7b99c898f841dc948c58ce66d3504d8883c' +
             '5ea7817a0b7c5d4d9b00364ccd214669131fc17fe4aca';
 
-        testHmac(false, 'sha1', sha1Mac);
-        testHmac(false, 'sha256', sha256Mac);
-        testHmac(false, 'sha512', sha512Mac);
+        testHmac('sha1', sha1Mac);
+        testHmac('sha256', sha256Mac);
+        testHmac('sha512', sha512Mac);
+    });
 
-        testHmac(true, 'sha1', sha1Mac);
-        testHmac(true, 'sha256', sha256Mac);
-        testHmac(true, 'sha512', sha512Mac);
+    describe('timeSafeEqual', () => {
+        it('should successfully compare two of the same values', async () => {
+            const cryptoFunctionService = getWebCryptoFunctionService();
+            const a = new Uint8Array(2);
+            a[0] = 1;
+            a[1] = 2;
+            const equal = await cryptoFunctionService.timeSafeEqual(a.buffer, a.buffer);
+            expect(equal).toBe(true);
+        });
+
+        it('should successfully compare two different values of the same length', async () => {
+            const cryptoFunctionService = getWebCryptoFunctionService();
+            const a = new Uint8Array(2);
+            a[0] = 1;
+            a[1] = 2;
+            const b = new Uint8Array(2);
+            b[0] = 3;
+            b[1] = 4;
+            const equal = await cryptoFunctionService.timeSafeEqual(a.buffer, b.buffer);
+            expect(equal).toBe(false);
+        });
+
+        it('should successfully compare two different values of different lengths', async () => {
+            const cryptoFunctionService = getWebCryptoFunctionService();
+            const a = new Uint8Array(2);
+            a[0] = 1;
+            a[1] = 2;
+            const b = new Uint8Array(2);
+            b[0] = 3;
+            const equal = await cryptoFunctionService.timeSafeEqual(a.buffer, b.buffer);
+            expect(equal).toBe(false);
+        });
+    });
+
+    describe('hmacFast', () => {
+        const sha1Mac = '4d4c223f95dc577b665ec4ccbcb680b80a397038';
+        const sha256Mac = '6be3caa84922e12aaaaa2f16c40d44433bb081ef323db584eb616333ab4e874f';
+        const sha512Mac = '21910e341fa12106ca35758a2285374509326c9fbe0bd64e7b99c898f841dc948c58ce66d3504d8883c' +
+            '5ea7817a0b7c5d4d9b00364ccd214669131fc17fe4aca';
+
+        testHmacFast('sha1', sha1Mac);
+        testHmacFast('sha256', sha256Mac);
+        testHmacFast('sha512', sha512Mac);
+    });
+
+    describe('timeSafeEqualFast', () => {
+        it('should successfully compare two of the same values', async () => {
+            const cryptoFunctionService = getWebCryptoFunctionService();
+            const a = new Uint8Array(2);
+            a[0] = 1;
+            a[1] = 2;
+            const aByteString = Utils.fromBufferToByteString(a.buffer);
+            const equal = await cryptoFunctionService.timeSafeEqualFast(aByteString, aByteString);
+            expect(equal).toBe(true);
+        });
+
+        it('should successfully compare two different values of the same length', async () => {
+            const cryptoFunctionService = getWebCryptoFunctionService();
+            const a = new Uint8Array(2);
+            a[0] = 1;
+            a[1] = 2;
+            const aByteString = Utils.fromBufferToByteString(a.buffer);
+            const b = new Uint8Array(2);
+            b[0] = 3;
+            b[1] = 4;
+            const bByteString = Utils.fromBufferToByteString(b.buffer);
+            const equal = await cryptoFunctionService.timeSafeEqualFast(aByteString, bByteString);
+            expect(equal).toBe(false);
+        });
+
+        it('should successfully compare two different values of different lengths', async () => {
+            const cryptoFunctionService = getWebCryptoFunctionService();
+            const a = new Uint8Array(2);
+            a[0] = 1;
+            a[1] = 2;
+            const aByteString = Utils.fromBufferToByteString(a.buffer);
+            const b = new Uint8Array(2);
+            b[0] = 3;
+            const bByteString = Utils.fromBufferToByteString(b.buffer);
+            const equal = await cryptoFunctionService.timeSafeEqualFast(aByteString, bByteString);
+            expect(equal).toBe(false);
+        });
     });
 
     describe('aesEncrypt', () => {
         it('should successfully encrypt data', async () => {
-            const webCryptoFunctionService = getWebCryptoFunctionService();
+            const cryptoFunctionService = getWebCryptoFunctionService();
             const iv = makeStaticByteArray(16);
             const key = makeStaticByteArray(32);
             const data = Utils.fromUtf8ToArray('EncryptMe!');
-            const encValue = await webCryptoFunctionService.aesEncrypt(data.buffer, iv.buffer, key.buffer);
+            const encValue = await cryptoFunctionService.aesEncrypt(data.buffer, iv.buffer, key.buffer);
             expect(Utils.fromBufferToB64(encValue)).toBe('ByUF8vhyX4ddU9gcooznwA==');
         });
 
         it('should successfully encrypt and then decrypt small data', async () => {
-            const webCryptoFunctionService = getWebCryptoFunctionService();
+            const cryptoFunctionService = getWebCryptoFunctionService();
             const iv = makeStaticByteArray(16);
             const key = makeStaticByteArray(32);
             const value = 'EncryptMe!';
             const data = Utils.fromUtf8ToArray(value);
-            const encValue = await webCryptoFunctionService.aesEncrypt(data.buffer, iv.buffer, key.buffer);
+            const encValue = await cryptoFunctionService.aesEncrypt(data.buffer, iv.buffer, key.buffer);
             const encData = Utils.fromBufferToB64(encValue);
             const b64Iv = Utils.fromBufferToB64(iv.buffer);
             const symKey = new SymmetricCryptoKey(key.buffer);
-            const params = webCryptoFunctionService.aesDecryptFastParameters(encData, b64Iv, null, symKey);
-            const decValue = await webCryptoFunctionService.aesDecryptFast(params);
+            const params = cryptoFunctionService.aesDecryptFastParameters(encData, b64Iv, null, symKey);
+            const decValue = await cryptoFunctionService.aesDecryptFast(params);
             expect(decValue).toBe(value);
         });
 
         it('should successfully encrypt and then decrypt large data', async () => {
-            const webCryptoFunctionService = getWebCryptoFunctionService();
+            const cryptoFunctionService = getWebCryptoFunctionService();
             const iv = makeStaticByteArray(16);
             const key = makeStaticByteArray(32);
             const value = 'EncryptMe!';
             const data = Utils.fromUtf8ToArray(value);
-            const encValue = await webCryptoFunctionService.aesEncrypt(data.buffer, iv.buffer, key.buffer);
-            const decValue = await webCryptoFunctionService.aesDecryptLarge(encValue, iv.buffer, key.buffer);
+            const encValue = await cryptoFunctionService.aesEncrypt(data.buffer, iv.buffer, key.buffer);
+            const decValue = await cryptoFunctionService.aesDecryptLarge(encValue, iv.buffer, key.buffer);
             expect(Utils.fromBufferToUtf8(decValue)).toBe(value);
         });
     });
 
     describe('aesDecryptFast', () => {
         it('should successfully decrypt data', async () => {
-            const webCryptoFunctionService = getWebCryptoFunctionService();
+            const cryptoFunctionService = getWebCryptoFunctionService();
             const iv = Utils.fromBufferToB64(makeStaticByteArray(16).buffer);
             const symKey = new SymmetricCryptoKey(makeStaticByteArray(32).buffer);
             const data = 'ByUF8vhyX4ddU9gcooznwA==';
-            const params = webCryptoFunctionService.aesDecryptFastParameters(data, iv, null, symKey);
-            const decValue = await webCryptoFunctionService.aesDecryptFast(params);
+            const params = cryptoFunctionService.aesDecryptFastParameters(data, iv, null, symKey);
+            const decValue = await cryptoFunctionService.aesDecryptFast(params);
             expect(decValue).toBe('EncryptMe!');
         });
     });
 
     describe('aesDecryptLarge', () => {
         it('should successfully decrypt data', async () => {
-            const webCryptoFunctionService = getWebCryptoFunctionService();
+            const cryptoFunctionService = getWebCryptoFunctionService();
             const iv = makeStaticByteArray(16);
             const key = makeStaticByteArray(32);
             const data = Utils.fromB64ToArray('ByUF8vhyX4ddU9gcooznwA==');
-            const decValue = await webCryptoFunctionService.aesDecryptLarge(data.buffer, iv.buffer, key.buffer);
+            const decValue = await cryptoFunctionService.aesDecryptLarge(data.buffer, iv.buffer, key.buffer);
             expect(Utils.fromBufferToUtf8(decValue)).toBe('EncryptMe!');
         });
     });
 
     describe('rsaEncrypt', () => {
         it('should successfully encrypt and then decrypt data', async () => {
-            const webCryptoFunctionService = getWebCryptoFunctionService();
+            const cryptoFunctionService = getWebCryptoFunctionService();
             const pubKey = Utils.fromB64ToArray(RsaPublicKey);
             const privKey = Utils.fromB64ToArray(RsaPrivateKey);
             const value = 'EncryptMe!';
             const data = Utils.fromUtf8ToArray(value);
-            const encValue = await webCryptoFunctionService.rsaEncrypt(data.buffer, pubKey.buffer, 'sha1');
-            const decValue = await webCryptoFunctionService.rsaDecrypt(encValue, privKey.buffer, 'sha1');
+            const encValue = await cryptoFunctionService.rsaEncrypt(data.buffer, pubKey.buffer, 'sha1');
+            const decValue = await cryptoFunctionService.rsaDecrypt(encValue, privKey.buffer, 'sha1');
             expect(Utils.fromBufferToUtf8(decValue)).toBe(value);
         });
     });
 
     describe('rsaDecrypt', () => {
         it('should successfully decrypt data', async () => {
-            const webCryptoFunctionService = getWebCryptoFunctionService();
+            const cryptoFunctionService = getWebCryptoFunctionService();
             const privKey = Utils.fromB64ToArray(RsaPrivateKey);
             const data = Utils.fromB64ToArray('A1/p8BQzN9UrbdYxUY2Va5+kPLyfZXF9JsZrjeEXcaclsnHurdxVAJcnbEqYMP3UXV' +
                 '4YAS/mpf+Rxe6/X0WS1boQdA0MAHSgx95hIlAraZYpiMLLiJRKeo2u8YivCdTM9V5vuAEJwf9Tof/qFsFci3sApdbATkorCT' +
                 'zFOIEPF2S1zgperEP23M01mr4dWVdYN18B32YF67xdJHMbFhp5dkQwv9CmscoWq7OE5HIfOb+JAh7BEZb+CmKhM3yWJvoR/D' +
                 '/5jcercUtK2o+XrzNrL4UQ7yLZcFz6Bfwb/j6ICYvqd/YJwXNE6dwlL57OfwJyCdw2rRYf0/qI00t9u8Iitw==');
-            const decValue = await webCryptoFunctionService.rsaDecrypt(data.buffer, privKey.buffer, 'sha1');
+            const decValue = await cryptoFunctionService.rsaDecrypt(data.buffer, privKey.buffer, 'sha1');
             expect(Utils.fromBufferToUtf8(decValue)).toBe('EncryptMe!');
         });
     });
 
     describe('randomBytes', () => {
         it('should make a value of the correct length', async () => {
-            const webCryptoFunctionService = getWebCryptoFunctionService();
-            const randomData = await webCryptoFunctionService.randomBytes(16);
+            const cryptoFunctionService = getWebCryptoFunctionService();
+            const randomData = await cryptoFunctionService.randomBytes(16);
             expect(randomData.byteLength).toBe(16);
         });
 
         it('should not make the same value twice', async () => {
-            const webCryptoFunctionService = getWebCryptoFunctionService();
-            const randomData = await webCryptoFunctionService.randomBytes(16);
-            const randomData2 = await webCryptoFunctionService.randomBytes(16);
+            const cryptoFunctionService = getWebCryptoFunctionService();
+            const randomData = await cryptoFunctionService.randomBytes(16);
+            const randomData2 = await cryptoFunctionService.randomBytes(16);
             expect(randomData.byteLength === randomData2.byteLength && randomData !== randomData2).toBeTruthy();
         });
     });
 });
 
-function testPbkdf2(edge: boolean, algorithm: 'sha256' | 'sha512', regularKey: string,
+function testPbkdf2(algorithm: 'sha256' | 'sha512', regularKey: string,
     utf8Key: string, unicodeKey: string) {
-    const forEdge = edge ? ' for edge' : '';
     const regularEmail = 'user@example.com';
     const utf8Email = 'üser@example.com';
 
@@ -205,76 +277,85 @@ function testPbkdf2(edge: boolean, algorithm: 'sha256' | 'sha512', regularKey: s
     const utf8Password = 'pǻssword';
     const unicodePassword = '😀password🙏';
 
-    it('should create valid ' + algorithm + ' key from regular input' + forEdge, async () => {
-        const webCryptoFunctionService = getWebCryptoFunctionService(edge);
-        const key = await webCryptoFunctionService.pbkdf2(regularPassword, regularEmail, algorithm, 5000);
+    it('should create valid ' + algorithm + ' key from regular input', async () => {
+        const cryptoFunctionService = getWebCryptoFunctionService();
+        const key = await cryptoFunctionService.pbkdf2(regularPassword, regularEmail, algorithm, 5000);
         expect(Utils.fromBufferToB64(key)).toBe(regularKey);
     });
 
-    it('should create valid ' + algorithm + ' key from utf8 input' + forEdge, async () => {
-        const webCryptoFunctionService = getWebCryptoFunctionService(edge);
-        const key = await webCryptoFunctionService.pbkdf2(utf8Password, utf8Email, algorithm, 5000);
+    it('should create valid ' + algorithm + ' key from utf8 input', async () => {
+        const cryptoFunctionService = getWebCryptoFunctionService();
+        const key = await cryptoFunctionService.pbkdf2(utf8Password, utf8Email, algorithm, 5000);
         expect(Utils.fromBufferToB64(key)).toBe(utf8Key);
     });
 
-    it('should create valid ' + algorithm + ' key from unicode input' + forEdge, async () => {
-        const webCryptoFunctionService = getWebCryptoFunctionService(edge);
-        const key = await webCryptoFunctionService.pbkdf2(unicodePassword, regularEmail, algorithm, 5000);
+    it('should create valid ' + algorithm + ' key from unicode input', async () => {
+        const cryptoFunctionService = getWebCryptoFunctionService();
+        const key = await cryptoFunctionService.pbkdf2(unicodePassword, regularEmail, algorithm, 5000);
         expect(Utils.fromBufferToB64(key)).toBe(unicodeKey);
     });
 
-    it('should create valid ' + algorithm + ' key from array buffer input' + forEdge, async () => {
-        const webCryptoFunctionService = getWebCryptoFunctionService(edge);
-        const key = await webCryptoFunctionService.pbkdf2(Utils.fromUtf8ToArray(regularPassword).buffer,
+    it('should create valid ' + algorithm + ' key from array buffer input', async () => {
+        const cryptoFunctionService = getWebCryptoFunctionService();
+        const key = await cryptoFunctionService.pbkdf2(Utils.fromUtf8ToArray(regularPassword).buffer,
             Utils.fromUtf8ToArray(regularEmail).buffer, algorithm, 5000);
         expect(Utils.fromBufferToB64(key)).toBe(regularKey);
     });
 }
 
-function testHash(edge: boolean, algorithm: 'sha1' | 'sha256' | 'sha512', regularHash: string,
+function testHash(algorithm: 'sha1' | 'sha256' | 'sha512', regularHash: string,
     utf8Hash: string, unicodeHash: string) {
-    const forEdge = edge ? ' for edge' : '';
     const regularValue = 'HashMe!!';
     const utf8Value = 'HǻshMe!!';
     const unicodeValue = '😀HashMe!!!🙏';
 
-    it('should create valid ' + algorithm + ' hash from regular input' + forEdge, async () => {
-        const webCryptoFunctionService = getWebCryptoFunctionService(edge);
-        const hash = await webCryptoFunctionService.hash(regularValue, algorithm);
+    it('should create valid ' + algorithm + ' hash from regular input', async () => {
+        const cryptoFunctionService = getWebCryptoFunctionService();
+        const hash = await cryptoFunctionService.hash(regularValue, algorithm);
         expect(Utils.fromBufferToHex(hash)).toBe(regularHash);
     });
 
-    it('should create valid ' + algorithm + ' hash from utf8 input' + forEdge, async () => {
-        const webCryptoFunctionService = getWebCryptoFunctionService(edge);
-        const hash = await webCryptoFunctionService.hash(utf8Value, algorithm);
+    it('should create valid ' + algorithm + ' hash from utf8 input', async () => {
+        const cryptoFunctionService = getWebCryptoFunctionService();
+        const hash = await cryptoFunctionService.hash(utf8Value, algorithm);
         expect(Utils.fromBufferToHex(hash)).toBe(utf8Hash);
     });
 
-    it('should create valid ' + algorithm + ' hash from unicode input' + forEdge, async () => {
-        const webCryptoFunctionService = getWebCryptoFunctionService(edge);
-        const hash = await webCryptoFunctionService.hash(unicodeValue, algorithm);
+    it('should create valid ' + algorithm + ' hash from unicode input', async () => {
+        const cryptoFunctionService = getWebCryptoFunctionService();
+        const hash = await cryptoFunctionService.hash(unicodeValue, algorithm);
         expect(Utils.fromBufferToHex(hash)).toBe(unicodeHash);
     });
 
-    it('should create valid ' + algorithm + ' hash from array buffer input' + forEdge, async () => {
-        const webCryptoFunctionService = getWebCryptoFunctionService(edge);
-        const hash = await webCryptoFunctionService.hash(Utils.fromUtf8ToArray(regularValue).buffer, algorithm);
+    it('should create valid ' + algorithm + ' hash from array buffer input', async () => {
+        const cryptoFunctionService = getWebCryptoFunctionService();
+        const hash = await cryptoFunctionService.hash(Utils.fromUtf8ToArray(regularValue).buffer, algorithm);
         expect(Utils.fromBufferToHex(hash)).toBe(regularHash);
     });
 }
 
-function testHmac(edge: boolean, algorithm: 'sha1' | 'sha256' | 'sha512', mac: string) {
-    it('should create valid ' + algorithm + ' hmac' + (edge ? ' for edge' : ''), async () => {
-        const webCryptoFunctionService = getWebCryptoFunctionService(edge);
-        const computedMac = await webCryptoFunctionService.hmac(Utils.fromUtf8ToArray('SignMe!!').buffer,
+function testHmac(algorithm: 'sha1' | 'sha256' | 'sha512', mac: string) {
+    it('should create valid ' + algorithm + ' hmac', async () => {
+        const cryptoFunctionService = getWebCryptoFunctionService();
+        const computedMac = await cryptoFunctionService.hmac(Utils.fromUtf8ToArray('SignMe!!').buffer,
             Utils.fromUtf8ToArray('secretkey').buffer, algorithm);
         expect(Utils.fromBufferToHex(computedMac)).toBe(mac);
     });
 }
 
-function getWebCryptoFunctionService(edge = false) {
+function testHmacFast(algorithm: 'sha1' | 'sha256' | 'sha512', mac: string) {
+    it('should create valid ' + algorithm + ' hmac', async () => {
+        const cryptoFunctionService = getWebCryptoFunctionService();
+        const keyByteString = Utils.fromBufferToByteString(Utils.fromUtf8ToArray('secretkey').buffer);
+        const dataByteString = Utils.fromBufferToByteString(Utils.fromUtf8ToArray('SignMe!!').buffer);
+        const computedMac = await cryptoFunctionService.hmacFast(dataByteString, keyByteString, algorithm);
+        expect(Utils.fromBufferToHex(Utils.fromByteStringToArray(computedMac).buffer)).toBe(mac);
+    });
+}
+
+function getWebCryptoFunctionService() {
     const platformUtilsMock = TypeMoq.Mock.ofType<PlatformUtilsService>(PlatformUtilsServiceMock);
-    platformUtilsMock.setup((x) => x.isEdge()).returns(() => edge);
+    platformUtilsMock.setup((x) => x.isEdge()).returns(() => navigator.userAgent.indexOf(' Edge/') !== -1);
     return new WebCryptoFunctionService(window, platformUtilsMock.object);
 }
 
