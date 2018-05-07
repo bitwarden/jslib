@@ -1,6 +1,7 @@
 import { NodeCryptoFunctionService } from '../../../src/services/nodeCryptoFunction.service';
 
 import { Utils } from '../../../src/misc/utils';
+import { SymmetricCryptoKey } from '../../../src/models/domain/symmetricCryptoKey';
 
 const RsaPublicKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAl0Vawl/toXzkEvB82FEtqHP' +
     '4xlU2ab/v0crqIfXfIoWF/XXdHGIdrZeilnRXPPJT1B9dTsasttEZNnua/0Rek/cjNDHtzT52irfoZYS7X6HNIfOi54Q+egP' +
@@ -92,19 +93,20 @@ describe('NodeCrypto Function Service', () => {
             const value = 'EncryptMe!';
             const data = Utils.fromUtf8ToArray(value);
             const encValue = await nodeCryptoFunctionService.aesEncrypt(data.buffer, iv.buffer, key.buffer);
-            const decValue = await nodeCryptoFunctionService.aesDecryptSmall(encValue, iv.buffer, key.buffer);
+            const decValue = await nodeCryptoFunctionService.aesDecryptLarge(encValue, iv.buffer, key.buffer);
             expect(Utils.fromBufferToUtf8(decValue)).toBe(value);
         });
     });
 
-    describe('aesDecryptSmall', () => {
+    describe('aesDecryptFast', () => {
         it('should successfully decrypt data', async () => {
             const nodeCryptoFunctionService = new NodeCryptoFunctionService();
-            const iv = makeStaticByteArray(16);
-            const key = makeStaticByteArray(32);
-            const data = Utils.fromB64ToArray('ByUF8vhyX4ddU9gcooznwA==');
-            const decValue = await nodeCryptoFunctionService.aesDecryptSmall(data.buffer, iv.buffer, key.buffer);
-            expect(Utils.fromBufferToUtf8(decValue)).toBe('EncryptMe!');
+            const iv = Utils.fromBufferToB64(makeStaticByteArray(16).buffer);
+            const symKey = new SymmetricCryptoKey(makeStaticByteArray(32).buffer);
+            const data = 'ByUF8vhyX4ddU9gcooznwA==';
+            const params = nodeCryptoFunctionService.aesDecryptFastParameters(data, iv, null, symKey);
+            const decValue = await nodeCryptoFunctionService.aesDecryptFast(params);
+            expect(decValue).toBe('EncryptMe!');
         });
     });
 

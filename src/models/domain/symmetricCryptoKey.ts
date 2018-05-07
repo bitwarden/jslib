@@ -9,6 +9,8 @@ export class SymmetricCryptoKey {
     encType: EncryptionType;
 
     keyB64: string;
+    encKeyB64: string;
+    macKeyB64: string;
 
     constructor(key: ArrayBuffer, encType?: EncryptionType) {
         if (key == null) {
@@ -26,7 +28,6 @@ export class SymmetricCryptoKey {
         }
 
         this.key = key;
-        this.keyB64 = Utils.fromBufferToB64(key);
         this.encType = encType;
 
         if (encType === EncryptionType.AesCbc256_B64 && key.byteLength === 32) {
@@ -40,6 +41,16 @@ export class SymmetricCryptoKey {
             this.macKey = key.slice(32, 64);
         } else {
             throw new Error('Unsupported encType/key length.');
+        }
+
+        if (this.key != null) {
+            this.keyB64 = Utils.fromBufferToB64(this.key);
+        }
+        if (this.encKey != null) {
+            this.encKeyB64 = Utils.fromBufferToB64(this.encKey);
+        }
+        if (this.macKey != null) {
+            this.macKeyB64 = Utils.fromBufferToB64(this.macKey);
         }
     }
 }

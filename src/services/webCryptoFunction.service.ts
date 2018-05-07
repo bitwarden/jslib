@@ -5,6 +5,9 @@ import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 
 import { Utils } from '../misc/utils';
 
+import { SymmetricCryptoKey } from '../models/domain';
+import { DecryptParameters } from '../models/domain/decryptParameters';
+
 export class WebCryptoFunctionService implements CryptoFunctionService {
     private crypto: Crypto;
     private subtle: SubtleCrypto;
@@ -80,21 +83,93 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return await this.subtle.sign(signingAlgorithm, impKey, value);
     }
 
+    // Safely compare two values in a way that protects against timing attacks (Double HMAC Verification).
+    // ref: https://www.nccgroup.trust/us/about-us/newsroom-and-events/blog/2011/february/double-hmac-verification/
+    // ref: https://paragonie.com/blog/2015/11/preventing-timing-attacks-on-string-comparison-with-double-hmac-strategy
+    async timeSafeEqual(a: ArrayBuffer, b: ArrayBuffer): Promise<boolean> {
+        const macKey = await this.randomBytes(32);
+        const signingAlgorithm = {
+            name: 'HMAC',
+            hash: { name: 'SHA-256' },
+        };
+        const impKey = await this.subtle.importKey('raw', macKey, signingAlgorithm, false, ['sign']);
+        const mac1 = await this.subtle.sign(signingAlgorithm, impKey, a);
+        const mac2 = await this.subtle.sign(signingAlgorithm, impKey, b);
+
+        if (mac1.byteLength !== mac2.byteLength) {
+            return false;
+        }
+
+        const arr1 = new Uint8Array(mac1);
+        const arr2 = new Uint8Array(mac2);
+        for (let i = 0; i < arr2.length; i++) {
+            if (arr1[i] !== arr2[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    hmacFast(value: string, key: string, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<string> {
+        const hmac = (forge as any).hmac.create();
+        hmac.start(algorithm, key);
+        hmac.update(value);
+        const bytes = hmac.digest().getBytes();
+        return Promise.resolve(bytes);
+    }
+
+    async timeSafeEqualFast(a: string, b: string): Promise<boolean> {
+        const rand = await this.randomBytes(32);
+        const bytes = new Uint32Array(rand);
+        const buffer = forge.util.createBuffer();
+        for (let i = 0; i < bytes.length; i++) {
+            buffer.putInt32(bytes[i]);
+        }
+        const macKey = buffer.getBytes();
+
+        const hmac = (forge as any).hmac.create();
+        hmac.start('sha256', macKey);
+        hmac.update(a);
+        const mac1 = hmac.digest().getBytes();
+
+        hmac.start(null, null);
+        hmac.update(b);
+        const mac2 = hmac.digest().getBytes();
+
+        const equals = mac1 === mac2;
+        return equals;
+    }
+
     async aesEncrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
         const impKey = await this.subtle.importKey('raw', key, { name: 'AES-CBC' }, false, ['encrypt']);
         return await this.subtle.encrypt({ name: 'AES-CBC', iv: iv }, impKey, data);
     }
 
-    async aesDecryptSmall(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
-        const dataBytes = this.toByteString(data);
-        const ivBytes = this.toByteString(iv);
-        const keyBytes = this.toByteString(key);
-        const dataBuffer = (forge as any).util.createBuffer(dataBytes);
-        const decipher = (forge as any).cipher.createDecipher('AES-CBC', keyBytes);
-        decipher.start({ iv: ivBytes });
+    aesDecryptFastParameters(data: string, iv: string, mac: string, key: SymmetricCryptoKey):
+        DecryptParameters<string> {
+        const p = new DecryptParameters<string>();
+        p.encKey = forge.util.decode64(key.encKeyB64);
+        p.data = forge.util.decode64(data);
+        p.iv = forge.util.decode64(iv);
+        p.macData = p.iv + p.data;
+        if (key.macKeyB64 != null) {
+            p.macKey = forge.util.decode64(key.macKeyB64);
+        }
+        if (mac != null) {
+            p.mac = forge.util.decode64(mac);
+        }
+        return p;
+    }
+
+    aesDecryptFast(parameters: DecryptParameters<string>): Promise<string> {
+        const dataBuffer = (forge as any).util.createBuffer(parameters.data);
+        const decipher = (forge as any).cipher.createDecipher('AES-CBC', parameters.encKey);
+        decipher.start({ iv: parameters.iv });
         decipher.update(dataBuffer);
         decipher.finish();
-        return Utils.fromByteStringToArray(decipher.output.getBytes()).buffer;
+        const val = decipher.output.toString('utf8');
+        return Promise.resolve(val);
     }
 
     async aesDecryptLarge(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {

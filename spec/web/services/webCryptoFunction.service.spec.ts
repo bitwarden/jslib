@@ -7,6 +7,7 @@ import { PlatformUtilsService } from '../../../src/abstractions/platformUtils.se
 import { WebCryptoFunctionService } from '../../../src/services/webCryptoFunction.service';
 
 import { Utils } from '../../../src/misc/utils';
+import { SymmetricCryptoKey } from '../../../src/models/domain';
 
 const RsaPublicKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAl0Vawl/toXzkEvB82FEtqHP' +
     '4xlU2ab/v0crqIfXfIoWF/XXdHGIdrZeilnRXPPJT1B9dTsasttEZNnua/0Rek/cjNDHtzT52irfoZYS7X6HNIfOi54Q+egP' +
@@ -109,8 +110,12 @@ describe('WebCrypto Function Service', () => {
             const value = 'EncryptMe!';
             const data = Utils.fromUtf8ToArray(value);
             const encValue = await webCryptoFunctionService.aesEncrypt(data.buffer, iv.buffer, key.buffer);
-            const decValue = await webCryptoFunctionService.aesDecryptSmall(encValue, iv.buffer, key.buffer);
-            expect(Utils.fromBufferToUtf8(decValue)).toBe(value);
+            const encData = Utils.fromBufferToB64(encValue);
+            const b64Iv = Utils.fromBufferToB64(iv.buffer);
+            const symKey = new SymmetricCryptoKey(key.buffer);
+            const params = webCryptoFunctionService.aesDecryptFastParameters(encData, b64Iv, null, symKey);
+            const decValue = await webCryptoFunctionService.aesDecryptFast(params);
+            expect(decValue).toBe(value);
         });
 
         it('should successfully encrypt and then decrypt large data', async () => {
@@ -125,14 +130,15 @@ describe('WebCrypto Function Service', () => {
         });
     });
 
-    describe('aesDecryptSmall', () => {
+    describe('aesDecryptFast', () => {
         it('should successfully decrypt data', async () => {
             const webCryptoFunctionService = getWebCryptoFunctionService();
-            const iv = makeStaticByteArray(16);
-            const key = makeStaticByteArray(32);
-            const data = Utils.fromB64ToArray('ByUF8vhyX4ddU9gcooznwA==');
-            const decValue = await webCryptoFunctionService.aesDecryptSmall(data.buffer, iv.buffer, key.buffer);
-            expect(Utils.fromBufferToUtf8(decValue)).toBe('EncryptMe!');
+            const iv = Utils.fromBufferToB64(makeStaticByteArray(16).buffer);
+            const symKey = new SymmetricCryptoKey(makeStaticByteArray(32).buffer);
+            const data = 'ByUF8vhyX4ddU9gcooznwA==';
+            const params = webCryptoFunctionService.aesDecryptFastParameters(data, iv, null, symKey);
+            const decValue = await webCryptoFunctionService.aesDecryptFast(params);
+            expect(decValue).toBe('EncryptMe!');
         });
     });
 

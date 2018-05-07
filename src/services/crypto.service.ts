@@ -304,7 +304,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         const iv = Utils.fromB64ToArray(cipherString.initializationVector).buffer;
         const ct = Utils.fromB64ToArray(cipherString.cipherText).buffer;
         const mac = cipherString.mac ? Utils.fromB64ToArray(cipherString.mac).buffer : null;
-        const decipher = await this.aesDecrypt(cipherString.encryptionType, ct, iv, mac, key);
+        const decipher = await this.aesDecryptToBytes(cipherString.encryptionType, ct, iv, mac, key);
         if (decipher == null) {
             return null;
         }
@@ -313,8 +313,8 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     async decryptToUtf8(cipherString: CipherString, key?: SymmetricCryptoKey): Promise<string> {
-        const decipher = await this.decrypt(cipherString, key);
-        return Utils.fromBufferToUtf8(decipher);
+        return await this.aesDecryptToUtf8(cipherString.encryptionType, cipherString.cipherText,
+            cipherString.initializationVector, cipherString.mac, key);
     }
 
     async decryptFromBytes(encBuf: ArrayBuffer, key: SymmetricCryptoKey): Promise<ArrayBuffer> {
@@ -351,7 +351,7 @@ export class CryptoService implements CryptoServiceAbstraction {
                 return null;
         }
 
-        return await this.aesDecryptLarge(encType, ctBytes.buffer, ivBytes.buffer,
+        return await this.aesDecryptToBytes(encType, ctBytes.buffer, ivBytes.buffer,
             macBytes != null ? macBytes.buffer : null, key);
     }
 
@@ -409,8 +409,8 @@ export class CryptoService implements CryptoServiceAbstraction {
         return obj;
     }
 
-    private async aesDecrypt(encType: EncryptionType, ct: ArrayBuffer, iv: ArrayBuffer, mac: ArrayBuffer,
-        key: SymmetricCryptoKey): Promise<ArrayBuffer> {
+    private async aesDecryptToUtf8(encType: EncryptionType, ct: string, iv: string, mac: string,
+        key: SymmetricCryptoKey): Promise<string> {
         const keyForEnc = await this.getKeyForEncryption(key);
         const theKey = this.resolveLegacyKey(encType, keyForEnc);
 
@@ -420,9 +420,37 @@ export class CryptoService implements CryptoServiceAbstraction {
             return null;
         }
 
-        if (encType !== theKey.encType) {
+        if (theKey.encType !== encType) {
             // tslint:disable-next-line
             console.error('encType unavailable.');
+            return null;
+        }
+
+        const fastParams = this.cryptoFunctionService.aesDecryptFastParameters(ct, iv, mac, theKey);
+        if (fastParams.macKey != null && fastParams.mac != null) {
+            const computedMac = await this.cryptoFunctionService.hmacFast(fastParams.macData,
+                fastParams.macKey, 'sha256');
+            const macsEqual = await this.cryptoFunctionService.timeSafeEqualFast(fastParams.mac, computedMac);
+            if (!macsEqual) {
+                // tslint:disable-next-line
+                console.error('mac failed.');
+                return null;
+            }
+        }
+
+        return this.cryptoFunctionService.aesDecryptFast(fastParams);
+    }
+
+    private async aesDecryptToBytes(encType: EncryptionType, ct: ArrayBuffer, iv: ArrayBuffer,
+        mac: ArrayBuffer, key: SymmetricCryptoKey): Promise<ArrayBuffer> {
+        const keyForEnc = await this.getKeyForEncryption(key);
+        const theKey = this.resolveLegacyKey(encType, keyForEnc);
+
+        if (theKey.macKey != null && mac == null) {
+            return null;
+        }
+
+        if (theKey.encType !== encType) {
             return null;
         }
 
@@ -430,39 +458,17 @@ export class CryptoService implements CryptoServiceAbstraction {
             const macData = new Uint8Array(iv.byteLength + ct.byteLength);
             macData.set(new Uint8Array(iv), 0);
             macData.set(new Uint8Array(ct), iv.byteLength);
-            const computedMac = await this.cryptoFunctionService.hmac(new Uint8Array(iv).buffer,
-                theKey.macKey, 'sha256');
-            if (!this.macsEqual(computedMac, mac)) {
+            const computedMac = await this.cryptoFunctionService.hmac(macData.buffer, theKey.macKey, 'sha256');
+            if (computedMac === null) {
+                return null;
+            }
+
+            const macsMatch = await this.cryptoFunctionService.timeSafeEqual(mac, computedMac);
+            if (!macsMatch) {
                 // tslint:disable-next-line
                 console.error('mac failed.');
                 return null;
             }
-        }
-
-        return this.cryptoFunctionService.aesDecryptSmall(ct, iv, theKey.encKey);
-    }
-
-    private async aesDecryptLarge(encType: EncryptionType, ct: ArrayBuffer, iv: ArrayBuffer,
-        mac: ArrayBuffer, key: SymmetricCryptoKey): Promise<ArrayBuffer> {
-        const theKey = await this.getKeyForEncryption(key);
-        if (theKey.macKey == null || mac == null) {
-            return null;
-        }
-
-        const macData = new Uint8Array(iv.byteLength + ct.byteLength);
-        macData.set(new Uint8Array(iv), 0);
-        macData.set(new Uint8Array(ct), iv.byteLength);
-        const computedMac = await this.cryptoFunctionService.hmac(new Uint8Array(iv).buffer,
-            theKey.macKey, 'sha256');
-        if (computedMac === null) {
-            return null;
-        }
-
-        const macsMatch = await this.macsEqual(mac, computedMac);
-        if (macsMatch === false) {
-            // tslint:disable-next-line
-            console.error('mac failed.');
-            return null;
         }
 
         return await this.cryptoFunctionService.aesDecryptLarge(ct, iv, theKey.encKey);
@@ -509,7 +515,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         if (key != null && key.macKey != null && encPieces.length > 1) {
             const mac = Utils.fromB64ToArray(encPieces[1]).buffer;
             const computedMac = await this.cryptoFunctionService.hmac(ct, key.macKey, 'sha256');
-            const macsEqual = await this.macsEqual(mac, computedMac);
+            const macsEqual = await this.cryptoFunctionService.timeSafeEqual(mac, computedMac);
             if (!macsEqual) {
                 throw new Error('MAC failed.');
             }
@@ -534,28 +540,6 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
 
         return this.cryptoFunctionService.rsaDecrypt(ct, privateKey, alg);
-    }
-
-    // Safely compare two MACs in a way that protects against timing attacks (Double HMAC Verification).
-    // ref: https://www.nccgroup.trust/us/about-us/newsroom-and-events/blog/2011/february/double-hmac-verification/
-    // ref: https://paragonie.com/blog/2015/11/preventing-timing-attacks-on-string-comparison-with-double-hmac-strategy
-    private async macsEqual(mac1: ArrayBuffer, mac2: ArrayBuffer): Promise<boolean> {
-        const key = await this.cryptoFunctionService.randomBytes(32);
-        const newMac1 = await this.cryptoFunctionService.hmac(mac1, key, 'sha256');
-        const newMac2 = await this.cryptoFunctionService.hmac(mac2, key, 'sha256');
-        if (newMac1.byteLength !== newMac2.byteLength) {
-            return false;
-        }
-
-        const arr1 = new Uint8Array(newMac1);
-        const arr2 = new Uint8Array(newMac2);
-        for (let i = 0; i < arr2.length; i++) {
-            if (arr1[i] !== arr2[i]) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     private async getKeyForEncryption(key?: SymmetricCryptoKey): Promise<SymmetricCryptoKey> {
