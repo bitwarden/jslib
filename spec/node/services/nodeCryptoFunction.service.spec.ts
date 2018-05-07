@@ -76,7 +76,7 @@ describe('NodeCrypto Function Service', () => {
         testHmac('sha512', Sha512Mac);
     });
 
-    describe('timeSafeEqual', () => {
+    describe('compare', () => {
         testCompare(false);
     });
 
@@ -86,7 +86,7 @@ describe('NodeCrypto Function Service', () => {
         testHmac('sha512', Sha512Mac, true);
     });
 
-    describe('timeSafeEqualFast', () => {
+    describe('compareFast', () => {
         testCompare(true);
     });
 
@@ -107,7 +107,7 @@ describe('NodeCrypto Function Service', () => {
             const value = 'EncryptMe!';
             const data = Utils.fromUtf8ToArray(value);
             const encValue = await nodeCryptoFunctionService.aesEncrypt(data.buffer, iv.buffer, key.buffer);
-            const decValue = await nodeCryptoFunctionService.aesDecryptLarge(encValue, iv.buffer, key.buffer);
+            const decValue = await nodeCryptoFunctionService.aesDecrypt(encValue, iv.buffer, key.buffer);
             expect(Utils.fromBufferToUtf8(decValue)).toBe(value);
         });
     });
@@ -124,13 +124,13 @@ describe('NodeCrypto Function Service', () => {
         });
     });
 
-    describe('aesDecryptLarge', () => {
+    describe('aesDecrypt', () => {
         it('should successfully decrypt data', async () => {
             const nodeCryptoFunctionService = new NodeCryptoFunctionService();
             const iv = makeStaticByteArray(16);
             const key = makeStaticByteArray(32);
             const data = Utils.fromB64ToArray('ByUF8vhyX4ddU9gcooznwA==');
-            const decValue = await nodeCryptoFunctionService.aesDecryptLarge(data.buffer, iv.buffer, key.buffer);
+            const decValue = await nodeCryptoFunctionService.aesDecrypt(data.buffer, iv.buffer, key.buffer);
             expect(Utils.fromBufferToUtf8(decValue)).toBe('EncryptMe!');
         });
     });
@@ -262,8 +262,8 @@ function testCompare(fast = false) {
         const a = new Uint8Array(2);
         a[0] = 1;
         a[1] = 2;
-        const equal = fast ? await cryptoFunctionService.timeSafeEqualFast(a.buffer, a.buffer) :
-            await cryptoFunctionService.timeSafeEqual(a.buffer, a.buffer);
+        const equal = fast ? await cryptoFunctionService.compareFast(a.buffer, a.buffer) :
+            await cryptoFunctionService.compare(a.buffer, a.buffer);
         expect(equal).toBe(true);
     });
 
@@ -275,8 +275,8 @@ function testCompare(fast = false) {
         const b = new Uint8Array(2);
         b[0] = 3;
         b[1] = 4;
-        const equal = fast ? await cryptoFunctionService.timeSafeEqualFast(a.buffer, b.buffer) :
-            await cryptoFunctionService.timeSafeEqual(a.buffer, b.buffer);
+        const equal = fast ? await cryptoFunctionService.compareFast(a.buffer, b.buffer) :
+            await cryptoFunctionService.compare(a.buffer, b.buffer);
         expect(equal).toBe(false);
     });
 
@@ -287,8 +287,8 @@ function testCompare(fast = false) {
         a[1] = 2;
         const b = new Uint8Array(2);
         b[0] = 3;
-        const equal = fast ? await cryptoFunctionService.timeSafeEqualFast(a.buffer, b.buffer) :
-            await cryptoFunctionService.timeSafeEqual(a.buffer, b.buffer);
+        const equal = fast ? await cryptoFunctionService.compareFast(a.buffer, b.buffer) :
+            await cryptoFunctionService.compare(a.buffer, b.buffer);
         expect(equal).toBe(false);
     });
 }

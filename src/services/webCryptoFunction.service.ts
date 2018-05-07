@@ -69,7 +69,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     // Safely compare two values in a way that protects against timing attacks (Double HMAC Verification).
     // ref: https://www.nccgroup.trust/us/about-us/newsroom-and-events/blog/2011/february/double-hmac-verification/
     // ref: https://paragonie.com/blog/2015/11/preventing-timing-attacks-on-string-comparison-with-double-hmac-strategy
-    async timeSafeEqual(a: ArrayBuffer, b: ArrayBuffer): Promise<boolean> {
+    async compare(a: ArrayBuffer, b: ArrayBuffer): Promise<boolean> {
         const macKey = await this.randomBytes(32);
         const signingAlgorithm = {
             name: 'HMAC',
@@ -102,7 +102,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return Promise.resolve(bytes);
     }
 
-    async timeSafeEqualFast(a: string, b: string): Promise<boolean> {
+    async compareFast(a: string, b: string): Promise<boolean> {
         const rand = await this.randomBytes(32);
         const bytes = new Uint32Array(rand);
         const buffer = forge.util.createBuffer();
@@ -155,7 +155,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return Promise.resolve(val);
     }
 
-    async aesDecryptLarge(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
+    async aesDecrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
         const impKey = await this.subtle.importKey('raw', key, { name: 'AES-CBC' }, false, ['decrypt']);
         return await this.subtle.decrypt({ name: 'AES-CBC', iv: iv }, impKey, data);
     }

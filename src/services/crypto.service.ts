@@ -430,7 +430,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         if (fastParams.macKey != null && fastParams.mac != null) {
             const computedMac = await this.cryptoFunctionService.hmacFast(fastParams.macData,
                 fastParams.macKey, 'sha256');
-            const macsEqual = await this.cryptoFunctionService.timeSafeEqualFast(fastParams.mac, computedMac);
+            const macsEqual = await this.cryptoFunctionService.compareFast(fastParams.mac, computedMac);
             if (!macsEqual) {
                 // tslint:disable-next-line
                 console.error('mac failed.');
@@ -463,7 +463,7 @@ export class CryptoService implements CryptoServiceAbstraction {
                 return null;
             }
 
-            const macsMatch = await this.cryptoFunctionService.timeSafeEqual(mac, computedMac);
+            const macsMatch = await this.cryptoFunctionService.compare(mac, computedMac);
             if (!macsMatch) {
                 // tslint:disable-next-line
                 console.error('mac failed.');
@@ -471,7 +471,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             }
         }
 
-        return await this.cryptoFunctionService.aesDecryptLarge(ct, iv, theKey.encKey);
+        return await this.cryptoFunctionService.aesDecrypt(ct, iv, theKey.encKey);
     }
 
     private async rsaDecrypt(encValue: string): Promise<ArrayBuffer> {
@@ -515,7 +515,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         if (key != null && key.macKey != null && encPieces.length > 1) {
             const mac = Utils.fromB64ToArray(encPieces[1]).buffer;
             const computedMac = await this.cryptoFunctionService.hmac(ct, key.macKey, 'sha256');
-            const macsEqual = await this.cryptoFunctionService.timeSafeEqual(mac, computedMac);
+            const macsEqual = await this.cryptoFunctionService.compare(mac, computedMac);
             if (!macsEqual) {
                 throw new Error('MAC failed.');
             }

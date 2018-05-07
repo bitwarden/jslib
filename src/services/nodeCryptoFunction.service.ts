@@ -41,7 +41,7 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         return Promise.resolve(this.toArrayBuffer(hmac.digest()));
     }
 
-    async timeSafeEqual(a: ArrayBuffer, b: ArrayBuffer): Promise<boolean> {
+    async compare(a: ArrayBuffer, b: ArrayBuffer): Promise<boolean> {
         const key = await this.randomBytes(32);
         const mac1 = await this.hmac(a, key, 'sha256');
         const mac2 = await this.hmac(b, key, 'sha256');
@@ -64,8 +64,8 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         return this.hmac(value, key, algorithm);
     }
 
-    timeSafeEqualFast(a: ArrayBuffer, b: ArrayBuffer): Promise<boolean> {
-        return this.timeSafeEqual(a, b);
+    compareFast(a: ArrayBuffer, b: ArrayBuffer): Promise<boolean> {
+        return this.compare(a, b);
     }
 
     aesEncrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
@@ -100,11 +100,11 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
     }
 
     async aesDecryptFast(parameters: DecryptParameters<ArrayBuffer>): Promise<string> {
-        const decBuf = await this.aesDecryptLarge(parameters.data, parameters.iv, parameters.encKey);
+        const decBuf = await this.aesDecrypt(parameters.data, parameters.iv, parameters.encKey);
         return Utils.fromBufferToUtf8(decBuf);
     }
 
-    aesDecryptLarge(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
+    aesDecrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
         const nodeData = this.toNodeBuffer(data);
         const nodeIv = this.toNodeBuffer(iv);
         const nodeKey = this.toNodeBuffer(key);
