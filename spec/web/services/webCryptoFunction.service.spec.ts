@@ -33,6 +33,11 @@ const RsaPrivateKey = 'MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCXRVrCX
     '+tPVgppLcG0+tMdLjigFQiDUQk2y3WjyxP5ZvXu7U96jaJRI8PFMoE06WeVYcdIzrID2HvqH+w0UQJFrLJ/0Mn4stFAEzXKZ' +
     'BokBGnjFnTnKcs7nv/O8=';
 
+const Sha1Mac = '4d4c223f95dc577b665ec4ccbcb680b80a397038';
+const Sha256Mac = '6be3caa84922e12aaaaa2f16c40d44433bb081ef323db584eb616333ab4e874f';
+const Sha512Mac = '21910e341fa12106ca35758a2285374509326c9fbe0bd64e7b99c898f841dc948c58ce66d3504d8883c' +
+    '5ea7817a0b7c5d4d9b00364ccd214669131fc17fe4aca';
+
 describe('WebCrypto Function Service', () => {
     describe('pbkdf2', () => {
         const regular256Key = 'pj9prw/OHPleXI6bRdmlaD+saJS4awrMiQsQiDjeu2I=';
@@ -72,14 +77,9 @@ describe('WebCrypto Function Service', () => {
     });
 
     describe('hmac', () => {
-        const sha1Mac = '4d4c223f95dc577b665ec4ccbcb680b80a397038';
-        const sha256Mac = '6be3caa84922e12aaaaa2f16c40d44433bb081ef323db584eb616333ab4e874f';
-        const sha512Mac = '21910e341fa12106ca35758a2285374509326c9fbe0bd64e7b99c898f841dc948c58ce66d3504d8883c' +
-            '5ea7817a0b7c5d4d9b00364ccd214669131fc17fe4aca';
-
-        testHmac('sha1', sha1Mac);
-        testHmac('sha256', sha256Mac);
-        testHmac('sha512', sha512Mac);
+        testHmac('sha1', Sha1Mac);
+        testHmac('sha256', Sha256Mac);
+        testHmac('sha512', Sha512Mac);
     });
 
     describe('timeSafeEqual', () => {
@@ -117,14 +117,9 @@ describe('WebCrypto Function Service', () => {
     });
 
     describe('hmacFast', () => {
-        const sha1Mac = '4d4c223f95dc577b665ec4ccbcb680b80a397038';
-        const sha256Mac = '6be3caa84922e12aaaaa2f16c40d44433bb081ef323db584eb616333ab4e874f';
-        const sha512Mac = '21910e341fa12106ca35758a2285374509326c9fbe0bd64e7b99c898f841dc948c58ce66d3504d8883c' +
-            '5ea7817a0b7c5d4d9b00364ccd214669131fc17fe4aca';
-
-        testHmacFast('sha1', sha1Mac);
-        testHmacFast('sha256', sha256Mac);
-        testHmacFast('sha512', sha512Mac);
+        testHmacFast('sha1', Sha1Mac);
+        testHmacFast('sha256', Sha256Mac);
+        testHmacFast('sha512', Sha512Mac);
     });
 
     describe('timeSafeEqualFast', () => {

@@ -27,6 +27,11 @@ const RsaPrivateKey = 'MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCXRVrCX
     '+tPVgppLcG0+tMdLjigFQiDUQk2y3WjyxP5ZvXu7U96jaJRI8PFMoE06WeVYcdIzrID2HvqH+w0UQJFrLJ/0Mn4stFAEzXKZ' +
     'BokBGnjFnTnKcs7nv/O8=';
 
+const Sha1Mac = '4d4c223f95dc577b665ec4ccbcb680b80a397038';
+const Sha256Mac = '6be3caa84922e12aaaaa2f16c40d44433bb081ef323db584eb616333ab4e874f';
+const Sha512Mac = '21910e341fa12106ca35758a2285374509326c9fbe0bd64e7b99c898f841dc948c58ce66d3504d8883c' +
+    '5ea7817a0b7c5d4d9b00364ccd214669131fc17fe4aca';
+
 describe('NodeCrypto Function Service', () => {
     describe('pbkdf2', () => {
         const regular256Key = 'pj9prw/OHPleXI6bRdmlaD+saJS4awrMiQsQiDjeu2I=';
@@ -66,14 +71,23 @@ describe('NodeCrypto Function Service', () => {
     });
 
     describe('hmac', () => {
-        const sha1Mac = '4d4c223f95dc577b665ec4ccbcb680b80a397038';
-        const sha256Mac = '6be3caa84922e12aaaaa2f16c40d44433bb081ef323db584eb616333ab4e874f';
-        const sha512Mac = '21910e341fa12106ca35758a2285374509326c9fbe0bd64e7b99c898f841dc948c58ce66d3504d8883c' +
-            '5ea7817a0b7c5d4d9b00364ccd214669131fc17fe4aca';
+        testHmac('sha1', Sha1Mac);
+        testHmac('sha256', Sha256Mac);
+        testHmac('sha512', Sha512Mac);
+    });
 
-        testHmac('sha1', sha1Mac);
-        testHmac('sha256', sha256Mac);
-        testHmac('sha512', sha512Mac);
+    describe('timeSafeEqual', () => {
+        testCompare(false);
+    });
+
+    describe('hmacFast', () => {
+        testHmac('sha1', Sha1Mac, true);
+        testHmac('sha256', Sha256Mac, true);
+        testHmac('sha512', Sha512Mac, true);
+    });
+
+    describe('timeSafeEqualFast', () => {
+        testCompare(true);
     });
 
     describe('aesEncrypt', () => {
@@ -227,12 +241,55 @@ function testHash(algorithm: 'sha1' | 'sha256' | 'sha512', regularHash: string, 
     });
 }
 
-function testHmac(algorithm: 'sha1' | 'sha256' | 'sha512', mac: string) {
+function testHmac(algorithm: 'sha1' | 'sha256' | 'sha512', mac: string, fast = false) {
     it('should create valid ' + algorithm + ' hmac', async () => {
         const cryptoFunctionService = new NodeCryptoFunctionService();
-        const computedMac = await cryptoFunctionService.hmac(Utils.fromUtf8ToArray('SignMe!!').buffer,
-            Utils.fromUtf8ToArray('secretkey').buffer, algorithm);
+        const value = Utils.fromUtf8ToArray('SignMe!!').buffer;
+        const key = Utils.fromUtf8ToArray('secretkey').buffer;
+        let computedMac: ArrayBuffer = null;
+        if (fast) {
+            computedMac = await cryptoFunctionService.hmacFast(value, key, algorithm);
+        } else {
+            computedMac = await cryptoFunctionService.hmac(value, key, algorithm);
+        }
         expect(Utils.fromBufferToHex(computedMac)).toBe(mac);
+    });
+}
+
+function testCompare(fast = false) {
+    it('should successfully compare two of the same values', async () => {
+        const cryptoFunctionService = new NodeCryptoFunctionService();
+        const a = new Uint8Array(2);
+        a[0] = 1;
+        a[1] = 2;
+        const equal = fast ? await cryptoFunctionService.timeSafeEqualFast(a.buffer, a.buffer) :
+            await cryptoFunctionService.timeSafeEqual(a.buffer, a.buffer);
+        expect(equal).toBe(true);
+    });
+
+    it('should successfully compare two different values of the same length', async () => {
+        const cryptoFunctionService = new NodeCryptoFunctionService();
+        const a = new Uint8Array(2);
+        a[0] = 1;
+        a[1] = 2;
+        const b = new Uint8Array(2);
+        b[0] = 3;
+        b[1] = 4;
+        const equal = fast ? await cryptoFunctionService.timeSafeEqualFast(a.buffer, b.buffer) :
+            await cryptoFunctionService.timeSafeEqual(a.buffer, b.buffer);
+        expect(equal).toBe(false);
+    });
+
+    it('should successfully compare two different values of different lengths', async () => {
+        const cryptoFunctionService = new NodeCryptoFunctionService();
+        const a = new Uint8Array(2);
+        a[0] = 1;
+        a[1] = 2;
+        const b = new Uint8Array(2);
+        b[0] = 3;
+        const equal = fast ? await cryptoFunctionService.timeSafeEqualFast(a.buffer, b.buffer) :
+            await cryptoFunctionService.timeSafeEqual(a.buffer, b.buffer);
+        expect(equal).toBe(false);
     });
 }
 
