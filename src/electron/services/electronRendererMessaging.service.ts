@@ -8,14 +8,20 @@ export class ElectronRendererMessagingService implements MessagingService {
     constructor(private broadcasterService: BroadcasterService) {
         ipcRenderer.on('messagingService', async (event: any, message: any) => {
             if (message.command) {
-                this.send(message.command, message);
+                this.sendMessage(message.command, message, false);
             }
         });
     }
 
     send(subscriber: string, arg: any = {}) {
+        this.sendMessage(subscriber, arg, true);
+    }
+
+    private sendMessage(subscriber: string, arg: any = {}, toMain: boolean) {
         const message = Object.assign({}, { command: subscriber }, arg);
-        ipcRenderer.send('messagingService', message);
         this.broadcasterService.send(message);
+        if (toMain) {
+            ipcRenderer.send('messagingService', message);
+        }
     }
 }
