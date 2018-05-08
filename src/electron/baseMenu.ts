@@ -12,59 +12,15 @@ import { WindowMain } from './window.main';
 import { isMacAppStore } from './utils';
 
 export class BaseMenu {
-    protected logOutMenuItemOptions: MenuItemConstructorOptions;
-    protected aboutMenuItemOptions: MenuItemConstructorOptions;
     protected editMenuItemOptions: MenuItemConstructorOptions;
     protected viewSubMenuItemOptions: MenuItemConstructorOptions[];
     protected windowMenuItemOptions: MenuItemConstructorOptions;
     protected macAppMenuItemOptions: MenuItemConstructorOptions[];
     protected macWindowSubmenuOptions: MenuItemConstructorOptions[];
 
-    constructor(protected i18nService: I18nService, protected windowMain: WindowMain,
-        protected appName: string, private onLogOut: () => void) { }
+    constructor(protected i18nService: I18nService, protected windowMain: WindowMain) { }
 
     protected initProperties() {
-        this.logOutMenuItemOptions = {
-            label: this.i18nService.t('logOut'),
-            id: 'logOut',
-            click: () => {
-                const result = dialog.showMessageBox(this.windowMain.win, {
-                    title: this.i18nService.t('logOut'),
-                    message: this.i18nService.t('logOut'),
-                    detail: this.i18nService.t('logOutConfirmation'),
-                    buttons: [this.i18nService.t('logOut'), this.i18nService.t('cancel')],
-                    cancelId: 1,
-                    defaultId: 0,
-                    noLink: true,
-                });
-                if (result === 0) {
-                    this.onLogOut();
-                }
-            },
-        };
-
-        this.aboutMenuItemOptions = {
-            label: this.i18nService.t('aboutBitwarden'),
-            click: () => {
-                const aboutInformation = this.i18nService.t('version', app.getVersion()) +
-                    '\nShell ' + process.versions.electron +
-                    '\nRenderer ' + process.versions.chrome +
-                    '\nNode ' + process.versions.node +
-                    '\nArchitecture ' + process.arch;
-                const result = dialog.showMessageBox(this.windowMain.win, {
-                    title: this.appName,
-                    message: this.appName,
-                    detail: aboutInformation,
-                    type: 'info',
-                    noLink: true,
-                    buttons: [this.i18nService.t('ok'), this.i18nService.t('copy')],
-                });
-                if (result === 1) {
-                    clipboard.writeText(aboutInformation);
-                }
-            },
-        };
-
         this.editMenuItemOptions = {
             label: this.i18nService.t('edit'),
             submenu: [
@@ -170,10 +126,6 @@ export class BaseMenu {
 
             this.macWindowSubmenuOptions = [
                 {
-                    label: this.i18nService.t('close'),
-                    role: isMacAppStore() ? 'quit' : 'close',
-                },
-                {
                     label: this.i18nService.t('minimize'),
                     role: 'minimize',
                 },
@@ -185,6 +137,10 @@ export class BaseMenu {
                 {
                     label: this.i18nService.t('bringAllToFront'),
                     role: 'front',
+                },
+                {
+                    label: this.i18nService.t('close'),
+                    role: isMacAppStore() ? 'quit' : 'close',
                 },
             ];
         }
