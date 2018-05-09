@@ -6,15 +6,15 @@ export class CipherString {
     encryptedString?: string;
     encryptionType?: EncryptionType;
     decryptedValue?: string;
-    cipherText?: string;
-    initializationVector?: string;
+    data?: string;
+    iv?: string;
     mac?: string;
 
-    constructor(encryptedStringOrType: string | EncryptionType, ct?: string, iv?: string, mac?: string) {
-        if (ct != null) {
-            // ct and header
+    constructor(encryptedStringOrType: string | EncryptionType, data?: string, iv?: string, mac?: string) {
+        if (data != null) {
+            // data and header
             const encType = encryptedStringOrType as EncryptionType;
-            this.encryptedString = encType + '.' + ct;
+            this.encryptedString = encType + '.' + data;
 
             // iv
             if (iv != null) {
@@ -27,8 +27,8 @@ export class CipherString {
             }
 
             this.encryptionType = encType;
-            this.cipherText = ct;
-            this.initializationVector = iv;
+            this.data = data;
+            this.iv = iv;
             this.mac = mac;
 
             return;
@@ -62,8 +62,8 @@ export class CipherString {
                     return;
                 }
 
-                this.initializationVector = encPieces[0];
-                this.cipherText = encPieces[1];
+                this.iv = encPieces[0];
+                this.data = encPieces[1];
                 this.mac = encPieces[2];
                 break;
             case EncryptionType.AesCbc256_B64:
@@ -71,8 +71,8 @@ export class CipherString {
                     return;
                 }
 
-                this.initializationVector = encPieces[0];
-                this.cipherText = encPieces[1];
+                this.iv = encPieces[0];
+                this.data = encPieces[1];
                 break;
             case EncryptionType.Rsa2048_OaepSha256_B64:
             case EncryptionType.Rsa2048_OaepSha1_B64:
@@ -80,7 +80,7 @@ export class CipherString {
                     return;
                 }
 
-                this.cipherText = encPieces[0];
+                this.data = encPieces[0];
                 break;
             default:
                 return;
