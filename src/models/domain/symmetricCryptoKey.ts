@@ -12,6 +12,8 @@ export class SymmetricCryptoKey {
     encKeyB64: string;
     macKeyB64: string;
 
+    meta: any;
+
     constructor(key: ArrayBuffer, encType?: EncryptionType) {
         if (key == null) {
             throw new Error('Must provide key');

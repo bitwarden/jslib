@@ -40,7 +40,8 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
             hash: { name: this.toWebCryptoAlgorithm(algorithm) },
         };
 
-        const impKey = await this.subtle.importKey('raw', passwordBuf, { name: 'PBKDF2' }, false, ['deriveBits']);
+        const impKey = await this.subtle.importKey('raw', passwordBuf, { name: 'PBKDF2' } as any,
+            false, ['deriveBits']);
         return await this.subtle.deriveBits(pbkdf2Params, impKey, wcLen);
     }
 
@@ -125,23 +126,42 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     }
 
     async aesEncrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
-        const impKey = await this.subtle.importKey('raw', key, { name: 'AES-CBC' }, false, ['encrypt']);
+        const impKey = await this.subtle.importKey('raw', key, { name: 'AES-CBC' } as any, false, ['encrypt']);
         return await this.subtle.encrypt({ name: 'AES-CBC', iv: iv }, impKey, data);
     }
 
     aesDecryptFastParameters(data: string, iv: string, mac: string, key: SymmetricCryptoKey):
         DecryptParameters<string> {
         const p = new DecryptParameters<string>();
-        p.encKey = forge.util.decode64(key.encKeyB64);
+        if (key.meta != null) {
+            p.encKey = key.meta.encKeyByteString;
+            p.macKey = key.meta.macKeyByteString;
+        }
+
+        if (p.encKey == null) {
+            p.encKey = forge.util.decode64(key.encKeyB64);
+        }
         p.data = forge.util.decode64(data);
         p.iv = forge.util.decode64(iv);
         p.macData = p.iv + p.data;
-        if (key.macKeyB64 != null) {
+        if (p.macKey == null && key.macKeyB64 != null) {
             p.macKey = forge.util.decode64(key.macKeyB64);
         }
         if (mac != null) {
             p.mac = forge.util.decode64(mac);
         }
+
+        // cache byte string keys for later
+        if (key.meta == null) {
+            key.meta = {};
+        }
+        if (key.meta.encKeyByteString == null) {
+            key.meta.encKeyByteString = p.encKey;
+        }
+        if (p.macKey != null && key.meta.macKeyByteString == null) {
+            key.meta.macKeyByteString = p.macKey;
+        }
+
         return p;
     }
 
@@ -156,7 +176,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     }
 
     async aesDecrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
-        const impKey = await this.subtle.importKey('raw', key, { name: 'AES-CBC' }, false, ['decrypt']);
+        const impKey = await this.subtle.importKey('raw', key, { name: 'AES-CBC' } as any, false, ['decrypt']);
         return await this.subtle.decrypt({ name: 'AES-CBC', iv: iv }, impKey, data);
     }
 
