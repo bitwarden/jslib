@@ -439,12 +439,10 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     private async handleTokenState(): Promise<string> {
-        let accessToken: string;
+        let accessToken = await this.tokenService.getToken();
         if (this.tokenService.tokenNeedsRefresh()) {
             const tokenResponse = await this.doRefreshToken();
             accessToken = tokenResponse.accessToken;
-        } else {
-            accessToken = await this.tokenService.getToken();
         }
 
         return 'Bearer ' + accessToken;
