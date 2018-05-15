@@ -6,9 +6,14 @@ export class ContainerService {
         private platformUtilsService: PlatformUtilsService) {
     }
 
+    // deprecated, use attachToGlobal instead
     attachToWindow(win: any) {
-        if (!win.bitwardenContainerService) {
-            win.bitwardenContainerService = this;
+        this.attachToGlobal(win);
+    }
+
+    attachToGlobal(global: any) {
+        if (!global.bitwardenContainerService) {
+            global.bitwardenContainerService = this;
         }
     }
 

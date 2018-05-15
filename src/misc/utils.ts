@@ -5,6 +5,7 @@ export class Utils {
     static inited = false;
     static isNode = false;
     static isBrowser = true;
+    static global: NodeJS.Global | Window = null;
 
     static init() {
         if (Utils.inited) {
@@ -14,6 +15,7 @@ export class Utils {
         Utils.inited = true;
         Utils.isNode = typeof window === 'undefined';
         Utils.isBrowser = !Utils.isNode;
+        Utils.global = Utils.isNode ? global : window;
     }
 
     static fromB64ToArray(str: string): Uint8Array {

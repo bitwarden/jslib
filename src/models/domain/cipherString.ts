@@ -2,6 +2,8 @@ import { EncryptionType } from '../../enums/encryptionType';
 
 import { CryptoService } from '../../abstractions/crypto.service';
 
+import { Utils } from '../../misc/utils';
+
 export class CipherString {
     encryptedString?: string;
     encryptionType?: EncryptionType;
@@ -93,11 +95,11 @@ export class CipherString {
         }
 
         let cryptoService: CryptoService;
-        const containerService = (window as any).bitwardenContainerService;
+        const containerService = (Utils.global as any).bitwardenContainerService;
         if (containerService) {
             cryptoService = containerService.getCryptoService();
         } else {
-            throw new Error('window.bitwardenContainerService not initialized.');
+            throw new Error('global bitwardenContainerService not initialized.');
         }
 
         try {

@@ -35,7 +35,7 @@ export class LoginUriView implements View {
 
     get domain(): string {
         if (this._domain == null && this.uri != null) {
-            const containerService = (window as any).bitwardenContainerService;
+            const containerService = (Utils.global as any).bitwardenContainerService;
             if (containerService) {
                 const platformUtilsService: PlatformUtilsService = containerService.getPlatformUtilsService();
                 this._domain = platformUtilsService.getDomain(this.uri);
@@ -43,7 +43,7 @@ export class LoginUriView implements View {
                     this._domain = null;
                 }
             } else {
-                throw new Error('window.bitwardenContainerService not initialized.');
+                throw new Error('global bitwardenContainerService not initialized.');
             }
         }
 
