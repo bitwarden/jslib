@@ -12,7 +12,6 @@ export { FolderService } from './folder.service';
 export { I18nService } from './i18n.service';
 export { LockService } from './lock.service';
 export { PasswordGenerationService } from './passwordGeneration.service';
-export { SearchService } from './search.service';
 export { SettingsService } from './settings.service';
 export { StateService } from './state.service';
 export { SyncService } from './sync.service';
