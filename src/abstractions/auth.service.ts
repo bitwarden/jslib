@@ -11,6 +11,9 @@ export abstract class AuthService {
     logIn: (email: string, masterPassword: string) => Promise<AuthResult>;
     logInTwoFactor: (twoFactorProvider: TwoFactorProviderType, twoFactorToken: string,
         remember?: boolean) => Promise<AuthResult>;
+    logInComplete: (email: string, masterPassword: string, twoFactorProvider: TwoFactorProviderType,
+        twoFactorToken: string, remember?: boolean) => Promise<AuthResult>;
     logOut: (callback: Function) => void;
+    getSupportedTwoFactorProviders: (win: Window) => any[];
     getDefaultTwoFactorProvider: (u2fSupported: boolean) => TwoFactorProviderType;
 }

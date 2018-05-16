@@ -29,30 +29,7 @@ export class TwoFactorOptionsComponent implements OnInit {
         protected win: Window) { }
 
     ngOnInit() {
-        if (this.authService.twoFactorProviders.has(TwoFactorProviderType.OrganizationDuo)) {
-            this.providers.push(TwoFactorProviders[TwoFactorProviderType.OrganizationDuo]);
-        }
-
-        if (this.authService.twoFactorProviders.has(TwoFactorProviderType.Authenticator)) {
-            this.providers.push(TwoFactorProviders[TwoFactorProviderType.Authenticator]);
-        }
-
-        if (this.authService.twoFactorProviders.has(TwoFactorProviderType.Yubikey)) {
-            this.providers.push(TwoFactorProviders[TwoFactorProviderType.Yubikey]);
-        }
-
-        if (this.authService.twoFactorProviders.has(TwoFactorProviderType.Duo)) {
-            this.providers.push(TwoFactorProviders[TwoFactorProviderType.Duo]);
-        }
-
-        if (this.authService.twoFactorProviders.has(TwoFactorProviderType.U2f) &&
-            this.platformUtilsService.supportsU2f(this.win)) {
-            this.providers.push(TwoFactorProviders[TwoFactorProviderType.U2f]);
-        }
-
-        if (this.authService.twoFactorProviders.has(TwoFactorProviderType.Email)) {
-            this.providers.push(TwoFactorProviders[TwoFactorProviderType.Email]);
-        }
+        this.providers = this.authService.getSupportedTwoFactorProviders(this.win);
     }
 
     choose(p: any) {

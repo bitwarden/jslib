@@ -37,6 +37,12 @@ export const TwoFactorProviders = {
         description: null as string,
         priority: 2,
     },
+    [TwoFactorProviderType.OrganizationDuo]: {
+        type: TwoFactorProviderType.OrganizationDuo,
+        name: 'Duo (Organization)',
+        description: null as string,
+        priority: 10,
+    },
     [TwoFactorProviderType.U2f]: {
         type: TwoFactorProviderType.U2f,
         name: null as string,
@@ -48,12 +54,6 @@ export const TwoFactorProviders = {
         name: null as string,
         description: null as string,
         priority: 0,
-    },
-    [TwoFactorProviderType.OrganizationDuo]: {
-        type: TwoFactorProviderType.OrganizationDuo,
-        name: 'Duo (Organization)',
-        description: null as string,
-        priority: 10,
     },
 };
 
@@ -107,9 +107,51 @@ export class AuthService {
             twoFactorToken, remember);
     }
 
+    async logInComplete(email: string, masterPassword: string, twoFactorProvider: TwoFactorProviderType,
+        twoFactorToken: string, remember?: boolean): Promise<AuthResult> {
+        this.selectedTwoFactorProviderType = null;
+        email = email.toLowerCase();
+        const key = await this.cryptoService.makeKey(masterPassword, email);
+        const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
+        return await this.logInHelper(email, hashedPassword, key, twoFactorProvider, twoFactorToken, remember);
+    }
+
     logOut(callback: Function) {
         callback();
         this.messagingService.send('loggedOut');
+    }
+
+    getSupportedTwoFactorProviders(win: Window): any[] {
+        const providers: any[] = [];
+        if (this.twoFactorProviders == null) {
+            return providers;
+        }
+
+        if (this.twoFactorProviders.has(TwoFactorProviderType.OrganizationDuo)) {
+            providers.push(TwoFactorProviders[TwoFactorProviderType.OrganizationDuo]);
+        }
+
+        if (this.twoFactorProviders.has(TwoFactorProviderType.Authenticator)) {
+            providers.push(TwoFactorProviders[TwoFactorProviderType.Authenticator]);
+        }
+
+        if (this.twoFactorProviders.has(TwoFactorProviderType.Yubikey)) {
+            providers.push(TwoFactorProviders[TwoFactorProviderType.Yubikey]);
+        }
+
+        if (this.twoFactorProviders.has(TwoFactorProviderType.Duo)) {
+            providers.push(TwoFactorProviders[TwoFactorProviderType.Duo]);
+        }
+
+        if (this.twoFactorProviders.has(TwoFactorProviderType.U2f) && this.platformUtilsService.supportsU2f(win)) {
+            providers.push(TwoFactorProviders[TwoFactorProviderType.U2f]);
+        }
+
+        if (this.twoFactorProviders.has(TwoFactorProviderType.Email)) {
+            providers.push(TwoFactorProviders[TwoFactorProviderType.Email]);
+        }
+
+        return providers;
     }
 
     getDefaultTwoFactorProvider(u2fSupported: boolean): TwoFactorProviderType {

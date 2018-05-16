@@ -248,8 +248,9 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     async hashPassword(password: string, key: SymmetricCryptoKey): Promise<string> {
-        const storedKey = await this.getKey();
-        key = key || storedKey;
+        if (key == null) {
+            key = await this.getKey();
+        }
         if (password == null || key == null) {
             throw new Error('Invalid parameters.');
         }
