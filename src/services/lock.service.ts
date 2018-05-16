@@ -10,12 +10,24 @@ import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { StorageService } from '../abstractions/storage.service';
 
 export class LockService implements LockServiceAbstraction {
+    private inited = false;
+
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private cryptoService: CryptoService,
         private platformUtilsService: PlatformUtilsService, private storageService: StorageService,
-        private messagingService: MessagingService, private lockedCallback: Function) {
-        this.checkLock();
-        setInterval(() => this.checkLock(), 10 * 1000); // check every 10 seconds
+        private messagingService: MessagingService, private lockedCallback: () => Promise<void>) {
+    }
+
+    init(checkOnInterval: boolean) {
+        if (this.inited) {
+            return;
+        }
+
+        this.inited = true;
+        if (checkOnInterval) {
+            this.checkLock();
+            setInterval(() => this.checkLock(), 10 * 1000); // check every 10 seconds
+        }
     }
 
     async checkLock(): Promise<void> {
@@ -60,7 +72,9 @@ export class LockService implements LockServiceAbstraction {
         this.cipherService.clearCache();
         this.collectionService.clearCache();
         this.messagingService.send('locked');
-        this.lockedCallback();
+        if (this.lockedCallback != null) {
+            await this.lockedCallback();
+        }
     }
 
     async setLockOption(lockOption: number): Promise<void> {
