@@ -27,11 +27,9 @@ export class ApiService implements ApiServiceAbstraction {
     baseUrl: string;
     identityBaseUrl: string;
     deviceType: string;
-    logoutCallback: Function;
 
     constructor(private tokenService: TokenService, private platformUtilsService: PlatformUtilsService,
-        logoutCallback: Function) {
-        this.logoutCallback = logoutCallback;
+        private logoutCallback: (expired: boolean) => Promise<void>) {
         this.deviceType = platformUtilsService.getDevice().toString();
     }
 
@@ -425,7 +423,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     private async handleError(response: Response, tokenError: boolean): Promise<ErrorResponse> {
         if ((tokenError && response.status === 400) || response.status === 401 || response.status === 403) {
-            this.logoutCallback(true);
+            await this.logoutCallback(true);
             return null;
         }
 

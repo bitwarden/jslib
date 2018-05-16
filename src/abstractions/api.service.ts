@@ -20,7 +20,6 @@ export abstract class ApiService {
     baseUrl: string;
     identityBaseUrl: string;
     deviceType: string;
-    logoutCallback: Function;
 
     setUrls: (urls: EnvironmentUrls) => void;
     postIdentityToken: (request: TokenRequest) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse>;

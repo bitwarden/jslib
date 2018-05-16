@@ -12,7 +12,7 @@ import { TokenService } from '../abstractions/token.service';
 
 export class NodeApiService extends ApiService {
     constructor(tokenService: TokenService, platformUtilsService: PlatformUtilsService,
-        logoutCallback: Function) {
+        logoutCallback: (expired: boolean) => Promise<void>) {
         super(tokenService, platformUtilsService, logoutCallback);
     }
 }

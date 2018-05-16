@@ -30,7 +30,7 @@ export class SyncService implements SyncServiceAbstraction {
         private settingsService: SettingsService, private folderService: FolderService,
         private cipherService: CipherService, private cryptoService: CryptoService,
         private collectionService: CollectionService, private storageService: StorageService,
-        private messagingService: MessagingService, private logoutCallback: Function) {
+        private messagingService: MessagingService, private logoutCallback: (expired: boolean) => Promise<void>) {
     }
 
     async getLastSync(): Promise<Date> {
@@ -134,7 +134,7 @@ export class SyncService implements SyncServiceAbstraction {
         const stamp = await this.userService.getSecurityStamp();
         if (stamp != null && stamp !== response.securityStamp) {
             if (this.logoutCallback != null) {
-                this.logoutCallback(true);
+                await this.logoutCallback(true);
             }
 
             throw new Error('Stamp has changed');
