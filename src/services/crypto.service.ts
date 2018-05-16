@@ -1,5 +1,3 @@
-import * as forge from 'node-forge';
-
 import { EncryptionType } from '../enums/encryptionType';
 
 import { CipherString } from '../models/domain/cipherString';
