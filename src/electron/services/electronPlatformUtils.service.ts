@@ -123,6 +123,10 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return false;
     }
 
+    supportsDuo(): boolean {
+        return true;
+    }
+
     showDialog(text: string, title?: string, confirmText?: string, cancelText?: string, type?: string):
         Promise<boolean> {
         const buttons = [confirmText == null ? this.i18nService.t('ok') : confirmText];

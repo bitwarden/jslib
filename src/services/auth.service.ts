@@ -127,7 +127,8 @@ export class AuthService {
             return providers;
         }
 
-        if (this.twoFactorProviders.has(TwoFactorProviderType.OrganizationDuo)) {
+        if (this.twoFactorProviders.has(TwoFactorProviderType.OrganizationDuo) &&
+            this.platformUtilsService.supportsDuo()) {
             providers.push(TwoFactorProviders[TwoFactorProviderType.OrganizationDuo]);
         }
 
@@ -139,7 +140,7 @@ export class AuthService {
             providers.push(TwoFactorProviders[TwoFactorProviderType.Yubikey]);
         }
 
-        if (this.twoFactorProviders.has(TwoFactorProviderType.Duo)) {
+        if (this.twoFactorProviders.has(TwoFactorProviderType.Duo) && this.platformUtilsService.supportsDuo()) {
             providers.push(TwoFactorProviders[TwoFactorProviderType.Duo]);
         }
 
