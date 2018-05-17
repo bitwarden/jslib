@@ -322,41 +322,56 @@ export class CipherService implements CipherServiceAbstraction {
         await this.upsert(data);
     }
 
-    saveAttachmentWithServer(cipher: Cipher, unencryptedFile: any): Promise<any> {
-        const self = this;
-
+    saveAttachmentWithServer(cipher: Cipher, unencryptedFile: any): Promise<Cipher> {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsArrayBuffer(unencryptedFile);
-
             reader.onload = async (evt: any) => {
-                const key = await self.cryptoService.getOrgKey(cipher.organizationId);
-                const encFileName = await self.cryptoService.encrypt(unencryptedFile.name, key);
-                const encData = await self.cryptoService.encryptToBytes(evt.target.result, key);
-
-                const fd = new FormData();
-                const blob = new Blob([encData], { type: 'application/octet-stream' });
-                fd.append('data', blob, encFileName.encryptedString);
-
-                let response: CipherResponse;
                 try {
-                    response = await self.apiService.postCipherAttachment(cipher.id, fd);
+                    const cData = await this.saveAttachmentRawWithServer(cipher,
+                        unencryptedFile.name, evt.target.result);
+                    resolve(cData);
                 } catch (e) {
-                    reject((e as ErrorResponse).getSingleMessage());
-                    return;
+                    reject(e);
                 }
-
-                const userId = await self.userService.getUserId();
-                const data = new CipherData(response, userId, cipher.collectionIds);
-                this.upsert(data);
-                resolve(new Cipher(data));
-
             };
-
             reader.onerror = (evt) => {
                 reject('Error reading file.');
             };
         });
+    }
+
+    async saveAttachmentRawWithServer(cipher: Cipher, filename: string, data: ArrayBuffer): Promise<Cipher> {
+        const key = await this.cryptoService.getOrgKey(cipher.organizationId);
+        const encFileName = await this.cryptoService.encrypt(filename, key);
+        const encData = await this.cryptoService.encryptToBytes(data, key);
+
+        const fd = new FormData();
+        try {
+            const blob = new Blob([encData], { type: 'application/octet-stream' });
+            fd.append('data', blob, encFileName.encryptedString);
+        } catch (e) {
+            if (Utils.isNode) {
+                fd.append('data', new Buffer(encData) as any, {
+                    filename: encFileName.encryptedString,
+                    contentType: 'application/octet-stream',
+                } as any);
+            } else {
+                throw e;
+            }
+        }
+
+        let response: CipherResponse;
+        try {
+            response = await this.apiService.postCipherAttachment(cipher.id, fd);
+        } catch (e) {
+            throw new Error((e as ErrorResponse).getSingleMessage());
+        }
+
+        const userId = await this.userService.getUserId();
+        const cData = new CipherData(response, userId, cipher.collectionIds);
+        this.upsert(cData);
+        return new Cipher(cData);
     }
 
     async upsert(cipher: CipherData | CipherData[]): Promise<any> {

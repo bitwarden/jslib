@@ -24,6 +24,7 @@
     "test:node:watch": "concurrently -k -n TSC,Node -c yellow,cyan \"npm run build:watch\" \"nodemon -w ./dist --delay 500ms --exec jasmine\""
   },
   "devDependencies": {
+    "@types/form-data": "^2.2.1",
     "@types/jasmine": "^2.8.2",
     "@types/keytar": "^4.0.1",
     "@types/lunr": "2.1.5",
@@ -72,6 +73,7 @@
     "electron-log": "2.2.14",
     "electron-store": "1.3.0",
     "electron-updater": "2.21.4",
+    "form-data": "2.3.2",
     "keytar": "4.1.0",
     "lunr": "2.1.6",
     "node-fetch": "2.1.2",
