@@ -9,7 +9,11 @@ export class AttachmentView implements View {
     sizeName: string;
     fileName: string;
 
-    constructor(a: Attachment) {
+    constructor(a?: Attachment) {
+        if (!a) {
+            return;
+        }
+
         this.id = a.id;
         this.url = a.url;
         this.size = a.size;
