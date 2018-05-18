@@ -1,14 +1,18 @@
 import { StorageService } from '../abstractions/storage.service';
 import { TokenService } from '../abstractions/token.service';
-import { UserService as UserServiceAbsrtaction } from '../abstractions/user.service';
+import { UserService as UserServiceAbstraction } from '../abstractions/user.service';
+
+import { OrganizationData } from '../models/data/organizationData';
+import { Organization } from '../models/domain/organization';
 
 const Keys = {
     userId: 'userId',
     userEmail: 'userEmail',
     stamp: 'securityStamp',
+    organizationsPrefix: 'organizations_',
 };
 
-export class UserService implements UserServiceAbsrtaction {
+export class UserService implements UserServiceAbstraction {
     userId: string;
     email: string;
     stamp: string;
@@ -59,10 +63,13 @@ export class UserService implements UserServiceAbsrtaction {
     }
 
     async clear(): Promise<any> {
+        const userId = await this.getUserId();
+
         await Promise.all([
             this.storageService.remove(Keys.userId),
             this.storageService.remove(Keys.userEmail),
             this.storageService.remove(Keys.stamp),
+            this.clearOrganizations(userId),
         ]);
 
         this.userId = this.email = this.stamp = null;
@@ -76,5 +83,38 @@ export class UserService implements UserServiceAbsrtaction {
 
         const userId = await this.getUserId();
         return userId != null;
+    }
+
+    async getOrganization(id: string): Promise<Organization> {
+        const userId = await this.getUserId();
+        const organizations = await this.storageService.get<{ [id: string]: OrganizationData; }>(
+            Keys.organizationsPrefix + userId);
+        if (organizations == null || !organizations.hasOwnProperty(id)) {
+            return null;
+        }
+
+        return new Organization(organizations[id]);
+    }
+
+    async getAllOrganizations(): Promise<Organization[]> {
+        const userId = await this.getUserId();
+        const organizations = await this.storageService.get<{ [id: string]: OrganizationData; }>(
+            Keys.organizationsPrefix + userId);
+        const response: Organization[] = [];
+        for (const id in organizations) {
+            if (organizations.hasOwnProperty(id)) {
+                response.push(new Organization(organizations[id]));
+            }
+        }
+        return response;
+    }
+
+    async replaceOrganizations(organizations: { [id: string]: OrganizationData; }): Promise<any> {
+        const userId = await this.getUserId();
+        await this.storageService.save(Keys.organizationsPrefix + userId, organizations);
+    }
+
+    async clearOrganizations(userId: string): Promise<any> {
+        await this.storageService.remove(Keys.organizationsPrefix + userId);
     }
 }

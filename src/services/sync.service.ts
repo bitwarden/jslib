@@ -12,6 +12,7 @@ import { UserService } from '../abstractions/user.service';
 import { CipherData } from '../models/data/cipherData';
 import { CollectionData } from '../models/data/collectionData';
 import { FolderData } from '../models/data/folderData';
+import { OrganizationData } from '../models/data/organizationData';
 
 import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionResponse } from '../models/response/collectionResponse';
@@ -144,6 +145,13 @@ export class SyncService implements SyncServiceAbstraction {
         await this.cryptoService.setEncPrivateKey(response.privateKey);
         await this.cryptoService.setOrgKeys(response.organizations);
         await this.userService.setSecurityStamp(response.securityStamp);
+        await this.userService.setSecurityStamp(response.securityStamp);
+
+        const organizations: { [id: string]: OrganizationData; } = {};
+        response.organizations.forEach((o) => {
+            organizations[o.id] = new OrganizationData(o);
+        });
+        return await this.userService.replaceOrganizations(organizations);
     }
 
     private async syncFolders(userId: string, response: FolderResponse[]) {
