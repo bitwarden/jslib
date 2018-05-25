@@ -353,7 +353,7 @@ export class CipherService implements CipherServiceAbstraction {
         } catch (e) {
             if (Utils.isNode) {
                 fd.append('data', new Buffer(encData) as any, {
-                    filename: encFileName.encryptedString,
+                    filepath: encFileName.encryptedString,
                     contentType: 'application/octet-stream',
                 } as any);
             } else {
