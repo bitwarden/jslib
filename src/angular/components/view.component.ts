@@ -155,6 +155,7 @@ export class ViewComponent implements OnDestroy {
     }
 
     private cleanUp() {
+        this.totpCode = null;
         this.cipher = null;
         this.showPassword = false;
         if (this.totpInterval) {
