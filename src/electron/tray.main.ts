@@ -52,7 +52,9 @@ export class TrayMain {
             menuItemOptions.splice(1, 0, ...additionalMenuItems);
         }
 
-        this.contextMenu = Menu.buildFromTemplate(menuItemOptions);
+        if (process.platform !== 'darwin') {
+            this.contextMenu = Menu.buildFromTemplate(menuItemOptions);
+        }
         if (await this.storageService.get<boolean>(ElectronConstants.enableTrayKey)) {
             this.showTray();
         }
