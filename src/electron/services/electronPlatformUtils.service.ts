@@ -127,6 +127,16 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return true;
     }
 
+    showToast(type: 'error' | 'success' | 'warning' | 'info', title: string, text: string, global?: any): void {
+        if (global == null && Utils.isBrowser) {
+            global = window;
+        }
+        if (global == null || global.BitwardenToasterService == null) {
+            throw new Error('BitwardenToasterService not available on global.');
+        }
+        global.BitwardenToasterService.popAsync(type, title, text);
+    }
+
     showDialog(text: string, title?: string, confirmText?: string, cancelText?: string, type?: string):
         Promise<boolean> {
         const buttons = [confirmText == null ? this.i18nService.t('ok') : confirmText];
