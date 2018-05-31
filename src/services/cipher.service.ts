@@ -238,10 +238,12 @@ export class CipherService implements CipherServiceAbstraction {
                             }
                             break;
                         case UriMatchType.RegularExpression:
-                            const regex = new RegExp(u.uri, 'i');
-                            if (regex.test(url)) {
-                                return true;
-                            }
+                            try {
+                                const regex = new RegExp(u.uri, 'i');
+                                if (regex.test(url)) {
+                                    return true;
+                                }
+                            } catch { }
                             break;
                         case UriMatchType.Never:
                         default:
