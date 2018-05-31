@@ -13,9 +13,9 @@ export class Utils {
         }
 
         Utils.inited = true;
-        Utils.isNode = typeof window === 'undefined';
-        Utils.isBrowser = !Utils.isNode;
-        Utils.global = Utils.isNode ? global : window;
+        Utils.isNode = typeof process !== 'undefined' && (process as any).release.name === 'node';
+        Utils.isBrowser = typeof window !== 'undefined';
+        Utils.global = Utils.isNode && !Utils.isBrowser ? global : window;
     }
 
     static fromB64ToArray(str: string): Uint8Array {

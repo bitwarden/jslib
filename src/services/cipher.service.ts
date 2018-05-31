@@ -353,7 +353,7 @@ export class CipherService implements CipherServiceAbstraction {
             const blob = new Blob([encData], { type: 'application/octet-stream' });
             fd.append('data', blob, encFileName.encryptedString);
         } catch (e) {
-            if (Utils.isNode) {
+            if (Utils.isNode && !Utils.isBrowser) {
                 fd.append('data', new Buffer(encData) as any, {
                     filepath: encFileName.encryptedString,
                     contentType: 'application/octet-stream',
