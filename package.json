@@ -34,7 +34,7 @@
     "@types/papaparse": "4.1.31",
     "@types/webcrypto": "0.0.28",
     "concurrently": "3.5.1",
-    "electron": "1.8.4",
+    "electron": "2.0.2",
     "jasmine": "^3.1.0",
     "jasmine-core": "^2.8.0",
     "jasmine-spec-reporter": "^4.2.1",

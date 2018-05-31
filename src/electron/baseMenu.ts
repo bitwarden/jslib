@@ -217,11 +217,11 @@ export class BaseMenu {
         this.windowMain.win.webContents.on('context-menu', (e, props) => {
             const selected = props.selectionText && props.selectionText.trim() !== '';
             if (props.isEditable && selected) {
-                inputSelectionMenu.popup(this.windowMain.win);
+                inputSelectionMenu.popup({ window: this.windowMain.win });
             } else if (props.isEditable) {
-                inputMenu.popup(this.windowMain.win);
+                inputMenu.popup({ window: this.windowMain.win });
             } else if (selected) {
-                selectionMenu.popup(this.windowMain.win);
+                selectionMenu.popup({ window: this.windowMain.win });
             }
         });
     }
