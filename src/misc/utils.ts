@@ -13,7 +13,8 @@ export class Utils {
         }
 
         Utils.inited = true;
-        Utils.isNode = typeof process !== 'undefined' && (process as any).release.name === 'node';
+        Utils.isNode = typeof process !== 'undefined' && (process as any).release != null &&
+            (process as any).release.name === 'node';
         Utils.isBrowser = typeof window !== 'undefined';
         Utils.global = Utils.isNode && !Utils.isBrowser ? global : window;
     }
