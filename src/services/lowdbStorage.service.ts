@@ -35,7 +35,7 @@ export class LowdbStorageService implements StorageService {
     }
 
     get<T>(key: string): Promise<T> {
-        const val = this.db.get(key).value();
+        const val = this.db.read().get(key).value();
         if (val == null) {
             return Promise.resolve(null);
         }
