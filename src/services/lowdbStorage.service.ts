@@ -30,7 +30,7 @@ export class LowdbStorageService implements StorageService {
 
     init() {
         if (this.defaults != null) {
-            this.db.defaults(this.defaults).write();
+            this.db.read().defaults(this.defaults).write();
         }
     }
 
@@ -43,12 +43,12 @@ export class LowdbStorageService implements StorageService {
     }
 
     save(key: string, obj: any): Promise<any> {
-        this.db.set(key, obj).write();
+        this.db.read().set(key, obj).write();
         return Promise.resolve();
     }
 
     remove(key: string): Promise<any> {
-        this.db.unset(key).write();
+        this.db.read().unset(key).write();
         return Promise.resolve();
     }
 }
