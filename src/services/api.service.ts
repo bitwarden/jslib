@@ -27,16 +27,20 @@ export class ApiService implements ApiServiceAbstraction {
     baseUrl: string;
     identityBaseUrl: string;
     deviceType: string;
+    isWebClient = false;
+    usingBaseUrl = false;
 
     constructor(private tokenService: TokenService, private platformUtilsService: PlatformUtilsService,
         private logoutCallback: (expired: boolean) => Promise<void>) {
         this.deviceType = platformUtilsService.getDevice().toString();
+        this.isWebClient = platformUtilsService.identityClientId === 'web';
     }
 
     setUrls(urls: EnvironmentUrls): void {
         this.urlsSet = true;
 
         if (urls.base != null) {
+            this.usingBaseUrl = true;
             this.baseUrl = urls.base + '/api';
             this.identityBaseUrl = urls.base + '/identity';
             return;
@@ -76,7 +80,7 @@ export class ApiService implements ApiServiceAbstraction {
     async postIdentityToken(request: TokenRequest): Promise<IdentityTokenResponse | IdentityTwoFactorResponse> {
         const response = await fetch(new Request(this.identityBaseUrl + '/connect/token', {
             body: this.qsStringify(request.toIdentityToken(this.platformUtilsService.identityClientId)),
-            credentials: 'include',
+            credentials: this.getCredentials(),
             cache: 'no-cache',
             headers: new Headers({
                 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
@@ -119,7 +123,7 @@ export class ApiService implements ApiServiceAbstraction {
         const response = await fetch(new Request(this.baseUrl + '/two-factor/send-email-login', {
             body: JSON.stringify(request),
             cache: 'no-cache',
-            credentials: 'include',
+            credentials: this.getCredentials(),
             headers: new Headers({
                 'Content-Type': 'application/json; charset=utf-8',
                 'Device-Type': this.deviceType,
@@ -139,7 +143,7 @@ export class ApiService implements ApiServiceAbstraction {
         const authHeader = await this.handleTokenState();
         const response = await fetch(new Request(this.baseUrl + '/accounts/profile', {
             cache: 'no-cache',
-            credentials: 'include',
+            credentials: this.getCredentials(),
             headers: new Headers({
                 'Accept': 'application/json',
                 'Authorization': authHeader,
@@ -160,7 +164,7 @@ export class ApiService implements ApiServiceAbstraction {
         const authHeader = await this.handleTokenState();
         const response = await fetch(new Request(this.baseUrl + '/accounts/revision-date', {
             cache: 'no-cache',
-            credentials: 'include',
+            credentials: this.getCredentials(),
             headers: new Headers({
                 'Accept': 'application/json',
                 'Authorization': authHeader,
@@ -180,7 +184,7 @@ export class ApiService implements ApiServiceAbstraction {
         const response = await fetch(new Request(this.baseUrl + '/accounts/password-hint', {
             body: JSON.stringify(request),
             cache: 'no-cache',
-            credentials: 'include',
+            credentials: this.getCredentials(),
             headers: new Headers({
                 'Content-Type': 'application/json; charset=utf-8',
                 'Device-Type': this.deviceType,
@@ -198,7 +202,7 @@ export class ApiService implements ApiServiceAbstraction {
         const response = await fetch(new Request(this.baseUrl + '/accounts/register', {
             body: JSON.stringify(request),
             cache: 'no-cache',
-            credentials: 'include',
+            credentials: this.getCredentials(),
             headers: new Headers({
                 'Content-Type': 'application/json; charset=utf-8',
                 'Device-Type': this.deviceType,
@@ -219,7 +223,7 @@ export class ApiService implements ApiServiceAbstraction {
         const response = await fetch(new Request(this.baseUrl + '/folders', {
             body: JSON.stringify(request),
             cache: 'no-cache',
-            credentials: 'include',
+            credentials: this.getCredentials(),
             headers: new Headers({
                 'Accept': 'application/json',
                 'Authorization': authHeader,
@@ -243,7 +247,7 @@ export class ApiService implements ApiServiceAbstraction {
         const response = await fetch(new Request(this.baseUrl + '/folders/' + id, {
             body: JSON.stringify(request),
             cache: 'no-cache',
-            credentials: 'include',
+            credentials: this.getCredentials(),
             headers: new Headers({
                 'Accept': 'application/json',
                 'Authorization': authHeader,
@@ -266,7 +270,7 @@ export class ApiService implements ApiServiceAbstraction {
         const authHeader = await this.handleTokenState();
         const response = await fetch(new Request(this.baseUrl + '/folders/' + id, {
             cache: 'no-cache',
-            credentials: 'include',
+            credentials: this.getCredentials(),
             headers: new Headers({
                 'Authorization': authHeader,
                 'Device-Type': this.deviceType,
@@ -287,7 +291,7 @@ export class ApiService implements ApiServiceAbstraction {
         const response = await fetch(new Request(this.baseUrl + '/ciphers', {
             body: JSON.stringify(request),
             cache: 'no-cache',
-            credentials: 'include',
+            credentials: this.getCredentials(),
             headers: new Headers({
                 'Accept': 'application/json',
                 'Authorization': authHeader,
@@ -311,7 +315,7 @@ export class ApiService implements ApiServiceAbstraction {
         const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id, {
             body: JSON.stringify(request),
             cache: 'no-cache',
-            credentials: 'include',
+            credentials: this.getCredentials(),
             headers: new Headers({
                 'Accept': 'application/json',
                 'Authorization': authHeader,
@@ -334,7 +338,7 @@ export class ApiService implements ApiServiceAbstraction {
         const authHeader = await this.handleTokenState();
         const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id, {
             cache: 'no-cache',
-            credentials: 'include',
+            credentials: this.getCredentials(),
             headers: new Headers({
                 'Authorization': authHeader,
                 'Device-Type': this.deviceType,
@@ -355,7 +359,7 @@ export class ApiService implements ApiServiceAbstraction {
         const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id + '/attachment', {
             body: data,
             cache: 'no-cache',
-            credentials: 'include',
+            credentials: this.getCredentials(),
             headers: new Headers({
                 'Accept': 'application/json',
                 'Authorization': authHeader,
@@ -377,7 +381,7 @@ export class ApiService implements ApiServiceAbstraction {
         const authHeader = await this.handleTokenState();
         const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id + '/attachment/' + attachmentId, {
             cache: 'no-cache',
-            credentials: 'include',
+            credentials: this.getCredentials(),
             headers: new Headers({
                 'Authorization': authHeader,
                 'Device-Type': this.deviceType,
@@ -397,7 +401,7 @@ export class ApiService implements ApiServiceAbstraction {
         const authHeader = await this.handleTokenState();
         const response = await fetch(new Request(this.baseUrl + '/sync', {
             cache: 'no-cache',
-            credentials: 'include',
+            credentials: this.getCredentials(),
             headers: new Headers({
                 'Accept': 'application/json',
                 'Authorization': authHeader,
@@ -419,7 +423,7 @@ export class ApiService implements ApiServiceAbstraction {
         const response = await fetch(new Request(this.baseUrl + '/organizations/' + organizationId + '/import', {
             body: JSON.stringify(request),
             cache: 'no-cache',
-            credentials: 'include',
+            credentials: this.getCredentials(),
             headers: new Headers({
                 'Accept': 'application/json',
                 'Authorization': authHeader,
@@ -476,7 +480,7 @@ export class ApiService implements ApiServiceAbstraction {
                 refresh_token: refreshToken,
             }),
             cache: 'no-cache',
-            credentials: 'include',
+            credentials: this.getCredentials(),
             headers: new Headers({
                 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
                 'Accept': 'application/json',
@@ -500,5 +504,12 @@ export class ApiService implements ApiServiceAbstraction {
         return Object.keys(params).map((key) => {
             return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
         }).join('&');
+    }
+
+    private getCredentials(): RequestCredentials {
+        if (!this.isWebClient || this.usingBaseUrl) {
+            return 'include';
+        }
+        return undefined;
     }
 }
