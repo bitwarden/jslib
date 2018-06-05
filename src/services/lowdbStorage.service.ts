@@ -12,7 +12,7 @@ export class LowdbStorageService implements StorageService {
     private db: lowdb.LowdbSync<any>;
     private defaults: any;
 
-    constructor(defaults?: any, dir?: string) {
+    constructor(defaults?: any, dir?: string, private allowCache = false) {
         this.defaults = defaults;
 
         let adapter: lowdb.AdapterSync<any>;
@@ -22,20 +22,24 @@ export class LowdbStorageService implements StorageService {
             }
             const p = path.join(dir, 'data.json');
             adapter = new FileSync(p);
-        } else if (Utils.isBrowser && !Utils.isNode) {
-            // local storage adapter for web
         }
         this.db = lowdb(adapter);
     }
 
     init() {
         if (this.defaults != null) {
-            this.db.read().defaults(this.defaults).write();
+            if (!this.allowCache) {
+                this.db.read();
+            }
+            this.db.defaults(this.defaults).write();
         }
     }
 
     get<T>(key: string): Promise<T> {
-        const val = this.db.read().get(key).value();
+        if (!this.allowCache) {
+            this.db.read();
+        }
+        const val = this.db.get(key).value();
         if (val == null) {
             return Promise.resolve(null);
         }
@@ -43,12 +47,18 @@ export class LowdbStorageService implements StorageService {
     }
 
     save(key: string, obj: any): Promise<any> {
-        this.db.read().set(key, obj).write();
+        if (!this.allowCache) {
+            this.db.read();
+        }
+        this.db.set(key, obj).write();
         return Promise.resolve();
     }
 
     remove(key: string): Promise<any> {
-        this.db.read().unset(key).write();
+        if (!this.allowCache) {
+            this.db.read();
+        }
+        this.db.unset(key).write();
         return Promise.resolve();
     }
 }
