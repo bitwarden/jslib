@@ -22,7 +22,7 @@ export class ModalComponent implements OnDestroy {
     parentContainer: ViewContainerRef = null;
     fade: boolean = true;
 
-    constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
+    constructor(protected componentFactoryResolver: ComponentFactoryResolver) { }
 
     ngOnDestroy() {
         document.body.classList.remove('modal-open');
@@ -46,7 +46,8 @@ export class ModalComponent implements OnDestroy {
             e.stopPropagation();
         });
 
-        for (const closeElement of document.querySelectorAll('.modal, .modal *[data-dismiss="modal"]')) {
+        const modals = Array.from(document.querySelectorAll('.modal, .modal *[data-dismiss="modal"]'));
+        for (const closeElement of modals) {
             closeElement.addEventListener('click', (event) => {
                 this.close();
             });
