@@ -278,6 +278,10 @@ export class AddEditComponent {
     }
 
     async checkPassword() {
+        if (this.checkPasswordPromise != null) {
+            return;
+        }
+
         if (this.cipher.login == null || this.cipher.login.password == null || this.cipher.login.password === '') {
             return;
         }
@@ -285,6 +289,7 @@ export class AddEditComponent {
         this.analytics.eventTrack.next({ action: 'Check Password' });
         this.checkPasswordPromise = this.auditService.passwordLeaked(this.cipher.login.password);
         const matches = await this.checkPasswordPromise;
+        this.checkPasswordPromise = null;
 
         if (matches > 0) {
             this.toasterService.popAsync('warning', null, this.i18nService.t('passwordExposed', matches.toString()));

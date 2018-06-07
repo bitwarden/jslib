@@ -18,6 +18,7 @@ export const AnalyticsIds = {
     [DeviceType.Windows]: 'UA-81915606-17',
     [DeviceType.Linux]: 'UA-81915606-19',
     [DeviceType.MacOs]: 'UA-81915606-18',
+    [DeviceType.Web]: 'UA-81915606-3',
 };
 
 export class Analytics {

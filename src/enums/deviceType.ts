@@ -8,4 +8,5 @@ export enum DeviceType {
     Linux = 8,
     Vivaldi = 19,
     Safari = 20,
+    Web = 21,
 }
