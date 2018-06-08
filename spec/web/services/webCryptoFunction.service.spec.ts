@@ -351,6 +351,8 @@ function testHmacFast(algorithm: 'sha1' | 'sha256' | 'sha512', mac: string) {
 function getWebCryptoFunctionService() {
     const platformUtilsMock = TypeMoq.Mock.ofType<PlatformUtilsService>(PlatformUtilsServiceMock);
     platformUtilsMock.setup((x) => x.isEdge()).returns(() => navigator.userAgent.indexOf(' Edge/') !== -1);
+    platformUtilsMock.setup((x) => x.isIE()).returns(() => navigator.userAgent.indexOf(' Edge/') === -1 &&
+        navigator.userAgent.indexOf(' Trident/') !== -1);
     return new WebCryptoFunctionService(window, platformUtilsMock.object);
 }
 
@@ -364,4 +366,5 @@ function makeStaticByteArray(length: number) {
 
 class PlatformUtilsServiceMock extends PlatformUtilsService {
     isEdge = () => false;
+    isIE = () => false;
 }
