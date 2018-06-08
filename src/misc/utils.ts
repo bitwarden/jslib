@@ -165,7 +165,15 @@ export class Utils {
 
         if (uriString.startsWith('http://') || uriString.startsWith('https://')) {
             try {
-                return nodeURL != null ? new nodeURL(uriString) : new URL(uriString);
+                if (nodeURL != null) {
+                    return new nodeURL(uriString);
+                } else if (typeof URL === 'function') {
+                    return new URL(uriString);
+                } else if (window != null) {
+                    const anchor = window.document.createElement('a');
+                    anchor.href = uriString;
+                    return anchor as any;
+                }
             } catch (e) { }
         }
 

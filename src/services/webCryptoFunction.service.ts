@@ -12,16 +12,18 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     private crypto: Crypto;
     private subtle: SubtleCrypto;
     private isEdge: boolean;
+    private isIE: boolean;
 
     constructor(private win: Window, private platformUtilsService: PlatformUtilsService) {
-        this.crypto = win.crypto;
-        this.subtle = win.crypto.subtle;
+        this.crypto = typeof win.crypto !== 'undefined' ? win.crypto : null;
+        this.subtle = (!!this.crypto && typeof win.crypto.subtle !== 'undefined') ? win.crypto.subtle : null;
         this.isEdge = platformUtilsService.isEdge();
+        this.isIE = platformUtilsService.isIE();
     }
 
     async pbkdf2(password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
         iterations: number): Promise<ArrayBuffer> {
-        if (this.isEdge) {
+        if (this.isEdge || this.isIE) {
             const forgeLen = algorithm === 'sha256' ? 32 : 64;
             const passwordBytes = this.toByteString(password);
             const saltBytes = this.toByteString(salt);
@@ -46,7 +48,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     }
 
     async hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
-        if (this.isEdge && algorithm === 'sha1') {
+        if ((this.isEdge || this.isIE) && algorithm === 'sha1') {
             const md = forge.md.sha1.create();
             const valueBytes = this.toByteString(value);
             md.update(valueBytes, 'raw');

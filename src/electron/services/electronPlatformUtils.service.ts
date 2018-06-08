@@ -74,6 +74,10 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return false;
     }
 
+    isIE(): boolean {
+        return false;
+    }
+
     isMacAppStore(): boolean {
         return isMacAppStore();
     }

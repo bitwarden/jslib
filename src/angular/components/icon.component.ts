@@ -11,6 +11,8 @@ import { StateService } from '../../abstractions/state.service';
 
 import { ConstantsService } from '../../services/constants.service';
 
+import { Utils } from '../../misc/utils';
+
 @Component({
     selector: 'app-vault-icon',
     templateUrl: 'icon.component.html',
@@ -77,8 +79,7 @@ export class IconComponent implements OnChanges {
 
             if (this.imageEnabled && isWebsite) {
                 try {
-                    const url = new URL(hostnameUri);
-                    this.image = this.iconsUrl + '/' + url.hostname + '/icon.png';
+                    this.image = this.iconsUrl + '/' + Utils.getHostname(hostnameUri) + '/icon.png';
                     this.fallbackImage = 'images/fa-globe.png';
                 } catch (e) { }
             }
