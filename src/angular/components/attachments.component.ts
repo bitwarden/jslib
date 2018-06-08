@@ -32,7 +32,7 @@ export class AttachmentsComponent implements OnInit {
     constructor(protected cipherService: CipherService, protected analytics: Angulartics2,
         protected toasterService: ToasterService, protected i18nService: I18nService,
         protected cryptoService: CryptoService, protected tokenService: TokenService,
-        protected platformUtilsService: PlatformUtilsService) { }
+        protected platformUtilsService: PlatformUtilsService, protected win: Window) { }
 
     async ngOnInit() {
         this.cipherDomain = await this.cipherService.get(this.cipherId);
@@ -121,5 +121,37 @@ export class AttachmentsComponent implements OnInit {
         } catch { }
 
         this.deletePromises[attachment.id] = null;
+    }
+
+    async download(attachment: AttachmentView) {
+        const a = (attachment as any);
+        if (a.downloading) {
+            return;
+        }
+
+        if (!this.canAccessAttachments) {
+            this.toasterService.popAsync('error', this.i18nService.t('premiumRequired'),
+                this.i18nService.t('premiumRequiredDesc'));
+            return;
+        }
+
+        a.downloading = true;
+        const response = await fetch(new Request(attachment.url, { cache: 'no-cache' }));
+        if (response.status !== 200) {
+            this.toasterService.popAsync('error', null, this.i18nService.t('errorOccurred'));
+            a.downloading = false;
+            return;
+        }
+
+        try {
+            const buf = await response.arrayBuffer();
+            const key = await this.cryptoService.getOrgKey(this.cipher.organizationId);
+            const decBuf = await this.cryptoService.decryptFromBytes(buf, key);
+            this.platformUtilsService.saveFile(this.win, decBuf, null, attachment.fileName);
+        } catch (e) {
+            this.toasterService.popAsync('error', null, this.i18nService.t('errorOccurred'));
+        }
+
+        a.downloading = false;
     }
 }
