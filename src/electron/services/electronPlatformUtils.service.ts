@@ -103,6 +103,10 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return false;
     }
 
+    lockTimeout(): number {
+        return null;
+    }
+
     launchUri(uri: string, options?: any): void {
         shell.openExternal(uri);
     }

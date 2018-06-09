@@ -42,7 +42,10 @@ export class LockService implements LockServiceAbstraction {
             return;
         }
 
-        const lockOption = await this.storageService.get<number>(ConstantsService.lockOptionKey);
+        let lockOption = this.platformUtilsService.lockTimeout();
+        if (lockOption == null) {
+            lockOption = await this.storageService.get<number>(ConstantsService.lockOptionKey);
+        }
         if (lockOption == null || lockOption < 0) {
             return;
         }

@@ -15,6 +15,7 @@ export abstract class PlatformUtilsService {
     analyticsId: () => string;
     getDomain: (uriString: string) => string;
     isViewOpen: () => boolean;
+    lockTimeout: () => number;
     launchUri: (uri: string, options?: any) => void;
     saveFile: (win: Window, blobData: any, blobOptions: any, fileName: string) => void;
     getApplicationVersion: () => string;
