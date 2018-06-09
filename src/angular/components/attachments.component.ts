@@ -21,6 +21,8 @@ import { CipherView } from '../../models/view/cipherView';
 
 export class AttachmentsComponent implements OnInit {
     @Input() cipherId: string;
+    @Output() onUploadedAttachment = new EventEmitter();
+    @Output() onDeletedAttachment = new EventEmitter();
 
     cipher: CipherView;
     cipherDomain: Cipher;
@@ -87,6 +89,7 @@ export class AttachmentsComponent implements OnInit {
             this.cipher = await this.cipherDomain.decrypt();
             this.analytics.eventTrack.next({ action: 'Added Attachment' });
             this.toasterService.popAsync('success', null, this.i18nService.t('attachmentSaved'));
+            this.onUploadedAttachment.emit();
         } catch { }
 
         // reset file input
@@ -121,6 +124,7 @@ export class AttachmentsComponent implements OnInit {
         } catch { }
 
         this.deletePromises[attachment.id] = null;
+        this.onDeletedAttachment.emit();
     }
 
     async download(attachment: AttachmentView) {

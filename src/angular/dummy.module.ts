@@ -7,7 +7,6 @@ import { TrueFalseValueDirective } from './directives/true-false-value.directive
     imports: [],
     declarations: [
         InputVerbatimDirective,
-        TrueFalseValueDirective,
     ],
 })
 export class DummyModule {
