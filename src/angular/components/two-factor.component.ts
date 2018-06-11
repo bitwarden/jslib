@@ -22,6 +22,7 @@ import { SyncService } from '../../abstractions/sync.service';
 
 import { TwoFactorProviders } from '../../services/auth.service';
 
+import * as DuoWebSDK from '../../misc/duo';
 import { U2f } from '../../misc/u2f';
 
 export class TwoFactorComponent implements OnInit, OnDestroy {
@@ -120,7 +121,8 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 }
 
                 setTimeout(() => {
-                    (this.win as any).Duo.init({
+                    DuoWebSDK.init({
+                        iframe: undefined,
                         host: params.Host,
                         sig_request: params.Signature,
                         submit_callback: async (f: HTMLFormElement) => {
@@ -131,7 +133,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                             }
                         },
                     });
-                });
+                }, 0);
                 break;
             case TwoFactorProviderType.Email:
                 this.twoFactorEmail = params.Email;
