@@ -21,6 +21,7 @@ export class CipherRequest {
     card: CardApi;
     identity: IdentityApi;
     fields: FieldApi[];
+    attachments: { [id: string]: string; };
 
     constructor(cipher: Cipher) {
         this.type = cipher.type;
@@ -99,6 +100,13 @@ export class CipherRequest {
                     name: field.name ? field.name.encryptedString : null,
                     value: field.value ? field.value.encryptedString : null,
                 });
+            });
+        }
+
+        if (cipher.attachments) {
+            this.attachments = {};
+            cipher.attachments.forEach((attachment) => {
+                this.attachments[attachment.id] = attachment.fileName ? attachment.fileName.encryptedString : null;
             });
         }
     }

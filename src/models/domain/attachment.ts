@@ -32,4 +32,15 @@ export class Attachment extends Domain {
             fileName: null,
         }, orgId);
     }
+
+    toAttachmentData(): AttachmentData {
+        const a = new AttachmentData();
+        this.buildDataModel(this, a, {
+            id: null,
+            url: null,
+            sizeName: null,
+            fileName: null,
+        }, ['id', 'url', 'sizeName']);
+        return a;
+    }
 }

@@ -18,6 +18,20 @@ export default abstract class Domain {
             }
         }
     }
+    protected buildDataModel<D extends Domain>(domain: D, dataObj: any, map: any, notCipherStringList: any[] = []) {
+        for (const prop in map) {
+            if (!map.hasOwnProperty(prop)) {
+                continue;
+            }
+
+            const objProp = (domain as any)[(map[prop] || prop)];
+            if (notCipherStringList.indexOf(prop) > -1) {
+                (dataObj as any)[prop] = objProp != null ? objProp : null;
+            } else {
+                (dataObj as any)[prop] = objProp != null ? (objProp as CipherString).encryptedString : null;
+            }
+        }
+    }
 
     protected async decryptObj<T extends View>(viewModel: T, map: any, orgId: string): Promise<T> {
         const promises = [];

@@ -28,4 +28,12 @@ export class LoginUri extends Domain {
             uri: null,
         }, orgId);
     }
+
+    toLoginUriData(): LoginUriData {
+        const u = new LoginUriData();
+        this.buildDataModel(this, u, {
+            uri: null,
+        }, ['match']);
+        return u;
+    }
 }

@@ -75,4 +75,29 @@ export class Identity extends Domain {
             licenseNumber: null,
         }, orgId);
     }
+
+    toIdentityData(): IdentityData {
+        const i = new IdentityData();
+        this.buildDataModel(this, i, {
+            title: null,
+            firstName: null,
+            middleName: null,
+            lastName: null,
+            address1: null,
+            address2: null,
+            address3: null,
+            city: null,
+            state: null,
+            postalCode: null,
+            country: null,
+            company: null,
+            email: null,
+            phone: null,
+            ssn: null,
+            username: null,
+            passportNumber: null,
+            licenseNumber: null,
+        });
+        return i;
+    }
 }

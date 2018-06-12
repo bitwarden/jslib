@@ -20,7 +20,11 @@ export class IdentityData {
     passportNumber: string;
     licenseNumber: string;
 
-    constructor(data: IdentityApi) {
+    constructor(data?: IdentityApi) {
+        if (data == null) {
+            return;
+        }
+
         this.title = data.title;
         this.firstName = data.firstName;
         this.middleName = data.middleName;

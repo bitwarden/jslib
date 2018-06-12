@@ -3,6 +3,7 @@ import { UriMatchType } from '../enums/uriMatchType';
 
 import { CipherData } from '../models/data/cipherData';
 
+import { Attachment } from '../models/domain/attachment';
 import { Card } from '../models/domain/card';
 import { Cipher } from '../models/domain/cipher';
 import { CipherString } from '../models/domain/cipherString';
@@ -19,6 +20,7 @@ import { CipherRequest } from '../models/request/cipherRequest';
 import { CipherResponse } from '../models/response/cipherResponse';
 import { ErrorResponse } from '../models/response/errorResponse';
 
+import { AttachmentView } from '../models/view/attachmentView';
 import { CardView } from '../models/view/cardView';
 import { CipherView } from '../models/view/cipherView';
 import { FieldView } from '../models/view/fieldView';
@@ -38,6 +40,7 @@ import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
 import { Utils } from '../misc/utils';
+import { CipherShareRequest } from '../models/request/cipherShareRequest';
 
 const Keys = {
     ciphersPrefix: 'ciphers_',
@@ -77,9 +80,37 @@ export class CipherService implements CipherServiceAbstraction {
             this.encryptFields(model.fields, key).then((fields) => {
                 cipher.fields = fields;
             }),
+            this.encryptAttachments(model.attachments, key).then((attachments) => {
+                cipher.attachments = attachments;
+            }),
         ]);
 
         return cipher;
+    }
+
+    async encryptAttachments(attachmentsModel: AttachmentView[], key: SymmetricCryptoKey): Promise<Attachment[]> {
+        if (attachmentsModel == null || attachmentsModel.length === 0) {
+            return null;
+        }
+
+        const promises: Array<Promise<any>> = [];
+        const encAttachments: Attachment[] = [];
+        attachmentsModel.forEach(async (model) => {
+            const attachment = new Attachment();
+            attachment.id = model.id;
+            attachment.size = model.size;
+            attachment.sizeName = model.sizeName;
+            attachment.url = model.url;
+            const promise = this.encryptObjProperty(model, attachment, {
+                fileName: null,
+            }, key).then(() => {
+                encAttachments.push(attachment);
+            });
+            promises.push(promise);
+        });
+
+        await Promise.all(promises);
+        return encAttachments;
     }
 
     async encryptFields(fieldsModel: FieldView[], key: SymmetricCryptoKey): Promise<Field[]> {
@@ -322,6 +353,49 @@ export class CipherService implements CipherServiceAbstraction {
         const userId = await this.userService.getUserId();
         const data = new CipherData(response, userId, cipher.collectionIds);
         await this.upsert(data);
+    }
+
+    async shareWithServer(cipher: Cipher): Promise<any> {
+        const request = new CipherShareRequest(cipher);
+        await this.apiService.shareCipher(cipher.id, request);
+        const userId = await this.userService.getUserId();
+        await this.upsert(cipher.toCipherData(userId));
+    }
+
+    async shareAttachmentWithServer(attachmentView: AttachmentView, cipherId: string,
+        organizationId: string): Promise<any> {
+        const attachmentResponse = await fetch(new Request(attachmentView.url, { cache: 'no-cache' }));
+        if (attachmentResponse.status !== 200) {
+            throw Error('Failed to download attachment: ' + attachmentResponse.status.toString());
+        }
+
+        const buf = await attachmentResponse.arrayBuffer();
+        const decBuf = await this.cryptoService.decryptFromBytes(buf, null);
+        const key = await this.cryptoService.getOrgKey(organizationId);
+        const encData = await this.cryptoService.encryptToBytes(decBuf, key);
+        const encFileName = await this.cryptoService.encrypt(attachmentView.fileName, key);
+
+        const fd = new FormData();
+        try {
+            const blob = new Blob([encData], { type: 'application/octet-stream' });
+            fd.append('data', blob, encFileName.encryptedString);
+        } catch (e) {
+            if (Utils.isNode && !Utils.isBrowser) {
+                fd.append('data', new Buffer(encData) as any, {
+                    filepath: encFileName.encryptedString,
+                    contentType: 'application/octet-stream',
+                } as any);
+            } else {
+                throw e;
+            }
+        }
+
+        let response: CipherResponse;
+        try {
+            response = await this.apiService.shareCipherAttachment(cipherId, attachmentView.id, fd, organizationId);
+        } catch (e) {
+            throw new Error((e as ErrorResponse).getSingleMessage());
+        }
     }
 
     saveAttachmentWithServer(cipher: Cipher, unencryptedFile: any): Promise<Cipher> {

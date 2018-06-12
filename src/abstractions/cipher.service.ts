@@ -6,6 +6,7 @@ import { Cipher } from '../models/domain/cipher';
 import { Field } from '../models/domain/field';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
+import { AttachmentView } from '../models/view/attachmentView';
 import { CipherView } from '../models/view/cipherView';
 import { FieldView } from '../models/view/fieldView';
 
@@ -25,6 +26,9 @@ export abstract class CipherService {
     updateLastUsedDate: (id: string) => Promise<void>;
     saveNeverDomain: (domain: string) => Promise<void>;
     saveWithServer: (cipher: Cipher) => Promise<any>;
+    shareWithServer: (cipher: Cipher) => Promise<any>;
+    shareAttachmentWithServer: (attachmentView: AttachmentView, cipherId: string,
+        organizationId: string) => Promise<any>;
     saveAttachmentWithServer: (cipher: Cipher, unencryptedFile: any) => Promise<Cipher>;
     saveAttachmentRawWithServer: (cipher: Cipher, filename: string, data: ArrayBuffer) => Promise<Cipher>;
     upsert: (cipher: CipherData | CipherData[]) => Promise<any>;

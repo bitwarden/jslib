@@ -17,7 +17,7 @@ export class CipherData {
     edit: boolean;
     organizationUseTotp: boolean;
     favorite: boolean;
-    revisionDate: string;
+    revisionDate: Date;
     type: CipherType;
     sizeName: string;
     name: string;
@@ -30,7 +30,11 @@ export class CipherData {
     attachments?: AttachmentData[];
     collectionIds?: string[];
 
-    constructor(response: CipherResponse, userId: string, collectionIds?: string[]) {
+    constructor(response?: CipherResponse, userId?: string, collectionIds?: string[]) {
+        if (response == null) {
+            return;
+        }
+
         this.id = response.id;
         this.organizationId = response.organizationId;
         this.folderId = response.folderId;

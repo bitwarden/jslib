@@ -6,7 +6,10 @@ export class LoginUriData {
     uri: string;
     match: UriMatchType = null;
 
-    constructor(data: LoginUriApi) {
+    constructor(data?: LoginUriApi) {
+        if (data == null) {
+            return;
+        }
         this.uri = data.uri;
         this.match = data.match;
     }

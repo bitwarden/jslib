@@ -21,7 +21,7 @@ export class CipherResponse {
     favorite: boolean;
     edit: boolean;
     organizationUseTotp: boolean;
-    revisionDate: string;
+    revisionDate: Date;
     attachments: AttachmentResponse[];
     collectionIds: string[];
 
@@ -35,7 +35,7 @@ export class CipherResponse {
         this.favorite = response.Favorite;
         this.edit = response.Edit;
         this.organizationUseTotp = response.OrganizationUseTotp;
-        this.revisionDate = response.RevisionDate;
+        this.revisionDate = new Date(response.RevisionDate);
 
         if (response.Login != null) {
             this.login = new LoginApi(response.Login);

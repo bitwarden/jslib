@@ -9,7 +9,11 @@ export class LoginData {
     password: string;
     totp: string;
 
-    constructor(data: LoginApi) {
+    constructor(data?: LoginApi) {
+        if (data == null) {
+            return;
+        }
+
         this.username = data.username;
         this.password = data.password;
         this.totp = data.totp;

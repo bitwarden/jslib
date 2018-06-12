@@ -7,7 +7,10 @@ export class FieldData {
     name: string;
     value: string;
 
-    constructor(response: FieldApi) {
+    constructor(response?: FieldApi) {
+        if (response == null) {
+            return;
+        }
         this.type = response.type;
         this.name = response.name;
         this.value = response.value;

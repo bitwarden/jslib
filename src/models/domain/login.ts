@@ -51,4 +51,22 @@ export class Login extends Domain {
 
         return view;
     }
+
+    toLoginData(): LoginData {
+        const l = new LoginData();
+        this.buildDataModel(this, l, {
+            username: null,
+            password: null,
+            totp: null,
+        });
+
+        if (this.uris != null && this.uris.length > 0) {
+            l.uris = [];
+            this.uris.forEach((u) => {
+                l.uris.push(u.toLoginUriData());
+            });
+        }
+
+        return l;
+    }
 }

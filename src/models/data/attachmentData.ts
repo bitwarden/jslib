@@ -7,7 +7,10 @@ export class AttachmentData {
     size: number;
     sizeName: string;
 
-    constructor(response: AttachmentResponse) {
+    constructor(response?: AttachmentResponse) {
+        if (response == null) {
+            return;
+        }
         this.id = response.id;
         this.url = response.url;
         this.fileName = response.fileName;

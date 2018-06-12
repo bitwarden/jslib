@@ -23,6 +23,7 @@ export class Cipher extends Domain {
     favorite: boolean;
     organizationUseTotp: boolean;
     edit: boolean;
+    revisionDate: Date;
     localData: any;
     login: Login;
     identity: Identity;
@@ -40,16 +41,18 @@ export class Cipher extends Domain {
 
         this.buildDomainModel(this, obj, {
             id: null,
+            userId: null,
             organizationId: null,
             folderId: null,
             name: null,
             notes: null,
-        }, alreadyEncrypted, ['id', 'organizationId', 'folderId']);
+        }, alreadyEncrypted, ['id', 'userId', 'organizationId', 'folderId']);
 
         this.type = obj.type;
         this.favorite = obj.favorite;
         this.organizationUseTotp = obj.organizationUseTotp;
         this.edit = obj.edit;
+        this.revisionDate = obj.revisionDate;
         this.collectionIds = obj.collectionIds;
         this.localData = localData;
 
@@ -141,5 +144,56 @@ export class Cipher extends Domain {
         }
 
         return model;
+    }
+
+    toCipherData(userId: string): CipherData {
+        const c = new CipherData();
+        c.id = this.id;
+        c.organizationId = this.organizationId;
+        c.folderId = this.folderId;
+        c.userId = this.organizationId != null ? userId : null;
+        c.edit = this.edit;
+        c.organizationUseTotp = this.organizationUseTotp;
+        c.favorite = this.favorite;
+        c.revisionDate = this.revisionDate;
+        c.type = this.type;
+        c.collectionIds = this.collectionIds;
+
+        this.buildDataModel(this, c, {
+            name: null,
+            notes: null,
+        });
+
+        switch (c.type) {
+            case CipherType.Login:
+                c.login = this.login.toLoginData();
+                break;
+            case CipherType.SecureNote:
+                c.secureNote = this.secureNote.toSecureNoteData();
+                break;
+            case CipherType.Card:
+                c.card = this.card.toCardData();
+                break;
+            case CipherType.Identity:
+                c.identity = this.identity.toIdentityData();
+                break;
+            default:
+                break;
+        }
+
+        if (this.fields != null) {
+            c.fields = [];
+            this.fields.forEach((field) => {
+                c.fields.push(field.toFieldData());
+            });
+        }
+
+        if (this.attachments != null) {
+            c.attachments = [];
+            this.attachments.forEach((attachment) => {
+                c.attachments.push(attachment.toAttachmentData());
+            });
+        }
+        return c;
     }
 }

@@ -7,6 +7,7 @@ import { TokenService } from '../abstractions/token.service';
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
 import { CipherRequest } from '../models/request/cipherRequest';
+import { CipherShareRequest } from '../models/request/cipherShareRequest';
 import { FolderRequest } from '../models/request/folderRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
@@ -334,6 +335,27 @@ export class ApiService implements ApiServiceAbstraction {
         }
     }
 
+    async shareCipher(id: string, request: CipherShareRequest): Promise<any> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id + '/share', {
+            body: JSON.stringify(request),
+            cache: 'no-cache',
+            credentials: this.getCredentials(),
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Authorization': authHeader,
+                'Content-Type': 'application/json; charset=utf-8',
+                'Device-Type': this.deviceType,
+            }),
+            method: 'PUT',
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
     async deleteCipher(id: string): Promise<any> {
         const authHeader = await this.handleTokenState();
         const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id, {
@@ -372,6 +394,28 @@ export class ApiService implements ApiServiceAbstraction {
             const responseJson = await response.json();
             return new CipherResponse(responseJson);
         } else {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
+    async shareCipherAttachment(id: string, attachmentId: string, data: FormData,
+        organizationId: string): Promise<any> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id + '/attachment/' +
+            attachmentId + '/share?organizationId=' + organizationId, {
+                body: data,
+                cache: 'no-cache',
+                credentials: this.getCredentials(),
+                headers: new Headers({
+                    'Accept': 'application/json',
+                    'Authorization': authHeader,
+                    'Device-Type': this.deviceType,
+                }),
+                method: 'POST',
+            }));
+
+        if (response.status !== 200) {
             const error = await this.handleError(response, false);
             return Promise.reject(error);
         }

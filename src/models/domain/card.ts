@@ -39,4 +39,17 @@ export class Card extends Domain {
             code: null,
         }, orgId);
     }
+
+    toCardData(): CardData {
+        const c = new CardData();
+        this.buildDataModel(this, c, {
+            cardholderName: null,
+            brand: null,
+            number: null,
+            expMonth: null,
+            expYear: null,
+            code: null,
+        });
+        return c;
+    }
 }

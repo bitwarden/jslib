@@ -31,4 +31,14 @@ export class Field extends Domain {
             value: null,
         }, orgId);
     }
+
+    toFieldData(): FieldData {
+        const f = new FieldData();
+        this.buildDataModel(this, f, {
+            name: null,
+            value: null,
+            type: null,
+        }, ['type']);
+        return f;
+    }
 }

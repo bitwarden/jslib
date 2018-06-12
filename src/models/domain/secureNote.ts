@@ -21,4 +21,10 @@ export class SecureNote extends Domain {
     decrypt(orgId: string): Promise<SecureNoteView> {
         return Promise.resolve(new SecureNoteView(this));
     }
+
+    toSecureNoteData(): SecureNoteData {
+        const n = new SecureNoteData();
+        n.type = this.type;
+        return n;
+    }
 }

@@ -8,7 +8,11 @@ export class CardData {
     expYear: string;
     code: string;
 
-    constructor(data: CardApi) {
+    constructor(data?: CardApi) {
+        if (data == null) {
+            return;
+        }
+
         this.cardholderName = data.cardholderName;
         this.brand = data.brand;
         this.number = data.number;
