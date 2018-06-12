@@ -1,5 +1,7 @@
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
+import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
+import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
 import { CipherCollectionsRequest } from '../models/request/cipherCollectionsRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CipherShareRequest } from '../models/request/cipherShareRequest';
@@ -39,6 +41,8 @@ export abstract class ApiService {
     postCipher: (request: CipherRequest) => Promise<CipherResponse>;
     putCipher: (id: string, request: CipherRequest) => Promise<CipherResponse>;
     deleteCipher: (id: string) => Promise<any>;
+    deleteManyCiphers: (request: CipherBulkDeleteRequest) => Promise<any>;
+    putMoveCiphers: (request: CipherBulkMoveRequest) => Promise<any>;
     putShareCipher: (id: string, request: CipherShareRequest) => Promise<any>;
     putCipherCollections: (id: string, request: CipherCollectionsRequest) => Promise<any>;
     postCipherAttachment: (id: string, data: FormData) => Promise<CipherResponse>;

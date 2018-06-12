@@ -3,7 +3,7 @@ export class CipherBulkMoveRequest {
     folderId: string;
 
     constructor(ids: string[], folderId: string) {
-        this.ids = ids;
+        this.ids = ids == null ? [] : ids;
         this.folderId = folderId;
     }
 }

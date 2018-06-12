@@ -35,8 +35,10 @@ export abstract class CipherService {
     upsert: (cipher: CipherData | CipherData[]) => Promise<any>;
     replace: (ciphers: { [id: string]: CipherData; }) => Promise<any>;
     clear: (userId: string) => Promise<any>;
+    moveManyWithServer: (ids: string[], folderId: string) => Promise<any>;
     delete: (id: string | string[]) => Promise<any>;
     deleteWithServer: (id: string) => Promise<any>;
+    deleteManyWithServer: (ids: string[]) => Promise<any>;
     deleteAttachment: (id: string, attachmentId: string) => Promise<void>;
     deleteAttachmentWithServer: (id: string, attachmentId: string) => Promise<void>;
     sortCiphersByLastUsed: (a: any, b: any) => number;

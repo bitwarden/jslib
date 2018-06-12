@@ -15,8 +15,11 @@ import { LoginUri } from '../models/domain/loginUri';
 import { SecureNote } from '../models/domain/secureNote';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
+import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
+import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
 import { CipherCollectionsRequest } from '../models/request/cipherCollectionsRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
+import { CipherShareRequest } from '../models/request/cipherShareRequest';
 
 import { CipherResponse } from '../models/response/cipherResponse';
 import { ErrorResponse } from '../models/response/errorResponse';
@@ -41,7 +44,6 @@ import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
 import { Utils } from '../misc/utils';
-import { CipherShareRequest } from '../models/request/cipherShareRequest';
 
 const Keys = {
     ciphersPrefix: 'ciphers_',
@@ -492,6 +494,26 @@ export class CipherService implements CipherServiceAbstraction {
         this.decryptedCipherCache = null;
     }
 
+    async moveManyWithServer(ids: string[], folderId: string): Promise<any> {
+        await this.apiService.putMoveCiphers(new CipherBulkMoveRequest(ids, folderId));
+
+        const userId = await this.userService.getUserId();
+        let ciphers = await this.storageService.get<{ [id: string]: CipherData; }>(
+            Keys.ciphersPrefix + userId);
+        if (ciphers == null) {
+            ciphers = {};
+        }
+
+        ids.forEach((id) => {
+            if (ciphers.hasOwnProperty(id)) {
+                ciphers[id].folderId = folderId;
+            }
+        });
+
+        await this.storageService.save(Keys.ciphersPrefix + userId, ciphers);
+        this.decryptedCipherCache = null;
+    }
+
     async delete(id: string | string[]): Promise<any> {
         const userId = await this.userService.getUserId();
         const ciphers = await this.storageService.get<{ [id: string]: CipherData; }>(
@@ -516,6 +538,11 @@ export class CipherService implements CipherServiceAbstraction {
     async deleteWithServer(id: string): Promise<any> {
         await this.apiService.deleteCipher(id);
         await this.delete(id);
+    }
+
+    async deleteManyWithServer(ids: string[]): Promise<any> {
+        await this.apiService.deleteManyCiphers(new CipherBulkDeleteRequest(ids));
+        await this.delete(ids);
     }
 
     async deleteAttachment(id: string, attachmentId: string): Promise<void> {

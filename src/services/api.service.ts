@@ -6,6 +6,8 @@ import { TokenService } from '../abstractions/token.service';
 
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
+import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
+import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
 import { CipherCollectionsRequest } from '../models/request/cipherCollectionsRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CipherShareRequest } from '../models/request/cipherShareRequest';
@@ -346,6 +348,48 @@ export class ApiService implements ApiServiceAbstraction {
                 'Device-Type': this.deviceType,
             }),
             method: 'DELETE',
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
+    async deleteManyCiphers(request: CipherBulkDeleteRequest): Promise<any> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.baseUrl + '/ciphers', {
+            body: JSON.stringify(request),
+            cache: 'no-cache',
+            credentials: this.getCredentials(),
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Authorization': authHeader,
+                'Content-Type': 'application/json; charset=utf-8',
+                'Device-Type': this.deviceType,
+            }),
+            method: 'DELETE',
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
+    async putMoveCiphers(request: CipherBulkMoveRequest): Promise<any> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.baseUrl + '/ciphers/move', {
+            body: JSON.stringify(request),
+            cache: 'no-cache',
+            credentials: this.getCredentials(),
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Authorization': authHeader,
+                'Content-Type': 'application/json; charset=utf-8',
+                'Device-Type': this.deviceType,
+            }),
+            method: 'PUT',
         }));
 
         if (response.status !== 200) {
