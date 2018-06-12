@@ -15,6 +15,7 @@ import { LoginUri } from '../models/domain/loginUri';
 import { SecureNote } from '../models/domain/secureNote';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
+import { CipherCollectionsRequest } from '../models/request/cipherCollectionsRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
 
 import { CipherResponse } from '../models/response/cipherResponse';
@@ -357,7 +358,7 @@ export class CipherService implements CipherServiceAbstraction {
 
     async shareWithServer(cipher: Cipher): Promise<any> {
         const request = new CipherShareRequest(cipher);
-        await this.apiService.shareCipher(cipher.id, request);
+        await this.apiService.putShareCipher(cipher.id, request);
         const userId = await this.userService.getUserId();
         await this.upsert(cipher.toCipherData(userId));
     }
@@ -392,7 +393,8 @@ export class CipherService implements CipherServiceAbstraction {
 
         let response: CipherResponse;
         try {
-            response = await this.apiService.shareCipherAttachment(cipherId, attachmentView.id, fd, organizationId);
+            response = await this.apiService.postShareCipherAttachment(cipherId, attachmentView.id, fd,
+                organizationId);
         } catch (e) {
             throw new Error((e as ErrorResponse).getSingleMessage());
         }
@@ -448,6 +450,14 @@ export class CipherService implements CipherServiceAbstraction {
         const cData = new CipherData(response, userId, cipher.collectionIds);
         this.upsert(cData);
         return new Cipher(cData);
+    }
+
+    async saveCollectionsWithServer(cipher: Cipher): Promise<any> {
+        const request = new CipherCollectionsRequest(cipher.collectionIds);
+        const response = await this.apiService.putCipherCollections(cipher.id, request);
+        const userId = await this.userService.getUserId();
+        const data = cipher.toCipherData(userId);
+        await this.upsert(data);
     }
 
     async upsert(cipher: CipherData | CipherData[]): Promise<any> {

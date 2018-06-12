@@ -31,6 +31,7 @@ export abstract class CipherService {
         organizationId: string) => Promise<any>;
     saveAttachmentWithServer: (cipher: Cipher, unencryptedFile: any) => Promise<Cipher>;
     saveAttachmentRawWithServer: (cipher: Cipher, filename: string, data: ArrayBuffer) => Promise<Cipher>;
+    saveCollectionsWithServer: (cipher: Cipher) => Promise<any>;
     upsert: (cipher: CipherData | CipherData[]) => Promise<any>;
     replace: (ciphers: { [id: string]: CipherData; }) => Promise<any>;
     clear: (userId: string) => Promise<any>;

@@ -6,6 +6,7 @@ import { TokenService } from '../abstractions/token.service';
 
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
+import { CipherCollectionsRequest } from '../models/request/cipherCollectionsRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CipherShareRequest } from '../models/request/cipherShareRequest';
 import { FolderRequest } from '../models/request/folderRequest';
@@ -335,7 +336,25 @@ export class ApiService implements ApiServiceAbstraction {
         }
     }
 
-    async shareCipher(id: string, request: CipherShareRequest): Promise<any> {
+    async deleteCipher(id: string): Promise<any> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id, {
+            cache: 'no-cache',
+            credentials: this.getCredentials(),
+            headers: new Headers({
+                'Authorization': authHeader,
+                'Device-Type': this.deviceType,
+            }),
+            method: 'DELETE',
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
+    async putShareCipher(id: string, request: CipherShareRequest): Promise<any> {
         const authHeader = await this.handleTokenState();
         const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id + '/share', {
             body: JSON.stringify(request),
@@ -356,16 +375,19 @@ export class ApiService implements ApiServiceAbstraction {
         }
     }
 
-    async deleteCipher(id: string): Promise<any> {
+    async putCipherCollections(id: string, request: CipherCollectionsRequest): Promise<any> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id, {
+        const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id + '/collections', {
+            body: JSON.stringify(request),
             cache: 'no-cache',
             credentials: this.getCredentials(),
             headers: new Headers({
+                'Accept': 'application/json',
                 'Authorization': authHeader,
+                'Content-Type': 'application/json; charset=utf-8',
                 'Device-Type': this.deviceType,
             }),
-            method: 'DELETE',
+            method: 'PUT',
         }));
 
         if (response.status !== 200) {
@@ -399,7 +421,25 @@ export class ApiService implements ApiServiceAbstraction {
         }
     }
 
-    async shareCipherAttachment(id: string, attachmentId: string, data: FormData,
+    async deleteCipherAttachment(id: string, attachmentId: string): Promise<any> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id + '/attachment/' + attachmentId, {
+            cache: 'no-cache',
+            credentials: this.getCredentials(),
+            headers: new Headers({
+                'Authorization': authHeader,
+                'Device-Type': this.deviceType,
+            }),
+            method: 'DELETE',
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
+    async postShareCipherAttachment(id: string, attachmentId: string, data: FormData,
         organizationId: string): Promise<any> {
         const authHeader = await this.handleTokenState();
         const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id + '/attachment/' +
@@ -414,24 +454,6 @@ export class ApiService implements ApiServiceAbstraction {
                 }),
                 method: 'POST',
             }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
-    }
-
-    async deleteCipherAttachment(id: string, attachmentId: string): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id + '/attachment/' + attachmentId, {
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Authorization': authHeader,
-                'Device-Type': this.deviceType,
-            }),
-            method: 'DELETE',
-        }));
 
         if (response.status !== 200) {
             const error = await this.handleError(response, false);

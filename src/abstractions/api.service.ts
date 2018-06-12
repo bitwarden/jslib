@@ -1,5 +1,6 @@
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
+import { CipherCollectionsRequest } from '../models/request/cipherCollectionsRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CipherShareRequest } from '../models/request/cipherShareRequest';
 import { FolderRequest } from '../models/request/folderRequest';
@@ -37,11 +38,13 @@ export abstract class ApiService {
     deleteFolder: (id: string) => Promise<any>;
     postCipher: (request: CipherRequest) => Promise<CipherResponse>;
     putCipher: (id: string, request: CipherRequest) => Promise<CipherResponse>;
-    shareCipher: (id: string, request: CipherShareRequest) => Promise<any>;
     deleteCipher: (id: string) => Promise<any>;
+    putShareCipher: (id: string, request: CipherShareRequest) => Promise<any>;
+    putCipherCollections: (id: string, request: CipherCollectionsRequest) => Promise<any>;
     postCipherAttachment: (id: string, data: FormData) => Promise<CipherResponse>;
-    shareCipherAttachment: (id: string, attachmentId: string, data: FormData, organizationId: string) => Promise<any>;
     deleteCipherAttachment: (id: string, attachmentId: string) => Promise<any>;
+    postShareCipherAttachment: (id: string, attachmentId: string, data: FormData,
+        organizationId: string) => Promise<any>;
     getSync: () => Promise<SyncResponse>;
     postImportDirectory: (organizationId: string, request: ImportDirectoryRequest) => Promise<any>;
 }
