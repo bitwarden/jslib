@@ -17,6 +17,7 @@ import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
 import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
+import { CipherBulkShareRequest } from '../models/request/cipherBulkShareRequest';
 import { CipherCollectionsRequest } from '../models/request/cipherCollectionsRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CipherShareRequest } from '../models/request/cipherShareRequest';
@@ -358,11 +359,31 @@ export class CipherService implements CipherServiceAbstraction {
         await this.upsert(data);
     }
 
-    async shareWithServer(cipher: Cipher): Promise<any> {
-        const request = new CipherShareRequest(cipher);
+    async shareWithServer(cipher: CipherView, organizationId: string, collectionIds: string[]): Promise<any> {
+        cipher.organizationId = organizationId;
+        cipher.collectionIds = collectionIds;
+        const encCipher = await this.encrypt(cipher);
+        const request = new CipherShareRequest(encCipher);
         await this.apiService.putShareCipher(cipher.id, request);
         const userId = await this.userService.getUserId();
-        await this.upsert(cipher.toCipherData(userId));
+        await this.upsert(encCipher.toCipherData(userId));
+    }
+
+    async shareManyWithServer(ciphers: CipherView[], organizationId: string, collectionIds: string[]): Promise<any> {
+        const promises: Array<Promise<any>> = [];
+        const encCiphers: Cipher[] = [];
+        for (const cipher of ciphers) {
+            cipher.organizationId = organizationId;
+            cipher.collectionIds = collectionIds;
+            promises.push(this.encrypt(cipher).then((c) => {
+                encCiphers.push(c);
+            }));
+        }
+        await Promise.all(promises);
+        const request = new CipherBulkShareRequest(encCiphers, collectionIds);
+        await this.apiService.putShareCiphers(request);
+        const userId = await this.userService.getUserId();
+        await this.upsert(encCiphers.map((c) => c.toCipherData(userId)));
     }
 
     async shareAttachmentWithServer(attachmentView: AttachmentView, cipherId: string,

@@ -8,6 +8,7 @@ import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
 import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
+import { CipherBulkShareRequest } from '../models/request/cipherBulkShareRequest';
 import { CipherCollectionsRequest } from '../models/request/cipherCollectionsRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CipherShareRequest } from '../models/request/cipherShareRequest';
@@ -401,6 +402,27 @@ export class ApiService implements ApiServiceAbstraction {
     async putShareCipher(id: string, request: CipherShareRequest): Promise<any> {
         const authHeader = await this.handleTokenState();
         const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id + '/share', {
+            body: JSON.stringify(request),
+            cache: 'no-cache',
+            credentials: this.getCredentials(),
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Authorization': authHeader,
+                'Content-Type': 'application/json; charset=utf-8',
+                'Device-Type': this.deviceType,
+            }),
+            method: 'PUT',
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
+    async putShareCiphers(request: CipherBulkShareRequest): Promise<any> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.baseUrl + '/ciphers/share', {
             body: JSON.stringify(request),
             cache: 'no-cache',
             credentials: this.getCredentials(),

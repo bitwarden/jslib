@@ -26,7 +26,8 @@ export abstract class CipherService {
     updateLastUsedDate: (id: string) => Promise<void>;
     saveNeverDomain: (domain: string) => Promise<void>;
     saveWithServer: (cipher: Cipher) => Promise<any>;
-    shareWithServer: (cipher: Cipher) => Promise<any>;
+    shareWithServer: (cipher: CipherView, organizationId: string, collectionIds: string[]) => Promise<any>;
+    shareManyWithServer: (ciphers: CipherView[], organizationId: string, collectionIds: string[]) => Promise<any>;
     shareAttachmentWithServer: (attachmentView: AttachmentView, cipherId: string,
         organizationId: string) => Promise<any>;
     saveAttachmentWithServer: (cipher: Cipher, unencryptedFile: any) => Promise<Cipher>;
