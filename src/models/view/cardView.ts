@@ -19,7 +19,7 @@ export class CardView implements View {
     }
 
     get maskedCode(): string {
-        return this.code != null ? '••••' : null;
+        return this.code != null ? '•'.repeat(this.code.length) : null;
     }
 
     get brand(): string {
