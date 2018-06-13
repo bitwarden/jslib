@@ -18,6 +18,10 @@ export class CardView implements View {
         // ctor
     }
 
+    get maskedCode(): string {
+        return this.code != null ? '••••' : null;
+    }
+
     get brand(): string {
         return this._brand;
     }
