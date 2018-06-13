@@ -1,16 +1,16 @@
-import { CipherRequest } from './cipherRequest';
+import { CipherWithIdRequest } from './cipherWithIdRequest';
 
 import { Cipher } from '../domain/cipher';
 
 export class CipherBulkShareRequest {
-    ciphers: CipherRequest[];
+    ciphers: CipherWithIdRequest[];
     collectionIds: string[];
 
     constructor(ciphers: Cipher[], collectionIds: string[]) {
         if (ciphers != null) {
             this.ciphers = [];
             ciphers.forEach((c) => {
-                this.ciphers.push(new CipherRequest(c));
+                this.ciphers.push(new CipherWithIdRequest(c));
             });
         }
         this.collectionIds = collectionIds;
