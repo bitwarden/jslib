@@ -192,6 +192,10 @@ export class CryptoService implements CryptoServiceAbstraction {
         return orgKeys.get(orgId);
     }
 
+    async hasKey(): Promise<boolean> {
+        return (await this.getKey()) != null;
+    }
+
     clearKey(): Promise<any> {
         this.key = this.legacyEtmKey = null;
         return this.secureStorageService.remove(Keys.key);
@@ -280,13 +284,6 @@ export class CryptoService implements CryptoServiceAbstraction {
             throw new Error('Invalid key size.');
         }
         */
-    }
-
-    async stretchKey(key: SymmetricCryptoKey): Promise<SymmetricCryptoKey> {
-        const newKey = new Uint8Array(64);
-        newKey.set(await this.hkdfExpand(key.key, Utils.fromUtf8ToArray('enc'), 32));
-        newKey.set(await this.hkdfExpand(key.key, Utils.fromUtf8ToArray('mac'), 32), 32);
-        return new SymmetricCryptoKey(newKey.buffer);
     }
 
     async encrypt(plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey): Promise<CipherString> {
@@ -592,6 +589,13 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
 
         return key;
+    }
+
+    private async stretchKey(key: SymmetricCryptoKey): Promise<SymmetricCryptoKey> {
+        const newKey = new Uint8Array(64);
+        newKey.set(await this.hkdfExpand(key.key, Utils.fromUtf8ToArray('enc'), 32));
+        newKey.set(await this.hkdfExpand(key.key, Utils.fromUtf8ToArray('mac'), 32), 32);
+        return new SymmetricCryptoKey(newKey.buffer);
     }
 
     // ref: https://tools.ietf.org/html/rfc5869

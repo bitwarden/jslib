@@ -15,6 +15,7 @@ export abstract class CryptoService {
     getPrivateKey: () => Promise<ArrayBuffer>;
     getOrgKeys: () => Promise<Map<string, SymmetricCryptoKey>>;
     getOrgKey: (orgId: string) => Promise<SymmetricCryptoKey>;
+    hasKey: () => Promise<boolean>;
     clearKey: () => Promise<any>;
     clearKeyHash: () => Promise<any>;
     clearEncKey: (memoryOnly?: boolean) => Promise<any>;
