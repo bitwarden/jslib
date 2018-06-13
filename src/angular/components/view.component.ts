@@ -31,6 +31,7 @@ export class ViewComponent implements OnDestroy {
 
     cipher: CipherView;
     showPassword: boolean;
+    showCardCode: boolean;
     isPremium: boolean;
     totpCode: string;
     totpCodeFormatted: string;
@@ -78,6 +79,11 @@ export class ViewComponent implements OnDestroy {
     togglePassword() {
         this.analytics.eventTrack.next({ action: 'Toggled Password' });
         this.showPassword = !this.showPassword;
+    }
+
+    toggleCardCode() {
+        this.analytics.eventTrack.next({ action: 'Toggled Card Code' });
+        this.showCardCode = !this.showCardCode;
     }
 
     async checkPassword() {
