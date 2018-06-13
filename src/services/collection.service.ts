@@ -54,8 +54,8 @@ export class CollectionService implements CollectionServiceAbstraction {
             return this.decryptedCollectionCache;
         }
 
-        const key = await this.cryptoService.getKey();
-        if (key == null) {
+        const hasKey = await this.cryptoService.hasKey();
+        if (!hasKey) {
             throw new Error('No key.');
         }
 

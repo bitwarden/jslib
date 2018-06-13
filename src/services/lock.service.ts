@@ -36,8 +36,8 @@ export class LockService implements LockServiceAbstraction {
             return;
         }
 
-        const key = await this.cryptoService.getKey();
-        if (key == null) {
+        const hasKey = await this.cryptoService.hasKey();
+        if (!hasKey) {
             // no key so no need to lock
             return;
         }

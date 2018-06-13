@@ -20,8 +20,8 @@ export class AuthGuardService implements CanActivate {
             return false;
         }
 
-        const key = await this.cryptoService.getKey();
-        if (key == null) {
+        const hasKey = await this.cryptoService.hasKey();
+        if (!hasKey) {
             this.router.navigate(['lock']);
             return false;
         }

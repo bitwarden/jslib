@@ -60,8 +60,8 @@ export class ApiService implements ApiServiceAbstraction {
 
         /* tslint:disable */
         // Desktop
-        //this.baseUrl = 'http://localhost:4000';
-        //this.identityBaseUrl = 'http://localhost:33656';
+        this.baseUrl = 'http://localhost:4000';
+        this.identityBaseUrl = 'http://localhost:33656';
 
         // Desktop HTTPS
         //this.baseUrl = 'https://localhost:44377';
@@ -76,13 +76,15 @@ export class ApiService implements ApiServiceAbstraction {
         //this.identityBaseUrl = 'https://preview-identity.bitwarden.com';
 
         // Production
+        /*
         if (this.isWebClient) {
-            this.baseUrl = 'https://vault.bitwarden.com/api';
-            this.identityBaseUrl = 'https://vault.bitwarden.com/identity';
+            this.baseUrl = 'https://api.bitwarden.com';
+            this.identityBaseUrl = 'https://identity.bitwarden.com';
         } else {
             this.baseUrl = 'https://api.bitwarden.com';
             this.identityBaseUrl = 'https://identity.bitwarden.com';
         }
+        */
         /* tslint:enable */
     }
 
