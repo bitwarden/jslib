@@ -1,4 +1,4 @@
-import { ConstantsService } from './constants.service';
+import { DeviceType } from '../enums/deviceType';
 
 import { ApiService as ApiServiceAbstraction } from '../abstractions/api.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
@@ -37,8 +37,9 @@ export class ApiService implements ApiServiceAbstraction {
 
     constructor(private tokenService: TokenService, private platformUtilsService: PlatformUtilsService,
         private logoutCallback: (expired: boolean) => Promise<void>) {
-        this.deviceType = platformUtilsService.getDevice().toString();
-        this.isWebClient = platformUtilsService.identityClientId === 'web';
+        const device = platformUtilsService.getDevice();
+        this.deviceType = device.toString();
+        this.isWebClient = device === DeviceType.Web;
     }
 
     setUrls(urls: EnvironmentUrls): void {
@@ -75,8 +76,13 @@ export class ApiService implements ApiServiceAbstraction {
         //this.identityBaseUrl = 'https://preview-identity.bitwarden.com';
 
         // Production
-        this.baseUrl = 'https://api.bitwarden.com';
-        this.identityBaseUrl = 'https://identity.bitwarden.com';
+        if (this.isWebClient) {
+            this.baseUrl = 'https://vault.bitwarden.com/api';
+            this.identityBaseUrl = 'https://vault.bitwarden.com/identity';
+        } else {
+            this.baseUrl = 'https://api.bitwarden.com';
+            this.identityBaseUrl = 'https://identity.bitwarden.com';
+        }
         /* tslint:enable */
     }
 
