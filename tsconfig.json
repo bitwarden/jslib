@@ -5,7 +5,6 @@
     "target": "ES6",
     "module": "commonjs",
     "lib": ["es5", "es6", "dom"],
-    "allowJs": true,
     "sourceMap": true,
     "declaration": true,
     "allowSyntheticDefaultImports": true,
