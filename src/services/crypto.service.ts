@@ -117,11 +117,20 @@ export class CryptoService implements CryptoServiceAbstraction {
             return null;
         }
 
-        const decEncKey = await this.decrypt(new CipherString(encKey), key);
+        let decEncKey: ArrayBuffer;
+        const encKeyCipher = new CipherString(encKey);
+        if (encKeyCipher.encryptionType === EncryptionType.AesCbc256_B64) {
+            decEncKey = await this.decrypt(encKeyCipher, key);
+        } else if (encKeyCipher.encryptionType === EncryptionType.AesCbc256_HmacSha256_B64) {
+            const newKey = await this.stretchKey(key);
+            decEncKey = await this.decrypt(encKeyCipher, newKey);
+        } else {
+            throw new Error('Unsupported encKey type.');
+        }
+
         if (decEncKey == null) {
             return null;
         }
-
         this.encKey = new SymmetricCryptoKey(decEncKey);
         return this.encKey;
     }
@@ -258,8 +267,23 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     async makeEncKey(key: SymmetricCryptoKey): Promise<CipherString> {
-        const bytes = await this.cryptoFunctionService.randomBytes(64);
-        return this.encrypt(bytes, key);
+        const encKey = await this.cryptoFunctionService.randomBytes(64);
+        // TODO: remove false/true flags when we're ready to enable key stretching
+        if (false && key.key.byteLength === 32) {
+            const newKey = await this.stretchKey(key);
+            return this.encrypt(encKey, newKey);
+        } else if (true || key.key.byteLength === 64) {
+            return this.encrypt(encKey, key);
+        } else {
+            throw new Error('Invalid key size.');
+        }
+    }
+
+    async stretchKey(key: SymmetricCryptoKey): Promise<SymmetricCryptoKey> {
+        const newKey = new Uint8Array(64);
+        newKey.set(await this.hkdfExpand(key.key, Utils.fromUtf8ToArray('enc'), 32));
+        newKey.set(await this.hkdfExpand(key.key, Utils.fromUtf8ToArray('mac'), 32), 32);
+        return new SymmetricCryptoKey(newKey.buffer);
     }
 
     async encrypt(plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey): Promise<CipherString> {
@@ -565,5 +589,23 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
 
         return key;
+    }
+
+    // ref: https://tools.ietf.org/html/rfc5869
+    private async hkdfExpand(prk: ArrayBuffer, info: Uint8Array, size: number) {
+        const hashLen = 32; // sha256
+        const okm = new Uint8Array(size);
+        let previousT = new Uint8Array(0);
+        const n = Math.ceil(size / hashLen);
+        for (let i = 0; i < n; i++) {
+            const t = new Uint8Array(previousT.length + info.length + 1);
+            t.set(previousT);
+            t.set(info, previousT.length);
+            t.set([i + 1], t.length - 1);
+            const hmac = await this.cryptoFunctionService.hmac(t.buffer, prk, 'sha256');
+            previousT = new Uint8Array(hmac);
+            okm.set(previousT, i * hashLen);
+        }
+        return okm;
     }
 }
