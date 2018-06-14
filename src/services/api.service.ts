@@ -29,11 +29,12 @@ import { SyncResponse } from '../models/response/syncResponse';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
-    baseUrl: string;
-    identityBaseUrl: string;
-    deviceType: string;
-    isWebClient = false;
-    usingBaseUrl = false;
+
+    private apiBaseUrl: string;
+    private identityBaseUrl: string;
+    private deviceType: string;
+    private isWebClient = false;
+    private usingBaseUrl = false;
 
     constructor(private tokenService: TokenService, private platformUtilsService: PlatformUtilsService,
         private logoutCallback: (expired: boolean) => Promise<void>) {
@@ -47,44 +48,42 @@ export class ApiService implements ApiServiceAbstraction {
 
         if (urls.base != null) {
             this.usingBaseUrl = true;
-            this.baseUrl = urls.base + '/api';
+            this.apiBaseUrl = urls.base + '/api';
             this.identityBaseUrl = urls.base + '/identity';
             return;
         }
 
         if (urls.api != null && urls.identity != null) {
-            this.baseUrl = urls.api;
+            this.apiBaseUrl = urls.api;
             this.identityBaseUrl = urls.identity;
             return;
         }
 
         /* tslint:disable */
         // Desktop
-        this.baseUrl = 'http://localhost:4000';
-        this.identityBaseUrl = 'http://localhost:33656';
+        //this.apiBaseUrl = 'http://localhost:4000';
+        //this.identityBaseUrl = 'http://localhost:33656';
 
         // Desktop HTTPS
-        //this.baseUrl = 'https://localhost:44377';
+        //this.apiBaseUrl = 'https://localhost:44377';
         //this.identityBaseUrl = 'https://localhost:44392';
 
         // Desktop external
-        //this.baseUrl = 'http://192.168.1.3:4000';
+        //this.apiBaseUrl = 'http://192.168.1.3:4000';
         //this.identityBaseUrl = 'http://192.168.1.3:33656';
 
         // Preview
-        //this.baseUrl = 'https://preview-api.bitwarden.com';
+        //this.apiBaseUrl = 'https://preview-api.bitwarden.com';
         //this.identityBaseUrl = 'https://preview-identity.bitwarden.com';
 
         // Production
-        /*
         if (this.isWebClient) {
-            this.baseUrl = 'https://api.bitwarden.com';
-            this.identityBaseUrl = 'https://identity.bitwarden.com';
+            this.apiBaseUrl = 'https://vault.bitwarden.com/api';
+            this.identityBaseUrl = 'https://vault.bitwarden.com/identity';
         } else {
-            this.baseUrl = 'https://api.bitwarden.com';
+            this.apiBaseUrl = 'https://api.bitwarden.com';
             this.identityBaseUrl = 'https://identity.bitwarden.com';
         }
-        */
         /* tslint:enable */
     }
 
@@ -133,7 +132,7 @@ export class ApiService implements ApiServiceAbstraction {
     // Two Factor APIs
 
     async postTwoFactorEmail(request: TwoFactorEmailRequest): Promise<any> {
-        const response = await fetch(new Request(this.baseUrl + '/two-factor/send-email-login', {
+        const response = await fetch(new Request(this.apiBaseUrl + '/two-factor/send-email-login', {
             body: JSON.stringify(request),
             cache: 'no-cache',
             credentials: this.getCredentials(),
@@ -154,7 +153,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async getProfile(): Promise<ProfileResponse> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/accounts/profile', {
+        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/profile', {
             cache: 'no-cache',
             credentials: this.getCredentials(),
             headers: new Headers({
@@ -175,7 +174,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async getAccountRevisionDate(): Promise<number> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/accounts/revision-date', {
+        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/revision-date', {
             cache: 'no-cache',
             credentials: this.getCredentials(),
             headers: new Headers({
@@ -194,7 +193,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     async postPasswordHint(request: PasswordHintRequest): Promise<any> {
-        const response = await fetch(new Request(this.baseUrl + '/accounts/password-hint', {
+        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/password-hint', {
             body: JSON.stringify(request),
             cache: 'no-cache',
             credentials: this.getCredentials(),
@@ -212,7 +211,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     async postRegister(request: RegisterRequest): Promise<any> {
-        const response = await fetch(new Request(this.baseUrl + '/accounts/register', {
+        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/register', {
             body: JSON.stringify(request),
             cache: 'no-cache',
             credentials: this.getCredentials(),
@@ -233,7 +232,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async postFolder(request: FolderRequest): Promise<FolderResponse> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/folders', {
+        const response = await fetch(new Request(this.apiBaseUrl + '/folders', {
             body: JSON.stringify(request),
             cache: 'no-cache',
             credentials: this.getCredentials(),
@@ -257,7 +256,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async putFolder(id: string, request: FolderRequest): Promise<FolderResponse> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/folders/' + id, {
+        const response = await fetch(new Request(this.apiBaseUrl + '/folders/' + id, {
             body: JSON.stringify(request),
             cache: 'no-cache',
             credentials: this.getCredentials(),
@@ -281,7 +280,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async deleteFolder(id: string): Promise<any> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/folders/' + id, {
+        const response = await fetch(new Request(this.apiBaseUrl + '/folders/' + id, {
             cache: 'no-cache',
             credentials: this.getCredentials(),
             headers: new Headers({
@@ -301,7 +300,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async postCipher(request: CipherRequest): Promise<CipherResponse> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/ciphers', {
+        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers', {
             body: JSON.stringify(request),
             cache: 'no-cache',
             credentials: this.getCredentials(),
@@ -325,7 +324,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async putCipher(id: string, request: CipherRequest): Promise<CipherResponse> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id, {
+        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/' + id, {
             body: JSON.stringify(request),
             cache: 'no-cache',
             credentials: this.getCredentials(),
@@ -349,7 +348,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async deleteCipher(id: string): Promise<any> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id, {
+        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/' + id, {
             cache: 'no-cache',
             credentials: this.getCredentials(),
             headers: new Headers({
@@ -367,7 +366,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async deleteManyCiphers(request: CipherBulkDeleteRequest): Promise<any> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/ciphers', {
+        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers', {
             body: JSON.stringify(request),
             cache: 'no-cache',
             credentials: this.getCredentials(),
@@ -388,7 +387,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async putMoveCiphers(request: CipherBulkMoveRequest): Promise<any> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/ciphers/move', {
+        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/move', {
             body: JSON.stringify(request),
             cache: 'no-cache',
             credentials: this.getCredentials(),
@@ -409,7 +408,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async putShareCipher(id: string, request: CipherShareRequest): Promise<any> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id + '/share', {
+        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/' + id + '/share', {
             body: JSON.stringify(request),
             cache: 'no-cache',
             credentials: this.getCredentials(),
@@ -430,7 +429,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async putShareCiphers(request: CipherBulkShareRequest): Promise<any> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/ciphers/share', {
+        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/share', {
             body: JSON.stringify(request),
             cache: 'no-cache',
             credentials: this.getCredentials(),
@@ -451,7 +450,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async putCipherCollections(id: string, request: CipherCollectionsRequest): Promise<any> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id + '/collections', {
+        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/' + id + '/collections', {
             body: JSON.stringify(request),
             cache: 'no-cache',
             credentials: this.getCredentials(),
@@ -474,7 +473,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async postCipherAttachment(id: string, data: FormData): Promise<CipherResponse> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id + '/attachment', {
+        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/' + id + '/attachment', {
             body: data,
             cache: 'no-cache',
             credentials: this.getCredentials(),
@@ -497,7 +496,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async deleteCipherAttachment(id: string, attachmentId: string): Promise<any> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id + '/attachment/' + attachmentId, {
+        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/' + id + '/attachment/' + attachmentId, {
             cache: 'no-cache',
             credentials: this.getCredentials(),
             headers: new Headers({
@@ -516,7 +515,7 @@ export class ApiService implements ApiServiceAbstraction {
     async postShareCipherAttachment(id: string, attachmentId: string, data: FormData,
         organizationId: string): Promise<any> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/ciphers/' + id + '/attachment/' +
+        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/' + id + '/attachment/' +
             attachmentId + '/share?organizationId=' + organizationId, {
                 body: data,
                 cache: 'no-cache',
@@ -539,7 +538,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async getSync(): Promise<SyncResponse> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/sync', {
+        const response = await fetch(new Request(this.apiBaseUrl + '/sync', {
             cache: 'no-cache',
             credentials: this.getCredentials(),
             headers: new Headers({
@@ -560,7 +559,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async postImportDirectory(organizationId: string, request: ImportDirectoryRequest): Promise<any> {
         const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.baseUrl + '/organizations/' + organizationId + '/import', {
+        const response = await fetch(new Request(this.apiBaseUrl + '/organizations/' + organizationId + '/import', {
             body: JSON.stringify(request),
             cache: 'no-cache',
             credentials: this.getCredentials(),
