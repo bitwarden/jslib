@@ -29,9 +29,9 @@ import { SyncResponse } from '../models/response/syncResponse';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
+    apiBaseUrl: string;
+    identityBaseUrl: string;
 
-    private apiBaseUrl: string;
-    private identityBaseUrl: string;
     private deviceType: string;
     private isWebClient = false;
     private usingBaseUrl = false;

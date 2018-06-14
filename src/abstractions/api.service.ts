@@ -24,6 +24,8 @@ import { AttachmentView } from '../models/view/attachmentView';
 
 export abstract class ApiService {
     urlsSet: boolean;
+    apiBaseUrl: string;
+    identityBaseUrl: string;
 
     setUrls: (urls: EnvironmentUrls) => void;
     postIdentityToken: (request: TokenRequest) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse>;
