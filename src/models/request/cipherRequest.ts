@@ -1,7 +1,6 @@
 import { CipherType } from '../../enums/cipherType';
 
 import { Cipher } from '../domain/cipher';
-import { Field } from '../domain/field';
 
 import { CardApi } from '../api/cardApi';
 import { FieldApi } from '../api/fieldApi';
