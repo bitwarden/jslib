@@ -609,8 +609,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             t.set(previousT);
             t.set(info, previousT.length);
             t.set([i + 1], t.length - 1);
-            const hmac = await this.cryptoFunctionService.hmac(t.buffer, prk, 'sha256');
-            previousT = new Uint8Array(hmac);
+            previousT = new Uint8Array(await this.cryptoFunctionService.hmac(t.buffer, prk, 'sha256'));
             okm.set(previousT, i * hashLen);
         }
         return okm;
