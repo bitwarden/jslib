@@ -46,6 +46,7 @@ export class AddEditComponent {
     deletePromise: Promise<any>;
     checkPasswordPromise: Promise<number>;
     showPassword: boolean = false;
+    showCardCode: boolean = false;
     cipherType = CipherType;
     fieldType = FieldType;
     addFieldType: FieldType = FieldType.Text;
@@ -260,6 +261,12 @@ export class AddEditComponent {
         this.analytics.eventTrack.next({ action: 'Toggled Password on Edit' });
         this.showPassword = !this.showPassword;
         document.getElementById('loginPassword').focus();
+    }
+
+    toggleCardCode() {
+        this.analytics.eventTrack.next({ action: 'Toggled CardCode on Edit' });
+        this.showCardCode = !this.showCardCode;
+        document.getElementById('cardCode').focus();
     }
 
     toggleFieldValue(field: FieldView) {
