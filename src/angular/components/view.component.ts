@@ -1,7 +1,6 @@
 import {
     EventEmitter,
     Input,
-    OnChanges,
     OnDestroy,
     Output,
 } from '@angular/core';
