@@ -18,6 +18,7 @@ import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
+import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
 
 import { CipherResponse } from '../models/response/cipherResponse';
 import { ErrorResponse } from '../models/response/errorResponse';
@@ -161,6 +162,30 @@ export class ApiService implements ApiServiceAbstraction {
                 'Authorization': authHeader,
                 'Device-Type': this.deviceType,
             }),
+        }));
+
+        if (response.status === 200) {
+            const responseJson = await response.json();
+            return new ProfileResponse(responseJson);
+        } else {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
+    async putProfile(request: UpdateProfileRequest): Promise<ProfileResponse> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/profile', {
+            body: JSON.stringify(request),
+            cache: 'no-cache',
+            credentials: this.getCredentials(),
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': authHeader,
+                'Device-Type': this.deviceType,
+            }),
+            method: 'PUT',
         }));
 
         if (response.status === 200) {

@@ -12,6 +12,7 @@ import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
+import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
 
 import { CipherResponse } from '../models/response/cipherResponse';
 import { FolderResponse } from '../models/response/folderResponse';
@@ -19,8 +20,6 @@ import { IdentityTokenResponse } from '../models/response/identityTokenResponse'
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SyncResponse } from '../models/response/syncResponse';
-
-import { AttachmentView } from '../models/view/attachmentView';
 
 export abstract class ApiService {
     urlsSet: boolean;
@@ -32,6 +31,7 @@ export abstract class ApiService {
     refreshIdentityToken: () => Promise<any>;
     postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
     getProfile: () => Promise<ProfileResponse>;
+    putProfile: (request: UpdateProfileRequest) => Promise<ProfileResponse>;
     getAccountRevisionDate: () => Promise<number>;
     postPasswordHint: (request: PasswordHintRequest) => Promise<any>;
     postRegister: (request: RegisterRequest) => Promise<any>;
