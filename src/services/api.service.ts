@@ -18,6 +18,7 @@ import { FolderRequest } from '../models/request/folderRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
+import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
@@ -82,8 +83,8 @@ export class ApiService implements ApiServiceAbstraction {
 
         // Production
         if (this.isWebClient) {
-            this.apiBaseUrl = 'https://vault.bitwarden.com/api';
-            this.identityBaseUrl = 'https://vault.bitwarden.com/identity';
+            this.apiBaseUrl = 'https://api.bitwarden.com';
+            this.identityBaseUrl = 'https://identity.bitwarden.com';
         } else {
             this.apiBaseUrl = 'https://api.bitwarden.com';
             this.identityBaseUrl = 'https://identity.bitwarden.com';
@@ -245,6 +246,48 @@ export class ApiService implements ApiServiceAbstraction {
     async postPassword(request: PasswordRequest): Promise<any> {
         const authHeader = await this.handleTokenState();
         const response = await fetch(new Request(this.apiBaseUrl + '/accounts/password', {
+            body: JSON.stringify(request),
+            cache: 'no-cache',
+            credentials: this.getCredentials(),
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': authHeader,
+                'Device-Type': this.deviceType,
+            }),
+            method: 'POST',
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
+    async postSecurityStamp(request: PasswordVerificationRequest): Promise<any> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/security-stamp', {
+            body: JSON.stringify(request),
+            cache: 'no-cache',
+            credentials: this.getCredentials(),
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': authHeader,
+                'Device-Type': this.deviceType,
+            }),
+            method: 'POST',
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
+    async postDeleteAccount(request: PasswordVerificationRequest): Promise<any> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/delete', {
             body: JSON.stringify(request),
             cache: 'no-cache',
             credentials: this.getCredentials(),
@@ -552,6 +595,27 @@ export class ApiService implements ApiServiceAbstraction {
                 'Device-Type': this.deviceType,
             }),
             method: 'PUT',
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
+    async postPurgeCiphers(request: PasswordVerificationRequest): Promise<any> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/purge', {
+            body: JSON.stringify(request),
+            cache: 'no-cache',
+            credentials: this.getCredentials(),
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': authHeader,
+                'Device-Type': this.deviceType,
+            }),
+            method: 'POST',
         }));
 
         if (response.status !== 200) {

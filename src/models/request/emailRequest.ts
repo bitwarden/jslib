@@ -1,6 +1,6 @@
-export class EmailRequest {
-    newEmail: string;
-    masterPasswordHash: string;
+import { EmailTokenRequest } from './emailTokenRequest';
+
+export class EmailRequest extends EmailTokenRequest {
     newMasterPasswordHash: string;
     token: string;
     key: string;
