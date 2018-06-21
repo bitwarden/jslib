@@ -12,9 +12,12 @@ import { CipherBulkShareRequest } from '../models/request/cipherBulkShareRequest
 import { CipherCollectionsRequest } from '../models/request/cipherCollectionsRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CipherShareRequest } from '../models/request/cipherShareRequest';
+import { EmailRequest } from '../models/request/emailRequest';
+import { EmailTokenRequest } from '../models/request/emailTokenRequest';
 import { FolderRequest } from '../models/request/folderRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
+import { PasswordRequest } from '../models/request/passwordRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
@@ -192,6 +195,69 @@ export class ApiService implements ApiServiceAbstraction {
             const responseJson = await response.json();
             return new ProfileResponse(responseJson);
         } else {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
+    async postEmailToken(request: EmailTokenRequest): Promise<any> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/email-token', {
+            body: JSON.stringify(request),
+            cache: 'no-cache',
+            credentials: this.getCredentials(),
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': authHeader,
+                'Device-Type': this.deviceType,
+            }),
+            method: 'POST',
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
+    async postEmail(request: EmailRequest): Promise<any> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/email', {
+            body: JSON.stringify(request),
+            cache: 'no-cache',
+            credentials: this.getCredentials(),
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': authHeader,
+                'Device-Type': this.deviceType,
+            }),
+            method: 'POST',
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
+    async postPassword(request: PasswordRequest): Promise<any> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/password', {
+            body: JSON.stringify(request),
+            cache: 'no-cache',
+            credentials: this.getCredentials(),
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': authHeader,
+                'Device-Type': this.deviceType,
+            }),
+            method: 'POST',
+        }));
+
+        if (response.status !== 200) {
             const error = await this.handleError(response, false);
             return Promise.reject(error);
         }

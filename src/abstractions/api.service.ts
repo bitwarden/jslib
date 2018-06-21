@@ -6,9 +6,12 @@ import { CipherBulkShareRequest } from '../models/request/cipherBulkShareRequest
 import { CipherCollectionsRequest } from '../models/request/cipherCollectionsRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CipherShareRequest } from '../models/request/cipherShareRequest';
+import { EmailRequest } from '../models/request/emailRequest';
+import { EmailTokenRequest } from '../models/request/emailTokenRequest';
 import { FolderRequest } from '../models/request/folderRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
+import { PasswordRequest } from '../models/request/passwordRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
@@ -32,6 +35,9 @@ export abstract class ApiService {
     postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
     getProfile: () => Promise<ProfileResponse>;
     putProfile: (request: UpdateProfileRequest) => Promise<ProfileResponse>;
+    postEmailToken: (request: EmailTokenRequest) => Promise<any>;
+    postEmail: (request: EmailRequest) => Promise<any>;
+    postPassword: (request: PasswordRequest) => Promise<any>;
     getAccountRevisionDate: () => Promise<number>;
     postPasswordHint: (request: PasswordHintRequest) => Promise<any>;
     postRegister: (request: RegisterRequest) => Promise<any>;
