@@ -9,8 +9,6 @@ import { FolderService } from '../abstractions/folder.service';
 import { CipherView } from '../models/view/cipherView';
 import { FolderView } from '../models/view/folderView';
 
-import { Utils } from '../misc/utils';
-
 export class ExportService implements ExportServiceAbstraction {
     constructor(private folderService: FolderService, private cipherService: CipherService) { }
 
@@ -38,6 +36,10 @@ export class ExportService implements ExportServiceAbstraction {
         decCiphers.forEach((c) => {
             // only export logins and secure notes
             if (c.type !== CipherType.Login && c.type !== CipherType.SecureNote) {
+                return;
+            }
+
+            if (c.organizationId != null) {
                 return;
             }
 
