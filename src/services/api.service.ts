@@ -65,30 +65,13 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         /* tslint:disable */
-        // Desktop
+        // Local Dev
         //this.apiBaseUrl = 'http://localhost:4000';
         //this.identityBaseUrl = 'http://localhost:33656';
 
-        // Desktop HTTPS
-        //this.apiBaseUrl = 'https://localhost:44377';
-        //this.identityBaseUrl = 'https://localhost:44392';
-
-        // Desktop external
-        //this.apiBaseUrl = 'http://192.168.1.3:4000';
-        //this.identityBaseUrl = 'http://192.168.1.3:33656';
-
-        // Preview
-        //this.apiBaseUrl = 'https://preview-api.bitwarden.com';
-        //this.identityBaseUrl = 'https://preview-identity.bitwarden.com';
-
         // Production
-        if (this.isWebClient) {
-            this.apiBaseUrl = 'https://vault.bitwarden.com/api';
-            this.identityBaseUrl = 'https://vault.bitwarden.com/identity';
-        } else {
-            this.apiBaseUrl = 'https://api.bitwarden.com';
-            this.identityBaseUrl = 'https://identity.bitwarden.com';
-        }
+        this.apiBaseUrl = 'https://api.bitwarden.com';
+        this.identityBaseUrl = 'https://identity.bitwarden.com';
         /* tslint:enable */
     }
 
