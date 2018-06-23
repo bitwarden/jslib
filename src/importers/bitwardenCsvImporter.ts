@@ -14,7 +14,7 @@ import { FieldType } from '../enums/fieldType';
 import { SecureNoteType } from '../enums/secureNoteType';
 
 export class BitwardenCsvImporter extends BaseImporter implements Importer {
-    import(data: string): ImportResult {
+    parse(data: string): ImportResult {
         const result = new ImportResult();
         const results = this.parseCsv(data, true);
         if (results == null) {
@@ -104,6 +104,7 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
             }
         });
 
+        result.success = true;
         return result;
     }
 }

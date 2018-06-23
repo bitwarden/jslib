@@ -14,7 +14,7 @@ import { CipherType } from '../enums/cipherType';
 import { SecureNoteType } from '../enums/secureNoteType';
 
 export class LastPassCsvImporter extends BaseImporter implements Importer {
-    import(data: string): ImportResult {
+    parse(data: string): ImportResult {
         const result = new ImportResult();
         const results = this.parseCsv(data, true);
         if (results == null) {
@@ -22,7 +22,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
             return result;
         }
 
-        results.forEach((value) => {
+        results.forEach((value, index) => {
             let folderIndex = result.folders.length;
             const cipherIndex = result.ciphers.length;
             const hasFolder = this.getValueOrDefault(value.grouping, '(none)') !== '(none)';
@@ -39,6 +39,11 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
             }
 
             const cipher = this.buildBaseCipher(value);
+            if (cipher.name === '--' && results.length > 2 && index >= (results.length - 2)) {
+                // LastPass file traditionally has two empty lines at the end
+                return;
+            }
+
             if (cipher.type === CipherType.Login) {
                 cipher.notes = this.getValueOrDefault(value.extra);
                 cipher.login = new LoginView();
@@ -75,6 +80,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
             }
         });
 
+        result.success = true;
         return result;
     }
 

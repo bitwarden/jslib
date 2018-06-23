@@ -50,15 +50,15 @@ export abstract class BaseImporter {
         const result = papa.parse(data, {
             header: header,
             encoding: 'UTF-8',
+            skipEmptyLines: false,
         });
         if (result.errors != null && result.errors.length > 0) {
             result.errors.forEach((e) => {
                 // tslint:disable-next-line
                 console.warn('Error parsing row ' + e.row + ': ' + e.message);
             });
-            return null;
         }
-        return result.data;
+        return result.data && result.data.length > 0 ? result.data : null;
     }
 
     protected parseSingleRowCsv(rowData: string) {
