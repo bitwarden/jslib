@@ -9,7 +9,9 @@ import { CipherShareRequest } from '../models/request/cipherShareRequest';
 import { EmailRequest } from '../models/request/emailRequest';
 import { EmailTokenRequest } from '../models/request/emailTokenRequest';
 import { FolderRequest } from '../models/request/folderRequest';
+import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
+import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
@@ -56,6 +58,8 @@ export abstract class ApiService {
     putShareCiphers: (request: CipherBulkShareRequest) => Promise<any>;
     putCipherCollections: (id: string, request: CipherCollectionsRequest) => Promise<any>;
     postPurgeCiphers: (request: PasswordVerificationRequest) => Promise<any>;
+    postImportCiphers: (request: ImportCiphersRequest) => Promise<any>;
+    postImportOrganizationCiphers: (request: ImportOrganizationCiphersRequest) => Promise<any>;
     postCipherAttachment: (id: string, data: FormData) => Promise<CipherResponse>;
     deleteCipherAttachment: (id: string, attachmentId: string) => Promise<any>;
     postShareCipherAttachment: (id: string, attachmentId: string, data: FormData,

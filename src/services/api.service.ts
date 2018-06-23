@@ -15,7 +15,9 @@ import { CipherShareRequest } from '../models/request/cipherShareRequest';
 import { EmailRequest } from '../models/request/emailRequest';
 import { EmailTokenRequest } from '../models/request/emailTokenRequest';
 import { FolderRequest } from '../models/request/folderRequest';
+import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
+import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
@@ -589,6 +591,48 @@ export class ApiService implements ApiServiceAbstraction {
     async postPurgeCiphers(request: PasswordVerificationRequest): Promise<any> {
         const authHeader = await this.handleTokenState();
         const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/purge', {
+            body: JSON.stringify(request),
+            cache: 'no-cache',
+            credentials: this.getCredentials(),
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': authHeader,
+                'Device-Type': this.deviceType,
+            }),
+            method: 'POST',
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
+    async postImportCiphers(request: ImportCiphersRequest): Promise<any> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/import', {
+            body: JSON.stringify(request),
+            cache: 'no-cache',
+            credentials: this.getCredentials(),
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': authHeader,
+                'Device-Type': this.deviceType,
+            }),
+            method: 'POST',
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
+    async postImportOrganizationCiphers(request: ImportOrganizationCiphersRequest): Promise<any> {
+        const authHeader = await this.handleTokenState();
+        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/import-organization', {
             body: JSON.stringify(request),
             cache: 'no-cache',
             credentials: this.getCredentials(),
