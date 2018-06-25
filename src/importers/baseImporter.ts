@@ -2,6 +2,8 @@ import * as papa from 'papaparse';
 
 import { LoginUriView } from '../models/view/loginUriView';
 
+import { Utils } from '../misc/utils';
+
 export abstract class BaseImporter {
     protected passwordFieldNames = [
         'password', 'pass word', 'passphrase', 'pass phrase',
@@ -110,6 +112,14 @@ export abstract class BaseImporter {
             return uri.substring(0, 1000);
         }
         return uri;
+    }
+
+    protected nameFromUrl(url: string) {
+        const hostname = Utils.getHostname(url);
+        if (this.isNullOrWhitespace(hostname)) {
+            return null;
+        }
+        return hostname.startsWith('www.') ? hostname.replace('www.', '') : hostname;
     }
 
     protected isNullOrWhitespace(str: string): boolean {
