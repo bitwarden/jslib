@@ -13,7 +13,15 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
     identityUrl: string;
     iconsUrl: string;
 
-    constructor(private apiService: ApiService, private storageService: StorageService) {
+    constructor(private apiService: ApiService, private storageService: StorageService) {}
+
+    getWebVaultUrl(): string {
+        if (this.webVaultUrl != null) {
+            return this.webVaultUrl;
+        } else if (this.baseUrl) {
+            return this.baseUrl;
+        }
+        return null;
     }
 
     async setUrlsFromStorage(): Promise<void> {
