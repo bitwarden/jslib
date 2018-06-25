@@ -26,14 +26,9 @@ import { CipherResponse } from '../models/response/cipherResponse';
 import { ErrorResponse } from '../models/response/errorResponse';
 
 import { AttachmentView } from '../models/view/attachmentView';
-import { CardView } from '../models/view/cardView';
 import { CipherView } from '../models/view/cipherView';
 import { FieldView } from '../models/view/fieldView';
-import { IdentityView } from '../models/view/identityView';
-import { LoginView } from '../models/view/loginView';
 import { View } from '../models/view/view';
-
-import { ConstantsService } from './constants.service';
 
 import { ApiService } from '../abstractions/api.service';
 import { CipherService as CipherServiceAbstraction } from '../abstractions/cipher.service';

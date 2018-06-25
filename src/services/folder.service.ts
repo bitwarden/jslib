@@ -9,23 +9,25 @@ import { FolderResponse } from '../models/response/folderResponse';
 import { FolderView } from '../models/view/folderView';
 
 import { ApiService } from '../abstractions/api.service';
+import { CipherService } from '../abstractions/cipher.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { FolderService as FolderServiceAbstraction } from '../abstractions/folder.service';
 import { I18nService } from '../abstractions/i18n.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
+import { CipherData } from '../models/data/cipherData';
 
 const Keys = {
     foldersPrefix: 'folders_',
+    ciphersPrefix: 'ciphers_',
 };
 
 export class FolderService implements FolderServiceAbstraction {
     decryptedFolderCache: FolderView[];
 
     constructor(private cryptoService: CryptoService, private userService: UserService,
-        private noneFolder: () => string, private apiService: ApiService,
-        private storageService: StorageService, private i18nService: I18nService) {
-    }
+        private apiService: ApiService, private storageService: StorageService,
+        private i18nService: I18nService, private cipherService: CipherService) { }
 
     clearCache(): void {
         this.decryptedFolderCache = null;
@@ -83,7 +85,7 @@ export class FolderService implements FolderServiceAbstraction {
         decFolders.sort(this.getLocaleSortingFunction());
 
         const noneFolder = new FolderView();
-        noneFolder.name = this.noneFolder();
+        noneFolder.name = this.i18nService.t('noneFolder');
         decFolders.push(noneFolder);
 
         this.decryptedFolderCache = decFolders;
@@ -157,6 +159,21 @@ export class FolderService implements FolderServiceAbstraction {
 
         await this.storageService.save(Keys.foldersPrefix + userId, folders);
         this.decryptedFolderCache = null;
+
+        // Items in a deleted folder are re-assigned to "No Folder"
+        const ciphers = await this.storageService.get<{ [id: string]: CipherData; }>(Keys.ciphersPrefix + userId);
+        if (ciphers != null) {
+            const updates: CipherData[] = [];
+            for (const cId in ciphers) {
+                if (ciphers[cId].folderId === id) {
+                    ciphers[cId].folderId = null;
+                    updates.push(ciphers[cId]);
+                }
+            }
+            if (updates.length > 0) {
+                this.cipherService.upsert(updates);
+            }
+        }
     }
 
     async deleteWithServer(id: string): Promise<any> {
