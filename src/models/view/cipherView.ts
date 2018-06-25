@@ -17,9 +17,9 @@ export class CipherView implements View {
     name: string;
     notes: string;
     type: CipherType;
-    favorite: boolean;
-    organizationUseTotp: boolean;
-    edit: boolean;
+    favorite = false;
+    organizationUseTotp = false;
+    edit = false;
     localData: any;
     login: LoginView;
     identity: IdentityView;
