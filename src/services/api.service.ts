@@ -24,9 +24,11 @@ import { PasswordVerificationRequest } from '../models/request/passwordVerificat
 import { RegisterRequest } from '../models/request/registerRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
+import { UpdateDomainsRequest } from '../models/request/updateDomainsRequest';
 import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
 
 import { CipherResponse } from '../models/response/cipherResponse';
+import { DomainsResponse } from '../models/response/domainsResponse';
 import { ErrorResponse } from '../models/response/errorResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
@@ -264,6 +266,18 @@ export class ApiService implements ApiServiceAbstraction {
 
     async postImportDirectory(organizationId: string, request: ImportDirectoryRequest): Promise<any> {
         return this.send('POST', '/organizations/' + organizationId + '/import', request, true, false);
+    }
+
+    // Settings
+
+    async getSettingsDomains(): Promise<DomainsResponse> {
+        const r = await this.send('GET', '/settings/domains', null, true, true);
+        return new DomainsResponse(r);
+    }
+
+    async putSettingsDomains(request: UpdateDomainsRequest): Promise<DomainsResponse> {
+        const r = await this.send('PUT', '/settings/domains', request, true, true);
+        return new DomainsResponse(r);
     }
 
     // Helpers
