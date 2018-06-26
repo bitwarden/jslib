@@ -18,9 +18,11 @@ import { PasswordVerificationRequest } from '../models/request/passwordVerificat
 import { RegisterRequest } from '../models/request/registerRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
+import { UpdateDomainsRequest } from '../models/request/updateDomainsRequest';
 import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
 
 import { CipherResponse } from '../models/response/cipherResponse';
+import { DomainsResponse } from '../models/response/domainsResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
@@ -66,4 +68,6 @@ export abstract class ApiService {
         organizationId: string) => Promise<any>;
     getSync: () => Promise<SyncResponse>;
     postImportDirectory: (organizationId: string, request: ImportDirectoryRequest) => Promise<any>;
+    getSettingsDomains: () => Promise<DomainsResponse>;
+    putSettingsDomains: (request: UpdateDomainsRequest) => Promise<DomainsResponse>;
 }
