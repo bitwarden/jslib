@@ -121,646 +121,193 @@ export class ApiService implements ApiServiceAbstraction {
 
     // Two Factor APIs
 
-    async postTwoFactorEmail(request: TwoFactorEmailRequest): Promise<any> {
-        const response = await fetch(new Request(this.apiBaseUrl + '/two-factor/send-email-login', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Content-Type': 'application/json; charset=utf-8',
-                'Device-Type': this.deviceType,
-            }),
-            method: 'POST',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    postTwoFactorEmail(request: TwoFactorEmailRequest): Promise<any> {
+        return this.send('POST', '/two-factor/send-email-login', request, false, false);
     }
 
     // Account APIs
 
     async getProfile(): Promise<ProfileResponse> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/profile', {
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Authorization': authHeader,
-                'Device-Type': this.deviceType,
-            }),
-        }));
-
-        if (response.status === 200) {
-            const responseJson = await response.json();
-            return new ProfileResponse(responseJson);
-        } else {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+        const r = await this.send('GET', '/accounts/profile', null, true, true);
+        return new ProfileResponse(r);
     }
 
     async putProfile(request: UpdateProfileRequest): Promise<ProfileResponse> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/profile', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': authHeader,
-                'Device-Type': this.deviceType,
-            }),
-            method: 'PUT',
-        }));
-
-        if (response.status === 200) {
-            const responseJson = await response.json();
-            return new ProfileResponse(responseJson);
-        } else {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+        const r = await this.send('PUT', '/accounts/profile', request, true, true);
+        return new ProfileResponse(r);
     }
 
-    async postEmailToken(request: EmailTokenRequest): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/email-token', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': authHeader,
-                'Device-Type': this.deviceType,
-            }),
-            method: 'POST',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    postEmailToken(request: EmailTokenRequest): Promise<any> {
+        return this.send('POST', '/accounts/email-token', request, true, false);
     }
 
-    async postEmail(request: EmailRequest): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/email', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': authHeader,
-                'Device-Type': this.deviceType,
-            }),
-            method: 'POST',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    postEmail(request: EmailRequest): Promise<any> {
+        return this.send('POST', '/accounts/email', request, true, false);
     }
 
-    async postPassword(request: PasswordRequest): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/password', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': authHeader,
-                'Device-Type': this.deviceType,
-            }),
-            method: 'POST',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    postPassword(request: PasswordRequest): Promise<any> {
+        return this.send('POST', '/accounts/password', request, true, false);
     }
 
-    async postSecurityStamp(request: PasswordVerificationRequest): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/security-stamp', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': authHeader,
-                'Device-Type': this.deviceType,
-            }),
-            method: 'POST',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    postSecurityStamp(request: PasswordVerificationRequest): Promise<any> {
+        return this.send('POST', '/accounts/security-stamp', request, true, false);
     }
 
-    async postDeleteAccount(request: PasswordVerificationRequest): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/delete', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': authHeader,
-                'Device-Type': this.deviceType,
-            }),
-            method: 'POST',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    postDeleteAccount(request: PasswordVerificationRequest): Promise<any> {
+        return this.send('POST', '/accounts/delete', request, true, false);
     }
 
     async getAccountRevisionDate(): Promise<number> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/revision-date', {
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Authorization': authHeader,
-                'Device-Type': this.deviceType,
-            }),
-        }));
-
-        if (response.status === 200) {
-            return (await response.json() as number);
-        } else {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+        const r = await this.send('GET', '/accounts/revision-date', null, true, true);
+        return r as number;
     }
 
-    async postPasswordHint(request: PasswordHintRequest): Promise<any> {
-        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/password-hint', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Content-Type': 'application/json; charset=utf-8',
-                'Device-Type': this.deviceType,
-            }),
-            method: 'POST',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    postPasswordHint(request: PasswordHintRequest): Promise<any> {
+        return this.send('POST', '/accounts/password-hint', request, false, false);
     }
 
-    async postRegister(request: RegisterRequest): Promise<any> {
-        const response = await fetch(new Request(this.apiBaseUrl + '/accounts/register', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Content-Type': 'application/json; charset=utf-8',
-                'Device-Type': this.deviceType,
-            }),
-            method: 'POST',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    postRegister(request: RegisterRequest): Promise<any> {
+        return this.send('POST', '/accounts/register', request, false, false);
     }
 
     // Folder APIs
 
     async postFolder(request: FolderRequest): Promise<FolderResponse> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/folders', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Authorization': authHeader,
-                'Content-Type': 'application/json; charset=utf-8',
-                'Device-Type': this.deviceType,
-            }),
-            method: 'POST',
-        }));
-
-        if (response.status === 200) {
-            const responseJson = await response.json();
-            return new FolderResponse(responseJson);
-        } else {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+        const r = await this.send('POST', '/folders', request, true, true);
+        return new FolderResponse(r);
     }
 
     async putFolder(id: string, request: FolderRequest): Promise<FolderResponse> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/folders/' + id, {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Authorization': authHeader,
-                'Content-Type': 'application/json; charset=utf-8',
-                'Device-Type': this.deviceType,
-            }),
-            method: 'PUT',
-        }));
-
-        if (response.status === 200) {
-            const responseJson = await response.json();
-            return new FolderResponse(responseJson);
-        } else {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+        const r = await this.send('PUT', '/folders/' + id, request, true, true);
+        return new FolderResponse(r);
     }
 
-    async deleteFolder(id: string): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/folders/' + id, {
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Authorization': authHeader,
-                'Device-Type': this.deviceType,
-            }),
-            method: 'DELETE',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    deleteFolder(id: string): Promise<any> {
+        return this.send('DELETE', '/folders/' + id, null, true, false);
     }
 
     // Cipher APIs
 
     async postCipher(request: CipherRequest): Promise<CipherResponse> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Authorization': authHeader,
-                'Content-Type': 'application/json; charset=utf-8',
-                'Device-Type': this.deviceType,
-            }),
-            method: 'POST',
-        }));
-
-        if (response.status === 200) {
-            const responseJson = await response.json();
-            return new CipherResponse(responseJson);
-        } else {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+        const r = await this.send('POST', '/ciphers', request, true, true);
+        return new CipherResponse(r);
     }
 
     async putCipher(id: string, request: CipherRequest): Promise<CipherResponse> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/' + id, {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Authorization': authHeader,
-                'Content-Type': 'application/json; charset=utf-8',
-                'Device-Type': this.deviceType,
-            }),
-            method: 'PUT',
-        }));
-
-        if (response.status === 200) {
-            const responseJson = await response.json();
-            return new CipherResponse(responseJson);
-        } else {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+        const r = await this.send('PUT', '/ciphers/' + id, request, true, true);
+        return new CipherResponse(r);
     }
 
-    async deleteCipher(id: string): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/' + id, {
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Authorization': authHeader,
-                'Device-Type': this.deviceType,
-            }),
-            method: 'DELETE',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    deleteCipher(id: string): Promise<any> {
+        return this.send('DELETE', '/ciphers/' + id, null, true, false);
     }
 
-    async deleteManyCiphers(request: CipherBulkDeleteRequest): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Authorization': authHeader,
-                'Content-Type': 'application/json; charset=utf-8',
-                'Device-Type': this.deviceType,
-            }),
-            method: 'DELETE',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    deleteManyCiphers(request: CipherBulkDeleteRequest): Promise<any> {
+        return this.send('DELETE', '/ciphers', request, true, false);
     }
 
-    async putMoveCiphers(request: CipherBulkMoveRequest): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/move', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Authorization': authHeader,
-                'Content-Type': 'application/json; charset=utf-8',
-                'Device-Type': this.deviceType,
-            }),
-            method: 'PUT',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    putMoveCiphers(request: CipherBulkMoveRequest): Promise<any> {
+        return this.send('PUT', '/ciphers/move', request, true, false);
     }
 
-    async putShareCipher(id: string, request: CipherShareRequest): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/' + id + '/share', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Authorization': authHeader,
-                'Content-Type': 'application/json; charset=utf-8',
-                'Device-Type': this.deviceType,
-            }),
-            method: 'PUT',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    putShareCipher(id: string, request: CipherShareRequest): Promise<any> {
+        return this.send('PUT', '/ciphers/' + id + '/share', request, true, false);
     }
 
-    async putShareCiphers(request: CipherBulkShareRequest): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/share', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Authorization': authHeader,
-                'Content-Type': 'application/json; charset=utf-8',
-                'Device-Type': this.deviceType,
-            }),
-            method: 'PUT',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    putShareCiphers(request: CipherBulkShareRequest): Promise<any> {
+        return this.send('PUT', '/ciphers/share', request, true, false);
     }
 
-    async putCipherCollections(id: string, request: CipherCollectionsRequest): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/' + id + '/collections', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Authorization': authHeader,
-                'Content-Type': 'application/json; charset=utf-8',
-                'Device-Type': this.deviceType,
-            }),
-            method: 'PUT',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    putCipherCollections(id: string, request: CipherCollectionsRequest): Promise<any> {
+        return this.send('PUT', '/ciphers/' + id + '/collections', request, true, false);
     }
 
-    async postPurgeCiphers(request: PasswordVerificationRequest): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/purge', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': authHeader,
-                'Device-Type': this.deviceType,
-            }),
-            method: 'POST',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    postPurgeCiphers(request: PasswordVerificationRequest): Promise<any> {
+        return this.send('POST', '/ciphers/purge', request, true, false);
     }
 
-    async postImportCiphers(request: ImportCiphersRequest): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/import', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': authHeader,
-                'Device-Type': this.deviceType,
-            }),
-            method: 'POST',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    postImportCiphers(request: ImportCiphersRequest): Promise<any> {
+        return this.send('POST', '/ciphers/import', request, true, false);
     }
 
-    async postImportOrganizationCiphers(request: ImportOrganizationCiphersRequest): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/import-organization', {
-            body: JSON.stringify(request),
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-                'Authorization': authHeader,
-                'Device-Type': this.deviceType,
-            }),
-            method: 'POST',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    postImportOrganizationCiphers(request: ImportOrganizationCiphersRequest): Promise<any> {
+        return this.send('POST', '/ciphers/import-organization', request, true, false);
     }
 
     // Attachments APIs
 
     async postCipherAttachment(id: string, data: FormData): Promise<CipherResponse> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/' + id + '/attachment', {
-            body: data,
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Authorization': authHeader,
-                'Device-Type': this.deviceType,
-            }),
-            method: 'POST',
-        }));
-
-        if (response.status === 200) {
-            const responseJson = await response.json();
-            return new CipherResponse(responseJson);
-        } else {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+        const r = await this.send('POST', '/ciphers/' + id + '/attachment', data, true, true);
+        return new CipherResponse(r);
     }
 
-    async deleteCipherAttachment(id: string, attachmentId: string): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/' + id + '/attachment/' + attachmentId, {
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Authorization': authHeader,
-                'Device-Type': this.deviceType,
-            }),
-            method: 'DELETE',
-        }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+    deleteCipherAttachment(id: string, attachmentId: string): Promise<any> {
+        return this.send('DELETE', '/ciphers/' + id + '/attachment/' + attachmentId, null, true, false);
     }
 
-    async postShareCipherAttachment(id: string, attachmentId: string, data: FormData,
+    postShareCipherAttachment(id: string, attachmentId: string, data: FormData,
         organizationId: string): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/ciphers/' + id + '/attachment/' +
-            attachmentId + '/share?organizationId=' + organizationId, {
-                body: data,
-                cache: 'no-cache',
-                credentials: this.getCredentials(),
-                headers: new Headers({
-                    'Accept': 'application/json',
-                    'Authorization': authHeader,
-                    'Device-Type': this.deviceType,
-                }),
-                method: 'POST',
-            }));
-
-        if (response.status !== 200) {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+        return this.send('POST', '/ciphers/' + id + '/attachment/' +
+            attachmentId + '/share?organizationId=' + organizationId, data, true, false);
     }
 
     // Sync APIs
 
     async getSync(): Promise<SyncResponse> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/sync', {
-            cache: 'no-cache',
-            credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Authorization': authHeader,
-                'Device-Type': this.deviceType,
-            }),
-        }));
-
-        if (response.status === 200) {
-            const responseJson = await response.json();
-            return new SyncResponse(responseJson);
-        } else {
-            const error = await this.handleError(response, false);
-            return Promise.reject(error);
-        }
+        const r = await this.send('GET', '/sync', null, true, true);
+        return new SyncResponse(r);
     }
 
     async postImportDirectory(organizationId: string, request: ImportDirectoryRequest): Promise<any> {
-        const authHeader = await this.handleTokenState();
-        const response = await fetch(new Request(this.apiBaseUrl + '/organizations/' + organizationId + '/import', {
-            body: JSON.stringify(request),
+        return this.send('POST', '/organizations/' + organizationId + '/import', request, true, false);
+    }
+
+    // Helpers
+
+    private async send(method: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string, body: any,
+        authed: boolean, hasResponse: boolean): Promise<any> {
+        const headers = new Headers({
+            'Device-Type': this.deviceType,
+        });
+
+        const requestInit: RequestInit = {
             cache: 'no-cache',
             credentials: this.getCredentials(),
-            headers: new Headers({
-                'Accept': 'application/json',
-                'Authorization': authHeader,
-                'Content-Type': 'application/json; charset=utf-8',
-                'Device-Type': this.deviceType,
-            }),
-            method: 'POST',
-        }));
+            method: method,
+        };
 
-        if (response.status !== 200) {
+        if (authed) {
+            const authHeader = await this.handleTokenState();
+            headers.set('Authorization', authHeader);
+        }
+        if (body != null) {
+            if (typeof body === 'string') {
+                requestInit.body = body;
+                headers.set('Content-Type', 'application/x-www-form-urlencoded; charset=utf-8');
+            } else if (typeof body === 'object') {
+                if (body instanceof FormData) {
+                    requestInit.body = body;
+                } else {
+                    headers.set('Content-Type', 'application/json; charset=utf-8');
+                    requestInit.body = JSON.stringify(body);
+                }
+            }
+        }
+        if (hasResponse) {
+            headers.set('Accept', 'application/json');
+        }
+
+        requestInit.headers = headers;
+        const response = await fetch(new Request(this.apiBaseUrl + path, requestInit));
+
+        if (hasResponse && response.status === 200) {
+            const responseJson = await response.json();
+            return responseJson;
+        } else if (response.status !== 200) {
             const error = await this.handleError(response, false);
             return Promise.reject(error);
         }
     }
-
-    // Helpers
 
     private async handleError(response: Response, tokenError: boolean): Promise<ErrorResponse> {
         if ((tokenError && response.status === 400) || response.status === 401 || response.status === 403) {
