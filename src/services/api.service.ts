@@ -41,6 +41,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     private deviceType: string;
     private isWebClient = false;
+    private isDesktopClient = false;
     private usingBaseUrl = false;
 
     constructor(private tokenService: TokenService, private platformUtilsService: PlatformUtilsService,
@@ -48,6 +49,8 @@ export class ApiService implements ApiServiceAbstraction {
         const device = platformUtilsService.getDevice();
         this.deviceType = device.toString();
         this.isWebClient = device === DeviceType.Web;
+        this.isDesktopClient = device === DeviceType.Windows || device === DeviceType.MacOs ||
+            device === DeviceType.Linux;
     }
 
     setUrls(urls: EnvironmentUrls): void {
@@ -254,7 +257,8 @@ export class ApiService implements ApiServiceAbstraction {
     // Sync APIs
 
     async getSync(): Promise<SyncResponse> {
-        const r = await this.send('GET', '/sync', null, true, true);
+        const path = this.isDesktopClient || this.isWebClient ? '/sync?excludeDomains=true' : '/sync';
+        const r = await this.send('GET', path, null, true, true);
         return new SyncResponse(r);
     }
 
