@@ -24,8 +24,15 @@ import { PasswordVerificationRequest } from '../models/request/passwordVerificat
 import { RegisterRequest } from '../models/request/registerRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
+import { TwoFactorProviderRequest } from '../models/request/twoFactorProviderRequest';
+import { TwoFactorRecoveryRequest } from '../models/request/twoFactorRecoveryRequest';
 import { UpdateDomainsRequest } from '../models/request/updateDomainsRequest';
 import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
+import { UpdateTwoFactorAuthenticatorRequest } from '../models/request/updateTwoFactorAuthenticatorRequest';
+import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoRequest';
+import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEmailRequest';
+import { UpdateTwoFactorU2fRequest } from '../models/request/updateTwoFactorU2fRequest';
+import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
 
 import { CipherResponse } from '../models/response/cipherResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
@@ -33,8 +40,16 @@ import { ErrorResponse } from '../models/response/errorResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
+import { ListResponse } from '../models/response/listResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SyncResponse } from '../models/response/syncResponse';
+import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
+import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
+import { TwoFactorEmailResponse } from '../models/response/twoFactorEmailResponse';
+import { TwoFactorProviderResponse } from '../models/response/twoFactorProviderResponse';
+import { TwoFactorRecoverResponse } from '../models/response/twoFactorRescoverResponse';
+import { TwoFactorU2fResponse } from '../models/response/twoFactorU2fResponse';
+import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
@@ -278,6 +293,78 @@ export class ApiService implements ApiServiceAbstraction {
     async putSettingsDomains(request: UpdateDomainsRequest): Promise<DomainsResponse> {
         const r = await this.send('PUT', '/settings/domains', request, true, true);
         return new DomainsResponse(r);
+    }
+
+    // Two-factor
+
+    async getTwoFactorProviders(): Promise<ListResponse<TwoFactorProviderResponse>> {
+        const r = await this.send('GET', '/two-factor', null, true, true);
+        return new ListResponse(r, TwoFactorProviderResponse);
+    }
+
+    async getTwoFactorAuthenticator(request: PasswordVerificationRequest): Promise<TwoFactorAuthenticatorResponse> {
+        const r = await this.send('POST', '/two-factor/get-authenticator', request, true, true);
+        return new TwoFactorAuthenticatorResponse(r);
+    }
+
+    async getTwoFactorEmail(request: PasswordVerificationRequest): Promise<TwoFactorEmailResponse> {
+        const r = await this.send('POST', '/two-factor/get-email', request, true, true);
+        return new TwoFactorEmailResponse(r);
+    }
+
+    async getTwoFactorDuo(request: PasswordVerificationRequest): Promise<TwoFactorDuoResponse> {
+        const r = await this.send('POST', '/two-factor/get-duo', request, true, true);
+        return new TwoFactorDuoResponse(r);
+    }
+
+    async getTwoFactorYubiKey(request: PasswordVerificationRequest): Promise<TwoFactorYubiKeyResponse> {
+        const r = await this.send('POST', '/two-factor/get-yubikey', request, true, true);
+        return new TwoFactorYubiKeyResponse(r);
+    }
+
+    async getTwoFactorU2f(request: PasswordVerificationRequest): Promise<TwoFactorU2fResponse> {
+        const r = await this.send('POST', '/two-factor/get-u2f', request, true, true);
+        return new TwoFactorU2fResponse(r);
+    }
+
+    async getTwoFactorRecover(request: PasswordVerificationRequest): Promise<TwoFactorRecoverResponse> {
+        const r = await this.send('POST', '/two-factor/get-recover', request, true, true);
+        return new TwoFactorRecoverResponse(r);
+    }
+
+    async putTwoFactorAuthenticator(
+        request: UpdateTwoFactorAuthenticatorRequest): Promise<TwoFactorAuthenticatorResponse> {
+        const r = await this.send('PUT', '/two-factor/authenticator', request, true, true);
+        return new TwoFactorAuthenticatorResponse(r);
+    }
+
+    async putTwoFactorEmail(request: UpdateTwoFactorEmailRequest): Promise<TwoFactorEmailResponse> {
+        const r = await this.send('PUT', '/two-factor/email', request, true, true);
+        return new TwoFactorEmailResponse(r);
+    }
+
+    async putTwoFactorDuo(request: UpdateTwoFactorDuoRequest): Promise<TwoFactorDuoResponse> {
+        const r = await this.send('PUT', '/two-factor/duo', request, true, true);
+        return new TwoFactorDuoResponse(r);
+    }
+
+    async putTwoFactorYubiKey(request: UpdateTwoFactorYubioOtpRequest): Promise<TwoFactorYubiKeyResponse> {
+        const r = await this.send('PUT', '/two-factor/yubikey', request, true, true);
+        return new TwoFactorYubiKeyResponse(r);
+    }
+
+    async putTwoFactorU2f(request: UpdateTwoFactorU2fRequest): Promise<TwoFactorU2fResponse> {
+        const r = await this.send('PUT', '/two-factor/u2f', request, true, true);
+        return new TwoFactorU2fResponse(r);
+    }
+
+    async putTwoFactorDisable(request: TwoFactorProviderRequest): Promise<TwoFactorProviderResponse> {
+        const r = await this.send('PUT', '/two-factor/disable', request, true, true);
+        return new TwoFactorProviderResponse(r);
+    }
+
+    postTwoFactorRecover(request: TwoFactorRecoveryRequest): Promise<any> {
+        return this.send('POST', '/two-factor/recover', request, false, false);
     }
 
     // Helpers

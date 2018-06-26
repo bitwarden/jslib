@@ -1,7 +1,9 @@
-export class ListResponse {
-    data: any;
+export class ListResponse<T> {
+    data: T[];
+    continuationToken: string;
 
-    constructor(data: any) {
-        this.data = data;
+    constructor(response: any, t: new (dataResponse: any) => T) {
+        this.data = response.Data.map((dr) => new t(dr));
+        this.continuationToken = response.ContinuationToken;
     }
 }

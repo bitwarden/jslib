@@ -18,16 +18,31 @@ import { PasswordVerificationRequest } from '../models/request/passwordVerificat
 import { RegisterRequest } from '../models/request/registerRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
+import { TwoFactorProviderRequest } from '../models/request/twoFactorProviderRequest';
+import { TwoFactorRecoveryRequest } from '../models/request/twoFactorRecoveryRequest';
 import { UpdateDomainsRequest } from '../models/request/updateDomainsRequest';
 import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
+import { UpdateTwoFactorAuthenticatorRequest } from '../models/request/updateTwoFactorAuthenticatorRequest';
+import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoRequest';
+import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEmailRequest';
+import { UpdateTwoFactorU2fRequest } from '../models/request/updateTwoFactorU2fRequest';
+import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
 
 import { CipherResponse } from '../models/response/cipherResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
+import { ListResponse } from '../models/response/listResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SyncResponse } from '../models/response/syncResponse';
+import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
+import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
+import { TwoFactorEmailResponse } from '../models/response/twoFactorEmailResponse';
+import { TwoFactorProviderResponse } from '../models/response/twoFactorProviderResponse';
+import { TwoFactorRecoverResponse } from '../models/response/twoFactorRescoverResponse';
+import { TwoFactorU2fResponse } from '../models/response/twoFactorU2fResponse';
+import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 
 export abstract class ApiService {
     urlsSet: boolean;
@@ -70,4 +85,19 @@ export abstract class ApiService {
     postImportDirectory: (organizationId: string, request: ImportDirectoryRequest) => Promise<any>;
     getSettingsDomains: () => Promise<DomainsResponse>;
     putSettingsDomains: (request: UpdateDomainsRequest) => Promise<DomainsResponse>;
+    getTwoFactorProviders: () => Promise<ListResponse<TwoFactorProviderResponse>>;
+    getTwoFactorAuthenticator: (request: PasswordVerificationRequest) => Promise<TwoFactorAuthenticatorResponse>;
+    getTwoFactorEmail: (request: PasswordVerificationRequest) => Promise<TwoFactorEmailResponse>;
+    getTwoFactorDuo: (request: PasswordVerificationRequest) => Promise<TwoFactorDuoResponse>;
+    getTwoFactorYubiKey: (request: PasswordVerificationRequest) => Promise<TwoFactorYubiKeyResponse>;
+    getTwoFactorU2f: (request: PasswordVerificationRequest) => Promise<TwoFactorU2fResponse>;
+    getTwoFactorRecover: (request: PasswordVerificationRequest) => Promise<TwoFactorRecoverResponse>;
+    putTwoFactorAuthenticator: (
+        request: UpdateTwoFactorAuthenticatorRequest) => Promise<TwoFactorAuthenticatorResponse>;
+    putTwoFactorEmail: (request: UpdateTwoFactorEmailRequest) => Promise<TwoFactorEmailResponse>;
+    putTwoFactorDuo: (request: UpdateTwoFactorDuoRequest) => Promise<TwoFactorDuoResponse>;
+    putTwoFactorYubiKey: (request: UpdateTwoFactorYubioOtpRequest) => Promise<TwoFactorYubiKeyResponse>;
+    putTwoFactorU2f: (request: UpdateTwoFactorU2fRequest) => Promise<TwoFactorU2fResponse>;
+    putTwoFactorDisable: (request: TwoFactorProviderRequest) => Promise<TwoFactorProviderResponse>;
+    postTwoFactorRecover: (request: TwoFactorRecoveryRequest) => Promise<any>;
 }
