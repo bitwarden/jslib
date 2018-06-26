@@ -1,14 +1,14 @@
 export class TwoFactorU2fResponse {
     enabled: boolean;
-    challenge: Challenge;
+    challenge: ChallengeResponse;
 
     constructor(response: any) {
         this.enabled = response.Enabled;
-        this.challenge = new Challenge(response.Challenge);
+        this.challenge = new ChallengeResponse(response.Challenge);
     }
 }
 
-class Challenge {
+export class ChallengeResponse {
     userId: string;
     appId: string;
     challenge: string;
