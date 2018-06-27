@@ -139,12 +139,6 @@ export class ApiService implements ApiServiceAbstraction {
         }
     }
 
-    // Two Factor APIs
-
-    postTwoFactorEmail(request: TwoFactorEmailRequest): Promise<any> {
-        return this.send('POST', '/two-factor/send-email-login', request, false, false);
-    }
-
     // Account APIs
 
     async getProfile(): Promise<ProfileResponse> {
@@ -283,7 +277,7 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/organizations/' + organizationId + '/import', request, true, false);
     }
 
-    // Settings
+    // Settings APIs
 
     async getSettingsDomains(): Promise<DomainsResponse> {
         const r = await this.send('GET', '/settings/domains', null, true, true);
@@ -295,7 +289,7 @@ export class ApiService implements ApiServiceAbstraction {
         return new DomainsResponse(r);
     }
 
-    // Two-factor
+    // Two-factor APIs
 
     async getTwoFactorProviders(): Promise<ListResponse<TwoFactorProviderResponse>> {
         const r = await this.send('GET', '/two-factor', null, true, true);
@@ -365,6 +359,14 @@ export class ApiService implements ApiServiceAbstraction {
 
     postTwoFactorRecover(request: TwoFactorRecoveryRequest): Promise<any> {
         return this.send('POST', '/two-factor/recover', request, false, false);
+    }
+
+    postTwoFactorEmailSetup(request: TwoFactorEmailRequest): Promise<any> {
+        return this.send('POST', '/two-factor/send-email', request, true, false);
+    }
+
+    postTwoFactorEmail(request: TwoFactorEmailRequest): Promise<any> {
+        return this.send('POST', '/two-factor/send-email-login', request, false, false);
     }
 
     // Helpers

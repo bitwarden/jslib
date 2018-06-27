@@ -52,7 +52,6 @@ export abstract class ApiService {
     setUrls: (urls: EnvironmentUrls) => void;
     postIdentityToken: (request: TokenRequest) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse>;
     refreshIdentityToken: () => Promise<any>;
-    postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
     getProfile: () => Promise<ProfileResponse>;
     putProfile: (request: UpdateProfileRequest) => Promise<ProfileResponse>;
     postEmailToken: (request: EmailTokenRequest) => Promise<any>;
@@ -100,4 +99,6 @@ export abstract class ApiService {
     putTwoFactorU2f: (request: UpdateTwoFactorU2fRequest) => Promise<TwoFactorU2fResponse>;
     putTwoFactorDisable: (request: TwoFactorProviderRequest) => Promise<TwoFactorProviderResponse>;
     postTwoFactorRecover: (request: TwoFactorRecoveryRequest) => Promise<any>;
+    postTwoFactorEmailSetup: (request: TwoFactorEmailRequest) => Promise<any>;
+    postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
 }
