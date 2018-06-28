@@ -1,8 +1,12 @@
 import { AuditService as AuditServiceAbstraction } from '../abstractions/audit.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
+
 import { Utils } from '../misc/utils';
 
+import { BreachAccountResponse } from '../models/response/breachAccountResponse';
+
 const PwnedPasswordsApi = 'https://api.pwnedpasswords.com/range/';
+const HibpBreachApi = 'https://haveibeenpwned.com/api/v2/breachedaccount/';
 
 export class AuditService implements AuditServiceAbstraction {
     constructor(private cryptoFunctionService: CryptoFunctionService) { }
@@ -20,5 +24,16 @@ export class AuditService implements AuditServiceAbstraction {
         });
 
         return match != null ? parseInt(match.split(':')[1], 10) : 0;
+    }
+
+    async breachedAccounts(email: string): Promise<BreachAccountResponse[]> {
+        const response = await fetch(HibpBreachApi + email);
+        if (response.status === 404) {
+            return [];
+        } else if (response.status !== 200) {
+            throw new Error();
+        }
+        const responseJson = await response.json();
+        return responseJson.map((a) => new BreachAccountResponse(a));
     }
 }
