@@ -34,6 +34,6 @@ export class AuditService implements AuditServiceAbstraction {
             throw new Error();
         }
         const responseJson = await response.json();
-        return responseJson.map((a) => new BreachAccountResponse(a));
+        return responseJson.map((a: any) => new BreachAccountResponse(a));
     }
 }
