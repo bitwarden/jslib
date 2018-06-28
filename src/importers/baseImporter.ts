@@ -14,7 +14,7 @@ export abstract class BaseImporter {
         'p', 'serial', 'serial#', 'license key', 'reg #',
 
         // Non-English names
-        'passwort'
+        'passwort',
     ];
 
     protected usernameFieldNames = [
@@ -26,16 +26,16 @@ export abstract class BaseImporter {
         'member', 'member #',
 
         // Non-English names
-        'nom', 'benutzername'
+        'nom', 'benutzername',
     ];
 
     protected notesFieldNames = [
-        "note", "notes", "comment", "comments", "memo",
-        "description", "free form", "freeform",
-        "free text", "freetext", "free",
+        'note', 'notes', 'comment', 'comments', 'memo',
+        'description', 'free form', 'freeform',
+        'free text', 'freetext', 'free',
 
         // Non-English names
-        "kommentar"
+        'kommentar',
     ];
 
     protected uriFieldNames: string[] = [
@@ -45,7 +45,7 @@ export abstract class BaseImporter {
         'web-site', 'uri',
 
         // Non-English names
-        'ort', 'adresse'
+        'ort', 'adresse',
     ];
 
     protected parseCsv(data: string, header: boolean): any[] {
@@ -149,7 +149,7 @@ export abstract class BaseImporter {
             return 'Visa';
         }
 
-        // Mastercard 
+        // Mastercard
         // Updated for Mastercard 2017 BINs expansion
         if (/^(5[1-5][0-9]{14}|2(22[1-9][0-9]{12}|2[3-9][0-9]{13}|[3-6][0-9]{14}|7[0-1][0-9]{13}|720[0-9]{12}))$/
             .test(cardNum)) {
