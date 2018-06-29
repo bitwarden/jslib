@@ -72,13 +72,13 @@ export class BillingSubscriptionItemResponse {
     name: string;
     amount: number;
     quantity: number;
-    internal: string;
+    interval: string;
 
     constructor(response: any) {
         this.name = response.Name;
         this.amount = response.Amount;
         this.quantity = response.Quantity;
-        this.internal = response.Internal;
+        this.interval = response.Interval;
     }
 }
 
