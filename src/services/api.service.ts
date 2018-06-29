@@ -34,6 +34,7 @@ import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEm
 import { UpdateTwoFactorU2fRequest } from '../models/request/updateTwoFactorU2fRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
 
+import { BillingResponse } from '../models/response/billingResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import { ErrorResponse } from '../models/response/errorResponse';
@@ -144,6 +145,11 @@ export class ApiService implements ApiServiceAbstraction {
     async getProfile(): Promise<ProfileResponse> {
         const r = await this.send('GET', '/accounts/profile', null, true, true);
         return new ProfileResponse(r);
+    }
+
+    async getUserBilling(): Promise<BillingResponse> {
+        const r = await this.send('GET', '/accounts/billing', null, true, true);
+        return new BillingResponse(r);
     }
 
     async putProfile(request: UpdateProfileRequest): Promise<ProfileResponse> {

@@ -28,6 +28,7 @@ import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEm
 import { UpdateTwoFactorU2fRequest } from '../models/request/updateTwoFactorU2fRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
 
+import { BillingResponse } from '../models/response/billingResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import { FolderResponse } from '../models/response/folderResponse';
@@ -53,6 +54,7 @@ export abstract class ApiService {
     postIdentityToken: (request: TokenRequest) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse>;
     refreshIdentityToken: () => Promise<any>;
     getProfile: () => Promise<ProfileResponse>;
+    getUserBilling: () => Promise<BillingResponse>;
     putProfile: (request: UpdateProfileRequest) => Promise<ProfileResponse>;
     postEmailToken: (request: EmailTokenRequest) => Promise<any>;
     postEmail: (request: EmailRequest) => Promise<any>;
