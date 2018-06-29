@@ -26,8 +26,8 @@ export class AuditService implements AuditServiceAbstraction {
         return match != null ? parseInt(match.split(':')[1], 10) : 0;
     }
 
-    async breachedAccounts(email: string): Promise<BreachAccountResponse[]> {
-        const response = await fetch(HibpBreachApi + email);
+    async breachedAccounts(username: string): Promise<BreachAccountResponse[]> {
+        const response = await fetch(HibpBreachApi + username);
         if (response.status === 404) {
             return [];
         } else if (response.status !== 200) {
