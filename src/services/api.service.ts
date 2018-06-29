@@ -184,6 +184,10 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/register', request, false, false);
     }
 
+    postPremium(data: FormData): Promise<any> {
+        return this.send('POST', '/accounts/premium', data, true, true);
+    }
+
     // Folder APIs
 
     async postFolder(request: FolderRequest): Promise<FolderResponse> {
