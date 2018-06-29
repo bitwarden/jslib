@@ -65,6 +65,8 @@ export abstract class ApiService {
     postPasswordHint: (request: PasswordHintRequest) => Promise<any>;
     postRegister: (request: RegisterRequest) => Promise<any>;
     postPremium: (data: FormData) => Promise<any>;
+    postReinstatePremium: () => Promise<any>;
+    postCancelPremium: () => Promise<any>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
     putFolder: (id: string, request: FolderRequest) => Promise<FolderResponse>;
     deleteFolder: (id: string) => Promise<any>;

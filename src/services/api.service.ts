@@ -191,7 +191,15 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     postPremium(data: FormData): Promise<any> {
-        return this.send('POST', '/accounts/premium', data, true, true);
+        return this.send('POST', '/accounts/premium', data, true, false);
+    }
+
+    postReinstatePremium(): Promise<any> {
+        return this.send('POST', '/accounts/reinstate-premium', null, true, false);
+    }
+
+    postCancelPremium(): Promise<any> {
+        return this.send('POST', '/accounts/cancel-premium', null, true, false);
     }
 
     // Folder APIs

@@ -4,11 +4,27 @@ export class BillingResponse {
     storageName: string;
     storageGb: number;
     maxStorageGb: number;
+    paymentSource: BillingSourceResponse;
+    subscription: BillingSubscriptionResponse;
+    upcomingInvoice: BillingInvoiceResponse;
+    charges: BillingChargeResponse[] = [];
+    license: any;
+    expiration: Date;
 
     constructor(response: any) {
         this.storageName = response.StorageName;
         this.storageGb = response.StorageGb;
         this.maxStorageGb = response.MaxStorageGb;
+        this.paymentSource = response.PaymentSource == null ? null : new BillingSourceResponse(response.PaymentSource);
+        this.subscription = response.Subscription == null ?
+            null : new BillingSubscriptionResponse(response.Subscription);
+        this.upcomingInvoice = response.UpcomingInvoice == null ?
+            null : new BillingInvoiceResponse(response.UpcomingInvoice);
+        if (response.Charges != null) {
+            this.charges = response.Charges.map((c: any) => new BillingChargeResponse(c));
+        }
+        this.license = response.License;
+        this.expiration = response.Expiration;
     }
 }
 
@@ -47,7 +63,7 @@ export class BillingSubscriptionResponse {
         this.status = response.Status;
         this.cancelled = response.Cancelled;
         if (response.Items != null) {
-            this.items = response.Items.map((i) => new BillingSubscriptionItemResponse(i));
+            this.items = response.Items.map((i: any) => new BillingSubscriptionItemResponse(i));
         }
     }
 }
