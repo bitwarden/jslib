@@ -22,6 +22,7 @@ import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
+import { StorageRequest } from '../models/request/storageRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
 import { TwoFactorProviderRequest } from '../models/request/twoFactorProviderRequest';
@@ -200,6 +201,10 @@ export class ApiService implements ApiServiceAbstraction {
 
     postCancelPremium(): Promise<any> {
         return this.send('POST', '/accounts/cancel-premium', null, true, false);
+    }
+
+    postAccountStorage(request: StorageRequest): Promise<any> {
+        return this.send('POST', '/accounts/storage', request, true, false);
     }
 
     // Folder APIs

@@ -16,6 +16,7 @@ import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
+import { StorageRequest } from '../models/request/storageRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
 import { TwoFactorProviderRequest } from '../models/request/twoFactorProviderRequest';
@@ -67,6 +68,7 @@ export abstract class ApiService {
     postPremium: (data: FormData) => Promise<any>;
     postReinstatePremium: () => Promise<any>;
     postCancelPremium: () => Promise<any>;
+    postAccountStorage: (request: StorageRequest) => Promise<any>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
     putFolder: (id: string, request: FolderRequest) => Promise<FolderResponse>;
     deleteFolder: (id: string) => Promise<any>;
