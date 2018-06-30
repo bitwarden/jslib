@@ -21,6 +21,7 @@ import { ImportOrganizationCiphersRequest } from '../models/request/importOrgani
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
+import { PaymentRequest } from '../models/request/paymentRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { StorageRequest } from '../models/request/storageRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
@@ -205,6 +206,10 @@ export class ApiService implements ApiServiceAbstraction {
 
     postAccountStorage(request: StorageRequest): Promise<any> {
         return this.send('POST', '/accounts/storage', request, true, false);
+    }
+
+    postAccountPayment(request: PaymentRequest): Promise<any> {
+        return this.send('POST', '/accounts/payment', request, true, false);
     }
 
     // Folder APIs

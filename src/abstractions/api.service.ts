@@ -15,6 +15,7 @@ import { ImportOrganizationCiphersRequest } from '../models/request/importOrgani
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
+import { PaymentRequest } from '../models/request/paymentRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { StorageRequest } from '../models/request/storageRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
@@ -69,6 +70,7 @@ export abstract class ApiService {
     postReinstatePremium: () => Promise<any>;
     postCancelPremium: () => Promise<any>;
     postAccountStorage: (request: StorageRequest) => Promise<any>;
+    postAccountPayment: (request: PaymentRequest) => Promise<any>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
     putFolder: (id: string, request: FolderRequest) => Promise<FolderResponse>;
     deleteFolder: (id: string) => Promise<any>;
