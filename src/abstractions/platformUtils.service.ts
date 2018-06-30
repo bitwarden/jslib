@@ -25,5 +25,6 @@ export abstract class PlatformUtilsService {
     showDialog: (text: string, title?: string, confirmText?: string, cancelText?: string,
         type?: string) => Promise<boolean>;
     isDev: () => boolean;
+    isSelfHost: () => boolean;
     copyToClipboard: (text: string, options?: any) => void;
 }
