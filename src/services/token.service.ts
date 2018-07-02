@@ -148,6 +148,15 @@ export class TokenService implements TokenServiceAbstraction {
         return decoded.email as string;
     }
 
+    getEmailVerified(): boolean {
+        const decoded = this.decodeToken();
+        if (typeof decoded.email_verified === 'undefined') {
+            throw new Error('No email verification found');
+        }
+
+        return decoded.email_verified as boolean;
+    }
+
     getName(): string {
         const decoded = this.decodeToken();
         if (typeof decoded.name === 'undefined') {

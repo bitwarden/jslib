@@ -17,6 +17,7 @@ export abstract class TokenService {
     tokenNeedsRefresh: (minutes?: number) => boolean;
     getUserId: () => string;
     getEmail: () => string;
+    getEmailVerified: () => boolean;
     getName: () => string;
     getPremium: () => boolean;
     getIssuer: () => string;
