@@ -18,6 +18,7 @@ import { FolderRequest } from '../models/request/folderRequest';
 import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
+import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
@@ -44,6 +45,7 @@ import { FolderResponse } from '../models/response/folderResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
+import { OrganizationResponse } from '../models/response/organizationResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
@@ -399,6 +401,18 @@ export class ApiService implements ApiServiceAbstraction {
 
     postTwoFactorEmail(request: TwoFactorEmailRequest): Promise<any> {
         return this.send('POST', '/two-factor/send-email-login', request, false, false);
+    }
+
+    // Organization APIs
+
+    async postOrganization(request: OrganizationCreateRequest): Promise<OrganizationResponse> {
+        const r = await this.send('POST', '/organizations', request, true, true);
+        return new OrganizationResponse(r);
+    }
+
+    async postOrganizationLicense(data: FormData): Promise<OrganizationResponse> {
+        const r = await this.send('POST', '/organizations/license', data, true, true);
+        return new OrganizationResponse(r);
     }
 
     // Helpers
