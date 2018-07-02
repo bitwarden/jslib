@@ -71,6 +71,7 @@ export abstract class ApiService {
     postCancelPremium: () => Promise<any>;
     postAccountStorage: (request: StorageRequest) => Promise<any>;
     postAccountPayment: (request: PaymentRequest) => Promise<any>;
+    postAccountLicense: (data: FormData) => Promise<any>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
     putFolder: (id: string, request: FolderRequest) => Promise<FolderResponse>;
     deleteFolder: (id: string) => Promise<any>;

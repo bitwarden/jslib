@@ -212,6 +212,10 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/payment', request, true, false);
     }
 
+    postAccountLicense(data: FormData): Promise<any> {
+        return this.send('POST', '/accounts/license', data, true, false);
+    }
+
     // Folder APIs
 
     async postFolder(request: FolderRequest): Promise<FolderResponse> {
