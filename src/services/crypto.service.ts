@@ -26,6 +26,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     private encKey: SymmetricCryptoKey;
     private legacyEtmKey: SymmetricCryptoKey;
     private keyHash: string;
+    private publicKey: ArrayBuffer;
     private privateKey: ArrayBuffer;
     private orgKeys: Map<string, SymmetricCryptoKey>;
 
@@ -133,6 +134,20 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
         this.encKey = new SymmetricCryptoKey(decEncKey);
         return this.encKey;
+    }
+
+    async getPublicKey(): Promise<ArrayBuffer> {
+        if (this.publicKey != null) {
+            return this.publicKey;
+        }
+
+        const privateKey = await this.getPrivateKey();
+        if (privateKey == null) {
+            return null;
+        }
+
+        this.publicKey = null; // TODO:
+        return this.publicKey;
     }
 
     async getPrivateKey(): Promise<ArrayBuffer> {
@@ -256,6 +271,14 @@ export class CryptoService implements CryptoServiceAbstraction {
     async makeKey(password: string, salt: string): Promise<SymmetricCryptoKey> {
         const key = await this.cryptoFunctionService.pbkdf2(password, salt, 'sha256', 5000);
         return new SymmetricCryptoKey(key);
+    }
+
+    async makeShareKey(): Promise<[CipherString, SymmetricCryptoKey]> {
+        const shareKey = await this.cryptoFunctionService.randomBytes(64);
+        const publicKey = await this.getPublicKey();
+        const encKey = await this.getEncKey();
+        const encShareKey = await this.rsaEncrypt(shareKey, publicKey, encKey);
+        return [encShareKey, new SymmetricCryptoKey(shareKey)];
     }
 
     async hashPassword(password: string, key: SymmetricCryptoKey): Promise<string> {
@@ -495,6 +518,25 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
 
         return await this.cryptoFunctionService.aesDecrypt(data, iv, theKey.encKey);
+    }
+
+    private async rsaEncrypt(data: ArrayBuffer, publicKey?: ArrayBuffer, key?: SymmetricCryptoKey) {
+        if (publicKey == null) {
+            publicKey = await this.getPublicKey();
+        }
+        if (publicKey == null) {
+            throw new Error('Public key unavailable.');
+        }
+
+        let type = EncryptionType.Rsa2048_OaepSha1_B64;
+        const encBytes = await this.cryptoFunctionService.rsaEncrypt(data, publicKey, 'sha1');
+        let mac: string = null;
+        if (key != null && key.macKey != null) {
+            type = EncryptionType.Rsa2048_OaepSha1_HmacSha256_B64;
+            const macBytes = await this.cryptoFunctionService.hmac(encBytes, key.macKey, 'sha256');
+            mac = Utils.fromBufferToB64(macBytes);
+        }
+        return new CipherString(type, Utils.fromBufferToB64(encBytes), null, mac);
     }
 
     private async rsaDecrypt(encValue: string): Promise<ArrayBuffer> {

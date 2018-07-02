@@ -12,6 +12,7 @@ export abstract class CryptoService {
     getKey: () => Promise<SymmetricCryptoKey>;
     getKeyHash: () => Promise<string>;
     getEncKey: () => Promise<SymmetricCryptoKey>;
+    getPublicKey: () => Promise<ArrayBuffer>;
     getPrivateKey: () => Promise<ArrayBuffer>;
     getOrgKeys: () => Promise<Map<string, SymmetricCryptoKey>>;
     getOrgKey: (orgId: string) => Promise<SymmetricCryptoKey>;
@@ -24,6 +25,7 @@ export abstract class CryptoService {
     clearKeys: () => Promise<any>;
     toggleKey: () => Promise<any>;
     makeKey: (password: string, salt: string) => Promise<SymmetricCryptoKey>;
+    makeShareKey: () => Promise<[CipherString, SymmetricCryptoKey]>;
     hashPassword: (password: string, key: SymmetricCryptoKey) => Promise<string>;
     makeEncKey: (key: SymmetricCryptoKey) => Promise<CipherString>;
     encrypt: (plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey) => Promise<CipherString>;
