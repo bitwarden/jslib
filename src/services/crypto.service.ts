@@ -146,7 +146,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             return null;
         }
 
-        this.publicKey = null; // TODO:
+        this.publicKey = await this.cryptoFunctionService.rsaExtractPublicKey(privateKey);
         return this.publicKey;
     }
 
