@@ -4,6 +4,7 @@ import { AuthResult } from '../models/domain/authResult';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
 import { DeviceRequest } from '../models/request/deviceRequest';
+import { KeysRequest } from '../models/request/keysRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
@@ -239,6 +240,19 @@ export class AuthService {
             await this.cryptoService.setKey(key);
             await this.cryptoService.setKeyHash(hashedPassword);
             await this.cryptoService.setEncKey(tokenResponse.key);
+
+            // User doesn't have a key pair yet (old account), let's generate one for them
+            if (tokenResponse.privateKey == null) {
+                try {
+                    const keyPair = await this.cryptoService.makeKeyPair();
+                    await this.apiService.postAccountKeys(new KeysRequest(keyPair[0], keyPair[1].encryptedString));
+                    tokenResponse.privateKey = keyPair[1].encryptedString;
+                } catch (e) {
+                    // tslint:disable-next-line
+                    console.error(e);
+                }
+            }
+
             await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
         }
 

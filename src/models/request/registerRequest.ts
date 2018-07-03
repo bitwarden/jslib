@@ -1,10 +1,12 @@
+import { KeysRequest } from './keysRequest';
+
 export class RegisterRequest {
     name: string;
     email: string;
     masterPasswordHash: string;
     masterPasswordHint: string;
     key: string;
-    keys: RegisterKeysRequest;
+    keys: KeysRequest;
     token: string;
     organizationUserId: string;
 
@@ -14,15 +16,5 @@ export class RegisterRequest {
         this.masterPasswordHash = masterPasswordHash;
         this.masterPasswordHint = masterPasswordHint ? masterPasswordHint : null;
         this.key = key;
-    }
-}
-
-export class RegisterKeysRequest {
-    publicKey: string;
-    encryptedPrivateKey: string;
-
-    constructor(publicKey: string, encryptedPrivateKey: string) {
-        this.publicKey = publicKey;
-        this.encryptedPrivateKey = encryptedPrivateKey;
     }
 }

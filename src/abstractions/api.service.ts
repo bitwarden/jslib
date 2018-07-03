@@ -12,6 +12,7 @@ import { FolderRequest } from '../models/request/folderRequest';
 import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
+import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
@@ -74,6 +75,7 @@ export abstract class ApiService {
     postAccountStorage: (request: StorageRequest) => Promise<any>;
     postAccountPayment: (request: PaymentRequest) => Promise<any>;
     postAccountLicense: (data: FormData) => Promise<any>;
+    postAccountKeys: (request: KeysRequest) => Promise<any>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
     putFolder: (id: string, request: FolderRequest) => Promise<FolderResponse>;
     deleteFolder: (id: string) => Promise<any>;

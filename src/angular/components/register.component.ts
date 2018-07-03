@@ -3,10 +3,8 @@ import { Router } from '@angular/router';
 import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
 
-import {
-    RegisterKeysRequest,
-    RegisterRequest,
-} from '../../models/request/registerRequest';
+import { KeysRequest } from '../../models/request/keysRequest';
+import { RegisterRequest } from '../../models/request/registerRequest';
 
 import { ApiService } from '../../abstractions/api.service';
 import { AuthService } from '../../abstractions/auth.service';
@@ -64,7 +62,7 @@ export class RegisterComponent {
         const keys = await this.cryptoService.makeKeyPair(encKey[0]);
         const request = new RegisterRequest(this.email, this.name, hashedPassword,
             this.hint, encKey[1].encryptedString);
-        request.keys = new RegisterKeysRequest(keys[0], keys[1].encryptedString);
+        request.keys = new KeysRequest(keys[0], keys[1].encryptedString);
 
         try {
             this.formPromise = this.apiService.postRegister(request);
