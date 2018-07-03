@@ -18,5 +18,6 @@ export abstract class CryptoFunctionService {
     rsaEncrypt: (data: ArrayBuffer, publicKey: ArrayBuffer, algorithm: 'sha1' | 'sha256') => Promise<ArrayBuffer>;
     rsaDecrypt: (data: ArrayBuffer, privateKey: ArrayBuffer, algorithm: 'sha1' | 'sha256') => Promise<ArrayBuffer>;
     rsaExtractPublicKey: (privateKey: ArrayBuffer) => Promise<ArrayBuffer>;
+    rsaGenerateKeyPair: (length: 1024 | 2048 | 4096) => Promise<[ArrayBuffer, ArrayBuffer]>;
     randomBytes: (length: number) => Promise<ArrayBuffer>;
 }

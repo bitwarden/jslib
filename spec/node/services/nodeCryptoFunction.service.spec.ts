@@ -170,6 +170,15 @@ describe('NodeCrypto Function Service', () => {
         });
     });
 
+    describe('rsaGenerateKeyPair', () => {
+        testRsaGenerateKeyPair(1024);
+        testRsaGenerateKeyPair(2048);
+
+        // Generating 4096 bit keys is really slow with Forge lib.
+        // Maybe move to something else if we ever want to generate keys of this size.
+        // testRsaGenerateKeyPair(4096);
+    });
+
     describe('randomBytes', () => {
         it('should make a value of the correct length', async () => {
             const nodeCryptoFunctionService = new NodeCryptoFunctionService();
@@ -300,6 +309,16 @@ function testCompare(fast = false) {
             await cryptoFunctionService.compare(a.buffer, b.buffer);
         expect(equal).toBe(false);
     });
+}
+
+function testRsaGenerateKeyPair(length: 1024 | 2048 | 4096) {
+    it('should successfully generate a ' + length + ' bit key pair', async () => {
+        const cryptoFunctionService = new NodeCryptoFunctionService();
+        const keyPair = await cryptoFunctionService.rsaGenerateKeyPair(length);
+        expect(keyPair[0] == null || keyPair[1] == null).toBe(false);
+        const publicKey = await cryptoFunctionService.rsaExtractPublicKey(keyPair[1]);
+        expect(Utils.fromBufferToB64(keyPair[0])).toBe(Utils.fromBufferToB64(publicKey));
+    }, 10000);
 }
 
 function makeStaticByteArray(length: number) {

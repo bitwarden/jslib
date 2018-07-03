@@ -3,7 +3,10 @@ import { Router } from '@angular/router';
 import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
 
-import { RegisterRequest } from '../../models/request/registerRequest';
+import {
+    RegisterKeysRequest,
+    RegisterRequest,
+} from '../../models/request/registerRequest';
 
 import { ApiService } from '../../abstractions/api.service';
 import { AuthService } from '../../abstractions/auth.service';
@@ -11,6 +14,7 @@ import { CryptoService } from '../../abstractions/crypto.service';
 import { I18nService } from '../../abstractions/i18n.service';
 
 export class RegisterComponent {
+    name: string = '';
     email: string = '';
     masterPassword: string = '';
     confirmMasterPassword: string = '';
@@ -52,8 +56,18 @@ export class RegisterComponent {
             return;
         }
 
+        this.name = this.name === '' ? null : this.name;
+        this.email = this.email.toLowerCase();
+        const key = await this.cryptoService.makeKey(this.masterPassword, this.email);
+        const encKey = await this.cryptoService.makeEncKey(key);
+        const hashedPassword = await this.cryptoService.hashPassword(this.masterPassword, key);
+        const keys = await this.cryptoService.makeKeyPair(encKey[0]);
+        const request = new RegisterRequest(this.email, this.name, hashedPassword,
+            this.hint, encKey[1].encryptedString);
+        request.keys = new RegisterKeysRequest(keys[0], keys[1].encryptedString);
+
         try {
-            this.formPromise = this.register();
+            this.formPromise = this.apiService.postRegister(request);
             await this.formPromise;
             this.analytics.eventTrack.next({ action: 'Registered' });
             this.toasterService.popAsync('success', null, this.i18nService.t('newAccountCreated'));
@@ -65,14 +79,5 @@ export class RegisterComponent {
         this.analytics.eventTrack.next({ action: 'Toggled Master Password on Register' });
         this.showPassword = !this.showPassword;
         document.getElementById(confirmField ? 'masterPasswordRetype' : 'masterPassword').focus();
-    }
-
-    private async register() {
-        this.email = this.email.toLowerCase();
-        const key = await this.cryptoService.makeKey(this.masterPassword, this.email);
-        const encKey = await this.cryptoService.makeEncKey(key);
-        const hashedPassword = await this.cryptoService.hashPassword(this.masterPassword, key);
-        const request = new RegisterRequest(this.email, hashedPassword, this.hint, encKey.encryptedString);
-        await this.apiService.postRegister(request);
     }
 }

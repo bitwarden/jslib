@@ -229,8 +229,9 @@ export class CryptoService implements CryptoServiceAbstraction {
         return this.storageService.remove(Keys.encKey);
     }
 
-    clearPrivateKey(memoryOnly?: boolean): Promise<any> {
+    clearKeyPair(memoryOnly?: boolean): Promise<any> {
         this.privateKey = null;
+        this.publicKey = null;
         if (memoryOnly) {
             return Promise.resolve();
         }
@@ -251,7 +252,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             this.clearKeyHash(),
             this.clearOrgKeys(),
             this.clearEncKey(),
-            this.clearPrivateKey(),
+            this.clearKeyPair(),
         ]);
     }
 
@@ -281,6 +282,13 @@ export class CryptoService implements CryptoServiceAbstraction {
         return [encShareKey, new SymmetricCryptoKey(shareKey)];
     }
 
+    async makeKeyPair(key?: SymmetricCryptoKey): Promise<[string, CipherString]> {
+        const keyPair = await this.cryptoFunctionService.rsaGenerateKeyPair(2048);
+        const publicB64 = Utils.fromBufferToB64(keyPair[0]);
+        const privateEnc = await this.encrypt(keyPair[1], key);
+        return [publicB64, privateEnc];
+    }
+
     async hashPassword(password: string, key: SymmetricCryptoKey): Promise<string> {
         if (key == null) {
             key = await this.getKey();
@@ -293,20 +301,22 @@ export class CryptoService implements CryptoServiceAbstraction {
         return Utils.fromBufferToB64(hash);
     }
 
-    async makeEncKey(key: SymmetricCryptoKey): Promise<CipherString> {
+    async makeEncKey(key: SymmetricCryptoKey): Promise<[SymmetricCryptoKey, CipherString]> {
         const encKey = await this.cryptoFunctionService.randomBytes(64);
+        let encKeyEnc: CipherString = null;
         // TODO: Uncomment when we're ready to enable key stretching
-        return this.encrypt(encKey, key);
+        encKeyEnc = await this.encrypt(encKey, key);
         /*
         if (key.key.byteLength === 32) {
             const newKey = await this.stretchKey(key);
-            return this.encrypt(encKey, newKey);
+            encKeyEnc = await this.encrypt(encKey, newKey);
         } else if (key.key.byteLength === 64) {
-            return this.encrypt(encKey, key);
+            encKeyEnc = await this.encrypt(encKey, key);
         } else {
             throw new Error('Invalid key size.');
         }
         */
+        return [new SymmetricCryptoKey(encKey), encKeyEnc];
     }
 
     async encrypt(plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey): Promise<CipherString> {

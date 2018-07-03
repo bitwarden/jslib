@@ -20,14 +20,15 @@ export abstract class CryptoService {
     clearKey: () => Promise<any>;
     clearKeyHash: () => Promise<any>;
     clearEncKey: (memoryOnly?: boolean) => Promise<any>;
-    clearPrivateKey: (memoryOnly?: boolean) => Promise<any>;
+    clearKeyPair: (memoryOnly?: boolean) => Promise<any>;
     clearOrgKeys: (memoryOnly?: boolean) => Promise<any>;
     clearKeys: () => Promise<any>;
     toggleKey: () => Promise<any>;
     makeKey: (password: string, salt: string) => Promise<SymmetricCryptoKey>;
     makeShareKey: () => Promise<[CipherString, SymmetricCryptoKey]>;
+    makeKeyPair: (key?: SymmetricCryptoKey) => Promise<[string, CipherString]>;
     hashPassword: (password: string, key: SymmetricCryptoKey) => Promise<string>;
-    makeEncKey: (key: SymmetricCryptoKey) => Promise<CipherString>;
+    makeEncKey: (key: SymmetricCryptoKey) => Promise<[SymmetricCryptoKey, CipherString]>;
     encrypt: (plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey) => Promise<CipherString>;
     encryptToBytes: (plainValue: ArrayBuffer, key?: SymmetricCryptoKey) => Promise<ArrayBuffer>;
     decryptToUtf8: (cipherString: CipherString, key?: SymmetricCryptoKey) => Promise<string>;

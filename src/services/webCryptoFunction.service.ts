@@ -223,6 +223,20 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return await this.subtle.exportKey('spki', impPublicKey);
     }
 
+    async rsaGenerateKeyPair(length: 1024 | 2048 | 4096): Promise<[ArrayBuffer, ArrayBuffer]> {
+        const rsaParams = {
+            name: 'RSA-OAEP',
+            modulusLength: length,
+            publicExponent: new Uint8Array([0x01, 0x00, 0x01]), // 65537
+            // Have to specify some algorithm
+            hash: { name: this.toWebCryptoAlgorithm('sha1') },
+        };
+        const keyPair = await this.subtle.generateKey(rsaParams, true, ['encrypt', 'decrypt']);
+        const publicKey = await this.subtle.exportKey('spki', keyPair.publicKey);
+        const privateKey = await this.subtle.exportKey('pkcs8', keyPair.privateKey);
+        return [publicKey, privateKey];
+    }
+
     randomBytes(length: number): Promise<ArrayBuffer> {
         const arr = new Uint8Array(length);
         this.crypto.getRandomValues(arr);

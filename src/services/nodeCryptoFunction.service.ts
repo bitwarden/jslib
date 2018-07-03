@@ -144,6 +144,32 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         return Promise.resolve(publicKeyArray.buffer);
     }
 
+    async rsaGenerateKeyPair(length: 1024 | 2048 | 4096): Promise<[ArrayBuffer, ArrayBuffer]> {
+        return new Promise<[ArrayBuffer, ArrayBuffer]>((resolve, reject) => {
+            forge.pki.rsa.generateKeyPair({
+                bits: length,
+                workers: -1,
+                e: 0x10001, // 65537
+            }, (error, keyPair) => {
+                if (error != null) {
+                    reject(error);
+                    return;
+                }
+
+                const publicKeyAsn1 = (forge.pki as any).publicKeyToAsn1(keyPair.publicKey);
+                const publicKeyByteString = forge.asn1.toDer(publicKeyAsn1).getBytes();
+                const publicKey = Utils.fromByteStringToArray(publicKeyByteString);
+
+                const privateKeyAsn1 = (forge.pki as any).privateKeyToAsn1(keyPair.privateKey);
+                const privateKeyPkcs8 = (forge.pki as any).wrapRsaPrivateKey(privateKeyAsn1);
+                const privateKeyByteString = forge.asn1.toDer(privateKeyPkcs8).getBytes();
+                const privateKey = Utils.fromByteStringToArray(privateKeyByteString);
+
+                resolve([publicKey.buffer, privateKey.buffer]);
+            });
+        });
+    }
+
     randomBytes(length: number): Promise<ArrayBuffer> {
         return new Promise<ArrayBuffer>((resolve, reject) => {
             crypto.randomBytes(length, (error, bytes) => {
