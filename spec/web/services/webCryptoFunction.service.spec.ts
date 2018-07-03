@@ -247,6 +247,15 @@ describe('WebCrypto Function Service', () => {
         });
     });
 
+    describe('rsaExtractPublicKey', () => {
+        it('should successfully extract key', async () => {
+            const cryptoFunctionService = getWebCryptoFunctionService();
+            const privKey = Utils.fromB64ToArray(RsaPrivateKey);
+            const publicKey = await cryptoFunctionService.rsaExtractPublicKey(privKey.buffer);
+            expect(Utils.fromBufferToB64(publicKey)).toBe(RsaPublicKey);
+        });
+    });
+
     describe('randomBytes', () => {
         it('should make a value of the correct length', async () => {
             const cryptoFunctionService = getWebCryptoFunctionService();

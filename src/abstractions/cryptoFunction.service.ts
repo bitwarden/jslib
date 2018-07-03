@@ -16,6 +16,7 @@ export abstract class CryptoFunctionService {
     aesDecryptFast: (parameters: DecryptParameters<ArrayBuffer | string>) => Promise<string>;
     aesDecrypt: (data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer) => Promise<ArrayBuffer>;
     rsaEncrypt: (data: ArrayBuffer, publicKey: ArrayBuffer, algorithm: 'sha1' | 'sha256') => Promise<ArrayBuffer>;
-    rsaDecrypt: (data: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256') => Promise<ArrayBuffer>;
+    rsaDecrypt: (data: ArrayBuffer, privateKey: ArrayBuffer, algorithm: 'sha1' | 'sha256') => Promise<ArrayBuffer>;
+    rsaExtractPublicKey: (privateKey: ArrayBuffer) => Promise<ArrayBuffer>;
     randomBytes: (length: number) => Promise<ArrayBuffer>;
 }

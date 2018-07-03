@@ -161,6 +161,15 @@ describe('NodeCrypto Function Service', () => {
         });
     });
 
+    describe('rsaExtractPublicKey', () => {
+        it('should successfully extract key', async () => {
+            const nodeCryptoFunctionService = new NodeCryptoFunctionService();
+            const privKey = Utils.fromB64ToArray(RsaPrivateKey);
+            const publicKey = await nodeCryptoFunctionService.rsaExtractPublicKey(privKey.buffer);
+            expect(Utils.fromBufferToB64(publicKey)).toBe(RsaPublicKey);
+        });
+    });
+
     describe('randomBytes', () => {
         it('should make a value of the correct length', async () => {
             const nodeCryptoFunctionService = new NodeCryptoFunctionService();
