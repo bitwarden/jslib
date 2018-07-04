@@ -259,7 +259,9 @@ describe('WebCrypto Function Service', () => {
     describe('rsaGenerateKeyPair', () => {
         testRsaGenerateKeyPair(1024);
         testRsaGenerateKeyPair(2048);
-        testRsaGenerateKeyPair(4096);
+
+        // Generating 4096 bit keys can be slow. Commenting it out to save CI.
+        // testRsaGenerateKeyPair(4096);
     });
 
     describe('randomBytes', () => {
