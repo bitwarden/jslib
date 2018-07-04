@@ -125,7 +125,7 @@ export class CollectionService implements CollectionServiceAbstraction {
         this.decryptedCollectionCache = null;
     }
 
-    private getLocaleSortingFunction(): (a: CollectionView, b: CollectionView) => number {
+    getLocaleSortingFunction(): (a: CollectionView, b: CollectionView) => number {
         return (a, b) => {
             if (a.name == null && b.name != null) {
                 return -1;

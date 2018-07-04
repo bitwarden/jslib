@@ -28,12 +28,12 @@ export class CipherResponse {
     constructor(response: any) {
         this.id = response.Id;
         this.organizationId = response.OrganizationId;
-        this.folderId = response.FolderId;
+        this.folderId = response.FolderId || null;
         this.type = response.Type;
         this.name = response.Name;
         this.notes = response.Notes;
-        this.favorite = response.Favorite;
-        this.edit = response.Edit;
+        this.favorite = response.Favorite || false;
+        this.edit = response.Edit || true;
         this.organizationUseTotp = response.OrganizationUseTotp;
         this.revisionDate = new Date(response.RevisionDate);
 

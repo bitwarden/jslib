@@ -44,4 +44,5 @@ export abstract class CipherService {
     deleteAttachmentWithServer: (id: string, attachmentId: string) => Promise<void>;
     sortCiphersByLastUsed: (a: any, b: any) => number;
     sortCiphersByLastUsedThenName: (a: any, b: any) => number;
+    getLocaleSortingFunction: () => (a: CipherView, b: CipherView) => number;
 }

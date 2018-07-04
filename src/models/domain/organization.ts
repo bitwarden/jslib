@@ -21,4 +21,15 @@ export class Organization {
         this.type = obj.type;
         this.enabled = obj.enabled;
     }
+
+    get canAccess() {
+        if (this.type === OrganizationUserType.Owner) {
+            return true;
+        }
+        return this.enabled && this.status === OrganizationUserStatusType.Confirmed;
+    }
+
+    get isAdmin() {
+        return this.type === OrganizationUserType.Owner || this.type === OrganizationUserType.Admin;
+    }
 }

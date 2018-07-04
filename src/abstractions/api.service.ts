@@ -34,6 +34,7 @@ import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFacto
 
 import { BillingResponse } from '../models/response/billingResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
+import { CollectionResponse } from '../models/response/collectionResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
@@ -79,6 +80,7 @@ export abstract class ApiService {
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
     putFolder: (id: string, request: FolderRequest) => Promise<FolderResponse>;
     deleteFolder: (id: string) => Promise<any>;
+    getCiphersOrganization: (organizationId: string) => Promise<ListResponse<CipherResponse>>;
     postCipher: (request: CipherRequest) => Promise<CipherResponse>;
     putCipher: (id: string, request: CipherRequest) => Promise<CipherResponse>;
     deleteCipher: (id: string) => Promise<any>;
@@ -94,6 +96,7 @@ export abstract class ApiService {
     deleteCipherAttachment: (id: string, attachmentId: string) => Promise<any>;
     postShareCipherAttachment: (id: string, attachmentId: string, data: FormData,
         organizationId: string) => Promise<any>;
+    getCollections: (organizationId: string) => Promise<ListResponse<CollectionResponse>>;
     getSync: () => Promise<SyncResponse>;
     postImportDirectory: (organizationId: string, request: ImportDirectoryRequest) => Promise<any>;
     getSettingsDomains: () => Promise<DomainsResponse>;

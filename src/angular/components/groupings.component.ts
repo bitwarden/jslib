@@ -14,6 +14,10 @@ import { CollectionService } from '../../abstractions/collection.service';
 import { FolderService } from '../../abstractions/folder.service';
 
 export class GroupingsComponent {
+    @Input() showFolders = true;
+    @Input() showCollections = true;
+    @Input() showFavorites = true;
+
     @Output() onAllClicked = new EventEmitter();
     @Output() onFavoritesClicked = new EventEmitter();
     @Output() onCipherTypeClicked = new EventEmitter<CipherType>();
@@ -44,11 +48,22 @@ export class GroupingsComponent {
         }
     }
 
-    async loadCollections() {
-        this.collections = await this.collectionService.getAllDecrypted();
+    async loadCollections(organizationId?: string) {
+        if (!this.showCollections) {
+            return;
+        }
+        const collections = await this.collectionService.getAllDecrypted();
+        if (organizationId != null) {
+            this.collections = collections.filter((c) => c.organizationId === organizationId);
+        } else {
+            this.collections = collections;
+        }
     }
 
     async loadFolders() {
+        if (!this.showFolders) {
+            return;
+        }
         this.folders = await this.folderService.getAllDecrypted();
     }
 

@@ -19,20 +19,15 @@ export class CiphersComponent {
     ciphers: CipherView[] = [];
     searchText: string;
     searchPlaceholder: string = null;
-    private filter: (cipher: CipherView) => boolean = null;
+
+    protected allCiphers: CipherView[] = [];
+    protected filter: (cipher: CipherView) => boolean = null;
 
     constructor(protected cipherService: CipherService) { }
 
     async load(filter: (cipher: CipherView) => boolean = null) {
-        this.filter = filter;
-        const ciphers = await this.cipherService.getAllDecrypted();
-
-        if (this.filter == null) {
-            this.ciphers = ciphers;
-        } else {
-            this.ciphers = ciphers.filter(this.filter);
-        }
-
+        this.allCiphers = await this.cipherService.getAllDecrypted();
+        this.applyFilter(filter);
         this.loaded = true;
     }
 
@@ -40,6 +35,15 @@ export class CiphersComponent {
         this.loaded = false;
         this.ciphers = [];
         await this.load(this.filter);
+    }
+
+    async applyFilter(filter: (cipher: CipherView) => boolean = null) {
+        this.filter = filter;
+        if (this.filter == null) {
+            this.ciphers = this.allCiphers;
+        } else {
+            this.ciphers = this.allCiphers.filter(this.filter);
+        }
     }
 
     selectCipher(cipher: CipherView) {

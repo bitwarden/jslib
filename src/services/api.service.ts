@@ -40,6 +40,7 @@ import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFacto
 
 import { BillingResponse } from '../models/response/billingResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
+import { CollectionResponse } from '../models/response/collectionResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import { ErrorResponse } from '../models/response/errorResponse';
 import { FolderResponse } from '../models/response/folderResponse';
@@ -241,6 +242,12 @@ export class ApiService implements ApiServiceAbstraction {
 
     // Cipher APIs
 
+    async getCiphersOrganization(organizationId: string): Promise<ListResponse<CipherResponse>> {
+        const r = await this.send('GET', '/ciphers/organization-details?organizationId=' + organizationId,
+            null, true, true);
+        return new ListResponse(r, CipherResponse);
+    }
+
     async postCipher(request: CipherRequest): Promise<CipherResponse> {
         const r = await this.send('POST', '/ciphers', request, true, true);
         return new CipherResponse(r);
@@ -302,6 +309,13 @@ export class ApiService implements ApiServiceAbstraction {
         organizationId: string): Promise<any> {
         return this.send('POST', '/ciphers/' + id + '/attachment/' +
             attachmentId + '/share?organizationId=' + organizationId, data, true, false);
+    }
+
+    // Collections APIs
+
+    async getCollections(organizationId: string): Promise<ListResponse<CollectionResponse>> {
+        const r = await this.send('GET', '/organizations/' + organizationId + '/collections', null, true, true);
+        return new ListResponse(r, CollectionResponse);
     }
 
     // Sync APIs

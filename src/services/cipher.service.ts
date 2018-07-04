@@ -619,9 +619,7 @@ export class CipherService implements CipherServiceAbstraction {
         return this.getLocaleSortingFunction()(a, b);
     }
 
-    // Helpers
-
-    private getLocaleSortingFunction(): (a: CipherView, b: CipherView) => number {
+    getLocaleSortingFunction(): (a: CipherView, b: CipherView) => number {
         return (a, b) => {
             let aName = a.name;
             let bName = b.name;
@@ -655,6 +653,8 @@ export class CipherService implements CipherServiceAbstraction {
                 aName.localeCompare(bName);
         };
     }
+
+    // Helpers
 
     private async encryptObjProperty<V extends View, D extends Domain>(model: V, obj: D,
         map: any, key: SymmetricCryptoKey): Promise<void> {
