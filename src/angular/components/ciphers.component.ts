@@ -37,7 +37,7 @@ export class CiphersComponent {
         await this.load(this.filter);
     }
 
-    async applyFilter(filter: (cipher: CipherView) => boolean = null) {
+    applyFilter(filter: (cipher: CipherView) => boolean = null) {
         this.filter = filter;
         if (this.filter == null) {
             this.ciphers = this.allCiphers;

@@ -119,5 +119,6 @@ export abstract class ApiService {
     postTwoFactorEmailSetup: (request: TwoFactorEmailRequest) => Promise<any>;
     postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
     postOrganization: (request: OrganizationCreateRequest) => Promise<OrganizationResponse>;
+    postLeaveOrganization: (id: string) => Promise<any>;
     postOrganizationLicense: (data: FormData) => Promise<OrganizationResponse>;
 }

@@ -429,6 +429,10 @@ export class ApiService implements ApiServiceAbstraction {
         return new OrganizationResponse(r);
     }
 
+    postLeaveOrganization(id: string): Promise<any> {
+        return this.send('POST', '/organizations/' + id + '/leave', null, true, false);
+    }
+
     async postOrganizationLicense(data: FormData): Promise<OrganizationResponse> {
         const r = await this.send('POST', '/organizations/license', data, true, true);
         return new OrganizationResponse(r);
