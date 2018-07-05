@@ -1,5 +1,8 @@
 import * as papa from 'papaparse';
 
+import { ImportResult } from '../models/domain/importResult';
+
+import { CollectionView } from '../models/view/collectionView';
 import { LoginUriView } from '../models/view/loginUriView';
 
 import { Utils } from '../misc/utils';
@@ -193,5 +196,16 @@ export abstract class BaseImporter {
         }
 
         return null;
+    }
+
+    protected moveFoldersToCollections(result: ImportResult) {
+        result.folderRelationships.forEach((value, key) => result.collectionRelationships.set(key, value));
+        result.collections = result.folders.map((f) => {
+            const collection = new CollectionView();
+            collection.name = f.name;
+            return collection;
+        });
+        result.folderRelationships = new Map<number, number>();
+        result.folders = [];
     }
 }

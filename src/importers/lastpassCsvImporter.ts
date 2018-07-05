@@ -14,7 +14,7 @@ import { CipherType } from '../enums/cipherType';
 import { SecureNoteType } from '../enums/secureNoteType';
 
 export class LastPassCsvImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string, organization = false): ImportResult {
         const result = new ImportResult();
         const results = this.parseCsv(data, true);
         if (results == null) {
@@ -23,8 +23,8 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
         }
 
         results.forEach((value, index) => {
-            let folderIndex = result.folders.length;
             const cipherIndex = result.ciphers.length;
+            let folderIndex = result.folders.length;
             const hasFolder = this.getValueOrDefault(value.grouping, '(none)') !== '(none)';
             let addFolder = hasFolder;
 
@@ -38,7 +38,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
                 }
             }
 
-            const cipher = this.buildBaseCipher(value);
+            const cipher = this.buildBaseCipher(value, organization);
             if (cipher.name === '--' && results.length > 2 && index >= (results.length - 2)) {
                 // LastPass file traditionally has two empty lines at the end
                 return;
@@ -60,7 +60,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
                 cipher.notes = this.getValueOrDefault(value.notes);
                 if (!this.isNullOrWhitespace(value.ccnum)) {
                     // there is a card on this identity too
-                    const cardCipher = this.buildBaseCipher(value);
+                    const cardCipher = this.buildBaseCipher(value, organization);
                     cardCipher.identity = null;
                     cardCipher.type = CipherType.Card;
                     cardCipher.card = this.parseCard(value);
@@ -80,11 +80,15 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
             }
         });
 
+        if (organization) {
+            this.moveFoldersToCollections(result);
+        }
+
         result.success = true;
         return result;
     }
 
-    private buildBaseCipher(value: any) {
+    private buildBaseCipher(value: any, organization: boolean) {
         const cipher = new CipherView();
         if (value.hasOwnProperty('profilename') && value.hasOwnProperty('profilelanguage')) {
             // form fill
@@ -100,7 +104,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
             }
         } else {
             // site or secure note
-            cipher.favorite = this.getValueOrDefault(value.fav, '0') === '1'; // TODO: if org, always false
+            cipher.favorite = !organization && this.getValueOrDefault(value.fav, '0') === '1';
             cipher.name = this.getValueOrDefault(value.name, '--');
             cipher.type = value.url === 'http://sn' ? CipherType.SecureNote : CipherType.Login;
         }

@@ -19,12 +19,15 @@ export class KeePassXCsvImporter extends BaseImporter implements Importer {
         }
 
         results.forEach((value) => {
+            if (this.isNullOrWhitespace(value.Title)) {
+                return;
+            }
+
             value.Group = !this.isNullOrWhitespace(value.Group) && value.Group.startsWith('Root/') ?
                 value.Group.replace('Root/', '') : value.Group;
             const groupName = !this.isNullOrWhitespace(value.Group) ? value.Group.split('/').join(' > ') : null;
 
             let folderIndex = result.folders.length;
-            const cipherIndex = result.ciphers.length;
             const hasFolder = groupName != null;
             let addFolder = hasFolder;
 
@@ -38,6 +41,15 @@ export class KeePassXCsvImporter extends BaseImporter implements Importer {
                 }
             }
 
+            if (addFolder) {
+                const f = new FolderView();
+                f.name = groupName;
+                result.folders.push(f);
+            }
+            if (hasFolder) {
+                result.folderRelationships.set(result.ciphers.length, folderIndex);
+            }
+
             const cipher = new CipherView();
             cipher.type = CipherType.Login;
             cipher.favorite = false;
@@ -47,19 +59,7 @@ export class KeePassXCsvImporter extends BaseImporter implements Importer {
             cipher.login.username = this.getValueOrDefault(value.Username);
             cipher.login.password = this.getValueOrDefault(value.Password);
             cipher.login.uris = this.makeUriArray(value.URL);
-
-            if (!this.isNullOrWhitespace(value.Title)) {
-                result.ciphers.push(cipher);
-            }
-
-            if (addFolder) {
-                const f = new FolderView();
-                f.name = groupName;
-                result.folders.push(f);
-            }
-            if (hasFolder) {
-                result.folderRelationships.set(cipherIndex, folderIndex);
-            }
+            result.ciphers.push(cipher);
         });
 
         result.success = true;

@@ -4,6 +4,7 @@ import { Importer } from './importer';
 import { ImportResult } from '../models/domain/importResult';
 
 import { CipherView } from '../models/view/cipherView';
+import { CollectionView } from '../models/view/collectionView';
 import { FieldView } from '../models/view/fieldView';
 import { FolderView } from '../models/view/folderView';
 import { LoginView } from '../models/view/loginView';
@@ -14,7 +15,7 @@ import { FieldType } from '../enums/fieldType';
 import { SecureNoteType } from '../enums/secureNoteType';
 
 export class BitwardenCsvImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string, organization = false): ImportResult {
         const result = new ImportResult();
         const results = this.parseCsv(data, true);
         if (results == null) {
@@ -23,24 +24,57 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
         }
 
         results.forEach((value) => {
-            let folderIndex = result.folders.length;
-            const cipherIndex = result.ciphers.length;
-            const hasFolder = !this.isNullOrWhitespace(value.folder);
-            let addFolder = hasFolder;
+            if (organization && !this.isNullOrWhitespace(value.collections)) {
+                const collections = (value.collections as string).split(',');
+                collections.forEach((col) => {
+                    let addCollection = true;
+                    let collectionIndex = result.collections.length;
 
-            if (hasFolder) {
-                for (let i = 0; i < result.folders.length; i++) {
-                    if (result.folders[i].name === value.folder) {
-                        addFolder = false;
-                        folderIndex = i;
-                        break;
+                    for (let i = 0; i < result.collections.length; i++) {
+                        if (result.collections[i].name === col) {
+                            addCollection = false;
+                            collectionIndex = i;
+                            break;
+                        }
                     }
+
+                    if (addCollection) {
+                        const collection = new CollectionView();
+                        collection.name = col;
+                        result.collections.push(collection);
+                    }
+
+                    result.collectionRelationships.set(result.ciphers.length, collectionIndex);
+                });
+            } else if (!organization) {
+                let folderIndex = result.folders.length;
+                const hasFolder = !organization && !this.isNullOrWhitespace(value.folder);
+                let addFolder = hasFolder;
+
+                if (hasFolder) {
+                    for (let i = 0; i < result.folders.length; i++) {
+                        if (result.folders[i].name === value.folder) {
+                            addFolder = false;
+                            folderIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                if (addFolder) {
+                    const f = new FolderView();
+                    f.name = value.folder;
+                    result.folders.push(f);
+                }
+
+                if (hasFolder) {
+                    result.folderRelationships.set(result.ciphers.length, folderIndex);
                 }
             }
 
             const cipher = new CipherView();
+            cipher.favorite = !organization && this.getValueOrDefault(value.favorite, '0') !== '0' ? true : false;
             cipher.type = CipherType.Login;
-            cipher.favorite = this.getValueOrDefault(value.favorite, '0') !== '0' ? true : false;
             cipher.notes = this.getValueOrDefault(value.notes);
             cipher.name = this.getValueOrDefault(value.name, '--');
 
@@ -93,15 +127,6 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
             }
 
             result.ciphers.push(cipher);
-
-            if (addFolder) {
-                const f = new FolderView();
-                f.name = value.folder;
-                result.folders.push(f);
-            }
-            if (hasFolder) {
-                result.folderRelationships.set(cipherIndex, folderIndex);
-            }
         });
 
         result.success = true;
