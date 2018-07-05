@@ -37,7 +37,7 @@ export class AttachmentsComponent implements OnInit {
         protected platformUtilsService: PlatformUtilsService, protected win: Window) { }
 
     async ngOnInit() {
-        this.cipherDomain = await this.cipherService.get(this.cipherId);
+        this.cipherDomain = await this.loadCipher();
         this.cipher = await this.cipherDomain.decrypt();
 
         const key = await this.cryptoService.getEncKey();
@@ -84,7 +84,7 @@ export class AttachmentsComponent implements OnInit {
         }
 
         try {
-            this.formPromise = this.cipherService.saveAttachmentWithServer(this.cipherDomain, files[0]);
+            this.formPromise = this.saveCipherAttachment(files[0]);
             this.cipherDomain = await this.formPromise;
             this.cipher = await this.cipherDomain.decrypt();
             this.analytics.eventTrack.next({ action: 'Added Attachment' });
@@ -112,8 +112,7 @@ export class AttachmentsComponent implements OnInit {
         }
 
         try {
-            this.deletePromises[attachment.id] = this.cipherService.deleteAttachmentWithServer(
-                this.cipher.id, attachment.id);
+            this.deletePromises[attachment.id] = this.deleteCipherAttachment(attachment.id);
             await this.deletePromises[attachment.id];
             this.analytics.eventTrack.next({ action: 'Deleted Attachment' });
             this.toasterService.popAsync('success', null, this.i18nService.t('deletedAttachment'));
@@ -157,5 +156,17 @@ export class AttachmentsComponent implements OnInit {
         }
 
         a.downloading = false;
+    }
+
+    protected loadCipher() {
+        return this.cipherService.get(this.cipherId);
+    }
+
+    protected saveCipherAttachment(file: File) {
+        return this.cipherService.saveAttachmentWithServer(this.cipherDomain, file);
+    }
+
+    protected deleteCipherAttachment(attachmentId: string) {
+        return this.cipherService.deleteAttachmentWithServer(this.cipher.id, attachmentId);
     }
 }

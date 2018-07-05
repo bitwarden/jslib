@@ -418,14 +418,14 @@ export class CipherService implements CipherServiceAbstraction {
         }
     }
 
-    saveAttachmentWithServer(cipher: Cipher, unencryptedFile: any): Promise<Cipher> {
+    saveAttachmentWithServer(cipher: Cipher, unencryptedFile: any, admin = false): Promise<Cipher> {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsArrayBuffer(unencryptedFile);
             reader.onload = async (evt: any) => {
                 try {
                     const cData = await this.saveAttachmentRawWithServer(cipher,
-                        unencryptedFile.name, evt.target.result);
+                        unencryptedFile.name, evt.target.result, admin);
                     resolve(cData);
                 } catch (e) {
                     reject(e);
@@ -437,7 +437,8 @@ export class CipherService implements CipherServiceAbstraction {
         });
     }
 
-    async saveAttachmentRawWithServer(cipher: Cipher, filename: string, data: ArrayBuffer): Promise<Cipher> {
+    async saveAttachmentRawWithServer(cipher: Cipher, filename: string,
+        data: ArrayBuffer, admin = false): Promise<Cipher> {
         const key = await this.cryptoService.getOrgKey(cipher.organizationId);
         const encFileName = await this.cryptoService.encrypt(filename, key);
         const encData = await this.cryptoService.encryptToBytes(data, key);
@@ -459,20 +460,26 @@ export class CipherService implements CipherServiceAbstraction {
 
         let response: CipherResponse;
         try {
-            response = await this.apiService.postCipherAttachment(cipher.id, fd);
+            if (admin) {
+                response = await this.apiService.postCipherAttachmentAdmin(cipher.id, fd);
+            } else {
+                response = await this.apiService.postCipherAttachment(cipher.id, fd);
+            }
         } catch (e) {
             throw new Error((e as ErrorResponse).getSingleMessage());
         }
 
         const userId = await this.userService.getUserId();
         const cData = new CipherData(response, userId, cipher.collectionIds);
-        this.upsert(cData);
+        if (!admin) {
+            this.upsert(cData);
+        }
         return new Cipher(cData);
     }
 
     async saveCollectionsWithServer(cipher: Cipher): Promise<any> {
         const request = new CipherCollectionsRequest(cipher.collectionIds);
-        const response = await this.apiService.putCipherCollections(cipher.id, request);
+        await this.apiService.putCipherCollections(cipher.id, request);
         const userId = await this.userService.getUserId();
         const data = cipher.toCipherData(userId);
         await this.upsert(data);
