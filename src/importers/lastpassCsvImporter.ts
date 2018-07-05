@@ -14,7 +14,7 @@ import { CipherType } from '../enums/cipherType';
 import { SecureNoteType } from '../enums/secureNoteType';
 
 export class LastPassCsvImporter extends BaseImporter implements Importer {
-    parse(data: string, organization = false): ImportResult {
+    parse(data: string): ImportResult {
         const result = new ImportResult();
         const results = this.parseCsv(data, true);
         if (results == null) {
@@ -38,7 +38,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
                 }
             }
 
-            const cipher = this.buildBaseCipher(value, organization);
+            const cipher = this.buildBaseCipher(value);
             if (cipher.name === '--' && results.length > 2 && index >= (results.length - 2)) {
                 // LastPass file traditionally has two empty lines at the end
                 return;
@@ -60,7 +60,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
                 cipher.notes = this.getValueOrDefault(value.notes);
                 if (!this.isNullOrWhitespace(value.ccnum)) {
                     // there is a card on this identity too
-                    const cardCipher = this.buildBaseCipher(value, organization);
+                    const cardCipher = this.buildBaseCipher(value);
                     cardCipher.identity = null;
                     cardCipher.type = CipherType.Card;
                     cardCipher.card = this.parseCard(value);
@@ -80,7 +80,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
             }
         });
 
-        if (organization) {
+        if (this.organization) {
             this.moveFoldersToCollections(result);
         }
 
@@ -88,7 +88,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
         return result;
     }
 
-    private buildBaseCipher(value: any, organization: boolean) {
+    private buildBaseCipher(value: any) {
         const cipher = new CipherView();
         if (value.hasOwnProperty('profilename') && value.hasOwnProperty('profilelanguage')) {
             // form fill
@@ -104,7 +104,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
             }
         } else {
             // site or secure note
-            cipher.favorite = !organization && this.getValueOrDefault(value.fav, '0') === '1';
+            cipher.favorite = !this.organization && this.getValueOrDefault(value.fav, '0') === '1';
             cipher.name = this.getValueOrDefault(value.name, '--');
             cipher.type = value.url === 'http://sn' ? CipherType.SecureNote : CipherType.Login;
         }

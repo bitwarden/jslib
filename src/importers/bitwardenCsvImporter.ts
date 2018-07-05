@@ -15,7 +15,7 @@ import { FieldType } from '../enums/fieldType';
 import { SecureNoteType } from '../enums/secureNoteType';
 
 export class BitwardenCsvImporter extends BaseImporter implements Importer {
-    parse(data: string, organization = false): ImportResult {
+    parse(data: string): ImportResult {
         const result = new ImportResult();
         const results = this.parseCsv(data, true);
         if (results == null) {
@@ -24,7 +24,7 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
         }
 
         results.forEach((value) => {
-            if (organization && !this.isNullOrWhitespace(value.collections)) {
+            if (this.organization && !this.isNullOrWhitespace(value.collections)) {
                 const collections = (value.collections as string).split(',');
                 collections.forEach((col) => {
                     let addCollection = true;
@@ -46,9 +46,9 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
 
                     result.collectionRelationships.set(result.ciphers.length, collectionIndex);
                 });
-            } else if (!organization) {
+            } else if (!this.organization) {
                 let folderIndex = result.folders.length;
-                const hasFolder = !organization && !this.isNullOrWhitespace(value.folder);
+                const hasFolder = !this.organization && !this.isNullOrWhitespace(value.folder);
                 let addFolder = hasFolder;
 
                 if (hasFolder) {
@@ -73,7 +73,7 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
             }
 
             const cipher = new CipherView();
-            cipher.favorite = !organization && this.getValueOrDefault(value.favorite, '0') !== '0' ? true : false;
+            cipher.favorite = !this.organization && this.getValueOrDefault(value.favorite, '0') !== '0' ? true : false;
             cipher.type = CipherType.Login;
             cipher.notes = this.getValueOrDefault(value.notes);
             cipher.name = this.getValueOrDefault(value.name, '--');

@@ -8,6 +8,8 @@ import { LoginUriView } from '../models/view/loginUriView';
 import { Utils } from '../misc/utils';
 
 export abstract class BaseImporter {
+    organization = false;
+
     protected passwordFieldNames = [
         'password', 'pass word', 'passphrase', 'pass phrase',
         'pass', 'code', 'code word', 'codeword',
