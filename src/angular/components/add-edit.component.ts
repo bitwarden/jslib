@@ -157,13 +157,13 @@ export class AddEditComponent {
             return false;
         }
 
-        if (!this.editMode && this.cipher.type === CipherType.Login && this.cipher.login.uris.length === 1 &&
+        if (!this.editMode && this.cipher.type === CipherType.Login &&
+            this.cipher.login.uris != null && this.cipher.login.uris.length === 1 &&
             (this.cipher.login.uris[0].uri == null || this.cipher.login.uris[0].uri === '')) {
             this.cipher.login.uris = null;
         }
 
-        const cipher = await this.cipherService.encrypt(this.cipher);
-
+        const cipher = await this.encryptCipher();
         try {
             this.formPromise = this.saveCipher(cipher);
             await this.formPromise;
@@ -309,6 +309,10 @@ export class AddEditComponent {
 
     protected loadCipher() {
         return this.cipherService.get(this.cipherId);
+    }
+
+    protected encryptCipher() {
+        return this.cipherService.encrypt(this.cipher);
     }
 
     protected saveCipher(cipher: Cipher) {
