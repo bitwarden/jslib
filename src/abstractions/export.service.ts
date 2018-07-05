@@ -1,4 +1,5 @@
 export abstract class ExportService {
-    getCsv: () => Promise<string>;
-    getFileName: () => string;
+    getExport: (format?: 'csv' | 'json') => Promise<string>;
+    getOrganizationExport: (organizationId: string, format?: 'csv' | 'json') => Promise<string>;
+    getFileName: (prefix?: string) => string;
 }

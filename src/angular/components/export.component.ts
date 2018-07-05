@@ -15,6 +15,7 @@ import { UserService } from '../../abstractions/user.service';
 export class ExportComponent {
     @Output() onSaved = new EventEmitter();
 
+    formPromise: Promise<string>;
     masterPassword: string;
     showPassword = false;
 
@@ -36,10 +37,13 @@ export class ExportComponent {
         const storedKeyHash = await this.cryptoService.getKeyHash();
 
         if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
-            const csv = await this.exportService.getCsv();
-            this.analytics.eventTrack.next({ action: 'Exported Data' });
-            this.downloadFile(csv);
-            this.saved();
+            try {
+                this.formPromise = this.getExportData();
+                const data = await this.formPromise;
+                this.analytics.eventTrack.next({ action: 'Exported Data' });
+                this.downloadFile(data);
+                this.saved();
+            } catch { }
         } else {
             this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('invalidMasterPassword'));
@@ -56,8 +60,16 @@ export class ExportComponent {
         this.onSaved.emit();
     }
 
+    protected getExportData() {
+        return this.exportService.getExport('csv');
+    }
+
+    protected getFileName(prefix?: string) {
+        return this.exportService.getFileName(prefix);
+    }
+
     private downloadFile(csv: string): void {
-        const fileName = this.exportService.getFileName();
+        const fileName = this.getFileName();
         this.platformUtilsService.saveFile(this.win, csv, { type: 'text/plain' }, fileName);
     }
 }
