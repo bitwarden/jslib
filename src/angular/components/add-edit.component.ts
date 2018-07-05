@@ -19,6 +19,8 @@ import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
 
+import { Cipher } from '../../models/domain/cipher';
+
 import { CardView } from '../../models/view/cardView';
 import { CipherView } from '../../models/view/cipherView';
 import { FieldView } from '../../models/view/fieldView';
@@ -130,7 +132,7 @@ export class AddEditComponent {
         await this.stateService.remove('addEditCipher');
         if (this.cipher == null) {
             if (this.editMode) {
-                const cipher = await this.cipherService.get(this.cipherId);
+                const cipher = await this.loadCipher();
                 this.cipher = await cipher.decrypt();
             } else {
                 this.cipher = new CipherView();
@@ -163,7 +165,7 @@ export class AddEditComponent {
         const cipher = await this.cipherService.encrypt(this.cipher);
 
         try {
-            this.formPromise = this.cipherService.saveWithServer(cipher);
+            this.formPromise = this.saveCipher(cipher);
             await this.formPromise;
             this.cipher.id = cipher.id;
             this.analytics.eventTrack.next({ action: this.editMode ? 'Edited Cipher' : 'Added Cipher' });
@@ -233,7 +235,7 @@ export class AddEditComponent {
         }
 
         try {
-            this.deletePromise = this.cipherService.deleteWithServer(this.cipher.id);
+            this.deletePromise = this.deleteCipher();
             await this.deletePromise;
             this.analytics.eventTrack.next({ action: 'Deleted Cipher' });
             this.toasterService.popAsync('success', null, this.i18nService.t('deletedItem'));
@@ -303,5 +305,17 @@ export class AddEditComponent {
         } else {
             this.toasterService.popAsync('success', null, this.i18nService.t('passwordSafe'));
         }
+    }
+
+    protected loadCipher() {
+        return this.cipherService.get(this.cipherId);
+    }
+
+    protected saveCipher(cipher: Cipher) {
+        return this.cipherService.saveWithServer(cipher);
+    }
+
+    protected deleteCipher() {
+        return this.cipherService.deleteWithServer(this.cipher.id);
     }
 }
