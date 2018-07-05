@@ -72,7 +72,7 @@ export class ExportService implements ExportServiceAbstraction {
         const promises = [];
 
         promises.push(this.apiService.getCollections(organizationId).then((collections) => {
-            const collectionPromises = [];
+            const collectionPromises: any = [];
             if (collections != null && collections.data != null && collections.data.length > 0) {
                 collections.data.forEach((c) => {
                     const collection = new Collection(new CollectionData(c));
@@ -85,7 +85,7 @@ export class ExportService implements ExportServiceAbstraction {
         }));
 
         promises.push(this.apiService.getCiphersOrganization(organizationId).then((ciphers) => {
-            const cipherPromises = [];
+            const cipherPromises: any = [];
             if (ciphers != null && ciphers.data != null && ciphers.data.length > 0) {
                 ciphers.data.forEach((c) => {
                     const cipher = new Cipher(new CipherData(c));
