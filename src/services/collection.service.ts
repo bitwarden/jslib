@@ -41,6 +41,19 @@ export class CollectionService implements CollectionServiceAbstraction {
         return collection;
     }
 
+    async decryptMany(collections: Collection[]): Promise<CollectionView[]> {
+        if (collections == null) {
+            return [];
+        }
+        const decCollections: CollectionView[] = [];
+        const promises: Array<Promise<any>> = [];
+        collections.forEach((collection) => {
+            promises.push(collection.decrypt().then((c) => decCollections.push(c)));
+        });
+        await Promise.all(promises);
+        return decCollections.sort(this.getLocaleSortingFunction());
+    }
+
     async get(id: string): Promise<Collection> {
         const userId = await this.userService.getUserId();
         const collections = await this.storageService.get<{ [id: string]: CollectionData; }>(
@@ -75,16 +88,8 @@ export class CollectionService implements CollectionServiceAbstraction {
             throw new Error('No key.');
         }
 
-        const decCollections: CollectionView[] = [];
-        const promises: Array<Promise<any>> = [];
         const collections = await this.getAll();
-        collections.forEach((collection) => {
-            promises.push(collection.decrypt().then((c) => decCollections.push(c)));
-        });
-
-        await Promise.all(promises);
-        decCollections.sort(this.getLocaleSortingFunction());
-        this.decryptedCollectionCache = decCollections;
+        this.decryptedCollectionCache = await this.decryptMany(collections);
         return this.decryptedCollectionCache;
     }
 
