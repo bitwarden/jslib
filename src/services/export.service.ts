@@ -16,6 +16,7 @@ import { Collection } from '../models/domain/collection';
 
 import { CipherData } from '../models/data/cipherData';
 import { CollectionData } from '../models/data/collectionData';
+import { CollectionDetailsResponse } from '../models/response/collectionResponse';
 
 export class ExportService implements ExportServiceAbstraction {
     constructor(private folderService: FolderService, private cipherService: CipherService,
@@ -75,7 +76,7 @@ export class ExportService implements ExportServiceAbstraction {
             const collectionPromises: any = [];
             if (collections != null && collections.data != null && collections.data.length > 0) {
                 collections.data.forEach((c) => {
-                    const collection = new Collection(new CollectionData(c));
+                    const collection = new Collection(new CollectionData(c as CollectionDetailsResponse));
                     collectionPromises.push(collection.decrypt().then((decCol) => {
                         decCollections.push(decCol);
                     }));
