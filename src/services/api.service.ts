@@ -318,8 +318,8 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/ciphers/import', request, true, false);
     }
 
-    postImportOrganizationCiphers(request: ImportOrganizationCiphersRequest): Promise<any> {
-        return this.send('POST', '/ciphers/import-organization', request, true, false);
+    postImportOrganizationCiphers(organizationId: string, request: ImportOrganizationCiphersRequest): Promise<any> {
+        return this.send('POST', '/ciphers/import-organization?organizationId=' + organizationId, request, true, false);
     }
 
     // Attachments APIs

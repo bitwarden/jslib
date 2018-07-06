@@ -97,7 +97,7 @@ export abstract class ApiService {
     putCipherCollectionsAdmin: (id: string, request: CipherCollectionsRequest) => Promise<any>;
     postPurgeCiphers: (request: PasswordVerificationRequest) => Promise<any>;
     postImportCiphers: (request: ImportCiphersRequest) => Promise<any>;
-    postImportOrganizationCiphers: (request: ImportOrganizationCiphersRequest) => Promise<any>;
+    postImportOrganizationCiphers: (organizationId: string, request: ImportOrganizationCiphersRequest) => Promise<any>;
     postCipherAttachment: (id: string, data: FormData) => Promise<CipherResponse>;
     postCipherAttachmentAdmin: (id: string, data: FormData) => Promise<CipherResponse>;
     deleteCipherAttachment: (id: string, attachmentId: string) => Promise<any>;

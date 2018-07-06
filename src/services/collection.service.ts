@@ -25,6 +25,22 @@ export class CollectionService implements CollectionServiceAbstraction {
         this.decryptedCollectionCache = null;
     }
 
+    async encrypt(model: CollectionView): Promise<Collection> {
+        if (model.organizationId == null) {
+            throw new Error('Collection has no organization id.');
+        }
+        const key = await this.cryptoService.getOrgKey(model.organizationId);
+        if (key == null) {
+            throw new Error('No key for this collection\'s organization.');
+        }
+        const collection = new Collection();
+        collection.id = model.id;
+        collection.organizationId = model.organizationId;
+        collection.readOnly = model.readOnly;
+        collection.name = await this.cryptoService.encrypt(model.name, key);
+        return collection;
+    }
+
     async get(id: string): Promise<Collection> {
         const userId = await this.userService.getUserId();
         const collections = await this.storageService.get<{ [id: string]: CollectionData; }>(

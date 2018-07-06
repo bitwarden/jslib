@@ -8,6 +8,7 @@ export abstract class CollectionService {
     decryptedCollectionCache: CollectionView[];
 
     clearCache: () => void;
+    encrypt: (model: CollectionView) => Promise<Collection>;
     get: (id: string) => Promise<Collection>;
     getAll: () => Promise<Collection[]>;
     getAllDecrypted: () => Promise<CollectionView[]>;
