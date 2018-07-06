@@ -59,6 +59,7 @@ import { IdentityTokenResponse } from '../models/response/identityTokenResponse'
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
+import { OrganizationUserUserDetailsResponse } from '../models/response/organizationUserResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
@@ -423,6 +424,13 @@ export class ApiService implements ApiServiceAbstraction {
 
     deleteGroup(id: string): Promise<any> {
         return this.send('DELETE', '/groups/' + id, null, true, false);
+    }
+
+    // Organization User APIs
+
+    async getOrganizationUsers(organizationId: string): Promise<ListResponse<OrganizationUserUserDetailsResponse>> {
+        const r = await this.send('GET', '/organizations/' + organizationId + '/users', null, true, true);
+        return new ListResponse(r, OrganizationUserUserDetailsResponse);
     }
 
     // Sync APIs

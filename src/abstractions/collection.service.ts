@@ -17,5 +17,4 @@ export abstract class CollectionService {
     replace: (collections: { [id: string]: CollectionData; }) => Promise<any>;
     clear: (userId: string) => Promise<any>;
     delete: (id: string | string[]) => Promise<any>;
-    getLocaleSortingFunction: () => (a: CollectionView, b: CollectionView) => number;
 }

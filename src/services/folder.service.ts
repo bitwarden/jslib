@@ -17,6 +17,8 @@ import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 import { CipherData } from '../models/data/cipherData';
 
+import { Utils } from '../misc/utils';
+
 const Keys = {
     foldersPrefix: 'folders_',
     ciphersPrefix: 'ciphers_',
@@ -82,7 +84,7 @@ export class FolderService implements FolderServiceAbstraction {
         });
 
         await Promise.all(promises);
-        decFolders.sort(this.getLocaleSortingFunction());
+        decFolders.sort(Utils.getSortFunction(this.i18nService, 'name'));
 
         const noneFolder = new FolderView();
         noneFolder.name = this.i18nService.t('noneFolder');
@@ -179,22 +181,5 @@ export class FolderService implements FolderServiceAbstraction {
     async deleteWithServer(id: string): Promise<any> {
         await this.apiService.deleteFolder(id);
         await this.delete(id);
-    }
-
-    private getLocaleSortingFunction(): (a: FolderView, b: FolderView) => number {
-        return (a, b) => {
-            if (a.name == null && b.name != null) {
-                return -1;
-            }
-            if (a.name != null && b.name == null) {
-                return 1;
-            }
-            if (a.name == null && b.name == null) {
-                return 0;
-            }
-
-            return this.i18nService.collator ? this.i18nService.collator.compare(a.name, b.name) :
-                a.name.localeCompare(b.name);
-        };
     }
 }

@@ -52,6 +52,7 @@ import { IdentityTokenResponse } from '../models/response/identityTokenResponse'
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
+import { OrganizationUserUserDetailsResponse } from '../models/response/organizationUserResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
@@ -70,6 +71,7 @@ export abstract class ApiService {
     setUrls: (urls: EnvironmentUrls) => void;
     postIdentityToken: (request: TokenRequest) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse>;
     refreshIdentityToken: () => Promise<any>;
+
     getProfile: () => Promise<ProfileResponse>;
     getUserBilling: () => Promise<BillingResponse>;
     putProfile: (request: UpdateProfileRequest) => Promise<ProfileResponse>;
@@ -88,9 +90,11 @@ export abstract class ApiService {
     postAccountPayment: (request: PaymentRequest) => Promise<any>;
     postAccountLicense: (data: FormData) => Promise<any>;
     postAccountKeys: (request: KeysRequest) => Promise<any>;
+
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
     putFolder: (id: string, request: FolderRequest) => Promise<FolderResponse>;
     deleteFolder: (id: string) => Promise<any>;
+
     getCipher: (id: string) => Promise<CipherResponse>;
     getCipherAdmin: (id: string) => Promise<CipherResponse>;
     getCiphersOrganization: (organizationId: string) => Promise<ListResponse<CipherResponse>>;
@@ -109,28 +113,36 @@ export abstract class ApiService {
     postPurgeCiphers: (request: PasswordVerificationRequest) => Promise<any>;
     postImportCiphers: (request: ImportCiphersRequest) => Promise<any>;
     postImportOrganizationCiphers: (organizationId: string, request: ImportOrganizationCiphersRequest) => Promise<any>;
+
     postCipherAttachment: (id: string, data: FormData) => Promise<CipherResponse>;
     postCipherAttachmentAdmin: (id: string, data: FormData) => Promise<CipherResponse>;
     deleteCipherAttachment: (id: string, attachmentId: string) => Promise<any>;
     deleteCipherAttachmentAdmin: (id: string, attachmentId: string) => Promise<any>;
     postShareCipherAttachment: (id: string, attachmentId: string, data: FormData,
         organizationId: string) => Promise<any>;
+
     getCollectionDetails: (organizationId: string, id: string) => Promise<CollectionGroupDetailsResponse>;
     getCollections: (organizationId: string) => Promise<ListResponse<CollectionResponse>>;
     getCollectionUsers: (organizationId: string, id: string) => Promise<ListResponse<CollectionUserResponse>>;
     postCollection: (request: CollectionRequest) => Promise<CollectionResponse>;
     putCollection: (id: string, request: CollectionRequest) => Promise<CollectionResponse>;
     deleteCollection: (id: string) => Promise<any>;
+
     getGroupDetails: (organizationId: string, id: string) => Promise<GroupDetailsResponse>;
     getGroups: (organizationId: string) => Promise<ListResponse<GroupResponse>>;
     getGroupUsers: (organizationId: string, id: string) => Promise<ListResponse<GroupUserResponse>>;
     postGroup: (request: GroupRequest) => Promise<GroupResponse>;
     putGroup: (id: string, request: GroupRequest) => Promise<GroupResponse>;
     deleteGroup: (id: string) => Promise<any>;
+
+    getOrganizationUsers: (organizationId: string) => Promise<ListResponse<OrganizationUserUserDetailsResponse>>;
+
     getSync: () => Promise<SyncResponse>;
     postImportDirectory: (organizationId: string, request: ImportDirectoryRequest) => Promise<any>;
+
     getSettingsDomains: () => Promise<DomainsResponse>;
     putSettingsDomains: (request: UpdateDomainsRequest) => Promise<DomainsResponse>;
+
     getTwoFactorProviders: () => Promise<ListResponse<TwoFactorProviderResponse>>;
     getTwoFactorAuthenticator: (request: PasswordVerificationRequest) => Promise<TwoFactorAuthenticatorResponse>;
     getTwoFactorEmail: (request: PasswordVerificationRequest) => Promise<TwoFactorEmailResponse>;
@@ -148,6 +160,7 @@ export abstract class ApiService {
     postTwoFactorRecover: (request: TwoFactorRecoveryRequest) => Promise<any>;
     postTwoFactorEmailSetup: (request: TwoFactorEmailRequest) => Promise<any>;
     postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
+
     postOrganization: (request: OrganizationCreateRequest) => Promise<OrganizationResponse>;
     postLeaveOrganization: (id: string) => Promise<any>;
     postOrganizationLicense: (data: FormData) => Promise<OrganizationResponse>;

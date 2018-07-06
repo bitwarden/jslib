@@ -10,6 +10,8 @@ import { I18nService } from '../abstractions/i18n.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
+import { Utils } from '../misc/utils';
+
 const Keys = {
     collectionsPrefix: 'collections_',
 };
@@ -51,7 +53,7 @@ export class CollectionService implements CollectionServiceAbstraction {
             promises.push(collection.decrypt().then((c) => decCollections.push(c)));
         });
         await Promise.all(promises);
-        return decCollections.sort(this.getLocaleSortingFunction());
+        return decCollections.sort(Utils.getSortFunction(this.i18nService, 'name'));
     }
 
     async get(id: string): Promise<Collection> {
@@ -144,22 +146,5 @@ export class CollectionService implements CollectionServiceAbstraction {
 
         await this.storageService.save(Keys.collectionsPrefix + userId, collections);
         this.decryptedCollectionCache = null;
-    }
-
-    getLocaleSortingFunction(): (a: CollectionView, b: CollectionView) => number {
-        return (a, b) => {
-            if (a.name == null && b.name != null) {
-                return -1;
-            }
-            if (a.name != null && b.name == null) {
-                return 1;
-            }
-            if (a.name == null && b.name == null) {
-                return 0;
-            }
-
-            return this.i18nService.collator ? this.i18nService.collator.compare(a.name, b.name) :
-                a.name.localeCompare(b.name);
-        };
     }
 }

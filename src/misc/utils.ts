@@ -1,3 +1,5 @@
+import { I18nService } from '../abstractions/i18n.service';
+
 // tslint:disable-next-line
 const nodeURL = typeof window === 'undefined' ? require('url').URL : null;
 
@@ -147,6 +149,23 @@ export class Utils {
     static getHost(uriString: string): string {
         const url = Utils.getUrl(uriString);
         return url != null ? url.host : null;
+    }
+
+    static getSortFunction(i18nService: I18nService, prop: string) {
+        return (a: any, b: any) => {
+            if (a[prop] == null && b[prop] != null) {
+                return -1;
+            }
+            if (a[prop] != null && b[prop] == null) {
+                return 1;
+            }
+            if (a[prop] == null && b[prop] == null) {
+                return 0;
+            }
+
+            return i18nService.collator ? i18nService.collator.compare(a[prop], b[prop]) :
+                a[prop].localeCompare(b[prop]);
+        };
     }
 
     private static getUrl(uriString: string): URL {
