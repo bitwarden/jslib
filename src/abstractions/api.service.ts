@@ -6,9 +6,11 @@ import { CipherBulkShareRequest } from '../models/request/cipherBulkShareRequest
 import { CipherCollectionsRequest } from '../models/request/cipherCollectionsRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CipherShareRequest } from '../models/request/cipherShareRequest';
+import { CollectionRequest } from '../models/request/collectionRequest';
 import { EmailRequest } from '../models/request/emailRequest';
 import { EmailTokenRequest } from '../models/request/emailTokenRequest';
 import { FolderRequest } from '../models/request/folderRequest';
+import { GroupRequest } from '../models/request/groupRequest';
 import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
@@ -34,9 +36,18 @@ import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFacto
 
 import { BillingResponse } from '../models/response/billingResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
-import { CollectionResponse } from '../models/response/collectionResponse';
+import {
+    CollectionGroupDetailsResponse,
+    CollectionResponse,
+} from '../models/response/collectionResponse';
+import { CollectionUserResponse } from '../models/response/collectionUserResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import { FolderResponse } from '../models/response/folderResponse';
+import {
+    GroupDetailsResponse,
+    GroupResponse,
+} from '../models/response/groupResponse';
+import { GroupUserResponse } from '../models/response/groupUserResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
@@ -104,7 +115,18 @@ export abstract class ApiService {
     deleteCipherAttachmentAdmin: (id: string, attachmentId: string) => Promise<any>;
     postShareCipherAttachment: (id: string, attachmentId: string, data: FormData,
         organizationId: string) => Promise<any>;
+    getCollectionDetails: (organizationId: string, id: string) => Promise<CollectionGroupDetailsResponse>;
     getCollections: (organizationId: string) => Promise<ListResponse<CollectionResponse>>;
+    getCollectionUsers: (organizationId: string, id: string) => Promise<ListResponse<CollectionUserResponse>>;
+    postCollection: (request: CollectionRequest) => Promise<CollectionResponse>;
+    putCollection: (id: string, request: CollectionRequest) => Promise<CollectionResponse>;
+    deleteCollection: (id: string) => Promise<any>;
+    getGroupDetails: (organizationId: string, id: string) => Promise<GroupDetailsResponse>;
+    getGroups: (organizationId: string) => Promise<ListResponse<GroupResponse>>;
+    getGroupUsers: (organizationId: string, id: string) => Promise<ListResponse<GroupUserResponse>>;
+    postGroup: (request: GroupRequest) => Promise<GroupResponse>;
+    putGroup: (id: string, request: GroupRequest) => Promise<GroupResponse>;
+    deleteGroup: (id: string) => Promise<any>;
     getSync: () => Promise<SyncResponse>;
     postImportDirectory: (organizationId: string, request: ImportDirectoryRequest) => Promise<any>;
     getSettingsDomains: () => Promise<DomainsResponse>;
