@@ -12,9 +12,11 @@ import { CipherBulkShareRequest } from '../models/request/cipherBulkShareRequest
 import { CipherCollectionsRequest } from '../models/request/cipherCollectionsRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CipherShareRequest } from '../models/request/cipherShareRequest';
+import { CollectionRequest } from '../models/request/collectionRequest';
 import { EmailRequest } from '../models/request/emailRequest';
 import { EmailTokenRequest } from '../models/request/emailTokenRequest';
 import { FolderRequest } from '../models/request/folderRequest';
+import { GroupRequest } from '../models/request/groupRequest';
 import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
@@ -40,10 +42,19 @@ import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFacto
 
 import { BillingResponse } from '../models/response/billingResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
-import { CollectionResponse } from '../models/response/collectionResponse';
+import {
+    CollectionGroupDetailsResponse,
+    CollectionResponse,
+} from '../models/response/collectionResponse';
+import { CollectionUserResponse } from '../models/response/collectionUserResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import { ErrorResponse } from '../models/response/errorResponse';
 import { FolderResponse } from '../models/response/folderResponse';
+import {
+    GroupDetailsResponse,
+    GroupResponse,
+} from '../models/response/groupResponse';
+import { GroupUserResponse } from '../models/response/groupUserResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
@@ -350,9 +361,68 @@ export class ApiService implements ApiServiceAbstraction {
 
     // Collections APIs
 
+    async getCollectionDetails(organizationId: string, id: string): Promise<CollectionGroupDetailsResponse> {
+        const r = await this.send('GET', '/organizations/' + organizationId + '/collections/' + id + '/details',
+            null, true, true);
+        return new CollectionGroupDetailsResponse(r);
+    }
+
     async getCollections(organizationId: string): Promise<ListResponse<CollectionResponse>> {
         const r = await this.send('GET', '/organizations/' + organizationId + '/collections', null, true, true);
         return new ListResponse(r, CollectionResponse);
+    }
+
+    async getCollectionUsers(organizationId: string, id: string): Promise<ListResponse<CollectionUserResponse>> {
+        const r = await this.send('GET', '/organizations/' + organizationId + '/collections/' + id + '/users',
+            null, true, true);
+        return new ListResponse(r, CollectionUserResponse);
+    }
+
+    async postCollection(request: CollectionRequest): Promise<CollectionResponse> {
+        const r = await this.send('POST', '/collections', request, true, true);
+        return new CollectionResponse(r);
+    }
+
+    async putCollection(id: string, request: CollectionRequest): Promise<CollectionResponse> {
+        const r = await this.send('PUT', '/collections/' + id, request, true, true);
+        return new CollectionResponse(r);
+    }
+
+    deleteCollection(id: string): Promise<any> {
+        return this.send('DELETE', '/collections/' + id, null, true, false);
+    }
+
+    // Groups APIs
+
+    async getGroupDetails(organizationId: string, id: string): Promise<GroupDetailsResponse> {
+        const r = await this.send('GET', '/organizations/' + organizationId + '/groups/' + id + '/details',
+            null, true, true);
+        return new GroupDetailsResponse(r);
+    }
+
+    async getGroups(organizationId: string): Promise<ListResponse<GroupResponse>> {
+        const r = await this.send('GET', '/organizations/' + organizationId + '/groups', null, true, true);
+        return new ListResponse(r, GroupResponse);
+    }
+
+    async getGroupUsers(organizationId: string, id: string): Promise<ListResponse<GroupUserResponse>> {
+        const r = await this.send('GET', '/organizations/' + organizationId + '/groups/' + id + '/users',
+            null, true, true);
+        return new ListResponse(r, GroupUserResponse);
+    }
+
+    async postGroup(request: GroupRequest): Promise<GroupResponse> {
+        const r = await this.send('POST', '/groups', request, true, true);
+        return new GroupResponse(r);
+    }
+
+    async putGroup(id: string, request: GroupRequest): Promise<GroupResponse> {
+        const r = await this.send('PUT', '/groups/' + id, request, true, true);
+        return new GroupResponse(r);
+    }
+
+    deleteGroup(id: string): Promise<any> {
+        return this.send('DELETE', '/groups/' + id, null, true, false);
     }
 
     // Sync APIs

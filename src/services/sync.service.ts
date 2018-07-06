@@ -15,7 +15,7 @@ import { FolderData } from '../models/data/folderData';
 import { OrganizationData } from '../models/data/organizationData';
 
 import { CipherResponse } from '../models/response/cipherResponse';
-import { CollectionResponse } from '../models/response/collectionResponse';
+import { CollectionDetailsResponse } from '../models/response/collectionResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
@@ -162,7 +162,7 @@ export class SyncService implements SyncServiceAbstraction {
         return await this.folderService.replace(folders);
     }
 
-    private async syncCollections(response: CollectionResponse[]) {
+    private async syncCollections(response: CollectionDetailsResponse[]) {
         const collections: { [id: string]: CollectionData; } = {};
         response.forEach((c) => {
             collections[c.id] = new CollectionData(c);

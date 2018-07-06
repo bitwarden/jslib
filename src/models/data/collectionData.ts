@@ -1,4 +1,4 @@
-import { CollectionResponse } from '../response/collectionResponse';
+import { CollectionDetailsResponse } from '../response/collectionResponse';
 
 export class CollectionData {
     id: string;
@@ -6,7 +6,7 @@ export class CollectionData {
     name: string;
     readOnly: boolean;
 
-    constructor(response: CollectionResponse) {
+    constructor(response: CollectionDetailsResponse) {
         this.id = response.id;
         this.organizationId = response.organizationId;
         this.name = response.name;
