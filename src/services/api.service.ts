@@ -49,6 +49,7 @@ import {
 import { CollectionUserResponse } from '../models/response/collectionUserResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import { ErrorResponse } from '../models/response/errorResponse';
+import { EventResponse } from '../models/response/eventResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import {
     GroupDetailsResponse,
@@ -553,6 +554,35 @@ export class ApiService implements ApiServiceAbstraction {
         return new OrganizationResponse(r);
     }
 
+    // Event APIs
+
+    async getEvents(start: string, end: string, token: string): Promise<ListResponse<EventResponse>> {
+        const r = await this.send('GET', this.addEventParameters('/events', start, end, token), null, true, true);
+        return new ListResponse(r, EventResponse);
+    }
+
+    async getEventsCipher(id: string, start: string, end: string,
+        token: string): Promise<ListResponse<EventResponse>> {
+        const r = await this.send('GET', this.addEventParameters('/ciphers/' + id + '/events', start, end, token),
+            null, true, true);
+        return new ListResponse(r, EventResponse);
+    }
+
+    async getEventsOrganization(id: string, start: string, end: string,
+        token: string): Promise<ListResponse<EventResponse>> {
+        const r = await this.send('GET', this.addEventParameters('/organizations/' + id + '/events', start, end, token),
+            null, true, true);
+        return new ListResponse(r, EventResponse);
+    }
+
+    async getEventsOrganizationUser(organizationId: string, id: string,
+        start: string, end: string, token: string): Promise<ListResponse<EventResponse>> {
+        const r = await this.send('GET',
+            this.addEventParameters('/organizations/' + organizationId + '/users/' + id + '/events', start, end, token),
+            null, true, true);
+        return new ListResponse(r, EventResponse);
+    }
+
     // Helpers
 
     private async send(method: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string, body: any,
@@ -670,5 +700,20 @@ export class ApiService implements ApiServiceAbstraction {
             return 'include';
         }
         return undefined;
+    }
+
+    private addEventParameters(base: string, start: string, end: string, token: string) {
+        if (start != null) {
+            base += ('?start=' + start);
+        }
+        if (end != null) {
+            base += (base.indexOf('?') > -1 ? '&' : '?');
+            base += ('end=' + end);
+        }
+        if (token != null) {
+            base += (base.indexOf('?') > -1 ? '&' : '?');
+            base += ('continuationToken=' + token);
+        }
+        return base;
     }
 }

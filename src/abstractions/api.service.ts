@@ -42,6 +42,7 @@ import {
 } from '../models/response/collectionResponse';
 import { CollectionUserResponse } from '../models/response/collectionUserResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
+import { EventResponse } from '../models/response/eventResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import {
     GroupDetailsResponse,
@@ -164,4 +165,11 @@ export abstract class ApiService {
     postOrganization: (request: OrganizationCreateRequest) => Promise<OrganizationResponse>;
     postLeaveOrganization: (id: string) => Promise<any>;
     postOrganizationLicense: (data: FormData) => Promise<OrganizationResponse>;
+
+    getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
+    getEventsCipher: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
+    getEventsOrganization: (id: string, start: string, end: string,
+        token: string) => Promise<ListResponse<EventResponse>>;
+    getEventsOrganizationUser: (organizationId: string, id: string,
+        start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>
 }
