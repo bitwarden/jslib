@@ -11,10 +11,6 @@ import { CipherType } from '../enums/cipherType';
 
 export class KeePassXCsvImporter extends BaseImporter implements Importer {
     parse(data: string): ImportResult {
-        if (this.organization) {
-            throw new Error('Organization import not supported.');
-        }
-
         const result = new ImportResult();
         const results = this.parseCsv(data, true);
         if (results == null) {
@@ -65,6 +61,10 @@ export class KeePassXCsvImporter extends BaseImporter implements Importer {
             cipher.login.uris = this.makeUriArray(value.URL);
             result.ciphers.push(cipher);
         });
+
+        if (this.organization) {
+            this.moveFoldersToCollections(result);
+        }
 
         result.success = true;
         return result;

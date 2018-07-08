@@ -10,10 +10,6 @@ import { CipherType } from '../enums/cipherType';
 
 export class AviraCsvImporter extends BaseImporter implements Importer {
     parse(data: string): ImportResult {
-        if (this.organization) {
-            throw new Error('Organization import not supported.');
-        }
-
         const result = new ImportResult();
         const results = this.parseCsv(data, true);
         if (results == null) {

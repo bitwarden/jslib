@@ -53,6 +53,12 @@ export abstract class BaseImporter {
         'ort', 'adresse',
     ];
 
+    protected parseXml(data: string): Document {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(data, 'application/xml');
+        return doc != null && doc.querySelector('parsererror') == null ? doc : null;
+    }
+
     protected parseCsv(data: string, header: boolean): any[] {
         const result = papa.parse(data, {
             header: header,
@@ -209,5 +215,14 @@ export abstract class BaseImporter {
         });
         result.folderRelationships = new Map<number, number>();
         result.folders = [];
+    }
+
+    protected querySelectorDirectChild(parentEl: Element, query: string) {
+        const els = this.querySelectorAllDirectChild(parentEl, query);
+        return els.length === 0 ? null : els[0];
+    }
+
+    protected querySelectorAllDirectChild(parentEl: Element, query: string) {
+        return Array.from(parentEl.querySelectorAll(query)).filter((el) => el.parentNode === parentEl);
     }
 }

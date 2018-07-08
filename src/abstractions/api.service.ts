@@ -171,5 +171,5 @@ export abstract class ApiService {
     getEventsOrganization: (id: string, start: string, end: string,
         token: string) => Promise<ListResponse<EventResponse>>;
     getEventsOrganizationUser: (organizationId: string, id: string,
-        start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>
+        start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
 }
