@@ -120,7 +120,7 @@ export class ApiService implements ApiServiceAbstraction {
     // Auth APIs
 
     async postIdentityToken(request: TokenRequest): Promise<IdentityTokenResponse | IdentityTwoFactorResponse> {
-        const response = await fetch(new Request(this.identityBaseUrl + '/connect/token', {
+        const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
             body: this.qsStringify(request.toIdentityToken(this.platformUtilsService.identityClientId)),
             credentials: this.getCredentials(),
             cache: 'no-cache',
@@ -585,6 +585,14 @@ export class ApiService implements ApiServiceAbstraction {
 
     // Helpers
 
+    fetch(request: Request): Promise<Response> {
+        if (request.method === 'GET') {
+            request.headers.set('Cache-Control', 'no-cache');
+            request.headers.set('Pragma', 'no-cache');
+        }
+        return fetch(request);
+    }
+
     private async send(method: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string, body: any,
         authed: boolean, hasResponse: boolean): Promise<any> {
         const headers = new Headers({
@@ -619,7 +627,7 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         requestInit.headers = headers;
-        const response = await fetch(new Request(this.apiBaseUrl + path, requestInit));
+        const response = await this.fetch(new Request(this.apiBaseUrl + path, requestInit));
 
         if (hasResponse && response.status === 200) {
             const responseJson = await response.json();
@@ -662,7 +670,7 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         const decodedToken = this.tokenService.decodeToken();
-        const response = await fetch(new Request(this.identityBaseUrl + '/connect/token', {
+        const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
             body: this.qsStringify({
                 grant_type: 'refresh_token',
                 client_id: decodedToken.client_id,

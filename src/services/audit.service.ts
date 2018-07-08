@@ -1,3 +1,4 @@
+import { ApiService } from '../abstractions/api.service';
 import { AuditService as AuditServiceAbstraction } from '../abstractions/audit.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 
@@ -9,7 +10,7 @@ const PwnedPasswordsApi = 'https://api.pwnedpasswords.com/range/';
 const HibpBreachApi = 'https://haveibeenpwned.com/api/v2/breachedaccount/';
 
 export class AuditService implements AuditServiceAbstraction {
-    constructor(private cryptoFunctionService: CryptoFunctionService) { }
+    constructor(private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService) { }
 
     async passwordLeaked(password: string): Promise<number> {
         const hashBytes = await this.cryptoFunctionService.hash(password, 'sha1');
@@ -17,7 +18,7 @@ export class AuditService implements AuditServiceAbstraction {
         const hashStart = hash.substr(0, 5);
         const hashEnding = hash.substr(5);
 
-        const response = await fetch(PwnedPasswordsApi + hashStart);
+        const response = await this.apiService.fetch(new Request(PwnedPasswordsApi + hashStart));
         const leakedHashes = await response.text();
         const match = leakedHashes.split(/\r?\n/).find((v) => {
             return v.split(':')[0] === hashEnding;
@@ -27,7 +28,7 @@ export class AuditService implements AuditServiceAbstraction {
     }
 
     async breachedAccounts(username: string): Promise<BreachAccountResponse[]> {
-        const response = await fetch(HibpBreachApi + username);
+        const response = await this.apiService.fetch(new Request(HibpBreachApi + username));
         if (response.status === 404) {
             return [];
         } else if (response.status !== 200) {
