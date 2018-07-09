@@ -6,6 +6,7 @@ export class EventResponse {
     userId: string;
     organizationId: string;
     cipherId: string;
+    collectionId: string;
     groupId: string;
     organizationUserId: string;
     actingUserId: string;
@@ -18,6 +19,7 @@ export class EventResponse {
         this.userId = response.UserId;
         this.organizationId = response.OrganizationId;
         this.cipherId = response.CipherId;
+        this.collectionId = response.CollectionId;
         this.groupId = response.GroupId;
         this.organizationUserId = response.OrganizationUserId;
         this.actingUserId = response.ActingUserId;
