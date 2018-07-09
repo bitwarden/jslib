@@ -85,9 +85,12 @@ export class ApiService implements ApiServiceAbstraction {
         private logoutCallback: (expired: boolean) => Promise<void>) {
         const device = platformUtilsService.getDevice();
         this.deviceType = device.toString();
-        this.isWebClient = device === DeviceType.Web;
-        this.isDesktopClient = device === DeviceType.Windows || device === DeviceType.MacOs ||
-            device === DeviceType.Linux;
+        this.isWebClient = device === DeviceType.IEBrowser || device === DeviceType.ChromeBrowser ||
+            device === DeviceType.EdgeBrowser || device === DeviceType.FirefoxBrowser ||
+            device === DeviceType.OperaBrowser || device === DeviceType.SafariBrowser ||
+            device === DeviceType.UnknownBrowser || device === DeviceType.VivaldiBrowser;
+        this.isDesktopClient = device === DeviceType.WindowsDesktop || device === DeviceType.MacOsDesktop ||
+            device === DeviceType.LinuxDesktop;
     }
 
     setUrls(urls: EnvironmentUrls): void {

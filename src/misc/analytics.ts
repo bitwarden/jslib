@@ -9,16 +9,15 @@ import { DeviceType } from '../enums/deviceType';
 const GaObj = 'ga';
 
 export const AnalyticsIds = {
-    [DeviceType.Chrome]: 'UA-81915606-6',
-    [DeviceType.Firefox]: 'UA-81915606-7',
-    [DeviceType.Opera]: 'UA-81915606-8',
-    [DeviceType.Edge]: 'UA-81915606-9',
-    [DeviceType.Vivaldi]: 'UA-81915606-15',
-    [DeviceType.Safari]: 'UA-81915606-16',
-    [DeviceType.Windows]: 'UA-81915606-17',
-    [DeviceType.Linux]: 'UA-81915606-19',
-    [DeviceType.MacOs]: 'UA-81915606-18',
-    [DeviceType.Web]: 'UA-81915606-3',
+    [DeviceType.ChromeExtension]: 'UA-81915606-6',
+    [DeviceType.FirefoxExtension]: 'UA-81915606-7',
+    [DeviceType.OperaExtension]: 'UA-81915606-8',
+    [DeviceType.EdgeExtension]: 'UA-81915606-9',
+    [DeviceType.VivaldiExtension]: 'UA-81915606-15',
+    [DeviceType.SafariExtension]: 'UA-81915606-16',
+    [DeviceType.WindowsDesktop]: 'UA-81915606-17',
+    [DeviceType.LinuxDesktop]: 'UA-81915606-19',
+    [DeviceType.MacOsDesktop]: 'UA-81915606-18',
 };
 
 export class Analytics {
