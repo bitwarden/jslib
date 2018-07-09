@@ -125,16 +125,16 @@ export abstract class ApiService {
     getCollectionDetails: (organizationId: string, id: string) => Promise<CollectionGroupDetailsResponse>;
     getCollections: (organizationId: string) => Promise<ListResponse<CollectionResponse>>;
     getCollectionUsers: (organizationId: string, id: string) => Promise<ListResponse<CollectionUserResponse>>;
-    postCollection: (request: CollectionRequest) => Promise<CollectionResponse>;
-    putCollection: (id: string, request: CollectionRequest) => Promise<CollectionResponse>;
-    deleteCollection: (id: string) => Promise<any>;
+    postCollection: (organizationId: string, request: CollectionRequest) => Promise<CollectionResponse>;
+    putCollection: (organizationId: string, id: string, request: CollectionRequest) => Promise<CollectionResponse>;
+    deleteCollection: (organizationId: string, id: string) => Promise<any>;
 
     getGroupDetails: (organizationId: string, id: string) => Promise<GroupDetailsResponse>;
     getGroups: (organizationId: string) => Promise<ListResponse<GroupResponse>>;
     getGroupUsers: (organizationId: string, id: string) => Promise<ListResponse<GroupUserResponse>>;
-    postGroup: (request: GroupRequest) => Promise<GroupResponse>;
-    putGroup: (id: string, request: GroupRequest) => Promise<GroupResponse>;
-    deleteGroup: (id: string) => Promise<any>;
+    postGroup: (organizationId: string, request: GroupRequest) => Promise<GroupResponse>;
+    putGroup: (organizationId: string, id: string, request: GroupRequest) => Promise<GroupResponse>;
+    deleteGroup: (organizationId: string, id: string) => Promise<any>;
 
     getOrganizationUsers: (organizationId: string) => Promise<ListResponse<OrganizationUserUserDetailsResponse>>;
 
