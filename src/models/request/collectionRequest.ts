@@ -6,7 +6,10 @@ export class CollectionRequest {
     name: string;
     groups: SelectionReadOnlyRequest[] = [];
 
-    constructor(collection: Collection) {
+    constructor(collection?: Collection) {
+        if (collection == null) {
+            return;
+        }
         this.name = collection.name ? collection.name.encryptedString : null;
     }
 }

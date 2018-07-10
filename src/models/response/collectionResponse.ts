@@ -27,7 +27,7 @@ export class CollectionGroupDetailsResponse extends CollectionResponse {
     constructor(response: any) {
         super(response);
         if (response.Groups != null) {
-            this.groups = response.Collections.map((g: any) => new SelectionReadOnlyResponse(g));
+            this.groups = response.Groups.map((g: any) => new SelectionReadOnlyResponse(g));
         }
     }
 }
