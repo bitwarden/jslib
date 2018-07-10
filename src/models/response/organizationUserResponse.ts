@@ -30,7 +30,7 @@ export class OrganizationUserUserDetailsResponse extends OrganizationUserRespons
 }
 
 export class OrganizationUserDetailsResponse extends OrganizationUserResponse {
-    collections: SelectionReadOnlyResponse;
+    collections: SelectionReadOnlyResponse[] = [];
 
     constructor(response: any) {
         super(response);
