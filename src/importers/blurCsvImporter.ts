@@ -3,11 +3,6 @@ import { Importer } from './importer';
 
 import { ImportResult } from '../models/domain/importResult';
 
-import { CipherView } from '../models/view/cipherView';
-import { LoginView } from '../models/view/loginView';
-
-import { CipherType } from '../enums/cipherType';
-
 export class BlurCsvImporter extends BaseImporter implements Importer {
     parse(data: string): ImportResult {
         const result = new ImportResult();
@@ -18,14 +13,12 @@ export class BlurCsvImporter extends BaseImporter implements Importer {
         }
 
         results.forEach((value) => {
-            const cipher = new CipherView();
-            cipher.type = CipherType.Login;
             if (value.label === 'null') {
                 value.label = null;
             }
+            const cipher = this.initLoginCipher();
             cipher.name = this.getValueOrDefault(value.label,
                 this.getValueOrDefault(this.nameFromUrl(value.domain), '--'));
-            cipher.login = new LoginView();
             cipher.login.uris = this.makeUriArray(value.domain);
             cipher.login.password = this.getValueOrDefault(value.password);
 
@@ -36,6 +29,7 @@ export class BlurCsvImporter extends BaseImporter implements Importer {
                 cipher.notes = this.getValueOrDefault(value.username);
             }
 
+            this.cleanupCipher(cipher);
             result.ciphers.push(cipher);
         });
 

@@ -2,10 +2,16 @@ import * as papa from 'papaparse';
 
 import { ImportResult } from '../models/domain/importResult';
 
+import { CipherView } from '../models/view/cipherView';
 import { CollectionView } from '../models/view/collectionView';
 import { LoginUriView } from '../models/view/loginUriView';
 
 import { Utils } from '../misc/utils';
+import { FieldView } from '../models/view/fieldView';
+import { LoginView } from '../models/view/loginView';
+
+import { CipherType } from '../enums/cipherType';
+import { FieldType } from '../enums/fieldType';
 
 export abstract class BaseImporter {
     organization = false;
@@ -226,5 +232,59 @@ export abstract class BaseImporter {
 
     protected querySelectorAllDirectChild(parentEl: Element, query: string) {
         return Array.from(parentEl.querySelectorAll(query)).filter((el) => el.parentNode === parentEl);
+    }
+
+    protected initLoginCipher() {
+        const cipher = new CipherView();
+        cipher.favorite = false;
+        cipher.notes = '';
+        cipher.fields = [];
+        cipher.login = new LoginView();
+        cipher.type = CipherType.Login;
+        return cipher;
+    }
+
+    protected cleanupCipher(cipher: CipherView) {
+        if (cipher == null) {
+            return;
+        }
+        if (cipher.type !== CipherType.Login) {
+            cipher.login = null;
+        }
+        if (this.isNullOrWhitespace(cipher.name)) {
+            cipher.name = '--';
+        }
+        if (this.isNullOrWhitespace(cipher.notes)) {
+            cipher.notes = null;
+        } else {
+            cipher.notes = cipher.notes.trim();
+        }
+        if (cipher.fields != null && cipher.fields.length === 0) {
+            cipher.fields = null;
+        }
+    }
+
+    protected processKvp(cipher: CipherView, key: string, value: string) {
+        if (this.isNullOrWhitespace(value)) {
+            return;
+        }
+        if (this.isNullOrWhitespace(key)) {
+            key = '';
+        }
+        if (value.length > 200 || value.search(this.newLineRegex) > -1) {
+            if (cipher.notes == null) {
+                cipher.notes = '';
+            }
+            cipher.notes += (key + ': ' + value + '\n');
+        } else {
+            if (cipher.fields == null) {
+                cipher.fields = [];
+            }
+            const field = new FieldView();
+            field.type = FieldType.Text;
+            field.name = key;
+            field.value = value;
+            cipher.fields.push(field);
+        }
     }
 }

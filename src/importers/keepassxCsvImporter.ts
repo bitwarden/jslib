@@ -3,11 +3,7 @@ import { Importer } from './importer';
 
 import { ImportResult } from '../models/domain/importResult';
 
-import { CipherView } from '../models/view/cipherView';
 import { FolderView } from '../models/view/folderView';
-import { LoginView } from '../models/view/loginView';
-
-import { CipherType } from '../enums/cipherType';
 
 export class KeePassXCsvImporter extends BaseImporter implements Importer {
     parse(data: string): ImportResult {
@@ -50,15 +46,13 @@ export class KeePassXCsvImporter extends BaseImporter implements Importer {
                 result.folderRelationships.push([result.ciphers.length, folderIndex]);
             }
 
-            const cipher = new CipherView();
-            cipher.type = CipherType.Login;
-            cipher.favorite = false;
+            const cipher = this.initLoginCipher();
             cipher.notes = this.getValueOrDefault(value.Notes);
             cipher.name = this.getValueOrDefault(value.Title, '--');
-            cipher.login = new LoginView();
             cipher.login.username = this.getValueOrDefault(value.Username);
             cipher.login.password = this.getValueOrDefault(value.Password);
             cipher.login.uris = this.makeUriArray(value.URL);
+            this.cleanupCipher(cipher);
             result.ciphers.push(cipher);
         });
 

@@ -3,14 +3,8 @@ import { Importer } from './importer';
 
 import { ImportResult } from '../models/domain/importResult';
 
-import { CipherView } from '../models/view/cipherView';
 import { CollectionView } from '../models/view/collectionView';
-import { FieldView } from '../models/view/fieldView';
 import { FolderView } from '../models/view/folderView';
-import { LoginView } from '../models/view/loginView';
-
-import { CipherType } from '../enums/cipherType';
-import { FieldType } from '../enums/fieldType';
 
 export class PadlockCsvImporter extends BaseImporter implements Importer {
     parse(data: string): ImportResult {
@@ -84,13 +78,8 @@ export class PadlockCsvImporter extends BaseImporter implements Importer {
                 }
             }
 
-            const cipher = new CipherView();
-            cipher.type = CipherType.Login;
-            cipher.favorite = false;
-            cipher.notes = '';
-            cipher.fields = [];
+            const cipher = this.initLoginCipher();
             cipher.name = this.getValueOrDefault(value[0], '--');
-            cipher.login = new LoginView();
 
             for (let i = 2; i < value.length; i++) {
                 const header = headers[i].trim().toLowerCase();
@@ -105,27 +94,11 @@ export class PadlockCsvImporter extends BaseImporter implements Importer {
                 } else if (this.uriFieldNames.indexOf(header) > -1) {
                     cipher.login.uris = this.makeUriArray(value[i]);
                 } else {
-                    if (value[i].length > 200 || value[i].search(this.newLineRegex) > -1) {
-                        cipher.notes += (headers[i] + ': ' + value[i] + '\n');
-                    } else {
-                        const field = new FieldView();
-                        field.type = FieldType.Text;
-                        field.name = headers[i];
-                        field.value = value[i];
-                        cipher.fields.push(field);
-                    }
+                    this.processKvp(cipher, headers[i], value[i]);
                 }
             }
 
-            if (this.isNullOrWhitespace(cipher.notes)) {
-                cipher.notes = null;
-            } else {
-                cipher.notes = cipher.notes.trim();
-            }
-            if (cipher.fields.length === 0) {
-                cipher.fields = null;
-            }
-
+            this.cleanupCipher(cipher);
             result.ciphers.push(cipher);
         });
 

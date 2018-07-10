@@ -3,11 +3,6 @@ import { Importer } from './importer';
 
 import { ImportResult } from '../models/domain/importResult';
 
-import { CipherView } from '../models/view/cipherView';
-import { LoginView } from '../models/view/loginView';
-
-import { CipherType } from '../enums/cipherType';
-
 export class AviraCsvImporter extends BaseImporter implements Importer {
     parse(data: string): ImportResult {
         const result = new ImportResult();
@@ -18,11 +13,9 @@ export class AviraCsvImporter extends BaseImporter implements Importer {
         }
 
         results.forEach((value) => {
-            const cipher = new CipherView();
-            cipher.type = CipherType.Login;
+            const cipher = this.initLoginCipher();
             cipher.name = this.getValueOrDefault(value.name,
                 this.getValueOrDefault(this.nameFromUrl(value.website), '--'));
-            cipher.login = new LoginView();
             cipher.login.uris = this.makeUriArray(value.website);
             cipher.login.password = this.getValueOrDefault(value.password);
 
@@ -33,6 +26,7 @@ export class AviraCsvImporter extends BaseImporter implements Importer {
                 cipher.notes = this.getValueOrDefault(value.secondary_username);
             }
 
+            this.cleanupCipher(cipher);
             result.ciphers.push(cipher);
         });
 

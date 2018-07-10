@@ -3,14 +3,10 @@ import { Importer } from './importer';
 
 import { ImportResult } from '../models/domain/importResult';
 
-import { CipherView } from '../models/view/cipherView';
-import { FieldView } from '../models/view/fieldView';
 import { FolderView } from '../models/view/folderView';
-import { LoginView } from '../models/view/loginView';
 import { SecureNoteView } from '../models/view/secureNoteView';
 
 import { CipherType } from '../enums/cipherType';
-import { FieldType } from '../enums/fieldType';
 import { SecureNoteType } from '../enums/secureNoteType';
 
 export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
@@ -55,11 +51,8 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
                 }
             }
 
-            const cipher = new CipherView();
-            cipher.favorite = false;
-            cipher.notes = '';
+            const cipher = this.initLoginCipher();
             cipher.name = this.getValueOrDefault(cardEl.getAttribute('title'), '--');
-            cipher.fields = null;
 
             const cardType = cardEl.getAttribute('type');
             if (cardType === 'note') {
@@ -67,8 +60,6 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
                 cipher.secureNote = new SecureNoteView();
                 cipher.secureNote.type = SecureNoteType.Generic;
             } else {
-                cipher.type = CipherType.Login;
-                cipher.login = new LoginView();
                 Array.from(this.querySelectorAllDirectChild(cardEl, 'field')).forEach((fieldEl) => {
                     const text = fieldEl.textContent;
                     if (this.isNullOrWhitespace(text)) {
@@ -84,17 +75,8 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
                         cipher.notes += (text + '\n');
                     } else if (fieldType === 'weblogin' || fieldType === 'website') {
                         cipher.login.uris = this.makeUriArray(text);
-                    } else if (text.length > 200) {
-                        cipher.notes += (name + ': ' + text + '\n');
                     } else {
-                        if (cipher.fields == null) {
-                            cipher.fields = [];
-                        }
-                        const field = new FieldView();
-                        field.name = name;
-                        field.value = text;
-                        field.type = FieldType.Text;
-                        cipher.fields.push(field);
+                        this.processKvp(cipher, name, text);
                     }
                 });
             }
@@ -103,11 +85,7 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
                 cipher.notes += (notesEl.textContent + '\n');
             });
 
-            cipher.notes = cipher.notes.trim();
-            if (cipher.notes === '') {
-                cipher.notes = null;
-            }
-
+            this.cleanupCipher(cipher);
             result.ciphers.push(cipher);
         });
 
