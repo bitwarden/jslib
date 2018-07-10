@@ -9,6 +9,8 @@ export class ProfileOrganizationResponse {
     useEvents: boolean;
     useTotp: boolean;
     use2fa: boolean;
+    selfHost: boolean;
+    usersGetPremium: boolean;
     seats: number;
     maxCollections: number;
     maxStorageGb?: number;
@@ -25,6 +27,8 @@ export class ProfileOrganizationResponse {
         this.useEvents = response.UseEvents;
         this.useTotp = response.UseTotp;
         this.use2fa = response.Use2fa;
+        this.selfHost = response.SelfHost;
+        this.usersGetPremium = response.UsersGetPremium;
         this.seats = response.Seats;
         this.maxCollections = response.MaxCollections;
         this.maxStorageGb = response.MaxStorageGb;

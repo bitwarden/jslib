@@ -9,6 +9,15 @@ export class OrganizationData {
     status: OrganizationUserStatusType;
     type: OrganizationUserType;
     enabled: boolean;
+    useGroups: boolean;
+    useDirectory: boolean;
+    useEvents: boolean;
+    useTotp: boolean;
+    use2fa: boolean;
+    selfHost: boolean;
+    usersGetPremium: boolean;
+    seats: number;
+    maxCollections: number;
 
     constructor(response: ProfileOrganizationResponse) {
         this.id = response.id;
@@ -16,5 +25,14 @@ export class OrganizationData {
         this.status = response.status;
         this.type = response.type;
         this.enabled = response.enabled;
+        this.useGroups = response.useGroups;
+        this.useDirectory = response.useDirectory;
+        this.useEvents = response.useEvents;
+        this.useTotp = response.useTotp;
+        this.use2fa = response.use2fa;
+        this.selfHost = response.selfHost;
+        this.usersGetPremium = response.usersGetPremium;
+        this.seats = response.seats;
+        this.maxCollections = response.maxCollections;
     }
 }
