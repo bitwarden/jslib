@@ -44,11 +44,11 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
                         result.collections.push(collection);
                     }
 
-                    result.collectionRelationships.set(result.ciphers.length, collectionIndex);
+                    result.collectionRelationships.push([result.ciphers.length, collectionIndex]);
                 });
             } else if (!this.organization) {
                 let folderIndex = result.folders.length;
-                const hasFolder = !this.organization && !this.isNullOrWhitespace(value.folder);
+                const hasFolder = !this.isNullOrWhitespace(value.folder);
                 let addFolder = hasFolder;
 
                 if (hasFolder) {
@@ -68,7 +68,7 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
                 }
 
                 if (hasFolder) {
-                    result.folderRelationships.set(result.ciphers.length, folderIndex);
+                    result.folderRelationships.push([result.ciphers.length, folderIndex]);
                 }
             }
 

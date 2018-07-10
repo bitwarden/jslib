@@ -76,7 +76,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
                 result.folders.push(f);
             }
             if (hasFolder) {
-                result.folderRelationships.set(cipherIndex, folderIndex);
+                result.folderRelationships.push([cipherIndex, folderIndex]);
             }
         });
 

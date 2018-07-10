@@ -10,6 +10,8 @@ import { Utils } from '../misc/utils';
 export abstract class BaseImporter {
     organization = false;
 
+    protected newLineRegex = /(?:\r\n|\r|\n)/;
+
     protected passwordFieldNames = [
         'password', 'pass word', 'passphrase', 'pass phrase',
         'pass', 'code', 'code word', 'codeword',
@@ -145,7 +147,7 @@ export abstract class BaseImporter {
     }
 
     protected splitNewLine(str: string): string[] {
-        return str.split(/(?:\r\n|\r|\n)/);
+        return str.split(this.newLineRegex);
     }
 
     // ref https://stackoverflow.com/a/5911300
@@ -207,13 +209,13 @@ export abstract class BaseImporter {
     }
 
     protected moveFoldersToCollections(result: ImportResult) {
-        result.folderRelationships.forEach((value, key) => result.collectionRelationships.set(key, value));
+        result.folderRelationships.forEach((r) => result.collectionRelationships.push(r));
         result.collections = result.folders.map((f) => {
             const collection = new CollectionView();
             collection.name = f.name;
             return collection;
         });
-        result.folderRelationships = new Map<number, number>();
+        result.folderRelationships = [];
         result.folders = [];
     }
 

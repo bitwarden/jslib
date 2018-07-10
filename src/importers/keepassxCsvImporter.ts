@@ -47,7 +47,7 @@ export class KeePassXCsvImporter extends BaseImporter implements Importer {
                 result.folders.push(f);
             }
             if (hasFolder) {
-                result.folderRelationships.set(result.ciphers.length, folderIndex);
+                result.folderRelationships.push([result.ciphers.length, folderIndex]);
             }
 
             const cipher = new CipherView();

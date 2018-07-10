@@ -51,7 +51,7 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
             if (labelIdEl != null) {
                 const labelId = labelIdEl.textContent;
                 if (!this.isNullOrWhitespace(labelId) && foldersMap.has(labelId)) {
-                    result.folderRelationships.set(result.ciphers.length, foldersMap.get(labelId));
+                    result.folderRelationships.push([result.ciphers.length, foldersMap.get(labelId)]);
                 }
             }
 
