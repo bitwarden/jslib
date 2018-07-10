@@ -22,6 +22,11 @@ import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
+import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
+import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
+import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
+import { OrganizationUserUpdateGroupsRequest } from '../models/request/organizationUserUpdateGroupsRequest';
+import { OrganizationUserUpdateRequest } from '../models/request/organizationUserUpdateRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
@@ -60,7 +65,10 @@ import { IdentityTokenResponse } from '../models/response/identityTokenResponse'
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
-import { OrganizationUserUserDetailsResponse } from '../models/response/organizationUserResponse';
+import {
+    OrganizationUserDetailsResponse,
+    OrganizationUserUserDetailsResponse,
+} from '../models/response/organizationUserResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
@@ -444,9 +452,52 @@ export class ApiService implements ApiServiceAbstraction {
 
     // Organization User APIs
 
+    async getOrganizationUser(organizationId: string, id: string): Promise<OrganizationUserDetailsResponse> {
+        const r = await this.send('GET', '/organizations/' + organizationId + '/users/' + id, null, true, true);
+        return new OrganizationUserDetailsResponse(r);
+    }
+
+    async getOrganizationUserGroups(organizationId: string, id: string): Promise<string[]> {
+        const r = await this.send('GET', '/organizations/' + organizationId + '/users/' + id + '/groups',
+            null, true, true);
+        return r;
+    }
+
     async getOrganizationUsers(organizationId: string): Promise<ListResponse<OrganizationUserUserDetailsResponse>> {
         const r = await this.send('GET', '/organizations/' + organizationId + '/users', null, true, true);
         return new ListResponse(r, OrganizationUserUserDetailsResponse);
+    }
+
+    postOrganizationUserInvite(organizationId: string, request: OrganizationUserInviteRequest): Promise<any> {
+        return this.send('POST', '/organizations/' + organizationId + '/users/invite', request, true, false);
+    }
+
+    postOrganizationUserReinvite(organizationId: string, id: string): Promise<any> {
+        return this.send('POST', '/organizations/' + organizationId + '/users/' + id + '/reinvite', null, true, false);
+    }
+
+    postOrganizationUserAccept(organizationId: string, id: string,
+        request: OrganizationUserAcceptRequest): Promise<any> {
+        return this.send('POST', '/organizations/' + organizationId + '/users/' + id + '/accept', request, true, false);
+    }
+
+    postOrganizationUserConfirm(organizationId: string, id: string,
+        request: OrganizationUserConfirmRequest): Promise<any> {
+        return this.send('POST', '/organizations/' + organizationId + '/users/' + id + '/confirm',
+            request, true, false);
+    }
+
+    putOrganizationUser(organizationId: string, id: string, request: OrganizationUserUpdateRequest): Promise<any> {
+        return this.send('PUT', '/organizations/' + organizationId + '/users/' + id, request, true, false);
+    }
+
+    putOrganizationUserGroups(organizationId: string, id: string,
+        request: OrganizationUserUpdateGroupsRequest): Promise<any> {
+        return this.send('PUT', '/organizations/' + organizationId + '/users/' + id + '/groups', request, true, false);
+    }
+
+    deleteOrganizationUser(organizationId: string, id: string): Promise<any> {
+        return this.send('DELETE', '/organizations/' + organizationId + '/users/' + id, null, true, false);
     }
 
     // Sync APIs

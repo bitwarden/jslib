@@ -16,6 +16,11 @@ import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
+import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
+import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
+import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
+import { OrganizationUserUpdateGroupsRequest } from '../models/request/organizationUserUpdateGroupsRequest';
+import { OrganizationUserUpdateRequest } from '../models/request/organizationUserUpdateRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
@@ -53,7 +58,10 @@ import { IdentityTokenResponse } from '../models/response/identityTokenResponse'
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
-import { OrganizationUserUserDetailsResponse } from '../models/response/organizationUserResponse';
+import {
+    OrganizationUserDetailsResponse,
+    OrganizationUserUserDetailsResponse,
+} from '../models/response/organizationUserResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
@@ -138,7 +146,19 @@ export abstract class ApiService {
     deleteGroup: (organizationId: string, id: string) => Promise<any>;
     deleteGroupUser: (organizationId: string, id: string, organizationUserId: string) => Promise<any>;
 
+    getOrganizationUser: (organizationId: string, id: string) => Promise<OrganizationUserDetailsResponse>;
+    getOrganizationUserGroups: (organizationId: string, id: string) => Promise<string[]>;
     getOrganizationUsers: (organizationId: string) => Promise<ListResponse<OrganizationUserUserDetailsResponse>>;
+    postOrganizationUserInvite: (organizationId: string, request: OrganizationUserInviteRequest) => Promise<any>;
+    postOrganizationUserReinvite: (organizationId: string, id: string) => Promise<any>;
+    postOrganizationUserAccept: (organizationId: string, id: string,
+        request: OrganizationUserAcceptRequest) => Promise<any>;
+    postOrganizationUserConfirm: (organizationId: string, id: string,
+        request: OrganizationUserConfirmRequest) => Promise<any>;
+    putOrganizationUser: (organizationId: string, id: string, request: OrganizationUserUpdateRequest) => Promise<any>;
+    putOrganizationUserGroups: (organizationId: string, id: string,
+        request: OrganizationUserUpdateGroupsRequest) => Promise<any>;
+    deleteOrganizationUser: (organizationId: string, id: string) => Promise<any>;
 
     getSync: () => Promise<SyncResponse>;
     postImportDirectory: (organizationId: string, request: ImportDirectoryRequest) => Promise<any>;
