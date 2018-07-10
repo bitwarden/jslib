@@ -24,6 +24,10 @@ export class KeePass2XmlImporter extends BaseImporter implements Importer {
 
         this.traverse(rootGroup, true, '');
 
+        if (this.organization) {
+            this.moveFoldersToCollections(this.result);
+        }
+
         this.result.success = true;
         return this.result;
     }
