@@ -398,6 +398,12 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('DELETE', '/organizations/' + organizationId + '/collections/' + id, null, true, false);
     }
 
+    deleteCollectionUser(organizationId: string, id: string, organizationUserId: string): Promise<any> {
+        return this.send('DELETE',
+            '/organizations/' + organizationId + '/collections/' + id + '/user/' + organizationUserId,
+            null, true, false);
+    }
+
     // Groups APIs
 
     async getGroupDetails(organizationId: string, id: string): Promise<GroupDetailsResponse> {
@@ -429,6 +435,11 @@ export class ApiService implements ApiServiceAbstraction {
 
     deleteGroup(organizationId: string, id: string): Promise<any> {
         return this.send('DELETE', '/organizations/' + organizationId + '/groups/' + id, null, true, false);
+    }
+
+    deleteGroupUser(organizationId: string, id: string, organizationUserId: string): Promise<any> {
+        return this.send('DELETE',
+            '/organizations/' + organizationId + '/groups/' + id + '/user/' + organizationUserId, null, true, false);
     }
 
     // Organization User APIs

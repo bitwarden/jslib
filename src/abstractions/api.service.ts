@@ -128,6 +128,7 @@ export abstract class ApiService {
     postCollection: (organizationId: string, request: CollectionRequest) => Promise<CollectionResponse>;
     putCollection: (organizationId: string, id: string, request: CollectionRequest) => Promise<CollectionResponse>;
     deleteCollection: (organizationId: string, id: string) => Promise<any>;
+    deleteCollectionUser: (organizationId: string, id: string, organizationUserId: string) => Promise<any>;
 
     getGroupDetails: (organizationId: string, id: string) => Promise<GroupDetailsResponse>;
     getGroups: (organizationId: string) => Promise<ListResponse<GroupResponse>>;
@@ -135,6 +136,7 @@ export abstract class ApiService {
     postGroup: (organizationId: string, request: GroupRequest) => Promise<GroupResponse>;
     putGroup: (organizationId: string, id: string, request: GroupRequest) => Promise<GroupResponse>;
     deleteGroup: (organizationId: string, id: string) => Promise<any>;
+    deleteGroupUser: (organizationId: string, id: string, organizationUserId: string) => Promise<any>;
 
     getOrganizationUsers: (organizationId: string) => Promise<ListResponse<OrganizationUserUserDetailsResponse>>;
 
