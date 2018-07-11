@@ -71,6 +71,7 @@ import { TwoFactorProviderResponse } from '../models/response/twoFactorProviderR
 import { TwoFactorRecoverResponse } from '../models/response/twoFactorRescoverResponse';
 import { TwoFactorU2fResponse } from '../models/response/twoFactorU2fResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
+import { UserKeyResponse } from '../models/response/userKeyResponse';
 
 export abstract class ApiService {
     urlsSet: boolean;
@@ -194,6 +195,8 @@ export abstract class ApiService {
         token: string) => Promise<ListResponse<EventResponse>>;
     getEventsOrganizationUser: (organizationId: string, id: string,
         start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
+
+    getUserPublicKey: (id: string) => Promise<UserKeyResponse>;
 
     fetch: (request: Request) => Promise<Response>;
 }

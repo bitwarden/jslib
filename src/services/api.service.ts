@@ -78,6 +78,7 @@ import { TwoFactorProviderResponse } from '../models/response/twoFactorProviderR
 import { TwoFactorRecoverResponse } from '../models/response/twoFactorRescoverResponse';
 import { TwoFactorU2fResponse } from '../models/response/twoFactorU2fResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
+import { UserKeyResponse } from '../models/response/userKeyResponse';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
@@ -647,6 +648,13 @@ export class ApiService implements ApiServiceAbstraction {
             this.addEventParameters('/organizations/' + organizationId + '/users/' + id + '/events', start, end, token),
             null, true, true);
         return new ListResponse(r, EventResponse);
+    }
+
+    // User APIs
+
+    async getUserPublicKey(id: string): Promise<UserKeyResponse> {
+        const r = await this.send('GET', '/users/' + id + '/public-key', null, true, true);
+        return new UserKeyResponse(r);
     }
 
     // Helpers

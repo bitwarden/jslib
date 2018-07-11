@@ -356,6 +356,25 @@ export class CryptoService implements CryptoServiceAbstraction {
         return encBytes.buffer;
     }
 
+    async rsaEncrypt(data: ArrayBuffer, publicKey?: ArrayBuffer, key?: SymmetricCryptoKey): Promise<CipherString> {
+        if (publicKey == null) {
+            publicKey = await this.getPublicKey();
+        }
+        if (publicKey == null) {
+            throw new Error('Public key unavailable.');
+        }
+
+        let type = EncryptionType.Rsa2048_OaepSha1_B64;
+        const encBytes = await this.cryptoFunctionService.rsaEncrypt(data, publicKey, 'sha1');
+        let mac: string = null;
+        if (key != null && key.macKey != null) {
+            type = EncryptionType.Rsa2048_OaepSha1_HmacSha256_B64;
+            const macBytes = await this.cryptoFunctionService.hmac(encBytes, key.macKey, 'sha256');
+            mac = Utils.fromBufferToB64(macBytes);
+        }
+        return new CipherString(type, Utils.fromBufferToB64(encBytes), null, mac);
+    }
+
     async decrypt(cipherString: CipherString, key?: SymmetricCryptoKey): Promise<ArrayBuffer> {
         const iv = Utils.fromB64ToArray(cipherString.iv).buffer;
         const data = Utils.fromB64ToArray(cipherString.data).buffer;
@@ -528,25 +547,6 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
 
         return await this.cryptoFunctionService.aesDecrypt(data, iv, theKey.encKey);
-    }
-
-    private async rsaEncrypt(data: ArrayBuffer, publicKey?: ArrayBuffer, key?: SymmetricCryptoKey) {
-        if (publicKey == null) {
-            publicKey = await this.getPublicKey();
-        }
-        if (publicKey == null) {
-            throw new Error('Public key unavailable.');
-        }
-
-        let type = EncryptionType.Rsa2048_OaepSha1_B64;
-        const encBytes = await this.cryptoFunctionService.rsaEncrypt(data, publicKey, 'sha1');
-        let mac: string = null;
-        if (key != null && key.macKey != null) {
-            type = EncryptionType.Rsa2048_OaepSha1_HmacSha256_B64;
-            const macBytes = await this.cryptoFunctionService.hmac(encBytes, key.macKey, 'sha256');
-            mac = Utils.fromBufferToB64(macBytes);
-        }
-        return new CipherString(type, Utils.fromBufferToB64(encBytes), null, mac);
     }
 
     private async rsaDecrypt(encValue: string): Promise<ArrayBuffer> {
