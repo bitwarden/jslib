@@ -271,7 +271,7 @@ export abstract class BaseImporter {
         if (this.isNullOrWhitespace(key)) {
             key = '';
         }
-        if (value.length > 200 || value.search(this.newLineRegex) > -1) {
+        if (value.length > 200 || value.trim().search(this.newLineRegex) > -1) {
             if (cipher.notes == null) {
                 cipher.notes = '';
             }
