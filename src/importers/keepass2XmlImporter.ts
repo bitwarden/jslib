@@ -47,11 +47,11 @@ export class KeePass2XmlImporter extends BaseImporter implements Importer {
             this.result.folders.push(folder);
         }
 
-        Array.from(this.querySelectorAllDirectChild(node, 'Entry')).forEach((entry) => {
+        this.querySelectorAllDirectChild(node, 'Entry').forEach((entry) => {
             const cipherIndex = this.result.ciphers.length;
 
             const cipher = this.initLoginCipher();
-            Array.from(this.querySelectorAllDirectChild(entry, 'String')).forEach((entryString) => {
+            this.querySelectorAllDirectChild(entry, 'String').forEach((entryString) => {
                 const valueEl = this.querySelectorDirectChild(entryString, 'Value');
                 const value = valueEl != null ? valueEl.textContent : null;
                 if (this.isNullOrWhitespace(value)) {
@@ -83,7 +83,7 @@ export class KeePass2XmlImporter extends BaseImporter implements Importer {
             }
         });
 
-        Array.from(this.querySelectorAllDirectChild(node, 'Group')).forEach((group) => {
+        this.querySelectorAllDirectChild(node, 'Group').forEach((group) => {
             this.traverse(group, false, groupName);
         });
     }
