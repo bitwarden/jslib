@@ -42,7 +42,7 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                     this.parseFields(item.secureContents.fields, cipher, 'designation', 'value', 'name');
                 }
                 if (item.secureContents.sections != null) {
-                    item.secureContents.sections.forEach((section) => {
+                    item.secureContents.sections.forEach((section: any) => {
                         if (section.fields != null) {
                             this.parseFields(section.fields, cipher, 'n', 'v', 't');
                         }
