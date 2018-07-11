@@ -7,14 +7,16 @@ import { CipherView } from '../../models/view/cipherView';
 
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
+import { DeviceType } from '../../enums';
+
 @Pipe({
     name: 'searchCiphers',
 })
 export class SearchCiphersPipe implements PipeTransform {
     private onlySearchName = false;
 
-    constructor(private platformUtilsService: PlatformUtilsService) {
-        this.onlySearchName = platformUtilsService.isEdge();
+    constructor(platformUtilsService: PlatformUtilsService) {
+        this.onlySearchName = platformUtilsService.getDevice() === DeviceType.EdgeExtension;
     }
 
     transform(ciphers: CipherView[], searchText: string): CipherView[] {
@@ -33,6 +35,9 @@ export class SearchCiphersPipe implements PipeTransform {
             }
             if (this.onlySearchName) {
                 return false;
+            }
+            if (c.id.substr(0, 8) === searchText) {
+                return true;
             }
             if (c.subTitle != null && c.subTitle.toLowerCase().indexOf(searchText) > -1) {
                 return true;
