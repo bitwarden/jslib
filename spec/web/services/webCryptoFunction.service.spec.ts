@@ -372,7 +372,7 @@ function testRsaGenerateKeyPair(length: 1024 | 2048 | 4096) {
         expect(keyPair[0] == null || keyPair[1] == null).toBe(false);
         const publicKey = await cryptoFunctionService.rsaExtractPublicKey(keyPair[1]);
         expect(Utils.fromBufferToB64(keyPair[0])).toBe(Utils.fromBufferToB64(publicKey));
-    });
+    }, 30000);
 }
 
 function getWebCryptoFunctionService() {
