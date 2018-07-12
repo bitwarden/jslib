@@ -14,6 +14,10 @@ export class ErrorResponse {
         if (errorModel) {
             this.message = errorModel.Message;
             this.validationErrors = errorModel.ValidationErrors;
+        } else {
+            if (status === 429) {
+                this.message = 'Rate limit exceeded. Try again later.';
+            }
         }
         this.statusCode = status;
     }
