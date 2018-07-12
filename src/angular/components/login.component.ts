@@ -8,7 +8,6 @@ import { AuthResult } from '../../models/domain/authResult';
 
 import { AuthService } from '../../abstractions/auth.service';
 import { I18nService } from '../../abstractions/i18n.service';
-import { SyncService } from '../../abstractions/sync.service';
 
 export class LoginComponent {
     @Input() email: string = '';

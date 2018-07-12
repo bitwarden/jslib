@@ -160,7 +160,7 @@ export class TokenService implements TokenServiceAbstraction {
     getName(): string {
         const decoded = this.decodeToken();
         if (typeof decoded.name === 'undefined') {
-            throw new Error('No name found');
+            return null;
         }
 
         return decoded.name as string;
