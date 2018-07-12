@@ -8,6 +8,7 @@ import { LoginUriView } from '../models/view/loginUriView';
 
 import { Utils } from '../misc/utils';
 import { FieldView } from '../models/view/fieldView';
+import { FolderView } from '../models/view/folderView';
 import { LoginView } from '../models/view/loginView';
 
 import { CipherType } from '../enums/cipherType';
@@ -285,6 +286,31 @@ export abstract class BaseImporter {
             field.name = key;
             field.value = value;
             cipher.fields.push(field);
+        }
+    }
+
+    protected processFolder(result: ImportResult, folderName: string) {
+        let folderIndex = result.folders.length;
+        const hasFolder = !this.isNullOrWhitespace(folderName);
+        let addFolder = hasFolder;
+
+        if (hasFolder) {
+            for (let i = 0; i < result.folders.length; i++) {
+                if (result.folders[i].name === folderName) {
+                    addFolder = false;
+                    folderIndex = i;
+                    break;
+                }
+            }
+        }
+
+        if (addFolder) {
+            const f = new FolderView();
+            f.name = folderName;
+            result.folders.push(f);
+        }
+        if (hasFolder) {
+            result.folderRelationships.push([result.ciphers.length, folderIndex]);
         }
     }
 }

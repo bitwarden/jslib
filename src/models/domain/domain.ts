@@ -1,4 +1,4 @@
-import { CipherString } from '../domain/cipherString';
+import { CipherString } from './cipherString';
 
 import { View } from '../view/view';
 
