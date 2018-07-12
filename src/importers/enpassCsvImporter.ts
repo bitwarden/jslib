@@ -29,13 +29,14 @@ export class EnpassCsvImporter extends BaseImporter implements Importer {
             cipher.notes = this.getValueOrDefault(value[value.length - 1]);
             cipher.name = this.getValueOrDefault(value[0], '--');
 
-            if (value.length === 2) {
+            if (value.length === 2 || (value.indexOf('Username') < 0 && value.indexOf('Password') < 0 &&
+                value.indexOf('Email') && value.indexOf('URL') < 0)) {
                 cipher.type = CipherType.SecureNote;
                 cipher.secureNote = new SecureNoteView();
                 cipher.secureNote.type = SecureNoteType.Generic;
             }
 
-            if (value.indexOf('Cardholder') > -1 && value.indexOf('Number') > -1 && value.indexOf('Expiry date')) {
+            if (value.indexOf('Cardholder') > -1 && value.indexOf('Number') > -1 && value.indexOf('Expiry date') > -1) {
                 cipher.type = CipherType.Card;
                 cipher.card = new CardView();
             }
