@@ -276,7 +276,7 @@ export abstract class BaseImporter {
             if (cipher.notes == null) {
                 cipher.notes = '';
             }
-            cipher.notes += (key + ': ' + value.split(this.newLineRegex).join('\n') + '\n');
+            cipher.notes += (key + ': ' + this.splitNewLine(value).join('\n') + '\n');
         } else {
             if (cipher.fields == null) {
                 cipher.fields = [];
