@@ -36,7 +36,7 @@ export class SearchCiphersPipe implements PipeTransform {
             if (this.onlySearchName) {
                 return false;
             }
-            if (c.id.substr(0, 8) === searchText) {
+            if (searchText.length >= 8 && c.id.startsWith(searchText)) {
                 return true;
             }
             if (c.subTitle != null && c.subTitle.toLowerCase().indexOf(searchText) > -1) {
