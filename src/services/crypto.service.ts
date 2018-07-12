@@ -211,6 +211,11 @@ export class CryptoService implements CryptoServiceAbstraction {
         return (await this.getKey()) != null;
     }
 
+    async hasEncKey(): Promise<boolean> {
+        const encKey = await this.storageService.get<string>(Keys.encKey);
+        return encKey != null;
+    }
+
     clearKey(): Promise<any> {
         this.key = this.legacyEtmKey = null;
         return this.secureStorageService.remove(Keys.key);

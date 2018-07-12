@@ -40,8 +40,7 @@ export class AttachmentsComponent implements OnInit {
         this.cipherDomain = await this.loadCipher();
         this.cipher = await this.cipherDomain.decrypt();
 
-        const key = await this.cryptoService.getEncKey();
-        this.hasUpdatedKey = key != null;
+        this.hasUpdatedKey = await this.cryptoService.hasEncKey();
         const isPremium = this.tokenService.getPremium();
         this.canAccessAttachments = isPremium || this.cipher.organizationId != null;
 
