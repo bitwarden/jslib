@@ -44,6 +44,7 @@ import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoR
 import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEmailRequest';
 import { UpdateTwoFactorU2fRequest } from '../models/request/updateTwoFactorU2fRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
+import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
 import { BillingResponse } from '../models/response/billingResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
@@ -247,6 +248,14 @@ export class ApiService implements ApiServiceAbstraction {
 
     postAccountKeys(request: KeysRequest): Promise<any> {
         return this.send('POST', '/accounts/keys', request, true, false);
+    }
+
+    postAccountVerifyEmail(): Promise<any> {
+        return this.send('POST', '/accounts/verify-email', null, true, false);
+    }
+
+    postAccountVerifyEmailToken(request: VerifyEmailRequest): Promise<any> {
+        return this.send('POST', '/accounts/verify-email-token', request, false, false);
     }
 
     // Folder APIs

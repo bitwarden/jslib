@@ -38,6 +38,7 @@ import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoR
 import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEmailRequest';
 import { UpdateTwoFactorU2fRequest } from '../models/request/updateTwoFactorU2fRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
+import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
 import { BillingResponse } from '../models/response/billingResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
@@ -100,6 +101,8 @@ export abstract class ApiService {
     postAccountPayment: (request: PaymentRequest) => Promise<any>;
     postAccountLicense: (data: FormData) => Promise<any>;
     postAccountKeys: (request: KeysRequest) => Promise<any>;
+    postAccountVerifyEmail: () => Promise<any>;
+    postAccountVerifyEmailToken: (request: VerifyEmailRequest) => Promise<any>;
 
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
     putFolder: (id: string, request: FolderRequest) => Promise<FolderResponse>;
