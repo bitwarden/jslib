@@ -52,29 +52,8 @@ export class PadlockCsvImporter extends BaseImporter implements Importer {
                     });
                 } else {
                     const tags = (value[1] as string).split(',');
-                    let folderIndex = result.folders.length;
-                    const hasFolder = tags.length > 0 && !this.isNullOrWhitespace(tags[0].trim());
-                    let addFolder = hasFolder;
-                    const tag = tags[0].trim();
-
-                    if (hasFolder) {
-                        for (let i = 0; i < result.folders.length; i++) {
-                            if (result.folders[i].name === tag) {
-                                addFolder = false;
-                                folderIndex = i;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (addFolder) {
-                        const f = new FolderView();
-                        f.name = tag;
-                        result.folders.push(f);
-                    }
-                    if (hasFolder) {
-                        result.folderRelationships.push([result.ciphers.length, folderIndex]);
-                    }
+                    const tag = tags.length > 0 ? tags[0].trim() : null;
+                    this.processFolder(result, tag);
                 }
             }
 

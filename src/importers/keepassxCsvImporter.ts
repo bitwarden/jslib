@@ -22,29 +22,7 @@ export class KeePassXCsvImporter extends BaseImporter implements Importer {
             value.Group = !this.isNullOrWhitespace(value.Group) && value.Group.startsWith('Root/') ?
                 value.Group.replace('Root/', '') : value.Group;
             const groupName = !this.isNullOrWhitespace(value.Group) ? value.Group.split('/').join(' > ') : null;
-
-            let folderIndex = result.folders.length;
-            const hasFolder = groupName != null;
-            let addFolder = hasFolder;
-
-            if (hasFolder) {
-                for (let i = 0; i < result.folders.length; i++) {
-                    if (result.folders[i].name === groupName) {
-                        addFolder = false;
-                        folderIndex = i;
-                        break;
-                    }
-                }
-            }
-
-            if (addFolder) {
-                const f = new FolderView();
-                f.name = groupName;
-                result.folders.push(f);
-            }
-            if (hasFolder) {
-                result.folderRelationships.push([result.ciphers.length, folderIndex]);
-            }
+            this.processFolder(result, groupName);
 
             const cipher = this.initLoginCipher();
             cipher.notes = this.getValueOrDefault(value.Notes);

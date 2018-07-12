@@ -19,29 +19,7 @@ export class KeeperCsvImporter extends BaseImporter implements Importer {
                 return;
             }
 
-            let folderIndex = result.folders.length;
-            const hasFolder = !this.isNullOrWhitespace(value[0]);
-            let addFolder = hasFolder;
-
-            if (hasFolder) {
-                for (let i = 0; i < result.folders.length; i++) {
-                    if (result.folders[i].name === value[0]) {
-                        addFolder = false;
-                        folderIndex = i;
-                        break;
-                    }
-                }
-            }
-
-            if (addFolder) {
-                const f = new FolderView();
-                f.name = value[0];
-                result.folders.push(f);
-            }
-            if (hasFolder) {
-                result.folderRelationships.push([result.ciphers.length, folderIndex]);
-            }
-
+            this.processFolder(result, value[0]);
             const cipher = this.initLoginCipher();
             cipher.notes = this.getValueOrDefault(value[5]) + '\n';
             cipher.name = this.getValueOrDefault(value[1], '--');

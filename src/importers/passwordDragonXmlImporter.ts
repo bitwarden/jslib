@@ -17,30 +17,9 @@ export class PasswordDragonXmlImporter extends BaseImporter implements Importer 
         const records = doc.querySelectorAll('PasswordManager > record');
         Array.from(records).forEach((record) => {
             const category = this.querySelectorDirectChild(record, 'Category');
-
-            let folderIndex = result.folders.length;
-            const hasFolder = category != null && !this.isNullOrWhitespace(category.textContent) &&
-                category.textContent !== 'Unfiled';
-            let addFolder = hasFolder;
-
-            if (hasFolder) {
-                for (let i = 0; i < result.folders.length; i++) {
-                    if (result.folders[i].name === category.textContent) {
-                        addFolder = false;
-                        folderIndex = i;
-                        break;
-                    }
-                }
-            }
-
-            if (addFolder) {
-                const f = new FolderView();
-                f.name = category.textContent;
-                result.folders.push(f);
-            }
-            if (hasFolder) {
-                result.folderRelationships.push([result.ciphers.length, folderIndex]);
-            }
+            const categoryText = category != null && !this.isNullOrWhitespace(category.textContent) &&
+                category.textContent !== 'Unfiled' ? category.textContent : null;
+            this.processFolder(result, categoryText);
 
             const accountName = this.querySelectorDirectChild(record, 'Account-Name');
             const userId = this.querySelectorDirectChild(record, 'User-Id');

@@ -47,29 +47,7 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
                     result.collectionRelationships.push([result.ciphers.length, collectionIndex]);
                 });
             } else if (!this.organization) {
-                let folderIndex = result.folders.length;
-                const hasFolder = !this.isNullOrWhitespace(value.folder);
-                let addFolder = hasFolder;
-
-                if (hasFolder) {
-                    for (let i = 0; i < result.folders.length; i++) {
-                        if (result.folders[i].name === value.folder) {
-                            addFolder = false;
-                            folderIndex = i;
-                            break;
-                        }
-                    }
-                }
-
-                if (addFolder) {
-                    const f = new FolderView();
-                    f.name = value.folder;
-                    result.folders.push(f);
-                }
-
-                if (hasFolder) {
-                    result.folderRelationships.push([result.ciphers.length, folderIndex]);
-                }
+                this.processFolder(result, value.folder);
             }
 
             const cipher = new CipherView();
