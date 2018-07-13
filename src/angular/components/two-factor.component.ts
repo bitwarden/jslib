@@ -38,7 +38,8 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     twoFactorEmail: string = null;
     formPromise: Promise<any>;
     emailPromise: Promise<any>;
-    onSuccessfullLogin: () => Promise<any>;
+    onSuccessfulLogin: () => Promise<any>;
+    onSuccessfulLoginNavigate: () => Promise<any>;
 
     protected loginRoute = 'login';
     protected successRoute = 'vault';
@@ -167,11 +168,15 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         try {
             this.formPromise = this.authService.logInTwoFactor(this.selectedProviderType, this.token, this.remember);
             await this.formPromise;
-            if (this.onSuccessfullLogin != null) {
-                this.onSuccessfullLogin();
+            if (this.onSuccessfulLogin != null) {
+                this.onSuccessfulLogin();
             }
             this.analytics.eventTrack.next({ action: 'Logged In From Two-step' });
-            this.router.navigate([this.successRoute]);
+            if (this.onSuccessfulLoginNavigate != null) {
+                this.onSuccessfulLoginNavigate();
+            } else {
+                this.router.navigate([this.successRoute]);
+            }
         } catch (e) {
             if (this.selectedProviderType === TwoFactorProviderType.U2f && this.u2f != null) {
                 this.u2f.start();
