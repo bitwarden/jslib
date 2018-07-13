@@ -13,6 +13,8 @@ import { AuthService } from '../../abstractions/auth.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { StorageService } from '../../abstractions/storage.service';
 
+import { Utils } from 'jslib/misc/utils';
+
 const Keys = {
     rememberedEmail: 'rememberedEmail',
     rememberEmail: 'rememberEmail',
@@ -44,6 +46,9 @@ export class LoginComponent implements OnInit {
         this.rememberEmail = await this.storageService.get<boolean>(Keys.rememberEmail);
         if (this.rememberEmail == null) {
             this.rememberEmail = true;
+        }
+        if (Utils.isBrowser) {
+            document.getElementById(this.email == null || this.email === '' ? 'email' : 'masterPassword').focus();
         }
     }
 
