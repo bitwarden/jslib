@@ -13,6 +13,7 @@ import { CipherCollectionsRequest } from '../models/request/cipherCollectionsReq
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CipherShareRequest } from '../models/request/cipherShareRequest';
 import { CollectionRequest } from '../models/request/collectionRequest';
+import { DeleteRecoverRequest } from '../models/request/deleteRecoverRequest';
 import { EmailRequest } from '../models/request/emailRequest';
 import { EmailTokenRequest } from '../models/request/emailTokenRequest';
 import { FolderRequest } from '../models/request/folderRequest';
@@ -44,6 +45,7 @@ import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoR
 import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEmailRequest';
 import { UpdateTwoFactorU2fRequest } from '../models/request/updateTwoFactorU2fRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
+import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
 import { BillingResponse } from '../models/response/billingResponse';
@@ -256,6 +258,14 @@ export class ApiService implements ApiServiceAbstraction {
 
     postAccountVerifyEmailToken(request: VerifyEmailRequest): Promise<any> {
         return this.send('POST', '/accounts/verify-email-token', request, false, false);
+    }
+
+    postAccountRecoverDelete(request: DeleteRecoverRequest): Promise<any> {
+        return this.send('POST', '/accounts/delete-recover', request, false, false);
+    }
+
+    postAccountRecoverDeleteToken(request: VerifyDeleteRecoverRequest): Promise<any> {
+        return this.send('POST', '/accounts/delete-recover-token', request, false, false);
     }
 
     // Folder APIs
