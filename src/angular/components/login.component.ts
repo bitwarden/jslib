@@ -13,7 +13,7 @@ import { AuthService } from '../../abstractions/auth.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { StorageService } from '../../abstractions/storage.service';
 
-import { Utils } from 'jslib/misc/utils';
+import { Utils } from '../../misc/utils';
 
 const Keys = {
     rememberedEmail: 'rememberedEmail',
