@@ -27,7 +27,8 @@ export class LoginComponent implements OnInit {
     masterPassword: string = '';
     showPassword: boolean = false;
     formPromise: Promise<AuthResult>;
-    onSuccessfullLogin: () => Promise<any>;
+    onSuccessfulLogin: () => Promise<any>;
+    onSuccessfulLoginNavigate: () => Promise<any>;
 
     protected twoFactorRoute = '2fa';
     protected successRoute = 'vault';
@@ -82,11 +83,15 @@ export class LoginComponent implements OnInit {
                 this.analytics.eventTrack.next({ action: 'Logged In To Two-step' });
                 this.router.navigate([this.twoFactorRoute]);
             } else {
-                if (this.onSuccessfullLogin != null) {
-                    this.onSuccessfullLogin();
+                if (this.onSuccessfulLogin != null) {
+                    this.onSuccessfulLogin();
                 }
                 this.analytics.eventTrack.next({ action: 'Logged In' });
-                this.router.navigate([this.successRoute]);
+                if (this.onSuccessfulLoginNavigate != null) {
+                    this.onSuccessfulLoginNavigate();
+                } else {
+                    this.router.navigate([this.successRoute]);
+                }
             }
         } catch { }
     }

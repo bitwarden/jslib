@@ -69,7 +69,7 @@ export class RegisterComponent {
             await this.formPromise;
             this.analytics.eventTrack.next({ action: 'Registered' });
             this.toasterService.popAsync('success', null, this.i18nService.t('newAccountCreated'));
-            this.router.navigate([this.successRoute]);
+            this.router.navigate([this.successRoute], { queryParams: { email: this.email } });
         } catch { }
     }
 
