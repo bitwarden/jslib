@@ -1,4 +1,7 @@
-import { Input } from '@angular/core';
+import {
+    Input,
+    OnInit,
+} from '@angular/core';
 import { Router } from '@angular/router';
 
 import { ToasterService } from 'angular2-toaster';
@@ -8,9 +11,16 @@ import { AuthResult } from '../../models/domain/authResult';
 
 import { AuthService } from '../../abstractions/auth.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { StorageService } from '../../abstractions/storage.service';
 
-export class LoginComponent {
+const Keys = {
+    rememberedEmail: 'rememberedEmail',
+    rememberEmail: 'rememberEmail',
+};
+
+export class LoginComponent implements OnInit {
     @Input() email: string = '';
+    @Input() rememberEmail = true;
 
     masterPassword: string = '';
     showPassword: boolean = false;
@@ -22,7 +32,20 @@ export class LoginComponent {
 
     constructor(protected authService: AuthService, protected router: Router,
         protected analytics: Angulartics2, protected toasterService: ToasterService,
-        protected i18nService: I18nService) { }
+        protected i18nService: I18nService, private storageService: StorageService) { }
+
+    async ngOnInit() {
+        if (this.email == null || this.email === '') {
+            this.email = await this.storageService.get<string>(Keys.rememberedEmail);
+            if (this.email == null) {
+                this.email = '';
+            }
+        }
+        this.rememberEmail = await this.storageService.get<boolean>(Keys.rememberEmail);
+        if (this.rememberEmail == null) {
+            this.rememberEmail = true;
+        }
+    }
 
     async submit() {
         if (this.email == null || this.email === '') {
@@ -44,6 +67,12 @@ export class LoginComponent {
         try {
             this.formPromise = this.authService.logIn(this.email, this.masterPassword);
             const response = await this.formPromise;
+            await this.storageService.save(Keys.rememberEmail, this.rememberEmail);
+            if (this.rememberEmail) {
+                await this.storageService.save(Keys.rememberedEmail, this.email);
+            } else {
+                await this.storageService.remove(Keys.rememberedEmail);
+            }
             if (response.twoFactor) {
                 this.analytics.eventTrack.next({ action: 'Logged In To Two-step' });
                 this.router.navigate([this.twoFactorRoute]);
