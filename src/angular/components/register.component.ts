@@ -10,6 +10,7 @@ import { ApiService } from '../../abstractions/api.service';
 import { AuthService } from '../../abstractions/auth.service';
 import { CryptoService } from '../../abstractions/crypto.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { StateService } from '../../abstractions/state.service';
 
 export class RegisterComponent {
     name: string = '';
@@ -25,7 +26,7 @@ export class RegisterComponent {
     constructor(protected authService: AuthService, protected router: Router,
         protected analytics: Angulartics2, protected toasterService: ToasterService,
         protected i18nService: I18nService, protected cryptoService: CryptoService,
-        protected apiService: ApiService) { }
+        protected apiService: ApiService, protected stateService: StateService) { }
 
     async submit() {
         if (this.email == null || this.email === '') {
@@ -63,6 +64,11 @@ export class RegisterComponent {
         const request = new RegisterRequest(this.email, this.name, hashedPassword,
             this.hint, encKey[1].encryptedString);
         request.keys = new KeysRequest(keys[0], keys[1].encryptedString);
+        const orgInvite = await this.stateService.get<any>('orgInvitation');
+        if (orgInvite != null && orgInvite.token != null && orgInvite.organizationUserId != null) {
+            request.token = orgInvite.token;
+            request.organizationUserId = orgInvite.organizationUserId;
+        }
 
         try {
             this.formPromise = this.apiService.postRegister(request);
