@@ -61,6 +61,7 @@ import { GroupUserResponse } from '../models/response/groupUserResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
+import { OrganizationBillingResponse } from '../models/response/organizationBillingResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import {
     OrganizationUserDetailsResponse,
@@ -93,7 +94,7 @@ export abstract class ApiService {
     postEmail: (request: EmailRequest) => Promise<any>;
     postPassword: (request: PasswordRequest) => Promise<any>;
     postSecurityStamp: (request: PasswordVerificationRequest) => Promise<any>;
-    postDeleteAccount: (request: PasswordVerificationRequest) => Promise<any>;
+    deleteAccount: (request: PasswordVerificationRequest) => Promise<any>;
     getAccountRevisionDate: () => Promise<number>;
     postPasswordHint: (request: PasswordHintRequest) => Promise<any>;
     postRegister: (request: RegisterRequest) => Promise<any>;
@@ -194,11 +195,14 @@ export abstract class ApiService {
     postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
 
     getOrganization: (id: string) => Promise<OrganizationResponse>;
+    getOrganizationBilling: (id: string) => Promise<OrganizationBillingResponse>;
     postOrganization: (request: OrganizationCreateRequest) => Promise<OrganizationResponse>;
     putOrganization: (id: string, request: OrganizationUpdateRequest) => Promise<OrganizationResponse>;
     postLeaveOrganization: (id: string) => Promise<any>;
     postOrganizationLicense: (data: FormData) => Promise<OrganizationResponse>;
-    postDeleteOrganization: (id: string, request: PasswordVerificationRequest) => Promise<any>;
+    postOrganizationStorage: (id: string, request: StorageRequest) => Promise<any>;
+    postOrganizationPayment: (id: string, request: PaymentRequest) => Promise<any>;
+    deleteOrganization: (id: string, request: PasswordVerificationRequest) => Promise<any>;
 
     getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
     getEventsCipher: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;

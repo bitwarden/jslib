@@ -68,6 +68,7 @@ import { GroupUserResponse } from '../models/response/groupUserResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
+import { OrganizationBillingResponse } from '../models/response/organizationBillingResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import {
     OrganizationUserDetailsResponse,
@@ -208,8 +209,8 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/security-stamp', request, true, false);
     }
 
-    postDeleteAccount(request: PasswordVerificationRequest): Promise<any> {
-        return this.send('POST', '/accounts/delete', request, true, false);
+    deleteAccount(request: PasswordVerificationRequest): Promise<any> {
+        return this.send('DELETE', '/accounts/delete', request, true, false);
     }
 
     async getAccountRevisionDate(): Promise<number> {
@@ -632,6 +633,11 @@ export class ApiService implements ApiServiceAbstraction {
         return new OrganizationResponse(r);
     }
 
+    async getOrganizationBilling(id: string): Promise<OrganizationBillingResponse> {
+        const r = await this.send('GET', '/organizations/' + id + '/billing', null, true, true);
+        return new OrganizationBillingResponse(r);
+    }
+
     async postOrganization(request: OrganizationCreateRequest): Promise<OrganizationResponse> {
         const r = await this.send('POST', '/organizations', request, true, true);
         return new OrganizationResponse(r);
@@ -651,8 +657,16 @@ export class ApiService implements ApiServiceAbstraction {
         return new OrganizationResponse(r);
     }
 
-    postDeleteOrganization(id: string, request: PasswordVerificationRequest): Promise<any> {
-        return this.send('POST', '/organizations/' + id + '/delete', request, true, false);
+    postOrganizationStorage(id: string, request: StorageRequest): Promise<any> {
+        return this.send('POST', '/organizations/' + id + '/storage', request, true, false);
+    }
+
+    postOrganizationPayment(id: string, request: PaymentRequest): Promise<any> {
+        return this.send('POST', '/organizations/' + id + '/payment', request, true, false);
+    }
+
+    deleteOrganization(id: string, request: PasswordVerificationRequest): Promise<any> {
+        return this.send('DELETE', '/organizations/' + id, request, true, false);
     }
 
     // Event APIs
