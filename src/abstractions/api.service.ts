@@ -198,7 +198,7 @@ export abstract class ApiService {
     putOrganization: (id: string, request: OrganizationUpdateRequest) => Promise<OrganizationResponse>;
     postLeaveOrganization: (id: string) => Promise<any>;
     postOrganizationLicense: (data: FormData) => Promise<OrganizationResponse>;
-    deleteOrganization: (id: string) => Promise<any>;
+    postDeleteOrganization: (id: string, request: PasswordVerificationRequest) => Promise<any>;
 
     getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
     getEventsCipher: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;

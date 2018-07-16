@@ -651,8 +651,8 @@ export class ApiService implements ApiServiceAbstraction {
         return new OrganizationResponse(r);
     }
 
-    deleteOrganization(id: string): Promise<any> {
-        return this.send('DELETE', '/organizations/' + id, null, true, false);
+    postDeleteOrganization(id: string, request: PasswordVerificationRequest): Promise<any> {
+        return this.send('POST', '/organizations/' + id + '/delete', request, true, false);
     }
 
     // Event APIs
