@@ -17,6 +17,7 @@ import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
+import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
 import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
 import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
 import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
@@ -192,9 +193,12 @@ export abstract class ApiService {
     postTwoFactorEmailSetup: (request: TwoFactorEmailRequest) => Promise<any>;
     postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
 
+    getOrganization: (id: string) => Promise<OrganizationResponse>;
     postOrganization: (request: OrganizationCreateRequest) => Promise<OrganizationResponse>;
+    putOrganization: (id: string, request: OrganizationUpdateRequest) => Promise<OrganizationResponse>;
     postLeaveOrganization: (id: string) => Promise<any>;
     postOrganizationLicense: (data: FormData) => Promise<OrganizationResponse>;
+    deleteOrganization: (id: string) => Promise<any>;
 
     getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
     getEventsCipher: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;

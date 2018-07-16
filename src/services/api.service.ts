@@ -23,6 +23,7 @@ import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
+import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
 import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
 import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
 import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
@@ -626,8 +627,18 @@ export class ApiService implements ApiServiceAbstraction {
 
     // Organization APIs
 
+    async getOrganization(id: string): Promise<OrganizationResponse> {
+        const r = await this.send('GET', '/organizations/' + id, null, true, true);
+        return new OrganizationResponse(r);
+    }
+
     async postOrganization(request: OrganizationCreateRequest): Promise<OrganizationResponse> {
         const r = await this.send('POST', '/organizations', request, true, true);
+        return new OrganizationResponse(r);
+    }
+
+    async putOrganization(id: string, request: OrganizationUpdateRequest): Promise<OrganizationResponse> {
+        const r = await this.send('PUT', '/organizations/' + id, request, true, true);
         return new OrganizationResponse(r);
     }
 
@@ -638,6 +649,10 @@ export class ApiService implements ApiServiceAbstraction {
     async postOrganizationLicense(data: FormData): Promise<OrganizationResponse> {
         const r = await this.send('POST', '/organizations/license', data, true, true);
         return new OrganizationResponse(r);
+    }
+
+    deleteOrganization(id: string): Promise<any> {
+        return this.send('DELETE', '/organizations/' + id, null, true, false);
     }
 
     // Event APIs
