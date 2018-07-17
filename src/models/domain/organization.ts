@@ -50,4 +50,8 @@ export class Organization {
     get isAdmin() {
         return this.type === OrganizationUserType.Owner || this.type === OrganizationUserType.Admin;
     }
+
+    get isOwner() {
+        return this.type === OrganizationUserType.Owner;
+    }
 }
