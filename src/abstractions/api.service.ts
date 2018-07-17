@@ -28,6 +28,7 @@ import { PasswordRequest } from '../models/request/passwordRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
 import { PaymentRequest } from '../models/request/paymentRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
+import { SeatRequest } from '../models/request/seatRequest';
 import { StorageRequest } from '../models/request/storageRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
@@ -202,6 +203,7 @@ export abstract class ApiService {
     putOrganization: (id: string, request: OrganizationUpdateRequest) => Promise<OrganizationResponse>;
     postLeaveOrganization: (id: string) => Promise<any>;
     postOrganizationLicense: (data: FormData) => Promise<OrganizationResponse>;
+    postOrganizationSeat: (id: string, request: SeatRequest) => Promise<any>;
     postOrganizationStorage: (id: string, request: StorageRequest) => Promise<any>;
     postOrganizationPayment: (id: string, request: PaymentRequest) => Promise<any>;
     postOrganizationVerifyBank: (id: string, request: VerifyBankRequest) => Promise<any>;

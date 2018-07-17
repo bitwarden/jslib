@@ -34,6 +34,7 @@ import { PasswordRequest } from '../models/request/passwordRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
 import { PaymentRequest } from '../models/request/paymentRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
+import { SeatRequest } from '../models/request/seatRequest';
 import { StorageRequest } from '../models/request/storageRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
@@ -661,6 +662,10 @@ export class ApiService implements ApiServiceAbstraction {
     async postOrganizationLicense(data: FormData): Promise<OrganizationResponse> {
         const r = await this.send('POST', '/organizations/license', data, true, true);
         return new OrganizationResponse(r);
+    }
+
+    postOrganizationSeat(id: string, request: SeatRequest): Promise<any> {
+        return this.send('POST', '/organizations/' + id + '/seat', request, true, false);
     }
 
     postOrganizationStorage(id: string, request: StorageRequest): Promise<any> {
