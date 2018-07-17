@@ -41,6 +41,7 @@ import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
 import { TwoFactorProviderRequest } from '../models/request/twoFactorProviderRequest';
 import { TwoFactorRecoveryRequest } from '../models/request/twoFactorRecoveryRequest';
 import { UpdateDomainsRequest } from '../models/request/updateDomainsRequest';
+import { UpdateKeyRequest } from '../models/request/updateKeyRequest';
 import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
 import { UpdateTwoFactorAuthenticatorRequest } from '../models/request/updateTwoFactorAuthenticatorRequest';
 import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoRequest';
@@ -254,6 +255,10 @@ export class ApiService implements ApiServiceAbstraction {
 
     postAccountKeys(request: KeysRequest): Promise<any> {
         return this.send('POST', '/accounts/keys', request, true, false);
+    }
+
+    postAccountKey(request: UpdateKeyRequest): Promise<any> {
+        return this.send('POST', '/accounts/key', request, true, false);
     }
 
     postAccountVerifyEmail(): Promise<any> {

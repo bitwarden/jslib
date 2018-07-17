@@ -35,6 +35,7 @@ import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
 import { TwoFactorProviderRequest } from '../models/request/twoFactorProviderRequest';
 import { TwoFactorRecoveryRequest } from '../models/request/twoFactorRecoveryRequest';
 import { UpdateDomainsRequest } from '../models/request/updateDomainsRequest';
+import { UpdateKeyRequest } from '../models/request/updateKeyRequest';
 import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
 import { UpdateTwoFactorAuthenticatorRequest } from '../models/request/updateTwoFactorAuthenticatorRequest';
 import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoRequest';
@@ -106,6 +107,7 @@ export abstract class ApiService {
     postAccountStorage: (request: StorageRequest) => Promise<any>;
     postAccountPayment: (request: PaymentRequest) => Promise<any>;
     postAccountLicense: (data: FormData) => Promise<any>;
+    postAccountKey: (request: UpdateKeyRequest) => Promise<any>;
     postAccountKeys: (request: KeysRequest) => Promise<any>;
     postAccountVerifyEmail: () => Promise<any>;
     postAccountVerifyEmailToken: (request: VerifyEmailRequest) => Promise<any>;

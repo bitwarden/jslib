@@ -1,6 +1,7 @@
 import { FolderData } from '../models/data/folderData';
 
 import { Folder } from '../models/domain/folder';
+import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
 import { FolderRequest } from '../models/request/folderRequest';
 
@@ -35,10 +36,10 @@ export class FolderService implements FolderServiceAbstraction {
         this.decryptedFolderCache = null;
     }
 
-    async encrypt(model: FolderView): Promise<Folder> {
+    async encrypt(model: FolderView, key?: SymmetricCryptoKey): Promise<Folder> {
         const folder = new Folder();
         folder.id = model.id;
-        folder.name = await this.cryptoService.encrypt(model.name);
+        folder.name = await this.cryptoService.encrypt(model.name, key);
         return folder;
     }
 

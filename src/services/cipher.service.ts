@@ -60,7 +60,7 @@ export class CipherService implements CipherServiceAbstraction {
         this.decryptedCipherCache = null;
     }
 
-    async encrypt(model: CipherView): Promise<Cipher> {
+    async encrypt(model: CipherView, key?: SymmetricCryptoKey): Promise<Cipher> {
         const cipher = new Cipher();
         cipher.id = model.id;
         cipher.folderId = model.folderId;
@@ -69,7 +69,9 @@ export class CipherService implements CipherServiceAbstraction {
         cipher.type = model.type;
         cipher.collectionIds = model.collectionIds;
 
-        const key = await this.cryptoService.getOrgKey(cipher.organizationId);
+        if (key == null && cipher.organizationId != null) {
+            key = await this.cryptoService.getOrgKey(cipher.organizationId);
+        }
         await Promise.all([
             this.encryptObjProperty(model, cipher, {
                 name: null,

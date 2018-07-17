@@ -1,6 +1,7 @@
 import { FolderData } from '../models/data/folderData';
 
 import { Folder } from '../models/domain/folder';
+import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
 import { FolderView } from '../models/view/folderView';
 
@@ -8,7 +9,7 @@ export abstract class FolderService {
     decryptedFolderCache: FolderView[];
 
     clearCache: () => void;
-    encrypt: (model: FolderView) => Promise<Folder>;
+    encrypt: (model: FolderView, key?: SymmetricCryptoKey) => Promise<Folder>;
     get: (id: string) => Promise<Folder>;
     getAll: () => Promise<Folder[]>;
     getAllDecrypted: () => Promise<FolderView[]>;
