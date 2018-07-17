@@ -639,6 +639,11 @@ export class ApiService implements ApiServiceAbstraction {
         return new OrganizationBillingResponse(r);
     }
 
+    async getOrganizationLicense(id: string, installationId: string): Promise<any> {
+        return this.send('GET', '/organizations/' + id + '/license?installationId=' + installationId,
+            null, true, true);
+    }
+
     async postOrganization(request: OrganizationCreateRequest): Promise<OrganizationResponse> {
         const r = await this.send('POST', '/organizations', request, true, true);
         return new OrganizationResponse(r);

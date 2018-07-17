@@ -197,6 +197,7 @@ export abstract class ApiService {
 
     getOrganization: (id: string) => Promise<OrganizationResponse>;
     getOrganizationBilling: (id: string) => Promise<OrganizationBillingResponse>;
+    getOrganizationLicense: (id: string, installationId: string) => Promise<any>;
     postOrganization: (request: OrganizationCreateRequest) => Promise<OrganizationResponse>;
     putOrganization: (id: string, request: OrganizationUpdateRequest) => Promise<OrganizationResponse>;
     postLeaveOrganization: (id: string) => Promise<any>;
