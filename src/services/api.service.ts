@@ -46,6 +46,7 @@ import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoR
 import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEmailRequest';
 import { UpdateTwoFactorU2fRequest } from '../models/request/updateTwoFactorU2fRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
+import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
@@ -663,6 +664,18 @@ export class ApiService implements ApiServiceAbstraction {
 
     postOrganizationPayment(id: string, request: PaymentRequest): Promise<any> {
         return this.send('POST', '/organizations/' + id + '/payment', request, true, false);
+    }
+
+    postOrganizationVerifyBank(id: string, request: VerifyBankRequest): Promise<any> {
+        return this.send('POST', '/organizations/' + id + '/verify-bank', request, true, false);
+    }
+
+    postOrganizationCancel(id: string): Promise<any> {
+        return this.send('POST', '/organizations/' + id + '/cancel', null, true, false);
+    }
+
+    postOrganizationReinstate(id: string): Promise<any> {
+        return this.send('POST', '/organizations/' + id + '/reinstate', null, true, false);
     }
 
     deleteOrganization(id: string, request: PasswordVerificationRequest): Promise<any> {

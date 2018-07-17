@@ -40,6 +40,7 @@ import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoR
 import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEmailRequest';
 import { UpdateTwoFactorU2fRequest } from '../models/request/updateTwoFactorU2fRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
+import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
@@ -202,6 +203,9 @@ export abstract class ApiService {
     postOrganizationLicense: (data: FormData) => Promise<OrganizationResponse>;
     postOrganizationStorage: (id: string, request: StorageRequest) => Promise<any>;
     postOrganizationPayment: (id: string, request: PaymentRequest) => Promise<any>;
+    postOrganizationVerifyBank: (id: string, request: VerifyBankRequest) => Promise<any>;
+    postOrganizationCancel: (id: string) => Promise<any>;
+    postOrganizationReinstate: (id: string) => Promise<any>;
     deleteOrganization: (id: string, request: PasswordVerificationRequest) => Promise<any>;
 
     getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
