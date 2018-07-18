@@ -18,6 +18,7 @@ export class OrganizationData {
     usersGetPremium: boolean;
     seats: number;
     maxCollections: number;
+    maxStorageGb?: number;
 
     constructor(response: ProfileOrganizationResponse) {
         this.id = response.id;
@@ -34,5 +35,6 @@ export class OrganizationData {
         this.usersGetPremium = response.usersGetPremium;
         this.seats = response.seats;
         this.maxCollections = response.maxCollections;
+        this.maxStorageGb = response.maxStorageGb;
     }
 }

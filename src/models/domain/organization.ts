@@ -18,6 +18,7 @@ export class Organization {
     usersGetPremium: boolean;
     seats: number;
     maxCollections: number;
+    maxStorageGb?: number;
 
     constructor(obj?: OrganizationData) {
         if (obj == null) {
@@ -38,6 +39,7 @@ export class Organization {
         this.usersGetPremium = obj.usersGetPremium;
         this.seats = obj.seats;
         this.maxCollections = obj.maxCollections;
+        this.maxStorageGb = obj.maxStorageGb;
     }
 
     get canAccess() {
