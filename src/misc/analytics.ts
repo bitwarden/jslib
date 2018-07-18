@@ -104,6 +104,15 @@ export class Analytics {
         if (pagePath.indexOf('!/') === 0 || pagePath.indexOf('#/') === 0) {
             pagePath = pagePath.substring(1);
         }
-        return encodeURIComponent(pagePath);
+        const pathParts = pagePath.split('/');
+        const newPathParts: string[] = [];
+        pathParts.forEach((p) => {
+            if (p.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
+                newPathParts.push('__guid__');
+            } else {
+                newPathParts.push(p);
+            }
+        });
+        return encodeURIComponent(newPathParts.join('/'));
     }
 }
