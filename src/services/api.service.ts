@@ -560,6 +560,11 @@ export class ApiService implements ApiServiceAbstraction {
         return new ListResponse(r, TwoFactorProviderResponse);
     }
 
+    async getTwoFactorOrganizationProviders(organizationId: string): Promise<ListResponse<TwoFactorProviderResponse>> {
+        const r = await this.send('GET', '/organizations/' + organizationId + '/two-factor', null, true, true);
+        return new ListResponse(r, TwoFactorProviderResponse);
+    }
+
     async getTwoFactorAuthenticator(request: PasswordVerificationRequest): Promise<TwoFactorAuthenticatorResponse> {
         const r = await this.send('POST', '/two-factor/get-authenticator', request, true, true);
         return new TwoFactorAuthenticatorResponse(r);
@@ -572,6 +577,13 @@ export class ApiService implements ApiServiceAbstraction {
 
     async getTwoFactorDuo(request: PasswordVerificationRequest): Promise<TwoFactorDuoResponse> {
         const r = await this.send('POST', '/two-factor/get-duo', request, true, true);
+        return new TwoFactorDuoResponse(r);
+    }
+
+    async getTwoFactorOrganizationDuo(organizationId: string,
+        request: PasswordVerificationRequest): Promise<TwoFactorDuoResponse> {
+        const r = await this.send('POST', '/organizations/' + organizationId + '/two-factor/get-duo',
+            request, true, true);
         return new TwoFactorDuoResponse(r);
     }
 
@@ -606,6 +618,12 @@ export class ApiService implements ApiServiceAbstraction {
         return new TwoFactorDuoResponse(r);
     }
 
+    async putTwoFactorOrganizationDuo(organizationId: string,
+        request: UpdateTwoFactorDuoRequest): Promise<TwoFactorDuoResponse> {
+        const r = await this.send('PUT', '/organizations/' + organizationId + '/two-factor/duo', request, true, true);
+        return new TwoFactorDuoResponse(r);
+    }
+
     async putTwoFactorYubiKey(request: UpdateTwoFactorYubioOtpRequest): Promise<TwoFactorYubiKeyResponse> {
         const r = await this.send('PUT', '/two-factor/yubikey', request, true, true);
         return new TwoFactorYubiKeyResponse(r);
@@ -618,6 +636,13 @@ export class ApiService implements ApiServiceAbstraction {
 
     async putTwoFactorDisable(request: TwoFactorProviderRequest): Promise<TwoFactorProviderResponse> {
         const r = await this.send('PUT', '/two-factor/disable', request, true, true);
+        return new TwoFactorProviderResponse(r);
+    }
+
+    async putTwoFactorOrganizationDisable(organizationId: string,
+        request: TwoFactorProviderRequest): Promise<TwoFactorProviderResponse> {
+        const r = await this.send('PUT', '/organizations/' + organizationId + '/two-factor/disable',
+            request, true, true);
         return new TwoFactorProviderResponse(r);
     }
 

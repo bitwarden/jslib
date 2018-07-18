@@ -181,9 +181,12 @@ export abstract class ApiService {
     putSettingsDomains: (request: UpdateDomainsRequest) => Promise<DomainsResponse>;
 
     getTwoFactorProviders: () => Promise<ListResponse<TwoFactorProviderResponse>>;
+    getTwoFactorOrganizationProviders: (organizationId: string) => Promise<ListResponse<TwoFactorProviderResponse>>;
     getTwoFactorAuthenticator: (request: PasswordVerificationRequest) => Promise<TwoFactorAuthenticatorResponse>;
     getTwoFactorEmail: (request: PasswordVerificationRequest) => Promise<TwoFactorEmailResponse>;
     getTwoFactorDuo: (request: PasswordVerificationRequest) => Promise<TwoFactorDuoResponse>;
+    getTwoFactorOrganizationDuo: (organizationId: string,
+        request: PasswordVerificationRequest) => Promise<TwoFactorDuoResponse>;
     getTwoFactorYubiKey: (request: PasswordVerificationRequest) => Promise<TwoFactorYubiKeyResponse>;
     getTwoFactorU2f: (request: PasswordVerificationRequest) => Promise<TwoFactorU2fResponse>;
     getTwoFactorRecover: (request: PasswordVerificationRequest) => Promise<TwoFactorRecoverResponse>;
@@ -191,9 +194,13 @@ export abstract class ApiService {
         request: UpdateTwoFactorAuthenticatorRequest) => Promise<TwoFactorAuthenticatorResponse>;
     putTwoFactorEmail: (request: UpdateTwoFactorEmailRequest) => Promise<TwoFactorEmailResponse>;
     putTwoFactorDuo: (request: UpdateTwoFactorDuoRequest) => Promise<TwoFactorDuoResponse>;
+    putTwoFactorOrganizationDuo: (organizationId: string,
+        request: UpdateTwoFactorDuoRequest) => Promise<TwoFactorDuoResponse>;
     putTwoFactorYubiKey: (request: UpdateTwoFactorYubioOtpRequest) => Promise<TwoFactorYubiKeyResponse>;
     putTwoFactorU2f: (request: UpdateTwoFactorU2fRequest) => Promise<TwoFactorU2fResponse>;
     putTwoFactorDisable: (request: TwoFactorProviderRequest) => Promise<TwoFactorProviderResponse>;
+    putTwoFactorOrganizationDisable: (organizationId: string,
+        request: TwoFactorProviderRequest) => Promise<TwoFactorProviderResponse>;
     postTwoFactorRecover: (request: TwoFactorRecoveryRequest) => Promise<any>;
     postTwoFactorEmailSetup: (request: TwoFactorEmailRequest) => Promise<any>;
     postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
