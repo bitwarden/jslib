@@ -205,6 +205,7 @@ export abstract class ApiService {
     putOrganization: (id: string, request: OrganizationUpdateRequest) => Promise<OrganizationResponse>;
     postLeaveOrganization: (id: string) => Promise<any>;
     postOrganizationLicense: (data: FormData) => Promise<OrganizationResponse>;
+    postOrganizationLicenseUpdate: (id: string, data: FormData) => Promise<any>
     postOrganizationSeat: (id: string, request: SeatRequest) => Promise<any>;
     postOrganizationStorage: (id: string, request: StorageRequest) => Promise<any>;
     postOrganizationPayment: (id: string, request: PaymentRequest) => Promise<any>;

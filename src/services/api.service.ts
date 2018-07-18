@@ -669,6 +669,10 @@ export class ApiService implements ApiServiceAbstraction {
         return new OrganizationResponse(r);
     }
 
+    async postOrganizationLicenseUpdate(id: string, data: FormData): Promise<any> {
+        return this.send('POST', '/organizations/' + id + '/license', data, true, false);
+    }
+
     postOrganizationSeat(id: string, request: SeatRequest): Promise<any> {
         return this.send('POST', '/organizations/' + id + '/seat', request, true, false);
     }
