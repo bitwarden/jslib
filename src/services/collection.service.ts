@@ -10,8 +10,8 @@ import { I18nService } from '../abstractions/i18n.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
-import { Utils } from '../misc/utils';
 import { sequentialize } from '../misc/sequentialize';
+import { Utils } from '../misc/utils';
 
 const Keys = {
     collectionsPrefix: 'collections_',
