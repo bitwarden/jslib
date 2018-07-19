@@ -7,12 +7,15 @@ import { CollectionView } from '../models/view/collectionView';
 import { LoginUriView } from '../models/view/loginUriView';
 
 import { Utils } from '../misc/utils';
+
 import { FieldView } from '../models/view/fieldView';
 import { FolderView } from '../models/view/folderView';
 import { LoginView } from '../models/view/loginView';
+import { SecureNoteView } from '../models/view/secureNoteView';
 
 import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
+import { SecureNoteType } from '../enums/secureNoteType';
 
 export abstract class BaseImporter {
     organization = false;
@@ -311,6 +314,16 @@ export abstract class BaseImporter {
         }
         if (hasFolder) {
             result.folderRelationships.push([result.ciphers.length, folderIndex]);
+        }
+    }
+
+    protected convertToNoteIfNeeded(cipher: CipherView) {
+        if (cipher.type === CipherType.Login && this.isNullOrWhitespace(cipher.login.username) &&
+            this.isNullOrWhitespace(cipher.login.password) &&
+            (cipher.login.uris == null || cipher.login.uris.length === 0)) {
+            cipher.type = CipherType.SecureNote;
+            cipher.secureNote = new SecureNoteView();
+            cipher.secureNote.type = SecureNoteType.Generic;
         }
     }
 }

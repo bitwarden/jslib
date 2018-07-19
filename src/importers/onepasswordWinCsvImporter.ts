@@ -3,10 +3,7 @@ import { Importer } from './importer';
 
 import { ImportResult } from '../models/domain/importResult';
 
-import { SecureNoteView } from '../models/view/secureNoteView';
-
 import { CipherType } from '../enums/cipherType';
-import { SecureNoteType } from '../enums/secureNoteType';
 import { CardView } from '../models/view';
 
 const IgnoredProperties = ['ainfo', 'autosubmit', 'notesPlain', 'ps', 'scope', 'tags', 'title', 'uuid'];
@@ -89,14 +86,8 @@ export class OnePasswordWinCsvImporter extends BaseImporter implements Importer 
                 this.isNullOrWhitespace(cipher.login.username) && altUsername.indexOf('://') === -1) {
                 cipher.login.username = altUsername;
             }
-            if (cipher.type === CipherType.Login && this.isNullOrWhitespace(cipher.login.username) &&
-                this.isNullOrWhitespace(cipher.login.password) &&
-                (cipher.login.uris == null || cipher.login.uris.length === 0)) {
-                cipher.type = CipherType.SecureNote;
-                cipher.secureNote = new SecureNoteView();
-                cipher.secureNote.type = SecureNoteType.Generic;
-            }
 
+            this.convertToNoteIfNeeded(cipher);
             this.cleanupCipher(cipher);
             result.ciphers.push(cipher);
         });

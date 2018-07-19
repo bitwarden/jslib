@@ -3,11 +3,6 @@ import { Importer } from './importer';
 
 import { ImportResult } from '../models/domain/importResult';
 
-import { SecureNoteView } from '../models/view/secureNoteView';
-
-import { CipherType } from '../enums/cipherType';
-import { SecureNoteType } from '../enums/secureNoteType';
-
 export class AscendoCsvImporter extends BaseImporter implements Importer {
     parse(data: string): ImportResult {
         const result = new ImportResult();
@@ -49,13 +44,7 @@ export class AscendoCsvImporter extends BaseImporter implements Importer {
                 }
             }
 
-            if (this.isNullOrWhitespace(cipher.login.username) && this.isNullOrWhitespace(cipher.login.password) &&
-                (cipher.login.uris == null || cipher.login.uris.length === 0)) {
-                cipher.type = CipherType.SecureNote;
-                cipher.secureNote = new SecureNoteView();
-                cipher.secureNote.type = SecureNoteType.Generic;
-            }
-
+            this.convertToNoteIfNeeded(cipher);
             this.cleanupCipher(cipher);
             result.ciphers.push(cipher);
         });
