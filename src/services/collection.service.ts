@@ -11,6 +11,7 @@ import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
 import { Utils } from '../misc/utils';
+import { sequentialize } from '../misc/sequentialize';
 
 const Keys = {
     collectionsPrefix: 'collections_',
@@ -80,6 +81,7 @@ export class CollectionService implements CollectionServiceAbstraction {
         return response;
     }
 
+    @sequentialize()
     async getAllDecrypted(): Promise<CollectionView[]> {
         if (this.decryptedCollectionCache != null) {
             return this.decryptedCollectionCache;
