@@ -25,7 +25,8 @@ export function sequentialize(key: (args: any[]) => string = JSON.stringify) {
                         cache.delete(argsKey);
 
                         return val;
-                    }).catch((err: any) => {
+                    })
+                    .catch((err: any) => {
                         cache.delete(argsKey);
 
                         throw err;
