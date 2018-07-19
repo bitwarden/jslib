@@ -105,6 +105,9 @@ export abstract class BaseImporter {
         if (typeof uri === 'string') {
             const loginUri = new LoginUriView();
             loginUri.uri = this.fixUri(uri);
+            if (this.isNullOrWhitespace(loginUri.uri)) {
+                return null;
+            }
             loginUri.match = null;
             return [loginUri];
         }
@@ -114,10 +117,13 @@ export abstract class BaseImporter {
             uri.forEach((u) => {
                 const loginUri = new LoginUriView();
                 loginUri.uri = this.fixUri(u);
+                if (this.isNullOrWhitespace(loginUri.uri)) {
+                    return;
+                }
                 loginUri.match = null;
                 returnArr.push(loginUri);
             });
-            return returnArr;
+            return returnArr.length === 0 ? null : returnArr;
         }
 
         return null;
