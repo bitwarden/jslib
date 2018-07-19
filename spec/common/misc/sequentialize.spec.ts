@@ -12,6 +12,20 @@ describe('sequentialize decorator', () => {
         expect(foo.calls).toBe(1);
     });
 
+    it('should call the function once for each instance of the object', async () => {
+        const foo = new Foo();
+        const foo2 = new Foo();
+        const promises = [];
+        for (let i = 0; i < 10; i++) {
+            promises.push(foo.bar(1));
+            promises.push(foo2.bar(1));
+        }
+        await Promise.all(promises);
+
+        expect(foo.calls).toBe(1);
+        expect(foo2.calls).toBe(1);
+    });
+
     it('should call the function once with key function', async () => {
         const foo = new Foo();
         const promises = [];

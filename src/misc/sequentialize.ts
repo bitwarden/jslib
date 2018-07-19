@@ -8,12 +8,24 @@
  */
 export function sequentialize(key: (args: any[]) => string = JSON.stringify) {
     return (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
-        const cache = new Map<string, Promise<any>>();
         const originalMethod: () => Promise<any> = descriptor.value;
+
+        const caches = new Map<any, Map<string, Promise<any>>>();
+        const getCache = (obj: any) => {
+            let cache = caches.get(obj);
+            if (cache) {
+                return cache;
+            }
+            cache = new Map<string, Promise<any>>();
+            caches.set(obj, cache);
+
+            return cache;
+        };
 
         return {
             value: function(...args: any[]) {
                 const argsKey = key(args);
+                const cache = getCache(this);
 
                 let res = cache.get(argsKey);
                 if (res) {
