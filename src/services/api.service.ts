@@ -213,7 +213,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     deleteAccount(request: PasswordVerificationRequest): Promise<any> {
-        return this.send('DELETE', '/accounts/delete', request, true, false);
+        return this.send('DELETE', '/accounts', request, true, false);
     }
 
     async getAccountRevisionDate(): Promise<number> {
