@@ -7,8 +7,7 @@ import { Router } from '@angular/router';
 import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
 
-import { TwoFactorOptionsComponent } from './two-factor-options.component';
-
+import { DeviceType } from '../../enums/deviceType';
 import { TwoFactorProviderType } from '../../enums/twoFactorProviderType';
 
 import { TwoFactorEmailRequest } from '../../models/request/twoFactorEmailRequest';
@@ -18,7 +17,6 @@ import { AuthService } from '../../abstractions/auth.service';
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
-import { SyncService } from '../../abstractions/sync.service';
 
 import { TwoFactorProviders } from '../../services/auth.service';
 
@@ -117,7 +115,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 break;
             case TwoFactorProviderType.Duo:
             case TwoFactorProviderType.OrganizationDuo:
-                if (this.platformUtilsService.isSafari()) {
+                if (this.platformUtilsService.getDevice() === DeviceType.SafariExtension) {
                     break;
                 }
 
