@@ -4,7 +4,7 @@ export class TwoFactorU2fResponse {
 
     constructor(response: any) {
         this.enabled = response.Enabled;
-        this.challenge = new ChallengeResponse(response.Challenge);
+        this.challenge = response.Challenge == null ? null : new ChallengeResponse(response.Challenge);
     }
 }
 
