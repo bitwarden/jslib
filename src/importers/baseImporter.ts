@@ -72,6 +72,7 @@ export abstract class BaseImporter {
     }
 
     protected parseCsv(data: string, header: boolean): any[] {
+        data = this.splitNewLine(data).join('\n').trim();
         const result = papa.parse(data, {
             header: header,
             encoding: 'UTF-8',

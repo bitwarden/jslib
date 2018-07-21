@@ -39,11 +39,6 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
             }
 
             const cipher = this.buildBaseCipher(value);
-            if (cipher.name === '--' && results.length > 2 && index >= (results.length - 2)) {
-                // LastPass file traditionally has two empty lines at the end
-                return;
-            }
-
             if (cipher.type === CipherType.Login) {
                 cipher.notes = this.getValueOrDefault(value.extra);
                 cipher.login = new LoginView();
