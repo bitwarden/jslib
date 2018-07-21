@@ -63,7 +63,8 @@ export class U2f {
     }
 
     private validMessage(event: any) {
-        if (!event.origin || event.origin === '' || event.origin !== (this.connectorLink as any).origin) {
+        if (!event.origin || event.origin === '' ||
+            event.origin !== (this.connectorLink as any).origin || !event.data) {
             return false;
         }
 
