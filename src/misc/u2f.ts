@@ -47,6 +47,8 @@ export class U2f {
     }
 
     private parseMessage(event: any) {
+        console.log('got u2f event');
+        console.log(event);
         if (!this.validMessage(event)) {
             this.errorCallback('Invalid message.');
             return;
@@ -63,8 +65,8 @@ export class U2f {
     }
 
     private validMessage(event: any) {
-        if (!event.origin || event.origin === '' ||
-            event.origin !== (this.connectorLink as any).origin || !event.data) {
+        if (event.origin == null || event.origin === '' || event.origin !== (this.connectorLink as any).origin ||
+            event.data == null || typeof (event.data) !== 'string') {
             return false;
         }
 
