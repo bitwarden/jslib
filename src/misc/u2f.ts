@@ -1,6 +1,7 @@
 export class U2f {
     private iframe: HTMLIFrameElement = null;
     private connectorLink: HTMLAnchorElement;
+    private parseFunction = this.parseMessage.bind(this);
 
     constructor(private win: Window, private webVaultUrl: string, private successCallback: Function,
         private errorCallback: Function, private infoCallback: Function) {
@@ -17,7 +18,7 @@ export class U2f {
         this.iframe = this.win.document.getElementById('u2f_iframe') as HTMLIFrameElement;
         this.iframe.src = this.connectorLink.href;
 
-        this.win.addEventListener('message', (e) => this.parseMessage(e), false);
+        this.win.addEventListener('message', this.parseFunction, false);
     }
 
     stop() {
@@ -43,14 +44,11 @@ export class U2f {
     }
 
     cleanup() {
-        this.win.removeEventListener('message', (e) => this.parseMessage(e), false);
+        this.win.removeEventListener('message', this.parseFunction, false);
     }
 
-    private parseMessage(event: any) {
-        console.log('got u2f event');
-        console.log(event);
+    private parseMessage(event: MessageEvent) {
         if (!this.validMessage(event)) {
-            this.errorCallback('Invalid message.');
             return;
         }
 
@@ -64,7 +62,7 @@ export class U2f {
         }
     }
 
-    private validMessage(event: any) {
+    private validMessage(event: MessageEvent) {
         if (event.origin == null || event.origin === '' || event.origin !== (this.connectorLink as any).origin ||
             event.data == null || typeof (event.data) !== 'string') {
             return false;
