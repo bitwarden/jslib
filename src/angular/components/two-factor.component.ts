@@ -59,9 +59,9 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
 
         if (this.win != null && this.u2fSupported) {
             let customWebVaultUrl: string = null;
-            if (this.environmentService.baseUrl) {
+            if (this.environmentService.baseUrl != null) {
                 customWebVaultUrl = this.environmentService.baseUrl;
-            } else if (this.environmentService.webVaultUrl) {
+            } else if (this.environmentService.webVaultUrl != null) {
                 customWebVaultUrl = this.environmentService.webVaultUrl;
             }
 
