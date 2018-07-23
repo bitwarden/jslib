@@ -71,7 +71,7 @@ export class StickyPasswordXmlImporter extends BaseImporter implements Importer 
             return groupText;
         }
         if (!this.isNullOrWhitespace(groupText)) {
-            groupText = ' > ' + groupText;
+            groupText = '/' + groupText;
         }
         groupText = group.getAttribute('Name') + groupText;
         return this.buildGroupText(doc, group.getAttribute('ParentID'), groupText);

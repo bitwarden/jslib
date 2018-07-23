@@ -24,7 +24,7 @@ export class PasswordSafeXmlImporter extends BaseImporter implements Importer {
         Array.from(entries).forEach((entry) => {
             const group = this.querySelectorDirectChild(entry, 'group');
             const groupText = group != null && !this.isNullOrWhitespace(group.textContent) ?
-                group.textContent.split('.').join(' > ') : null;
+                group.textContent.split('.').join('/') : null;
             this.processFolder(result, groupText);
 
             const title = this.querySelectorDirectChild(entry, 'title');

@@ -38,7 +38,7 @@ export class KeePass2XmlImporter extends BaseImporter implements Importer {
 
         if (!isRootNode) {
             if (groupName !== '') {
-                groupName += ' > ';
+                groupName += '/';
             }
             const nameEl = this.querySelectorDirectChild(node, 'Name');
             groupName += nameEl == null ? '-' : nameEl.textContent;

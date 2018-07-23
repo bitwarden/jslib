@@ -19,7 +19,7 @@ export class KeePassXCsvImporter extends BaseImporter implements Importer {
 
             value.Group = !this.isNullOrWhitespace(value.Group) && value.Group.startsWith('Root/') ?
                 value.Group.replace('Root/', '') : value.Group;
-            const groupName = !this.isNullOrWhitespace(value.Group) ? value.Group.split('/').join(' > ') : null;
+            const groupName = !this.isNullOrWhitespace(value.Group) ? value.Group : null;
             this.processFolder(result, groupName);
 
             const cipher = this.initLoginCipher();

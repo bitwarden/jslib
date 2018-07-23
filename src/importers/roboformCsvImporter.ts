@@ -16,7 +16,7 @@ export class RoboFormCsvImporter extends BaseImporter implements Importer {
         results.forEach((value) => {
             const folder = !this.isNullOrWhitespace(value.Folder) && value.Folder.startsWith('/') ?
                 value.Folder.replace('/', '') : value.Folder;
-            const folderName = !this.isNullOrWhitespace(folder) ? folder.split('/').join(' > ') : null;
+            const folderName = !this.isNullOrWhitespace(folder) ? folder : null;
             this.processFolder(result, folderName);
 
             const cipher = this.initLoginCipher();
