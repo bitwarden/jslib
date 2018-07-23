@@ -18,7 +18,6 @@ import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 import { CipherData } from '../models/data/cipherData';
 
-import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
 
 const Keys = {
@@ -68,7 +67,6 @@ export class FolderService implements FolderServiceAbstraction {
         return response;
     }
 
-    @sequentialize()
     async getAllDecrypted(): Promise<FolderView[]> {
         if (this.decryptedFolderCache != null) {
             return this.decryptedFolderCache;
