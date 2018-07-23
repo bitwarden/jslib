@@ -119,8 +119,8 @@ describe('sequentialize decorator', () => {
 class Foo {
     calls = 0;
 
-    @sequentialize()
-    bar(a) {
+    @sequentialize((args) => 'bar' + args[0])
+    bar(a: any) {
         this.calls++;
         return new Promise((res) => {
             setTimeout(() => {
@@ -129,8 +129,8 @@ class Foo {
         });
     }
 
-    @sequentialize((args) => args[0])
-    baz(a) {
+    @sequentialize((args) => 'baz' + args[0])
+    baz(a: any) {
         this.calls++;
         return new Promise((res) => {
             setTimeout(() => {
