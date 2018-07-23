@@ -2,7 +2,6 @@ import { EncryptionType } from '../../enums/encryptionType';
 
 import { CryptoService } from '../../abstractions/crypto.service';
 
-import { sequentialize } from '../../misc/sequentialize';
 import { Utils } from '../../misc/utils';
 
 export class CipherString {
@@ -90,7 +89,6 @@ export class CipherString {
         }
     }
 
-    @sequentialize((args) => args[0])
     async decrypt(orgId: string): Promise<string> {
         if (this.decryptedValue) {
             return Promise.resolve(this.decryptedValue);

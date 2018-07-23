@@ -104,6 +104,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         return this.storageService.get<string>(Keys.keyHash);
     }
 
+    @sequentialize()
     async getEncKey(): Promise<SymmetricCryptoKey> {
         if (this.encKey != null) {
             return this.encKey;
