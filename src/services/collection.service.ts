@@ -48,9 +48,11 @@ export class CollectionService implements CollectionServiceAbstraction {
             return [];
         }
         const decCollections: CollectionView[] = [];
-        for (let i = 0; i < collections.length; i++) {
-            decCollections.push(await collections[i].decrypt());
-        }
+        const promises: Array<Promise<any>> = [];
+        collections.forEach((collection) => {
+            promises.push(collection.decrypt().then((c) => decCollections.push(c)));
+        });
+        await Promise.all(promises);
         return decCollections.sort(Utils.getSortFunction(this.i18nService, 'name'));
     }
 

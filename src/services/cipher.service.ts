@@ -181,10 +181,13 @@ export class CipherService implements CipherServiceAbstraction {
             throw new Error('No key.');
         }
 
+        const promises: any[] = [];
         const ciphers = await this.getAll();
-        for (let i = 0; i < ciphers.length; i++) {
-            decCiphers.push(await ciphers[i].decrypt());
-        }
+        ciphers.forEach((cipher) => {
+            promises.push(cipher.decrypt().then((c) => decCiphers.push(c)));
+        });
+
+        await Promise.all(promises);
         decCiphers.sort(this.getLocaleSortingFunction());
         this.decryptedCipherCache = decCiphers;
         return this.decryptedCipherCache;
