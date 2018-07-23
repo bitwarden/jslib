@@ -10,7 +10,6 @@ import { I18nService } from '../abstractions/i18n.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
-import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
 
 const Keys = {
@@ -81,7 +80,6 @@ export class CollectionService implements CollectionServiceAbstraction {
         return response;
     }
 
-    @sequentialize()
     async getAllDecrypted(): Promise<CollectionView[]> {
         if (this.decryptedCollectionCache != null) {
             return this.decryptedCollectionCache;
