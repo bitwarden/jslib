@@ -6,10 +6,11 @@
  *
  * Results are not cached, once the promise has returned, the next call will result in a fresh call
  */
-export function sequentialize(key: (args: any[]) => string = JSON.stringify) {
+export function sequentialize(cacheKey: (args: any[]) => string) {
     return (target: any, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
         const originalMethod: () => Promise<any> = descriptor.value;
         const caches = new Map<any, Map<string, Promise<any>>>();
+
         const getCache = (obj: any) => {
             let cache = caches.get(obj);
             if (cache != null) {
@@ -22,22 +23,22 @@ export function sequentialize(key: (args: any[]) => string = JSON.stringify) {
 
         return {
             value: function(...args: any[]) {
-                const argsKey = key(args);
+                const argsCacheKey = cacheKey(args);
                 const cache = getCache(this);
-                let response = cache.get(argsKey);
+                let response = cache.get(argsCacheKey);
                 if (response != null) {
                     return response;
                 }
 
                 response = originalMethod.apply(this, args).then((val: any) => {
-                    cache.delete(argsKey);
+                    cache.delete(argsCacheKey);
                     return val;
                 }).catch((err: any) => {
-                    cache.delete(argsKey);
+                    cache.delete(argsCacheKey);
                     throw err;
                 });
 
-                cache.set(argsKey, response);
+                cache.set(argsCacheKey, response);
                 return response;
             },
         };

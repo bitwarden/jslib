@@ -104,7 +104,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         return this.storageService.get<string>(Keys.keyHash);
     }
 
-    @sequentialize()
+    @sequentialize(() => 'getEncKey')
     async getEncKey(): Promise<SymmetricCryptoKey> {
         if (this.encKey != null) {
             return this.encKey;
@@ -166,7 +166,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         return this.privateKey;
     }
 
-    @sequentialize()
+    @sequentialize(() => 'getOrgKeys')
     async getOrgKeys(): Promise<Map<string, SymmetricCryptoKey>> {
         if (this.orgKeys != null && this.orgKeys.size > 0) {
             return this.orgKeys;
