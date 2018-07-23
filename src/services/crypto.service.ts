@@ -11,6 +11,7 @@ import { StorageService } from '../abstractions/storage.service';
 
 import { ConstantsService } from './constants.service';
 
+import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
 
 const Keys = {
@@ -164,6 +165,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         return this.privateKey;
     }
 
+    @sequentialize()
     async getOrgKeys(): Promise<Map<string, SymmetricCryptoKey>> {
         if (this.orgKeys != null && this.orgKeys.size > 0) {
             return this.orgKeys;
