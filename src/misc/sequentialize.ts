@@ -21,15 +21,15 @@ export function sequentialize(key: (args: any[]) => string = JSON.stringify) {
         };
 
         return {
-            value: (...args: any[]) => {
+            value: function(...args: any[]) {
                 const argsKey = key(args);
                 const cache = getCache(this);
-                let res = cache.get(argsKey);
-                if (res != null) {
-                    return res;
+                let response = cache.get(argsKey);
+                if (response != null) {
+                    return response;
                 }
 
-                res = originalMethod.apply(this, args).then((val: any) => {
+                response = originalMethod.apply(this, args).then((val: any) => {
                     cache.delete(argsKey);
                     return val;
                 }).catch((err: any) => {
@@ -37,8 +37,8 @@ export function sequentialize(key: (args: any[]) => string = JSON.stringify) {
                     throw err;
                 });
 
-                cache.set(argsKey, res);
-                return res;
+                cache.set(argsKey, response);
+                return response;
             },
         };
     };
