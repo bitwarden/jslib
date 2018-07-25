@@ -42,7 +42,8 @@ export class Analytics {
         }
 
         this.appVersion = this.platformUtilsService.getApplicationVersion();
-        this.defaultDisabled = this.platformUtilsService.isFirefox() || this.platformUtilsService.isMacAppStore();
+        this.defaultDisabled = this.platformUtilsService.getDevice() === DeviceType.FirefoxExtension ||
+            this.platformUtilsService.isMacAppStore();
         this.gaTrackingId = this.platformUtilsService.analyticsId();
 
         (win as any).GoogleAnalyticsObject = GaObj;
