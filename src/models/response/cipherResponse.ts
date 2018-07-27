@@ -1,4 +1,5 @@
 import { AttachmentResponse } from './attachmentResponse';
+import { PasswordHistoryResponse } from './passwordHistoryResponse';
 
 import { CardApi } from '../api/cardApi';
 import { FieldApi } from '../api/fieldApi';
@@ -23,6 +24,7 @@ export class CipherResponse {
     organizationUseTotp: boolean;
     revisionDate: Date;
     attachments: AttachmentResponse[];
+    passwordHistory: PasswordHistoryResponse[];
     collectionIds: string[];
 
     constructor(response: any) {
@@ -64,6 +66,13 @@ export class CipherResponse {
             this.attachments = [];
             response.Attachments.forEach((attachment: any) => {
                 this.attachments.push(new AttachmentResponse(attachment));
+            });
+        }
+
+        if (response.PasswordHistory != null) {
+            this.passwordHistory = [];
+            response.PasswordHistory.forEach((ph: any) => {
+                this.passwordHistory.push(new PasswordHistoryResponse(ph));
             });
         }
 

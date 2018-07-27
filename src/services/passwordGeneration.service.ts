@@ -1,5 +1,5 @@
 import { CipherString } from '../models/domain/cipherString';
-import { PasswordHistory } from '../models/domain/passwordHistory';
+import { GeneratedPasswordHistory } from '../models/domain/generatedPasswordHistory';
 
 import { CryptoService } from '../abstractions/crypto.service';
 import {
@@ -29,7 +29,7 @@ const MaxPasswordsInHistory = 100;
 
 export class PasswordGenerationService implements PasswordGenerationServiceAbstraction {
     private optionsCache: any;
-    private history: PasswordHistory[];
+    private history: GeneratedPasswordHistory[];
 
     constructor(private cryptoService: CryptoService, private storageService: StorageService) { }
 
@@ -168,18 +168,18 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         this.optionsCache = options;
     }
 
-    async getHistory(): Promise<PasswordHistory[]> {
+    async getHistory(): Promise<GeneratedPasswordHistory[]> {
         const hasKey = await this.cryptoService.hasKey();
         if (!hasKey) {
-            return new Array<PasswordHistory>();
+            return new Array<GeneratedPasswordHistory>();
         }
 
         if (!this.history) {
-            const encrypted = await this.storageService.get<PasswordHistory[]>(Keys.history);
+            const encrypted = await this.storageService.get<GeneratedPasswordHistory[]>(Keys.history);
             this.history = await this.decryptHistory(encrypted);
         }
 
-        return this.history || new Array<PasswordHistory>();
+        return this.history || new Array<GeneratedPasswordHistory>();
     }
 
     async addHistory(password: string): Promise<any> {
@@ -196,7 +196,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             return;
         }
 
-        currentHistory.unshift(new PasswordHistory(password, Date.now()));
+        currentHistory.unshift(new GeneratedPasswordHistory(password, Date.now()));
 
         // Remove old items.
         if (currentHistory.length > MaxPasswordsInHistory) {
@@ -212,33 +212,33 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         return await this.storageService.remove(Keys.history);
     }
 
-    private async encryptHistory(history: PasswordHistory[]): Promise<PasswordHistory[]> {
+    private async encryptHistory(history: GeneratedPasswordHistory[]): Promise<GeneratedPasswordHistory[]> {
         if (history == null || history.length === 0) {
             return Promise.resolve([]);
         }
 
         const promises = history.map(async (item) => {
             const encrypted = await this.cryptoService.encrypt(item.password);
-            return new PasswordHistory(encrypted.encryptedString, item.date);
+            return new GeneratedPasswordHistory(encrypted.encryptedString, item.date);
         });
 
         return await Promise.all(promises);
     }
 
-    private async decryptHistory(history: PasswordHistory[]): Promise<PasswordHistory[]> {
+    private async decryptHistory(history: GeneratedPasswordHistory[]): Promise<GeneratedPasswordHistory[]> {
         if (history == null || history.length === 0) {
             return Promise.resolve([]);
         }
 
         const promises = history.map(async (item) => {
             const decrypted = await this.cryptoService.decryptToUtf8(new CipherString(item.password));
-            return new PasswordHistory(decrypted, item.date);
+            return new GeneratedPasswordHistory(decrypted, item.date);
         });
 
         return await Promise.all(promises);
     }
 
-    private matchesPrevious(password: string, history: PasswordHistory[]): boolean {
+    private matchesPrevious(password: string, history: GeneratedPasswordHistory[]): boolean {
         if (history == null || history.length === 0) {
             return false;
         }

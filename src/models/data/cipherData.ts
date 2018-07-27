@@ -5,6 +5,7 @@ import { CardData } from './cardData';
 import { FieldData } from './fieldData';
 import { IdentityData } from './identityData';
 import { LoginData } from './loginData';
+import { PasswordHistoryData } from './passwordHistoryData';
 import { SecureNoteData } from './secureNoteData';
 
 import { CipherResponse } from '../response/cipherResponse';
@@ -28,6 +29,7 @@ export class CipherData {
     identity?: IdentityData;
     fields?: FieldData[];
     attachments?: AttachmentData[];
+    passwordHistory?: PasswordHistoryData[];
     collectionIds?: string[];
 
     constructor(response?: CipherResponse, userId?: string, collectionIds?: string[]) {
@@ -81,6 +83,13 @@ export class CipherData {
             this.attachments = [];
             response.attachments.forEach((attachment) => {
                 this.attachments.push(new AttachmentData(attachment));
+            });
+        }
+
+        if (response.passwordHistory != null) {
+            this.passwordHistory = [];
+            response.passwordHistory.forEach((ph) => {
+                this.passwordHistory.push(new PasswordHistoryData(ph));
             });
         }
     }

@@ -11,6 +11,7 @@ import Domain from './domain';
 import { Field } from './field';
 import { Identity } from './identity';
 import { Login } from './login';
+import { Password } from './password';
 import { SecureNote } from './secureNote';
 
 export class Cipher extends Domain {
@@ -31,6 +32,7 @@ export class Cipher extends Domain {
     secureNote: SecureNote;
     attachments: Attachment[];
     fields: Field[];
+    passwordHistory: Password[];
     collectionIds: string[];
 
     constructor(obj?: CipherData, alreadyEncrypted: boolean = false, localData: any = null) {
@@ -90,6 +92,15 @@ export class Cipher extends Domain {
         } else {
             this.fields = null;
         }
+
+        if (obj.passwordHistory != null) {
+            this.passwordHistory = [];
+            obj.passwordHistory.forEach((ph) => {
+                this.passwordHistory.push(new Password(ph, alreadyEncrypted));
+            });
+        } else {
+            this.passwordHistory = null;
+        }
     }
 
     async decrypt(): Promise<CipherView> {
@@ -143,6 +154,18 @@ export class Cipher extends Domain {
             model.fields = fields;
         }
 
+        if (this.passwordHistory != null && this.passwordHistory.length > 0) {
+            const passwordHistory: any[] = [];
+            await this.passwordHistory.reduce((promise, ph) => {
+                return promise.then(() => {
+                    return ph.decrypt(orgId);
+                }).then((decPh) => {
+                    passwordHistory.push(decPh);
+                });
+            }, Promise.resolve());
+            model.passwordHistory = passwordHistory;
+        }
+
         return model;
     }
 
@@ -192,6 +215,13 @@ export class Cipher extends Domain {
             c.attachments = [];
             this.attachments.forEach((attachment) => {
                 c.attachments.push(attachment.toAttachmentData());
+            });
+        }
+
+        if (this.passwordHistory != null) {
+            c.passwordHistory = [];
+            this.passwordHistory.forEach((ph) => {
+                c.passwordHistory.push(ph.toPasswordHistoryData());
             });
         }
         return c;

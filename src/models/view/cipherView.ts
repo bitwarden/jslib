@@ -7,6 +7,7 @@ import { CardView } from './cardView';
 import { FieldView } from './fieldView';
 import { IdentityView } from './identityView';
 import { LoginView } from './loginView';
+import { PasswordHistoryView } from './passwordHistoryView';
 import { SecureNoteView } from './secureNoteView';
 import { View } from './view';
 
@@ -27,6 +28,7 @@ export class CipherView implements View {
     secureNote: SecureNoteView;
     attachments: AttachmentView[];
     fields: FieldView[];
+    passwordHistory: PasswordHistoryView[];
     collectionIds: string[];
 
     constructor(c?: Cipher) {
@@ -60,6 +62,10 @@ export class CipherView implements View {
         }
 
         return null;
+    }
+
+    get hasPasswordHistory(): boolean {
+        return this.passwordHistory && this.passwordHistory.length > 0;
     }
 
     get hasAttachments(): boolean {

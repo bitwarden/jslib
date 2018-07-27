@@ -7,10 +7,10 @@ import { I18nService } from '../../abstractions/i18n.service';
 import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
-import { PasswordHistory } from '../../models/domain/passwordHistory';
+import { GeneratedPasswordHistory } from '../../models/domain/generatedPasswordHistory';
 
 export class PasswordGeneratorHistoryComponent implements OnInit {
-    history: PasswordHistory[] = [];
+    history: GeneratedPasswordHistory[] = [];
 
     constructor(protected passwordGenerationService: PasswordGenerationService, protected analytics: Angulartics2,
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,

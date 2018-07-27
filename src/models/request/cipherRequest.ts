@@ -8,6 +8,8 @@ import { IdentityApi } from '../api/identityApi';
 import { LoginApi } from '../api/loginApi';
 import { SecureNoteApi } from '../api/secureNoteApi';
 
+import { PasswordHistoryRequest } from './passwordHistoryRequest';
+
 export class CipherRequest {
     type: CipherType;
     folderId: string;
@@ -20,6 +22,7 @@ export class CipherRequest {
     card: CardApi;
     identity: IdentityApi;
     fields: FieldApi[];
+    passwordHistory: PasswordHistoryRequest[];
     attachments: { [id: string]: string; };
 
     constructor(cipher: Cipher) {
@@ -98,6 +101,16 @@ export class CipherRequest {
                     type: field.type,
                     name: field.name ? field.name.encryptedString : null,
                     value: field.value ? field.value.encryptedString : null,
+                });
+            });
+        }
+
+        if (cipher.passwordHistory) {
+            this.passwordHistory = [];
+            cipher.passwordHistory.forEach((ph) => {
+                this.passwordHistory.push({
+                    lastUsedDate: ph.lastUsedDate,
+                    password: ph.password ? ph.password.encryptedString : null,
                 });
             });
         }

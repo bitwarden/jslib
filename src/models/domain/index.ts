@@ -11,6 +11,6 @@ export { Folder } from './folder';
 export { Identity } from './identity';
 export { Login } from './login';
 export { LoginUri } from './loginUri';
-export { PasswordHistory } from './passwordHistory';
+export { GeneratedPasswordHistory } from './generatedPasswordHistory';
 export { SecureNote } from './secureNote';
 export { SymmetricCryptoKey } from './symmetricCryptoKey';

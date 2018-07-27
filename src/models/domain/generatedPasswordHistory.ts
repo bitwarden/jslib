@@ -1,4 +1,4 @@
-export class PasswordHistory {
+export class GeneratedPasswordHistory {
     password: string;
     date: number;
 

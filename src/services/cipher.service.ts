@@ -1,4 +1,5 @@
 import { CipherType } from '../enums/cipherType';
+import { FieldType } from '../enums/fieldType';
 import { UriMatchType } from '../enums/uriMatchType';
 
 import { CipherData } from '../models/data/cipherData';
@@ -12,6 +13,7 @@ import { Field } from '../models/domain/field';
 import { Identity } from '../models/domain/identity';
 import { Login } from '../models/domain/login';
 import { LoginUri } from '../models/domain/loginUri';
+import { Password } from '../models/domain/password';
 import { SecureNote } from '../models/domain/secureNote';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
@@ -28,6 +30,7 @@ import { ErrorResponse } from '../models/response/errorResponse';
 import { AttachmentView } from '../models/view/attachmentView';
 import { CipherView } from '../models/view/cipherView';
 import { FieldView } from '../models/view/fieldView';
+import { PasswordHistoryView } from '../models/view/passwordHistoryView';
 import { View } from '../models/view/view';
 
 import { ApiService } from '../abstractions/api.service';
@@ -61,6 +64,41 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async encrypt(model: CipherView, key?: SymmetricCryptoKey): Promise<Cipher> {
+        // Adjust password history
+        if (model.id != null) {
+            const existingCipher = await (await this.get(model.id)).decrypt();
+            if (existingCipher != null) {
+                model.passwordHistory = existingCipher.passwordHistory || [];
+                if (model.type === CipherType.Login && existingCipher.type === CipherType.Login &&
+                    existingCipher.login.password !== model.login.password) {
+                    const ph = new PasswordHistoryView(null);
+                    ph.password = existingCipher.login.password;
+                    ph.lastUsedDate = new Date();
+                    model.passwordHistory.splice(0, 0, ph);
+                }
+                if (existingCipher.hasFields) {
+                    const existingHiddenFields = existingCipher.fields.filter((f) => f.type === FieldType.Hidden);
+                    const hiddenFields = model.fields == null ? [] :
+                        model.fields.filter((f) => f.type === FieldType.Hidden);
+                    existingHiddenFields.forEach((ef) => {
+                        const matchedField = hiddenFields.filter((f) => f.name === ef.name);
+                        if (matchedField.length === 0 || matchedField[0].value !== ef.value) {
+                            const ph = new PasswordHistoryView(null);
+                            ph.password = ef.name + ': ' + ef.value;
+                            ph.lastUsedDate = new Date();
+                            model.passwordHistory.splice(0, 0, ph);
+                        }
+                    });
+                }
+            }
+            if (model.passwordHistory != null && model.passwordHistory.length === 0) {
+                model.passwordHistory = null;
+            } else if (model.passwordHistory != null && model.passwordHistory.length > 5) {
+                // only save last 5 history
+                model.passwordHistory = model.passwordHistory.slice(0, 4);
+            }
+        }
+
         const cipher = new Cipher();
         cipher.id = model.id;
         cipher.folderId = model.folderId;
@@ -80,6 +118,9 @@ export class CipherService implements CipherServiceAbstraction {
             this.encryptCipherData(cipher, model, key),
             this.encryptFields(model.fields, key).then((fields) => {
                 cipher.fields = fields;
+            }),
+            this.encryptPasswordHistories(model.passwordHistory, key).then((ph) => {
+                cipher.passwordHistory = ph;
             }),
             this.encryptAttachments(model.attachments, key).then((attachments) => {
                 cipher.attachments = attachments;
@@ -142,6 +183,35 @@ export class CipherService implements CipherServiceAbstraction {
         }, key);
 
         return field;
+    }
+
+    async encryptPasswordHistories(phModels: PasswordHistoryView[], key: SymmetricCryptoKey): Promise<Password[]> {
+        if (!phModels || !phModels.length) {
+            return null;
+        }
+
+        const self = this;
+        const encPhs: Password[] = [];
+        await phModels.reduce((promise, ph) => {
+            return promise.then(() => {
+                return self.encryptPasswordHistory(ph, key);
+            }).then((encPh: Password) => {
+                encPhs.push(encPh);
+            });
+        }, Promise.resolve());
+
+        return encPhs;
+    }
+
+    async encryptPasswordHistory(phModel: PasswordHistoryView, key: SymmetricCryptoKey): Promise<Password> {
+        const ph = new Password();
+        ph.lastUsedDate = phModel.lastUsedDate;
+
+        await this.encryptObjProperty(phModel, ph, {
+            password: null,
+        }, key);
+
+        return ph;
     }
 
     async get(id: string): Promise<Cipher> {
