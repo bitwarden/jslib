@@ -95,7 +95,7 @@ export class CipherService implements CipherServiceAbstraction {
                 model.passwordHistory = null;
             } else if (model.passwordHistory != null && model.passwordHistory.length > 5) {
                 // only save last 5 history
-                model.passwordHistory = model.passwordHistory.slice(0, 4);
+                model.passwordHistory = model.passwordHistory.slice(0, 5);
             }
         }
 
