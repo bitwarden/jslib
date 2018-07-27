@@ -3,16 +3,19 @@ import { View } from './view';
 
 import { Login } from '../domain/login';
 
-import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
-
 export class LoginView implements View {
     username: string;
     password: string;
+    passwordRevisionDate?: Date;
     totp: string;
     uris: LoginUriView[];
 
     constructor(l?: Login) {
-        // ctor
+        if (!l) {
+            return;
+        }
+
+        this.passwordRevisionDate = l.passwordRevisionDate;
     }
 
     get uri(): string {

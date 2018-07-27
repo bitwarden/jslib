@@ -2,7 +2,6 @@ import { LoginUri } from './loginUri';
 
 import { LoginData } from '../data/loginData';
 
-import { LoginUriView } from '../view/loginUriView';
 import { LoginView } from '../view/loginView';
 
 import { CipherString } from './cipherString';
@@ -12,6 +11,7 @@ export class Login extends Domain {
     uris: LoginUri[];
     username: CipherString;
     password: CipherString;
+    passwordRevisionDate?: Date;
     totp: CipherString;
 
     constructor(obj?: LoginData, alreadyEncrypted: boolean = false) {
@@ -20,6 +20,7 @@ export class Login extends Domain {
             return;
         }
 
+        this.passwordRevisionDate = obj.passwordRevisionDate;
         this.buildDomainModel(this, obj, {
             username: null,
             password: null,
@@ -54,6 +55,7 @@ export class Login extends Domain {
 
     toLoginData(): LoginData {
         const l = new LoginData();
+        l.passwordRevisionDate = this.passwordRevisionDate;
         this.buildDataModel(this, l, {
             username: null,
             password: null,

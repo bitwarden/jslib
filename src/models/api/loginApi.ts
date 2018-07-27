@@ -4,11 +4,13 @@ export class LoginApi {
     uris: LoginUriApi[];
     username: string;
     password: string;
+    passwordRevisionDate?: Date;
     totp: string;
 
     constructor(data: any) {
         this.username = data.Username;
         this.password = data.Password;
+        this.passwordRevisionDate = data.PasswordRevisionDate;
         this.totp = data.Totp;
 
         if (data.Uris) {

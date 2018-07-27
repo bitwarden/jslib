@@ -69,12 +69,15 @@ export class CipherService implements CipherServiceAbstraction {
             const existingCipher = await (await this.get(model.id)).decrypt();
             if (existingCipher != null) {
                 model.passwordHistory = existingCipher.passwordHistory || [];
-                if (model.type === CipherType.Login && existingCipher.type === CipherType.Login &&
-                    existingCipher.login.password !== model.login.password) {
-                    const ph = new PasswordHistoryView(null);
-                    ph.password = existingCipher.login.password;
-                    ph.lastUsedDate = new Date();
-                    model.passwordHistory.splice(0, 0, ph);
+                if (model.type === CipherType.Login && existingCipher.type === CipherType.Login) {
+                    if (existingCipher.login.password !== model.login.password) {
+                        const ph = new PasswordHistoryView();
+                        ph.password = existingCipher.login.password;
+                        ph.lastUsedDate = model.login.passwordRevisionDate = new Date();
+                        model.passwordHistory.splice(0, 0, ph);
+                    } else {
+                        model.login.passwordRevisionDate = existingCipher.login.passwordRevisionDate;
+                    }
                 }
                 if (existingCipher.hasFields) {
                     const existingHiddenFields = existingCipher.fields.filter((f) => f.type === FieldType.Hidden);
@@ -83,7 +86,7 @@ export class CipherService implements CipherServiceAbstraction {
                     existingHiddenFields.forEach((ef) => {
                         const matchedField = hiddenFields.filter((f) => f.name === ef.name);
                         if (matchedField.length === 0 || matchedField[0].value !== ef.value) {
-                            const ph = new PasswordHistoryView(null);
+                            const ph = new PasswordHistoryView();
                             ph.password = ef.name + ': ' + ef.value;
                             ph.lastUsedDate = new Date();
                             model.passwordHistory.splice(0, 0, ph);
@@ -767,6 +770,7 @@ export class CipherService implements CipherServiceAbstraction {
         switch (cipher.type) {
             case CipherType.Login:
                 cipher.login = new Login();
+                cipher.login.passwordRevisionDate = model.login.passwordRevisionDate;
                 await this.encryptObjProperty(model.login, cipher.login, {
                     username: null,
                     password: null,
