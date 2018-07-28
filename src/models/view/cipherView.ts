@@ -30,6 +30,7 @@ export class CipherView implements View {
     fields: FieldView[];
     passwordHistory: PasswordHistoryView[];
     collectionIds: string[];
+    revisionDate: Date;
 
     constructor(c?: Cipher) {
         if (!c) {
@@ -45,6 +46,7 @@ export class CipherView implements View {
         this.type = c.type;
         this.localData = c.localData;
         this.collectionIds = c.collectionIds;
+        this.revisionDate = c.revisionDate;
     }
 
     get subTitle(): string {
@@ -78,5 +80,14 @@ export class CipherView implements View {
 
     get login_username(): string {
         return this.login != null ? this.login.username : null;
+    }
+
+    get passwordRevisionDisplayDate(): Date {
+        if (this.login == null) {
+            return null;
+        } else if (this.login.password == null || this.login.password === '') {
+            return null;
+        }
+        return this.login.passwordRevisionDate != null ? this.login.passwordRevisionDate : this.revisionDate;
     }
 }
