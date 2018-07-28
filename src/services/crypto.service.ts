@@ -83,11 +83,6 @@ export class CryptoService implements CryptoServiceAbstraction {
             return this.key;
         }
 
-        const option = await this.storageService.get<number>(ConstantsService.lockOptionKey);
-        if (option != null) {
-            return null;
-        }
-
         const key = await this.secureStorageService.get<string>(Keys.key);
         if (key != null) {
             this.key = new SymmetricCryptoKey(Utils.fromB64ToArray(key).buffer);
