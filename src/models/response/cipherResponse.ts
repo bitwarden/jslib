@@ -37,7 +37,7 @@ export class CipherResponse {
         this.favorite = response.Favorite || false;
         this.edit = response.Edit || true;
         this.organizationUseTotp = response.OrganizationUseTotp;
-        this.revisionDate = new Date(response.RevisionDate);
+        this.revisionDate = response.RevisionDate;
 
         if (response.Login != null) {
             this.login = new LoginApi(response.Login);
