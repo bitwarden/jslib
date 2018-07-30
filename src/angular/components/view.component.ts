@@ -27,7 +27,6 @@ import { LoginUriView } from '../../models/view/loginUriView';
 export class ViewComponent implements OnDestroy {
     @Input() cipherId: string;
     @Output() onEditCipher = new EventEmitter<CipherView>();
-    @Output() onViewCipherPasswordHistory = new EventEmitter<CipherView>();
 
     cipher: CipherView;
     showPassword: boolean;
