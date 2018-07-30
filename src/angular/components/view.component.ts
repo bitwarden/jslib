@@ -160,11 +160,6 @@ export class ViewComponent implements OnDestroy {
         a.downloading = false;
     }
 
-    viewHistory() {
-        this.analytics.eventTrack.next({ action: 'View Password History' });
-        this.onViewCipherPasswordHistory.emit(this.cipher);
-    }
-
     private cleanUp() {
         this.totpCode = null;
         this.cipher = null;
