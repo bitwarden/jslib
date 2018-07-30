@@ -27,6 +27,7 @@ import { LoginUriView } from '../../models/view/loginUriView';
 export class ViewComponent implements OnDestroy {
     @Input() cipherId: string;
     @Output() onEditCipher = new EventEmitter<CipherView>();
+    @Output() onViewCipherPasswordHistory = new EventEmitter<CipherView>();
 
     cipher: CipherView;
     showPassword: boolean;
@@ -157,6 +158,11 @@ export class ViewComponent implements OnDestroy {
         }
 
         a.downloading = false;
+    }
+
+    viewHistory() {
+        this.analytics.eventTrack.next({ action: 'View Password History' });
+        this.onViewCipherPasswordHistory.emit(this.cipher);
     }
 
     private cleanUp() {
