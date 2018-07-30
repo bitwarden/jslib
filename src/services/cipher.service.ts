@@ -70,7 +70,8 @@ export class CipherService implements CipherServiceAbstraction {
             if (existingCipher != null) {
                 model.passwordHistory = existingCipher.passwordHistory || [];
                 if (model.type === CipherType.Login && existingCipher.type === CipherType.Login) {
-                    if (existingCipher.login.password !== model.login.password) {
+                    if (existingCipher.login.password != null && existingCipher.login.password !== '' &&
+                        existingCipher.login.password !== model.login.password) {
                         const ph = new PasswordHistoryView();
                         ph.password = existingCipher.login.password;
                         ph.lastUsedDate = model.login.passwordRevisionDate = new Date();
@@ -80,9 +81,10 @@ export class CipherService implements CipherServiceAbstraction {
                     }
                 }
                 if (existingCipher.hasFields) {
-                    const existingHiddenFields = existingCipher.fields.filter((f) => f.type === FieldType.Hidden);
+                    const existingHiddenFields = existingCipher.fields.filter((f) => f.type === FieldType.Hidden &&
+                        f.name != null && f.name !== '' && f.value != null && f.value !== '');
                     const hiddenFields = model.fields == null ? [] :
-                        model.fields.filter((f) => f.type === FieldType.Hidden);
+                        model.fields.filter((f) => f.type === FieldType.Hidden && f.name != null && f.name !== '');
                     existingHiddenFields.forEach((ef) => {
                         const matchedField = hiddenFields.filter((f) => f.name === ef.name);
                         if (matchedField.length === 0 || matchedField[0].value !== ef.value) {
