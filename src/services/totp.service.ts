@@ -30,7 +30,10 @@ export class TotpService implements TotpServiceAbstraction {
             }
             if (params.has('period') && params.get('period') != null) {
                 try {
-                    period = parseInt(params.get('period').trim(), null);
+                    const periodParam = parseInt(params.get('period').trim(), null);
+                    if (periodParam > 0) {
+                        period = periodParam;
+                    }
                 } catch { }
             }
             if (params.has('secret') && params.get('secret') != null) {
