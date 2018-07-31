@@ -88,6 +88,6 @@ export class CipherView implements View {
         } else if (this.login.password == null || this.login.password === '') {
             return null;
         }
-        return this.login.passwordRevisionDate != null ? this.login.passwordRevisionDate : this.revisionDate;
+        return this.login.passwordRevisionDate;
     }
 }
