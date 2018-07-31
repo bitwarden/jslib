@@ -47,9 +47,9 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return await this.subtle.deriveBits(pbkdf2Params, impKey, wcLen);
     }
 
-    async hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
-        if ((this.isEdge || this.isIE) && algorithm === 'sha1') {
-            const md = forge.md.sha1.create();
+    async hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512' | 'md5'): Promise<ArrayBuffer> {
+        if (((this.isEdge || this.isIE) && algorithm === 'sha1') || algorithm === 'md5') {
+            const md = algorithm === 'md5' ? forge.md.md5.create() : forge.md.sha1.create();
             const valueBytes = this.toByteString(value);
             md.update(valueBytes, 'raw');
             return Utils.fromByteStringToArray(md.digest().data).buffer;
@@ -263,7 +263,10 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return bytes;
     }
 
-    private toWebCryptoAlgorithm(algorithm: 'sha1' | 'sha256' | 'sha512'): string {
+    private toWebCryptoAlgorithm(algorithm: 'sha1' | 'sha256' | 'sha512' | 'md5'): string {
+        if (algorithm === 'md5') {
+            throw new Error('MD5 is not supported in WebCrypto.');
+        }
         return algorithm === 'sha1' ? 'SHA-1' : algorithm === 'sha256' ? 'SHA-256' : 'SHA-512';
     }
 }

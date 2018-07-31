@@ -71,9 +71,14 @@ describe('WebCrypto Function Service', () => {
         const unicode512Hash = '2b16a5561af8ad6fe414cc103fc8036492e1fc6d9aabe1b655497054f760fe0e34c5d100ac773d' +
             '9f3030438284f22dbfa20cb2e9b019f2c98dfe38ce1ef41bae';
 
+        const regularMd5 = '5eceffa53a5fd58c44134211e2c5f522';
+        const utf8Md5 = '3abc9433c09551b939c80aa0aa3174e1';
+        const unicodeMd5 = '85ae134072c8d81257933f7045ba17ca';
+
         testHash('sha1', regular1Hash, utf81Hash, unicode1Hash);
         testHash('sha256', regular256Hash, utf8256Hash, unicode256Hash);
         testHash('sha512', regular512Hash, utf8512Hash, unicode512Hash);
+        testHash('md5', regularMd5, utf8Md5, unicodeMd5);
     });
 
     describe('hmac', () => {
@@ -315,7 +320,7 @@ function testPbkdf2(algorithm: 'sha256' | 'sha512', regularKey: string,
     });
 }
 
-function testHash(algorithm: 'sha1' | 'sha256' | 'sha512', regularHash: string,
+function testHash(algorithm: 'sha1' | 'sha256' | 'sha512' | 'md5', regularHash: string,
     utf8Hash: string, unicodeHash: string) {
     const regularValue = 'HashMe!!';
     const utf8Value = 'HǻshMe!!';

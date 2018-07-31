@@ -26,7 +26,7 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         });
     }
 
-    hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
+    hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512' | 'md5'): Promise<ArrayBuffer> {
         const nodeValue = this.toNodeValue(value);
         const hash = crypto.createHash(algorithm);
         hash.update(nodeValue);
