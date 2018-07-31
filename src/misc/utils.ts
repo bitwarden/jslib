@@ -151,6 +151,23 @@ export class Utils {
         return url != null ? url.host : null;
     }
 
+    static getQueryParams(uriString: string): Map<string, string> {
+        const url = Utils.getUrl(uriString);
+        if (url == null || url.search == null || url.search === '') {
+            return null;
+        }
+        const map = new Map<string, string>();
+        const pairs = (url.search[0] === '?' ? url.search.substr(1) : url.search).split('&');
+        pairs.forEach((pair) => {
+            const parts = pair.split('=');
+            if (parts.length < 1) {
+                return;
+            }
+            map.set(decodeURIComponent(parts[0]).toLowerCase(), parts[1] == null ? '' : decodeURIComponent(parts[1]));
+        });
+        return map;
+    }
+
     static getSortFunction(i18nService: I18nService, prop: string) {
         return (a: any, b: any) => {
             if (a[prop] == null && b[prop] != null) {
@@ -178,23 +195,24 @@ export class Utils {
             return null;
         }
 
-        if (uriString.indexOf('://') === -1 && uriString.indexOf('.') > -1) {
+        const hasProtocol = uriString.indexOf('://') > -1;
+        if (!hasProtocol && uriString.indexOf('.') > -1) {
             uriString = 'http://' + uriString;
+        } else if (!hasProtocol) {
+            return null;
         }
 
-        if (uriString.startsWith('http://') || uriString.startsWith('https://')) {
-            try {
-                if (nodeURL != null) {
-                    return new nodeURL(uriString);
-                } else if (typeof URL === 'function') {
-                    return new URL(uriString);
-                } else if (window != null) {
-                    const anchor = window.document.createElement('a');
-                    anchor.href = uriString;
-                    return anchor as any;
-                }
-            } catch (e) { }
-        }
+        try {
+            if (nodeURL != null) {
+                return new nodeURL(uriString);
+            } else if (typeof URL === 'function') {
+                return new URL(uriString);
+            } else if (window != null) {
+                const anchor = window.document.createElement('a');
+                anchor.href = uriString;
+                return anchor as any;
+            }
+        } catch (e) { }
 
         return null;
     }

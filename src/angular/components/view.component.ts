@@ -63,10 +63,11 @@ export class ViewComponent implements OnDestroy {
         if (this.cipher.type === CipherType.Login && this.cipher.login.totp &&
             (cipher.organizationUseTotp || this.isPremium)) {
             await this.totpUpdateCode();
-            await this.totpTick();
+            const interval = this.totpService.getTimeInterval(this.cipher.login.totp);
+            await this.totpTick(interval);
 
             this.totpInterval = setInterval(async () => {
-                await this.totpTick();
+                await this.totpTick(interval);
             }, 1000);
         }
     }
@@ -178,7 +179,12 @@ export class ViewComponent implements OnDestroy {
 
         this.totpCode = await this.totpService.getCode(this.cipher.login.totp);
         if (this.totpCode != null) {
-            this.totpCodeFormatted = this.totpCode.substring(0, 3) + ' ' + this.totpCode.substring(3);
+            if (this.totpCode.length > 4) {
+                const half = Math.floor(this.totpCode.length / 2);
+                this.totpCodeFormatted = this.totpCode.substring(0, half) + ' ' + this.totpCode.substring(half);
+            } else {
+                this.totpCodeFormatted = this.totpCode;
+            }
         } else {
             this.totpCodeFormatted = null;
             if (this.totpInterval) {
@@ -187,12 +193,12 @@ export class ViewComponent implements OnDestroy {
         }
     }
 
-    private async totpTick() {
+    private async totpTick(intervalSeconds: number) {
         const epoch = Math.round(new Date().getTime() / 1000.0);
-        const mod = epoch % 30;
+        const mod = epoch % intervalSeconds;
 
-        this.totpSec = 30 - mod;
-        this.totpDash = +(Math.round(((2.62 * mod) + 'e+2') as any) + 'e-2');
+        this.totpSec = intervalSeconds - mod;
+        this.totpDash = +(Math.round((((78.6 / intervalSeconds) * mod) + 'e+2') as any) + 'e-2');
         this.totpLow = this.totpSec <= 7;
         if (mod === 0) {
             await this.totpUpdateCode();

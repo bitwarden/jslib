@@ -1,4 +1,5 @@
 export abstract class TotpService {
-    getCode: (keyb32: string) => Promise<string>;
+    getCode: (key: string) => Promise<string>;
+    getTimeInterval: (key: string) => number;
     isAutoCopyEnabled: () => Promise<boolean>;
 }
