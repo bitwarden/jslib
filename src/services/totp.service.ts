@@ -12,11 +12,14 @@ export class TotpService implements TotpServiceAbstraction {
     constructor(private storageService: StorageService, private cryptoFunctionService: CryptoFunctionService) { }
 
     async getCode(key: string): Promise<string> {
+        if (key == null) {
+            return null;
+        }
         let period = 30;
         let alg: 'sha1' | 'sha256' | 'sha512' = 'sha1';
         let digits = 6;
         let keyB32 = key;
-        if (key.indexOf('otpauth://') === 0) {
+        if (key.toLowerCase().indexOf('otpauth://') === 0) {
             const params = Utils.getQueryParams(key);
             if (params.has('digits') && params.get('digits') != null) {
                 try {
@@ -73,7 +76,7 @@ export class TotpService implements TotpServiceAbstraction {
 
     getTimeInterval(key: string): number {
         let period = 30;
-        if (key.indexOf('otpauth://') === 0) {
+        if (key != null && key.toLowerCase().indexOf('otpauth://') === 0) {
             const params = Utils.getQueryParams(key);
             if (params.has('period') && params.get('period') != null) {
                 try {
