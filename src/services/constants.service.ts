@@ -2,6 +2,7 @@ export class ConstantsService {
     static readonly environmentUrlsKey: string = 'environmentUrls';
     static readonly disableGaKey: string = 'disableGa';
     static readonly disableAddLoginNotificationKey: string = 'disableAddLoginNotification';
+    static readonly disableChangedPasswordNotificationKey: string = 'disableChangedPasswordNotification';
     static readonly disableContextMenuItemKey: string = 'disableContextMenuItem';
     static readonly disableFaviconKey: string = 'disableFavicon';
     static readonly disableAutoTotpCopyKey: string = 'disableAutoTotpCopy';
