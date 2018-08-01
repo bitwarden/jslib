@@ -4,6 +4,8 @@ import {
     Input,
 } from '@angular/core';
 
+import { Utils } from '../../misc/utils';
+
 @Directive({
     selector: '[appAutofocus]',
 })
@@ -17,7 +19,7 @@ export class AutofocusDirective {
     constructor(private el: ElementRef) { }
 
     ngOnInit() {
-        if (this.autofocus) {
+        if (!Utils.isMobileBrowser && this.autofocus) {
             this.el.nativeElement.focus();
         }
     }
