@@ -27,6 +27,6 @@ export class OrganizationBillingResponse extends OrganizationResponse {
         if (response.Charges != null) {
             this.charges = response.Charges.map((c: any) => new BillingChargeResponse(c));
         }
-        this.expiration = new Date(response.Expiration);
+        this.expiration = response.Expiration != null ? new Date(response.Expiration) : null;
     }
 }
