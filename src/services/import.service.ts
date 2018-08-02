@@ -2,7 +2,10 @@ import { ApiService } from '../abstractions/api.service';
 import { CipherService } from '../abstractions/cipher.service';
 import { FolderService } from '../abstractions/folder.service';
 import { I18nService } from '../abstractions/i18n.service';
-import { ImportService as ImportServiceAbstraction } from '../abstractions/import.service';
+import {
+    ImportOptions,
+    ImportService as ImportServiceAbstraction,
+} from '../abstractions/import.service';
 
 import { ImportResult } from '../models/domain/importResult';
 
@@ -47,82 +50,80 @@ import { TrueKeyCsvImporter } from '../importers/truekeyCsvImporter';
 import { UpmCsvImporter } from '../importers/upmCsvImporter';
 import { ZohoVaultCsvImporter } from '../importers/zohoVaultCsvImporter';
 
-export interface ISubmitResult {
-    success: boolean;
-    message: string;
-    shouldReport: boolean;
-}
-
 export class ImportService implements ImportServiceAbstraction {
-    format: string = null;
-    fileContents: string;
-    formPromise: Promise<any>;
+    importOptions: ImportOptions  = [
+        { id: 'bitwardencsv', name: 'Bitwarden (csv)' },
+        { id: 'lastpasscsv', name: 'LastPass (csv)' },
+        { id: 'chromecsv', name: 'Chrome (csv)' },
+        { id: 'firefoxcsv', name: 'Firefox (csv)' },
+        { id: 'keepass2xml', name: 'KeePass 2 (xml)' },
+        { id: '1password1pif', name: '1Password (1pif)' },
+        { id: 'dashlanecsv', name: 'Dashlane (csv)' },
+        { id: 'keepassxcsv', name: 'KeePassX (csv)' },
+        { id: '1passwordwincsv', name: '1Password 6 and 7 Windows (csv)' },
+        { id: 'roboformcsv', name: 'RoboForm (csv)' },
+        { id: 'keepercsv', name: 'Keeper (csv)' },
+        { id: 'enpasscsv', name: 'Enpass (csv)' },
+        { id: 'safeincloudxml', name: 'SafeInCloud (xml)' },
+        { id: 'pwsafexml', name: 'Password Safe (xml)' },
+        { id: 'stickypasswordxml', name: 'Sticky Password (xml)' },
+        { id: 'msecurecsv', name: 'mSecure (csv)' },
+        { id: 'truekeycsv', name: 'True Key (csv)' },
+        { id: 'passwordbossjson', name: 'Password Boss (json)' },
+        { id: 'zohovaultcsv', name: 'Zoho Vault (csv)' },
+        { id: 'splashidcsv', name: 'SplashID (csv)' },
+        { id: 'passworddragonxml', name: 'Password Dragon (xml)' },
+        { id: 'padlockcsv', name: 'Padlock (csv)' },
+        { id: 'passboltcsv', name: 'Passbolt (csv)' },
+        { id: 'clipperzhtml', name: 'Clipperz (html)' },
+        { id: 'aviracsv', name: 'Avira (csv)' },
+        { id: 'saferpasscsv', name: 'SaferPass (csv)' },
+        { id: 'upmcsv', name: 'Universal Password Manager (csv)' },
+        { id: 'ascendocsv', name: 'Ascendo DataVault (csv)' },
+        { id: 'meldiumcsv', name: 'Meldium (csv)' },
+        { id: 'passkeepcsv', name: 'PassKeep (csv)' },
+    ];
 
     protected successNavigate: any[] = ['vault'];
 
     constructor(protected cipherService: CipherService, protected folderService: FolderService,
         protected apiService: ApiService, protected i18nService: I18nService) { }
 
-    async submit(importer: Importer, fileContents: string): Promise<ISubmitResult> {
+    async submit(importer: Importer, fileContents: string): Promise<Error> {
         if (importer === null) {
-            return {
-                success: false,
-                message: this.i18nService.t('selectFormat'),
-                shouldReport: false,
-            };
+            return new Error(this.i18nService.t('selectFormat'));
         }
 
         if (fileContents == null || fileContents === '') {
-            return {
-                success: false,
-                message: this.i18nService.t('selectFile'),
-                shouldReport: false,
-            };
+            return new Error(this.i18nService.t('selectFile'));
         }
 
         const importResult = await importer.parse(fileContents);
         if (importResult.success) {
             if (importResult.folders.length === 0 && importResult.ciphers.length === 0) {
-                return {
-                    success: false,
-                    message: this.i18nService.t('importNothingError'),
-                    shouldReport: true,
-                };
+                return new Error(this.i18nService.t('importNothingError'));
             } else if (importResult.ciphers.length > 0) {
                 const halfway = Math.floor(importResult.ciphers.length / 2);
                 const last = importResult.ciphers.length - 1;
-                if (this.badData(importResult.ciphers[0]) && this.badData(importResult.ciphers[halfway]) &&
+
+                if (this.badData(importResult.ciphers[0]) &&
+                    this.badData(importResult.ciphers[halfway]) &&
                     this.badData(importResult.ciphers[last])) {
-                        return {
-                            success: false,
-                            message: this.i18nService.t('importFormatError'),
-                            shouldReport: true,
-                        };
+                        return new Error(this.i18nService.t('importFormatError'));
                 }
             }
-
-            try {
-                this.formPromise = this.postImport(importResult);
-                await this.formPromise;
-                return {
-                    success: true,
-                    message: this.i18nService.t('importSuccess'),
-                    shouldReport: true,
-                };
-            } catch(e) {
-                return {
-                    success: false,
-                    message: e,
-                    shouldReport: false,
-                };
-            }
+            return this.postImport(importResult).then(() => {
+                return null;
+            }).catch((err) => {
+                return new Error(err);
+            });
         } else {
-            return {
-                success: false,
-                message: this.i18nService.t('importFormatError'),
-                shouldReport: false,
-            };
+            return new Error(this.i18nService.t('importFormatError'));
         }
+    }
+
+    getOptions(): ImportOptions {
+        return this.importOptions;
     }
 
     getImporter(format: string): Importer {
