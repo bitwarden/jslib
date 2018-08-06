@@ -3,7 +3,7 @@ import { CipherService } from '../abstractions/cipher.service';
 import { FolderService } from '../abstractions/folder.service';
 import { I18nService } from '../abstractions/i18n.service';
 import {
-    ImportOptions,
+    ImportOption,
     ImportService as ImportServiceAbstraction,
 } from '../abstractions/import.service';
 
@@ -51,7 +51,7 @@ import { UpmCsvImporter } from '../importers/upmCsvImporter';
 import { ZohoVaultCsvImporter } from '../importers/zohoVaultCsvImporter';
 
 export class ImportService implements ImportServiceAbstraction {
-    importOptions: ImportOptions  = [
+    importOptions: ImportOption[] = [
         { id: 'bitwardencsv', name: 'Bitwarden (csv)' },
         { id: 'lastpasscsv', name: 'LastPass (csv)' },
         { id: 'chromecsv', name: 'Chrome (csv)' },
@@ -84,24 +84,14 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'passkeepcsv', name: 'PassKeep (csv)' },
     ];
 
-    protected successNavigate: any[] = ['vault'];
-
     constructor(protected cipherService: CipherService, protected folderService: FolderService,
         protected apiService: ApiService, protected i18nService: I18nService) { }
 
-    async submit(importer: Importer, fileContents: string): Promise<Error> {
-        if (importer === null) {
-            return new Error(this.i18nService.t('selectFormat'));
-        }
-
-        if (fileContents == null || fileContents === '') {
-            return new Error(this.i18nService.t('selectFile'));
-        }
-
+    async import(importer: Importer, fileContents: string): Promise<any> {
         const importResult = await importer.parse(fileContents);
         if (importResult.success) {
             if (importResult.folders.length === 0 && importResult.ciphers.length === 0) {
-                return new Error(this.i18nService.t('importNothingError'));
+                throw new Error(this.i18nService.t('importNothingError'));
             } else if (importResult.ciphers.length > 0) {
                 const halfway = Math.floor(importResult.ciphers.length / 2);
                 const last = importResult.ciphers.length - 1;
@@ -109,21 +99,13 @@ export class ImportService implements ImportServiceAbstraction {
                 if (this.badData(importResult.ciphers[0]) &&
                     this.badData(importResult.ciphers[halfway]) &&
                     this.badData(importResult.ciphers[last])) {
-                        return new Error(this.i18nService.t('importFormatError'));
+                        throw new Error(this.i18nService.t('importFormatError'));
                 }
             }
-            return this.postImport(importResult).then(() => {
-                return null;
-            }).catch((err) => {
-                return new Error(err);
-            });
+            await this.postImport(importResult);
         } else {
-            return new Error(this.i18nService.t('importFormatError'));
+            throw new Error(this.i18nService.t('importFormatError'));
         }
-    }
-
-    getOptions(): ImportOptions {
-        return this.importOptions;
     }
 
     getImporter(format: string): Importer {
@@ -204,7 +186,7 @@ export class ImportService implements ImportServiceAbstraction {
         }
     }
 
-    protected async postImport(importResult: ImportResult) {
+    private async postImport(importResult: ImportResult) {
         const request = new ImportCiphersRequest();
         for (let i = 0; i < importResult.ciphers.length; i++) {
             const c = await this.cipherService.encrypt(importResult.ciphers[i]);
