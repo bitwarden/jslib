@@ -1,5 +1,6 @@
 import { ApiService } from '../abstractions/api.service';
 import { CipherService } from '../abstractions/cipher.service';
+import { CollectionService } from '../abstractions/collection.service';
 import { FolderService } from '../abstractions/folder.service';
 import { I18nService } from '../abstractions/i18n.service';
 import {
@@ -10,8 +11,10 @@ import {
 import { ImportResult } from '../models/domain/importResult';
 
 import { CipherRequest } from '../models/request/cipherRequest';
+import { CollectionRequest } from '../models/request/collectionRequest';
 import { FolderRequest } from '../models/request/folderRequest';
 import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
+import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
 import { KvpRequest } from '../models/request/kvpRequest';
 
 import { CipherView } from '../models/view/cipherView';
@@ -51,7 +54,7 @@ import { UpmCsvImporter } from '../importers/upmCsvImporter';
 import { ZohoVaultCsvImporter } from '../importers/zohoVaultCsvImporter';
 
 export class ImportService implements ImportServiceAbstraction {
-    importOptions: ImportOption[] = [
+    featuredImportOptions = [
         { id: 'bitwardencsv', name: 'Bitwarden (csv)' },
         { id: 'lastpasscsv', name: 'LastPass (csv)' },
         { id: 'chromecsv', name: 'Chrome (csv)' },
@@ -59,6 +62,9 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'keepass2xml', name: 'KeePass 2 (xml)' },
         { id: '1password1pif', name: '1Password (1pif)' },
         { id: 'dashlanecsv', name: 'Dashlane (csv)' },
+    ];
+
+    regularImportOptions: ImportOption[] = [
         { id: 'keepassxcsv', name: 'KeePassX (csv)' },
         { id: '1passwordwincsv', name: '1Password 6 and 7 Windows (csv)' },
         { id: 'roboformcsv', name: 'RoboForm (csv)' },
@@ -82,16 +88,26 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'ascendocsv', name: 'Ascendo DataVault (csv)' },
         { id: 'meldiumcsv', name: 'Meldium (csv)' },
         { id: 'passkeepcsv', name: 'PassKeep (csv)' },
+        { id: 'operacsv', name: 'Opera (csv)' },
+        { id: 'vivaldicsv', name: 'Vivaldi (csv)' },
+        { id: 'gnomejson', name: 'GNOME Passwords and Keys/Seahorse (json)' },
+        { id: 'blurcsv', name: 'Blur (csv)' },
+        { id: 'passwordagentcsv', name: 'Password Agent (csv)' },
     ];
 
-    constructor(protected cipherService: CipherService, protected folderService: FolderService,
-        protected apiService: ApiService, protected i18nService: I18nService) { }
+    constructor(private cipherService: CipherService, private folderService: FolderService,
+        private apiService: ApiService, private i18nService: I18nService,
+        private collectionService: CollectionService) { }
 
-    async import(importer: Importer, fileContents: string): Promise<any> {
+    getImportOptions(): ImportOption[] {
+        return this.featuredImportOptions.concat(this.regularImportOptions);
+    }
+
+    async import(importer: Importer, fileContents: string, organizationId: string = null): Promise<Error> {
         const importResult = await importer.parse(fileContents);
         if (importResult.success) {
             if (importResult.folders.length === 0 && importResult.ciphers.length === 0) {
-                throw new Error(this.i18nService.t('importNothingError'));
+                return new Error(this.i18nService.t('importNothingError'));
             } else if (importResult.ciphers.length > 0) {
                 const halfway = Math.floor(importResult.ciphers.length / 2);
                 const last = importResult.ciphers.length - 1;
@@ -99,16 +115,26 @@ export class ImportService implements ImportServiceAbstraction {
                 if (this.badData(importResult.ciphers[0]) &&
                     this.badData(importResult.ciphers[halfway]) &&
                     this.badData(importResult.ciphers[last])) {
-                        throw new Error(this.i18nService.t('importFormatError'));
+                    return new Error(this.i18nService.t('importFormatError'));
                 }
             }
-            await this.postImport(importResult);
+            await this.postImport(importResult, organizationId);
+            return null;
         } else {
-            throw new Error(this.i18nService.t('importFormatError'));
+            return new Error(this.i18nService.t('importFormatError'));
         }
     }
 
-    getImporter(format: string): Importer {
+    getImporter(format: string, organization = false): Importer {
+        const importer = this.getImporterInstance(format);
+        if (importer == null) {
+            return null;
+        }
+        importer.organization = organization;
+        return importer;
+    }
+
+    private getImporterInstance(format: string) {
         if (format == null || format === '') {
             return null;
         }
@@ -186,23 +212,44 @@ export class ImportService implements ImportServiceAbstraction {
         }
     }
 
-    private async postImport(importResult: ImportResult) {
-        const request = new ImportCiphersRequest();
-        for (let i = 0; i < importResult.ciphers.length; i++) {
-            const c = await this.cipherService.encrypt(importResult.ciphers[i]);
-            request.ciphers.push(new CipherRequest(c));
-        }
-        if (importResult.folders != null) {
-            for (let i = 0; i < importResult.folders.length; i++) {
-                const f = await this.folderService.encrypt(importResult.folders[i]);
-                request.folders.push(new FolderRequest(f));
+    private async postImport(importResult: ImportResult, organizationId: string = null) {
+        if (organizationId == null) {
+            const request = new ImportCiphersRequest();
+            for (let i = 0; i < importResult.ciphers.length; i++) {
+                const c = await this.cipherService.encrypt(importResult.ciphers[i]);
+                request.ciphers.push(new CipherRequest(c));
             }
+            if (importResult.folders != null) {
+                for (let i = 0; i < importResult.folders.length; i++) {
+                    const f = await this.folderService.encrypt(importResult.folders[i]);
+                    request.folders.push(new FolderRequest(f));
+                }
+            }
+            if (importResult.folderRelationships != null) {
+                importResult.folderRelationships.forEach((r) =>
+                    request.folderRelationships.push(new KvpRequest(r[0], r[1])));
+            }
+            return await this.apiService.postImportCiphers(request);
+        } else {
+            const request = new ImportOrganizationCiphersRequest();
+            for (let i = 0; i < importResult.ciphers.length; i++) {
+                importResult.ciphers[i].organizationId = organizationId;
+                const c = await this.cipherService.encrypt(importResult.ciphers[i]);
+                request.ciphers.push(new CipherRequest(c));
+            }
+            if (importResult.collections != null) {
+                for (let i = 0; i < importResult.collections.length; i++) {
+                    importResult.collections[i].organizationId = organizationId;
+                    const c = await this.collectionService.encrypt(importResult.collections[i]);
+                    request.collections.push(new CollectionRequest(c));
+                }
+            }
+            if (importResult.collectionRelationships != null) {
+                importResult.collectionRelationships.forEach((r) =>
+                    request.collectionRelationships.push(new KvpRequest(r[0], r[1])));
+            }
+            return await this.apiService.postImportOrganizationCiphers(organizationId, request);
         }
-        if (importResult.folderRelationships != null) {
-            importResult.folderRelationships.forEach((r) =>
-                request.folderRelationships.push(new KvpRequest(r[0], r[1])));
-        }
-        return await this.apiService.postImportCiphers(request);
     }
 
     private badData(c: CipherView) {

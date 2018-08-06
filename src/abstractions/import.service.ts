@@ -5,7 +5,9 @@ export interface ImportOption {
     name: string;
 }
 export abstract class ImportService {
-    importOptions: ImportOption[];
-    import: (importer: Importer, fileContents: string) => Promise<any>;
-    getImporter: (format: string) => Importer;
+    featuredImportOptions: ImportOption[];
+    regularImportOptions: ImportOption[];
+    getImportOptions: () => ImportOption[];
+    import: (importer: Importer, fileContents: string, organizationId?: string) => Promise<Error>;
+    getImporter: (format: string, organization?: boolean) => Importer;
 }
