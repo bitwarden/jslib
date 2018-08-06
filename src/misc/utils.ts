@@ -71,7 +71,7 @@ export class Utils {
 
     static fromBufferToB64(buffer: ArrayBuffer): string {
         if (Utils.isNode) {
-            return new Buffer(buffer).toString('base64');
+            return Buffer.from(buffer).toString('base64');
         } else {
             let binary = '';
             const bytes = new Uint8Array(buffer);
@@ -84,7 +84,7 @@ export class Utils {
 
     static fromBufferToUtf8(buffer: ArrayBuffer): string {
         if (Utils.isNode) {
-            return new Buffer(buffer).toString('utf8');
+            return Buffer.from(buffer).toString('utf8');
         } else {
             const bytes = new Uint8Array(buffer);
             const encodedString = String.fromCharCode.apply(null, bytes);
@@ -99,7 +99,7 @@ export class Utils {
     // ref: https://stackoverflow.com/a/40031979/1090359
     static fromBufferToHex(buffer: ArrayBuffer): string {
         if (Utils.isNode) {
-            return new Buffer(buffer).toString('hex');
+            return Buffer.from(buffer).toString('hex');
         } else {
             const bytes = new Uint8Array(buffer);
             return Array.prototype.map.call(bytes, (x: number) => ('00' + x.toString(16)).slice(-2)).join('');
@@ -126,7 +126,7 @@ export class Utils {
 
     static fromB64ToUtf8(b64Str: string): string {
         if (Utils.isNode) {
-            return new Buffer(b64Str, 'base64').toString('utf8');
+            return Buffer.from(b64Str, 'base64').toString('utf8');
         } else {
             return decodeURIComponent(escape(window.atob(b64Str)));
         }

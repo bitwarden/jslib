@@ -477,7 +477,7 @@ export class CipherService implements CipherServiceAbstraction {
             fd.append('data', blob, encFileName.encryptedString);
         } catch (e) {
             if (Utils.isNode && !Utils.isBrowser) {
-                fd.append('data', new Buffer(encData) as any, {
+                fd.append('data', Buffer.from(encData) as any, {
                     filepath: encFileName.encryptedString,
                     contentType: 'application/octet-stream',
                 } as any);
@@ -526,7 +526,7 @@ export class CipherService implements CipherServiceAbstraction {
             fd.append('data', blob, encFileName.encryptedString);
         } catch (e) {
             if (Utils.isNode && !Utils.isBrowser) {
-                fd.append('data', new Buffer(encData) as any, {
+                fd.append('data', Buffer.from(encData) as any, {
                     filepath: encFileName.encryptedString,
                     contentType: 'application/octet-stream',
                 } as any);
