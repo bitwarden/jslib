@@ -116,9 +116,6 @@ export class SearchService implements SearchServiceAbstraction {
                 }
             });
         }
-        if (results != null) {
-            results.sort(this.cipherService.getLocaleSortingFunction());
-        }
         return results;
     }
 
