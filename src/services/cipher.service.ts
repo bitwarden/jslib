@@ -67,10 +67,12 @@ export class CipherService implements CipherServiceAbstraction {
     }
     set decryptedCipherCache(value: CipherView[]) {
         this._decryptedCipherCache = value;
-        if (value == null) {
-            this.searchService().clearIndex();
-        } else {
-            this.searchService().indexCiphers();
+        if (this.searchService != null) {
+            if (value == null) {
+                this.searchService().clearIndex();
+            } else {
+                this.searchService().indexCiphers();
+            }
         }
     }
 

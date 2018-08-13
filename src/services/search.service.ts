@@ -103,24 +103,7 @@ export class SearchService implements SearchServiceAbstraction {
 
         if (this.index == null) {
             // Fall back to basic search if index is not available
-            return ciphers.filter((c) => {
-                if (c.name != null && c.name.toLowerCase().indexOf(query) > -1) {
-                    return true;
-                }
-                if (this.onlySearchName) {
-                    return false;
-                }
-                if (query.length >= 8 && c.id.startsWith(query)) {
-                    return true;
-                }
-                if (c.subTitle != null && c.subTitle.toLowerCase().indexOf(query) > -1) {
-                    return true;
-                }
-                if (c.login && c.login.uri != null && c.login.uri.toLowerCase().indexOf(query) > -1) {
-                    return true;
-                }
-                return false;
-            });
+            return this.searchCiphersBasic(ciphers, query);
         }
 
         const ciphersMap = new Map<string, CipherView>();
@@ -156,5 +139,27 @@ export class SearchService implements SearchServiceAbstraction {
             results.sort(this.cipherService.getLocaleSortingFunction());
         }
         return results;
+    }
+
+    searchCiphersBasic(ciphers: CipherView[], query: string) {
+        query = query.trim().toLowerCase();
+        return ciphers.filter((c) => {
+            if (c.name != null && c.name.toLowerCase().indexOf(query) > -1) {
+                return true;
+            }
+            if (this.onlySearchName) {
+                return false;
+            }
+            if (query.length >= 8 && c.id.startsWith(query)) {
+                return true;
+            }
+            if (c.subTitle != null && c.subTitle.toLowerCase().indexOf(query) > -1) {
+                return true;
+            }
+            if (c.login && c.login.uri != null && c.login.uri.toLowerCase().indexOf(query) > -1) {
+                return true;
+            }
+            return false;
+        });
     }
 }
