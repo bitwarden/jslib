@@ -43,6 +43,7 @@ import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
+import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
 
 const Keys = {
@@ -259,6 +260,7 @@ export class CipherService implements CipherServiceAbstraction {
         return response;
     }
 
+    @sequentialize(() => 'getAllDecrypted')
     async getAllDecrypted(): Promise<CipherView[]> {
         if (this.decryptedCipherCache != null) {
             return this.decryptedCipherCache;
