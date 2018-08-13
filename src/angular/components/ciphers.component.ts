@@ -22,6 +22,7 @@ export class CiphersComponent {
 
     protected allCiphers: CipherView[] = [];
     protected filter: (cipher: CipherView) => boolean = null;
+    protected searchPending = false;
 
     private searchTimeout: any = null;
 
@@ -40,15 +41,22 @@ export class CiphersComponent {
 
     async applyFilter(filter: (cipher: CipherView) => boolean = null) {
         this.filter = filter;
-        await this.search(0);
+        await this.search(null);
     }
 
-    search(timeout: number = 0) {
+    async search(timeout: number = null) {
+        this.searchPending = false;
         if (this.searchTimeout != null) {
             clearTimeout(this.searchTimeout);
         }
+        if (timeout == null) {
+            this.ciphers = await this.searchService.searchCiphers(this.searchText, this.filter);
+            return;
+        }
+        this.searchPending = true;
         this.searchTimeout = setTimeout(async () => {
             this.ciphers = await this.searchService.searchCiphers(this.searchText, this.filter);
+            this.searchPending = false;
         }, timeout);
     }
 

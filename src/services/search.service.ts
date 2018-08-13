@@ -22,6 +22,12 @@ export class SearchService implements SearchServiceAbstraction {
         this.index = null;
     }
 
+    isSearchable(query: string): boolean {
+        const notSearchable = query == null || (this.index == null && query.length < 2) ||
+            (this.index != null && query.length < 2 && query.indexOf('>') !== 0);
+        return !notSearchable;
+    }
+
     async indexCiphers(): Promise<void> {
         if (this.indexing) {
             return;
@@ -91,7 +97,7 @@ export class SearchService implements SearchServiceAbstraction {
             ciphers = ciphers.filter(filter);
         }
 
-        if (query == null || (this.index == null && query.length < 2)) {
+        if (!this.isSearchable(query)) {
             return ciphers;
         }
 
