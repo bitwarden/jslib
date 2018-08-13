@@ -20,7 +20,6 @@ export class CiphersComponent {
     searchText: string;
     searchPlaceholder: string = null;
 
-    protected allCiphers: CipherView[] = [];
     protected filter: (cipher: CipherView) => boolean = null;
     protected searchPending = false;
 
