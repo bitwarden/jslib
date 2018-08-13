@@ -50,30 +50,11 @@ export class SearchService implements SearchServiceAbstraction {
             extractor: (c: CipherView) => c.login == null || !c.login.hasUris ? null :
                 c.login.uris.filter((u) => u.hostname != null).map((u) => u.hostname),
         });
-        (builder as any).field('fields', {
-            extractor: (c: CipherView) => {
-                if (!c.hasFields) {
-                    return null;
-                }
-                const fields = c.fields.filter((f) => f.type === FieldType.Text).map((f) => {
-                    let field = '';
-                    if (f.name != null) {
-                        field += f.name;
-                    }
-                    if (f.value != null) {
-                        if (field !== '') {
-                            field += ' ';
-                        }
-                        field += f.value;
-                    }
-                    return field;
-                });
-                return fields.filter((f) => f.trim() !== '');
-            },
-        });
-        (builder as any).field('attachments', {
-            extractor: (c: CipherView) => !c.hasAttachments ? null : c.attachments.map((a) => a.fileName),
-        });
+        (builder as any).field('fields', { extractor: (c: CipherView) => this.fieldExtractor(c, false) });
+        (builder as any).field('fields_joined', { extractor: (c: CipherView) => this.fieldExtractor(c, true) });
+        (builder as any).field('attachments', { extractor: (c: CipherView) => this.attachmentExtractor(c, false) });
+        (builder as any).field('attachments_joined',
+            { extractor: (c: CipherView) => this.attachmentExtractor(c, true) });
         const ciphers = await this.cipherService.getAllDecrypted();
         ciphers.forEach((c) => builder.add(c));
         this.index = builder.build();
@@ -161,5 +142,46 @@ export class SearchService implements SearchServiceAbstraction {
             }
             return false;
         });
+    }
+
+    private fieldExtractor(c: CipherView, joined: boolean) {
+        if (!c.hasFields) {
+            return null;
+        }
+        let fields: string[] = [];
+        c.fields.forEach((f) => {
+            if (f.name != null) {
+                fields.push(f.name);
+            }
+            if (f.type === FieldType.Text && f.value != null) {
+                fields.push(f.value);
+            }
+        });
+        fields = fields.filter((f) => f.trim() !== '');
+        if (fields.length === 0) {
+            return null;
+        }
+        return joined ? fields.join(' ') : fields;
+    }
+
+    private attachmentExtractor(c: CipherView, joined: boolean) {
+        if (!c.hasAttachments) {
+            return null;
+        }
+        let attachments: string[] = [];
+        c.attachments.forEach((a) => {
+            if (a != null && a.fileName != null) {
+                if (joined && a.fileName.indexOf('.') > -1) {
+                    attachments.push(a.fileName.substr(0, a.fileName.lastIndexOf('.')));
+                } else {
+                    attachments.push(a.fileName);
+                }
+            }
+        });
+        attachments = attachments.filter((f) => f.trim() !== '');
+        if (attachments.length === 0) {
+            return null;
+        }
+        return joined ? attachments.join(' ') : attachments;
     }
 }
