@@ -7,6 +7,7 @@ import { FolderService } from '../abstractions/folder.service';
 import { LockService as LockServiceAbstraction } from '../abstractions/lock.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
+import { SearchService } from '../abstractions/search.service';
 import { StorageService } from '../abstractions/storage.service';
 
 export class LockService implements LockServiceAbstraction {
@@ -15,7 +16,8 @@ export class LockService implements LockServiceAbstraction {
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private cryptoService: CryptoService,
         private platformUtilsService: PlatformUtilsService, private storageService: StorageService,
-        private messagingService: MessagingService, private lockedCallback: () => Promise<void>) {
+        private messagingService: MessagingService, private searchService: SearchService,
+        private lockedCallback: () => Promise<void>) {
     }
 
     init(checkOnInterval: boolean) {
@@ -74,6 +76,7 @@ export class LockService implements LockServiceAbstraction {
         this.folderService.clearCache();
         this.cipherService.clearCache();
         this.collectionService.clearCache();
+        this.searchService.clearIndex();
         this.messagingService.send('locked');
         if (this.lockedCallback != null) {
             await this.lockedCallback();
