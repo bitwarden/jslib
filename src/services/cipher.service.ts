@@ -38,6 +38,7 @@ import { CipherService as CipherServiceAbstraction } from '../abstractions/ciphe
 import { CryptoService } from '../abstractions/crypto.service';
 import { I18nService } from '../abstractions/i18n.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
+import { SearchService } from '../abstractions/search.service';
 import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
@@ -51,12 +52,25 @@ const Keys = {
 };
 
 export class CipherService implements CipherServiceAbstraction {
-    decryptedCipherCache: CipherView[];
+    // tslint:disable-next-line
+    _decryptedCipherCache: CipherView[];
 
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private settingsService: SettingsService, private apiService: ApiService,
         private storageService: StorageService, private i18nService: I18nService,
-        private platformUtilsService: PlatformUtilsService) {
+        private platformUtilsService: PlatformUtilsService, private searchService: () => SearchService) {
+    }
+
+    get decryptedCipherCache() {
+        return this._decryptedCipherCache;
+    }
+    set decryptedCipherCache(value: CipherView[]) {
+        this._decryptedCipherCache = value;
+        if (value == null) {
+            this.searchService().clearIndex();
+        } else {
+            this.searchService().indexCiphers();
+        }
     }
 
     clearCache(): void {
@@ -591,7 +605,7 @@ export class CipherService implements CipherServiceAbstraction {
 
     async clear(userId: string): Promise<any> {
         await this.storageService.remove(Keys.ciphersPrefix + userId);
-        this.decryptedCipherCache = null;
+        this.clearCache();
     }
 
     async moveManyWithServer(ids: string[], folderId: string): Promise<any> {

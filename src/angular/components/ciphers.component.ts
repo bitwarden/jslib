@@ -4,7 +4,7 @@ import {
     Output,
 } from '@angular/core';
 
-import { CipherService } from '../../abstractions/cipher.service';
+import { SearchService } from '../../abstractions/search.service';
 
 import { CipherView } from '../../models/view/cipherView';
 
@@ -23,11 +23,12 @@ export class CiphersComponent {
     protected allCiphers: CipherView[] = [];
     protected filter: (cipher: CipherView) => boolean = null;
 
-    constructor(protected cipherService: CipherService) { }
+    private searchTimeout: any = null;
+
+    constructor(protected searchService: SearchService) { }
 
     async load(filter: (cipher: CipherView) => boolean = null) {
-        this.allCiphers = await this.cipherService.getAllDecrypted();
-        this.applyFilter(filter);
+        await this.applyFilter(filter);
         this.loaded = true;
     }
 
@@ -37,13 +38,18 @@ export class CiphersComponent {
         await this.load(this.filter);
     }
 
-    applyFilter(filter: (cipher: CipherView) => boolean = null) {
+    async applyFilter(filter: (cipher: CipherView) => boolean = null) {
         this.filter = filter;
-        if (this.filter == null) {
-            this.ciphers = this.allCiphers;
-        } else {
-            this.ciphers = this.allCiphers.filter(this.filter);
+        await this.search(0);
+    }
+
+    search(timeout: number = 0) {
+        if (this.searchTimeout != null) {
+            clearTimeout(this.searchTimeout);
         }
+        this.searchTimeout = setTimeout(async () => {
+            this.ciphers = await this.searchService.searchCiphers(this.searchText, this.filter);
+        }, timeout);
     }
 
     selectCipher(cipher: CipherView) {

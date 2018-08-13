@@ -78,10 +78,6 @@ export class CipherView implements View {
         return this.fields && this.fields.length > 0;
     }
 
-    get login_username(): string {
-        return this.login != null ? this.login.username : null;
-    }
-
     get passwordRevisionDisplayDate(): Date {
         if (this.login == null) {
             return null;
