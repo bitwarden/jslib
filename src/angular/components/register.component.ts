@@ -12,6 +12,8 @@ import { CryptoService } from '../../abstractions/crypto.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { StateService } from '../../abstractions/state.service';
 
+import { KdfType } from '../../enums/kdfType';
+
 export class RegisterComponent {
     name: string = '';
     email: string = '';
@@ -57,12 +59,14 @@ export class RegisterComponent {
 
         this.name = this.name === '' ? null : this.name;
         this.email = this.email.toLowerCase();
-        const key = await this.cryptoService.makeKey(this.masterPassword, this.email);
+        const kdf = KdfType.PBKDF2;
+        const kdfIterations = 5000;
+        const key = await this.cryptoService.makeKey(this.masterPassword, this.email, kdf, kdfIterations);
         const encKey = await this.cryptoService.makeEncKey(key);
         const hashedPassword = await this.cryptoService.hashPassword(this.masterPassword, key);
         const keys = await this.cryptoService.makeKeyPair(encKey[0]);
         const request = new RegisterRequest(this.email, this.name, hashedPassword,
-            this.hint, encKey[1].encryptedString);
+            this.hint, encKey[1].encryptedString, kdf, kdfIterations);
         request.keys = new KeysRequest(keys[0], keys[1].encryptedString);
         const orgInvite = await this.stateService.get<any>('orgInvitation');
         if (orgInvite != null && orgInvite.token != null && orgInvite.organizationUserId != null) {

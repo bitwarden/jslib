@@ -33,6 +33,7 @@ import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
 import { PaymentRequest } from '../models/request/paymentRequest';
+import { PreloginRequest } from '../models/request/preloginRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
 import { StorageRequest } from '../models/request/storageRequest';
@@ -77,6 +78,7 @@ import {
     OrganizationUserDetailsResponse,
     OrganizationUserUserDetailsResponse,
 } from '../models/response/organizationUserResponse';
+import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
@@ -194,6 +196,11 @@ export class ApiService implements ApiServiceAbstraction {
     async putProfile(request: UpdateProfileRequest): Promise<ProfileResponse> {
         const r = await this.send('PUT', '/accounts/profile', request, true, true);
         return new ProfileResponse(r);
+    }
+
+    async postPrelogin(request: PreloginRequest): Promise<PreloginResponse> {
+        const r = await this.send('POST', '/accounts/prelogin', request, false, true);
+        return new PreloginResponse(r);
     }
 
     postEmailToken(request: EmailTokenRequest): Promise<any> {

@@ -1,6 +1,7 @@
 import { TwoFactorProviderType } from '../enums/twoFactorProviderType';
 
 import { AuthResult } from '../models/domain/authResult';
+import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
 export abstract class AuthService {
     email: string;
@@ -16,4 +17,5 @@ export abstract class AuthService {
     logOut: (callback: Function) => void;
     getSupportedTwoFactorProviders: (win: Window) => any[];
     getDefaultTwoFactorProvider: (u2fSupported: boolean) => TwoFactorProviderType;
+    makePreloginKey: (masterPassword: string, email: string) => Promise<SymmetricCryptoKey>;
 }

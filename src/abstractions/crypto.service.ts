@@ -3,6 +3,8 @@ import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
 import { ProfileOrganizationResponse } from '../models/response/profileOrganizationResponse';
 
+import { KdfType } from '../enums/kdfType';
+
 export abstract class CryptoService {
     setKey: (key: SymmetricCryptoKey) => Promise<any>;
     setKeyHash: (keyHash: string) => Promise<{}>;
@@ -25,7 +27,7 @@ export abstract class CryptoService {
     clearOrgKeys: (memoryOnly?: boolean) => Promise<any>;
     clearKeys: () => Promise<any>;
     toggleKey: () => Promise<any>;
-    makeKey: (password: string, salt: string) => Promise<SymmetricCryptoKey>;
+    makeKey: (password: string, salt: string, kdf: KdfType, kdfIterations: number) => Promise<SymmetricCryptoKey>;
     makeShareKey: () => Promise<[CipherString, SymmetricCryptoKey]>;
     makeKeyPair: (key?: SymmetricCryptoKey) => Promise<[string, CipherString]>;
     hashPassword: (password: string, key: SymmetricCryptoKey) => Promise<string>;

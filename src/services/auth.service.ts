@@ -1,3 +1,4 @@
+import { KdfType } from '../enums/kdfType';
 import { TwoFactorProviderType } from '../enums/twoFactorProviderType';
 
 import { AuthResult } from '../models/domain/authResult';
@@ -5,8 +6,10 @@ import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
 import { DeviceRequest } from '../models/request/deviceRequest';
 import { KeysRequest } from '../models/request/keysRequest';
+import { PreloginRequest } from '../models/request/preloginRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 
+import { ErrorResponse } from '../models/response/errorResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 
@@ -77,6 +80,8 @@ export class AuthService {
     selectedTwoFactorProviderType: TwoFactorProviderType = null;
 
     private key: SymmetricCryptoKey;
+    private kdf: KdfType;
+    private kdfIterations: number;
 
     constructor(private cryptoService: CryptoService, private apiService: ApiService,
         private userService: UserService, private tokenService: TokenService,
@@ -108,8 +113,7 @@ export class AuthService {
 
     async logIn(email: string, masterPassword: string): Promise<AuthResult> {
         this.selectedTwoFactorProviderType = null;
-        email = email.toLowerCase();
-        const key = await this.cryptoService.makeKey(masterPassword, email);
+        const key = await this.makePreloginKey(masterPassword, email);
         const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
         return await this.logInHelper(email, hashedPassword, key);
     }
@@ -123,8 +127,7 @@ export class AuthService {
     async logInComplete(email: string, masterPassword: string, twoFactorProvider: TwoFactorProviderType,
         twoFactorToken: string, remember?: boolean): Promise<AuthResult> {
         this.selectedTwoFactorProviderType = null;
-        email = email.toLowerCase();
-        const key = await this.cryptoService.makeKey(masterPassword, email);
+        const key = await this.makePreloginKey(masterPassword, email);
         const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
         return await this.logInHelper(email, hashedPassword, key, twoFactorProvider, twoFactorToken, remember);
     }
@@ -195,6 +198,24 @@ export class AuthService {
         return providerType;
     }
 
+    async makePreloginKey(masterPassword: string, email: string): Promise<SymmetricCryptoKey> {
+        email = email.toLowerCase();
+        this.kdf = null;
+        this.kdfIterations = null;
+        try {
+            const preloginResponse = await this.apiService.postPrelogin(new PreloginRequest(email));
+            if (preloginResponse != null) {
+                this.kdf = preloginResponse.kdf;
+                this.kdfIterations = preloginResponse.kdfIterations;
+            }
+        } catch (e) {
+            if (!(e instanceof ErrorResponse) || e.statusCode !== 404) {
+                throw e;
+            }
+        }
+        return this.cryptoService.makeKey(masterPassword, email, this.kdf, this.kdfIterations);
+    }
+
     private async logInHelper(email: string, hashedPassword: string, key: SymmetricCryptoKey,
         twoFactorProvider?: TwoFactorProviderType, twoFactorToken?: string, remember?: boolean): Promise<AuthResult> {
         const storedTwoFactorToken = await this.tokenService.getTwoFactorToken(email);
@@ -235,7 +256,8 @@ export class AuthService {
         }
 
         await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken);
-        await this.userService.setUserIdAndEmail(this.tokenService.getUserId(), this.tokenService.getEmail());
+        await this.userService.setInformation(this.tokenService.getUserId(), this.tokenService.getEmail(),
+            this.kdf, this.kdfIterations);
         if (this.setCryptoKeys) {
             await this.cryptoService.setKey(key);
             await this.cryptoService.setKeyHash(hashedPassword);

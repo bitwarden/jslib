@@ -5,28 +5,37 @@ import { UserService as UserServiceAbstraction } from '../abstractions/user.serv
 import { OrganizationData } from '../models/data/organizationData';
 import { Organization } from '../models/domain/organization';
 
+import { KdfType } from '../enums/kdfType';
+
 const Keys = {
     userId: 'userId',
     userEmail: 'userEmail',
     stamp: 'securityStamp',
+    kdf: 'kdf',
+    kdfIterations: 'kdfIterations',
     organizationsPrefix: 'organizations_',
 };
 
 export class UserService implements UserServiceAbstraction {
-    userId: string;
-    email: string;
-    stamp: string;
+    private userId: string;
+    private email: string;
+    private stamp: string;
+    private kdf: KdfType;
+    private kdfIterations: number;
 
-    constructor(private tokenService: TokenService, private storageService: StorageService) {
-    }
+    constructor(private tokenService: TokenService, private storageService: StorageService) { }
 
-    setUserIdAndEmail(userId: string, email: string): Promise<any> {
+    setInformation(userId: string, email: string, kdf: KdfType, kdfIterations: number): Promise<any> {
         this.email = email;
         this.userId = userId;
+        this.kdf = kdf;
+        this.kdfIterations = kdfIterations;
 
         return Promise.all([
             this.storageService.save(Keys.userEmail, email),
             this.storageService.save(Keys.userId, userId),
+            this.storageService.save(Keys.kdf, kdf),
+            this.storageService.save(Keys.kdfIterations, kdfIterations),
         ]);
     }
 
@@ -62,6 +71,24 @@ export class UserService implements UserServiceAbstraction {
         return this.stamp;
     }
 
+    async getKdf(): Promise<KdfType> {
+        if (this.kdf != null) {
+            return this.kdf;
+        }
+
+        this.kdf = await this.storageService.get<KdfType>(Keys.kdf);
+        return this.kdf;
+    }
+
+    async getKdfIterations(): Promise<number> {
+        if (this.kdfIterations != null) {
+            return this.kdfIterations;
+        }
+
+        this.kdfIterations = await this.storageService.get<number>(Keys.kdfIterations);
+        return this.kdfIterations;
+    }
+
     async clear(): Promise<any> {
         const userId = await this.getUserId();
 
@@ -69,10 +96,14 @@ export class UserService implements UserServiceAbstraction {
             this.storageService.remove(Keys.userId),
             this.storageService.remove(Keys.userEmail),
             this.storageService.remove(Keys.stamp),
+            this.storageService.remove(Keys.kdf),
+            this.storageService.remove(Keys.kdfIterations),
             this.clearOrganizations(userId),
         ]);
 
         this.userId = this.email = this.stamp = null;
+        this.kdf = null;
+        this.kdfIterations = null;
     }
 
     async isAuthenticated(): Promise<boolean> {

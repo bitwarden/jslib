@@ -10,7 +10,6 @@ import { CryptoService } from '../../abstractions/crypto.service';
 import { ExportService } from '../../abstractions/export.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
-import { UserService } from '../../abstractions/user.service';
 
 export class ExportComponent {
     @Output() onSaved = new EventEmitter();
@@ -20,9 +19,9 @@ export class ExportComponent {
     showPassword = false;
 
     constructor(protected analytics: Angulartics2, protected toasterService: ToasterService,
-        protected cryptoService: CryptoService, protected userService: UserService,
-        protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
-        protected exportService: ExportService, protected win: Window) { }
+        protected cryptoService: CryptoService, protected i18nService: I18nService,
+        protected platformUtilsService: PlatformUtilsService, protected exportService: ExportService,
+        protected win: Window) { }
 
     async submit() {
         if (this.masterPassword == null || this.masterPassword === '') {
@@ -31,11 +30,8 @@ export class ExportComponent {
             return;
         }
 
-        const email = await this.userService.getEmail();
-        const key = await this.cryptoService.makeKey(this.masterPassword, email);
-        const keyHash = await this.cryptoService.hashPassword(this.masterPassword, key);
+        const keyHash = await this.cryptoService.hashPassword(this.masterPassword, null);
         const storedKeyHash = await this.cryptoService.getKeyHash();
-
         if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
             try {
                 this.formPromise = this.getExportData();

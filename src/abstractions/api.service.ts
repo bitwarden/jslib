@@ -27,6 +27,7 @@ import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
 import { PaymentRequest } from '../models/request/paymentRequest';
+import { PreloginRequest } from '../models/request/preloginRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
 import { StorageRequest } from '../models/request/storageRequest';
@@ -70,6 +71,7 @@ import {
     OrganizationUserDetailsResponse,
     OrganizationUserUserDetailsResponse,
 } from '../models/response/organizationUserResponse';
+import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
@@ -93,6 +95,7 @@ export abstract class ApiService {
     getProfile: () => Promise<ProfileResponse>;
     getUserBilling: () => Promise<BillingResponse>;
     putProfile: (request: UpdateProfileRequest) => Promise<ProfileResponse>;
+    postPrelogin: (request: PreloginRequest) => Promise<PreloginResponse>;
     postEmailToken: (request: EmailTokenRequest) => Promise<any>;
     postEmail: (request: EmailRequest) => Promise<any>;
     postPassword: (request: PasswordRequest) => Promise<any>;

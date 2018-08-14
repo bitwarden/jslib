@@ -1,4 +1,5 @@
 import { EncryptionType } from '../enums/encryptionType';
+import { KdfType } from '../enums/kdfType';
 
 import { CipherString } from '../models/domain/cipherString';
 import { EncryptedObject } from '../models/domain/encryptedObject';
@@ -272,8 +273,19 @@ export class CryptoService implements CryptoServiceAbstraction {
         await this.setKey(key);
     }
 
-    async makeKey(password: string, salt: string): Promise<SymmetricCryptoKey> {
-        const key = await this.cryptoFunctionService.pbkdf2(password, salt, 'sha256', 5000);
+    async makeKey(password: string, salt: string, kdf: KdfType, kdfIterations: number):
+        Promise<SymmetricCryptoKey> {
+        let key: ArrayBuffer = null;
+        if (kdf == null || kdf === KdfType.PBKDF2) {
+            if (kdfIterations == null) {
+                kdfIterations = 5000;
+            } else if (kdfIterations < 5000) {
+                throw new Error('PBKDF2 iteration minimum is 5000.');
+            }
+            key = await this.cryptoFunctionService.pbkdf2(password, salt, 'sha256', kdfIterations);
+        } else {
+            throw new Error('Unknown Kdf.');
+        }
         return new SymmetricCryptoKey(key);
     }
 

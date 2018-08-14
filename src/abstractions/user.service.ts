@@ -1,16 +1,16 @@
 import { OrganizationData } from '../models/data/organizationData';
 import { Organization } from '../models/domain/organization';
 
-export abstract class UserService {
-    userId: string;
-    email: string;
-    stamp: string;
+import { KdfType } from '../enums/kdfType';
 
-    setUserIdAndEmail: (userId: string, email: string) => Promise<any>;
+export abstract class UserService {
+    setInformation: (userId: string, email: string, kdf: KdfType, kdfIterations: number) => Promise<any>;
     setSecurityStamp: (stamp: string) => Promise<any>;
     getUserId: () => Promise<string>;
     getEmail: () => Promise<string>;
     getSecurityStamp: () => Promise<string>;
+    getKdf: () => Promise<KdfType>;
+    getKdfIterations: () => Promise<number>;
     clear: () => Promise<any>;
     isAuthenticated: () => Promise<boolean>;
     getOrganization: (id: string) => Promise<Organization>;
