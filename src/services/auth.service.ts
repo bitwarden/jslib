@@ -209,7 +209,7 @@ export class AuthService {
                 this.kdfIterations = preloginResponse.kdfIterations;
             }
         } catch (e) {
-            if (!(e instanceof ErrorResponse) || e.statusCode !== 404) {
+            if (e == null || e.statusCode !== 404) {
                 throw e;
             }
         }
