@@ -80,11 +80,14 @@ export class CipherService implements CipherServiceAbstraction {
         this.decryptedCipherCache = null;
     }
 
-    async encrypt(model: CipherView, key?: SymmetricCryptoKey): Promise<Cipher> {
+    async encrypt(model: CipherView, key?: SymmetricCryptoKey, originalCipher: Cipher = null): Promise<Cipher> {
         // Adjust password history
         if (model.id != null) {
-            const existingCipher = await (await this.get(model.id)).decrypt();
-            if (existingCipher != null) {
+            if (originalCipher == null) {
+                originalCipher = await this.get(model.id);
+            }
+            if (originalCipher != null) {
+                const existingCipher = await originalCipher.decrypt();
                 model.passwordHistory = existingCipher.passwordHistory || [];
                 if (model.type === CipherType.Login && existingCipher.type === CipherType.Login) {
                     if (existingCipher.login.password != null && existingCipher.login.password !== '' &&
