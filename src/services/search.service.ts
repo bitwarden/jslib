@@ -101,7 +101,7 @@ export class SearchService implements SearchServiceAbstraction {
             } catch { }
         } else {
             // tslint:disable-next-line
-            const soWild = lunr.Query.wildcard.LEADING | lunr.Query.wildcard.TRAILING;
+            const soWild = lunr.Query.wildcard.TRAILING;
             searchResults = index.query((q) => {
                 q.term(query, { fields: ['name'], wildcard: soWild });
                 q.term(query, { fields: ['subTitle'], wildcard: soWild });
