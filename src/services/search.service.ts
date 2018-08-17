@@ -63,7 +63,7 @@ export class SearchService implements SearchServiceAbstraction {
         console.timeEnd('search indexing');
     }
 
-    async searchCiphers(query: string, filter: (cipher: CipherView) => boolean = null):
+    async searchCiphers(query: string, filter: (cipher: CipherView) => boolean = null, ciphers: CipherView[] = null):
         Promise<CipherView[]> {
         const results: CipherView[] = [];
         if (query != null) {
@@ -73,7 +73,9 @@ export class SearchService implements SearchServiceAbstraction {
             query = null;
         }
 
-        let ciphers = await this.cipherService.getAllDecrypted();
+        if (ciphers == null) {
+            ciphers = await this.cipherService.getAllDecrypted();
+        }
         if (filter != null) {
             ciphers = ciphers.filter(filter);
         }
@@ -82,7 +84,8 @@ export class SearchService implements SearchServiceAbstraction {
             return ciphers;
         }
 
-        if (this.index == null) {
+        const index = this.getIndexForSearch();
+        if (index == null) {
             // Fall back to basic search if index is not available
             return this.searchCiphersBasic(ciphers, query);
         }
@@ -94,12 +97,12 @@ export class SearchService implements SearchServiceAbstraction {
         const isQueryString = query != null && query.length > 1 && query.indexOf('>') === 0;
         if (isQueryString) {
             try {
-                searchResults = this.index.search(query.substr(1));
+                searchResults = index.search(query.substr(1));
             } catch { }
         } else {
             // tslint:disable-next-line
             const soWild = lunr.Query.wildcard.LEADING | lunr.Query.wildcard.TRAILING;
-            searchResults = this.index.query((q) => {
+            searchResults = index.query((q) => {
                 q.term(query, { fields: ['name'], wildcard: soWild });
                 q.term(query, { fields: ['subTitle'], wildcard: soWild });
                 q.term(query, { fields: ['login.uris'], wildcard: soWild });
@@ -139,6 +142,10 @@ export class SearchService implements SearchServiceAbstraction {
             }
             return false;
         });
+    }
+
+    getIndexForSearch(): lunr.Index {
+        return this.index;
     }
 
     private fieldExtractor(c: CipherView, joined: boolean) {
