@@ -27,7 +27,7 @@ export class PasswordGeneratorHistoryComponent implements OnInit {
 
     copy(password: string) {
         this.analytics.eventTrack.next({ action: 'Copied Historical Password' });
-        const copyOptions = this.win != null ? { doc: this.win.document } : null;
+        const copyOptions = this.win != null ? { window: this.win } : null;
         this.platformUtilsService.copyToClipboard(password, copyOptions);
         this.toasterService.popAsync('info', null, this.i18nService.t('valueCopied', this.i18nService.t('password')));
     }
