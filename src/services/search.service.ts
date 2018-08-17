@@ -97,7 +97,7 @@ export class SearchService implements SearchServiceAbstraction {
         const isQueryString = query != null && query.length > 1 && query.indexOf('>') === 0;
         if (isQueryString) {
             try {
-                searchResults = index.search(query.substr(1));
+                searchResults = index.search(query.substr(1).trim());
             } catch { }
         } else {
             // tslint:disable-next-line
