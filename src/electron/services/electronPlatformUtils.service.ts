@@ -3,6 +3,7 @@ import {
     remote,
     shell,
 } from 'electron';
+import * as fs from 'fs';
 
 import {
     isDev,
@@ -113,13 +114,13 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     }
 
     saveFile(win: Window, blobData: any, blobOptions: any, fileName: string): void {
-        const blob = new Blob([blobData], blobOptions);
-        const a = win.document.createElement('a');
-        a.href = win.URL.createObjectURL(blob);
-        a.download = fileName;
-        window.document.body.appendChild(a);
-        a.click();
-        window.document.body.removeChild(a);
+        remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
+            defaultPath: fileName,
+        }, (filename) => {
+            fs.writeFile(filename, Buffer.from(blobData), (err) => {
+                // error check?
+            });
+        });
     }
 
     getApplicationVersion(): string {
