@@ -1,7 +1,10 @@
 import {
+    ChangeDetectorRef,
     EventEmitter,
     Input,
+    NgZone,
     OnDestroy,
+    OnInit,
     Output,
 } from '@angular/core';
 
@@ -23,8 +26,11 @@ import { AttachmentView } from '../../models/view/attachmentView';
 import { CipherView } from '../../models/view/cipherView';
 import { FieldView } from '../../models/view/fieldView';
 import { LoginUriView } from '../../models/view/loginUriView';
+import { BroadcasterService } from '../services/broadcaster.service';
 
-export class ViewComponent implements OnDestroy {
+const BroadcasterSubscriptionId = 'ViewComponent';
+
+export class ViewComponent implements OnDestroy, OnInit {
     @Input() cipherId: string;
     @Output() onEditCipher = new EventEmitter<CipherView>();
 
@@ -46,9 +52,27 @@ export class ViewComponent implements OnDestroy {
         protected tokenService: TokenService, protected toasterService: ToasterService,
         protected cryptoService: CryptoService, protected platformUtilsService: PlatformUtilsService,
         protected i18nService: I18nService, protected analytics: Angulartics2,
-        protected auditService: AuditService, protected win: Window) { }
+        protected auditService: AuditService, protected win: Window,
+        protected broadcasterService: BroadcasterService, protected ngZone: NgZone,
+        protected changeDetectorRef: ChangeDetectorRef) { }
+
+    ngOnInit() {
+        this.broadcasterService.subscribe(BroadcasterSubscriptionId, (message: any) => {
+            this.ngZone.run(async () => {
+                switch (message.command) {
+                    case 'syncCompleted':
+                        if (message.successfully) {
+                            await this.load();
+                            this.changeDetectorRef.detectChanges();
+                        }
+                        break;
+                }
+            });
+        });
+    }
 
     ngOnDestroy() {
+        this.broadcasterService.unsubscribe(BroadcasterSubscriptionId);
         this.cleanUp();
     }
 
