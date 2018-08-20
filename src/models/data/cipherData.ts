@@ -18,7 +18,7 @@ export class CipherData {
     edit: boolean;
     organizationUseTotp: boolean;
     favorite: boolean;
-    revisionDate: Date;
+    revisionDate: string;
     type: CipherType;
     sizeName: string;
     name: string;

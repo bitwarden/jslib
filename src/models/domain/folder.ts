@@ -8,6 +8,7 @@ import Domain from './domain';
 export class Folder extends Domain {
     id: string;
     name: CipherString;
+    revisionDate: Date;
 
     constructor(obj?: FolderData, alreadyEncrypted: boolean = false) {
         super();
@@ -19,6 +20,8 @@ export class Folder extends Domain {
             id: null,
             name: null,
         }, alreadyEncrypted, ['id']);
+
+        this.revisionDate = obj.revisionDate != null ? new Date(obj.revisionDate) : null;
     }
 
     decrypt(): Promise<FolderView> {

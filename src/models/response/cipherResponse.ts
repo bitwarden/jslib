@@ -22,7 +22,7 @@ export class CipherResponse {
     favorite: boolean;
     edit: boolean;
     organizationUseTotp: boolean;
-    revisionDate: Date;
+    revisionDate: string;
     attachments: AttachmentResponse[];
     passwordHistory: PasswordHistoryResponse[];
     collectionIds: string[];

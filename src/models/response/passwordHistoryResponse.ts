@@ -1,6 +1,6 @@
 export class PasswordHistoryResponse {
     password: string;
-    lastUsedDate: Date;
+    lastUsedDate: string;
 
     constructor(response: any) {
         this.password = response.Password;

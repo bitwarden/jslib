@@ -286,6 +286,11 @@ export class ApiService implements ApiServiceAbstraction {
 
     // Folder APIs
 
+    async getFolder(id: string): Promise<FolderResponse> {
+        const r = await this.send('GET', '/folders/' + id, null, true, true);
+        return new FolderResponse(r);
+    }
+
     async postFolder(request: FolderRequest): Promise<FolderResponse> {
         const r = await this.send('POST', '/folders', request, true, true);
         return new FolderResponse(r);

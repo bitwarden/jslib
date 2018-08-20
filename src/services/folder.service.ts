@@ -152,7 +152,9 @@ export class FolderService implements FolderServiceAbstraction {
         }
 
         if (typeof id === 'string') {
-            const i = id as string;
+            if (folders[id] == null) {
+                return;
+            }
             delete folders[id];
         } else {
             (id as string[]).forEach((i) => {

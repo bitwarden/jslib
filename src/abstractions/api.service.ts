@@ -117,6 +117,7 @@ export abstract class ApiService {
     postAccountRecoverDelete: (request: DeleteRecoverRequest) => Promise<any>;
     postAccountRecoverDeleteToken: (request: VerifyDeleteRecoverRequest) => Promise<any>;
 
+    getFolder: (id: string) => Promise<FolderResponse>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
     putFolder: (id: string, request: FolderRequest) => Promise<FolderResponse>;
     deleteFolder: (id: string) => Promise<any>;

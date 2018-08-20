@@ -644,7 +644,9 @@ export class CipherService implements CipherServiceAbstraction {
         }
 
         if (typeof id === 'string') {
-            const i = id as string;
+            if (ciphers[id] == null) {
+                return;
+            }
             delete ciphers[id];
         } else {
             (id as string[]).forEach((i) => {

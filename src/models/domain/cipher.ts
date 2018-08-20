@@ -54,7 +54,7 @@ export class Cipher extends Domain {
         this.favorite = obj.favorite;
         this.organizationUseTotp = obj.organizationUseTotp;
         this.edit = obj.edit;
-        this.revisionDate = obj.revisionDate;
+        this.revisionDate = obj.revisionDate != null ? new Date(obj.revisionDate) : null;
         this.collectionIds = obj.collectionIds;
         this.localData = localData;
 
@@ -178,7 +178,7 @@ export class Cipher extends Domain {
         c.edit = this.edit;
         c.organizationUseTotp = this.organizationUseTotp;
         c.favorite = this.favorite;
-        c.revisionDate = this.revisionDate;
+        c.revisionDate = this.revisionDate.toISOString();
         c.type = this.type;
         c.collectionIds = this.collectionIds;
 

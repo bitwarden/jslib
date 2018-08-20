@@ -18,6 +18,10 @@ import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionDetailsResponse } from '../models/response/collectionResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import { FolderResponse } from '../models/response/folderResponse';
+import {
+    SyncCipherNotification,
+    SyncFolderNotification,
+} from '../models/response/notificationResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 
 const Keys = {
@@ -57,22 +61,11 @@ export class SyncService implements SyncServiceAbstraction {
         await this.storageService.save(Keys.lastSyncPrefix + userId, date.toJSON());
     }
 
-    syncStarted() {
-        this.syncInProgress = true;
-        this.messagingService.send('syncStarted');
-    }
-
-    syncCompleted(successfully: boolean) {
-        this.syncInProgress = false;
-        this.messagingService.send('syncCompleted', { successfully: successfully });
-    }
-
     async fullSync(forceSync: boolean): Promise<boolean> {
         this.syncStarted();
         const isAuthenticated = await this.userService.isAuthenticated();
         if (!isAuthenticated) {
-            this.syncCompleted(false);
-            return false;
+            return this.syncCompleted(false);
         }
 
         const now = new Date();
@@ -81,14 +74,12 @@ export class SyncService implements SyncServiceAbstraction {
         const skipped = needsSyncResult[1];
 
         if (skipped) {
-            this.syncCompleted(false);
-            return false;
+            return this.syncCompleted(false);
         }
 
         if (!needsSync) {
             await this.setLastSync(now);
-            this.syncCompleted(false);
-            return false;
+            return this.syncCompleted(false);
         }
 
         const userId = await this.userService.getUserId();
@@ -102,15 +93,81 @@ export class SyncService implements SyncServiceAbstraction {
             await this.syncSettings(userId, response.domains);
 
             await this.setLastSync(now);
-            this.syncCompleted(true);
-            return true;
+            return this.syncCompleted(true);
         } catch (e) {
-            this.syncCompleted(false);
-            return false;
+            return this.syncCompleted(false);
         }
     }
 
+    async syncUpsertFolder(notification: SyncFolderNotification): Promise<boolean> {
+        this.syncStarted();
+        if (await this.userService.isAuthenticated()) {
+            try {
+                const remoteFolder = await this.apiService.getFolder(notification.id);
+                const localFolder = await this.folderService.get(notification.id);
+                if (remoteFolder != null &&
+                    (localFolder == null || localFolder.revisionDate < notification.revisionDate)) {
+                    const userId = await this.userService.getUserId();
+                    await this.folderService.upsert(new FolderData(remoteFolder, userId));
+                    this.messagingService.send('syncedUpsertedFolder', { folderId: notification.id });
+                    return this.syncCompleted(true);
+                }
+            } catch { }
+        }
+        return this.syncCompleted(false);
+    }
+
+    async syncDeleteFolder(notification: SyncFolderNotification): Promise<boolean> {
+        this.syncStarted();
+        if (await this.userService.isAuthenticated()) {
+            await this.folderService.delete(notification.id);
+            this.messagingService.send('syncedDeletedFolder', { folderId: notification.id });
+            this.syncCompleted(true);
+            return true;
+        }
+        return this.syncCompleted(false);
+    }
+
+    async syncUpsertCipher(notification: SyncCipherNotification): Promise<boolean> {
+        this.syncStarted();
+        if (await this.userService.isAuthenticated()) {
+            try {
+                const remoteCipher = await this.apiService.getCipher(notification.id);
+                const localCipher = await this.cipherService.get(notification.id);
+                if (remoteCipher != null &&
+                    (localCipher == null || localCipher.revisionDate < notification.revisionDate)) {
+                    const userId = await this.userService.getUserId();
+                    await this.cipherService.upsert(new CipherData(remoteCipher, userId));
+                    this.messagingService.send('syncedUpsertedCipher', { cipherId: notification.id });
+                    return this.syncCompleted(true);
+                }
+            } catch { }
+        }
+        return this.syncCompleted(false);
+    }
+
+    async syncDeleteCipher(notification: SyncCipherNotification): Promise<boolean> {
+        this.syncStarted();
+        if (await this.userService.isAuthenticated()) {
+            await this.cipherService.delete(notification.id);
+            this.messagingService.send('syncedDeletedCipher', { cipherId: notification.id });
+            return this.syncCompleted(true);
+        }
+        return this.syncCompleted(false);
+    }
+
     // Helpers
+
+    private syncStarted() {
+        this.syncInProgress = true;
+        this.messagingService.send('syncStarted');
+    }
+
+    private syncCompleted(successfully: boolean): boolean {
+        this.syncInProgress = false;
+        this.messagingService.send('syncCompleted', { successfully: successfully });
+        return successfully;
+    }
 
     private async needsSyncing(forceSync: boolean) {
         if (forceSync) {

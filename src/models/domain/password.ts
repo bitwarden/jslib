@@ -17,8 +17,8 @@ export class Password extends Domain {
 
         this.buildDomainModel(this, obj, {
             password: null,
-            lastUsedDate: null,
-        }, alreadyEncrypted, ['lastUsedDate']);
+        }, alreadyEncrypted);
+        this.lastUsedDate = new Date(obj.lastUsedDate);
     }
 
     async decrypt(orgId: string): Promise<PasswordHistoryView> {
@@ -30,7 +30,7 @@ export class Password extends Domain {
 
     toPasswordHistoryData(): PasswordHistoryData {
         const ph = new PasswordHistoryData();
-        ph.lastUsedDate = this.lastUsedDate;
+        ph.lastUsedDate = this.lastUsedDate.toISOString();
         this.buildDataModel(this, ph, {
             password: null,
         });

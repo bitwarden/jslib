@@ -2,23 +2,24 @@ import * as signalR from '@aspnet/signalr';
 
 import { NotificationType } from '../enums/notificationType';
 
-import { CipherService } from '../abstractions/cipher.service';
-import { CollectionService } from '../abstractions/collection.service';
+import { AppIdService } from '../abstractions/appId.service';
 import { EnvironmentService } from '../abstractions/environment.service';
-import { FolderService } from '../abstractions/folder.service';
 import { NotificationsService as NotificationsServiceAbstraction } from '../abstractions/notifications.service';
-import { SettingsService } from '../abstractions/settings.service';
 import { SyncService } from '../abstractions/sync.service';
 import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
 
-import { NotificationResponse } from '../models/response/notificationResponse';
+import {
+    NotificationResponse,
+    SyncCipherNotification,
+    SyncFolderNotification,
+} from '../models/response/notificationResponse';
 
 export class NotificationsService implements NotificationsServiceAbstraction {
     private signalrConnection: signalR.HubConnection;
 
     constructor(private userService: UserService, private tokenService: TokenService,
-        private syncService: SyncService) { }
+        private syncService: SyncService, private appIdService: AppIdService) { }
 
     async init(environmentService: EnvironmentService): Promise<void> {
         let url = 'https://notifications.bitwarden.com';
@@ -61,21 +62,26 @@ export class NotificationsService implements NotificationsServiceAbstraction {
     }
 
     private async processNotification(notification: NotificationResponse) {
-        if (notification == null) {
+        const appId = await this.appIdService.getAppId();
+        if (notification == null || notification.contextId === appId) {
             return;
         }
 
         switch (notification.type) {
             case NotificationType.SyncCipherCreate:
-            case NotificationType.SyncCipherDelete:
             case NotificationType.SyncCipherUpdate:
+                this.syncService.syncUpsertCipher(notification.payload as SyncCipherNotification);
+                break;
+            case NotificationType.SyncCipherDelete:
             case NotificationType.SyncLoginDelete:
-                this.syncService.fullSync(false);
+                this.syncService.syncDeleteCipher(notification.payload as SyncCipherNotification);
                 break;
             case NotificationType.SyncFolderCreate:
-            case NotificationType.SyncFolderDelete:
             case NotificationType.SyncFolderUpdate:
-                this.syncService.fullSync(false);
+                this.syncService.syncUpsertFolder(notification.payload as SyncFolderNotification);
+                break;
+            case NotificationType.SyncFolderDelete:
+                this.syncService.syncDeleteFolder(notification.payload as SyncFolderNotification);
                 break;
             case NotificationType.SyncVault:
             case NotificationType.SyncCiphers:
