@@ -4,6 +4,7 @@ import { ConstantsService } from './constants.service';
 
 import { ApiService } from '../abstractions/api.service';
 import { EnvironmentService as EnvironmentServiceAbstraction } from '../abstractions/environment.service';
+import { NotificationsService } from '../abstractions/notifications.service';
 import { StorageService } from '../abstractions/storage.service';
 
 export class EnvironmentService implements EnvironmentServiceAbstraction {
@@ -14,7 +15,8 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
     iconsUrl: string;
     notificationsUrl: string;
 
-    constructor(private apiService: ApiService, private storageService: StorageService) {}
+    constructor(private apiService: ApiService, private storageService: StorageService,
+        private notificationsService: NotificationsService) { }
 
     getWebVaultUrl(): string {
         if (this.webVaultUrl != null) {
@@ -85,6 +87,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         }
 
         await this.apiService.setUrls(envUrls);
+        this.notificationsService.init(this);
         return urls;
     }
 
