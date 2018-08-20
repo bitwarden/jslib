@@ -16,6 +16,7 @@ export class EnvironmentComponent {
     identityUrl: string;
     apiUrl: string;
     webVaultUrl: string;
+    notificationsUrl: string;
     baseUrl: string;
     showCustom = false;
 
@@ -26,6 +27,7 @@ export class EnvironmentComponent {
         this.apiUrl = environmentService.apiUrl || '';
         this.identityUrl = environmentService.identityUrl || '';
         this.iconsUrl = environmentService.iconsUrl || '';
+        this.notificationsUrl = environmentService.notificationsUrl || '';
     }
 
     async submit() {
@@ -35,6 +37,7 @@ export class EnvironmentComponent {
             identity: this.identityUrl,
             webVault: this.webVaultUrl,
             icons: this.iconsUrl,
+            notifications: this.notificationsUrl,
         });
 
         // re-set urls since service can change them, ex: prefixing https://
@@ -43,6 +46,7 @@ export class EnvironmentComponent {
         this.identityUrl = resUrls.identity;
         this.webVaultUrl = resUrls.webVault;
         this.iconsUrl = resUrls.icons;
+        this.notificationsUrl = resUrls.notifications;
 
         this.analytics.eventTrack.next({ action: 'Set Environment URLs' });
         this.toasterService.popAsync('success', null, this.i18nService.t('environmentSaved'));

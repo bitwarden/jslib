@@ -12,6 +12,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
     apiUrl: string;
     identityUrl: string;
     iconsUrl: string;
+    notificationsUrl: string;
 
     constructor(private apiService: ApiService, private storageService: StorageService) {}
 
@@ -31,6 +32,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
             api: null,
             identity: null,
             icons: null,
+            notifications: null,
             webVault: null,
         };
 
@@ -46,6 +48,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         this.apiUrl = envUrls.api = urls.api;
         this.identityUrl = envUrls.identity = urls.identity;
         this.iconsUrl = urls.icons;
+        this.notificationsUrl = urls.notifications;
         await this.apiService.setUrls(envUrls);
     }
 
@@ -55,6 +58,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         urls.api = this.formatUrl(urls.api);
         urls.identity = this.formatUrl(urls.identity);
         urls.icons = this.formatUrl(urls.icons);
+        urls.notifications = this.formatUrl(urls.notifications);
 
         await this.storageService.save(ConstantsService.environmentUrlsKey, {
             base: urls.base,
@@ -62,6 +66,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
             identity: urls.identity,
             webVault: urls.webVault,
             icons: urls.icons,
+            notifications: urls.notifications,
         });
 
         this.baseUrl = urls.base;
@@ -69,6 +74,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         this.apiUrl = urls.api;
         this.identityUrl = urls.identity;
         this.iconsUrl = urls.icons;
+        this.notificationsUrl = urls.notifications;
 
         const envUrls = new EnvironmentUrls();
         if (this.baseUrl) {
