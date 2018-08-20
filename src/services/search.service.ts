@@ -9,6 +9,8 @@ import { SearchService as SearchServiceAbstraction } from '../abstractions/searc
 import { DeviceType } from '../enums/deviceType';
 import { FieldType } from '../enums/fieldType';
 
+const IgnoredTlds = ['com', 'net', 'org', 'io', 'co', 'uk', 'au', 'nz', 'fr', 'de', 'eu', 'me', 'jp', 'cn'];
+
 export class SearchService implements SearchServiceAbstraction {
     private indexing = false;
     private index: lunr.Index = null;
@@ -49,6 +51,31 @@ export class SearchService implements SearchServiceAbstraction {
             boost: 2,
             extractor: (c: CipherView) => c.login == null || !c.login.hasUris ? null :
                 c.login.uris.filter((u) => u.hostname != null).map((u) => u.hostname),
+        });
+        (builder as any).field('login.uris_split', {
+            boost: 2,
+            extractor: (c: CipherView) => {
+                if (c.login == null || !c.login.hasUris) {
+                    return null;
+                }
+                let uriParts: string[] = [];
+                c.login.uris.forEach((u) => {
+                    if (u.hostname == null) {
+                        return;
+                    }
+                    const parts = u.hostname.split('.');
+                    if (parts.length > 0 && parts.length <= 2) {
+                        uriParts.push(parts[0]);
+                    } else if (parts.length > 2) {
+                        uriParts = uriParts.concat(parts.slice(0, parts.length - 2));
+                        const lastBit = parts[parts.length - 2];
+                        if (IgnoredTlds.indexOf(lastBit) === -1) {
+                            uriParts.push(lastBit);
+                        }
+                    }
+                });
+                return uriParts.length === 0 ? null : uriParts;
+            },
         });
         (builder as any).field('fields', { extractor: (c: CipherView) => this.fieldExtractor(c, false) });
         (builder as any).field('fields_joined', { extractor: (c: CipherView) => this.fieldExtractor(c, true) });
