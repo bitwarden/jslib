@@ -1,13 +1,13 @@
 export class BreachAccountResponse {
-    addedDate: Date;
-    breachDate: Date;
+    addedDate: string;
+    breachDate: string;
     dataClasses: string[];
     description: string;
     domain: string;
     isActive: boolean;
     isVerified: boolean;
     logoType: string;
-    modifiedDate: Date;
+    modifiedDate: string;
     name: string;
     pwnCount: number;
     title: string;

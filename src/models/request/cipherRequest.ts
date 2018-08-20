@@ -39,7 +39,8 @@ export class CipherRequest {
                     uris: null,
                     username: cipher.login.username ? cipher.login.username.encryptedString : null,
                     password: cipher.login.password ? cipher.login.password.encryptedString : null,
-                    passwordRevisionDate: cipher.login.passwordRevisionDate,
+                    passwordRevisionDate: cipher.login.passwordRevisionDate != null ?
+                        cipher.login.passwordRevisionDate.toISOString() : null,
                     totp: cipher.login.totp ? cipher.login.totp.encryptedString : null,
                 };
 

@@ -20,7 +20,7 @@ export class Login extends Domain {
             return;
         }
 
-        this.passwordRevisionDate = obj.passwordRevisionDate;
+        this.passwordRevisionDate = obj.passwordRevisionDate != null ? new Date(obj.passwordRevisionDate) : null;
         this.buildDomainModel(this, obj, {
             username: null,
             password: null,
@@ -55,7 +55,7 @@ export class Login extends Domain {
 
     toLoginData(): LoginData {
         const l = new LoginData();
-        l.passwordRevisionDate = this.passwordRevisionDate;
+        l.passwordRevisionDate = this.passwordRevisionDate != null ? this.passwordRevisionDate.toISOString() : null;
         this.buildDataModel(this, l, {
             username: null,
             password: null,

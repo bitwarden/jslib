@@ -9,7 +9,7 @@ export class BillingResponse {
     upcomingInvoice: BillingInvoiceResponse;
     charges: BillingChargeResponse[] = [];
     license: any;
-    expiration: Date;
+    expiration: string;
 
     constructor(response: any) {
         this.storageName = response.StorageName;
@@ -43,11 +43,11 @@ export class BillingSourceResponse {
 }
 
 export class BillingSubscriptionResponse {
-    trialStartDate: Date;
-    trialEndDate: Date;
-    periodStartDate: Date;
-    periodEndDate: Date;
-    cancelledDate: Date;
+    trialStartDate: string;
+    trialEndDate: string;
+    periodStartDate: string;
+    periodEndDate: string;
+    cancelledDate: string;
     cancelAtEndDate: boolean;
     status: string;
     cancelled: boolean;
@@ -83,7 +83,7 @@ export class BillingSubscriptionItemResponse {
 }
 
 export class BillingInvoiceResponse {
-    date: Date;
+    date: string;
     amount: number;
 
     constructor(response: any) {
@@ -93,7 +93,7 @@ export class BillingInvoiceResponse {
 }
 
 export class BillingChargeResponse {
-    createdDate: Date;
+    createdDate: string;
     amount: number;
     paymentSource: BillingSourceResponse;
     status: string;

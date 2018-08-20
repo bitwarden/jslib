@@ -5,6 +5,7 @@ import { Folder } from '../domain/folder';
 export class FolderView implements View {
     id: string = null;
     name: string;
+    revisionDate: Date;
 
     constructor(f?: Folder) {
         if (!f) {
@@ -12,5 +13,6 @@ export class FolderView implements View {
         }
 
         this.id = f.id;
+        this.revisionDate = f.revisionDate;
     }
 }

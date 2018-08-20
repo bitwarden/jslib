@@ -4,7 +4,7 @@ export class LoginApi {
     uris: LoginUriApi[];
     username: string;
     password: string;
-    passwordRevisionDate?: Date;
+    passwordRevisionDate: string;
     totp: string;
 
     constructor(data: any) {

@@ -13,7 +13,7 @@ export class OrganizationBillingResponse extends OrganizationResponse {
     subscription: BillingSubscriptionResponse;
     upcomingInvoice: BillingInvoiceResponse;
     charges: BillingChargeResponse[] = [];
-    expiration: Date;
+    expiration: string;
 
     constructor(response: any) {
         super(response);
@@ -27,6 +27,6 @@ export class OrganizationBillingResponse extends OrganizationResponse {
         if (response.Charges != null) {
             this.charges = response.Charges.map((c: any) => new BillingChargeResponse(c));
         }
-        this.expiration = response.Expiration != null ? new Date(response.Expiration) : null;
+        this.expiration = response.Expiration;
     }
 }

@@ -10,7 +10,7 @@ export class EventResponse {
     groupId: string;
     organizationUserId: string;
     actingUserId: string;
-    date: Date;
+    date: string;
     deviceType: DeviceType;
     ipAddress: string;
 
