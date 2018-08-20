@@ -87,7 +87,9 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         }
 
         await this.apiService.setUrls(envUrls);
-        this.notificationsService.init(this);
+        if (this.notificationsService != null) {
+            this.notificationsService.init(this);
+        }
         return urls;
     }
 
