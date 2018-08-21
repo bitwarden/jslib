@@ -56,7 +56,8 @@ export class NotificationsService implements NotificationsServiceAbstraction {
         switch (notification.type) {
             case NotificationType.SyncCipherCreate:
             case NotificationType.SyncCipherUpdate:
-                await this.syncService.syncUpsertCipher(notification.payload as SyncCipherNotification);
+                await this.syncService.syncUpsertCipher(notification.payload as SyncCipherNotification,
+                    notification.type === NotificationType.SyncCipherUpdate);
                 break;
             case NotificationType.SyncCipherDelete:
             case NotificationType.SyncLoginDelete:
@@ -64,7 +65,8 @@ export class NotificationsService implements NotificationsServiceAbstraction {
                 break;
             case NotificationType.SyncFolderCreate:
             case NotificationType.SyncFolderUpdate:
-                await this.syncService.syncUpsertFolder(notification.payload as SyncFolderNotification);
+                await this.syncService.syncUpsertFolder(notification.payload as SyncFolderNotification,
+                    notification.type === NotificationType.SyncFolderUpdate);
                 break;
             case NotificationType.SyncFolderDelete:
                 await this.syncService.syncDeleteFolder(notification.payload as SyncFolderNotification);

@@ -99,18 +99,20 @@ export class SyncService implements SyncServiceAbstraction {
         }
     }
 
-    async syncUpsertFolder(notification: SyncFolderNotification): Promise<boolean> {
+    async syncUpsertFolder(notification: SyncFolderNotification, isEdit: boolean): Promise<boolean> {
         this.syncStarted();
         if (await this.userService.isAuthenticated()) {
             try {
-                const remoteFolder = await this.apiService.getFolder(notification.id);
                 const localFolder = await this.folderService.get(notification.id);
-                if (remoteFolder != null &&
-                    (localFolder == null || localFolder.revisionDate < notification.revisionDate)) {
-                    const userId = await this.userService.getUserId();
-                    await this.folderService.upsert(new FolderData(remoteFolder, userId));
-                    this.messagingService.send('syncedUpsertedFolder', { folderId: notification.id });
-                    return this.syncCompleted(true);
+                if ((!isEdit && localFolder == null) ||
+                    (isEdit && localFolder != null && localFolder.revisionDate < notification.revisionDate)) {
+                    const remoteFolder = await this.apiService.getFolder(notification.id);
+                    if (remoteFolder != null) {
+                        const userId = await this.userService.getUserId();
+                        await this.folderService.upsert(new FolderData(remoteFolder, userId));
+                        this.messagingService.send('syncedUpsertedFolder', { folderId: notification.id });
+                        return this.syncCompleted(true);
+                    }
                 }
             } catch { }
         }
@@ -128,18 +130,20 @@ export class SyncService implements SyncServiceAbstraction {
         return this.syncCompleted(false);
     }
 
-    async syncUpsertCipher(notification: SyncCipherNotification): Promise<boolean> {
+    async syncUpsertCipher(notification: SyncCipherNotification, isEdit: boolean): Promise<boolean> {
         this.syncStarted();
         if (await this.userService.isAuthenticated()) {
             try {
-                const remoteCipher = await this.apiService.getCipher(notification.id);
                 const localCipher = await this.cipherService.get(notification.id);
-                if (remoteCipher != null &&
-                    (localCipher == null || localCipher.revisionDate < notification.revisionDate)) {
-                    const userId = await this.userService.getUserId();
-                    await this.cipherService.upsert(new CipherData(remoteCipher, userId));
-                    this.messagingService.send('syncedUpsertedCipher', { cipherId: notification.id });
-                    return this.syncCompleted(true);
+                if ((!isEdit && localCipher == null) ||
+                    (isEdit && localCipher != null && localCipher.revisionDate < notification.revisionDate)) {
+                    const remoteCipher = await this.apiService.getCipher(notification.id);
+                    if (remoteCipher != null) {
+                        const userId = await this.userService.getUserId();
+                        await this.cipherService.upsert(new CipherData(remoteCipher, userId));
+                        this.messagingService.send('syncedUpsertedCipher', { cipherId: notification.id });
+                        return this.syncCompleted(true);
+                    }
                 }
             } catch { }
         }
