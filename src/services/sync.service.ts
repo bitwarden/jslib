@@ -134,9 +134,41 @@ export class SyncService implements SyncServiceAbstraction {
         this.syncStarted();
         if (await this.userService.isAuthenticated()) {
             try {
+                let shouldUpdate = true;
                 const localCipher = await this.cipherService.get(notification.id);
-                if ((!isEdit && localCipher == null) ||
-                    (isEdit && localCipher != null && localCipher.revisionDate < notification.revisionDate)) {
+                if (localCipher != null && localCipher.revisionDate >= notification.revisionDate) {
+                    shouldUpdate = false;
+                }
+
+                let checkCollections = false;
+                if (shouldUpdate) {
+                    if (isEdit) {
+                        shouldUpdate = localCipher != null;
+                        checkCollections = true;
+                    } else {
+                        if (notification.collectionIds == null || notification.organizationId == null) {
+                            shouldUpdate = localCipher == null;
+                        } else {
+                            shouldUpdate = false;
+                            checkCollections = true;
+                        }
+                    }
+                }
+
+                if (!shouldUpdate && checkCollections && notification.organizationId != null &&
+                    notification.collectionIds != null && notification.collectionIds.length > 0) {
+                    const collections = await this.collectionService.getAll();
+                    if (collections != null) {
+                        for (let i = 0; i < collections.length; i++) {
+                            if (notification.collectionIds.indexOf(collections[i].id)) {
+                                shouldUpdate = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (shouldUpdate) {
                     const remoteCipher = await this.apiService.getCipher(notification.id);
                     if (remoteCipher != null) {
                         const userId = await this.userService.getUserId();

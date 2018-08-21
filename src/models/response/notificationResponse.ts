@@ -38,12 +38,14 @@ export class SyncCipherNotification {
     id: string;
     userId: string;
     organizationId: string;
+    collectionIds: string[];
     revisionDate: Date;
 
     constructor(response: any) {
         this.id = response.Id;
         this.userId = response.UserId;
         this.organizationId = response.OrganizationId;
+        this.collectionIds = response.CollectionIds;
         this.revisionDate = new Date(response.RevisionDate);
     }
 }
