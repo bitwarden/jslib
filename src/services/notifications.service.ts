@@ -2,6 +2,7 @@ import * as signalR from '@aspnet/signalr';
 
 import { NotificationType } from '../enums/notificationType';
 
+import { ApiService } from '../abstractions/api.service';
 import { AppIdService } from '../abstractions/appId.service';
 import { EnvironmentService } from '../abstractions/environment.service';
 import { NotificationsService as NotificationsServiceAbstraction } from '../abstractions/notifications.service';
@@ -17,35 +18,20 @@ import {
 
 export class NotificationsService implements NotificationsServiceAbstraction {
     private signalrConnection: signalR.HubConnection;
+    private url: string;
 
     constructor(private userService: UserService, private tokenService: TokenService,
-        private syncService: SyncService, private appIdService: AppIdService) { }
+        private syncService: SyncService, private appIdService: AppIdService,
+        private apiService: ApiService) { }
 
     async init(environmentService: EnvironmentService): Promise<void> {
-        let url = 'https://notifications.bitwarden.com';
+        this.url = 'https://notifications.bitwarden.com';
         if (environmentService.notificationsUrl != null) {
-            url = environmentService.notificationsUrl;
+            this.url = environmentService.notificationsUrl;
         } else if (environmentService.baseUrl != null) {
-            url = environmentService.baseUrl + '/notifications';
+            this.url = environmentService.baseUrl + '/notifications';
         }
-
-        if (this.signalrConnection != null) {
-            await this.signalrConnection.stop();
-            this.signalrConnection = null;
-        }
-
-        this.signalrConnection = new signalR.HubConnectionBuilder()
-            .withUrl(url + '/hub', {
-                accessTokenFactory: () => this.tokenService.getToken(),
-            })
-            .configureLogging(signalR.LogLevel.Information)
-            .build();
-
-        this.signalrConnection.on('ReceiveMessage', async (data: any) => {
-            await this.processNotification(new NotificationResponse(data));
-        });
-
-        this.updateConnection();
+        this.reconnect();
     }
 
     async updateConnection(): Promise<void> {
@@ -70,27 +56,51 @@ export class NotificationsService implements NotificationsServiceAbstraction {
         switch (notification.type) {
             case NotificationType.SyncCipherCreate:
             case NotificationType.SyncCipherUpdate:
-                this.syncService.syncUpsertCipher(notification.payload as SyncCipherNotification);
+                await this.syncService.syncUpsertCipher(notification.payload as SyncCipherNotification);
                 break;
             case NotificationType.SyncCipherDelete:
             case NotificationType.SyncLoginDelete:
-                this.syncService.syncDeleteCipher(notification.payload as SyncCipherNotification);
+                await this.syncService.syncDeleteCipher(notification.payload as SyncCipherNotification);
                 break;
             case NotificationType.SyncFolderCreate:
             case NotificationType.SyncFolderUpdate:
-                this.syncService.syncUpsertFolder(notification.payload as SyncFolderNotification);
+                await this.syncService.syncUpsertFolder(notification.payload as SyncFolderNotification);
                 break;
             case NotificationType.SyncFolderDelete:
-                this.syncService.syncDeleteFolder(notification.payload as SyncFolderNotification);
+                await this.syncService.syncDeleteFolder(notification.payload as SyncFolderNotification);
                 break;
             case NotificationType.SyncVault:
             case NotificationType.SyncCiphers:
-            case NotificationType.SyncOrgKeys:
             case NotificationType.SyncSettings:
-                this.syncService.fullSync(false);
+                await this.syncService.fullSync(false);
+                break;
+            case NotificationType.SyncOrgKeys:
+                await this.apiService.refreshIdentityToken();
+                await this.syncService.fullSync(true);
+                // Now reconnect to join the new org groups
+                await this.reconnect();
                 break;
             default:
                 break;
         }
+    }
+
+    private async reconnect() {
+        if (this.signalrConnection != null) {
+            await this.signalrConnection.stop();
+            this.signalrConnection = null;
+        }
+
+        this.signalrConnection = new signalR.HubConnectionBuilder()
+            .withUrl(this.url + '/hub', {
+                accessTokenFactory: () => this.tokenService.getToken(),
+            })
+            // .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        this.signalrConnection.on('ReceiveMessage', async (data: any) => {
+            await this.processNotification(new NotificationResponse(data));
+        });
+        await this.updateConnection();
     }
 }
