@@ -50,9 +50,8 @@ export class NotificationsService implements NotificationsServiceAbstraction {
             // .configureLogging(signalR.LogLevel.Information)
             .build();
 
-        this.signalrConnection.on('ReceiveMessage', async (data: any) => {
-            await this.processNotification(new NotificationResponse(data));
-        });
+        this.signalrConnection.on('ReceiveMessage',
+            (data: any) => this.processNotification(new NotificationResponse(data)));
         this.signalrConnection.onclose(() => {
             this.connected = false;
             this.reconnect();
@@ -136,9 +135,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
         } catch { }
 
         if (!this.connected) {
-            this.reconnectTimer = setTimeout(() => {
-                this.reconnect();
-            }, 120000);
+            this.reconnectTimer = setTimeout(() => this.reconnect(), 120000);
         }
     }
 }
