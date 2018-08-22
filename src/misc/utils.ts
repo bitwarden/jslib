@@ -145,12 +145,20 @@ export class Utils {
 
     static getHostname(uriString: string): string {
         const url = Utils.getUrl(uriString);
-        return url != null ? url.hostname : null;
+        try {
+            return url != null ? url.hostname : null;
+        } catch {
+            return null;
+        }
     }
 
     static getHost(uriString: string): string {
         const url = Utils.getUrl(uriString);
-        return url != null ? url.host : null;
+        try {
+            return url != null ? url.host : null;
+        } catch {
+            return null;
+        }
     }
 
     static getQueryParams(uriString: string): Map<string, string> {
