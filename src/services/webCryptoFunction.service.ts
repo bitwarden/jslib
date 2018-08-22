@@ -60,6 +60,15 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     }
 
     async hmac(value: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
+        if (this.isIE && algorithm === 'sha512') {
+            const hmac = (forge as any).hmac.create();
+            const keyBytes = this.toByteString(key);
+            const valueBytes = this.toByteString(value);
+            hmac.start(algorithm, keyBytes);
+            hmac.update(valueBytes, 'raw');
+            return Utils.fromByteStringToArray(hmac.digest().data).buffer;
+        }
+
         const signingAlgorithm = {
             name: 'HMAC',
             hash: { name: this.toWebCryptoAlgorithm(algorithm) },
