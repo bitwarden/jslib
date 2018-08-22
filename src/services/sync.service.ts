@@ -177,7 +177,13 @@ export class SyncService implements SyncServiceAbstraction {
                         return this.syncCompleted(true);
                     }
                 }
-            } catch { }
+            } catch (e) {
+                if (e != null && e.statusCode === 404 && isEdit) {
+                    await this.cipherService.delete(notification.id);
+                    this.messagingService.send('syncedDeletedCipher', { cipherId: notification.id });
+                    return this.syncCompleted(true);
+                }
+            }
         }
         return this.syncCompleted(false);
     }
