@@ -21,6 +21,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
     private url: string;
     private connected = false;
     private inited = false;
+    private inactive = false;
     private reconnectTimer: any = null;
 
     constructor(private userService: UserService, private tokenService: TokenService,
@@ -75,6 +76,22 @@ export class NotificationsService implements NotificationsServiceAbstraction {
         }
     }
 
+    async reconnectFromActivity(): Promise<any> {
+        this.inactive = false;
+        if (!this.connected) {
+            if (await this.userService.isAuthenticated()) {
+                return this.reconnect().then(() => this.syncService.fullSync(false));
+            }
+        }
+    }
+
+    async disconnectFromInactivity(): Promise<any> {
+        this.inactive = true;
+        if (this.connected) {
+            await this.signalrConnection.stop();
+        }
+    }
+
     private async processNotification(notification: NotificationResponse) {
         const appId = await this.appIdService.getAppId();
         if (notification == null || notification.contextId === appId) {
@@ -125,8 +142,11 @@ export class NotificationsService implements NotificationsServiceAbstraction {
             clearTimeout(this.reconnectTimer);
             this.reconnectTimer = null;
         }
+        if (this.connected || !this.inited || this.inactive) {
+            return;
+        }
         const authed = await this.userService.isAuthenticated();
-        if (this.connected || !this.inited || !authed) {
+        if (!authed) {
             return;
         }
 
