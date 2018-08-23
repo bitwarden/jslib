@@ -55,18 +55,18 @@ export class NotificationsService implements NotificationsServiceAbstraction {
             (data: any) => this.processNotification(new NotificationResponse(data)));
         this.signalrConnection.onclose(() => {
             this.connected = false;
-            this.reconnect();
+            this.reconnect(true);
         });
         this.inited = true;
         if (await this.isAuthedAndUnlocked()) {
-            await this.connect();
+            await this.reconnect(false);
         }
     }
 
-    async updateConnection(): Promise<void> {
+    async updateConnection(sync = false): Promise<void> {
         try {
             if (await this.isAuthedAndUnlocked()) {
-                await this.connect();
+                await this.reconnect(sync);
             } else {
                 await this.signalrConnection.stop();
             }
@@ -77,16 +77,19 @@ export class NotificationsService implements NotificationsServiceAbstraction {
     }
 
     async reconnectFromActivity(): Promise<void> {
+        if (!this.inited) {
+            return;
+        }
         this.inactive = false;
         if (!this.connected) {
-            if (await this.isAuthedAndUnlocked()) {
-                await this.reconnect();
-                await this.syncService.fullSync(false);
-            }
+            await this.reconnect(true);
         }
     }
 
     async disconnectFromInactivity(): Promise<void> {
+        if (!this.inited) {
+            return;
+        }
         this.inactive = true;
         if (this.connected) {
             await this.signalrConnection.stop();
@@ -133,12 +136,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
         }
     }
 
-    private async connect() {
-        await this.signalrConnection.start();
-        this.connected = true;
-    }
-
-    private async reconnect() {
+    private async reconnect(sync: boolean) {
         if (this.reconnectTimer != null) {
             clearTimeout(this.reconnectTimer);
             this.reconnectTimer = null;
@@ -152,11 +150,15 @@ export class NotificationsService implements NotificationsServiceAbstraction {
         }
 
         try {
-            await this.connect();
+            await this.signalrConnection.start();
+            this.connected = true;
+            if (sync) {
+                await this.syncService.fullSync(false);
+            }
         } catch { }
 
         if (!this.connected) {
-            this.reconnectTimer = setTimeout(() => this.reconnect(), 120000);
+            this.reconnectTimer = setTimeout(() => this.reconnect(sync), 120000);
         }
     }
 
