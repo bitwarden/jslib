@@ -234,5 +234,6 @@ export abstract class ApiService {
 
     getUserPublicKey: (id: string) => Promise<UserKeyResponse>;
 
+    getActiveBearerToken: () => Promise<string>;
     fetch: (request: Request) => Promise<Response>;
 }

@@ -4,10 +4,10 @@ import { NotificationType } from '../enums/notificationType';
 
 import { ApiService } from '../abstractions/api.service';
 import { AppIdService } from '../abstractions/appId.service';
+import { CryptoService } from '../abstractions/crypto.service';
 import { EnvironmentService } from '../abstractions/environment.service';
 import { NotificationsService as NotificationsServiceAbstraction } from '../abstractions/notifications.service';
 import { SyncService } from '../abstractions/sync.service';
-import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
 
 import {
@@ -24,9 +24,9 @@ export class NotificationsService implements NotificationsServiceAbstraction {
     private inactive = false;
     private reconnectTimer: any = null;
 
-    constructor(private userService: UserService, private tokenService: TokenService,
-        private syncService: SyncService, private appIdService: AppIdService,
-        private apiService: ApiService) { }
+    constructor(private userService: UserService, private syncService: SyncService,
+        private appIdService: AppIdService, private apiService: ApiService,
+        private cryptoService: CryptoService) { }
 
     async init(environmentService: EnvironmentService): Promise<void> {
         this.inited = false;
@@ -46,7 +46,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
 
         this.signalrConnection = new signalR.HubConnectionBuilder()
             .withUrl(this.url + '/hub', {
-                accessTokenFactory: () => this.tokenService.getToken(),
+                accessTokenFactory: () => this.apiService.getActiveBearerToken(),
             })
             // .configureLogging(signalR.LogLevel.Information)
             .build();
@@ -58,14 +58,14 @@ export class NotificationsService implements NotificationsServiceAbstraction {
             this.reconnect();
         });
         this.inited = true;
-        if (await this.userService.isAuthenticated()) {
+        if (await this.isAuthedAndUnlocked()) {
             await this.connect();
         }
     }
 
     async updateConnection(): Promise<void> {
         try {
-            if (await this.userService.isAuthenticated()) {
+            if (await this.isAuthedAndUnlocked()) {
                 await this.connect();
             } else {
                 await this.signalrConnection.stop();
@@ -76,16 +76,17 @@ export class NotificationsService implements NotificationsServiceAbstraction {
         }
     }
 
-    async reconnectFromActivity(): Promise<any> {
+    async reconnectFromActivity(): Promise<void> {
         this.inactive = false;
         if (!this.connected) {
-            if (await this.userService.isAuthenticated()) {
-                return this.reconnect().then(() => this.syncService.fullSync(false));
+            if (await this.isAuthedAndUnlocked()) {
+                await this.reconnect();
+                await this.syncService.fullSync(false);
             }
         }
     }
 
-    async disconnectFromInactivity(): Promise<any> {
+    async disconnectFromInactivity(): Promise<void> {
         this.inactive = true;
         if (this.connected) {
             await this.signalrConnection.stop();
@@ -145,8 +146,8 @@ export class NotificationsService implements NotificationsServiceAbstraction {
         if (this.connected || !this.inited || this.inactive) {
             return;
         }
-        const authed = await this.userService.isAuthenticated();
-        if (!authed) {
+        const authedAndUnlocked = await this.isAuthedAndUnlocked();
+        if (!authedAndUnlocked) {
             return;
         }
 
@@ -157,5 +158,12 @@ export class NotificationsService implements NotificationsServiceAbstraction {
         if (!this.connected) {
             this.reconnectTimer = setTimeout(() => this.reconnect(), 120000);
         }
+    }
+
+    private async isAuthedAndUnlocked() {
+        if (await this.userService.isAuthenticated()) {
+            return this.cryptoService.hasKey();
+        }
+        return false;
     }
 }

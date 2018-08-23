@@ -776,6 +776,15 @@ export class ApiService implements ApiServiceAbstraction {
 
     // Helpers
 
+    async getActiveBearerToken(): Promise<string> {
+        let accessToken = await this.tokenService.getToken();
+        if (this.tokenService.tokenNeedsRefresh()) {
+            const tokenResponse = await this.doRefreshToken();
+            accessToken = tokenResponse.accessToken;
+        }
+        return accessToken;
+    }
+
     fetch(request: Request): Promise<Response> {
         if (request.method === 'GET') {
             request.headers.set('Cache-Control', 'no-cache');
@@ -797,8 +806,8 @@ export class ApiService implements ApiServiceAbstraction {
         };
 
         if (authed) {
-            const authHeader = await this.handleTokenState();
-            headers.set('Authorization', authHeader);
+            const authHeader = await this.getActiveBearerToken();
+            headers.set('Authorization', 'Bearer ' + authHeader);
         }
         if (body != null) {
             if (typeof body === 'string') {
@@ -842,16 +851,6 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         return new ErrorResponse(responseJson, response.status, tokenError);
-    }
-
-    private async handleTokenState(): Promise<string> {
-        let accessToken = await this.tokenService.getToken();
-        if (this.tokenService.tokenNeedsRefresh()) {
-            const tokenResponse = await this.doRefreshToken();
-            accessToken = tokenResponse.accessToken;
-        }
-
-        return 'Bearer ' + accessToken;
     }
 
     private async doRefreshToken(): Promise<IdentityTokenResponse> {
