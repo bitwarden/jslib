@@ -178,7 +178,7 @@ export class Cipher extends Domain {
         c.edit = this.edit;
         c.organizationUseTotp = this.organizationUseTotp;
         c.favorite = this.favorite;
-        c.revisionDate = this.revisionDate.toISOString();
+        c.revisionDate = this.revisionDate != null ? this.revisionDate.toISOString() : null;
         c.type = this.type;
         c.collectionIds = this.collectionIds;
 
