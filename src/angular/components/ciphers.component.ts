@@ -19,8 +19,8 @@ export class CiphersComponent {
     ciphers: CipherView[] = [];
     searchText: string;
     searchPlaceholder: string = null;
+    filter: (cipher: CipherView) => boolean = null;
 
-    protected filter: (cipher: CipherView) => boolean = null;
     protected searchPending = false;
 
     private searchTimeout: any = null;
