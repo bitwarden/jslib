@@ -37,6 +37,12 @@ export class NotificationsService implements NotificationsServiceAbstraction {
             this.url = environmentService.baseUrl + '/notifications';
         }
 
+        // Set notifications server URL to `https://-` to effectively disable communication
+        // with the notifications server from the client app
+        if (this.url === 'https://-') {
+            return;
+        }
+
         if (this.signalrConnection != null) {
             this.signalrConnection.off('ReceiveMessage');
             await this.signalrConnection.stop();
@@ -64,6 +70,9 @@ export class NotificationsService implements NotificationsServiceAbstraction {
     }
 
     async updateConnection(sync = false): Promise<void> {
+        if (!this.inited) {
+            return;
+        }
         try {
             if (await this.isAuthedAndUnlocked()) {
                 await this.reconnect(sync);
