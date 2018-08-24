@@ -42,11 +42,11 @@ export class SyncCipherNotification {
     revisionDate: Date;
 
     constructor(response: any) {
-        this.id = response.Id;
-        this.userId = response.UserId;
-        this.organizationId = response.OrganizationId;
-        this.collectionIds = response.CollectionIds;
-        this.revisionDate = new Date(response.RevisionDate);
+        this.id = response.id || response.Id;
+        this.userId = response.userId || response.UserId;
+        this.organizationId = response.organizationId || response.OrganizationId;
+        this.collectionIds = response.collectionIds || response.CollectionIds;
+        this.revisionDate = new Date(response.revisionDate || response.RevisionDate);
     }
 }
 
@@ -56,9 +56,9 @@ export class SyncFolderNotification {
     revisionDate: Date;
 
     constructor(response: any) {
-        this.id = response.Id;
-        this.userId = response.UserId;
-        this.revisionDate = new Date(response.RevisionDate);
+        this.id = response.id || response.Id;
+        this.userId = response.userId || response.UserId;
+        this.revisionDate = new Date(response.revisionDate || response.RevisionDate);
     }
 }
 
@@ -67,7 +67,7 @@ export class SyncUserNotification {
     date: Date;
 
     constructor(response: any) {
-        this.userId = response.UserId;
-        this.date = new Date(response.Date);
+        this.userId = response.userId || response.UserId;
+        this.date = new Date(response.date || response.Date);
     }
 }

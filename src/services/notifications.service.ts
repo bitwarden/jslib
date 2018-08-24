@@ -1,4 +1,5 @@
 import * as signalR from '@aspnet/signalr';
+import * as signalRMsgPack from '@aspnet/signalr-protocol-msgpack';
 
 import { NotificationType } from '../enums/notificationType';
 
@@ -54,7 +55,8 @@ export class NotificationsService implements NotificationsServiceAbstraction {
             .withUrl(this.url + '/hub', {
                 accessTokenFactory: () => this.apiService.getActiveBearerToken(),
             })
-            // .configureLogging(signalR.LogLevel.Information)
+            .withHubProtocol(new signalRMsgPack.MessagePackHubProtocol())
+            // .configureLogging(signalR.LogLevel.Trace)
             .build();
 
         this.signalrConnection.on('ReceiveMessage',
