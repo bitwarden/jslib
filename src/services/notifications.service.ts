@@ -88,21 +88,15 @@ export class NotificationsService implements NotificationsServiceAbstraction {
     }
 
     async reconnectFromActivity(): Promise<void> {
-        if (!this.inited) {
-            return;
-        }
         this.inactive = false;
-        if (!this.connected) {
+        if (this.inited && !this.connected) {
             await this.reconnect(true);
         }
     }
 
     async disconnectFromInactivity(): Promise<void> {
-        if (!this.inited) {
-            return;
-        }
         this.inactive = true;
-        if (this.connected) {
+        if (this.inited && this.connected) {
             await this.signalrConnection.stop();
         }
     }
