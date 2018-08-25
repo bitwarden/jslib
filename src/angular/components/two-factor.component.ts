@@ -175,11 +175,9 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             } else {
                 this.router.navigate([this.successRoute]);
             }
-        } catch (e) {
+        } catch {
             if (this.selectedProviderType === TwoFactorProviderType.U2f && this.u2f != null) {
                 this.u2f.start();
-            } else {
-                throw e;
             }
         }
     }
