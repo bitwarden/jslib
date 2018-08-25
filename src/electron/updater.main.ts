@@ -34,7 +34,8 @@ export class UpdaterMain {
         const linuxCanUpdate = process.platform === 'linux' && isAppImage();
         const windowsCanUpdate = process.platform === 'win32' && !isWindowsStore() && !isWindowsPortable();
         const macCanUpdate = process.platform === 'darwin' && !isMacAppStore();
-        this.canUpdate = linuxCanUpdate || windowsCanUpdate || macCanUpdate;
+        this.canUpdate = process.env.ELECTRON_NO_UPDATER !== '1' &&
+            (linuxCanUpdate || windowsCanUpdate || macCanUpdate);
     }
 
     async init() {
