@@ -21,6 +21,7 @@ import { GroupRequest } from '../models/request/groupRequest';
 import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
+import { KdfRequest } from '../models/request/kdfRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
@@ -282,6 +283,10 @@ export class ApiService implements ApiServiceAbstraction {
 
     postAccountRecoverDeleteToken(request: VerifyDeleteRecoverRequest): Promise<any> {
         return this.send('POST', '/accounts/delete-recover-token', request, false, false);
+    }
+
+    postAccountKdf(request: KdfRequest): Promise<any> {
+        return this.send('POST', '/accounts/kdf', request, true, false);
     }
 
     // Folder APIs

@@ -16,6 +16,7 @@ import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
 import { KeysRequest } from '../models/request/keysRequest';
+import { KdfRequest } from '../models/request/kdfRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
 import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
@@ -116,6 +117,7 @@ export abstract class ApiService {
     postAccountVerifyEmailToken: (request: VerifyEmailRequest) => Promise<any>;
     postAccountRecoverDelete: (request: DeleteRecoverRequest) => Promise<any>;
     postAccountRecoverDeleteToken: (request: VerifyDeleteRecoverRequest) => Promise<any>;
+    postAccountKdf: (request: KdfRequest) => Promise<any>;
 
     getFolder: (id: string) => Promise<FolderResponse>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
