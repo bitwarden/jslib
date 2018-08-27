@@ -319,9 +319,6 @@ export class CryptoService implements CryptoServiceAbstraction {
     async makeEncKey(key: SymmetricCryptoKey): Promise<[SymmetricCryptoKey, CipherString]> {
         const encKey = await this.cryptoFunctionService.randomBytes(64);
         let encKeyEnc: CipherString = null;
-        // TODO: Uncomment when we're ready to enable key stretching
-        encKeyEnc = await this.encrypt(encKey, key);
-        /*
         if (key.key.byteLength === 32) {
             const newKey = await this.stretchKey(key);
             encKeyEnc = await this.encrypt(encKey, newKey);
@@ -330,7 +327,6 @@ export class CryptoService implements CryptoServiceAbstraction {
         } else {
             throw new Error('Invalid key size.');
         }
-        */
         return [new SymmetricCryptoKey(encKey), encKeyEnc];
     }
 
