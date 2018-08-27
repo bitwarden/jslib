@@ -318,16 +318,12 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     async makeEncKey(key: SymmetricCryptoKey): Promise<[SymmetricCryptoKey, CipherString]> {
         const encKey = await this.cryptoFunctionService.randomBytes(64);
-        let encKeyEnc: CipherString = null;
-        if (key.key.byteLength === 32) {
-            const newKey = await this.stretchKey(key);
-            encKeyEnc = await this.encrypt(encKey, newKey);
-        } else if (key.key.byteLength === 64) {
-            encKeyEnc = await this.encrypt(encKey, key);
-        } else {
-            throw new Error('Invalid key size.');
-        }
-        return [new SymmetricCryptoKey(encKey), encKeyEnc];
+        return this.buildEncKey(key, encKey);
+    }
+
+    async remakeEncKey(key: SymmetricCryptoKey): Promise<[SymmetricCryptoKey, CipherString]> {
+        const encKey = await this.getEncKey();
+        return this.buildEncKey(key, encKey.key);
     }
 
     async encrypt(plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey): Promise<CipherString> {
@@ -676,5 +672,19 @@ export class CryptoService implements CryptoServiceAbstraction {
             okm.set(previousT, i * hashLen);
         }
         return okm;
+    }
+
+    private async buildEncKey(key: SymmetricCryptoKey, encKey: ArrayBuffer = null)
+        : Promise<[SymmetricCryptoKey, CipherString]> {
+        let encKeyEnc: CipherString = null;
+        if (key.key.byteLength === 32) {
+            const newKey = await this.stretchKey(key);
+            encKeyEnc = await this.encrypt(encKey, newKey);
+        } else if (key.key.byteLength === 64) {
+            encKeyEnc = await this.encrypt(encKey, key);
+        } else {
+            throw new Error('Invalid key size.');
+        }
+        return [new SymmetricCryptoKey(encKey), encKeyEnc];
     }
 }
