@@ -27,7 +27,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
 
     constructor(private userService: UserService, private syncService: SyncService,
         private appIdService: AppIdService, private apiService: ApiService,
-        private cryptoService: CryptoService) { }
+        private cryptoService: CryptoService, private logoutCallback: () => Promise<void>) { }
 
     async init(environmentService: EnvironmentService): Promise<void> {
         this.inited = false;
@@ -135,6 +135,9 @@ export class NotificationsService implements NotificationsServiceAbstraction {
                 await this.syncService.fullSync(true);
                 // Stop so a reconnect can be made
                 await this.signalrConnection.stop();
+                break;
+            case NotificationType.LogOut:
+                this.logoutCallback();
                 break;
             default:
                 break;

@@ -11,4 +11,6 @@ export enum NotificationType {
     SyncFolderUpdate = 8,
     SyncCipherDelete = 9,
     SyncSettings = 10,
+
+    LogOut = 11,
 }
