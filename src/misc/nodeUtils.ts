@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export class NodeUtils {
-    static mkdirpSync(targetDir: string, mode = 755, relative = false, relativeDir: string = null) {
+    static mkdirpSync(targetDir: string, mode = '755', relative = false, relativeDir: string = null) {
         const initialDir = path.isAbsolute(targetDir) ? path.sep : '';
         const baseDir = relative ? (relativeDir != null ? relativeDir : __dirname) : '.';
         targetDir.split(path.sep).reduce((parentDir, childDir) => {

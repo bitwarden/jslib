@@ -18,7 +18,7 @@ export class LowdbStorageService implements StorageService {
         let adapter: lowdb.AdapterSync<any>;
         if (Utils.isNode && dir != null) {
             if (!fs.existsSync(dir)) {
-                NodeUtils.mkdirpSync(dir, 755);
+                NodeUtils.mkdirpSync(dir, '755');
             }
             const p = path.join(dir, 'data.json');
             adapter = new FileSync(p);
