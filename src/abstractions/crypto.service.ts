@@ -32,7 +32,7 @@ export abstract class CryptoService {
     makeKeyPair: (key?: SymmetricCryptoKey) => Promise<[string, CipherString]>;
     hashPassword: (password: string, key: SymmetricCryptoKey) => Promise<string>;
     makeEncKey: (key: SymmetricCryptoKey) => Promise<[SymmetricCryptoKey, CipherString]>;
-    remakeEncKey: (key: SymmetricCryptoKey) => Promise<[SymmetricCryptoKey, CipherString]>
+    remakeEncKey: (key: SymmetricCryptoKey) => Promise<[SymmetricCryptoKey, CipherString]>;
     encrypt: (plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey) => Promise<CipherString>;
     encryptToBytes: (plainValue: ArrayBuffer, key?: SymmetricCryptoKey) => Promise<ArrayBuffer>;
     rsaEncrypt: (data: ArrayBuffer, publicKey?: ArrayBuffer, key?: SymmetricCryptoKey) => Promise<CipherString>;
