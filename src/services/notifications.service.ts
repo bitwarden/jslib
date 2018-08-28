@@ -107,6 +107,13 @@ export class NotificationsService implements NotificationsServiceAbstraction {
             return;
         }
 
+        const isAuthenticated = await this.userService.isAuthenticated();
+        const payloadUserId = notification.payload.userId || notification.payload.UserId;
+        const myUserId = await this.userService.getUserId();
+        if (isAuthenticated && payloadUserId != null && payloadUserId !== myUserId) {
+            return;
+        }
+
         switch (notification.type) {
             case NotificationType.SyncCipherCreate:
             case NotificationType.SyncCipherUpdate:
@@ -128,16 +135,22 @@ export class NotificationsService implements NotificationsServiceAbstraction {
             case NotificationType.SyncVault:
             case NotificationType.SyncCiphers:
             case NotificationType.SyncSettings:
-                await this.syncService.fullSync(false);
+                if (isAuthenticated) {
+                    await this.syncService.fullSync(false);
+                }
                 break;
             case NotificationType.SyncOrgKeys:
-                await this.apiService.refreshIdentityToken();
-                await this.syncService.fullSync(true);
-                // Stop so a reconnect can be made
-                await this.signalrConnection.stop();
+                if (isAuthenticated) {
+                    await this.apiService.refreshIdentityToken();
+                    await this.syncService.fullSync(true);
+                    // Stop so a reconnect can be made
+                    await this.signalrConnection.stop();
+                }
                 break;
             case NotificationType.LogOut:
-                this.logoutCallback();
+                if (isAuthenticated) {
+                    this.logoutCallback();
+                }
                 break;
             default:
                 break;

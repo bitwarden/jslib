@@ -26,7 +26,8 @@ export class NotificationResponse {
             case NotificationType.SyncCiphers:
             case NotificationType.SyncOrgKeys:
             case NotificationType.SyncSettings:
-                this.payload = new SyncUserNotification(payload);
+            case NotificationType.LogOut:
+                this.payload = new UserNotification(payload);
                 break;
             default:
                 break;
@@ -62,7 +63,7 @@ export class SyncFolderNotification {
     }
 }
 
-export class SyncUserNotification {
+export class UserNotification {
     userId: string;
     date: Date;
 
