@@ -124,7 +124,7 @@ export class UserService implements UserServiceAbstraction {
 
         const orgs = await this.getAllOrganizations();
         for (let i = 0; i < orgs.length; i++) {
-            if (orgs[i].usersGetPremium) {
+            if (orgs[i].usersGetPremium && orgs[i].enabled) {
                 return true;
             }
         }
