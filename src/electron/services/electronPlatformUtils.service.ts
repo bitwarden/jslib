@@ -117,10 +117,12 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
             defaultPath: fileName,
             showsTagField: false,
-        }, (filename) => {
-            fs.writeFile(filename, Buffer.from(blobData), (err) => {
-                // error check?
-            });
+        }, (path) => {
+            if (path != null) {
+                fs.writeFile(path, Buffer.from(blobData), (err) => {
+                    // error check?
+                });
+            }
         });
     }
 
