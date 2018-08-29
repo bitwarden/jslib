@@ -38,7 +38,6 @@ export class ViewComponent implements OnDestroy, OnInit {
     cipher: CipherView;
     showPassword: boolean;
     showCardCode: boolean;
-    isPremium: boolean;
     canAccessPremium: boolean;
     totpCode: string;
     totpCodeFormatted: string;
@@ -83,8 +82,6 @@ export class ViewComponent implements OnDestroy, OnInit {
 
         const cipher = await this.cipherService.get(this.cipherId);
         this.cipher = await cipher.decrypt();
-
-        this.isPremium = this.tokenService.getPremium();
         this.canAccessPremium = await this.userService.canAccessPremium();
 
         if (this.cipher.type === CipherType.Login && this.cipher.login.totp &&
@@ -161,7 +158,7 @@ export class ViewComponent implements OnDestroy, OnInit {
             return;
         }
 
-        if (this.cipher.organizationId == null && !this.isPremium) {
+        if (this.cipher.organizationId == null && !this.canAccessPremium) {
             this.toasterService.popAsync('error', this.i18nService.t('premiumRequired'),
                 this.i18nService.t('premiumRequiredDesc'));
             return;

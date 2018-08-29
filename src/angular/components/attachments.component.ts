@@ -12,7 +12,7 @@ import { CipherService } from '../../abstractions/cipher.service';
 import { CryptoService } from '../../abstractions/crypto.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
-import { TokenService } from '../../abstractions/token.service';
+import { UserService } from '../../abstractions/user.service';
 
 import { Cipher } from '../../models/domain/cipher';
 
@@ -33,7 +33,7 @@ export class AttachmentsComponent implements OnInit {
 
     constructor(protected cipherService: CipherService, protected analytics: Angulartics2,
         protected toasterService: ToasterService, protected i18nService: I18nService,
-        protected cryptoService: CryptoService, protected tokenService: TokenService,
+        protected cryptoService: CryptoService, protected userService: UserService,
         protected platformUtilsService: PlatformUtilsService, protected win: Window) { }
 
     async ngOnInit() {
@@ -41,8 +41,8 @@ export class AttachmentsComponent implements OnInit {
         this.cipher = await this.cipherDomain.decrypt();
 
         this.hasUpdatedKey = await this.cryptoService.hasEncKey();
-        const isPremium = this.tokenService.getPremium();
-        this.canAccessAttachments = isPremium || this.cipher.organizationId != null;
+        const canAccessPremium = await this.userService.canAccessPremium();
+        this.canAccessAttachments = canAccessPremium || this.cipher.organizationId != null;
 
         if (!this.canAccessAttachments) {
             const confirmed = await this.platformUtilsService.showDialog(
