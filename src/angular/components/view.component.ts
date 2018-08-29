@@ -21,6 +21,7 @@ import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { TokenService } from '../../abstractions/token.service';
 import { TotpService } from '../../abstractions/totp.service';
+import { UserService } from '../../abstractions/user.service';
 
 import { AttachmentView } from '../../models/view/attachmentView';
 import { CipherView } from '../../models/view/cipherView';
@@ -38,6 +39,7 @@ export class ViewComponent implements OnDestroy, OnInit {
     showPassword: boolean;
     showCardCode: boolean;
     isPremium: boolean;
+    canAccessPremium: boolean;
     totpCode: string;
     totpCodeFormatted: string;
     totpDash: number;
@@ -54,7 +56,7 @@ export class ViewComponent implements OnDestroy, OnInit {
         protected i18nService: I18nService, protected analytics: Angulartics2,
         protected auditService: AuditService, protected win: Window,
         protected broadcasterService: BroadcasterService, protected ngZone: NgZone,
-        protected changeDetectorRef: ChangeDetectorRef) { }
+        protected changeDetectorRef: ChangeDetectorRef, protected userService: UserService) { }
 
     ngOnInit() {
         this.broadcasterService.subscribe(BroadcasterSubscriptionId, (message: any) => {
@@ -83,9 +85,10 @@ export class ViewComponent implements OnDestroy, OnInit {
         this.cipher = await cipher.decrypt();
 
         this.isPremium = this.tokenService.getPremium();
+        this.canAccessPremium = await this.userService.canAccessPremium();
 
         if (this.cipher.type === CipherType.Login && this.cipher.login.totp &&
-            (cipher.organizationUseTotp || this.isPremium)) {
+            (cipher.organizationUseTotp || this.canAccessPremium)) {
             await this.totpUpdateCode();
             const interval = this.totpService.getTimeInterval(this.cipher.login.totp);
             await this.totpTick(interval);

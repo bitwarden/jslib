@@ -13,6 +13,7 @@ export abstract class UserService {
     getKdfIterations: () => Promise<number>;
     clear: () => Promise<any>;
     isAuthenticated: () => Promise<boolean>;
+    canAccessPremium: () => Promise<boolean>;
     getOrganization: (id: string) => Promise<Organization>;
     getAllOrganizations: () => Promise<Organization[]>;
     replaceOrganizations: (organizations: { [id: string]: OrganizationData; }) => Promise<any>;
