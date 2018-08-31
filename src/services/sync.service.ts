@@ -216,14 +216,16 @@ export class SyncService implements SyncServiceAbstraction {
             return [true, false];
         }
 
+        const lastSync = await this.getLastSync();
+        if (lastSync == null || lastSync.getTime() === 0) {
+            return [true, false];
+        }
+
         try {
             const response = await this.apiService.getAccountRevisionDate();
-            const accountRevisionDate = new Date(response);
-            const lastSync = await this.getLastSync();
-            if (lastSync != null && accountRevisionDate <= lastSync) {
+            if (new Date(response) <= lastSync) {
                 return [false, false];
             }
-
             return [true, false];
         } catch (e) {
             return [false, true];
