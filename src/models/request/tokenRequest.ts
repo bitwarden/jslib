@@ -37,7 +37,7 @@ export class TokenRequest {
             // obj.devicePushToken = this.device.pushToken;
         }
 
-        if (this.token && this.provider !== null && (typeof this.provider !== 'undefined')) {
+        if (this.token && this.provider != null) {
             obj.twoFactorToken = this.token;
             obj.twoFactorProvider = this.provider;
             obj.twoFactorRemember = this.remember ? '1' : '0';
