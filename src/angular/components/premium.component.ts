@@ -10,7 +10,7 @@ import { TokenService } from '../../abstractions/token.service';
 
 export class PremiumComponent implements OnInit {
     isPremium: boolean = false;
-    price: string = '$10';
+    price: number = 10;
     refreshPromise: Promise<any>;
 
     constructor(protected analytics: Angulartics2, protected toasterService: ToasterService,
