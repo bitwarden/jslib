@@ -179,7 +179,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
         } catch { }
 
         if (!this.connected) {
-            this.reconnectTimer = setTimeout(() => this.reconnect(sync), 120000);
+            this.reconnectTimer = setTimeout(() => this.reconnect(sync), this.random(120000, 300000));
         }
     }
 
@@ -188,5 +188,11 @@ export class NotificationsService implements NotificationsServiceAbstraction {
             return this.cryptoService.hasKey();
         }
         return false;
+    }
+
+    private random(min: number, max: number) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 }
