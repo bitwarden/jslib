@@ -8,8 +8,7 @@ import { SearchService as SearchServiceAbstraction } from '../abstractions/searc
 
 import { DeviceType } from '../enums/deviceType';
 import { FieldType } from '../enums/fieldType';
-
-const IgnoredTlds = ['com', 'net', 'org', 'io', 'co', 'uk', 'au', 'nz', 'fr', 'de', 'eu', 'me', 'jp', 'cn'];
+import { UriMatchType } from '../enums/uriMatchType';
 
 export class SearchService implements SearchServiceAbstraction {
     private indexing = false;
@@ -47,36 +46,7 @@ export class SearchService implements SearchServiceAbstraction {
         (builder as any).field('login.username', {
             extractor: (c: CipherView) => c.login != null ? c.login.username : null,
         });
-        (builder as any).field('login.uris', {
-            boost: 2,
-            extractor: (c: CipherView) => c.login == null || !c.login.hasUris ? null :
-                c.login.uris.filter((u) => u.hostname != null).map((u) => u.hostname),
-        });
-        (builder as any).field('login.uris_split', {
-            boost: 2,
-            extractor: (c: CipherView) => {
-                if (c.login == null || !c.login.hasUris) {
-                    return null;
-                }
-                let uriParts: string[] = [];
-                c.login.uris.forEach((u) => {
-                    if (u.hostname == null) {
-                        return;
-                    }
-                    const parts = u.hostname.split('.');
-                    if (parts.length > 0 && parts.length <= 2) {
-                        uriParts.push(parts[0]);
-                    } else if (parts.length > 2) {
-                        uriParts = uriParts.concat(parts.slice(0, parts.length - 2));
-                        const lastBit = parts[parts.length - 2];
-                        if (IgnoredTlds.indexOf(lastBit) === -1) {
-                            uriParts.push(lastBit);
-                        }
-                    }
-                });
-                return uriParts.length === 0 ? null : uriParts;
-            },
-        });
+        (builder as any).field('login.uris', { boost: 2, extractor: (c: CipherView) => this.uriExtractor(c) });
         (builder as any).field('fields', { extractor: (c: CipherView) => this.fieldExtractor(c, false) });
         (builder as any).field('fields_joined', { extractor: (c: CipherView) => this.fieldExtractor(c, true) });
         (builder as any).field('attachments', { extractor: (c: CipherView) => this.attachmentExtractor(c, false) });
@@ -128,12 +98,11 @@ export class SearchService implements SearchServiceAbstraction {
             } catch { }
         } else {
             // tslint:disable-next-line
-            const soWild = lunr.Query.wildcard.TRAILING;
+            const soWild = lunr.Query.wildcard.LEADING | lunr.Query.wildcard.TRAILING;
             searchResults = index.query((q) => {
                 q.term(query, { fields: ['name'], wildcard: soWild });
                 q.term(query, { fields: ['subTitle'], wildcard: soWild });
                 q.term(query, { fields: ['login.uris'], wildcard: soWild });
-                q.term(query, { fields: ['login.uris_split'], wildcard: soWild });
                 lunr.tokenizer(query).forEach((token) => {
                     q.term(token.toString(), {});
                 });
@@ -215,5 +184,34 @@ export class SearchService implements SearchServiceAbstraction {
             return null;
         }
         return joined ? attachments.join(' ') : attachments;
+    }
+
+    private uriExtractor(c: CipherView) {
+        if (c.login == null || !c.login.hasUris) {
+            return null;
+        }
+        const uris: string[] = [];
+        c.login.uris.forEach((u) => {
+            if (u.uri == null || u.uri === '') {
+                return;
+            }
+            if (u.hostname != null) {
+                uris.push(u.hostname);
+                return;
+            }
+            let uri = u.uri;
+            if (u.match !== UriMatchType.RegularExpression) {
+                const protocolIndex = uri.indexOf('://');
+                if (protocolIndex > -1) {
+                    uri = uri.substr(protocolIndex + 3);
+                }
+                const queryIndex = uri.search(/\?|&|#/);
+                if (queryIndex > -1) {
+                    uri = uri.substring(0, queryIndex);
+                }
+            }
+            uris.push(uri);
+        });
+        return uris.length > 0 ? uris : null;
     }
 }
