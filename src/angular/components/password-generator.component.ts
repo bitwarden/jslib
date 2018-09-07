@@ -78,6 +78,12 @@ export class PasswordGeneratorComponent implements OnInit {
         this.options.minUppercase = 0;
         this.options.ambiguous = !this.avoidAmbiguous;
 
+        let typePassword = false;
+        if (!this.options.generateTypePassword || this.options.generateTypePassword === 'generate-password') {
+            typePassword = true;
+        }
+        this.options.generatePassphrase = !typePassword;
+
         if (!this.options.uppercase && !this.options.lowercase && !this.options.number && !this.options.special) {
             this.options.lowercase = true;
             const lowercase = document.querySelector('#lowercase') as HTMLInputElement;
@@ -110,6 +116,10 @@ export class PasswordGeneratorComponent implements OnInit {
 
         if (this.options.minSpecial + this.options.minNumber > this.options.length) {
             this.options.minSpecial = this.options.length - this.options.minNumber;
+        }
+
+        if (!this.options.numWords || this.options.length < 3) {
+            this.options.numWords = 3;
         }
     }
 }
