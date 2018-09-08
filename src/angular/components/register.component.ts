@@ -58,7 +58,7 @@ export class RegisterComponent {
         }
 
         this.name = this.name === '' ? null : this.name;
-        this.email = this.email.toLowerCase();
+        this.email = this.email.trim().toLowerCase();
         const kdf = KdfType.PBKDF2_SHA256;
         const kdfIterations = 5000;
         const key = await this.cryptoService.makeKey(this.masterPassword, this.email, kdf, kdfIterations);

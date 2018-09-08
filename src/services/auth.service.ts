@@ -199,7 +199,7 @@ export class AuthService {
     }
 
     async makePreloginKey(masterPassword: string, email: string): Promise<SymmetricCryptoKey> {
-        email = email.toLowerCase();
+        email = email.trim().toLowerCase();
         this.kdf = null;
         this.kdfIterations = null;
         try {
