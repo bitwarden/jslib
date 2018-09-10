@@ -20,7 +20,7 @@ export class EnpassCsvImporter extends BaseImporter implements Importer {
 
         let firstRow = true;
         results.forEach((value) => {
-            if (value.length < 2 || (firstRow && value[0] === 'Title')) {
+            if (value.length < 2 || (firstRow && (value[0] === 'Title' || value[0] === 'title'))) {
                 firstRow = false;
                 return;
             }
@@ -29,14 +29,16 @@ export class EnpassCsvImporter extends BaseImporter implements Importer {
             cipher.notes = this.getValueOrDefault(value[value.length - 1]);
             cipher.name = this.getValueOrDefault(value[0], '--');
 
-            if (value.length === 2 || (value.indexOf('Username') < 0 && value.indexOf('Password') < 0 &&
-                value.indexOf('Email') && value.indexOf('URL') < 0)) {
+            if (value.length === 2 || (!this.containsField(value, 'username') &&
+                !this.containsField(value, 'password') && !this.containsField(value, 'email') &&
+                !this.containsField(value, 'url'))) {
                 cipher.type = CipherType.SecureNote;
                 cipher.secureNote = new SecureNoteView();
                 cipher.secureNote.type = SecureNoteType.Generic;
             }
 
-            if (value.indexOf('Cardholder') > -1 && value.indexOf('Number') > -1 && value.indexOf('Expiry date') > -1) {
+            if (this.containsField(value, 'cardholder') && this.containsField(value, 'number') &&
+                this.containsField(value, 'expiry date')) {
                 cipher.type = CipherType.Card;
                 cipher.card = new CardView();
             }
@@ -114,5 +116,13 @@ export class EnpassCsvImporter extends BaseImporter implements Importer {
 
         result.success = true;
         return result;
+    }
+
+    private containsField(fields: any[], name: string) {
+        if (fields == null || name == null) {
+            return false;
+        }
+        return fields.filter((f) => !this.isNullOrWhitespace(f) &&
+            f.toLowerCase() === name.toLowerCase()).length > 0;
     }
 }
