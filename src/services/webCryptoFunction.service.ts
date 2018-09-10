@@ -5,25 +5,31 @@ import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 
 import { Utils } from '../misc/utils';
 
-import { SymmetricCryptoKey } from '../models/domain';
 import { DecryptParameters } from '../models/domain/decryptParameters';
+import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
+
+import { DeviceType } from '../enums/deviceType';
 
 export class WebCryptoFunctionService implements CryptoFunctionService {
     private crypto: Crypto;
     private subtle: SubtleCrypto;
     private isEdge: boolean;
     private isIE: boolean;
+    private isOldSafari: boolean;
 
     constructor(private win: Window, private platformUtilsService: PlatformUtilsService) {
         this.crypto = typeof win.crypto !== 'undefined' ? win.crypto : null;
         this.subtle = (!!this.crypto && typeof win.crypto.subtle !== 'undefined') ? win.crypto.subtle : null;
         this.isEdge = platformUtilsService.isEdge();
         this.isIE = platformUtilsService.isIE();
+        const ua = win.navigator.userAgent;
+        this.isOldSafari = platformUtilsService.getDevice() === DeviceType.SafariBrowser &&
+            (ua.indexOf(' Version/10.') > -1 || ua.indexOf(' Version/9.') > -1);
     }
 
     async pbkdf2(password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
         iterations: number): Promise<ArrayBuffer> {
-        if (this.isEdge || this.isIE) {
+        if (this.isEdge || this.isIE || this.isOldSafari) {
             const forgeLen = algorithm === 'sha256' ? 32 : 64;
             const passwordBytes = this.toByteString(password);
             const saltBytes = this.toByteString(salt);
