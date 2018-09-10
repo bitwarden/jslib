@@ -76,6 +76,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             orgKeys[org.id] = org.key;
         });
 
+        this.orgKeys = null;
         return this.storageService.save(Keys.encOrgKeys, orgKeys);
     }
 
