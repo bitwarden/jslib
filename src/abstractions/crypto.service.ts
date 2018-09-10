@@ -36,6 +36,7 @@ export abstract class CryptoService {
     encrypt: (plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey) => Promise<CipherString>;
     encryptToBytes: (plainValue: ArrayBuffer, key?: SymmetricCryptoKey) => Promise<ArrayBuffer>;
     rsaEncrypt: (data: ArrayBuffer, publicKey?: ArrayBuffer, key?: SymmetricCryptoKey) => Promise<CipherString>;
+    decryptToBytes: (cipherString: CipherString, key?: SymmetricCryptoKey) => Promise<ArrayBuffer>;
     decryptToUtf8: (cipherString: CipherString, key?: SymmetricCryptoKey) => Promise<string>;
     decryptFromBytes: (encBuf: ArrayBuffer, key: SymmetricCryptoKey) => Promise<ArrayBuffer>;
     randomNumber: (min: number, max: number) => Promise<number>;

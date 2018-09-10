@@ -120,10 +120,10 @@ export class CryptoService implements CryptoServiceAbstraction {
         let decEncKey: ArrayBuffer;
         const encKeyCipher = new CipherString(encKey);
         if (encKeyCipher.encryptionType === EncryptionType.AesCbc256_B64) {
-            decEncKey = await this.decrypt(encKeyCipher, key);
+            decEncKey = await this.decryptToBytes(encKeyCipher, key);
         } else if (encKeyCipher.encryptionType === EncryptionType.AesCbc256_HmacSha256_B64) {
             const newKey = await this.stretchKey(key);
-            decEncKey = await this.decrypt(encKeyCipher, newKey);
+            decEncKey = await this.decryptToBytes(encKeyCipher, newKey);
         } else {
             throw new Error('Unsupported encKey type.');
         }
@@ -159,7 +159,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             return null;
         }
 
-        this.privateKey = await this.decrypt(new CipherString(encPrivateKey), null);
+        this.privateKey = await this.decryptToBytes(new CipherString(encPrivateKey), null);
         return this.privateKey;
     }
 
@@ -383,7 +383,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         return new CipherString(type, Utils.fromBufferToB64(encBytes), null, mac);
     }
 
-    async decrypt(cipherString: CipherString, key?: SymmetricCryptoKey): Promise<ArrayBuffer> {
+    async decryptToBytes(cipherString: CipherString, key?: SymmetricCryptoKey): Promise<ArrayBuffer> {
         const iv = Utils.fromB64ToArray(cipherString.iv).buffer;
         const data = Utils.fromB64ToArray(cipherString.data).buffer;
         const mac = cipherString.mac ? Utils.fromB64ToArray(cipherString.mac).buffer : null;
