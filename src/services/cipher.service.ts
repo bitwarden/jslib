@@ -134,6 +134,9 @@ export class CipherService implements CipherServiceAbstraction {
 
         if (key == null && cipher.organizationId != null) {
             key = await this.cryptoService.getOrgKey(cipher.organizationId);
+            if (key == null) {
+                throw new Error('Cannot encrypt cipher for organization. No key.');
+            }
         }
         await Promise.all([
             this.encryptObjProperty(model, cipher, {
