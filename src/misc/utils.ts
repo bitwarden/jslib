@@ -1,14 +1,15 @@
 import { I18nService } from '../abstractions/i18n.service';
 
 // tslint:disable-next-line
-const nodeURL = typeof window === 'undefined' ? require('url').URL : null;
+const nodeURL = typeof window === 'undefined' ? require('url') : null;
 
 export class Utils {
     static inited = false;
+    static isNativeScript = false;
     static isNode = false;
     static isBrowser = true;
     static isMobileBrowser = false;
-    static global: NodeJS.Global | Window = null;
+    static global: any = null;
 
     static init() {
         if (Utils.inited) {
@@ -19,12 +20,13 @@ export class Utils {
         Utils.isNode = typeof process !== 'undefined' && (process as any).release != null &&
             (process as any).release.name === 'node';
         Utils.isBrowser = typeof window !== 'undefined';
+        Utils.isNativeScript = !Utils.isNode && !Utils.isBrowser;
         Utils.isMobileBrowser = Utils.isBrowser && this.isMobile(window);
-        Utils.global = Utils.isNode && !Utils.isBrowser ? global : window;
+        Utils.global = Utils.isNativeScript ? new Object() : (Utils.isNode && !Utils.isBrowser ? global : window);
     }
 
     static fromB64ToArray(str: string): Uint8Array {
-        if (Utils.isNode) {
+        if (Utils.isNode || Utils.isNativeScript) {
             return new Uint8Array(Buffer.from(str, 'base64'));
         } else {
             const binaryString = window.atob(str);
@@ -37,7 +39,7 @@ export class Utils {
     }
 
     static fromHexToArray(str: string): Uint8Array {
-        if (Utils.isNode) {
+        if (Utils.isNode || Utils.isNativeScript) {
             return new Uint8Array(Buffer.from(str, 'hex'));
         } else {
             const bytes = new Uint8Array(str.length / 2);
@@ -49,7 +51,7 @@ export class Utils {
     }
 
     static fromUtf8ToArray(str: string): Uint8Array {
-        if (Utils.isNode) {
+        if (Utils.isNode || Utils.isNativeScript) {
             return new Uint8Array(Buffer.from(str, 'utf8'));
         } else {
             const strUtf8 = unescape(encodeURIComponent(str));
@@ -70,7 +72,7 @@ export class Utils {
     }
 
     static fromBufferToB64(buffer: ArrayBuffer): string {
-        if (Utils.isNode) {
+        if (Utils.isNode || Utils.isNativeScript) {
             return Buffer.from(buffer).toString('base64');
         } else {
             let binary = '';
@@ -83,7 +85,7 @@ export class Utils {
     }
 
     static fromBufferToUtf8(buffer: ArrayBuffer): string {
-        if (Utils.isNode) {
+        if (Utils.isNode || Utils.isNativeScript) {
             return Buffer.from(buffer).toString('utf8');
         } else {
             const bytes = new Uint8Array(buffer);
@@ -98,7 +100,7 @@ export class Utils {
 
     // ref: https://stackoverflow.com/a/40031979/1090359
     static fromBufferToHex(buffer: ArrayBuffer): string {
-        if (Utils.isNode) {
+        if (Utils.isNode || Utils.isNativeScript) {
             return Buffer.from(buffer).toString('hex');
         } else {
             const bytes = new Uint8Array(buffer);
@@ -125,7 +127,7 @@ export class Utils {
     }
 
     static fromB64ToUtf8(b64Str: string): string {
-        if (Utils.isNode) {
+        if (Utils.isNode || Utils.isNativeScript) {
             return Buffer.from(b64Str, 'base64').toString('utf8');
         } else {
             return decodeURIComponent(escape(window.atob(b64Str)));
@@ -225,7 +227,7 @@ export class Utils {
 
         try {
             if (nodeURL != null) {
-                return new nodeURL(uriString);
+                return nodeURL.URL ? new nodeURL.URL(uriString) : nodeURL.parse(uriString);
             } else if (typeof URL === 'function') {
                 return new URL(uriString);
             } else if (window != null) {
