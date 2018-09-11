@@ -28,7 +28,7 @@ export class AuditService implements AuditServiceAbstraction {
     }
 
     async breachedAccounts(username: string): Promise<BreachAccountResponse[]> {
-        const response = await this.apiService.fetch(new Request(HibpBreachApi + username));
+        const response = await fetch(new Request(HibpBreachApi + username));
         if (response.status === 404) {
             return [];
         } else if (response.status !== 200) {
