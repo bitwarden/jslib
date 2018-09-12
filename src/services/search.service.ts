@@ -45,8 +45,8 @@ export class SearchService implements SearchServiceAbstraction {
         (builder as any).field('subTitle', {
             boost: 5,
             extractor: (c: CipherView) => {
-                if (c.type === CipherType.Card && c.subTitle.indexOf('*') === 0) {
-                    return c.subTitle.substr(1);
+                if (c.subTitle != null && c.type === CipherType.Card) {
+                    return c.subTitle.replace(/\*/g, '');
                 }
                 return c.subTitle;
             },
