@@ -6,6 +6,7 @@ import { CipherService } from '../abstractions/cipher.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { SearchService as SearchServiceAbstraction } from '../abstractions/search.service';
 
+import { CipherType } from '../enums/cipherType';
 import { DeviceType } from '../enums/deviceType';
 import { FieldType } from '../enums/fieldType';
 import { UriMatchType } from '../enums/uriMatchType';
@@ -41,7 +42,15 @@ export class SearchService implements SearchServiceAbstraction {
         builder.ref('id');
         (builder as any).field('shortId', { boost: 100, extractor: (c: CipherView) => c.id.substr(0, 8) });
         (builder as any).field('name', { boost: 10 });
-        (builder as any).field('subTitle', { boost: 5 });
+        (builder as any).field('subTitle', {
+            boost: 5,
+            extractor: (c: CipherView) => {
+                if (c.type === CipherType.Card && c.subTitle.indexOf('*') === 0) {
+                    return c.subTitle.substr(1);
+                }
+                return c.subTitle;
+            },
+        });
         builder.field('notes');
         (builder as any).field('login.username', {
             extractor: (c: CipherView) => c.login != null ? c.login.username : null,
