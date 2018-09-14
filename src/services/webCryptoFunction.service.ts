@@ -8,8 +8,6 @@ import { Utils } from '../misc/utils';
 import { DecryptParameters } from '../models/domain/decryptParameters';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
-import { DeviceType } from '../enums/deviceType';
-
 export class WebCryptoFunctionService implements CryptoFunctionService {
     private crypto: Crypto;
     private subtle: SubtleCrypto;
@@ -23,7 +21,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         this.isEdge = platformUtilsService.isEdge();
         this.isIE = platformUtilsService.isIE();
         const ua = win.navigator.userAgent;
-        this.isOldSafari = platformUtilsService.getDevice() === DeviceType.SafariBrowser &&
+        this.isOldSafari = platformUtilsService.isSafari() &&
             (ua.indexOf(' Version/10.') > -1 || ua.indexOf(' Version/9.') > -1);
     }
 
