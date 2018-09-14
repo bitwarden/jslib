@@ -40,9 +40,9 @@ export class SearchService implements SearchServiceAbstraction {
         this.index = null;
         const builder = new lunr.Builder();
         builder.ref('id');
-        (builder as any).field('shortId', { boost: 100, extractor: (c: CipherView) => c.id.substr(0, 8) });
+        (builder as any).field('shortid', { boost: 100, extractor: (c: CipherView) => c.id.substr(0, 8) });
         (builder as any).field('name', { boost: 10 });
-        (builder as any).field('subTitle', {
+        (builder as any).field('subtitle', {
             boost: 5,
             extractor: (c: CipherView) => {
                 if (c.subTitle != null && c.type === CipherType.Card) {
@@ -110,7 +110,7 @@ export class SearchService implements SearchServiceAbstraction {
             const soWild = lunr.Query.wildcard.LEADING | lunr.Query.wildcard.TRAILING;
             searchResults = index.query((q) => {
                 q.term(query, { fields: ['name'], wildcard: soWild });
-                q.term(query, { fields: ['subTitle'], wildcard: soWild });
+                q.term(query, { fields: ['subtitle'], wildcard: soWild });
                 q.term(query, { fields: ['login.uris'], wildcard: soWild });
                 lunr.tokenizer(query).forEach((token) => {
                     q.term(token.toString(), {});
