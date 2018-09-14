@@ -399,5 +399,5 @@ function makeStaticByteArray(length: number) {
 class PlatformUtilsServiceMock extends PlatformUtilsService {
     isEdge = () => false;
     isIE = () => false;
-    getDevice = () => super.getDevice();
+    isSafari = () => super.isSafari();
 }
