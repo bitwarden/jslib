@@ -1,7 +1,5 @@
 import * as TypeMoq from 'typemoq';
 
-import { DeviceType } from '../../../src/enums/deviceType';
-
 import { PlatformUtilsService } from '../../../src/abstractions/platformUtils.service';
 
 import { WebCryptoFunctionService } from '../../../src/services/webCryptoFunction.service';
