@@ -40,6 +40,7 @@ import { OnePassword1PifImporter } from '../importers/onepassword1PifImporter';
 import { OnePasswordWinCsvImporter } from '../importers/onepasswordWinCsvImporter';
 import { PadlockCsvImporter } from '../importers/padlockCsvImporter';
 import { PassKeepCsvImporter } from '../importers/passkeepCsvImporter';
+import { PasspackCsvImporter } from '../importers/passpackCsvImporter';
 import { PasswordAgentCsvImporter } from '../importers/passwordAgentCsvImporter';
 import { PasswordBossJsonImporter } from '../importers/passwordBossJsonImporter';
 import { PasswordDragonXmlImporter } from '../importers/passwordDragonXmlImporter';
@@ -93,6 +94,7 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'gnomejson', name: 'GNOME Passwords and Keys/Seahorse (json)' },
         { id: 'blurcsv', name: 'Blur (csv)' },
         { id: 'passwordagentcsv', name: 'Password Agent (csv)' },
+        { id: 'passpackcsv', name: 'Passpack (csv)' },
     ];
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -207,6 +209,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new GnomeJsonImporter();
             case 'passwordagentcsv':
                 return new PasswordAgentCsvImporter();
+            case 'passpackcsv':
+                return new PasspackCsvImporter();
             default:
                 return null;
         }
