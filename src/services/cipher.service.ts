@@ -45,6 +45,7 @@ import { UserService } from '../abstractions/user.service';
 
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
+import { LoginUriView } from '../models/view';
 
 const Keys = {
     ciphersPrefix: 'ciphers_',
@@ -393,7 +394,19 @@ export class CipherService implements CipherServiceAbstraction {
             return null;
         }
 
-        const sortedCiphers = ciphers.sort(this.sortCiphersByLastUsed);
+        const hostnameParts = url.split(/(http|https):\/\//i);
+        const hostname = hostnameParts[hostnameParts.length - 1].split('/')[0];
+        const uriMatch = (uri: LoginUriView) =>  uri.hostname === hostname;
+
+        const sortedCiphers = ciphers.sort((a, b) => {
+            const aIsExact = a.login.hasUris && a.login.uris.some(uriMatch);
+            const bIsExact = b.login.hasUris && b.login.uris.some(uriMatch);
+
+            if (aIsExact === bIsExact) {
+                return this.sortCiphersByLastUsed(a, b);
+            }
+            return aIsExact ? -1 : 1;
+        });
         return sortedCiphers[0];
     }
 
