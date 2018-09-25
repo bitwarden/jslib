@@ -380,8 +380,12 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('PUT', '/ciphers/' + id + '/collections-admin', request, true, false);
     }
 
-    postPurgeCiphers(request: PasswordVerificationRequest): Promise<any> {
-        return this.send('POST', '/ciphers/purge', request, true, false);
+    postPurgeCiphers(request: PasswordVerificationRequest, organizationId: string = null): Promise<any> {
+        let path = '/ciphers/purge';
+        if (organizationId != null) {
+            path += '?organizationId=' + organizationId;
+        }
+        return this.send('POST', path, request, true, false);
     }
 
     postImportCiphers(request: ImportCiphersRequest): Promise<any> {

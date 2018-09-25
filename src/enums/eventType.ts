@@ -30,5 +30,5 @@ export enum EventType {
     OrganizationUser_UpdatedGroups = 1504,
 
     Organization_Updated = 1600,
-
+    Organization_PurgedVault = 1601,
 }
