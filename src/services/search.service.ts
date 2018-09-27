@@ -17,7 +17,8 @@ export class SearchService implements SearchServiceAbstraction {
     private onlySearchName = false;
 
     constructor(private cipherService: CipherService, platformUtilsService: PlatformUtilsService) {
-        this.onlySearchName = platformUtilsService.getDevice() === DeviceType.EdgeExtension;
+        this.onlySearchName = platformUtilsService == null ||
+            platformUtilsService.getDevice() === DeviceType.EdgeExtension;
     }
 
     clearIndex(): void {
