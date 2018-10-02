@@ -10,6 +10,7 @@ import { ApiService } from '../../abstractions/api.service';
 import { AuthService } from '../../abstractions/auth.service';
 import { CryptoService } from '../../abstractions/crypto.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
 
 import { KdfType } from '../../enums/kdfType';
@@ -28,7 +29,8 @@ export class RegisterComponent {
     constructor(protected authService: AuthService, protected router: Router,
         protected analytics: Angulartics2, protected toasterService: ToasterService,
         protected i18nService: I18nService, protected cryptoService: CryptoService,
-        protected apiService: ApiService, protected stateService: StateService) { }
+        protected apiService: ApiService, protected stateService: StateService,
+        protected platformUtilsService: PlatformUtilsService) { }
 
     async submit() {
         if (this.email == null || this.email === '') {
@@ -60,7 +62,8 @@ export class RegisterComponent {
         this.name = this.name === '' ? null : this.name;
         this.email = this.email.trim().toLowerCase();
         const kdf = KdfType.PBKDF2_SHA256;
-        const kdfIterations = 100000;
+        const useLowerKdf = this.platformUtilsService.isEdge() || this.platformUtilsService.isIE();
+        const kdfIterations = useLowerKdf ? 10000 : 100000;
         const key = await this.cryptoService.makeKey(this.masterPassword, this.email, kdf, kdfIterations);
         const encKey = await this.cryptoService.makeEncKey(key);
         const hashedPassword = await this.cryptoService.hashPassword(this.masterPassword, key);
