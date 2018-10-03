@@ -172,6 +172,10 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return Promise.resolve(result === 0);
     }
 
+    eventTrack(action: string, label?: string, options?: any) {
+        // TODO: track
+    }
+
     isDev(): boolean {
         return isDev();
     }
