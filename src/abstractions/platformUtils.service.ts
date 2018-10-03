@@ -21,7 +21,8 @@ export abstract class PlatformUtilsService {
     getApplicationVersion: () => string;
     supportsU2f: (win: Window) => boolean;
     supportsDuo: () => boolean;
-    showToast: (type: 'error' | 'success' | 'warning' | 'info', title: string, text: string) => void;
+    showToast: (type: 'error' | 'success' | 'warning' | 'info', title: string, text: string | string[],
+        options?: any) => void;
     showDialog: (text: string, title?: string, confirmText?: string, cancelText?: string,
         type?: string) => Promise<boolean>;
     isDev: () => boolean;

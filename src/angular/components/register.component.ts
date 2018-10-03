@@ -1,6 +1,5 @@
 import { Router } from '@angular/router';
 
-import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
 
 import { KeysRequest } from '../../models/request/keysRequest';
@@ -27,34 +26,34 @@ export class RegisterComponent {
     protected successRoute = 'login';
 
     constructor(protected authService: AuthService, protected router: Router,
-        protected analytics: Angulartics2, protected toasterService: ToasterService,
+        protected analytics: Angulartics2,
         protected i18nService: I18nService, protected cryptoService: CryptoService,
         protected apiService: ApiService, protected stateService: StateService,
         protected platformUtilsService: PlatformUtilsService) { }
 
     async submit() {
         if (this.email == null || this.email === '') {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('emailRequired'));
             return;
         }
         if (this.email.indexOf('@') === -1) {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('invalidEmail'));
             return;
         }
         if (this.masterPassword == null || this.masterPassword === '') {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('masterPassRequired'));
             return;
         }
         if (this.masterPassword.length < 8) {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('masterPassLength'));
             return;
         }
         if (this.masterPassword !== this.confirmMasterPassword) {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('masterPassDoesntMatch'));
             return;
         }
@@ -81,7 +80,7 @@ export class RegisterComponent {
             this.formPromise = this.apiService.postRegister(request);
             await this.formPromise;
             this.analytics.eventTrack.next({ action: 'Registered' });
-            this.toasterService.popAsync('success', null, this.i18nService.t('newAccountCreated'));
+            this.platformUtilsService.showToast('success', null, this.i18nService.t('newAccountCreated'));
             this.router.navigate([this.successRoute], { queryParams: { email: this.email } });
         } catch { }
     }

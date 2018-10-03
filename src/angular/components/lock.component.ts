@@ -1,6 +1,5 @@
 import { Router } from '@angular/router';
 
-import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
 
 import { CryptoService } from '../../abstractions/crypto.service';
@@ -16,13 +15,13 @@ export class LockComponent {
     protected successRoute: string = 'vault';
 
     constructor(protected router: Router, protected analytics: Angulartics2,
-        protected toasterService: ToasterService, protected i18nService: I18nService,
+        protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected messagingService: MessagingService,
         protected userService: UserService, protected cryptoService: CryptoService) { }
 
     async submit() {
         if (this.masterPassword == null || this.masterPassword === '') {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('masterPassRequired'));
             return;
         }
@@ -39,7 +38,7 @@ export class LockComponent {
             this.messagingService.send('unlocked');
             this.router.navigate([this.successRoute]);
         } else {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('invalidMasterPassword'));
         }
     }

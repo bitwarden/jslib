@@ -5,7 +5,6 @@ import {
     Output,
 } from '@angular/core';
 
-import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
 
 import { CipherService } from '../../abstractions/cipher.service';
@@ -32,7 +31,7 @@ export class AttachmentsComponent implements OnInit {
     deletePromises: { [id: string]: Promise<any>; } = {};
 
     constructor(protected cipherService: CipherService, protected analytics: Angulartics2,
-        protected toasterService: ToasterService, protected i18nService: I18nService,
+        protected i18nService: I18nService,
         protected cryptoService: CryptoService, protected userService: UserService,
         protected platformUtilsService: PlatformUtilsService, protected win: Window) { }
 
@@ -63,7 +62,7 @@ export class AttachmentsComponent implements OnInit {
 
     async submit() {
         if (!this.hasUpdatedKey) {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('updateKey'));
             return;
         }
@@ -71,13 +70,13 @@ export class AttachmentsComponent implements OnInit {
         const fileEl = document.getElementById('file') as HTMLInputElement;
         const files = fileEl.files;
         if (files == null || files.length === 0) {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('selectFile'));
             return;
         }
 
         if (files[0].size > 104857600) { // 100 MB
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('maxFileSize'));
             return;
         }
@@ -87,7 +86,7 @@ export class AttachmentsComponent implements OnInit {
             this.cipherDomain = await this.formPromise;
             this.cipher = await this.cipherDomain.decrypt();
             this.analytics.eventTrack.next({ action: 'Added Attachment' });
-            this.toasterService.popAsync('success', null, this.i18nService.t('attachmentSaved'));
+            this.platformUtilsService.showToast('success', null, this.i18nService.t('attachmentSaved'));
             this.onUploadedAttachment.emit();
         } catch { }
 
@@ -114,7 +113,7 @@ export class AttachmentsComponent implements OnInit {
             this.deletePromises[attachment.id] = this.deleteCipherAttachment(attachment.id);
             await this.deletePromises[attachment.id];
             this.analytics.eventTrack.next({ action: 'Deleted Attachment' });
-            this.toasterService.popAsync('success', null, this.i18nService.t('deletedAttachment'));
+            this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedAttachment'));
             const i = this.cipher.attachments.indexOf(attachment);
             if (i > -1) {
                 this.cipher.attachments.splice(i, 1);
@@ -132,7 +131,7 @@ export class AttachmentsComponent implements OnInit {
         }
 
         if (!this.canAccessAttachments) {
-            this.toasterService.popAsync('error', this.i18nService.t('premiumRequired'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('premiumRequired'),
                 this.i18nService.t('premiumRequiredDesc'));
             return;
         }
@@ -140,7 +139,7 @@ export class AttachmentsComponent implements OnInit {
         a.downloading = true;
         const response = await fetch(new Request(attachment.url, { cache: 'no-cache' }));
         if (response.status !== 200) {
-            this.toasterService.popAsync('error', null, this.i18nService.t('errorOccurred'));
+            this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
             a.downloading = false;
             return;
         }
@@ -151,7 +150,7 @@ export class AttachmentsComponent implements OnInit {
             const decBuf = await this.cryptoService.decryptFromBytes(buf, key);
             this.platformUtilsService.saveFile(this.win, decBuf, null, attachment.fileName);
         } catch (e) {
-            this.toasterService.popAsync('error', null, this.i18nService.t('errorOccurred'));
+            this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
         }
 
         a.downloading = false;

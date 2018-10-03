@@ -140,14 +140,15 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return true;
     }
 
-    showToast(type: 'error' | 'success' | 'warning' | 'info', title: string, text: string, global?: any): void {
-        if (global == null && Utils.isBrowser) {
-            global = window;
+    showToast(type: 'error' | 'success' | 'warning' | 'info', title: string, text: string | string[],
+        options?: any): void {
+        if ((options == null || options.global == null) && Utils.isBrowser) {
+            options.global = window;
         }
-        if (global == null || global.BitwardenToasterService == null) {
+        if (options.global == null || options.global.BitwardenToasterService == null) {
             throw new Error('BitwardenToasterService not available on global.');
         }
-        global.BitwardenToasterService.popAsync(type, title, text);
+        options.global.BitwardenToasterService.popAsync(type, title, text);
     }
 
     showDialog(text: string, title?: string, confirmText?: string, cancelText?: string, type?: string):

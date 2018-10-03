@@ -4,7 +4,6 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
 
 import { DeviceType } from '../../enums/deviceType';
@@ -43,7 +42,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     protected successRoute = 'vault';
 
     constructor(protected authService: AuthService, protected router: Router,
-        protected analytics: Angulartics2, protected toasterService: ToasterService,
+        protected analytics: Angulartics2,
         protected i18nService: I18nService, protected apiService: ApiService,
         protected platformUtilsService: PlatformUtilsService, protected win: Window,
         protected environmentService: EnvironmentService) {
@@ -69,7 +68,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 this.token = token;
                 this.submit();
             }, (error: string) => {
-                this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'), error);
+                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), error);
             }, (info: string) => {
                 if (info === 'ready') {
                     this.u2fReady = true;
@@ -147,7 +146,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
 
     async submit() {
         if (this.token == null || this.token === '') {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('verificationCodeRequired'));
             return;
         }
@@ -196,7 +195,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             this.emailPromise = this.apiService.postTwoFactorEmail(request);
             await this.emailPromise;
             if (doToast) {
-                this.toasterService.popAsync('success', null,
+                this.platformUtilsService.showToast('success', null,
                     this.i18nService.t('verificationCodeEmailSent', this.twoFactorEmail));
             }
         } catch { }

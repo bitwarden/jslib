@@ -4,13 +4,13 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
 
 import { AuthResult } from '../../models/domain/authResult';
 
 import { AuthService } from '../../abstractions/auth.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StorageService } from '../../abstractions/storage.service';
 
 import { Utils } from '../../misc/utils';
@@ -34,7 +34,7 @@ export class LoginComponent implements OnInit {
     protected successRoute = 'vault';
 
     constructor(protected authService: AuthService, protected router: Router,
-        protected analytics: Angulartics2, protected toasterService: ToasterService,
+        protected analytics: Angulartics2, protected platformUtilsService: PlatformUtilsService,
         protected i18nService: I18nService, private storageService: StorageService) { }
 
     async ngOnInit() {
@@ -55,17 +55,17 @@ export class LoginComponent implements OnInit {
 
     async submit() {
         if (this.email == null || this.email === '') {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('emailRequired'));
             return;
         }
         if (this.email.indexOf('@') === -1) {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('invalidEmail'));
             return;
         }
         if (this.masterPassword == null || this.masterPassword === '') {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('masterPassRequired'));
             return;
         }

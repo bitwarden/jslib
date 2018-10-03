@@ -1,21 +1,11 @@
-import {
-    Injectable,
-    SecurityContext,
-} from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
-
-import {
-    BodyOutputType,
-    Toast,
-    ToasterService,
-} from 'angular2-toaster';
+import { Injectable } from '@angular/core';
 
 import { I18nService } from '../../abstractions/i18n.service';
+import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 @Injectable()
 export class ValidationService {
-    constructor(private toasterService: ToasterService, private i18nService: I18nService,
-        private sanitizer: DomSanitizer) { }
+    constructor(private i18nService: I18nService, private platformUtilsService: PlatformUtilsService) { }
 
     showError(data: any): string[] {
         const defaultErrorMessage = this.i18nService.t('unexpectedError');
@@ -45,18 +35,11 @@ export class ValidationService {
         }
 
         if (errors.length === 1) {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'), errors[0]);
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), errors[0]);
         } else if (errors.length > 1) {
-            let errorMessage = '';
-            errors.forEach((e) => errorMessage += ('<p>' + this.sanitizer.sanitize(SecurityContext.HTML, e) + '</p>'));
-            const toast: Toast = {
-                type: 'error',
-                title: this.i18nService.t('errorOccurred'),
-                body: errorMessage,
-                bodyOutputType: BodyOutputType.TrustedHtml,
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), errors, {
                 timeout: 5000 * errors.length,
-            };
-            this.toasterService.popAsync(toast);
+            });
         }
 
         return errors;

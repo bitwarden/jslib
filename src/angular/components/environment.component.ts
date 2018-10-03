@@ -3,11 +3,11 @@ import {
     Output,
 } from '@angular/core';
 
-import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
 
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 export class EnvironmentComponent {
     @Output() onSaved = new EventEmitter();
@@ -20,7 +20,7 @@ export class EnvironmentComponent {
     baseUrl: string;
     showCustom = false;
 
-    constructor(protected analytics: Angulartics2, protected toasterService: ToasterService,
+    constructor(protected analytics: Angulartics2, protected platformUtilsService: PlatformUtilsService,
         protected environmentService: EnvironmentService, protected i18nService: I18nService) {
         this.baseUrl = environmentService.baseUrl || '';
         this.webVaultUrl = environmentService.webVaultUrl || '';
@@ -49,7 +49,7 @@ export class EnvironmentComponent {
         this.notificationsUrl = resUrls.notifications;
 
         this.analytics.eventTrack.next({ action: 'Set Environment URLs' });
-        this.toasterService.popAsync('success', null, this.i18nService.t('environmentSaved'));
+        this.platformUtilsService.showToast('success', null, this.i18nService.t('environmentSaved'));
         this.saved();
     }
 

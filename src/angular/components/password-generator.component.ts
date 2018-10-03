@@ -1,4 +1,3 @@
-import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
 
 import {
@@ -23,7 +22,7 @@ export class PasswordGeneratorComponent implements OnInit {
 
     constructor(protected passwordGenerationService: PasswordGenerationService, protected analytics: Angulartics2,
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
-        protected toasterService: ToasterService, private win: Window) { }
+        private win: Window) { }
 
     async ngOnInit() {
         this.options = await this.passwordGenerationService.getOptions();
@@ -63,7 +62,8 @@ export class PasswordGeneratorComponent implements OnInit {
         this.analytics.eventTrack.next({ action: 'Copied Generated Password' });
         const copyOptions = this.win != null ? { window: this.win } : null;
         this.platformUtilsService.copyToClipboard(this.password, copyOptions);
-        this.toasterService.popAsync('info', null, this.i18nService.t('valueCopied', this.i18nService.t('password')));
+        this.platformUtilsService.showToast('info', null,
+            this.i18nService.t('valueCopied', this.i18nService.t('password')));
     }
 
     select() {

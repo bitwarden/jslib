@@ -5,7 +5,6 @@ import {
     Output,
 } from '@angular/core';
 
-import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
 
 import { FolderService } from '../../abstractions/folder.service';
@@ -26,8 +25,7 @@ export class FolderAddEditComponent implements OnInit {
     deletePromise: Promise<any>;
 
     constructor(protected folderService: FolderService, protected i18nService: I18nService,
-        protected analytics: Angulartics2, protected toasterService: ToasterService,
-        protected platformUtilsService: PlatformUtilsService) { }
+        protected analytics: Angulartics2, protected platformUtilsService: PlatformUtilsService) { }
 
     async ngOnInit() {
         this.editMode = this.folderId != null;
@@ -44,7 +42,7 @@ export class FolderAddEditComponent implements OnInit {
 
     async submit(): Promise<boolean> {
         if (this.folder.name == null || this.folder.name === '') {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('nameRequired'));
             return false;
         }
@@ -54,7 +52,7 @@ export class FolderAddEditComponent implements OnInit {
             this.formPromise = this.folderService.saveWithServer(folder);
             await this.formPromise;
             this.analytics.eventTrack.next({ action: this.editMode ? 'Edited Folder' : 'Added Folder' });
-            this.toasterService.popAsync('success', null,
+            this.platformUtilsService.showToast('success', null,
                 this.i18nService.t(this.editMode ? 'editedFolder' : 'addedFolder'));
             this.onSavedFolder.emit(this.folder);
             return true;
@@ -75,7 +73,7 @@ export class FolderAddEditComponent implements OnInit {
             this.deletePromise = this.folderService.deleteWithServer(this.folder.id);
             await this.deletePromise;
             this.analytics.eventTrack.next({ action: 'Deleted Folder' });
-            this.toasterService.popAsync('success', null, this.i18nService.t('deletedFolder'));
+            this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedFolder'));
             this.onDeletedFolder.emit(this.folder);
         } catch { }
 

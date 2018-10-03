@@ -4,7 +4,6 @@ import {
     Output,
 } from '@angular/core';
 
-import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
 
 import { CipherType } from '../../enums/cipherType';
@@ -61,7 +60,7 @@ export class AddEditComponent {
 
     constructor(protected cipherService: CipherService, protected folderService: FolderService,
         protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
-        protected analytics: Angulartics2, protected toasterService: ToasterService,
+        protected analytics: Angulartics2,
         protected auditService: AuditService, protected stateService: StateService) {
         this.typeOptions = [
             { name: i18nService.t('typeLogin'), value: CipherType.Login },
@@ -152,7 +151,7 @@ export class AddEditComponent {
 
     async submit(): Promise<boolean> {
         if (this.cipher.name == null || this.cipher.name === '') {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('nameRequired'));
             return false;
         }
@@ -169,7 +168,7 @@ export class AddEditComponent {
             await this.formPromise;
             this.cipher.id = cipher.id;
             this.analytics.eventTrack.next({ action: this.editMode ? 'Edited Cipher' : 'Added Cipher' });
-            this.toasterService.popAsync('success', null,
+            this.platformUtilsService.showToast('success', null,
                 this.i18nService.t(this.editMode ? 'editedItem' : 'addedItem'));
             this.onSavedCipher.emit(this.cipher);
             return true;
@@ -238,7 +237,7 @@ export class AddEditComponent {
             this.deletePromise = this.deleteCipher();
             await this.deletePromise;
             this.analytics.eventTrack.next({ action: 'Deleted Cipher' });
-            this.toasterService.popAsync('success', null, this.i18nService.t('deletedItem'));
+            this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedItem'));
             this.onDeletedCipher.emit(this.cipher);
         } catch { }
 
@@ -301,9 +300,10 @@ export class AddEditComponent {
         this.checkPasswordPromise = null;
 
         if (matches > 0) {
-            this.toasterService.popAsync('warning', null, this.i18nService.t('passwordExposed', matches.toString()));
+            this.platformUtilsService.showToast('warning', null,
+                this.i18nService.t('passwordExposed', matches.toString()));
         } else {
-            this.toasterService.popAsync('success', null, this.i18nService.t('passwordSafe'));
+            this.platformUtilsService.showToast('success', null, this.i18nService.t('passwordSafe'));
         }
     }
 

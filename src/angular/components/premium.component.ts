@@ -1,6 +1,5 @@
 import { OnInit } from '@angular/core';
 
-import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
 
 import { ApiService } from '../../abstractions/api.service';
@@ -13,7 +12,7 @@ export class PremiumComponent implements OnInit {
     price: number = 10;
     refreshPromise: Promise<any>;
 
-    constructor(protected analytics: Angulartics2, protected toasterService: ToasterService,
+    constructor(protected analytics: Angulartics2,
         protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected tokenService: TokenService, protected apiService: ApiService) { }
 
@@ -25,7 +24,7 @@ export class PremiumComponent implements OnInit {
         try {
             this.refreshPromise = this.apiService.refreshIdentityToken();
             await this.refreshPromise;
-            this.toasterService.popAsync('success', null, this.i18nService.t('refreshComplete'));
+            this.platformUtilsService.showToast('success', null, this.i18nService.t('refreshComplete'));
             this.isPremium = this.tokenService.getPremium();
         } catch { }
     }

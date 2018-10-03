@@ -1,4 +1,3 @@
-import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
 
 import {
@@ -18,14 +17,14 @@ export class ExportComponent {
     masterPassword: string;
     showPassword = false;
 
-    constructor(protected analytics: Angulartics2, protected toasterService: ToasterService,
+    constructor(protected analytics: Angulartics2,
         protected cryptoService: CryptoService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected exportService: ExportService,
         protected win: Window) { }
 
     async submit() {
         if (this.masterPassword == null || this.masterPassword === '') {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('invalidMasterPassword'));
             return;
         }
@@ -41,7 +40,7 @@ export class ExportComponent {
                 this.saved();
             } catch { }
         } else {
-            this.toasterService.popAsync('error', this.i18nService.t('errorOccurred'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('invalidMasterPassword'));
         }
     }

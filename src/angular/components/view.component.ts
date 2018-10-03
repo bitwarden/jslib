@@ -8,7 +8,6 @@ import {
     Output,
 } from '@angular/core';
 
-import { ToasterService } from 'angular2-toaster';
 import { Angulartics2 } from 'angulartics2';
 
 import { CipherType } from '../../enums/cipherType';
@@ -50,7 +49,7 @@ export class ViewComponent implements OnDestroy, OnInit {
     private totpInterval: any;
 
     constructor(protected cipherService: CipherService, protected totpService: TotpService,
-        protected tokenService: TokenService, protected toasterService: ToasterService,
+        protected tokenService: TokenService,
         protected cryptoService: CryptoService, protected platformUtilsService: PlatformUtilsService,
         protected i18nService: I18nService, protected analytics: Angulartics2,
         protected auditService: AuditService, protected win: Window,
@@ -120,9 +119,10 @@ export class ViewComponent implements OnDestroy, OnInit {
         const matches = await this.checkPasswordPromise;
 
         if (matches > 0) {
-            this.toasterService.popAsync('warning', null, this.i18nService.t('passwordExposed', matches.toString()));
+            this.platformUtilsService.showToast('warning', null,
+                this.i18nService.t('passwordExposed', matches.toString()));
         } else {
-            this.toasterService.popAsync('success', null, this.i18nService.t('passwordSafe'));
+            this.platformUtilsService.showToast('success', null, this.i18nService.t('passwordSafe'));
         }
     }
 
@@ -148,7 +148,7 @@ export class ViewComponent implements OnDestroy, OnInit {
         this.analytics.eventTrack.next({ action: 'Copied ' + aType });
         const copyOptions = this.win != null ? { window: this.win } : null;
         this.platformUtilsService.copyToClipboard(value, copyOptions);
-        this.toasterService.popAsync('info', null,
+        this.platformUtilsService.showToast('info', null,
             this.i18nService.t('valueCopied', this.i18nService.t(typeI18nKey)));
     }
 
@@ -159,7 +159,7 @@ export class ViewComponent implements OnDestroy, OnInit {
         }
 
         if (this.cipher.organizationId == null && !this.canAccessPremium) {
-            this.toasterService.popAsync('error', this.i18nService.t('premiumRequired'),
+            this.platformUtilsService.showToast('error', this.i18nService.t('premiumRequired'),
                 this.i18nService.t('premiumRequiredDesc'));
             return;
         }
@@ -167,7 +167,7 @@ export class ViewComponent implements OnDestroy, OnInit {
         a.downloading = true;
         const response = await fetch(new Request(attachment.url, { cache: 'no-cache' }));
         if (response.status !== 200) {
-            this.toasterService.popAsync('error', null, this.i18nService.t('errorOccurred'));
+            this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
             a.downloading = false;
             return;
         }
@@ -178,7 +178,7 @@ export class ViewComponent implements OnDestroy, OnInit {
             const decBuf = await this.cryptoService.decryptFromBytes(buf, key);
             this.platformUtilsService.saveFile(this.win, decBuf, null, attachment.fileName);
         } catch (e) {
-            this.toasterService.popAsync('error', null, this.i18nService.t('errorOccurred'));
+            this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
         }
 
         a.downloading = false;
