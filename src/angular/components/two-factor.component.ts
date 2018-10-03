@@ -4,8 +4,6 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Angulartics2 } from 'angulartics2';
-
 import { DeviceType } from '../../enums/deviceType';
 import { TwoFactorProviderType } from '../../enums/twoFactorProviderType';
 
@@ -42,7 +40,6 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     protected successRoute = 'vault';
 
     constructor(protected authService: AuthService, protected router: Router,
-        protected analytics: Angulartics2,
         protected i18nService: I18nService, protected apiService: ApiService,
         protected platformUtilsService: PlatformUtilsService, protected win: Window,
         protected environmentService: EnvironmentService) {
@@ -168,7 +165,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             if (this.onSuccessfulLogin != null) {
                 this.onSuccessfulLogin();
             }
-            this.analytics.eventTrack.next({ action: 'Logged In From Two-step' });
+            this.platformUtilsService.eventTrack('Logged In From Two-step');
             if (this.onSuccessfulLoginNavigate != null) {
                 this.onSuccessfulLoginNavigate();
             } else {

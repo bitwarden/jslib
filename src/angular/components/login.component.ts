@@ -4,8 +4,6 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Angulartics2 } from 'angulartics2';
-
 import { AuthResult } from '../../models/domain/authResult';
 
 import { AuthService } from '../../abstractions/auth.service';
@@ -34,8 +32,8 @@ export class LoginComponent implements OnInit {
     protected successRoute = 'vault';
 
     constructor(protected authService: AuthService, protected router: Router,
-        protected analytics: Angulartics2, protected platformUtilsService: PlatformUtilsService,
-        protected i18nService: I18nService, private storageService: StorageService) { }
+        protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
+        private storageService: StorageService) { }
 
     async ngOnInit() {
         if (this.email == null || this.email === '') {
@@ -80,13 +78,13 @@ export class LoginComponent implements OnInit {
                 await this.storageService.remove(Keys.rememberedEmail);
             }
             if (response.twoFactor) {
-                this.analytics.eventTrack.next({ action: 'Logged In To Two-step' });
+                this.platformUtilsService.eventTrack('Logged In To Two-step');
                 this.router.navigate([this.twoFactorRoute]);
             } else {
                 if (this.onSuccessfulLogin != null) {
                     this.onSuccessfulLogin();
                 }
-                this.analytics.eventTrack.next({ action: 'Logged In' });
+                this.platformUtilsService.eventTrack('Logged In');
                 if (this.onSuccessfulLoginNavigate != null) {
                     this.onSuccessfulLoginNavigate();
                 } else {
@@ -97,7 +95,7 @@ export class LoginComponent implements OnInit {
     }
 
     togglePassword() {
-        this.analytics.eventTrack.next({ action: 'Toggled Master Password on Login' });
+        this.platformUtilsService.eventTrack('Toggled Master Password on Login');
         this.showPassword = !this.showPassword;
         document.getElementById('masterPassword').focus();
     }

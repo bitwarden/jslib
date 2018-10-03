@@ -4,8 +4,6 @@ import {
     Output,
 } from '@angular/core';
 
-import { Angulartics2 } from 'angulartics2';
-
 import { CipherType } from '../../enums/cipherType';
 import { FieldType } from '../../enums/fieldType';
 import { SecureNoteType } from '../../enums/secureNoteType';
@@ -60,7 +58,6 @@ export class AddEditComponent {
 
     constructor(protected cipherService: CipherService, protected folderService: FolderService,
         protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
-        protected analytics: Angulartics2,
         protected auditService: AuditService, protected stateService: StateService) {
         this.typeOptions = [
             { name: i18nService.t('typeLogin'), value: CipherType.Login },
@@ -167,7 +164,7 @@ export class AddEditComponent {
             this.formPromise = this.saveCipher(cipher);
             await this.formPromise;
             this.cipher.id = cipher.id;
-            this.analytics.eventTrack.next({ action: this.editMode ? 'Edited Cipher' : 'Added Cipher' });
+            this.platformUtilsService.eventTrack(this.editMode ? 'Edited Cipher' : 'Added Cipher');
             this.platformUtilsService.showToast('success', null,
                 this.i18nService.t(this.editMode ? 'editedItem' : 'addedItem'));
             this.onSavedCipher.emit(this.cipher);
@@ -236,7 +233,7 @@ export class AddEditComponent {
         try {
             this.deletePromise = this.deleteCipher();
             await this.deletePromise;
-            this.analytics.eventTrack.next({ action: 'Deleted Cipher' });
+            this.platformUtilsService.eventTrack('Deleted Cipher');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedItem'));
             this.onDeletedCipher.emit(this.cipher);
         } catch { }
@@ -259,13 +256,13 @@ export class AddEditComponent {
     }
 
     togglePassword() {
-        this.analytics.eventTrack.next({ action: 'Toggled Password on Edit' });
+        this.platformUtilsService.eventTrack('Toggled Password on Edit');
         this.showPassword = !this.showPassword;
         document.getElementById('loginPassword').focus();
     }
 
     toggleCardCode() {
-        this.analytics.eventTrack.next({ action: 'Toggled CardCode on Edit' });
+        this.platformUtilsService.eventTrack('Toggled CardCode on Edit');
         this.showCardCode = !this.showCardCode;
         document.getElementById('cardCode').focus();
     }
@@ -294,7 +291,7 @@ export class AddEditComponent {
             return;
         }
 
-        this.analytics.eventTrack.next({ action: 'Check Password' });
+        this.platformUtilsService.eventTrack('Check Password');
         this.checkPasswordPromise = this.auditService.passwordLeaked(this.cipher.login.password);
         const matches = await this.checkPasswordPromise;
         this.checkPasswordPromise = null;

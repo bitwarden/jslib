@@ -1,5 +1,3 @@
-import { Angulartics2 } from 'angulartics2';
-
 import {
     EventEmitter,
     Output,
@@ -17,8 +15,7 @@ export class ExportComponent {
     masterPassword: string;
     showPassword = false;
 
-    constructor(protected analytics: Angulartics2,
-        protected cryptoService: CryptoService, protected i18nService: I18nService,
+    constructor(protected cryptoService: CryptoService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected exportService: ExportService,
         protected win: Window) { }
 
@@ -35,7 +32,7 @@ export class ExportComponent {
             try {
                 this.formPromise = this.getExportData();
                 const data = await this.formPromise;
-                this.analytics.eventTrack.next({ action: 'Exported Data' });
+                this.platformUtilsService.eventTrack('Exported Data');
                 this.downloadFile(data);
                 this.saved();
             } catch { }
@@ -46,7 +43,7 @@ export class ExportComponent {
     }
 
     togglePassword() {
-        this.analytics.eventTrack.next({ action: 'Toggled Master Password on Export' });
+        this.platformUtilsService.eventTrack('Toggled Master Password on Export');
         this.showPassword = !this.showPassword;
         document.getElementById('masterPassword').focus();
     }

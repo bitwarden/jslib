@@ -1,5 +1,3 @@
-import { Angulartics2 } from 'angulartics2';
-
 import { OnInit } from '@angular/core';
 
 import { I18nService } from '../../abstractions/i18n.service';
@@ -11,7 +9,7 @@ import { GeneratedPasswordHistory } from '../../models/domain/generatedPasswordH
 export class PasswordGeneratorHistoryComponent implements OnInit {
     history: GeneratedPasswordHistory[] = [];
 
-    constructor(protected passwordGenerationService: PasswordGenerationService, protected analytics: Angulartics2,
+    constructor(protected passwordGenerationService: PasswordGenerationService,
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
         private win: Window) { }
 
@@ -25,7 +23,7 @@ export class PasswordGeneratorHistoryComponent implements OnInit {
     }
 
     copy(password: string) {
-        this.analytics.eventTrack.next({ action: 'Copied Historical Password' });
+        this.platformUtilsService.eventTrack('Copied Historical Password');
         const copyOptions = this.win != null ? { window: this.win } : null;
         this.platformUtilsService.copyToClipboard(password, copyOptions);
         this.platformUtilsService.showToast('info', null,

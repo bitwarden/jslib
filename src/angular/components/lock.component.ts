@@ -1,7 +1,5 @@
 import { Router } from '@angular/router';
 
-import { Angulartics2 } from 'angulartics2';
-
 import { CryptoService } from '../../abstractions/crypto.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { MessagingService } from '../../abstractions/messaging.service';
@@ -14,8 +12,7 @@ export class LockComponent {
 
     protected successRoute: string = 'vault';
 
-    constructor(protected router: Router, protected analytics: Angulartics2,
-        protected i18nService: I18nService,
+    constructor(protected router: Router, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected messagingService: MessagingService,
         protected userService: UserService, protected cryptoService: CryptoService) { }
 
@@ -52,7 +49,7 @@ export class LockComponent {
     }
 
     togglePassword() {
-        this.analytics.eventTrack.next({ action: 'Toggled Master Password on Unlock' });
+        this.platformUtilsService.eventTrack('Toggled Master Password on Unlock');
         this.showPassword = !this.showPassword;
         document.getElementById('masterPassword').focus();
     }

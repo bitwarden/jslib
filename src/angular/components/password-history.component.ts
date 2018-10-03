@@ -1,5 +1,3 @@
-import { Angulartics2 } from 'angulartics2';
-
 import { OnInit } from '@angular/core';
 
 import { CipherService } from '../../abstractions/cipher.service';
@@ -12,9 +10,8 @@ export class PasswordHistoryComponent implements OnInit {
     cipherId: string;
     history: PasswordHistoryView[] = [];
 
-    constructor(protected cipherService: CipherService, protected analytics: Angulartics2,
-        protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
-        private win: Window) { }
+    constructor(protected cipherService: CipherService, protected platformUtilsService: PlatformUtilsService,
+        protected i18nService: I18nService, private win: Window) { }
 
     async ngOnInit() {
         const cipher = await this.cipherService.get(this.cipherId);
@@ -23,7 +20,7 @@ export class PasswordHistoryComponent implements OnInit {
     }
 
     copy(password: string) {
-        this.analytics.eventTrack.next({ action: 'Copied Password History' });
+        this.platformUtilsService.eventTrack('Copied Password History');
         const copyOptions = this.win != null ? { window: this.win } : null;
         this.platformUtilsService.copyToClipboard(password, copyOptions);
         this.platformUtilsService.showToast('info', null,

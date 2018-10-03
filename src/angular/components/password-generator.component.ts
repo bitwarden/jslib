@@ -1,5 +1,3 @@
-import { Angulartics2 } from 'angulartics2';
-
 import {
     EventEmitter,
     Input,
@@ -20,7 +18,7 @@ export class PasswordGeneratorComponent implements OnInit {
     showOptions = false;
     avoidAmbiguous = false;
 
-    constructor(protected passwordGenerationService: PasswordGenerationService, protected analytics: Angulartics2,
+    constructor(protected passwordGenerationService: PasswordGenerationService,
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
         private win: Window) { }
 
@@ -28,14 +26,14 @@ export class PasswordGeneratorComponent implements OnInit {
         this.options = await this.passwordGenerationService.getOptions();
         this.avoidAmbiguous = !this.options.ambiguous;
         this.password = await this.passwordGenerationService.generatePassword(this.options);
-        this.analytics.eventTrack.next({ action: 'Generated Password' });
+        this.platformUtilsService.eventTrack('Generated Password');
         await this.passwordGenerationService.addHistory(this.password);
     }
 
     async sliderChanged() {
         this.saveOptions(false);
         await this.passwordGenerationService.addHistory(this.password);
-        this.analytics.eventTrack.next({ action: 'Regenerated Password' });
+        this.platformUtilsService.eventTrack('Regenerated Password');
     }
 
     async sliderInput() {
@@ -55,11 +53,11 @@ export class PasswordGeneratorComponent implements OnInit {
     async regenerate() {
         this.password = await this.passwordGenerationService.generatePassword(this.options);
         await this.passwordGenerationService.addHistory(this.password);
-        this.analytics.eventTrack.next({ action: 'Regenerated Password' });
+        this.platformUtilsService.eventTrack('Regenerated Password');
     }
 
     copy() {
-        this.analytics.eventTrack.next({ action: 'Copied Generated Password' });
+        this.platformUtilsService.eventTrack('Copied Generated Password');
         const copyOptions = this.win != null ? { window: this.win } : null;
         this.platformUtilsService.copyToClipboard(this.password, copyOptions);
         this.platformUtilsService.showToast('info', null,
@@ -67,7 +65,7 @@ export class PasswordGeneratorComponent implements OnInit {
     }
 
     select() {
-        this.analytics.eventTrack.next({ action: 'Selected Generated Password' });
+        this.platformUtilsService.eventTrack('Selected Generated Password');
         this.onSelected.emit(this.password);
     }
 

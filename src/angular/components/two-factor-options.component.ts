@@ -6,8 +6,6 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Angulartics2 } from 'angulartics2';
-
 import { TwoFactorProviderType } from '../../enums/twoFactorProviderType';
 
 import { AuthService } from '../../abstractions/auth.service';
@@ -21,7 +19,6 @@ export class TwoFactorOptionsComponent implements OnInit {
     providers: any[] = [];
 
     constructor(protected authService: AuthService, protected router: Router,
-        protected analytics: Angulartics2,
         protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected win: Window) { }
 
@@ -34,7 +31,7 @@ export class TwoFactorOptionsComponent implements OnInit {
     }
 
     recover() {
-        this.analytics.eventTrack.next({ action: 'Selected Recover' });
+        this.platformUtilsService.eventTrack('Selected Recover');
         this.platformUtilsService.launchUri('https://help.bitwarden.com/article/lost-two-step-device/');
         this.onRecoverSelected.emit();
     }

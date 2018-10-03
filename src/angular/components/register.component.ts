@@ -1,7 +1,5 @@
 import { Router } from '@angular/router';
 
-import { Angulartics2 } from 'angulartics2';
-
 import { KeysRequest } from '../../models/request/keysRequest';
 import { RegisterRequest } from '../../models/request/registerRequest';
 
@@ -26,7 +24,6 @@ export class RegisterComponent {
     protected successRoute = 'login';
 
     constructor(protected authService: AuthService, protected router: Router,
-        protected analytics: Angulartics2,
         protected i18nService: I18nService, protected cryptoService: CryptoService,
         protected apiService: ApiService, protected stateService: StateService,
         protected platformUtilsService: PlatformUtilsService) { }
@@ -79,14 +76,14 @@ export class RegisterComponent {
         try {
             this.formPromise = this.apiService.postRegister(request);
             await this.formPromise;
-            this.analytics.eventTrack.next({ action: 'Registered' });
+            this.platformUtilsService.eventTrack('Registered');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('newAccountCreated'));
             this.router.navigate([this.successRoute], { queryParams: { email: this.email } });
         } catch { }
     }
 
     togglePassword(confirmField: boolean) {
-        this.analytics.eventTrack.next({ action: 'Toggled Master Password on Register' });
+        this.platformUtilsService.eventTrack('Toggled Master Password on Register');
         this.showPassword = !this.showPassword;
         document.getElementById(confirmField ? 'masterPasswordRetype' : 'masterPassword').focus();
     }

@@ -5,8 +5,6 @@ import {
     Output,
 } from '@angular/core';
 
-import { Angulartics2 } from 'angulartics2';
-
 import { CipherService } from '../../abstractions/cipher.service';
 import { CryptoService } from '../../abstractions/crypto.service';
 import { I18nService } from '../../abstractions/i18n.service';
@@ -30,8 +28,7 @@ export class AttachmentsComponent implements OnInit {
     formPromise: Promise<any>;
     deletePromises: { [id: string]: Promise<any>; } = {};
 
-    constructor(protected cipherService: CipherService, protected analytics: Angulartics2,
-        protected i18nService: I18nService,
+    constructor(protected cipherService: CipherService, protected i18nService: I18nService,
         protected cryptoService: CryptoService, protected userService: UserService,
         protected platformUtilsService: PlatformUtilsService, protected win: Window) { }
 
@@ -85,7 +82,7 @@ export class AttachmentsComponent implements OnInit {
             this.formPromise = this.saveCipherAttachment(files[0]);
             this.cipherDomain = await this.formPromise;
             this.cipher = await this.cipherDomain.decrypt();
-            this.analytics.eventTrack.next({ action: 'Added Attachment' });
+            this.platformUtilsService.eventTrack('Added Attachment');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('attachmentSaved'));
             this.onUploadedAttachment.emit();
         } catch { }
@@ -112,7 +109,7 @@ export class AttachmentsComponent implements OnInit {
         try {
             this.deletePromises[attachment.id] = this.deleteCipherAttachment(attachment.id);
             await this.deletePromises[attachment.id];
-            this.analytics.eventTrack.next({ action: 'Deleted Attachment' });
+            this.platformUtilsService.eventTrack('Deleted Attachment');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedAttachment'));
             const i = this.cipher.attachments.indexOf(attachment);
             if (i > -1) {

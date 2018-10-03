@@ -3,8 +3,6 @@ import {
     Output,
 } from '@angular/core';
 
-import { Angulartics2 } from 'angulartics2';
-
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
@@ -20,8 +18,8 @@ export class EnvironmentComponent {
     baseUrl: string;
     showCustom = false;
 
-    constructor(protected analytics: Angulartics2, protected platformUtilsService: PlatformUtilsService,
-        protected environmentService: EnvironmentService, protected i18nService: I18nService) {
+    constructor(protected platformUtilsService: PlatformUtilsService, protected environmentService: EnvironmentService,
+        protected i18nService: I18nService) {
         this.baseUrl = environmentService.baseUrl || '';
         this.webVaultUrl = environmentService.webVaultUrl || '';
         this.apiUrl = environmentService.apiUrl || '';
@@ -48,7 +46,7 @@ export class EnvironmentComponent {
         this.iconsUrl = resUrls.icons;
         this.notificationsUrl = resUrls.notifications;
 
-        this.analytics.eventTrack.next({ action: 'Set Environment URLs' });
+        this.platformUtilsService.eventTrack('Set Environment URLs');
         this.platformUtilsService.showToast('success', null, this.i18nService.t('environmentSaved'));
         this.saved();
     }

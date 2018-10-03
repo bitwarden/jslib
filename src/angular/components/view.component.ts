@@ -8,8 +8,6 @@ import {
     Output,
 } from '@angular/core';
 
-import { Angulartics2 } from 'angulartics2';
-
 import { CipherType } from '../../enums/cipherType';
 import { FieldType } from '../../enums/fieldType';
 
@@ -49,9 +47,8 @@ export class ViewComponent implements OnDestroy, OnInit {
     private totpInterval: any;
 
     constructor(protected cipherService: CipherService, protected totpService: TotpService,
-        protected tokenService: TokenService,
+        protected tokenService: TokenService, protected i18nService: I18nService,
         protected cryptoService: CryptoService, protected platformUtilsService: PlatformUtilsService,
-        protected i18nService: I18nService, protected analytics: Angulartics2,
         protected auditService: AuditService, protected win: Window,
         protected broadcasterService: BroadcasterService, protected ngZone: NgZone,
         protected changeDetectorRef: ChangeDetectorRef, protected userService: UserService) { }
@@ -100,12 +97,12 @@ export class ViewComponent implements OnDestroy, OnInit {
     }
 
     togglePassword() {
-        this.analytics.eventTrack.next({ action: 'Toggled Password' });
+        this.platformUtilsService.eventTrack('Toggled Password');
         this.showPassword = !this.showPassword;
     }
 
     toggleCardCode() {
-        this.analytics.eventTrack.next({ action: 'Toggled Card Code' });
+        this.platformUtilsService.eventTrack('Toggled Card Code');
         this.showCardCode = !this.showCardCode;
     }
 
@@ -114,7 +111,7 @@ export class ViewComponent implements OnDestroy, OnInit {
             return;
         }
 
-        this.analytics.eventTrack.next({ action: 'Check Password' });
+        this.platformUtilsService.eventTrack('Check Password');
         this.checkPasswordPromise = this.auditService.passwordLeaked(this.cipher.login.password);
         const matches = await this.checkPasswordPromise;
 
@@ -136,7 +133,7 @@ export class ViewComponent implements OnDestroy, OnInit {
             return;
         }
 
-        this.analytics.eventTrack.next({ action: 'Launched Login URI' });
+        this.platformUtilsService.eventTrack('Launched Login URI');
         this.platformUtilsService.launchUri(uri.uri);
     }
 
@@ -145,7 +142,7 @@ export class ViewComponent implements OnDestroy, OnInit {
             return;
         }
 
-        this.analytics.eventTrack.next({ action: 'Copied ' + aType });
+        this.platformUtilsService.eventTrack('Copied ' + aType);
         const copyOptions = this.win != null ? { window: this.win } : null;
         this.platformUtilsService.copyToClipboard(value, copyOptions);
         this.platformUtilsService.showToast('info', null,

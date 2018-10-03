@@ -5,8 +5,6 @@ import {
     Output,
 } from '@angular/core';
 
-import { Angulartics2 } from 'angulartics2';
-
 import { FolderService } from '../../abstractions/folder.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
@@ -25,7 +23,7 @@ export class FolderAddEditComponent implements OnInit {
     deletePromise: Promise<any>;
 
     constructor(protected folderService: FolderService, protected i18nService: I18nService,
-        protected analytics: Angulartics2, protected platformUtilsService: PlatformUtilsService) { }
+        protected platformUtilsService: PlatformUtilsService) { }
 
     async ngOnInit() {
         this.editMode = this.folderId != null;
@@ -51,7 +49,7 @@ export class FolderAddEditComponent implements OnInit {
             const folder = await this.folderService.encrypt(this.folder);
             this.formPromise = this.folderService.saveWithServer(folder);
             await this.formPromise;
-            this.analytics.eventTrack.next({ action: this.editMode ? 'Edited Folder' : 'Added Folder' });
+            this.platformUtilsService.eventTrack(this.editMode ? 'Edited Folder' : 'Added Folder');
             this.platformUtilsService.showToast('success', null,
                 this.i18nService.t(this.editMode ? 'editedFolder' : 'addedFolder'));
             this.onSavedFolder.emit(this.folder);
@@ -72,7 +70,7 @@ export class FolderAddEditComponent implements OnInit {
         try {
             this.deletePromise = this.folderService.deleteWithServer(this.folder.id);
             await this.deletePromise;
-            this.analytics.eventTrack.next({ action: 'Deleted Folder' });
+            this.platformUtilsService.eventTrack('Deleted Folder');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedFolder'));
             this.onDeletedFolder.emit(this.folder);
         } catch { }

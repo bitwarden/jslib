@@ -1,7 +1,5 @@
 import { Router } from '@angular/router';
 
-import { Angulartics2 } from 'angulartics2';
-
 import { PasswordHintRequest } from '../../models/request/passwordHintRequest';
 
 import { ApiService } from '../../abstractions/api.service';
@@ -14,9 +12,8 @@ export class HintComponent {
 
     protected successRoute = 'login';
 
-    constructor(protected router: Router, protected analytics: Angulartics2,
-        protected i18nService: I18nService, protected apiService: ApiService,
-        protected platformUtilsService: PlatformUtilsService) { }
+    constructor(protected router: Router, protected i18nService: I18nService,
+        protected apiService: ApiService, protected platformUtilsService: PlatformUtilsService) { }
 
     async submit() {
         if (this.email == null || this.email === '') {
@@ -33,7 +30,7 @@ export class HintComponent {
         try {
             this.formPromise = this.apiService.postPasswordHint(new PasswordHintRequest(this.email));
             await this.formPromise;
-            this.analytics.eventTrack.next({ action: 'Requested Hint' });
+            this.platformUtilsService.eventTrack('Requested Hint');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('masterPassSent'));
             this.router.navigate([this.successRoute]);
         } catch { }
