@@ -13,6 +13,7 @@ import {
 import { DeviceType } from '../../enums/deviceType';
 
 import { I18nService } from '../../abstractions/i18n.service';
+import { MessagingService } from '../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 import { AnalyticsIds } from '../../misc/analytics';
@@ -24,7 +25,8 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     private deviceCache: DeviceType = null;
     private analyticsIdCache: string = null;
 
-    constructor(private i18nService: I18nService, private isDesktopApp: boolean) {
+    constructor(private i18nService: I18nService, private messagingService: MessagingService,
+        private isDesktopApp: boolean) {
         this.identityClientId = isDesktopApp ? 'desktop' : 'connector';
     }
 
@@ -142,13 +144,12 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
 
     showToast(type: 'error' | 'success' | 'warning' | 'info', title: string, text: string | string[],
         options?: any): void {
-        if ((options == null || options.global == null) && Utils.isBrowser) {
-            options.global = window;
-        }
-        if (options.global == null || options.global.BitwardenToasterService == null) {
-            throw new Error('BitwardenToasterService not available on global.');
-        }
-        options.global.BitwardenToasterService.popAsync(type, title, text);
+        this.messagingService.send('showToast', {
+            text: text,
+            title: title,
+            type: type,
+            options: options,
+        });
     }
 
     showDialog(text: string, title?: string, confirmText?: string, cancelText?: string, type?: string):
@@ -173,7 +174,11 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     }
 
     eventTrack(action: string, label?: string, options?: any) {
-        // TODO: track
+        this.messagingService.send('analyticsEventTrack', {
+            action: action,
+            label: label,
+            options: options,
+        });
     }
 
     isDev(): boolean {
