@@ -42,7 +42,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
 
         if (urls.base) {
             this.baseUrl = envUrls.base = urls.base;
-            await this.apiService.setUrls(envUrls);
+            this.apiService.setUrls(envUrls);
             return;
         }
 
@@ -51,7 +51,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         this.identityUrl = envUrls.identity = urls.identity;
         this.iconsUrl = urls.icons;
         this.notificationsUrl = urls.notifications;
-        await this.apiService.setUrls(envUrls);
+        this.apiService.setUrls(envUrls);
     }
 
     async setUrls(urls: any): Promise<any> {
@@ -86,7 +86,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
             envUrls.identity = this.identityUrl;
         }
 
-        await this.apiService.setUrls(envUrls);
+        this.apiService.setUrls(envUrls);
         if (this.notificationsService != null) {
             this.notificationsService.init(this);
         }
