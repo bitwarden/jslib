@@ -2,7 +2,7 @@ import { CipherString } from './cipherString';
 
 import { View } from '../view/view';
 
-export default abstract class Domain {
+export default class Domain {
     protected buildDomainModel<D extends Domain>(domain: D, dataObj: any, map: any,
         alreadyEncrypted: boolean, notEncList: any[] = []) {
         for (const prop in map) {

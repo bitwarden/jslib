@@ -1,7 +1,7 @@
 import { PasswordHistoryData } from '../data/passwordHistoryData';
 
 import { CipherString } from './cipherString';
-import Domain from './domain';
+import Domain from './domainBase';
 
 import { PasswordHistoryView } from '../view/passwordHistoryView';
 

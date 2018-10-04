@@ -1,7 +1,7 @@
 import { AttachmentData } from '../data/attachmentData';
 
 import { CipherString } from './cipherString';
-import Domain from './domain';
+import Domain from './domainBase';
 
 import { AttachmentView } from '../view/attachmentView';
 

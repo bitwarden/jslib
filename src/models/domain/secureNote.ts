@@ -2,7 +2,7 @@ import { SecureNoteType } from '../../enums/secureNoteType';
 
 import { SecureNoteData } from '../data/secureNoteData';
 
-import Domain from './domain';
+import Domain from './domainBase';
 
 import { SecureNoteView } from '../view/secureNoteView';
 

@@ -3,7 +3,7 @@ import { FieldType } from '../../enums/fieldType';
 import { FieldData } from '../data/fieldData';
 
 import { CipherString } from './cipherString';
-import Domain from './domain';
+import Domain from './domainBase';
 
 import { FieldView } from '../view/fieldView';
 

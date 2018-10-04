@@ -1,7 +1,7 @@
 import { IdentityData } from '../data/identityData';
 
 import { CipherString } from './cipherString';
-import Domain from './domain';
+import Domain from './domainBase';
 
 import { IdentityView } from '../view/identityView';
 

@@ -1,7 +1,7 @@
 import { CardData } from '../data/cardData';
 
 import { CipherString } from './cipherString';
-import Domain from './domain';
+import Domain from './domainBase';
 
 import { CardView } from '../view/cardView';
 

@@ -7,7 +7,7 @@ import { CipherView } from '../view/cipherView';
 import { Attachment } from './attachment';
 import { Card } from './card';
 import { CipherString } from './cipherString';
-import Domain from './domain';
+import Domain from './domainBase';
 import { Field } from './field';
 import { Identity } from './identity';
 import { Login } from './login';

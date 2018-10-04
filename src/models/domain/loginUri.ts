@@ -5,7 +5,7 @@ import { LoginUriData } from '../data/loginUriData';
 import { LoginUriView } from '../view/loginUriView';
 
 import { CipherString } from './cipherString';
-import Domain from './domain';
+import Domain from './domainBase';
 
 export class LoginUri extends Domain {
     uri: CipherString;

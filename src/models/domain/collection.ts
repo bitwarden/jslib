@@ -3,7 +3,7 @@ import { CollectionData } from '../data/collectionData';
 import { CollectionView } from '../view/collectionView';
 
 import { CipherString } from './cipherString';
-import Domain from './domain';
+import Domain from './domainBase';
 
 export class Collection extends Domain {
     id: string;

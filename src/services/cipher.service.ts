@@ -8,7 +8,7 @@ import { Attachment } from '../models/domain/attachment';
 import { Card } from '../models/domain/card';
 import { Cipher } from '../models/domain/cipher';
 import { CipherString } from '../models/domain/cipherString';
-import Domain from '../models/domain/domain';
+import Domain from '../models/domain/domainBase';
 import { Field } from '../models/domain/field';
 import { Identity } from '../models/domain/identity';
 import { Login } from '../models/domain/login';
