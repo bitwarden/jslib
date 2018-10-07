@@ -41,6 +41,7 @@ import { OnePasswordWinCsvImporter } from '../importers/onepasswordWinCsvImporte
 import { PadlockCsvImporter } from '../importers/padlockCsvImporter';
 import { PassKeepCsvImporter } from '../importers/passkeepCsvImporter';
 import { PasspackCsvImporter } from '../importers/passpackCsvImporter';
+import { PassmanJsonImporter } from '../importers/passmanJsonImporter';
 import { PasswordAgentCsvImporter } from '../importers/passwordAgentCsvImporter';
 import { PasswordBossJsonImporter } from '../importers/passwordBossJsonImporter';
 import { PasswordDragonXmlImporter } from '../importers/passwordDragonXmlImporter';
@@ -95,6 +96,7 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'blurcsv', name: 'Blur (csv)' },
         { id: 'passwordagentcsv', name: 'Password Agent (csv)' },
         { id: 'passpackcsv', name: 'Passpack (csv)' },
+        { id: 'passmanjson', name: 'Passman (json)' },
     ];
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -211,6 +213,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new PasswordAgentCsvImporter();
             case 'passpackcsv':
                 return new PasspackCsvImporter();
+            case 'passmanjson':
+                return new PassmanJsonImporter();
             default:
                 return null;
         }
