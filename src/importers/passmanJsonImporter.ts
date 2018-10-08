@@ -23,7 +23,14 @@ export class PassmanJsonImporter extends BaseImporter implements Importer {
             if (cipher.name.length > 30) {
                 cipher.name = cipher.name.substring(0, 30);
             }
-            cipher.login.username = this.getValueOrDefault(credential.username, credential.email);
+
+            cipher.login.username = this.getValueOrDefault(credential.username);
+            if (cipher.login.username === null) {
+                cipher.login.username = this.getValueOrDefault(credential.email);
+            } else if (credential.email !== '') {
+                cipher.notes += 'E-Mail: ' + credential.email;
+            }
+
             cipher.login.password = this.getValueOrDefault(credential.password);
             cipher.login.uris = this.makeUriArray(credential.url);
             cipher.notes = this.getValueOrDefault(credential.description);
