@@ -7,6 +7,8 @@ import {
 } from '../abstractions/passwordGeneration.service';
 import { StorageService } from '../abstractions/storage.service';
 
+import { WordList } from '../misc/wordlist';
+
 const DefaultOptions = {
     length: 14,
     ambiguous: false,
@@ -36,6 +38,10 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     async generatePassword(options: any): Promise<string> {
         // overload defaults with given options
         const o = Object.assign({}, DefaultOptions, options);
+
+        if (o.generatePassphrase) {
+            return this.generatePassphrase(options);
+        }
 
         // sanitize
         if (o.uppercase && o.minUppercase <= 0) {
@@ -148,6 +154,18 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         }
 
         return password;
+    }
+
+    async generatePassphrase(options: any): Promise<string> {
+        const o = Object.assign({}, DefaultOptions, options);
+
+        const listLength = WordList.length - 1;
+        const wordList = new Array(o.numWords);
+        for (let i = 0; i < o.numWords; i++) {
+            const wordindex = await this.cryptoService.randomNumber(0, listLength);
+            wordList[i] = WordList[wordindex];
+        }
+        return wordList.join(' ');
     }
 
     async getOptions() {
