@@ -32,11 +32,11 @@ export class PassmanJsonImporter extends BaseImporter implements Importer {
                   cipher.login.totp = credential.otp.secret;
             }
 
-            credential.custom_fields.forEach((custom_field: any) => {
-                switch (custom_field.field_type) {
-                    case "text":
-                    case "password":
-                        this.processKvp(cipher, custom_field.label, custom_field.value);
+            credential.custom_fields.forEach((customField: any) => {
+                switch (customField.field_type) {
+                    case 'text':
+                    case 'password':
+                        this.processKvp(cipher, customField.label, customField.value);
                         break;
                 }
             });
