@@ -27,7 +27,6 @@ export class PassmanJsonImporter extends BaseImporter implements Importer {
             cipher.login.password = this.getValueOrDefault(credential.password);
             cipher.login.uris = this.makeUriArray(credential.url);
             cipher.notes = this.getValueOrDefault(credential.description);
-            cipher.revisionDate = new Date(credential.changed * 1000);
 
             if (credential.otp) {
                   cipher.login.totp = credential.otp.secret;
