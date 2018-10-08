@@ -13,40 +13,41 @@ export class PassmanJsonImporter extends BaseImporter implements Importer {
         }
 
         results.forEach((credential: any) => {
-            if (credential.tags.length > 0) {
+            if (credential.tags != null && credential.tags.length > 0) {
                 const folderName = credential.tags[0].text;
                 this.processFolder(result, folderName);
             }
 
             const cipher = this.initLoginCipher();
             cipher.name = credential.label;
-            if (cipher.name.length > 30) {
+            if (cipher.name != null && cipher.name.length > 30) {
                 cipher.name = cipher.name.substring(0, 30);
             }
 
             cipher.login.username = this.getValueOrDefault(credential.username);
-            if (cipher.login.username === null) {
+            if (this.isNullOrWhitespace(cipher.login.username)) {
                 cipher.login.username = this.getValueOrDefault(credential.email);
-            } else if (credential.email !== '') {
-                cipher.notes += 'E-Mail: ' + credential.email;
+            } else if (!this.isNullOrWhitespace(credential.email)) {
+                cipher.notes = ('Email: ' + credential.email + '\n');
             }
 
             cipher.login.password = this.getValueOrDefault(credential.password);
             cipher.login.uris = this.makeUriArray(credential.url);
-            cipher.notes = this.getValueOrDefault(credential.description);
-
-            if (credential.otp) {
-                  cipher.login.totp = credential.otp.secret;
+            cipher.notes += this.getValueOrDefault(credential.description);
+            if (credential.otp != null) {
+                cipher.login.totp = this.getValueOrDefault(credential.otp.secret);
             }
 
-            credential.custom_fields.forEach((customField: any) => {
-                switch (customField.field_type) {
-                    case 'text':
-                    case 'password':
-                        this.processKvp(cipher, customField.label, customField.value);
-                        break;
-                }
-            });
+            if (credential.custom_fields != null) {
+                credential.custom_fields.forEach((customField: any) => {
+                    switch (customField.field_type) {
+                        case 'text':
+                        case 'password':
+                            this.processKvp(cipher, customField.label, customField.value);
+                            break;
+                    }
+                });
+            }
 
             this.convertToNoteIfNeeded(cipher);
             this.cleanupCipher(cipher);
