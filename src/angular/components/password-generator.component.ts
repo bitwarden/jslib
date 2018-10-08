@@ -17,6 +17,7 @@ export class PasswordGeneratorComponent implements OnInit {
     password: string = '-';
     showOptions = false;
     avoidAmbiguous = false;
+    type = '0';
 
     constructor(protected passwordGenerationService: PasswordGenerationService,
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
@@ -25,6 +26,7 @@ export class PasswordGeneratorComponent implements OnInit {
     async ngOnInit() {
         this.options = await this.passwordGenerationService.getOptions();
         this.avoidAmbiguous = !this.options.ambiguous;
+        this.type = this.options.type === 1 ? '1' : '0';
         this.password = await this.passwordGenerationService.generatePassword(this.options);
         this.platformUtilsService.eventTrack('Generated Password');
         await this.passwordGenerationService.addHistory(this.password);
@@ -77,12 +79,7 @@ export class PasswordGeneratorComponent implements OnInit {
         this.options.minLowercase = 0;
         this.options.minUppercase = 0;
         this.options.ambiguous = !this.avoidAmbiguous;
-
-        let typePassword = false;
-        if (!this.options.generateTypePassword || this.options.generateTypePassword === 'generate-password') {
-            typePassword = true;
-        }
-        this.options.generatePassphrase = !typePassword;
+        this.options.type = this.type == null || this.type === '0' ? 0 : 1;
 
         if (!this.options.uppercase && !this.options.lowercase && !this.options.number && !this.options.special) {
             this.options.lowercase = true;
@@ -118,8 +115,10 @@ export class PasswordGeneratorComponent implements OnInit {
             this.options.minSpecial = this.options.length - this.options.minNumber;
         }
 
-        if (!this.options.numWords || this.options.length < 3) {
+        if (this.options.numWords == null || this.options.length < 3) {
             this.options.numWords = 3;
+        } else if (this.options.numWords > 20) {
+            this.options.numWords = 20;
         }
     }
 }

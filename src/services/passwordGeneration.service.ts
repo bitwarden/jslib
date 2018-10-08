@@ -7,7 +7,7 @@ import {
 } from '../abstractions/passwordGeneration.service';
 import { StorageService } from '../abstractions/storage.service';
 
-import { WordList } from '../misc/wordlist';
+import { EEFLongWordList } from '../misc/wordlist';
 
 const DefaultOptions = {
     length: 14,
@@ -20,6 +20,9 @@ const DefaultOptions = {
     minLowercase: 0,
     special: false,
     minSpecial: 1,
+    type: 0,
+    numWords: 3,
+    wordSeparator: ' ',
 };
 
 const Keys = {
@@ -39,7 +42,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         // overload defaults with given options
         const o = Object.assign({}, DefaultOptions, options);
 
-        if (o.generatePassphrase) {
+        if (o.type === 1) { // TODO: enum?
             return this.generatePassphrase(options);
         }
 
@@ -159,13 +162,20 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     async generatePassphrase(options: any): Promise<string> {
         const o = Object.assign({}, DefaultOptions, options);
 
-        const listLength = WordList.length - 1;
+        if (o.numWords == null || o.numWords <= 2) {
+            o.numWords = DefaultOptions.numWords;
+        }
+        if (o.wordSeparator == null || o.wordSeparator.length === 0 || o.wordSeparator.length > 1) {
+            o.wordSeparator = DefaultOptions.wordSeparator;
+        }
+
+        const listLength = EEFLongWordList.length - 1;
         const wordList = new Array(o.numWords);
         for (let i = 0; i < o.numWords; i++) {
-            const wordindex = await this.cryptoService.randomNumber(0, listLength);
-            wordList[i] = WordList[wordindex];
+            const wordIndex = await this.cryptoService.randomNumber(0, listLength);
+            wordList[i] = EEFLongWordList[wordIndex];
         }
-        return wordList.join(' ');
+        return wordList.join(o.wordSeparator);
     }
 
     async getOptions() {
