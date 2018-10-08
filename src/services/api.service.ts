@@ -48,6 +48,7 @@ import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
 import { UpdateTwoFactorAuthenticatorRequest } from '../models/request/updateTwoFactorAuthenticatorRequest';
 import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoRequest';
 import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEmailRequest';
+import { UpdateTwoFactorU2fDeleteRequest } from '../models/request/updateTwoFactorU2fDeleteRequest';
 import { UpdateTwoFactorU2fRequest } from '../models/request/updateTwoFactorU2fRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
 import { VerifyBankRequest } from '../models/request/verifyBankRequest';
@@ -87,7 +88,10 @@ import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
 import { TwoFactorEmailResponse } from '../models/response/twoFactorEmailResponse';
 import { TwoFactorProviderResponse } from '../models/response/twoFactorProviderResponse';
 import { TwoFactorRecoverResponse } from '../models/response/twoFactorRescoverResponse';
-import { TwoFactorU2fResponse } from '../models/response/twoFactorU2fResponse';
+import {
+    ChallengeResponse,
+    TwoFactorU2fResponse,
+} from '../models/response/twoFactorU2fResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
@@ -618,6 +622,11 @@ export class ApiService implements ApiServiceAbstraction {
         return new TwoFactorU2fResponse(r);
     }
 
+    async getTwoFactorU2fChallenge(request: PasswordVerificationRequest): Promise<ChallengeResponse> {
+        const r = await this.send('POST', '/two-factor/get-u2f-challenge', request, true, true);
+        return new ChallengeResponse(r);
+    }
+
     async getTwoFactorRecover(request: PasswordVerificationRequest): Promise<TwoFactorRecoverResponse> {
         const r = await this.send('POST', '/two-factor/get-recover', request, true, true);
         return new TwoFactorRecoverResponse(r);
@@ -652,6 +661,11 @@ export class ApiService implements ApiServiceAbstraction {
 
     async putTwoFactorU2f(request: UpdateTwoFactorU2fRequest): Promise<TwoFactorU2fResponse> {
         const r = await this.send('PUT', '/two-factor/u2f', request, true, true);
+        return new TwoFactorU2fResponse(r);
+    }
+
+    async deleteTwoFactorU2f(request: UpdateTwoFactorU2fDeleteRequest): Promise<TwoFactorU2fResponse> {
+        const r = await this.send('DELETE', '/two-factor/u2f', request, true, true);
         return new TwoFactorU2fResponse(r);
     }
 

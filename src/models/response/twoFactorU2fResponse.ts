@@ -1,10 +1,22 @@
 export class TwoFactorU2fResponse {
     enabled: boolean;
-    challenge: ChallengeResponse;
+    keys: KeyResponse[];
 
     constructor(response: any) {
         this.enabled = response.Enabled;
-        this.challenge = response.Challenge == null ? null : new ChallengeResponse(response.Challenge);
+        this.keys = response.Keys == null ? null : response.Keys.map((k: any) => new KeyResponse(k));
+    }
+}
+
+export class KeyResponse {
+    name: string;
+    id: number;
+    compromised: boolean;
+
+    constructor(response: any) {
+        this.name = response.Name;
+        this.id = response.Id;
+        this.compromised = response.Compromised;
     }
 }
 
