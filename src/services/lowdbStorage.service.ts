@@ -11,6 +11,7 @@ import { Utils } from '../misc/utils';
 export class LowdbStorageService implements StorageService {
     private db: lowdb.LowdbSync<any>;
     private defaults: any;
+    private dataFilePath: string;
 
     constructor(defaults?: any, dir?: string, private allowCache = false) {
         this.defaults = defaults;
@@ -20,25 +21,30 @@ export class LowdbStorageService implements StorageService {
             if (!fs.existsSync(dir)) {
                 NodeUtils.mkdirpSync(dir, '700');
             }
-            const p = path.join(dir, 'data.json');
-            adapter = new FileSync(p);
+            this.dataFilePath = path.join(dir, 'data.json');
+            adapter = new FileSync(this.dataFilePath);
         }
-        this.db = lowdb(adapter);
+        try {
+            this.db = lowdb(adapter);
+        } catch (e) {
+            if (e instanceof SyntaxError) {
+                fs.writeFileSync(this.dataFilePath, '');
+                this.db = lowdb(adapter);
+            } else {
+                throw e;
+            }
+        }
     }
 
     init() {
         if (this.defaults != null) {
-            if (!this.allowCache) {
-                this.db.read();
-            }
+            this.readForNoCache();
             this.db.defaults(this.defaults).write();
         }
     }
 
     get<T>(key: string): Promise<T> {
-        if (!this.allowCache) {
-            this.db.read();
-        }
+        this.readForNoCache();
         const val = this.db.get(key).value();
         if (val == null) {
             return Promise.resolve(null);
@@ -47,18 +53,20 @@ export class LowdbStorageService implements StorageService {
     }
 
     save(key: string, obj: any): Promise<any> {
-        if (!this.allowCache) {
-            this.db.read();
-        }
+        this.readForNoCache();
         this.db.set(key, obj).write();
         return Promise.resolve();
     }
 
     remove(key: string): Promise<any> {
+        this.readForNoCache();
+        this.db.unset(key).write();
+        return Promise.resolve();
+    }
+
+    private readForNoCache() {
         if (!this.allowCache) {
             this.db.read();
         }
-        this.db.unset(key).write();
-        return Promise.resolve();
     }
 }
