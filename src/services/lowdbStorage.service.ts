@@ -28,7 +28,7 @@ export class LowdbStorageService implements StorageService {
             this.db = lowdb(adapter);
         } catch (e) {
             if (e instanceof SyntaxError) {
-                fs.writeFileSync(this.dataFilePath, '');
+                adapter.write({});
                 this.db = lowdb(adapter);
             } else {
                 throw e;
