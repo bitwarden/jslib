@@ -20,9 +20,6 @@ export class PassmanJsonImporter extends BaseImporter implements Importer {
 
             const cipher = this.initLoginCipher();
             cipher.name = credential.label;
-            if (cipher.name != null && cipher.name.length > 30) {
-                cipher.name = cipher.name.substring(0, 30);
-            }
 
             cipher.login.username = this.getValueOrDefault(credential.username);
             if (this.isNullOrWhitespace(cipher.login.username)) {
