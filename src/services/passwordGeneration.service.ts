@@ -20,9 +20,9 @@ const DefaultOptions = {
     minLowercase: 0,
     special: false,
     minSpecial: 1,
-    type: 0,
+    type: 'password',
     numWords: 3,
-    wordSeparator: ' ',
+    wordSeparator: '-',
 };
 
 const Keys = {
@@ -42,7 +42,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         // overload defaults with given options
         const o = Object.assign({}, DefaultOptions, options);
 
-        if (o.type === 1) { // TODO: enum?
+        if (o.type === 'passphrase') {
             return this.generatePassphrase(options);
         }
 
@@ -166,7 +166,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             o.numWords = DefaultOptions.numWords;
         }
         if (o.wordSeparator == null || o.wordSeparator.length === 0 || o.wordSeparator.length > 1) {
-            o.wordSeparator = DefaultOptions.wordSeparator;
+            o.wordSeparator = ' ';
         }
 
         const listLength = EEFLongWordList.length - 1;
