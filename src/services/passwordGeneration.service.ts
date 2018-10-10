@@ -184,7 +184,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             if (options == null) {
                 this.optionsCache = DefaultOptions;
             } else {
-                this.optionsCache = options;
+                this.optionsCache = Object.assign({}, DefaultOptions, options);
             }
         }
 
