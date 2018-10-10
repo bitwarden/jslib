@@ -97,18 +97,23 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                     break;
                 }
 
-                const challenges = JSON.parse(params.Challenges);
-                if (challenges != null && challenges.length > 0) {
-                    this.u2f.init({
-                        appId: challenges[0].appId,
-                        challenge: challenges[0].challenge,
-                        keys: challenges.map((c: any) => {
-                            return {
-                                version: c.version,
-                                keyHandle: c.keyHandle,
-                            };
-                        }),
-                    });
+                if (params.Challenge != null) {
+                    this.u2f.init(JSON.parse(params.Challenge));
+                } else {
+                    // TODO: Deprecated. Remove in future version.
+                    const challenges = JSON.parse(params.Challenges);
+                    if (challenges != null && challenges.length > 0) {
+                        this.u2f.init({
+                            appId: challenges[0].appId,
+                            challenge: challenges[0].challenge,
+                            keys: challenges.map((c: any) => {
+                                return {
+                                    version: c.version,
+                                    keyHandle: c.keyHandle,
+                                };
+                            }),
+                        });
+                    }
                 }
                 break;
             case TwoFactorProviderType.Duo:
