@@ -98,14 +98,16 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 }
 
                 const challenges = JSON.parse(params.Challenges);
-                if (challenges.length > 0) {
+                if (challenges != null && challenges.length > 0) {
                     this.u2f.init({
                         appId: challenges[0].appId,
                         challenge: challenges[0].challenge,
-                        keys: [{
-                            version: challenges[0].version,
-                            keyHandle: challenges[0].keyHandle,
-                        }],
+                        keys: challenges.map((c: any) => {
+                            return {
+                                version: c.version,
+                                keyHandle: c.keyHandle,
+                            };
+                        }),
                     });
                 }
                 break;
