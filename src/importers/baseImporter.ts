@@ -80,8 +80,10 @@ export abstract class BaseImporter {
         });
         if (result.errors != null && result.errors.length > 0) {
             result.errors.forEach((e) => {
-                // tslint:disable-next-line
-                console.warn('Error parsing row ' + e.row + ': ' + e.message);
+                if (e.row != null) {
+                    // tslint:disable-next-line
+                    console.warn('Error parsing row ' + e.row + ': ' + e.message);
+                }
             });
         }
         return result.data && result.data.length > 0 ? result.data : null;
