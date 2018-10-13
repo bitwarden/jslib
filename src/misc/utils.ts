@@ -22,7 +22,7 @@ export class Utils {
         Utils.isBrowser = typeof window !== 'undefined';
         Utils.isNativeScript = !Utils.isNode && !Utils.isBrowser;
         Utils.isMobileBrowser = Utils.isBrowser && this.isMobile(window);
-        Utils.global = Utils.isNativeScript ? new Object() : (Utils.isNode && !Utils.isBrowser ? global : window);
+        Utils.global = Utils.isNativeScript ? global : (Utils.isNode && !Utils.isBrowser ? global : window);
     }
 
     static fromB64ToArray(str: string): Uint8Array {

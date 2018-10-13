@@ -27,6 +27,7 @@ export class LoginComponent implements OnInit {
     formPromise: Promise<AuthResult>;
     onSuccessfulLogin: () => Promise<any>;
     onSuccessfulLoginNavigate: () => Promise<any>;
+    onSuccessfulLoginTwoFactorNavigate: () => Promise<any>;
 
     protected twoFactorRoute = '2fa';
     protected successRoute = 'vault';
@@ -79,7 +80,11 @@ export class LoginComponent implements OnInit {
             }
             if (response.twoFactor) {
                 this.platformUtilsService.eventTrack('Logged In To Two-step');
-                this.router.navigate([this.twoFactorRoute]);
+                if (this.onSuccessfulLoginTwoFactorNavigate != null) {
+                    this.onSuccessfulLoginTwoFactorNavigate();
+                } else {
+                    this.router.navigate([this.twoFactorRoute]);
+                }
             } else {
                 if (this.onSuccessfulLogin != null) {
                     this.onSuccessfulLogin();
