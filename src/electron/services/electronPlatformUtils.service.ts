@@ -17,7 +17,6 @@ import { MessagingService } from '../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 import { AnalyticsIds } from '../../misc/analytics';
-import { Utils } from '../../misc/utils';
 
 export class ElectronPlatformUtilsService implements PlatformUtilsService {
     identityClientId: string;
@@ -97,10 +96,6 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
 
         this.analyticsIdCache = (AnalyticsIds as any)[this.getDevice()];
         return this.analyticsIdCache;
-    }
-
-    getDomain(uriString: string): string {
-        return Utils.getHostname(uriString);
     }
 
     isViewOpen(): boolean {

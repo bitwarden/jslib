@@ -13,7 +13,6 @@ export abstract class PlatformUtilsService {
     isIE: () => boolean;
     isMacAppStore: () => boolean;
     analyticsId: () => string;
-    getDomain: (uriString: string) => string;
     isViewOpen: () => boolean;
     lockTimeout: () => number;
     launchUri: (uri: string, options?: any) => void;

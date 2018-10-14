@@ -1,6 +1,35 @@
 import { Utils } from '../../../src/misc/utils';
 
 describe('Utils Service', () => {
+    describe('getDomain', () => {
+        it('should fail for invalid urls', () => {
+            expect(Utils.getDomain(null)).toBeNull();
+            expect(Utils.getDomain(undefined)).toBeNull();
+            expect(Utils.getDomain(' ')).toBeNull();
+            expect(Utils.getDomain('https://bit!:"_&ward.com')).toBeNull();
+            expect(Utils.getDomain('bitwarden')).toBeNull();
+        });
+
+        it('should handle urls without protocol', () => {
+            expect(Utils.getDomain('bitwarden.com')).toBe('bitwarden.com');
+            expect(Utils.getDomain('wrong://bitwarden.com')).toBe('bitwarden.com');
+        });
+
+        it('should handle valid urls', () => {
+            expect(Utils.getDomain('https://bitwarden')).toBe('bitwarden');
+            expect(Utils.getDomain('https://bitwarden.com')).toBe('bitwarden.com');
+            expect(Utils.getDomain('http://bitwarden.com')).toBe('bitwarden.com');
+            expect(Utils.getDomain('http://vault.bitwarden.com')).toBe('bitwarden.com');
+            expect(Utils.getDomain('https://user:password@bitwarden.com:8080/password/sites?and&query#hash')).toBe('bitwarden.com');
+            expect(Utils.getDomain('https://bitwarden.unknown')).toBe('bitwarden.unknown');
+        });
+
+        it('should support localhost and IP', () => {
+            expect(Utils.getDomain('https://localhost')).toBe('localhost');
+            expect(Utils.getDomain('https://192.168.1.1')).toBe('192.168.1.1');
+        });
+    });
+
     describe('getHostname', () => {
         it('should fail for invalid urls', () => {
             expect(Utils.getHostname(null)).toBeNull();

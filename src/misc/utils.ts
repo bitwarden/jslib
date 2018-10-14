@@ -1,3 +1,5 @@
+import * as tldjs from 'tldjs';
+
 import { I18nService } from '../abstractions/i18n.service';
 
 // tslint:disable-next-line
@@ -163,6 +165,36 @@ export class Utils {
         }
     }
 
+    static getDomain(uriString: string): string {
+        if (uriString == null) {
+            return null;
+        }
+
+        uriString = uriString.trim();
+        if (uriString === '') {
+            return null;
+        }
+
+        if (uriString.startsWith('http://') || uriString.startsWith('https://')) {
+            try {
+                const url = Utils.getUrlObject(uriString);
+                if (url.hostname === 'localhost' || Utils.validIpAddress(url.hostname)) {
+                    return url.hostname;
+                }
+
+                const urlDomain = tldjs != null && tldjs.getDomain != null ? tldjs.getDomain(url.hostname) : null;
+                return urlDomain != null ? urlDomain : url.hostname;
+            } catch (e) { }
+        }
+
+        const domain = tldjs != null && tldjs.getDomain != null ? tldjs.getDomain(uriString) : null;
+        if (domain != null) {
+            return domain;
+        }
+
+        return null;
+    }
+
     static getQueryParams(uriString: string): Map<string, string> {
         const url = Utils.getUrl(uriString);
         if (url == null || url.search == null || url.search === '') {
@@ -197,6 +229,12 @@ export class Utils {
         };
     }
 
+    private static validIpAddress(ipString: string): boolean {
+        // tslint:disable-next-line
+        const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+        return ipRegex.test(ipString);
+    }
+
     private static isMobile(win: Window) {
         let mobile = false;
         ((a) => {
@@ -225,6 +263,10 @@ export class Utils {
             return null;
         }
 
+        return Utils.getUrlObject(uriString);
+    }
+
+    private static getUrlObject(uriString: string): URL {
         try {
             if (nodeURL != null) {
                 return nodeURL.URL ? new nodeURL.URL(uriString) : nodeURL.parse(uriString);

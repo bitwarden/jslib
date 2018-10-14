@@ -37,7 +37,6 @@ import { ApiService } from '../abstractions/api.service';
 import { CipherService as CipherServiceAbstraction } from '../abstractions/cipher.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { I18nService } from '../abstractions/i18n.service';
-import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { SearchService } from '../abstractions/search.service';
 import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
@@ -59,7 +58,7 @@ export class CipherService implements CipherServiceAbstraction {
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private settingsService: SettingsService, private apiService: ApiService,
         private storageService: StorageService, private i18nService: I18nService,
-        private platformUtilsService: PlatformUtilsService, private searchService: () => SearchService) {
+        private searchService: () => SearchService) {
     }
 
     get decryptedCipherCache() {
@@ -311,7 +310,7 @@ export class CipherService implements CipherServiceAbstraction {
             return Promise.resolve([]);
         }
 
-        const domain = this.platformUtilsService.getDomain(url);
+        const domain = Utils.getDomain(url);
         const eqDomainsPromise = domain == null ? Promise.resolve([]) :
             this.settingsService.getEquivalentDomains().then((eqDomains: any[][]) => {
                 let matches: any[] = [];

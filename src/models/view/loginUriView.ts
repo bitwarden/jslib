@@ -4,8 +4,6 @@ import { View } from './view';
 
 import { LoginUri } from '../domain/loginUri';
 
-import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
-
 import { Utils } from '../../misc/utils';
 
 export class LoginUriView implements View {
@@ -35,15 +33,9 @@ export class LoginUriView implements View {
 
     get domain(): string {
         if (this._domain == null && this.uri != null) {
-            const containerService = (Utils.global as any).bitwardenContainerService;
-            if (containerService) {
-                const platformUtilsService: PlatformUtilsService = containerService.getPlatformUtilsService();
-                this._domain = platformUtilsService.getDomain(this.uri);
-                if (this._domain === '') {
-                    this._domain = null;
-                }
-            } else {
-                throw new Error('global bitwardenContainerService not initialized.');
+            this._domain = Utils.getDomain(this.uri);
+            if (this._domain === '') {
+                this._domain = null;
             }
         }
 
