@@ -11,6 +11,7 @@ export class LockComponent {
     showPassword: boolean = false;
 
     protected successRoute: string = 'vault';
+    protected onSuccessfulSubmit: () => void;
 
     constructor(protected router: Router, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected messagingService: MessagingService,
@@ -33,7 +34,11 @@ export class LockComponent {
         if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
             await this.cryptoService.setKey(key);
             this.messagingService.send('unlocked');
-            this.router.navigate([this.successRoute]);
+            if (this.onSuccessfulSubmit != null) {
+                this.onSuccessfulSubmit();
+            } else if (this.router != null) {
+                this.router.navigate([this.successRoute]);
+            }
         } else {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('invalidMasterPassword'));

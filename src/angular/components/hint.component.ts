@@ -11,6 +11,7 @@ export class HintComponent {
     formPromise: Promise<any>;
 
     protected successRoute = 'login';
+    protected onSuccessfulSubmit: () => void;
 
     constructor(protected router: Router, protected i18nService: I18nService,
         protected apiService: ApiService, protected platformUtilsService: PlatformUtilsService) { }
@@ -32,7 +33,11 @@ export class HintComponent {
             await this.formPromise;
             this.platformUtilsService.eventTrack('Requested Hint');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('masterPassSent'));
-            this.router.navigate([this.successRoute]);
+            if (this.onSuccessfulSubmit != null) {
+                this.onSuccessfulSubmit();
+            } else if (this.router != null) {
+                this.router.navigate([this.successRoute]);
+            }
         } catch { }
     }
 }
