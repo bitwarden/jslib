@@ -155,6 +155,7 @@ export abstract class ApiService {
         organizationId: string) => Promise<any>;
 
     getCollectionDetails: (organizationId: string, id: string) => Promise<CollectionGroupDetailsResponse>;
+    getUserCollections: () => Promise<ListResponse<CollectionResponse>>;
     getCollections: (organizationId: string) => Promise<ListResponse<CollectionResponse>>;
     getCollectionUsers: (organizationId: string, id: string) => Promise<ListResponse<CollectionUserResponse>>;
     postCollection: (organizationId: string, request: CollectionRequest) => Promise<CollectionResponse>;
