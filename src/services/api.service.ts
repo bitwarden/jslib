@@ -61,7 +61,6 @@ import {
     CollectionGroupDetailsResponse,
     CollectionResponse,
 } from '../models/response/collectionResponse';
-import { CollectionUserResponse } from '../models/response/collectionUserResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import { ErrorResponse } from '../models/response/errorResponse';
 import { EventResponse } from '../models/response/eventResponse';
@@ -82,6 +81,7 @@ import {
 } from '../models/response/organizationUserResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
+import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
 import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
@@ -444,10 +444,10 @@ export class ApiService implements ApiServiceAbstraction {
         return new ListResponse(r, CollectionResponse);
     }
 
-    async getCollectionUsers(organizationId: string, id: string): Promise<ListResponse<CollectionUserResponse>> {
+    async getCollectionUsers(organizationId: string, id: string): Promise<ListResponse<SelectionReadOnlyResponse>> {
         const r = await this.send('GET', '/organizations/' + organizationId + '/collections/' + id + '/users',
             null, true, true);
-        return new ListResponse(r, CollectionUserResponse);
+        return new ListResponse(r, SelectionReadOnlyResponse);
     }
 
     async postCollection(organizationId: string, request: CollectionRequest): Promise<CollectionResponse> {

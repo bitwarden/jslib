@@ -55,7 +55,6 @@ import {
     CollectionGroupDetailsResponse,
     CollectionResponse,
 } from '../models/response/collectionResponse';
-import { CollectionUserResponse } from '../models/response/collectionUserResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import { EventResponse } from '../models/response/eventResponse';
 import { FolderResponse } from '../models/response/folderResponse';
@@ -75,6 +74,7 @@ import {
 } from '../models/response/organizationUserResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
+import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
 import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
@@ -157,7 +157,7 @@ export abstract class ApiService {
     getCollectionDetails: (organizationId: string, id: string) => Promise<CollectionGroupDetailsResponse>;
     getUserCollections: () => Promise<ListResponse<CollectionResponse>>;
     getCollections: (organizationId: string) => Promise<ListResponse<CollectionResponse>>;
-    getCollectionUsers: (organizationId: string, id: string) => Promise<ListResponse<CollectionUserResponse>>;
+    getCollectionUsers: (organizationId: string, id: string) => Promise<ListResponse<SelectionReadOnlyResponse>>;
     postCollection: (organizationId: string, request: CollectionRequest) => Promise<CollectionResponse>;
     putCollection: (organizationId: string, id: string, request: CollectionRequest) => Promise<CollectionResponse>;
     deleteCollection: (organizationId: string, id: string) => Promise<any>;
