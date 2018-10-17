@@ -49,6 +49,11 @@ export class Organization {
         return this.enabled && this.status === OrganizationUserStatusType.Confirmed;
     }
 
+    get isManager() {
+        return this.type === OrganizationUserType.Manager || this.type === OrganizationUserType.Owner ||
+            this.type === OrganizationUserType.Admin;
+    }
+
     get isAdmin() {
         return this.type === OrganizationUserType.Owner || this.type === OrganizationUserType.Admin;
     }
