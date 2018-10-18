@@ -63,7 +63,6 @@ import {
     GroupDetailsResponse,
     GroupResponse,
 } from '../models/response/groupResponse';
-import { GroupUserResponse } from '../models/response/groupUserResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
@@ -158,7 +157,7 @@ export abstract class ApiService {
     getCollectionDetails: (organizationId: string, id: string) => Promise<CollectionGroupDetailsResponse>;
     getUserCollections: () => Promise<ListResponse<CollectionResponse>>;
     getCollections: (organizationId: string) => Promise<ListResponse<CollectionResponse>>;
-    getCollectionUsers: (organizationId: string, id: string) => Promise<ListResponse<SelectionReadOnlyResponse>>;
+    getCollectionUsers: (organizationId: string, id: string) => Promise<SelectionReadOnlyResponse[]>;
     postCollection: (organizationId: string, request: CollectionRequest) => Promise<CollectionResponse>;
     putCollectionUsers: (organizationId: string, id: string, request: SelectionReadOnlyRequest[]) => Promise<any>;
     putCollection: (organizationId: string, id: string, request: CollectionRequest) => Promise<CollectionResponse>;
@@ -167,9 +166,10 @@ export abstract class ApiService {
 
     getGroupDetails: (organizationId: string, id: string) => Promise<GroupDetailsResponse>;
     getGroups: (organizationId: string) => Promise<ListResponse<GroupResponse>>;
-    getGroupUsers: (organizationId: string, id: string) => Promise<ListResponse<GroupUserResponse>>;
+    getGroupUsers: (organizationId: string, id: string) => Promise<string[]>;
     postGroup: (organizationId: string, request: GroupRequest) => Promise<GroupResponse>;
     putGroup: (organizationId: string, id: string, request: GroupRequest) => Promise<GroupResponse>;
+    putGroupUsers: (organizationId: string, id: string, request: string[]) => Promise<any>;
     deleteGroup: (organizationId: string, id: string) => Promise<any>;
     deleteGroupUser: (organizationId: string, id: string, organizationUserId: string) => Promise<any>;
 

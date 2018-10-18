@@ -70,7 +70,6 @@ import {
     GroupDetailsResponse,
     GroupResponse,
 } from '../models/response/groupResponse';
-import { GroupUserResponse } from '../models/response/groupUserResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
@@ -445,10 +444,10 @@ export class ApiService implements ApiServiceAbstraction {
         return new ListResponse(r, CollectionResponse);
     }
 
-    async getCollectionUsers(organizationId: string, id: string): Promise<ListResponse<SelectionReadOnlyResponse>> {
+    async getCollectionUsers(organizationId: string, id: string): Promise<SelectionReadOnlyResponse[]> {
         const r = await this.send('GET', '/organizations/' + organizationId + '/collections/' + id + '/users',
             null, true, true);
-        return new ListResponse(r, SelectionReadOnlyResponse);
+        return r.map((dr: any) => new SelectionReadOnlyResponse(dr));
     }
 
     async postCollection(organizationId: string, request: CollectionRequest): Promise<CollectionResponse> {
@@ -490,10 +489,10 @@ export class ApiService implements ApiServiceAbstraction {
         return new ListResponse(r, GroupResponse);
     }
 
-    async getGroupUsers(organizationId: string, id: string): Promise<ListResponse<GroupUserResponse>> {
+    async getGroupUsers(organizationId: string, id: string): Promise<string[]> {
         const r = await this.send('GET', '/organizations/' + organizationId + '/groups/' + id + '/users',
             null, true, true);
-        return new ListResponse(r, GroupUserResponse);
+        return r;
     }
 
     async postGroup(organizationId: string, request: GroupRequest): Promise<GroupResponse> {
@@ -504,6 +503,10 @@ export class ApiService implements ApiServiceAbstraction {
     async putGroup(organizationId: string, id: string, request: GroupRequest): Promise<GroupResponse> {
         const r = await this.send('PUT', '/organizations/' + organizationId + '/groups/' + id, request, true, true);
         return new GroupResponse(r);
+    }
+
+    async putGroupUsers(organizationId: string, id: string, request: string[]): Promise<any> {
+        await this.send('PUT', '/organizations/' + organizationId + '/groups/' + id + '/users', request, true, false);
     }
 
     deleteGroup(organizationId: string, id: string): Promise<any> {
