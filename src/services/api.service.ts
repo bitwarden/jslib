@@ -37,6 +37,7 @@ import { PaymentRequest } from '../models/request/paymentRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
+import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
 import { StorageRequest } from '../models/request/storageRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
@@ -459,6 +460,11 @@ export class ApiService implements ApiServiceAbstraction {
         const r = await this.send('PUT', '/organizations/' + organizationId + '/collections/' + id,
             request, true, true);
         return new CollectionResponse(r);
+    }
+
+    async putCollectionUsers(organizationId: string, id: string, request: SelectionReadOnlyRequest[]): Promise<any> {
+        await this.send('PUT', '/organizations/' + organizationId + '/collections/' + id + '/users',
+            request, true, false);
     }
 
     deleteCollection(organizationId: string, id: string): Promise<any> {

@@ -31,6 +31,7 @@ import { PaymentRequest } from '../models/request/paymentRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
+import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
 import { StorageRequest } from '../models/request/storageRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
@@ -159,6 +160,7 @@ export abstract class ApiService {
     getCollections: (organizationId: string) => Promise<ListResponse<CollectionResponse>>;
     getCollectionUsers: (organizationId: string, id: string) => Promise<ListResponse<SelectionReadOnlyResponse>>;
     postCollection: (organizationId: string, request: CollectionRequest) => Promise<CollectionResponse>;
+    putCollectionUsers: (organizationId: string, id: string, request: SelectionReadOnlyRequest[]) => Promise<any>;
     putCollection: (organizationId: string, id: string, request: CollectionRequest) => Promise<CollectionResponse>;
     deleteCollection: (organizationId: string, id: string) => Promise<any>;
     deleteCollectionUser: (organizationId: string, id: string, organizationUserId: string) => Promise<any>;
