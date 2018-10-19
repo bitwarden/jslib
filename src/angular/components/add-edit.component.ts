@@ -313,12 +313,16 @@ export class AddEditComponent implements OnInit {
         u.showOptions = u.showOptions == null ? true : u.showOptions;
     }
 
-    organizationChanged() {
+    async organizationChanged() {
         if (this.writeableCollections != null) {
             this.writeableCollections.forEach((c) => (c as any).checked = false);
         }
         if (this.cipher.organizationId != null) {
             this.collections = this.writeableCollections.filter((c) => c.organizationId === this.cipher.organizationId);
+            const org = await this.userService.getOrganization(this.cipher.organizationId);
+            if (org != null) {
+                this.cipher.organizationUseTotp = org.useTotp;
+            }
         } else {
             this.collections = [];
         }
