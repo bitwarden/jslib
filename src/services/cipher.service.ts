@@ -21,6 +21,7 @@ import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteReque
 import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
 import { CipherBulkShareRequest } from '../models/request/cipherBulkShareRequest';
 import { CipherCollectionsRequest } from '../models/request/cipherCollectionsRequest';
+import { CipherCreateRequest } from '../models/request/cipherCreateRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CipherShareRequest } from '../models/request/cipherShareRequest';
 
@@ -438,14 +439,19 @@ export class CipherService implements CipherServiceAbstraction {
         await this.storageService.save(Keys.neverDomains, domains);
     }
 
-    async saveWithServer(cipher: Cipher): Promise<any> {
-        const request = new CipherRequest(cipher);
-
+    async saveWithServer(cipher: Cipher, collectionIds: string[] = null): Promise<any> {
         let response: CipherResponse;
         if (cipher.id == null) {
-            response = await this.apiService.postCipher(request);
+            if (collectionIds != null) {
+                const request = new CipherCreateRequest(cipher, collectionIds);
+                response = await this.apiService.postCipherCreate(request);
+            } else {
+                const request = new CipherRequest(cipher);
+                response = await this.apiService.postCipher(request);
+            }
             cipher.id = response.id;
         } else {
+            const request = new CipherRequest(cipher);
             response = await this.apiService.putCipher(cipher.id, request);
         }
 

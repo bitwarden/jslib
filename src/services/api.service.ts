@@ -10,6 +10,7 @@ import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteReque
 import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
 import { CipherBulkShareRequest } from '../models/request/cipherBulkShareRequest';
 import { CipherCollectionsRequest } from '../models/request/cipherCollectionsRequest';
+import { CipherCreateRequest } from '../models/request/cipherCreateRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CipherShareRequest } from '../models/request/cipherShareRequest';
 import { CollectionRequest } from '../models/request/collectionRequest';
@@ -337,7 +338,12 @@ export class ApiService implements ApiServiceAbstraction {
         return new CipherResponse(r);
     }
 
-    async postCipherAdmin(request: CipherRequest): Promise<CipherResponse> {
+    async postCipherCreate(request: CipherCreateRequest): Promise<CipherResponse> {
+        const r = await this.send('POST', '/ciphers/create', request, true, true);
+        return new CipherResponse(r);
+    }
+
+    async postCipherAdmin(request: CipherCreateRequest): Promise<CipherResponse> {
         const r = await this.send('POST', '/ciphers/admin', request, true, true);
         return new CipherResponse(r);
     }

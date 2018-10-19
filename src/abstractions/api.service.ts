@@ -4,6 +4,7 @@ import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteReque
 import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
 import { CipherBulkShareRequest } from '../models/request/cipherBulkShareRequest';
 import { CipherCollectionsRequest } from '../models/request/cipherCollectionsRequest';
+import { CipherCreateRequest } from '../models/request/cipherCreateRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CipherShareRequest } from '../models/request/cipherShareRequest';
 import { CollectionRequest } from '../models/request/collectionRequest';
@@ -132,7 +133,8 @@ export abstract class ApiService {
     getCipherAdmin: (id: string) => Promise<CipherResponse>;
     getCiphersOrganization: (organizationId: string) => Promise<ListResponse<CipherResponse>>;
     postCipher: (request: CipherRequest) => Promise<CipherResponse>;
-    postCipherAdmin: (request: CipherRequest) => Promise<CipherResponse>;
+    postCipherCreate: (request: CipherCreateRequest) => Promise<CipherResponse>;
+    postCipherAdmin: (request: CipherCreateRequest) => Promise<CipherResponse>;
     putCipher: (id: string, request: CipherRequest) => Promise<CipherResponse>;
     putCipherAdmin: (id: string, request: CipherRequest) => Promise<CipherResponse>;
     deleteCipher: (id: string) => Promise<any>;
