@@ -451,6 +451,9 @@ export class CipherService implements CipherServiceAbstraction {
             }
             cipher.id = response.id;
         } else {
+            if (collectionIds != null) {
+                throw new Error('You cannot edit with collection ids.');
+            }
             const request = new CipherRequest(cipher);
             response = await this.apiService.putCipher(cipher.id, request);
         }
