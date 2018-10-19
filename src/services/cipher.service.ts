@@ -439,11 +439,11 @@ export class CipherService implements CipherServiceAbstraction {
         await this.storageService.save(Keys.neverDomains, domains);
     }
 
-    async saveWithServer(cipher: Cipher, collectionIds: string[] = null): Promise<any> {
+    async saveWithServer(cipher: Cipher): Promise<any> {
         let response: CipherResponse;
         if (cipher.id == null) {
-            if (collectionIds != null) {
-                const request = new CipherCreateRequest(cipher, collectionIds);
+            if (cipher.collectionIds != null) {
+                const request = new CipherCreateRequest(cipher);
                 response = await this.apiService.postCipherCreate(request);
             } else {
                 const request = new CipherRequest(cipher);
@@ -451,9 +451,6 @@ export class CipherService implements CipherServiceAbstraction {
             }
             cipher.id = response.id;
         } else {
-            if (collectionIds != null) {
-                throw new Error('You cannot edit with collection ids.');
-            }
             const request = new CipherRequest(cipher);
             response = await this.apiService.putCipher(cipher.id, request);
         }

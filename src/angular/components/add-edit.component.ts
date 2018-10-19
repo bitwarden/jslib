@@ -1,25 +1,30 @@
 import {
     EventEmitter,
     Input,
+    OnInit,
     Output,
 } from '@angular/core';
 
 import { CipherType } from '../../enums/cipherType';
 import { FieldType } from '../../enums/fieldType';
+import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { SecureNoteType } from '../../enums/secureNoteType';
 import { UriMatchType } from '../../enums/uriMatchType';
 
 import { AuditService } from '../../abstractions/audit.service';
 import { CipherService } from '../../abstractions/cipher.service';
+import { CollectionService } from '../../abstractions/collection.service';
 import { FolderService } from '../../abstractions/folder.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
+import { UserService } from '../../abstractions/user.service';
 
 import { Cipher } from '../../models/domain/cipher';
 
 import { CardView } from '../../models/view/cardView';
 import { CipherView } from '../../models/view/cipherView';
+import { CollectionView } from '../../models/view/collectionView';
 import { FieldView } from '../../models/view/fieldView';
 import { FolderView } from '../../models/view/folderView';
 import { IdentityView } from '../../models/view/identityView';
@@ -27,7 +32,9 @@ import { LoginUriView } from '../../models/view/loginUriView';
 import { LoginView } from '../../models/view/loginView';
 import { SecureNoteView } from '../../models/view/secureNoteView';
 
-export class AddEditComponent {
+import { Utils } from '../../misc/utils';
+
+export class AddEditComponent implements OnInit {
     @Input() folderId: string = null;
     @Input() cipherId: string;
     @Input() type: CipherType;
@@ -40,6 +47,7 @@ export class AddEditComponent {
     editMode: boolean = false;
     cipher: CipherView;
     folders: FolderView[];
+    collections: CollectionView[] = [];
     title: string;
     formPromise: Promise<any>;
     deletePromise: Promise<any>;
@@ -55,10 +63,14 @@ export class AddEditComponent {
     identityTitleOptions: any[];
     addFieldTypeOptions: any[];
     uriMatchOptions: any[];
+    ownershipOptions: any[] = [];
+
+    private writeableCollections: CollectionView[];
 
     constructor(protected cipherService: CipherService, protected folderService: FolderService,
         protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
-        protected auditService: AuditService, protected stateService: StateService) {
+        protected auditService: AuditService, protected stateService: StateService,
+        protected userService: UserService, protected collectionService: CollectionService) {
         this.typeOptions = [
             { name: i18nService.t('typeLogin'), value: CipherType.Login },
             { name: i18nService.t('typeCard'), value: CipherType.Card },
@@ -115,6 +127,19 @@ export class AddEditComponent {
         ];
     }
 
+    async ngOnInit() {
+        const myEmail = await this.userService.getEmail();
+        this.ownershipOptions.push({ name: myEmail, value: null });
+        const orgs = await this.userService.getAllOrganizations();
+        orgs.sort(Utils.getSortFunction(this.i18nService, 'name')).forEach((o) => {
+            if (o.enabled && o.status === OrganizationUserStatusType.Confirmed) {
+                this.ownershipOptions.push({ name: o.name, value: o.id });
+            }
+        });
+        const allCollections = await this.collectionService.getAllDecrypted();
+        this.writeableCollections = allCollections.filter((c) => !c.readOnly);
+    }
+
     async load() {
         this.editMode = this.cipherId != null;
         if (this.editMode) {
@@ -132,6 +157,7 @@ export class AddEditComponent {
                 this.cipher = await cipher.decrypt();
             } else {
                 this.cipher = new CipherView();
+                this.cipher.organizationId = null;
                 this.cipher.folderId = this.folderId;
                 this.cipher.type = this.type == null ? CipherType.Login : this.type;
                 this.cipher.login = new LoginView();
@@ -157,6 +183,11 @@ export class AddEditComponent {
             this.cipher.login.uris != null && this.cipher.login.uris.length === 1 &&
             (this.cipher.login.uris[0].uri == null || this.cipher.login.uris[0].uri === '')) {
             this.cipher.login.uris = null;
+        }
+
+        if (!this.editMode && this.cipher.organizationId != null) {
+            this.cipher.collectionIds = this.collections == null ? [] :
+                this.collections.filter((c) => (c as any).checked).map((c) => c.id);
         }
 
         const cipher = await this.encryptCipher();
@@ -280,6 +311,17 @@ export class AddEditComponent {
     loginUriMatchChanged(uri: LoginUriView) {
         const u = (uri as any);
         u.showOptions = u.showOptions == null ? true : u.showOptions;
+    }
+
+    organizationChanged() {
+        if (this.writeableCollections != null) {
+            this.writeableCollections.forEach((c) => (c as any).checked = false);
+        }
+        if (this.cipher.organizationId != null) {
+            this.collections = this.writeableCollections.filter((c) => c.organizationId === this.cipher.organizationId);
+        } else {
+            this.collections = [];
+        }
     }
 
     async checkPassword() {
