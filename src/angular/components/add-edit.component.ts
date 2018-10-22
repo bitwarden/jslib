@@ -38,6 +38,8 @@ export class AddEditComponent implements OnInit {
     @Input() folderId: string = null;
     @Input() cipherId: string;
     @Input() type: CipherType;
+    @Input() collectionIds: string[];
+    @Input() organizationId: string = null;
     @Output() onSavedCipher = new EventEmitter<CipherView>();
     @Output() onDeletedCipher = new EventEmitter<CipherView>();
     @Output() onCancelled = new EventEmitter<CipherView>();
@@ -156,7 +158,7 @@ export class AddEditComponent implements OnInit {
                 this.cipher = await cipher.decrypt();
             } else {
                 this.cipher = new CipherView();
-                this.cipher.organizationId = null;
+                this.cipher.organizationId = this.organizationId == null ? null : this.organizationId;
                 this.cipher.folderId = this.folderId;
                 this.cipher.type = this.type == null ? CipherType.Login : this.type;
                 this.cipher.login = new LoginView();
@@ -165,6 +167,15 @@ export class AddEditComponent implements OnInit {
                 this.cipher.identity = new IdentityView();
                 this.cipher.secureNote = new SecureNoteView();
                 this.cipher.secureNote.type = SecureNoteType.Generic;
+
+                await this.organizationChanged();
+                if (this.collectionIds != null && this.collectionIds.length > 0 && this.collections.length > 0) {
+                    this.collections.forEach((c) => {
+                        if (this.collectionIds.indexOf(c.id) > -1) {
+                            (c as any).checked = true;
+                        }
+                    });
+                }
             }
         }
 
