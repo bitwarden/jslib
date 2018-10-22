@@ -136,8 +136,7 @@ export class AddEditComponent implements OnInit {
                 this.ownershipOptions.push({ name: o.name, value: o.id });
             }
         });
-        const allCollections = await this.collectionService.getAllDecrypted();
-        this.writeableCollections = allCollections.filter((c) => !c.readOnly);
+        this.writeableCollections = await this.loadCollections();
     }
 
     async load() {
@@ -348,6 +347,11 @@ export class AddEditComponent implements OnInit {
         } else {
             this.platformUtilsService.showToast('success', null, this.i18nService.t('passwordSafe'));
         }
+    }
+
+    protected async loadCollections() {
+        const allCollections = await this.collectionService.getAllDecrypted();
+        return allCollections.filter((c) => !c.readOnly);
     }
 
     protected loadCipher() {
