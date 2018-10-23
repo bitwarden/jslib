@@ -67,7 +67,7 @@ export class AddEditComponent implements OnInit {
     uriMatchOptions: any[];
     ownershipOptions: any[] = [];
 
-    private writeableCollections: CollectionView[];
+    protected writeableCollections: CollectionView[];
 
     constructor(protected cipherService: CipherService, protected folderService: FolderService,
         protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
