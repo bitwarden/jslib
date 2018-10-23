@@ -44,6 +44,8 @@ export class AddEditComponent implements OnInit {
     @Output() onDeletedCipher = new EventEmitter<CipherView>();
     @Output() onCancelled = new EventEmitter<CipherView>();
     @Output() onEditAttachments = new EventEmitter<CipherView>();
+    @Output() onShareCipher = new EventEmitter<CipherView>();
+    @Output() onEditCollections = new EventEmitter<CipherView>();
     @Output() onGeneratePassword = new EventEmitter();
 
     editMode: boolean = false;
@@ -261,6 +263,14 @@ export class AddEditComponent implements OnInit {
 
     attachments() {
         this.onEditAttachments.emit(this.cipher);
+    }
+
+    share() {
+        this.onShareCipher.emit(this.cipher);
+    }
+
+    editCollections() {
+        this.onEditCollections.emit(this.cipher);
     }
 
     async delete(): Promise<boolean> {
