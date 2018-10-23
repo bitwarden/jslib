@@ -465,9 +465,10 @@ export class CipherService implements CipherServiceAbstraction {
         cipher.collectionIds = collectionIds;
         const encCipher = await this.encrypt(cipher);
         const request = new CipherShareRequest(encCipher);
-        await this.apiService.putShareCipher(cipher.id, request);
+        const response = await this.apiService.putShareCipher(cipher.id, request);
         const userId = await this.userService.getUserId();
-        await this.upsert(encCipher.toCipherData(userId));
+        const data = new CipherData(response, userId, collectionIds);
+        await this.upsert(data);
     }
 
     async shareManyWithServer(ciphers: CipherView[], organizationId: string, collectionIds: string[]): Promise<any> {
