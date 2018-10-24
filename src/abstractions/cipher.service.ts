@@ -28,8 +28,6 @@ export abstract class CipherService {
     saveWithServer: (cipher: Cipher) => Promise<any>;
     shareWithServer: (cipher: CipherView, organizationId: string, collectionIds: string[]) => Promise<any>;
     shareManyWithServer: (ciphers: CipherView[], organizationId: string, collectionIds: string[]) => Promise<any>;
-    shareAttachmentWithServer: (attachmentView: AttachmentView, cipherId: string,
-        organizationId: string) => Promise<any>;
     saveAttachmentWithServer: (cipher: Cipher, unencryptedFile: any, admin?: boolean) => Promise<Cipher>;
     saveAttachmentRawWithServer: (cipher: Cipher, filename: string, data: ArrayBuffer,
         admin?: boolean) => Promise<Cipher>;

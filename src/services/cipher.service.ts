@@ -461,6 +461,14 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async shareWithServer(cipher: CipherView, organizationId: string, collectionIds: string[]): Promise<any> {
+        const attachmentPromises: Array<Promise<any>> = [];
+        if (cipher.attachments != null) {
+            cipher.attachments.forEach((attachment) => {
+                attachmentPromises.push(this.shareAttachmentWithServer(attachment, cipher.id, organizationId));
+            });
+        }
+        await Promise.all(attachmentPromises);
+
         cipher.organizationId = organizationId;
         cipher.collectionIds = collectionIds;
         const encCipher = await this.encrypt(cipher);
@@ -486,43 +494,6 @@ export class CipherService implements CipherServiceAbstraction {
         await this.apiService.putShareCiphers(request);
         const userId = await this.userService.getUserId();
         await this.upsert(encCiphers.map((c) => c.toCipherData(userId)));
-    }
-
-    async shareAttachmentWithServer(attachmentView: AttachmentView, cipherId: string,
-        organizationId: string): Promise<any> {
-        const attachmentResponse = await fetch(new Request(attachmentView.url, { cache: 'no-cache' }));
-        if (attachmentResponse.status !== 200) {
-            throw Error('Failed to download attachment: ' + attachmentResponse.status.toString());
-        }
-
-        const buf = await attachmentResponse.arrayBuffer();
-        const decBuf = await this.cryptoService.decryptFromBytes(buf, null);
-        const key = await this.cryptoService.getOrgKey(organizationId);
-        const encData = await this.cryptoService.encryptToBytes(decBuf, key);
-        const encFileName = await this.cryptoService.encrypt(attachmentView.fileName, key);
-
-        const fd = new FormData();
-        try {
-            const blob = new Blob([encData], { type: 'application/octet-stream' });
-            fd.append('data', blob, encFileName.encryptedString);
-        } catch (e) {
-            if (Utils.isNode && !Utils.isBrowser) {
-                fd.append('data', Buffer.from(encData) as any, {
-                    filepath: encFileName.encryptedString,
-                    contentType: 'application/octet-stream',
-                } as any);
-            } else {
-                throw e;
-            }
-        }
-
-        let response: CipherResponse;
-        try {
-            response = await this.apiService.postShareCipherAttachment(cipherId, attachmentView.id, fd,
-                organizationId);
-        } catch (e) {
-            throw new Error((e as ErrorResponse).getSingleMessage());
-        }
     }
 
     saveAttachmentWithServer(cipher: Cipher, unencryptedFile: any, admin = false): Promise<Cipher> {
@@ -771,6 +742,41 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     // Helpers
+
+    private async shareAttachmentWithServer(attachmentView: AttachmentView, cipherId: string,
+        organizationId: string): Promise<any> {
+        const attachmentResponse = await fetch(new Request(attachmentView.url, { cache: 'no-cache' }));
+        if (attachmentResponse.status !== 200) {
+            throw Error('Failed to download attachment: ' + attachmentResponse.status.toString());
+        }
+
+        const buf = await attachmentResponse.arrayBuffer();
+        const decBuf = await this.cryptoService.decryptFromBytes(buf, null);
+        const key = await this.cryptoService.getOrgKey(organizationId);
+        const encData = await this.cryptoService.encryptToBytes(decBuf, key);
+        const encFileName = await this.cryptoService.encrypt(attachmentView.fileName, key);
+
+        const fd = new FormData();
+        try {
+            const blob = new Blob([encData], { type: 'application/octet-stream' });
+            fd.append('data', blob, encFileName.encryptedString);
+        } catch (e) {
+            if (Utils.isNode && !Utils.isBrowser) {
+                fd.append('data', Buffer.from(encData) as any, {
+                    filepath: encFileName.encryptedString,
+                    contentType: 'application/octet-stream',
+                } as any);
+            } else {
+                throw e;
+            }
+        }
+
+        try {
+            await this.apiService.postShareCipherAttachment(cipherId, attachmentView.id, fd, organizationId);
+        } catch (e) {
+            throw new Error((e as ErrorResponse).getSingleMessage());
+        }
+    }
 
     private async encryptObjProperty<V extends View, D extends Domain>(model: V, obj: D,
         map: any, key: SymmetricCryptoKey): Promise<void> {

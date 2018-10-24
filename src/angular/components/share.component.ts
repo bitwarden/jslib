@@ -65,23 +65,14 @@ export class ShareComponent implements OnInit {
         const cipherDomain = await this.cipherService.get(this.cipherId);
         const cipherView = await cipherDomain.decrypt();
 
-        const attachmentPromises: Array<Promise<any>> = [];
-        if (cipherView.attachments != null) {
-            for (const attachment of cipherView.attachments) {
-                const promise = this.cipherService.shareAttachmentWithServer(attachment, cipherView.id,
-                    this.organizationId);
-                attachmentPromises.push(promise);
-            }
-        }
-
         const checkedCollectionIds = this.collections.filter((c) => (c as any).checked).map((c) => c.id);
         try {
-            this.formPromise = Promise.all(attachmentPromises).then(async () => {
-                await this.cipherService.shareWithServer(cipherView, this.organizationId, checkedCollectionIds);
-                this.onSharedCipher.emit();
-                this.platformUtilsService.eventTrack('Shared Cipher');
-                this.platformUtilsService.showToast('success', null, this.i18nService.t('sharedItem'));
-            });
+            this.formPromise = this.cipherService.shareWithServer(cipherView, this.organizationId,
+                checkedCollectionIds).then(async () => {
+                    this.onSharedCipher.emit();
+                    this.platformUtilsService.eventTrack('Shared Cipher');
+                    this.platformUtilsService.showToast('success', null, this.i18nService.t('sharedItem'));
+                });
             await this.formPromise;
         } catch { }
     }
