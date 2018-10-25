@@ -19,11 +19,13 @@ import { UserService } from '../abstractions/user.service';
 import { CipherData } from '../models/data/cipherData';
 
 import { Utils } from '../misc/utils';
+import { TreeNode } from '../models/domain/treeNode';
 
 const Keys = {
     foldersPrefix: 'folders_',
     ciphersPrefix: 'ciphers_',
 };
+const NestingDelimiter = '/';
 
 export class FolderService implements FolderServiceAbstraction {
     decryptedFolderCache: FolderView[];
@@ -93,6 +95,18 @@ export class FolderService implements FolderServiceAbstraction {
 
         this.decryptedFolderCache = decFolders;
         return this.decryptedFolderCache;
+    }
+
+    async getAllNested(): Promise<Array<TreeNode<FolderView>>> {
+        const folders = await this.getAllDecrypted();
+        const nodes: Array<TreeNode<FolderView>> = [];
+        folders.forEach((f) => {
+            const folderCopy = new FolderView();
+            folderCopy.id = f.id;
+            folderCopy.revisionDate = f.revisionDate;
+            this.nestedTraverse(nodes, 0, f.name.split(NestingDelimiter), folderCopy);
+        });
+        return nodes;
     }
 
     async saveWithServer(folder: Folder): Promise<any> {
@@ -184,5 +198,38 @@ export class FolderService implements FolderServiceAbstraction {
     async deleteWithServer(id: string): Promise<any> {
         await this.apiService.deleteFolder(id);
         await this.delete(id);
+    }
+
+    private nestedTraverse(nodeTree: Array<TreeNode<FolderView>>, partIndex: number,
+        parts: string[], folder: FolderView) {
+        if (parts.length <= partIndex) {
+            return;
+        }
+
+        const end = partIndex === parts.length - 1;
+        const partName = parts[partIndex];
+
+        for (let i = 0; i < nodeTree.length; i++) {
+            if (nodeTree[i].node.name === parts[partIndex]) {
+                if (end && nodeTree[i].node.id !== folder.id) {
+                    // Another node with the same name.
+                    folder.name = partName;
+                    nodeTree.push(new TreeNode(folder));
+                    return;
+                }
+                this.nestedTraverse(nodeTree[i].children, partIndex + 1, parts, folder);
+                return;
+            }
+        }
+
+        if (nodeTree.filter((n) => n.node.name === partName).length === 0) {
+            if (end) {
+                folder.name = partName;
+                nodeTree.push(new TreeNode(folder));
+                return;
+            }
+            const newPartName = parts[partIndex] + NestingDelimiter + parts[partIndex + 1];
+            this.nestedTraverse(nodeTree, 0, [newPartName, ...parts.slice(partIndex + 2)], folder);
+        }
     }
 }

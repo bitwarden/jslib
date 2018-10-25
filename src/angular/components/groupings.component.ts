@@ -9,11 +9,14 @@ import { CipherType } from '../../enums/cipherType';
 import { CollectionView } from '../../models/view/collectionView';
 import { FolderView } from '../../models/view/folderView';
 
+import { TreeNode } from '../../models/domain/treeNode';
+
 import { CollectionService } from '../../abstractions/collection.service';
 import { FolderService } from '../../abstractions/folder.service';
 
 export class GroupingsComponent {
     @Input() showFolders = true;
+    @Input() loadNestedFolder = false;
     @Input() showCollections = true;
     @Input() showFavorites = true;
 
@@ -26,6 +29,7 @@ export class GroupingsComponent {
     @Output() onCollectionClicked = new EventEmitter<CollectionView>();
 
     folders: FolderView[];
+    nestedFolders: Array<TreeNode<FolderView>>;
     collections: CollectionView[];
     loaded: boolean = false;
     cipherType = CipherType;
@@ -64,6 +68,9 @@ export class GroupingsComponent {
             return;
         }
         this.folders = await this.folderService.getAllDecrypted();
+        if (this.loadNestedFolder) {
+            this.nestedFolders = await this.folderService.getAllNested();
+        }
     }
 
     selectAll() {
