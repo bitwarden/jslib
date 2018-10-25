@@ -85,8 +85,12 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
 
             const valueType = value.type != null ? value.type.toLowerCase() : null;
             switch (valueType) {
-                case 'login':
-                case null:
+                case 'note':
+                    cipher.type = CipherType.SecureNote;
+                    cipher.secureNote = new SecureNoteView();
+                    cipher.secureNote.type = SecureNoteType.Generic;
+                    break;
+                default:
                     cipher.type = CipherType.Login;
                     cipher.login = new LoginView();
                     cipher.login.totp = this.getValueOrDefault(value.login_totp || value.totp);
@@ -94,13 +98,6 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
                     cipher.login.password = this.getValueOrDefault(value.login_password || value.password);
                     const uris = this.parseSingleRowCsv(value.login_uri || value.uri);
                     cipher.login.uris = this.makeUriArray(uris);
-                    break;
-                case 'note':
-                    cipher.type = CipherType.SecureNote;
-                    cipher.secureNote = new SecureNoteView();
-                    cipher.secureNote.type = SecureNoteType.Generic;
-                    break;
-                default:
                     break;
             }
 
