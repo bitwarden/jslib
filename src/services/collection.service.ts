@@ -1,6 +1,7 @@
 import { CollectionData } from '../models/data/collectionData';
 
 import { Collection } from '../models/domain/collection';
+import { TreeNode } from '../models/domain/treeNode';
 
 import { CollectionView } from '../models/view/collectionView';
 
@@ -10,11 +11,13 @@ import { I18nService } from '../abstractions/i18n.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
+import { ServiceUtils } from '../misc/serviceUtils';
 import { Utils } from '../misc/utils';
 
 const Keys = {
     collectionsPrefix: 'collections_',
 };
+const NestingDelimiter = '/';
 
 export class CollectionService implements CollectionServiceAbstraction {
     decryptedCollectionCache: CollectionView[];
@@ -93,6 +96,19 @@ export class CollectionService implements CollectionServiceAbstraction {
         const collections = await this.getAll();
         this.decryptedCollectionCache = await this.decryptMany(collections);
         return this.decryptedCollectionCache;
+    }
+
+    async getAllNested(collections: CollectionView[] = null): Promise<Array<TreeNode<CollectionView>>> {
+        if (collections == null) {
+            collections = await this.getAllDecrypted();
+        }
+        const nodes: Array<TreeNode<CollectionView>> = [];
+        collections.forEach((f) => {
+            const collectionCopy = new CollectionView();
+            collectionCopy.id = f.id;
+            ServiceUtils.nestedTraverse(nodes, 0, f.name.split(NestingDelimiter), collectionCopy, NestingDelimiter);
+        });
+        return nodes;
     }
 
     async upsert(collection: CollectionData | CollectionData[]): Promise<any> {
