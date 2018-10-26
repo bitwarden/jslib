@@ -43,6 +43,7 @@ export class ViewComponent implements OnDestroy, OnInit {
     totpLow: boolean;
     fieldType = FieldType;
     checkPasswordPromise: Promise<number>;
+    exposed: number;
 
     private totpInterval: any;
 
@@ -79,6 +80,8 @@ export class ViewComponent implements OnDestroy, OnInit {
         const cipher = await this.cipherService.get(this.cipherId);
         this.cipher = await cipher.decrypt();
         this.canAccessPremium = await this.userService.canAccessPremium();
+
+        this.checkPasswordExposed();
 
         if (this.cipher.type === CipherType.Login && this.cipher.login.totp &&
             (cipher.organizationUseTotp || this.canAccessPremium)) {
@@ -223,6 +226,16 @@ export class ViewComponent implements OnDestroy, OnInit {
         this.totpLow = this.totpSec <= 7;
         if (mod === 0) {
             await this.totpUpdateCode();
+        }
+    }
+
+    private checkPasswordExposed() {
+        if (this.cipher.type === CipherType.Login && this.cipher.login.password != null) {
+            this.auditService
+                .passwordLeaked(this.cipher.login.password)
+                .then((leaked) => this.exposed = leaked);
+        } else {
+            this.exposed = 0;
         }
     }
 }
