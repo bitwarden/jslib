@@ -10,6 +10,9 @@ const PwnedPasswordsApi = 'https://api.pwnedpasswords.com/range/';
 const HibpBreachApi = 'https://haveibeenpwned.com/api/v2/breachedaccount/';
 
 export class AuditService implements AuditServiceAbstraction {
+
+    private cachedPasswordLeaked = new Map<string, string>();
+
     constructor(private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService) { }
 
     async passwordLeaked(password: string): Promise<number> {
@@ -18,9 +21,13 @@ export class AuditService implements AuditServiceAbstraction {
         const hashStart = hash.substr(0, 5);
         const hashEnding = hash.substr(5);
 
-        const response = await fetch(new Request(PwnedPasswordsApi + hashStart));
-        const leakedHashes = await response.text();
-        const match = leakedHashes.split(/\r?\n/).find((v) => {
+        if (this.cachedPasswordLeaked[hashStart] == null) {
+            const response = await fetch(new Request(PwnedPasswordsApi + hashStart));
+            const leakedHashes = await response.text();
+            this.cachedPasswordLeaked[hashStart] = leakedHashes;
+        }
+
+        const match = this.cachedPasswordLeaked[hashStart].split(/\r?\n/).find((v) => {
             return v.split(':')[0] === hashEnding;
         });
 
