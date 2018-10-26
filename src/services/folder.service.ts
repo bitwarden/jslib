@@ -105,7 +105,8 @@ export class FolderService implements FolderServiceAbstraction {
             const folderCopy = new FolderView();
             folderCopy.id = f.id;
             folderCopy.revisionDate = f.revisionDate;
-            ServiceUtils.nestedTraverse(nodes, 0, f.name.split(NestingDelimiter), folderCopy, NestingDelimiter);
+            ServiceUtils.nestedTraverse(nodes, 0, f.name.split(NestingDelimiter), folderCopy,
+                null, NestingDelimiter);
         });
         return nodes;
     }

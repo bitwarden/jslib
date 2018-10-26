@@ -106,7 +106,8 @@ export class CollectionService implements CollectionServiceAbstraction {
         collections.forEach((f) => {
             const collectionCopy = new CollectionView();
             collectionCopy.id = f.id;
-            ServiceUtils.nestedTraverse(nodes, 0, f.name.split(NestingDelimiter), collectionCopy, NestingDelimiter);
+            ServiceUtils.nestedTraverse(nodes, 0, f.name.split(NestingDelimiter), collectionCopy,
+                null, NestingDelimiter);
         });
         return nodes;
     }
