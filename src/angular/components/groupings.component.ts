@@ -16,9 +16,7 @@ import { FolderService } from '../../abstractions/folder.service';
 
 export class GroupingsComponent {
     @Input() showFolders = true;
-    @Input() loadNestedFolders = false;
     @Input() showCollections = true;
-    @Input() loadNestedCollections = false;
     @Input() showFavorites = true;
 
     @Output() onAllClicked = new EventEmitter();
@@ -63,9 +61,7 @@ export class GroupingsComponent {
         } else {
             this.collections = collections;
         }
-        if (this.loadNestedCollections) {
-            this.nestedCollections = await this.collectionService.getAllNested(this.collections);
-        }
+        this.nestedCollections = await this.collectionService.getAllNested(this.collections);
     }
 
     async loadFolders() {
@@ -73,9 +69,7 @@ export class GroupingsComponent {
             return;
         }
         this.folders = await this.folderService.getAllDecrypted();
-        if (this.loadNestedFolders) {
-            this.nestedFolders = await this.folderService.getAllNested();
-        }
+        this.nestedFolders = await this.folderService.getAllNested();
     }
 
     selectAll() {

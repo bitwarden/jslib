@@ -110,6 +110,11 @@ export class FolderService implements FolderServiceAbstraction {
         return nodes;
     }
 
+    async getNested(id: string): Promise<TreeNode<FolderView>> {
+        const folders = await this.getAllNested();
+        return ServiceUtils.getTreeNodeObject(folders, id) as TreeNode<FolderView>;
+    }
+
     async saveWithServer(folder: Folder): Promise<any> {
         const request = new FolderRequest(folder);
 

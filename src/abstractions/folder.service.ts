@@ -15,6 +15,7 @@ export abstract class FolderService {
     getAll: () => Promise<Folder[]>;
     getAllDecrypted: () => Promise<FolderView[]>;
     getAllNested: () => Promise<Array<TreeNode<FolderView>>>;
+    getNested: (id: string) => Promise<TreeNode<FolderView>>;
     saveWithServer: (folder: Folder) => Promise<any>;
     upsert: (folder: FolderData | FolderData[]) => Promise<any>;
     replace: (folders: { [id: string]: FolderData; }) => Promise<any>;

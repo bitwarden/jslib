@@ -111,6 +111,11 @@ export class CollectionService implements CollectionServiceAbstraction {
         return nodes;
     }
 
+    async getNested(id: string): Promise<TreeNode<CollectionView>> {
+        const collections = await this.getAllNested();
+        return ServiceUtils.getTreeNodeObject(collections, id) as TreeNode<CollectionView>;
+    }
+
     async upsert(collection: CollectionData | CollectionData[]): Promise<any> {
         const userId = await this.userService.getUserId();
         let collections = await this.storageService.get<{ [id: string]: CollectionData; }>(

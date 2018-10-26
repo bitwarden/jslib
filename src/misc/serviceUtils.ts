@@ -20,7 +20,7 @@ export class ServiceUtils {
                     nodeTree.push(new TreeNode(obj, partName));
                     return;
                 }
-                this.nestedTraverse(nodeTree[i].children, partIndex + 1, parts, obj, delimiter);
+                ServiceUtils.nestedTraverse(nodeTree[i].children, partIndex + 1, parts, obj, delimiter);
                 return;
             }
         }
@@ -31,7 +31,21 @@ export class ServiceUtils {
                 return;
             }
             const newPartName = parts[partIndex] + delimiter + parts[partIndex + 1];
-            this.nestedTraverse(nodeTree, 0, [newPartName, ...parts.slice(partIndex + 2)], obj, delimiter);
+            ServiceUtils.nestedTraverse(nodeTree, 0, [newPartName, ...parts.slice(partIndex + 2)], obj, delimiter);
         }
+    }
+
+    static getTreeNodeObject(nodeTree: Array<TreeNode<ITreeNodeObject>>, id: string): TreeNode<ITreeNodeObject> {
+        for (let i = 0; i < nodeTree.length; i++) {
+            if (nodeTree[i].node.id === id) {
+                return nodeTree[i];
+            } else if (nodeTree[i].children != null) {
+                const node = ServiceUtils.getTreeNodeObject(nodeTree[i].children, id);
+                if (node !== null) {
+                    return node;
+                }
+            }
+        }
+        return null;
     }
 }
