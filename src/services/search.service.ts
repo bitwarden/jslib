@@ -62,6 +62,7 @@ export class SearchService implements SearchServiceAbstraction {
         (builder as any).field('attachments', { extractor: (c: CipherView) => this.attachmentExtractor(c, false) });
         (builder as any).field('attachments_joined',
             { extractor: (c: CipherView) => this.attachmentExtractor(c, true) });
+        (builder as any).field('organizationid', { extractor: (c: CipherView) => c.organizationId });
         const ciphers = await this.cipherService.getAllDecrypted();
         ciphers.forEach((c) => builder.add(c));
         this.index = builder.build();
