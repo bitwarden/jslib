@@ -50,6 +50,7 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                 }
             }
 
+            this.convertToNoteIfNeeded(cipher);
             this.cleanupCipher(cipher);
             this.result.ciphers.push(cipher);
         });
