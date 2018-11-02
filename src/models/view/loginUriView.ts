@@ -6,6 +6,16 @@ import { LoginUri } from '../domain/loginUri';
 
 import { Utils } from '../../misc/utils';
 
+const CanLaunchWhitelist = [
+    'https://',
+    'http://',
+    'ssh://',
+    'ftp://',
+    'sftp://',
+    'irc://',
+    'chrome://',
+];
+
 export class LoginUriView implements View {
     match: UriMatchType = null;
 
@@ -62,6 +72,14 @@ export class LoginUriView implements View {
     }
 
     get canLaunch(): boolean {
-        return this.uri != null && this.uri.indexOf('://') > -1;
+        if (this.uri == null) {
+            return false;
+        }
+        for (let i = 0; i < CanLaunchWhitelist.length; i++) {
+            if (this.uri.indexOf(CanLaunchWhitelist[i]) === 0) {
+                return true;
+            }
+        }
+        return false;
     }
 }
