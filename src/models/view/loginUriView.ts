@@ -23,6 +23,7 @@ export class LoginUriView implements View {
     private _uri: string;
     private _domain: string;
     private _hostname: string;
+    private _canLaunch: boolean;
     // tslint:enable
 
     constructor(u?: LoginUri) {
@@ -39,6 +40,7 @@ export class LoginUriView implements View {
     set uri(value: string) {
         this._uri = value;
         this._domain = null;
+        this._canLaunch = null;
     }
 
     get domain(): string {
@@ -72,14 +74,18 @@ export class LoginUriView implements View {
     }
 
     get canLaunch(): boolean {
-        if (this.uri == null) {
-            return false;
+        if (this._canLaunch != null) {
+            return this._canLaunch;
         }
-        for (let i = 0; i < CanLaunchWhitelist.length; i++) {
-            if (this.uri.indexOf(CanLaunchWhitelist[i]) === 0) {
-                return true;
+        if (this.uri != null) {
+            for (let i = 0; i < CanLaunchWhitelist.length; i++) {
+                if (this.uri.indexOf(CanLaunchWhitelist[i]) === 0) {
+                    this._canLaunch = true;
+                    return this._canLaunch;
+                }
             }
         }
-        return false;
+        this._canLaunch = false;
+        return this._canLaunch;
     }
 }
