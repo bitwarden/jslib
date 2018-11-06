@@ -15,7 +15,7 @@ import { ConstantsService } from '../../services/constants.service';
 
 import { Utils } from '../../misc/utils';
 
-const IconMap = {
+const IconMap: any = {
     'fa-globe': String.fromCharCode(0xf0ac),
     'fa-sticky-note-o': String.fromCharCode(0xf24a),
     'fa-id-card-o': String.fromCharCode(0xf2c3),
