@@ -5,7 +5,7 @@ import {
 
 export class ServiceUtils {
     static nestedTraverse(nodeTree: Array<TreeNode<ITreeNodeObject>>, partIndex: number, parts: string[],
-        obj: ITreeNodeObject, delimiter: string) {
+        obj: ITreeNodeObject, parent: ITreeNodeObject, delimiter: string) {
         if (parts.length <= partIndex) {
             return;
         }
@@ -17,21 +17,23 @@ export class ServiceUtils {
             if (nodeTree[i].node.name === parts[partIndex]) {
                 if (end && nodeTree[i].node.id !== obj.id) {
                     // Another node with the same name.
-                    nodeTree.push(new TreeNode(obj, partName));
+                    nodeTree.push(new TreeNode(obj, partName, parent));
                     return;
                 }
-                ServiceUtils.nestedTraverse(nodeTree[i].children, partIndex + 1, parts, obj, delimiter);
+                ServiceUtils.nestedTraverse(nodeTree[i].children, partIndex + 1, parts,
+                    obj, nodeTree[i].node, delimiter);
                 return;
             }
         }
 
         if (nodeTree.filter((n) => n.node.name === partName).length === 0) {
             if (end) {
-                nodeTree.push(new TreeNode(obj, partName));
+                nodeTree.push(new TreeNode(obj, partName, parent));
                 return;
             }
             const newPartName = parts[partIndex] + delimiter + parts[partIndex + 1];
-            ServiceUtils.nestedTraverse(nodeTree, 0, [newPartName, ...parts.slice(partIndex + 2)], obj, delimiter);
+            ServiceUtils.nestedTraverse(nodeTree, 0, [newPartName, ...parts.slice(partIndex + 2)],
+                obj, parent, delimiter);
         }
     }
 

@@ -103,10 +103,12 @@ export class CollectionService implements CollectionServiceAbstraction {
             collections = await this.getAllDecrypted();
         }
         const nodes: Array<TreeNode<CollectionView>> = [];
-        collections.forEach((f) => {
+        collections.forEach((c) => {
             const collectionCopy = new CollectionView();
-            collectionCopy.id = f.id;
-            ServiceUtils.nestedTraverse(nodes, 0, f.name.split(NestingDelimiter), collectionCopy, NestingDelimiter);
+            collectionCopy.id = c.id;
+            collectionCopy.organizationId = c.organizationId;
+            ServiceUtils.nestedTraverse(nodes, 0, c.name.split(NestingDelimiter), collectionCopy,
+                null, NestingDelimiter);
         });
         return nodes;
     }

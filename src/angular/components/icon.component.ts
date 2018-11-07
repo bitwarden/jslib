@@ -6,6 +6,8 @@ import {
 
 import { CipherType } from '../../enums/cipherType';
 
+import { CipherView } from '../../models/view/cipherView';
+
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { StateService } from '../../abstractions/state.service';
 
@@ -13,12 +15,21 @@ import { ConstantsService } from '../../services/constants.service';
 
 import { Utils } from '../../misc/utils';
 
+const IconMap: any = {
+    'fa-globe': String.fromCharCode(0xf0ac),
+    'fa-sticky-note-o': String.fromCharCode(0xf24a),
+    'fa-id-card-o': String.fromCharCode(0xf2c3),
+    'fa-credit-card': String.fromCharCode(0xf09d),
+    'fa-android': String.fromCharCode(0xf17b),
+    'fa-apple': String.fromCharCode(0xf179),
+};
+
 @Component({
     selector: 'app-vault-icon',
     templateUrl: 'icon.component.html',
 })
 export class IconComponent implements OnChanges {
-    @Input() cipher: any;
+    @Input() cipher: CipherView;
     icon: string;
     image: string;
     fallbackImage: string;
@@ -57,6 +68,10 @@ export class IconComponent implements OnChanges {
             default:
                 break;
         }
+    }
+
+    get iconCode(): string {
+        return IconMap[this.icon];
     }
 
     private setLoginIcon() {

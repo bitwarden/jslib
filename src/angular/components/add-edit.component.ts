@@ -132,6 +132,10 @@ export class AddEditComponent implements OnInit {
     }
 
     async ngOnInit() {
+        await this.init();
+    }
+
+    async init() {
         const myEmail = await this.userService.getEmail();
         this.ownershipOptions.push({ name: myEmail, value: null });
         const orgs = await this.userService.getAllOrganizations();

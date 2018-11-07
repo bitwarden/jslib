@@ -6,6 +6,16 @@ import { LoginUri } from '../domain/loginUri';
 
 import { Utils } from '../../misc/utils';
 
+const CanLaunchWhitelist = [
+    'https://',
+    'http://',
+    'ssh://',
+    'ftp://',
+    'sftp://',
+    'irc://',
+    'chrome://',
+];
+
 export class LoginUriView implements View {
     match: UriMatchType = null;
 
@@ -13,6 +23,7 @@ export class LoginUriView implements View {
     private _uri: string;
     private _domain: string;
     private _hostname: string;
+    private _canLaunch: boolean;
     // tslint:enable
 
     constructor(u?: LoginUri) {
@@ -29,6 +40,7 @@ export class LoginUriView implements View {
     set uri(value: string) {
         this._uri = value;
         this._domain = null;
+        this._canLaunch = null;
     }
 
     get domain(): string {
@@ -62,6 +74,18 @@ export class LoginUriView implements View {
     }
 
     get canLaunch(): boolean {
-        return this.uri != null && this.uri.indexOf('://') > -1;
+        if (this._canLaunch != null) {
+            return this._canLaunch;
+        }
+        if (this.uri != null) {
+            for (let i = 0; i < CanLaunchWhitelist.length; i++) {
+                if (this.uri.indexOf(CanLaunchWhitelist[i]) === 0) {
+                    this._canLaunch = true;
+                    return this._canLaunch;
+                }
+            }
+        }
+        this._canLaunch = false;
+        return this._canLaunch;
     }
 }
