@@ -21,13 +21,13 @@ export class AuditService implements AuditServiceAbstraction {
         const hashStart = hash.substr(0, 5);
         const hashEnding = hash.substr(5);
 
-        if (this.cachedPasswordLeaked[hashStart] == null) {
+        if (!this.cachedPasswordLeaked.has(hashStart)) {
             const response = await fetch(new Request(PwnedPasswordsApi + hashStart));
             const leakedHashes = await response.text();
-            this.cachedPasswordLeaked[hashStart] = leakedHashes;
+            this.cachedPasswordLeaked.set(hashStart, leakedHashes);
         }
 
-        const match = this.cachedPasswordLeaked[hashStart].split(/\r?\n/).find((v) => {
+        const match = this.cachedPasswordLeaked.get(hashStart).split(/\r?\n/).find((v) => {
             return v.split(':')[0] === hashEnding;
         });
 
@@ -43,5 +43,9 @@ export class AuditService implements AuditServiceAbstraction {
         }
         const responseJson = await response.json();
         return responseJson.map((a: any) => new BreachAccountResponse(a));
+    }
+
+    clearCache(): void {
+        this.cachedPasswordLeaked.clear();
     }
 }
