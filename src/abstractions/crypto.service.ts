@@ -16,7 +16,7 @@ export abstract class CryptoService {
     getEncKey: () => Promise<SymmetricCryptoKey>;
     getPublicKey: () => Promise<ArrayBuffer>;
     getPrivateKey: () => Promise<ArrayBuffer>;
-    getFingerprint: () => Promise<string[]>;
+    getFingerprint: (userId: string, publicKey?: ArrayBuffer) => Promise<string[]>;
     getOrgKeys: () => Promise<Map<string, SymmetricCryptoKey>>;
     getOrgKey: (orgId: string) => Promise<SymmetricCryptoKey>;
     hasKey: () => Promise<boolean>;

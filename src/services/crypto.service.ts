@@ -166,13 +166,15 @@ export class CryptoService implements CryptoServiceAbstraction {
         return this.privateKey;
     }
 
-    async getFingerprint(): Promise<string[]> {
-        const publicKey = await this.getPublicKey();
+    async getFingerprint(userId: string, publicKey?: ArrayBuffer): Promise<string[]> {
+        if (publicKey == null) {
+            publicKey = await this.getPublicKey();
+        }
         if (publicKey === null) {
             throw new Error('No public key available.');
         }
         const keyFingerprint = await this.cryptoFunctionService.hash(publicKey, 'sha256');
-        const userFingerprint = await this.hkdfExpand(keyFingerprint, Utils.fromUtf8ToArray('USER-ID'), 32);
+        const userFingerprint = await this.hkdfExpand(keyFingerprint, Utils.fromUtf8ToArray(userId), 32);
         return this.hashPhrase(userFingerprint.buffer);
     }
 
@@ -688,12 +690,12 @@ export class CryptoService implements CryptoServiceAbstraction {
         return okm;
     }
 
-    private async hashPhrase(data: ArrayBuffer, minimumEntropy: number = 64) {
-        const wordListLength = EEFLongWordList.length;
-        const entropyPerWord = Math.log(wordListLength) / Math.log(2);
+    private async hashPhrase(data: ArrayBuffer, minimumEntropy: number = 64, hashIterations: number = 50000) {
+        const entropyPerWord = Math.log(EEFLongWordList.length) / Math.log(2);
         let numWords = Math.ceil(minimumEntropy / entropyPerWord);
 
-        const hashBuffer = await this.cryptoFunctionService.pbkdf2(data, '', 'sha256', 50000);
+        const hashBuffer = await this.cryptoFunctionService.pbkdf2(data, new Uint8Array([]).buffer,
+            'sha256', hashIterations);
         const hash = Array.from(new Uint8Array(hashBuffer));
         const entropyAvailable = hash.length * 4;
         if (numWords * entropyPerWord > entropyAvailable) {
@@ -703,8 +705,8 @@ export class CryptoService implements CryptoServiceAbstraction {
         const phrase: string[] = [];
         let hashNumber = bigInt.fromArray(hash, 256);
         while (numWords--) {
-            const remainder = hashNumber.mod(wordListLength);
-            hashNumber = hashNumber.divide(wordListLength);
+            const remainder = hashNumber.mod(EEFLongWordList.length);
+            hashNumber = hashNumber.divide(EEFLongWordList.length);
             phrase.push(EEFLongWordList[remainder as any]);
         }
         return phrase;
