@@ -1,3 +1,5 @@
+import * as bigInt from 'big-integer';
+
 import { EncryptionType } from '../enums/encryptionType';
 import { KdfType } from '../enums/kdfType';
 
@@ -14,6 +16,7 @@ import { ConstantsService } from './constants.service';
 
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
+import { EEFLongWordList } from '../misc/wordlist';
 
 const Keys = {
     key: 'key',
@@ -161,6 +164,16 @@ export class CryptoService implements CryptoServiceAbstraction {
 
         this.privateKey = await this.decryptToBytes(new CipherString(encPrivateKey), null);
         return this.privateKey;
+    }
+
+    async getFingerprint(): Promise<string[]> {
+        const publicKey = await this.getPublicKey();
+        if (publicKey === null) {
+            throw new Error('No public key available.');
+        }
+        const keyFingerprint = await this.cryptoFunctionService.hash(publicKey, 'sha256');
+        const userFingerprint = await this.hkdfExpand(keyFingerprint, Utils.fromUtf8ToArray('USER-ID'), 32);
+        return this.hashPhrase(userFingerprint.buffer);
     }
 
     @sequentialize(() => 'getOrgKeys')
@@ -673,6 +686,28 @@ export class CryptoService implements CryptoServiceAbstraction {
             okm.set(previousT, i * hashLen);
         }
         return okm;
+    }
+
+    private async hashPhrase(data: ArrayBuffer, minimumEntropy: number = 64) {
+        const wordListLength = EEFLongWordList.length;
+        const entropyPerWord = Math.log(wordListLength) / Math.log(2);
+        let numWords = Math.ceil(minimumEntropy / entropyPerWord);
+
+        const hashBuffer = await this.cryptoFunctionService.pbkdf2(data, '', 'sha256', 50000);
+        const hash = Array.from(new Uint8Array(hashBuffer));
+        const entropyAvailable = hash.length * 4;
+        if (numWords * entropyPerWord > entropyAvailable) {
+            throw new Error('Output entropy of hash function is too small');
+        }
+
+        const phrase: string[] = [];
+        let hashNumber = bigInt.fromArray(hash, 256);
+        while (numWords--) {
+            const remainder = hashNumber.mod(wordListLength);
+            hashNumber = hashNumber.divide(wordListLength);
+            phrase.push(EEFLongWordList[remainder as any]);
+        }
+        return phrase;
     }
 
     private async buildEncKey(key: SymmetricCryptoKey, encKey: ArrayBuffer = null)
