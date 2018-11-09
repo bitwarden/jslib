@@ -13,6 +13,7 @@ export class ConstantsService {
     static readonly installedVersionKey: string = 'installedVersion';
     static readonly localeKey: string = 'locale';
     static readonly themeKey: string = 'theme';
+    static readonly collapsedGroupingsKey: string = 'collapsedGroupings';
 
     readonly environmentUrlsKey: string = ConstantsService.environmentUrlsKey;
     readonly disableGaKey: string = ConstantsService.disableGaKey;
@@ -27,4 +28,5 @@ export class ConstantsService {
     readonly installedVersionKey: string = ConstantsService.installedVersionKey;
     readonly localeKey: string = ConstantsService.localeKey;
     readonly themeKey: string = ConstantsService.themeKey;
+    readonly collapsedGroupingsKey: string = ConstantsService.collapsedGroupingsKey;
 }
