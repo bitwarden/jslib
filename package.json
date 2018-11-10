@@ -70,11 +70,13 @@
     "@angular/upgrade": "6.1.7",
     "@aspnet/signalr": "1.0.4",
     "@aspnet/signalr-protocol-msgpack": "1.0.4",
+    "@types/xmldom": "^0.1.29",
     "big-integer": "1.6.36",
     "core-js": "2.5.7",
     "electron-log": "2.2.14",
     "electron-updater": "3.0.3",
     "form-data": "2.3.2",
+    "kdbxweb": "^1.2.5",
     "keytar": "4.2.1",
     "lowdb": "1.0.0",
     "lunr": "2.3.3",
@@ -82,7 +84,9 @@
     "node-forge": "0.7.6",
     "papaparse": "4.6.0",
     "rxjs": "6.3.2",
+    "text-encoding": "^0.7.0",
     "tldjs": "2.3.1",
+    "xmldom": "^0.1.27",
     "zone.js": "0.8.26"
   }
 }
