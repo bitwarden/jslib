@@ -31,20 +31,27 @@ export class ExportKdbxService implements ExportKdbxServiceAbstraction {
         const credentials = new kdbxweb.Credentials(protectedValue, null);
         const kdbxDb = kdbxweb.Kdbx.create(credentials, 'BitWarden Export');
         const groups = {};
-        let decFolders: FolderView[] = [];
+        let decFolders: Array<TreeNode<FolderView>> = [];
         let decCiphers: CipherView[] = [];
-        const promises: Array<Promise<void | {}>> = [];
+        const promises = [];
 
-        const ciphers = await this.cipherService.getAllDecrypted();
-        console.log(ciphers);
+        promises.push(this.cipherService.getAllDecrypted().then((ciphers) => {
+            decCiphers = ciphers;
+        }));
 
         promises.push(this.folderService.getAllNested().then((folders) => {
-            for (const folder of folders) {
-                promises.push(this.createGroup(ciphers, folder, kdbxDb));
-            }
+            decFolders = folders;
         }));
 
         await Promise.all(promises);
+
+        const entryPromises = [];
+
+        for (const folder of decFolders) {
+            entryPromises.push(this.createGroup(decCiphers, folder, kdbxDb));
+        }
+
+        await Promise.all(entryPromises);
 
         /*
             const foldersMap = new Map<string, FolderView>();
