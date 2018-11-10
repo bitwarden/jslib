@@ -1,5 +1,4 @@
-import * as fs from 'fs';
-import { Group, Kdbx } from 'kdbxweb'
+import { Group, Kdbx } from 'kdbxweb';
 import * as kdbxweb from 'kdbxweb';
 
 import { CipherType } from '../enums/cipherType';
@@ -26,7 +25,7 @@ export class ExportKdbxService implements ExportKdbxServiceAbstraction {
     constructor(private folderService: FolderService, private cipherService: CipherService,
         private apiService: ApiService, private searchService: SearchService) { }
 
-    async getExport(format: 'kdbx' = 'kdbx'): Promise<string> {
+    async getExport(format: 'kdbx' = 'kdbx'): Promise<ArrayBuffer> {
         const protectedValue = kdbxweb.ProtectedValue.fromString('test1234');
         const credentials = new kdbxweb.Credentials(protectedValue, null);
         const kdbxDb = kdbxweb.Kdbx.create(credentials, 'BitWarden Export');
@@ -53,38 +52,7 @@ export class ExportKdbxService implements ExportKdbxServiceAbstraction {
 
         await Promise.all(entryPromises);
 
-        /*
-            const foldersMap = new Map<string, FolderView>();
-            decFolders.forEach((f) => {
-                foldersMap.set(f.id, f);
-            });
-
-            const exportCiphers: any[] = [];
-            decCiphers.forEach((c) => {
-                // only export logins and secure notes
-                if (c.type !== CipherType.Login && c.type !== CipherType.SecureNote) {
-                    return;
-                }
-
-                if (c.organizationId != null) {
-                    return;
-                }
-
-                const cipher: any = {};
-                cipher.folder = c.folderId != null && foldersMap.has(c.folderId) ? foldersMap.get(c.folderId).name : null;
-                cipher.favorite = c.favorite ? 1 : null;
-                this.buildCommonCipher(cipher, c);
-                exportCiphers.push(cipher);
-            });
-        */
-
-        try {
-            const data = await kdbxDb.save();
-            fs.writeFileSync('out.kdbx', new Buffer(data));
-        } catch (e) {
-            console.log(e);
-        }
-        return '';
+        return await kdbxDb.save();
     }
 
     async getOrganizationExport(organizationId: string, format: 'kdbx' = 'kdbx'): Promise<string> {
@@ -222,11 +190,11 @@ export class ExportKdbxService implements ExportKdbxServiceAbstraction {
             for (const cipher of filteredCiphers) {
                 const entry = database.createEntry(group);
                 entry.fields.Title = cipher.name;
-                if (cipher.login){
+                if (cipher.type === CipherType.Login) {
                     entry.fields.UserName = cipher.login.username;
                     entry.fields.Password = kdbxweb.ProtectedValue.fromString(cipher.login.password);
                     entry.fields.Notes = cipher.notes;
-                    if(cipher.login.uris){
+                    if (cipher.login.uris) {
                         const httpUris = cipher.login.uris.filter((c) => {
                             if (c.uri === null) {
                                 return false;
