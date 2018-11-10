@@ -56,60 +56,6 @@ export class ExportKdbxService implements ExportKdbxServiceAbstraction {
     }
 
     async getOrganizationExport(organizationId: string, format: 'kdbx' = 'kdbx'): Promise<string> {
-        const decCollections: CollectionView[] = [];
-        const decCiphers: CipherView[] = [];
-        const promises = [];
-
-        promises.push(this.apiService.getCollections(organizationId).then((collections) => {
-            const collectionPromises: any = [];
-            if (collections != null && collections.data != null && collections.data.length > 0) {
-                collections.data.forEach((c) => {
-                    const collection = new Collection(new CollectionData(c as CollectionDetailsResponse));
-                    collectionPromises.push(collection.decrypt().then((decCol) => {
-                        decCollections.push(decCol);
-                    }));
-                });
-            }
-            return Promise.all(collectionPromises);
-        }));
-
-        promises.push(this.apiService.getCiphersOrganization(organizationId).then((ciphers) => {
-            const cipherPromises: any = [];
-            if (ciphers != null && ciphers.data != null && ciphers.data.length > 0) {
-                ciphers.data.forEach((c) => {
-                    const cipher = new Cipher(new CipherData(c));
-                    cipherPromises.push(cipher.decrypt().then((decCipher) => {
-                        decCiphers.push(decCipher);
-                    }));
-                });
-            }
-            return Promise.all(cipherPromises);
-        }));
-
-        await Promise.all(promises);
-
-        const collectionsMap = new Map<string, CollectionView>();
-        decCollections.forEach((c) => {
-            collectionsMap.set(c.id, c);
-        });
-
-        const exportCiphers: any[] = [];
-        decCiphers.forEach((c) => {
-            // only export logins and secure notes
-            if (c.type !== CipherType.Login && c.type !== CipherType.SecureNote) {
-                return;
-            }
-
-            const cipher: any = {};
-            cipher.collections = [];
-            if (c.collectionIds != null) {
-                cipher.collections = c.collectionIds.filter((id) => collectionsMap.has(id))
-                    .map((id) => collectionsMap.get(id).name);
-            }
-            this.buildCommonCipher(cipher, c);
-            exportCiphers.push(cipher);
-        });
-
         throw new Error('Not yet implemented');
     }
 
@@ -127,53 +73,6 @@ export class ExportKdbxService implements ExportKdbxServiceAbstraction {
         const numString = num.toString();
         return numString.length >= width ? numString :
             new Array(width - numString.length + 1).join(padCharacter) + numString;
-    }
-
-    private buildCommonCipher(cipher: any, c: CipherView) {
-        cipher.type = null;
-        cipher.name = c.name;
-        cipher.notes = c.notes;
-        cipher.fields = null;
-        // Login props
-        cipher.login_uri = null;
-        cipher.login_username = null;
-        cipher.login_password = null;
-        cipher.login_totp = null;
-
-        if (c.fields) {
-            c.fields.forEach((f: any) => {
-                if (!cipher.fields) {
-                    cipher.fields = '';
-                } else {
-                    cipher.fields += '\n';
-                }
-
-                cipher.fields += ((f.name || '') + ': ' + f.value);
-            });
-        }
-
-        switch (c.type) {
-            case CipherType.Login:
-                cipher.type = 'login';
-                cipher.login_username = c.login.username;
-                cipher.login_password = c.login.password;
-                cipher.login_totp = c.login.totp;
-
-                if (c.login.uris) {
-                    cipher.login_uri = [];
-                    c.login.uris.forEach((u) => {
-                        cipher.login_uri.push(u.uri);
-                    });
-                }
-                break;
-            case CipherType.SecureNote:
-                cipher.type = 'note';
-                break;
-            default:
-                return;
-        }
-
-        return cipher;
     }
 
     private createGroup(ciphers: CipherView[], treeNode: TreeNode<FolderView>, database: Kdbx, parentGroup?: Group) {
