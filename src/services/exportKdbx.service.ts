@@ -85,7 +85,6 @@ export class ExportKdbxService implements ExportKdbxServiceAbstraction {
             console.log(e);
         }
         return '';
-        
     }
 
     async getOrganizationExport(organizationId: string, format: 'kdbx' = 'kdbx'): Promise<string> {
@@ -220,6 +219,27 @@ export class ExportKdbxService implements ExportKdbxServiceAbstraction {
                 return false;
             });
             const group = database.createGroup(parentGroup, treeNode.node.name);
+            for (const cipher of filteredCiphers) {
+                const entry = database.createEntry(group);
+                entry.fields.Title = cipher.name;
+                if (cipher.login){
+                    entry.fields.UserName = cipher.login.username;
+                    entry.fields.Password = kdbxweb.ProtectedValue.fromString(cipher.login.password);
+                    entry.fields.Notes = cipher.notes;
+                    if(cipher.login.uris){
+                        const httpUris = cipher.login.uris.filter((c) => {
+                            if (c.uri === null) {
+                                return false;
+                            }
+                            return c.uri.startsWith('http');
+                        });
+                        if (httpUris.length) {
+                            entry.fields.URL = httpUris[0].uri;
+                        }
+                    }
+                    entry.fields.Uris = cipher.login.uris ? cipher.login.uris.map((u) => u.uri).join('\n') : null;
+                }
+            }
             for (const child of treeNode.children) {
                 promises.push(this.createGroup(ciphers, child, database, group));
             }
