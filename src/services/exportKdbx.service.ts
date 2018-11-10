@@ -18,9 +18,8 @@ export class ExportKdbxService implements ExportKdbxServiceAbstraction {
     constructor(private folderService: FolderService, private cipherService: CipherService,
         private apiService: ApiService, private searchService: SearchService) { }
 
-    async getExport(format: 'kdbx' = 'kdbx'): Promise<ArrayBuffer> {
-        const protectedValue = kdbxweb.ProtectedValue.fromString('test1234');
-        const credentials = new kdbxweb.Credentials(protectedValue, null);
+    async getExport(protectedPassword: kdbxweb.ProtectedValue): Promise<ArrayBuffer> {
+        const credentials = new kdbxweb.Credentials(protectedPassword, null);
         const kdbxDb = kdbxweb.Kdbx.create(credentials, 'BitWarden Export');
         let decFolders: Array<TreeNode<FolderView>> = [];
         let decCiphers: CipherView[] = [];

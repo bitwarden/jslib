@@ -1,5 +1,7 @@
+import { ProtectedValue } from "kdbxweb";
+
 export abstract class ExportKdbxService {
-    getExport: (format?: 'kdbx') => Promise<ArrayBuffer>;
+    getExport: (password: ProtectedValue) => Promise<ArrayBuffer>;
     getOrganizationExport: (organizationId: string, format?: 'kdbx') => Promise<string>;
     getFileName: (prefix?: string) => string;
 }
