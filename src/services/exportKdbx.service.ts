@@ -213,13 +213,12 @@ export class ExportKdbxService implements ExportKdbxServiceAbstraction {
         parentGroup = parentGroup ? parentGroup : database.getDefaultGroup();
         return new Promise(async (resolve, reject) => {
             const promises = [];
-            ciphers = ciphers.filter(c => {
-                if (treeNode.node.id === c.folderId){
+            const filteredCiphers = ciphers.filter((c) => {
+                if (treeNode.node.id === c.folderId) {
                     return true;
                 }
                 return false;
             });
-            console.log(`${treeNode.node.name}:${ciphers}`)
             const group = database.createGroup(parentGroup, treeNode.node.name);
             for (const child of treeNode.children) {
                 promises.push(this.createGroup(ciphers, child, database, group));
