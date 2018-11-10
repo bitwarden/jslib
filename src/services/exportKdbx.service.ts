@@ -10,16 +10,9 @@ import { FolderService } from '../abstractions/folder.service';
 import { SearchService } from '../abstractions/search.service';
 
 import { CipherView } from '../models/view/cipherView';
-import { CollectionView } from '../models/view/collectionView';
 import { FolderView } from '../models/view/folderView';
 
-import { Cipher } from '../models/domain/cipher';
-import { Collection } from '../models/domain/collection';
-
-import { CipherData } from '../models/data/cipherData';
-import { CollectionData } from '../models/data/collectionData';
 import { TreeNode } from '../models/domain/treeNode';
-import { CollectionDetailsResponse } from '../models/response/collectionResponse';
 
 export class ExportKdbxService implements ExportKdbxServiceAbstraction {
     constructor(private folderService: FolderService, private cipherService: CipherService,
@@ -29,7 +22,6 @@ export class ExportKdbxService implements ExportKdbxServiceAbstraction {
         const protectedValue = kdbxweb.ProtectedValue.fromString('test1234');
         const credentials = new kdbxweb.Credentials(protectedValue, null);
         const kdbxDb = kdbxweb.Kdbx.create(credentials, 'BitWarden Export');
-        const groups = {};
         let decFolders: Array<TreeNode<FolderView>> = [];
         let decCiphers: CipherView[] = [];
         const promises = [];
@@ -77,7 +69,7 @@ export class ExportKdbxService implements ExportKdbxServiceAbstraction {
 
     private createGroup(ciphers: CipherView[], treeNode: TreeNode<FolderView>, database: Kdbx, parentGroup?: Group) {
         parentGroup = parentGroup ? parentGroup : database.getDefaultGroup();
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve) => {
             const promises = [];
             const filteredCiphers = ciphers.filter((c) => {
                 if (treeNode.node.id === c.folderId) {
