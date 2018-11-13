@@ -1,3 +1,5 @@
+import * as zxcvbn from 'zxcvbn';
+
 import { CipherString } from '../models/domain/cipherString';
 import { GeneratedPasswordHistory } from '../models/domain/generatedPasswordHistory';
 
@@ -238,6 +240,20 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     async clear(): Promise<any> {
         this.history = [];
         return await this.storageService.remove(Keys.history);
+    }
+
+    passwordStrength(password: string, userInputs: string[] = null): zxcvbn.ZXCVBNResult {
+        if (password == null || password.length === 0) {
+            return null;
+        }
+        let globalUserInputs = ['bitwarden', 'bit', 'warden'];
+        if (userInputs != null) {
+            globalUserInputs = globalUserInputs.concat(userInputs);
+        }
+        // Use a hash set to get rid of any duplicate user inputs
+        const finalUserInputs = Array.from(new Set(globalUserInputs));
+        const result = zxcvbn(password, finalUserInputs);
+        return result;
     }
 
     private async encryptHistory(history: GeneratedPasswordHistory[]): Promise<GeneratedPasswordHistory[]> {

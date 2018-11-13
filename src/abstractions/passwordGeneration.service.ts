@@ -8,4 +8,5 @@ export abstract class PasswordGenerationService {
     getHistory: () => Promise<GeneratedPasswordHistory[]>;
     addHistory: (password: string) => Promise<any>;
     clear: () => Promise<any>;
+    passwordStrength: (password: string, userInputs?: string[]) => zxcvbn.ZXCVBNResult;
 }
