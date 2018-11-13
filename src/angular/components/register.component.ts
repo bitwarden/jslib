@@ -59,7 +59,8 @@ export class RegisterComponent {
             return;
         }
 
-        const strengthResult = this.passwordGenerationService.passwordStrength(this.masterPassword, null);
+        const strengthResult = this.passwordGenerationService.passwordStrength(this.masterPassword,
+            this.getPasswordStrengthUserInput());
         if (strengthResult != null && strengthResult.score < 3) {
             const result = await this.platformUtilsService.showDialog(this.i18nService.t('weakMasterPasswordDesc'),
                 this.i18nService.t('weakMasterPassword'), this.i18nService.t('yes'), this.i18nService.t('no'),
@@ -69,8 +70,6 @@ export class RegisterComponent {
             }
         }
 
-        this.name = this.name === '' ? null : this.name;
-        this.email = this.email.trim().toLowerCase();
         const kdf = KdfType.PBKDF2_SHA256;
         const useLowerKdf = this.platformUtilsService.isEdge() || this.platformUtilsService.isIE();
         const kdfIterations = useLowerKdf ? 10000 : 100000;
@@ -107,8 +106,21 @@ export class RegisterComponent {
             clearTimeout(this.masterPasswordStrengthTimeout);
         }
         this.masterPasswordStrengthTimeout = setTimeout(() => {
-            const strengthResult = this.passwordGenerationService.passwordStrength(this.masterPassword, null);
+            const strengthResult = this.passwordGenerationService.passwordStrength(this.masterPassword,
+                this.getPasswordStrengthUserInput());
             this.masterPasswordScore = strengthResult == null ? null : strengthResult.score;
         }, 300);
+    }
+
+    private getPasswordStrengthUserInput() {
+        let userInput: string[] = [];
+        const atPosition = this.email.indexOf('@');
+        if (atPosition > -1) {
+            userInput = userInput.concat(this.email.substr(0, atPosition).trim().toLowerCase().split(/[^A-Za-z0-9]/));
+        }
+        if (this.name != null && this.name !== '') {
+            userInput = userInput.concat(this.name.trim().toLowerCase().split(' '));
+        }
+        return userInput;
     }
 }
