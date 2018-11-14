@@ -20,6 +20,7 @@ export class AttachmentsComponent implements OnInit {
     @Input() cipherId: string;
     @Output() onUploadedAttachment = new EventEmitter();
     @Output() onDeletedAttachment = new EventEmitter();
+    @Output() onReuploadedAttachment = new EventEmitter();
 
     cipher: CipherView;
     cipherDomain: Cipher;
@@ -27,6 +28,7 @@ export class AttachmentsComponent implements OnInit {
     canAccessAttachments: boolean;
     formPromise: Promise<any>;
     deletePromises: { [id: string]: Promise<any>; } = {};
+    reuploadPromises: { [id: string]: Promise<any>; } = {};
 
     constructor(protected cipherService: CipherService, protected i18nService: I18nService,
         protected cryptoService: CryptoService, protected userService: UserService,
@@ -152,6 +154,57 @@ export class AttachmentsComponent implements OnInit {
         }
 
         a.downloading = false;
+    }
+
+    protected async reuploadCipherAttachment(attachment: AttachmentView, admin: boolean) {
+        const a = (attachment as any);
+        if (attachment.key != null || a.downloading || this.reuploadPromises[attachment.id] != null) {
+            return;
+        }
+
+        try {
+            this.reuploadPromises[attachment.id] = Promise.resolve().then(async () => {
+                // 1. Download
+                a.downloading = true;
+                const response = await fetch(new Request(attachment.url, { cache: 'no-cache' }));
+                if (response.status !== 200) {
+                    this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
+                    a.downloading = false;
+                    return;
+                }
+
+                try {
+                    // 2. Resave
+                    const buf = await response.arrayBuffer();
+                    const key = attachment.key != null ? attachment.key :
+                        await this.cryptoService.getOrgKey(this.cipher.organizationId);
+                    const decBuf = await this.cryptoService.decryptFromBytes(buf, key);
+                    this.cipherDomain = await this.cipherService.saveAttachmentRawWithServer(
+                        this.cipherDomain, attachment.fileName, decBuf, admin);
+                    this.cipher = await this.cipherDomain.decrypt();
+
+                    // 3. Delete old
+                    this.deletePromises[attachment.id] = this.deleteCipherAttachment(attachment.id);
+                    await this.deletePromises[attachment.id];
+                    const foundAttachment = this.cipher.attachments.filter((a2) => a2.id === attachment.id);
+                    if (foundAttachment.length > 0) {
+                        const i = this.cipher.attachments.indexOf(foundAttachment[0]);
+                        if (i > -1) {
+                            this.cipher.attachments.splice(i, 1);
+                        }
+                    }
+
+                    this.platformUtilsService.eventTrack('Reuploaded Attachment');
+                    this.platformUtilsService.showToast('success', null, this.i18nService.t('attachmentSaved'));
+                    this.onReuploadedAttachment.emit();
+                } catch (e) {
+                    this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
+                }
+
+                a.downloading = false;
+            });
+            await this.reuploadPromises[attachment.id];
+        } catch { }
     }
 
     protected loadCipher() {
