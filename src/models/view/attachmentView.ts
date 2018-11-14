@@ -1,6 +1,7 @@
 import { View } from './view';
 
 import { Attachment } from '../domain/attachment';
+import { SymmetricCryptoKey } from '../domain/symmetricCryptoKey';
 
 export class AttachmentView implements View {
     id: string;
@@ -8,6 +9,7 @@ export class AttachmentView implements View {
     size: number;
     sizeName: string;
     fileName: string;
+    key: SymmetricCryptoKey;
 
     constructor(a?: Attachment) {
         if (!a) {

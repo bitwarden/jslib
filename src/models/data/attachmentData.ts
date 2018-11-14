@@ -4,6 +4,7 @@ export class AttachmentData {
     id: string;
     url: string;
     fileName: string;
+    key: string;
     size: number;
     sizeName: string;
 
@@ -14,6 +15,7 @@ export class AttachmentData {
         this.id = response.id;
         this.url = response.url;
         this.fileName = response.fileName;
+        this.key = response.key;
         this.size = response.size;
         this.sizeName = response.sizeName;
     }

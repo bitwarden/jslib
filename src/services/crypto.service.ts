@@ -333,8 +333,9 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     async makeEncKey(key: SymmetricCryptoKey): Promise<[SymmetricCryptoKey, CipherString]> {
+        const theKey = await this.getKeyForEncryption(key);
         const encKey = await this.cryptoFunctionService.randomBytes(64);
-        return this.buildEncKey(key, encKey);
+        return this.buildEncKey(theKey, encKey);
     }
 
     async remakeEncKey(key: SymmetricCryptoKey): Promise<[SymmetricCryptoKey, CipherString]> {

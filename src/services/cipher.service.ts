@@ -173,7 +173,10 @@ export class CipherService implements CipherServiceAbstraction {
             attachment.url = model.url;
             const promise = this.encryptObjProperty(model, attachment, {
                 fileName: null,
-            }, key).then(() => {
+            }, key).then(async () => {
+                if (model.key != null) {
+                    attachment.key = await this.cryptoService.encrypt(model.key.key, key);
+                }
                 encAttachments.push(attachment);
             });
             promises.push(promise);
@@ -519,14 +522,18 @@ export class CipherService implements CipherServiceAbstraction {
         data: ArrayBuffer, admin = false): Promise<Cipher> {
         const key = await this.cryptoService.getOrgKey(cipher.organizationId);
         const encFileName = await this.cryptoService.encrypt(filename, key);
-        const encData = await this.cryptoService.encryptToBytes(data, key);
+
+        const dataEncKey = await this.cryptoService.makeEncKey(key);
+        const encData = await this.cryptoService.encryptToBytes(data, dataEncKey[0]);
 
         const fd = new FormData();
         try {
+            fd.append('key', dataEncKey[1].encryptedString);
             const blob = new Blob([encData], { type: 'application/octet-stream' });
             fd.append('data', blob, encFileName.encryptedString);
         } catch (e) {
             if (Utils.isNode && !Utils.isBrowser) {
+                fd.append('key', dataEncKey[1].encryptedString);
                 fd.append('data', Buffer.from(encData) as any, {
                     filepath: encFileName.encryptedString,
                     contentType: 'application/octet-stream',
@@ -753,15 +760,19 @@ export class CipherService implements CipherServiceAbstraction {
         const buf = await attachmentResponse.arrayBuffer();
         const decBuf = await this.cryptoService.decryptFromBytes(buf, null);
         const key = await this.cryptoService.getOrgKey(organizationId);
-        const encData = await this.cryptoService.encryptToBytes(decBuf, key);
         const encFileName = await this.cryptoService.encrypt(attachmentView.fileName, key);
+
+        const dataEncKey = await this.cryptoService.makeEncKey(key);
+        const encData = await this.cryptoService.encryptToBytes(decBuf, dataEncKey[0]);
 
         const fd = new FormData();
         try {
+            fd.append('key', dataEncKey[1].encryptedString);
             const blob = new Blob([encData], { type: 'application/octet-stream' });
             fd.append('data', blob, encFileName.encryptedString);
         } catch (e) {
             if (Utils.isNode && !Utils.isBrowser) {
+                fd.append('key', dataEncKey[1].encryptedString);
                 fd.append('data', Buffer.from(encData) as any, {
                     filepath: encFileName.encryptedString,
                     contentType: 'application/octet-stream',

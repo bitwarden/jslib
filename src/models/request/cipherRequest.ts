@@ -8,6 +8,7 @@ import { IdentityApi } from '../api/identityApi';
 import { LoginApi } from '../api/loginApi';
 import { SecureNoteApi } from '../api/secureNoteApi';
 
+import { AttachmentRequest } from './attachmentRequest';
 import { PasswordHistoryRequest } from './passwordHistoryRequest';
 
 export class CipherRequest {
@@ -23,7 +24,9 @@ export class CipherRequest {
     identity: IdentityApi;
     fields: FieldApi[];
     passwordHistory: PasswordHistoryRequest[];
+    // Deprecated, remove at some point and rename attachments2 to attachments
     attachments: { [id: string]: string; };
+    attachments2: { [id: string]: AttachmentRequest; };
 
     constructor(cipher: Cipher) {
         this.type = cipher.type;
@@ -119,8 +122,16 @@ export class CipherRequest {
 
         if (cipher.attachments) {
             this.attachments = {};
+            this.attachments2 = {};
             cipher.attachments.forEach((attachment) => {
-                this.attachments[attachment.id] = attachment.fileName ? attachment.fileName.encryptedString : null;
+                const fileName = attachment.fileName ? attachment.fileName.encryptedString : null;
+                this.attachments[attachment.id] = fileName;
+                const attachmentRequest = new AttachmentRequest();
+                attachmentRequest.fileName = fileName;
+                if (attachment.key != null) {
+                    attachmentRequest.key = attachment.key.encryptedString;
+                }
+                this.attachments2[attachment.id] = attachmentRequest;
             });
         }
     }

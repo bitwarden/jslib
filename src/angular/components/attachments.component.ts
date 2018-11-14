@@ -143,7 +143,8 @@ export class AttachmentsComponent implements OnInit {
 
         try {
             const buf = await response.arrayBuffer();
-            const key = await this.cryptoService.getOrgKey(this.cipher.organizationId);
+            const key = attachment.key != null ? attachment.key :
+                await this.cryptoService.getOrgKey(this.cipher.organizationId);
             const decBuf = await this.cryptoService.decryptFromBytes(buf, key);
             this.platformUtilsService.saveFile(this.win, decBuf, null, attachment.fileName);
         } catch (e) {
