@@ -467,7 +467,9 @@ export class CipherService implements CipherServiceAbstraction {
         const attachmentPromises: Array<Promise<any>> = [];
         if (cipher.attachments != null) {
             cipher.attachments.forEach((attachment) => {
-                attachmentPromises.push(this.shareAttachmentWithServer(attachment, cipher.id, organizationId));
+                if (attachment.key == null) {
+                    attachmentPromises.push(this.shareAttachmentWithServer(attachment, cipher.id, organizationId));
+                }
             });
         }
         await Promise.all(attachmentPromises);
