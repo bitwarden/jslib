@@ -14,6 +14,7 @@ export class ConstantsService {
     static readonly localeKey: string = 'locale';
     static readonly themeKey: string = 'theme';
     static readonly collapsedGroupingsKey: string = 'collapsedGroupings';
+    static readonly autoConfirmFingerprints: string = 'autoConfirmFingerprints';
 
     readonly environmentUrlsKey: string = ConstantsService.environmentUrlsKey;
     readonly disableGaKey: string = ConstantsService.disableGaKey;
@@ -29,4 +30,5 @@ export class ConstantsService {
     readonly localeKey: string = ConstantsService.localeKey;
     readonly themeKey: string = ConstantsService.themeKey;
     readonly collapsedGroupingsKey: string = ConstantsService.collapsedGroupingsKey;
+    readonly autoConfirmFingerprints: string = ConstantsService.autoConfirmFingerprints;
 }
