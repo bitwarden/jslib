@@ -49,7 +49,6 @@ export class IconComponent implements OnChanges {
     }
 
     async ngOnChanges() {
-        console.log('load it changes');
         this.imageEnabled = !(await this.stateService.get<boolean>(ConstantsService.disableFaviconKey));
         this.load();
     }
