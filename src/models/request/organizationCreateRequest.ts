@@ -9,6 +9,7 @@ export class OrganizationCreateRequest {
     paymentToken: string;
     additionalSeats: number;
     additionalStorageGb: number;
+    premiumAccessAddon: boolean;
     collectionName: string;
     country: string;
 }
