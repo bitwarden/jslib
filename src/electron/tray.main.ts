@@ -59,7 +59,7 @@ export class TrayMain {
             this.showTray();
         }
 
-        if (process.platform === 'win32') {
+        if (process.platform === 'win32' || process.platform === 'linux') {
             this.windowMain.win.on('minimize', async (e: Event) => {
                 if (await this.storageService.get<boolean>(ElectronConstants.enableMinimizeToTrayKey)) {
                     e.preventDefault();
@@ -68,7 +68,7 @@ export class TrayMain {
             });
         }
 
-        if (process.platform === 'win32') {
+        if (process.platform === 'win32' || process.platform === 'linux') {
             this.windowMain.win.on('close', async (e: Event) => {
                 if (await this.storageService.get<boolean>(ElectronConstants.enableCloseToTrayKey)) {
                     if(!this.windowMain.isQuitting){
