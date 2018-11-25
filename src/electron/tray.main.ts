@@ -68,6 +68,17 @@ export class TrayMain {
             });
         }
 
+        if (process.platform === 'win32') {
+            this.windowMain.win.on('close', async (e: Event) => {
+                if (await this.storageService.get<boolean>(ElectronConstants.enableCloseToTrayKey)) {
+                    if(!this.windowMain.isQuitting){
+                        e.preventDefault();
+                        this.hideToTray();
+                    }
+                }
+            });
+        }
+
         this.windowMain.win.on('show', async (e: Event) => {
             const enableTray = await this.storageService.get<boolean>(ElectronConstants.enableTrayKey);
             if (!enableTray) {
@@ -124,6 +135,7 @@ export class TrayMain {
     }
 
     private closeWindow() {
+        this.windowMain.quit();
         if (this.windowMain.win != null) {
             this.windowMain.win.close();
         }
