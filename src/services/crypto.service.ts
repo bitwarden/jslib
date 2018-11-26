@@ -308,8 +308,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     async makeShareKey(): Promise<[CipherString, SymmetricCryptoKey]> {
         const shareKey = await this.cryptoFunctionService.randomBytes(64);
         const publicKey = await this.getPublicKey();
-        const encKey = await this.getEncKey();
-        const encShareKey = await this.rsaEncrypt(shareKey, publicKey, encKey);
+        const encShareKey = await this.rsaEncrypt(shareKey, publicKey);
         return [encShareKey, new SymmetricCryptoKey(shareKey)];
     }
 
@@ -380,7 +379,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         return encBytes.buffer;
     }
 
-    async rsaEncrypt(data: ArrayBuffer, publicKey?: ArrayBuffer, key?: SymmetricCryptoKey): Promise<CipherString> {
+    async rsaEncrypt(data: ArrayBuffer, publicKey?: ArrayBuffer): Promise<CipherString> {
         if (publicKey == null) {
             publicKey = await this.getPublicKey();
         }
@@ -388,15 +387,8 @@ export class CryptoService implements CryptoServiceAbstraction {
             throw new Error('Public key unavailable.');
         }
 
-        let type = EncryptionType.Rsa2048_OaepSha1_B64;
         const encBytes = await this.cryptoFunctionService.rsaEncrypt(data, publicKey, 'sha1');
-        let mac: string = null;
-        if (key != null && key.macKey != null) {
-            type = EncryptionType.Rsa2048_OaepSha1_HmacSha256_B64;
-            const macBytes = await this.cryptoFunctionService.hmac(encBytes, key.macKey, 'sha256');
-            mac = Utils.fromBufferToB64(macBytes);
-        }
-        return new CipherString(type, Utils.fromBufferToB64(encBytes), null, mac);
+        return new CipherString(EncryptionType.Rsa2048_OaepSha1_B64, Utils.fromBufferToB64(encBytes));
     }
 
     async decryptToBytes(cipherString: CipherString, key?: SymmetricCryptoKey): Promise<ArrayBuffer> {
@@ -591,15 +583,9 @@ export class CryptoService implements CryptoServiceAbstraction {
         switch (encType) {
             case EncryptionType.Rsa2048_OaepSha256_B64:
             case EncryptionType.Rsa2048_OaepSha1_B64:
-                if (encPieces.length !== 1) {
-                    throw new Error('Invalid cipher format.');
-                }
-                break;
+            // HmacSha256 types are deprecated
             case EncryptionType.Rsa2048_OaepSha256_HmacSha256_B64:
             case EncryptionType.Rsa2048_OaepSha1_HmacSha256_B64:
-                if (encPieces.length !== 2) {
-                    throw new Error('Invalid cipher format.');
-                }
                 break;
             default:
                 throw new Error('encType unavailable.');
@@ -610,16 +596,6 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
 
         const data = Utils.fromB64ToArray(encPieces[0]).buffer;
-        const key = await this.getEncKey();
-        if (key != null && key.macKey != null && encPieces.length > 1) {
-            const mac = Utils.fromB64ToArray(encPieces[1]).buffer;
-            const computedMac = await this.cryptoFunctionService.hmac(data, key.macKey, 'sha256');
-            const macsEqual = await this.cryptoFunctionService.compare(mac, computedMac);
-            if (!macsEqual) {
-                throw new Error('MAC failed.');
-            }
-        }
-
         const privateKey = await this.getPrivateKey();
         if (privateKey == null) {
             throw new Error('No private key.');
