@@ -6,7 +6,9 @@ import { TotpService as TotpServiceAbstraction } from '../abstractions/totp.serv
 
 import { Utils } from '../misc/utils';
 
-const b32Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+const B32Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+const SteamChars = ['2', '3', '4', '5', '6', '7', '8', '9', 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'M',
+    'N', 'P', 'Q', 'R', 'T', 'V', 'W', 'X', 'Y'];
 
 export class TotpService implements TotpServiceAbstraction {
     constructor(private storageService: StorageService, private cryptoFunctionService: CryptoFunctionService) { }
@@ -19,7 +21,9 @@ export class TotpService implements TotpServiceAbstraction {
         let alg: 'sha1' | 'sha256' | 'sha512' = 'sha1';
         let digits = 6;
         let keyB32 = key;
-        if (key.toLowerCase().indexOf('otpauth://') === 0) {
+        const isOtpAuth = key.toLowerCase().indexOf('otpauth://') === 0;
+        const isSteamAuth = !isOtpAuth && key.toLowerCase().indexOf('steam://') === 0;
+        if (isOtpAuth) {
             const params = Utils.getQueryParams(key);
             if (params.has('digits') && params.get('digits') != null) {
                 try {
@@ -48,14 +52,14 @@ export class TotpService implements TotpServiceAbstraction {
                     alg = algParam;
                 }
             }
-        } else if(key.toLowerCase().indexOf('steam://') === 0) {
+        } else if (isSteamAuth) {
             keyB32 = key.substr('steam://'.length);
         }
 
         const epoch = Math.round(new Date().getTime() / 1000.0);
-        const timeHex = this.leftpad(this.dec2hex(Math.floor(epoch / period)), 16, '0');
+        const timeHex = this.leftPad(this.decToHex(Math.floor(epoch / period)), 16, '0');
         const timeBytes = Utils.fromHexToArray(timeHex);
-        const keyBytes = this.b32tobytes(keyB32);
+        const keyBytes = this.b32ToBytes(keyB32);
 
         if (!keyBytes.length || !timeBytes.length) {
             return null;
@@ -71,20 +75,18 @@ export class TotpService implements TotpServiceAbstraction {
         const binary = ((hash[offset] & 0x7f) << 24) | ((hash[offset + 1] & 0xff) << 16) |
             ((hash[offset + 2] & 0xff) << 8) | (hash[offset + 3] & 0xff);
         /* tslint:enable */
-        let otp = (binary % Math.pow(10, digits)).toString();
-        otp = this.leftpad(otp, digits, '0');
 
-        if(key.toLowerCase().indexOf('steam://') === 0) {
-            const steamchars = [
-                '2', '3', '4', '5', '6', '7', '8', '9', 'B', 'C',
-                'D', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q',
-                'R', 'T', 'V', 'W', 'X', 'Y'];
-             otp = "";
-            let fullcode = binary & 0x7fffffff;
-            for (var i = 0; i < 5; i++) {
-                otp += steamchars[fullcode % steamchars.length];
-                fullcode = Math.trunc(fullcode / steamchars.length);
+        let otp = '';
+        if (isSteamAuth) {
+            // tslint:disable-next-line
+            let fullCode = binary & 0x7fffffff;
+            for (let i = 0; i < 5; i++) {
+                otp += SteamChars[fullCode % SteamChars.length];
+                fullCode = Math.trunc(fullCode / SteamChars.length);
             }
+        } else {
+            otp = (binary % Math.pow(10, digits)).toString();
+            otp = this.leftPad(otp, digits, '0');
         }
 
         return otp;
@@ -109,23 +111,23 @@ export class TotpService implements TotpServiceAbstraction {
 
     // Helpers
 
-    private leftpad(s: string, l: number, p: string): string {
+    private leftPad(s: string, l: number, p: string): string {
         if (l + 1 >= s.length) {
             s = Array(l + 1 - s.length).join(p) + s;
         }
         return s;
     }
 
-    private dec2hex(d: number): string {
+    private decToHex(d: number): string {
         return (d < 15.5 ? '0' : '') + Math.round(d).toString(16);
     }
 
-    private b32tohex(s: string): string {
+    private b32ToHex(s: string): string {
         s = s.toUpperCase();
         let cleanedInput = '';
 
         for (let i = 0; i < s.length; i++) {
-            if (b32Chars.indexOf(s[i]) < 0) {
+            if (B32Chars.indexOf(s[i]) < 0) {
                 continue;
             }
 
@@ -136,11 +138,11 @@ export class TotpService implements TotpServiceAbstraction {
         let bits = '';
         let hex = '';
         for (let i = 0; i < s.length; i++) {
-            const byteIndex = b32Chars.indexOf(s.charAt(i));
+            const byteIndex = B32Chars.indexOf(s.charAt(i));
             if (byteIndex < 0) {
                 continue;
             }
-            bits += this.leftpad(byteIndex.toString(2), 5, '0');
+            bits += this.leftPad(byteIndex.toString(2), 5, '0');
         }
         for (let i = 0; i + 4 <= bits.length; i += 4) {
             const chunk = bits.substr(i, 4);
@@ -149,8 +151,8 @@ export class TotpService implements TotpServiceAbstraction {
         return hex;
     }
 
-    private b32tobytes(s: string): Uint8Array {
-        return Utils.fromHexToArray(this.b32tohex(s));
+    private b32ToBytes(s: string): Uint8Array {
+        return Utils.fromHexToArray(this.b32ToHex(s));
     }
 
     private async sign(keyBytes: Uint8Array, timeBytes: Uint8Array, alg: 'sha1' | 'sha256' | 'sha512') {
