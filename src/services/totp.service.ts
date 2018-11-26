@@ -53,6 +53,7 @@ export class TotpService implements TotpServiceAbstraction {
             }
         } else if (isSteamAuth) {
             keyB32 = key.substr('steam://'.length);
+            digits = 5;
         }
 
         const epoch = Math.round(new Date().getTime() / 1000.0);
@@ -79,7 +80,7 @@ export class TotpService implements TotpServiceAbstraction {
         if (isSteamAuth) {
             // tslint:disable-next-line
             let fullCode = binary & 0x7fffffff;
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < digits; i++) {
                 otp += SteamChars[fullCode % SteamChars.length];
                 fullCode = Math.trunc(fullCode / SteamChars.length);
             }
