@@ -7,8 +7,7 @@ import { TotpService as TotpServiceAbstraction } from '../abstractions/totp.serv
 import { Utils } from '../misc/utils';
 
 const B32Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-const SteamChars = ['2', '3', '4', '5', '6', '7', '8', '9', 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'M',
-    'N', 'P', 'Q', 'R', 'T', 'V', 'W', 'X', 'Y'];
+const SteamChars = '23456789BCDFGHJKMNPQRTVWXY';
 
 export class TotpService implements TotpServiceAbstraction {
     constructor(private storageService: StorageService, private cryptoFunctionService: CryptoFunctionService) { }
