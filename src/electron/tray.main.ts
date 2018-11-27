@@ -135,7 +135,7 @@ export class TrayMain {
     }
 
     private closeWindow() {
-        this.windowMain.quit();
+        this.windowMain.isQuitting = true;
         if (this.windowMain.win != null) {
             this.windowMain.win.close();
         }

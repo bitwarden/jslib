@@ -228,8 +228,4 @@ export class WindowMain {
         return state != null && Number.isInteger(state.x) && Number.isInteger(state.y) &&
             Number.isInteger(state.width) && state.width > 0 && Number.isInteger(state.height) && state.height > 0;
     }
-
-    public quit() {
-        this.isQuitting = true;
-    }
 }
