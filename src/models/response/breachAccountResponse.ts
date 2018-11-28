@@ -6,7 +6,7 @@ export class BreachAccountResponse {
     domain: string;
     isActive: boolean;
     isVerified: boolean;
-    logoType: string;
+    logoPath: string;
     modifiedDate: string;
     name: string;
     pwnCount: number;
@@ -20,7 +20,7 @@ export class BreachAccountResponse {
         this.domain = response.Domain;
         this.isActive = response.IsActive;
         this.isVerified = response.IsVerified;
-        this.logoType = response.LogoType;
+        this.logoPath = response.LogoPath;
         this.modifiedDate = response.ModifiedDate;
         this.name = response.Name;
         this.pwnCount = response.PwnCount;
