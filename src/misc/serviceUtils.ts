@@ -14,16 +14,17 @@ export class ServiceUtils {
         const partName = parts[partIndex];
 
         for (let i = 0; i < nodeTree.length; i++) {
-            if (nodeTree[i].node.name === parts[partIndex]) {
-                if (end && nodeTree[i].node.id !== obj.id) {
-                    // Another node with the same name.
-                    nodeTree.push(new TreeNode(obj, partName, parent));
-                    return;
-                }
-                ServiceUtils.nestedTraverse(nodeTree[i].children, partIndex + 1, parts,
-                    obj, nodeTree[i].node, delimiter);
+            if (nodeTree[i].node.name !== parts[partIndex]) {
+                continue;
+            }
+            if (end && nodeTree[i].node.id !== obj.id) {
+                // Another node with the same name.
+                nodeTree.push(new TreeNode(obj, partName, parent));
                 return;
             }
+            ServiceUtils.nestedTraverse(nodeTree[i].children, partIndex + 1, parts,
+                obj, nodeTree[i].node, delimiter);
+            return;
         }
 
         if (nodeTree.filter((n) => n.node.name === partName).length === 0) {
