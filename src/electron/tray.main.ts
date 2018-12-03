@@ -66,12 +66,10 @@ export class TrayMain {
                     this.hideToTray();
                 }
             });
-        }
 
-        if (process.platform === 'win32') {
             this.windowMain.win.on('close', async (e: Event) => {
                 if (await this.storageService.get<boolean>(ElectronConstants.enableCloseToTrayKey)) {
-                    if(!this.windowMain.isQuitting){
+                    if (!this.windowMain.isQuitting) {
                         e.preventDefault();
                         this.hideToTray();
                     }

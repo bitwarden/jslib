@@ -93,7 +93,7 @@ export class BaseMenu {
                 },
                 {
                     label: this.i18nService.t('close'),
-                    role: 'quit',
+                    role: 'close',
                 },
             ],
         };
