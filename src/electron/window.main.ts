@@ -13,6 +13,7 @@ const Keys = {
 
 export class WindowMain {
     win: BrowserWindow;
+    isQuitting: boolean = false;
 
     private windowStateChangeTimer: NodeJS.Timer;
     private windowStates: { [key: string]: any; } = {};
@@ -38,6 +39,12 @@ export class WindowMain {
                         return;
                     }
                 }
+
+                // This method will be called when Electron is shutting
+                // down the application.
+                app.on('before-quit', () => {
+                    this.isQuitting = true;
+                });
 
                 // This method will be called when Electron has finished
                 // initialization and is ready to create browser windows.
