@@ -52,6 +52,10 @@ const Keys = {
     neverDomains: 'neverDomains',
 };
 
+const DomainMatchBlacklist = new Map<string, Set<string>>([
+    ['google.com', new Set(['script.google.com'])],
+]);
+
 export class CipherService implements CipherServiceAbstraction {
     // tslint:disable-next-line
     _decryptedCipherCache: CipherView[];
@@ -352,7 +356,14 @@ export class CipherService implements CipherServiceAbstraction {
                         case undefined:
                         case UriMatchType.Domain:
                             if (domain != null && u.domain != null && matchingDomains.indexOf(u.domain) > -1) {
-                                return true;
+                                if (DomainMatchBlacklist.has(u.domain)) {
+                                    const domainUrlHost = Utils.getHost(url);
+                                    if (!DomainMatchBlacklist.get(u.domain).has(domainUrlHost)) {
+                                        return true;
+                                    }
+                                } else {
+                                    return true;
+                                }
                             }
                             break;
                         case UriMatchType.Host:
