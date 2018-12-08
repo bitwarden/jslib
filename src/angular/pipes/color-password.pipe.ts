@@ -1,20 +1,43 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { SafeHtml } from '@angular/platform-browser';
+import {
+    Pipe,
+    PipeTransform,
+} from '@angular/core';
 
 /**
  * A pipe that sanitizes HTML and highlights numbers and special characters (in different colors each).
  */
 @Pipe({ name: 'colorPassword' })
 export class ColorPasswordPipe implements PipeTransform {
-    transform(password: string): SafeHtml {
-        return password
+    transform(password: string) {
+        let colorizedPassword = '';
+        for (let i = 0; i < password.length; i++) {
+            let character = password[i];
+            let isSpecial = false;
             // Sanitize HTML first.
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            // Replace special chars (since that will exclude numbers anyway).
-            .replace(/((&amp;|&lt;|&gt;|[^\w ])+)/g, `<span class="passwordSpecial">$1</span>`)
-            // Finally replace the numbers.
-            .replace(/(\d+)/g, `<span class="passwordNumber">$1</span>`);
+            switch (character) {
+                case '&':
+                    character = '&amp;';
+                    isSpecial = true;
+                    break;
+                case '<':
+                    character = '&lt;';
+                    isSpecial = true;
+                    break;
+                case '>':
+                    character = '&gt;';
+                    isSpecial = true;
+                    break;
+                default:
+                    break;
+            }
+            let type = 'letter';
+            if (isSpecial || character.match(/[^\w ]/)) {
+                type = 'special';
+            } else if (character.match(/\d/)) {
+                type = 'number';
+            }
+            colorizedPassword += '<span class="password-' + type + '">' + character + '</span>';
+        }
+        return colorizedPassword;
     }
 }
