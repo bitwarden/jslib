@@ -25,7 +25,7 @@ import { BitwardenCsvImporter } from '../importers/bitwardenCsvImporter';
 import { BlurCsvImporter } from '../importers/blurCsvImporter';
 import { ChromeCsvImporter } from '../importers/chromeCsvImporter';
 import { ClipperzHtmlImporter } from '../importers/clipperzHtmlImporter';
-import { DashlaneCsvImporter } from '../importers/dashlaneCsvImporter';
+import { DashlaneJsonImporter } from '../importers/dashlaneJsonImporter';
 import { EnpassCsvImporter } from '../importers/enpassCsvImporter';
 import { FirefoxCsvImporter } from '../importers/firefoxCsvImporter';
 import { GnomeJsonImporter } from '../importers/gnomeJsonImporter';
@@ -63,7 +63,7 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'firefoxcsv', name: 'Firefox (csv)' },
         { id: 'keepass2xml', name: 'KeePass 2 (xml)' },
         { id: '1password1pif', name: '1Password (1pif)' },
-        { id: 'dashlanecsv', name: 'Dashlane (csv)' },
+        { id: 'dashlanejson', name: 'Dashlane (json)' },
     ];
 
     regularImportOptions: ImportOption[] = [
@@ -185,8 +185,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new EnpassCsvImporter();
             case 'pwsafexml':
                 return new PasswordSafeXmlImporter();
-            case 'dashlanecsv':
-                return new DashlaneCsvImporter();
+            case 'dashlanejson':
+                return new DashlaneJsonImporter();
             case 'msecurecsv':
                 return new MSecureCsvImporter();
             case 'stickypasswordxml':
