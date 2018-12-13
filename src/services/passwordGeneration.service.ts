@@ -247,7 +247,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             return null;
         }
         let globalUserInputs = ['bitwarden', 'bit', 'warden'];
-        if (userInputs != null) {
+        if (userInputs != null && userInputs.length > 0) {
             globalUserInputs = globalUserInputs.concat(userInputs);
         }
         // Use a hash set to get rid of any duplicate user inputs
