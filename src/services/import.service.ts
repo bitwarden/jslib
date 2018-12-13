@@ -27,6 +27,7 @@ import { ChromeCsvImporter } from '../importers/chromeCsvImporter';
 import { ClipperzHtmlImporter } from '../importers/clipperzHtmlImporter';
 import { DashlaneJsonImporter } from '../importers/dashlaneJsonImporter';
 import { EnpassCsvImporter } from '../importers/enpassCsvImporter';
+import { EnpassJsonImporter } from '../importers/enpassJsonImporter';
 import { FirefoxCsvImporter } from '../importers/firefoxCsvImporter';
 import { GnomeJsonImporter } from '../importers/gnomeJsonImporter';
 import { Importer } from '../importers/importer';
@@ -72,6 +73,7 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'roboformcsv', name: 'RoboForm (csv)' },
         { id: 'keepercsv', name: 'Keeper (csv)' },
         { id: 'enpasscsv', name: 'Enpass (csv)' },
+        { id: 'enpassjson', name: 'Enpass (json)' },
         { id: 'safeincloudxml', name: 'SafeInCloud (xml)' },
         { id: 'pwsafexml', name: 'Password Safe (xml)' },
         { id: 'stickypasswordxml', name: 'Sticky Password (xml)' },
@@ -183,6 +185,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new PasswordDragonXmlImporter();
             case 'enpasscsv':
                 return new EnpassCsvImporter();
+            case 'enpassjson':
+                return new EnpassJsonImporter();
             case 'pwsafexml':
                 return new PasswordSafeXmlImporter();
             case 'dashlanejson':
