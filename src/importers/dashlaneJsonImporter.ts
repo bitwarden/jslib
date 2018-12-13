@@ -148,13 +148,9 @@ export class DashlaneJsonImporter extends BaseImporter implements Importer {
             } else {
                 cipher.name = this.getValueOrDefault(obj[nameProperty]);
             }
-            cipher.notes = '';
             for (const key in obj) {
                 if (obj.hasOwnProperty(key) && key !== nameProperty) {
-                    const val = obj[key].toString();
-                    if (!this.isNullOrWhitespace(val)) {
-                        cipher.notes += (key + ': ' + obj[key].toString() + '\n');
-                    }
+                    this.processKvp(cipher, key, obj[key].toString());
                 }
             }
             this.cleanupCipher(cipher);
