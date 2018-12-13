@@ -211,6 +211,10 @@ export class CipherService implements CipherServiceAbstraction {
     async encryptField(fieldModel: FieldView, key: SymmetricCryptoKey): Promise<Field> {
         const field = new Field();
         field.type = fieldModel.type;
+        // normalize boolean type field values
+        if (fieldModel.type === FieldType.Boolean && fieldModel.value !== 'true') {
+            fieldModel.value = 'false';
+        }
 
         await this.encryptObjProperty(fieldModel, field, {
             name: null,
