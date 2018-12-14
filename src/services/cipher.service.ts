@@ -405,6 +405,24 @@ export class CipherService implements CipherServiceAbstraction {
         });
     }
 
+    async getAllFromApiForOrganization(organizationId: string): Promise<CipherView[]> {
+        const ciphers = await this.apiService.getCiphersOrganization(organizationId);
+        if (ciphers != null && ciphers.data != null && ciphers.data.length) {
+            const decCiphers: CipherView[] = [];
+            const promises: any[] = [];
+            ciphers.data.forEach((r) => {
+                const data = new CipherData(r);
+                const cipher = new Cipher(data);
+                promises.push(cipher.decrypt().then((c) => decCiphers.push(c)));
+            });
+            await Promise.all(promises);
+            decCiphers.sort(this.getLocaleSortingFunction());
+            return decCiphers;
+        } else {
+            return [];
+        }
+    }
+
     async getLastUsedForUrl(url: string): Promise<CipherView> {
         const ciphers = await this.getAllDecryptedForUrl(url);
         if (ciphers.length === 0) {
