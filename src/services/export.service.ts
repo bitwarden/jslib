@@ -73,6 +73,9 @@ export class ExportService implements ExportServiceAbstraction {
             };
 
             decFolders.forEach((f) => {
+                if (f.id == null) {
+                    return;
+                }
                 const folder = new FolderExport();
                 folder.build(f);
                 jsonDoc.folders.push(folder);
