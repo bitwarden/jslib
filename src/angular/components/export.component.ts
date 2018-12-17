@@ -13,6 +13,7 @@ export class ExportComponent {
 
     formPromise: Promise<string>;
     masterPassword: string;
+    format: 'json' | 'csv' = 'json';
     showPassword = false;
 
     constructor(protected cryptoService: CryptoService, protected i18nService: I18nService,
@@ -53,11 +54,11 @@ export class ExportComponent {
     }
 
     protected getExportData() {
-        return this.exportService.getExport('csv');
+        return this.exportService.getExport(this.format);
     }
 
     protected getFileName(prefix?: string) {
-        return this.exportService.getFileName(prefix);
+        return this.exportService.getFileName(prefix, this.format);
     }
 
     private downloadFile(csv: string): void {

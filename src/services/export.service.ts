@@ -166,7 +166,7 @@ export class ExportService implements ExportServiceAbstraction {
                 cipher.build(c);
                 jsonDoc.items.push(cipher);
             });
-            return JSON.stringify({}, null, '  ');
+            return JSON.stringify(jsonDoc, null, '  ');
         }
     }
 
