@@ -17,7 +17,7 @@ import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 import { TwoFactorProviders } from '../../services/auth.service';
 
-import * as DuoWebSDK from '../../misc/duo';
+import * as DuoWebSDK from 'duo_web_sdk';
 import { U2f } from '../../misc/u2f';
 
 export class TwoFactorComponent implements OnInit, OnDestroy {
