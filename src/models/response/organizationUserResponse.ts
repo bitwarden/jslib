@@ -21,11 +21,13 @@ export class OrganizationUserResponse {
 export class OrganizationUserUserDetailsResponse extends OrganizationUserResponse {
     name: string;
     email: string;
+    twoFactorEnabled: string;
 
     constructor(response: any) {
         super(response);
         this.name = response.Name;
         this.email = response.Email;
+        this.twoFactorEnabled = response.TwoFactorEnabled;
     }
 }
 
