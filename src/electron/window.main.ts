@@ -24,19 +24,20 @@ export class WindowMain {
         return new Promise((resolve, reject) => {
             try {
                 if (!isMacAppStore() && !isSnapStore()) {
-                    const shouldQuit = app.makeSingleInstance((args, dir) => {
-                        // Someone tried to run a second instance, we should focus our window.
-                        if (this.win != null) {
-                            if (this.win.isMinimized()) {
-                                this.win.restore();
-                            }
-                            this.win.focus();
-                        }
-                    });
-
-                    if (shouldQuit) {
+                    const gotTheLock = app.requestSingleInstanceLock();
+                    if (!gotTheLock) {
                         app.quit();
                         return;
+                    } else {
+                        app.on('second-instance', (event, commandLine, workingDirectory) => {
+                            // Someone tried to run a second instance, we should focus our window.
+                            if (this.win != null) {
+                                if (this.win.isMinimized()) {
+                                    this.win.restore();
+                                }
+                                this.win.focus();
+                            }
+                        });
                     }
                 }
 
