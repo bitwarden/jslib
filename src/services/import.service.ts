@@ -20,6 +20,7 @@ import { KvpRequest } from '../models/request/kvpRequest';
 import { CipherView } from '../models/view/cipherView';
 
 import { AscendoCsvImporter } from '../importers/ascendoCsvImporter';
+import { AvastCsvImporter } from '../importers/avastCsvImporter';
 import { AviraCsvImporter } from '../importers/aviraCsvImporter';
 import { BitwardenCsvImporter } from '../importers/bitwardenCsvImporter';
 import { BitwardenJsonImporter } from '../importers/bitwardenJsonImporter';
@@ -101,6 +102,7 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'passwordagentcsv', name: 'Password Agent (csv)' },
         { id: 'passpackcsv', name: 'Passpack (csv)' },
         { id: 'passmanjson', name: 'Passman (json)' },
+        { id: 'avastcsv', name: 'Avast Passwords (csv)' },
     ];
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -223,6 +225,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new PasspackCsvImporter();
             case 'passmanjson':
                 return new PassmanJsonImporter();
+            case 'avastcsv':
+                return new AvastCsvImporter();
             default:
                 return null;
         }
