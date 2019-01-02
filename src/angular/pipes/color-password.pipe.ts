@@ -27,6 +27,10 @@ export class ColorPasswordPipe implements PipeTransform {
                     character = '&gt;';
                     isSpecial = true;
                     break;
+                case ' ':
+                    character = '&nbsp;';
+                    isSpecial = true;
+                    break;
                 default:
                     break;
             }
