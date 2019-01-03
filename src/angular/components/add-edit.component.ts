@@ -16,6 +16,7 @@ import { CipherService } from '../../abstractions/cipher.service';
 import { CollectionService } from '../../abstractions/collection.service';
 import { FolderService } from '../../abstractions/folder.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { MessagingService } from '../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
 import { UserService } from '../../abstractions/user.service';
@@ -74,7 +75,8 @@ export class AddEditComponent implements OnInit {
     constructor(protected cipherService: CipherService, protected folderService: FolderService,
         protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected auditService: AuditService, protected stateService: StateService,
-        protected userService: UserService, protected collectionService: CollectionService) {
+        protected userService: UserService, protected collectionService: CollectionService,
+        protected messagingService: MessagingService) {
         this.typeOptions = [
             { name: i18nService.t('typeLogin'), value: CipherType.Login },
             { name: i18nService.t('typeCard'), value: CipherType.Card },
@@ -215,6 +217,7 @@ export class AddEditComponent implements OnInit {
             this.platformUtilsService.showToast('success', null,
                 this.i18nService.t(this.editMode ? 'editedItem' : 'addedItem'));
             this.onSavedCipher.emit(this.cipher);
+            this.messagingService.send(this.editMode ? 'editedCipher' : 'addedCipher');
             return true;
         } catch { }
 
