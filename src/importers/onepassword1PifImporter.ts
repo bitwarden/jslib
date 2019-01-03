@@ -55,7 +55,9 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                 cipher.type = CipherType.Card;
                 cipher.card = new CardView();
             }
-
+            if (cipher.type === CipherType.Login && !this.isNullOrWhitespace(item.details.password)) {
+                cipher.login.password = item.details.password;
+            }
             if (!this.isNullOrWhitespace(item.details.notesPlain)) {
                 cipher.notes = item.details.notesPlain.split(this.newLineRegex).join('\n') + '\n';
             }
@@ -90,6 +92,22 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
         if (item.secureContents != null) {
             if (!this.isNullOrWhitespace(item.secureContents.notesPlain)) {
                 cipher.notes = item.secureContents.notesPlain.split(this.newLineRegex).join('\n') + '\n';
+            }
+            if (cipher.type === CipherType.Login) {
+                if (!this.isNullOrWhitespace(item.secureContents.password)) {
+                    cipher.login.password = item.secureContents.password;
+                }
+                if (item.secureContents.URLs != null) {
+                    const urls: string[] = [];
+                    item.secureContents.URLs.forEach((u: any) => {
+                        if (!this.isNullOrWhitespace(u.url)) {
+                            urls.push(u.url);
+                        }
+                    });
+                    if (urls.length > 0) {
+                        cipher.login.uris = this.makeUriArray(urls);
+                    }
+                }
             }
             if (item.secureContents.fields != null) {
                 this.parseFields(item.secureContents.fields, cipher, 'designation', 'value', 'name');
