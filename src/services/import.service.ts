@@ -31,6 +31,7 @@ import { DashlaneJsonImporter } from '../importers/dashlaneJsonImporter';
 import { EnpassCsvImporter } from '../importers/enpassCsvImporter';
 import { EnpassJsonImporter } from '../importers/enpassJsonImporter';
 import { FirefoxCsvImporter } from '../importers/firefoxCsvImporter';
+import { FSecureFskImporter } from '../importers/fsecureFskImporter';
 import { GnomeJsonImporter } from '../importers/gnomeJsonImporter';
 import { Importer } from '../importers/importer';
 import { KeePass2XmlImporter } from '../importers/keepass2XmlImporter';
@@ -103,6 +104,7 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'passpackcsv', name: 'Passpack (csv)' },
         { id: 'passmanjson', name: 'Passman (json)' },
         { id: 'avastcsv', name: 'Avast Passwords (csv)' },
+        { id: 'fsecurefsk', name: 'F-Secure KEY (fsk)' },
     ];
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -227,6 +229,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new PassmanJsonImporter();
             case 'avastcsv':
                 return new AvastCsvImporter();
+            case 'fsecurefsk':
+                return new FSecureFskImporter();
             default:
                 return null;
         }

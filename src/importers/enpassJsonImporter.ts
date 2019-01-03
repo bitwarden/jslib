@@ -84,24 +84,7 @@ export class EnpassJsonImporter extends BaseImporter implements Importer {
             } else if (field.type === 'ccCvc' && this.isNullOrWhitespace(cipher.card.code)) {
                 cipher.card.code = field.value;
             } else if (field.type === 'ccExpiry' && this.isNullOrWhitespace(cipher.card.expYear)) {
-                const parts = field.value.split('/');
-                if (parts.length === 2) {
-                    let month: string = null;
-                    let year: string = null;
-                    if (parts[0].length === 1 || parts[0].length === 2) {
-                        month = parts[0];
-                        if (month.length === 2 && month[0] === '0') {
-                            month = month.substr(1, 1);
-                        }
-                    }
-                    if (parts[1].length === 2 || parts[1].length === 4) {
-                        year = month.length === 2 ? '20' + parts[1] : parts[1];
-                    }
-                    if (month != null && year != null) {
-                        cipher.card.expMonth = month;
-                        cipher.card.expYear = year;
-                    }
-                } else {
+                if (!this.setCardExpiration(cipher, field.value)) {
                     this.processKvp(cipher, field.label, field.value);
                 }
             } else {
