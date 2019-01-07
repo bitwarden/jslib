@@ -70,7 +70,8 @@ export class LoginUriView implements View {
     }
 
     get isWebsite(): boolean {
-        return this.uri != null && (this.uri.indexOf('http://') === 0 || this.uri.indexOf('https://') === 0);
+        return this.uri != null && (this.uri.indexOf('http://') === 0 || this.uri.indexOf('https://') === 0 ||
+            (this.uri.indexOf('://') < 0 && Utils.tldEndingRegex.test(this.uri)));
     }
 
     get canLaunch(): boolean {
@@ -78,8 +79,9 @@ export class LoginUriView implements View {
             return this._canLaunch;
         }
         if (this.uri != null) {
+            const uri = this.launchUri;
             for (let i = 0; i < CanLaunchWhitelist.length; i++) {
-                if (this.uri.indexOf(CanLaunchWhitelist[i]) === 0) {
+                if (uri.indexOf(CanLaunchWhitelist[i]) === 0) {
                     this._canLaunch = true;
                     return this._canLaunch;
                 }
@@ -87,5 +89,9 @@ export class LoginUriView implements View {
         }
         this._canLaunch = false;
         return this._canLaunch;
+    }
+
+    get launchUri(): string {
+        return this.uri.indexOf('://') < 0 && Utils.tldEndingRegex.test(this.uri) ? ('http://' + this.uri) : this.uri;
     }
 }

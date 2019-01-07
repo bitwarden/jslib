@@ -12,6 +12,7 @@ export class Utils {
     static isBrowser = true;
     static isMobileBrowser = false;
     static global: any = null;
+    static tldEndingRegex = /.*\.(com|net|org|edu|uk|gov|ca|de|jp|fr|au|ru|ch|io|es|us|co|xyz|info|ly|mil)$/;
 
     static init() {
         if (Utils.inited) {
@@ -175,7 +176,13 @@ export class Utils {
             return null;
         }
 
-        if (uriString.startsWith('http://') || uriString.startsWith('https://')) {
+        let httpUrl = uriString.startsWith('http://') || uriString.startsWith('https://');
+        if (!httpUrl && Utils.tldEndingRegex.test(uriString)) {
+            uriString = 'http://' + uriString;
+            httpUrl = true;
+        }
+
+        if (httpUrl) {
             try {
                 const url = Utils.getUrlObject(uriString);
                 if (url.hostname === 'localhost' || Utils.validIpAddress(url.hostname)) {

@@ -34,6 +34,10 @@ export class LoginView implements View {
         return this.hasUris && this.uris[0].canLaunch;
     }
 
+    get launchUri(): string {
+        return this.canLaunch ? this.uris[0].launchUri : null;
+    }
+
     get hasUris(): boolean {
         return this.uris != null && this.uris.length > 0;
     }

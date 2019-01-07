@@ -134,7 +134,7 @@ export class ViewComponent implements OnDestroy, OnInit {
         }
 
         this.platformUtilsService.eventTrack('Launched Login URI');
-        this.platformUtilsService.launchUri(uri.uri);
+        this.platformUtilsService.launchUri(uri.launchUri);
     }
 
     copy(value: string, typeI18nKey: string, aType: string) {
