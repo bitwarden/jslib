@@ -1,3 +1,4 @@
+import { OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { CryptoService } from '../../abstractions/crypto.service';
@@ -6,9 +7,10 @@ import { MessagingService } from '../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { UserService } from '../../abstractions/user.service';
 
-export class LockComponent {
+export class LockComponent implements OnInit {
     masterPassword: string = '';
     showPassword: boolean = false;
+    email: string;
 
     protected successRoute: string = 'vault';
     protected onSuccessfulSubmit: () => void;
@@ -17,6 +19,10 @@ export class LockComponent {
         protected platformUtilsService: PlatformUtilsService, protected messagingService: MessagingService,
         protected userService: UserService, protected cryptoService: CryptoService) { }
 
+    async ngOnInit() {
+        this.email = await this.userService.getEmail();
+    }
+
     async submit() {
         if (this.masterPassword == null || this.masterPassword === '') {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
@@ -24,10 +30,9 @@ export class LockComponent {
             return;
         }
 
-        const email = await this.userService.getEmail();
         const kdf = await this.userService.getKdf();
         const kdfIterations = await this.userService.getKdfIterations();
-        const key = await this.cryptoService.makeKey(this.masterPassword, email, kdf, kdfIterations);
+        const key = await this.cryptoService.makeKey(this.masterPassword, this.email, kdf, kdfIterations);
         const keyHash = await this.cryptoService.hashPassword(this.masterPassword, key);
         const storedKeyHash = await this.cryptoService.getKeyHash();
 
