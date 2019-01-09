@@ -43,6 +43,8 @@ import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
+import { ConstantsService } from './constants.service';
+
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
 
@@ -343,6 +345,11 @@ export class CipherService implements CipherServiceAbstraction {
         const matchingDomains = result[0];
         const ciphers = result[1];
 
+        let defaultMatch = await this.storageService.get<UriMatchType>(ConstantsService.defaultUriMatch);
+        if (defaultMatch == null) {
+            defaultMatch = UriMatchType.Domain;
+        }
+
         return ciphers.filter((cipher) => {
             if (includeOtherTypes && includeOtherTypes.indexOf(cipher.type) > -1) {
                 return true;
@@ -355,9 +362,8 @@ export class CipherService implements CipherServiceAbstraction {
                         continue;
                     }
 
-                    switch (u.match) {
-                        case null:
-                        case undefined:
+                    const match = u.match == null ? defaultMatch : u.match;
+                    switch (match) {
                         case UriMatchType.Domain:
                             if (domain != null && u.domain != null && matchingDomains.indexOf(u.domain) > -1) {
                                 if (DomainMatchBlacklist.has(u.domain)) {

@@ -17,6 +17,7 @@ export class ConstantsService {
     static readonly autoConfirmFingerprints: string = 'autoConfirmFingerprints';
     static readonly dontShowCardsCurrentTab: string = 'dontShowCardsCurrentTab';
     static readonly dontShowIdentitiesCurrentTab: string = 'dontShowIdentitiesCurrentTab';
+    static readonly defaultUriMatch: string = 'defaultUriMatch';
 
     readonly environmentUrlsKey: string = ConstantsService.environmentUrlsKey;
     readonly disableGaKey: string = ConstantsService.disableGaKey;
@@ -35,4 +36,5 @@ export class ConstantsService {
     readonly autoConfirmFingerprints: string = ConstantsService.autoConfirmFingerprints;
     readonly dontShowCardsCurrentTab: string = ConstantsService.dontShowCardsCurrentTab;
     readonly dontShowIdentitiesCurrentTab: string = ConstantsService.dontShowIdentitiesCurrentTab;
+    readonly defaultUriMatch: string = ConstantsService.defaultUriMatch;
 }
