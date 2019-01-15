@@ -155,7 +155,7 @@ export abstract class BaseImporter {
     }
 
     protected isNullOrWhitespace(str: string): boolean {
-        return str == null || typeof str !== 'string' || str.trim() === '';
+        return Utils.isNullOrWhitespace(str);
     }
 
     protected getValueOrDefault(str: string, defaultValue: string = null): string {
