@@ -68,6 +68,9 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
             if (addFolder) {
                 const f = new FolderView();
                 f.name = value.grouping;
+                if (f.name != null) {
+                    f.name = f.name.replace(/\\/g, '/');
+                }
                 result.folders.push(f);
             }
             if (hasFolder) {
