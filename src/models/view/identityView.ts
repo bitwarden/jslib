@@ -2,6 +2,8 @@ import { View } from './view';
 
 import { Identity } from '../domain/identity';
 
+import { Utils } from '../../misc/utils';
+
 export class IdentityView implements View {
     title: string = null;
     middleName: string;
@@ -82,5 +84,22 @@ export class IdentityView implements View {
         }
 
         return null;
+    }
+
+    get fullAddress(): string {
+        let address = this.address1;
+        if (Utils.isNullOrWhitespace(this.address2)) {
+            if (Utils.isNullOrWhitespace(address)) {
+                address += ', ';
+            }
+            address += this.address2;
+        }
+        if (Utils.isNullOrWhitespace(this.address3)) {
+            if (Utils.isNullOrWhitespace(address)) {
+                address += ', ';
+            }
+            address += this.address3;
+        }
+        return address;
     }
 }
