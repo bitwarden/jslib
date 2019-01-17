@@ -28,7 +28,7 @@ export class EnpassJsonImporter extends BaseImporter implements Importer {
                 } else if (item.template_type.indexOf('creditcard.') === 0) {
                     this.processCard(cipher, item.fields);
                 } else if (item.template_type.indexOf('identity.') < 0 &&
-                    item.fields.find((f: any) => f.type === 'password' && !this.isNullOrWhitespace(f.value)) != null) {
+                    item.fields.some((f: any) => f.type === 'password' && !this.isNullOrWhitespace(f.value))) {
                     this.processLogin(cipher, item.fields);
                 } else {
                     this.processNote(cipher, item.fields);
