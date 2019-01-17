@@ -52,6 +52,7 @@ import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecove
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
 import { BillingResponse } from '../models/response/billingResponse';
+import { BreachAccountResponse } from '../models/response/breachAccountResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
 import {
     CollectionGroupDetailsResponse,
@@ -246,6 +247,8 @@ export abstract class ApiService {
         start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
 
     getUserPublicKey: (id: string) => Promise<UserKeyResponse>;
+
+    getHibpBreach: (username: string) => Promise<BreachAccountResponse[]>;
 
     getActiveBearerToken: () => Promise<string>;
     fetch: (request: Request) => Promise<Response>;

@@ -58,6 +58,7 @@ import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecove
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
 import { BillingResponse } from '../models/response/billingResponse';
+import { BreachAccountResponse } from '../models/response/breachAccountResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
 import {
     CollectionGroupDetailsResponse,
@@ -816,6 +817,13 @@ export class ApiService implements ApiServiceAbstraction {
     async getUserPublicKey(id: string): Promise<UserKeyResponse> {
         const r = await this.send('GET', '/users/' + id + '/public-key', null, true, true);
         return new UserKeyResponse(r);
+    }
+
+    // HIBP APIs
+
+    async getHibpBreach(username: string): Promise<BreachAccountResponse[]> {
+        const r = await this.send('GET', '/hibp/breach?username=' + username, null, true, true);
+        return r.map((a: any) => new BreachAccountResponse(a));
     }
 
     // Helpers
