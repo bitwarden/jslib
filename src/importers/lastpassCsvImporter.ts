@@ -210,28 +210,39 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
         const dataObj: any = {};
 
         extraParts.forEach((extraPart) => {
-            const fieldParts = extraPart.split(':');
-            if (fieldParts.length < 1 || this.isNullOrWhitespace(fieldParts[0]) ||
-                this.isNullOrWhitespace(fieldParts[1]) || fieldParts[0] === 'NoteType') {
+            if (this.isNullOrWhitespace(extraPart)) {
+                return;
+            }
+            let key: string = null;
+            let val: string = null;
+            const colonIndex = extraPart.indexOf(':');
+            if (colonIndex === -1) {
+                key = extraPart;
+            } else {
+                key = extraPart.substring(0, colonIndex);
+                if (extraPart.length > colonIndex) {
+                    val = extraPart.substring(colonIndex + 1);
+                }
+            }
+            if (this.isNullOrWhitespace(key) || this.isNullOrWhitespace(val) || key === 'NoteType') {
                 return;
             }
 
-            if (fieldParts[0] === 'Notes') {
+            if (key === 'Notes') {
                 if (!this.isNullOrWhitespace(notes)) {
-                    notes += ('\n' + fieldParts[1]);
+                    notes += ('\n' + val);
                 } else {
-                    notes = fieldParts[1];
+                    notes = val;
                 }
-            } else if (map.hasOwnProperty(fieldParts[0])) {
-                dataObj[map[fieldParts[0]]] = fieldParts[1];
+            } else if (map.hasOwnProperty(key)) {
+                dataObj[map[key]] = val;
             } else {
                 if (!this.isNullOrWhitespace(notes)) {
                     notes += '\n';
                 } else {
                     notes = '';
                 }
-
-                notes += (fieldParts[0] + ': ' + fieldParts[1]);
+                notes += (key + ': ' + val);
             }
         });
 
