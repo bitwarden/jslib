@@ -11,14 +11,14 @@ export class ValidationService {
 
     showError(data: any): string[] {
         const defaultErrorMessage = this.i18nService.t('unexpectedError');
-        const errors: string[] = [];
+        let errors: string[] = [];
 
         if (data != null && typeof data === 'string') {
             errors.push(data);
         } else if (data == null || typeof data !== 'object') {
             errors.push(defaultErrorMessage);
         } else if (data.validationErrors != null) {
-            errors.concat((data as ErrorResponse).getAllMessages());
+            errors = errors.concat((data as ErrorResponse).getAllMessages());
         } else {
             errors.push(data.message ? data.message : defaultErrorMessage);
         }
