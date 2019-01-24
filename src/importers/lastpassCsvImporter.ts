@@ -25,12 +25,16 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
         results.forEach((value, index) => {
             const cipherIndex = result.ciphers.length;
             let folderIndex = result.folders.length;
-            const hasFolder = this.getValueOrDefault(value.grouping, '(none)') !== '(none)';
+            let grouping = value.grouping;
+            if (grouping != null) {
+                grouping = grouping.replace(/\\/g, '/');
+            }
+            const hasFolder = this.getValueOrDefault(grouping, '(none)') !== '(none)';
             let addFolder = hasFolder;
 
             if (hasFolder) {
                 for (let i = 0; i < result.folders.length; i++) {
-                    if (result.folders[i].name === value.grouping) {
+                    if (result.folders[i].name === grouping) {
                         addFolder = false;
                         folderIndex = i;
                         break;
@@ -67,10 +71,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
 
             if (addFolder) {
                 const f = new FolderView();
-                f.name = value.grouping;
-                if (f.name != null) {
-                    f.name = f.name.replace(/\\/g, '/');
-                }
+                f.name = grouping;
                 result.folders.push(f);
             }
             if (hasFolder) {
