@@ -54,7 +54,7 @@ export class SearchService implements SearchServiceAbstraction {
         });
         builder.field('notes');
         (builder as any).field('login.username', {
-            extractor: (c: CipherView) => c.login != null ? c.login.username : null,
+            extractor: (c: CipherView) => c.type === CipherType.Login && c.login != null ? c.login.username : null,
         });
         (builder as any).field('login.uris', { boost: 2, extractor: (c: CipherView) => this.uriExtractor(c) });
         (builder as any).field('fields', { extractor: (c: CipherView) => this.fieldExtractor(c, false) });
@@ -198,7 +198,7 @@ export class SearchService implements SearchServiceAbstraction {
     }
 
     private uriExtractor(c: CipherView) {
-        if (c.login == null || !c.login.hasUris) {
+        if (c.type !== CipherType.Login || c.login == null || !c.login.hasUris) {
             return null;
         }
         const uris: string[] = [];

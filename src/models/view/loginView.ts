@@ -4,11 +4,11 @@ import { View } from './view';
 import { Login } from '../domain/login';
 
 export class LoginView implements View {
-    username: string;
-    password: string;
-    passwordRevisionDate?: Date;
-    totp: string;
-    uris: LoginUriView[];
+    username: string = null;
+    password: string = null;
+    passwordRevisionDate?: Date = null;
+    totp: string = null;
+    uris: LoginUriView[] = null;
 
     constructor(l?: Login) {
         if (!l) {

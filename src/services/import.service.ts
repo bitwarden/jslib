@@ -10,6 +10,10 @@ import {
 
 import { ImportResult } from '../models/domain/importResult';
 
+import { CipherType } from '../enums/cipherType';
+
+import { Utils } from '../misc/utils';
+
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CollectionRequest } from '../models/request/collectionRequest';
 import { FolderRequest } from '../models/request/folderRequest';
@@ -278,6 +282,6 @@ export class ImportService implements ImportServiceAbstraction {
 
     private badData(c: CipherView) {
         return (c.name == null || c.name === '--') &&
-            (c.login != null && (c.login.password == null || c.login.password === ''));
+            (c.type === CipherType.Login && c.login != null && Utils.isNullOrWhitespace(c.login.password));
     }
 }

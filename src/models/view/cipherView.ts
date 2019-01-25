@@ -12,25 +12,25 @@ import { SecureNoteView } from './secureNoteView';
 import { View } from './view';
 
 export class CipherView implements View {
-    id: string;
-    organizationId: string;
-    folderId: string;
-    name: string;
-    notes: string;
-    type: CipherType;
+    id: string = null;
+    organizationId: string = null;
+    folderId: string = null;
+    name: string = null;
+    notes: string = null;
+    type: CipherType = null;
     favorite = false;
     organizationUseTotp = false;
     edit = false;
     localData: any;
-    login: LoginView;
-    identity: IdentityView;
-    card: CardView;
-    secureNote: SecureNoteView;
-    attachments: AttachmentView[];
-    fields: FieldView[];
-    passwordHistory: PasswordHistoryView[];
-    collectionIds: string[];
-    revisionDate: Date;
+    login = new LoginView();
+    identity = new IdentityView();
+    card = new CardView();
+    secureNote = new SecureNoteView();
+    attachments: AttachmentView[] = null;
+    fields: FieldView[] = null;
+    passwordHistory: PasswordHistoryView[] = null;
+    collectionIds: string[] = null;
+    revisionDate: Date = null;
 
     constructor(c?: Cipher) {
         if (!c) {
@@ -90,7 +90,7 @@ export class CipherView implements View {
     }
 
     get passwordRevisionDisplayDate(): Date {
-        if (this.login == null) {
+        if (this.type !== CipherType.Login || this.login == null) {
             return null;
         } else if (this.login.password == null || this.login.password === '') {
             return null;

@@ -6,26 +6,26 @@ import { Utils } from '../../misc/utils';
 
 export class IdentityView implements View {
     title: string = null;
-    middleName: string;
-    address1: string;
-    address2: string;
-    address3: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    country: string;
-    company: string;
-    email: string;
-    phone: string;
-    ssn: string;
-    username: string;
-    passportNumber: string;
-    licenseNumber: string;
+    middleName: string = null;
+    address1: string = null;
+    address2: string = null;
+    address3: string = null;
+    city: string = null;
+    state: string = null;
+    postalCode: string = null;
+    country: string = null;
+    company: string = null;
+    email: string = null;
+    phone: string = null;
+    ssn: string = null;
+    username: string = null;
+    passportNumber: string = null;
+    licenseNumber: string = null;
 
     // tslint:disable
-    private _firstName: string;
-    private _lastName: string;
-    private _subTitle: string;
+    private _firstName: string = null;
+    private _lastName: string = null;
+    private _subTitle: string = null;
     // tslint:enable
 
     constructor(i?: Identity) {

@@ -5,8 +5,8 @@ import { ITreeNodeObject } from '../domain/treeNode';
 
 export class FolderView implements View, ITreeNodeObject {
     id: string = null;
-    name: string;
-    revisionDate: Date;
+    name: string = null;
+    revisionDate: Date = null;
 
     constructor(f?: Folder) {
         if (!f) {

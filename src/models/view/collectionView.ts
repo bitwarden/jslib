@@ -4,10 +4,10 @@ import { Collection } from '../domain/collection';
 import { ITreeNodeObject } from '../domain/treeNode';
 
 export class CollectionView implements View, ITreeNodeObject {
-    id: string;
-    organizationId: string;
-    name: string;
-    readOnly: boolean;
+    id: string = null;
+    organizationId: string = null;
+    name: string = null;
+    readOnly: boolean = null;
 
     constructor(c?: Collection) {
         if (!c) {

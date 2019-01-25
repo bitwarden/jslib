@@ -20,10 +20,10 @@ export class LoginUriView implements View {
     match: UriMatchType = null;
 
     // tslint:disable
-    private _uri: string;
-    private _domain: string;
-    private _hostname: string;
-    private _canLaunch: boolean;
+    private _uri: string = null;
+    private _domain: string = null;
+    private _hostname: string = null;
+    private _canLaunch: boolean = null;
     // tslint:enable
 
     constructor(u?: LoginUri) {
