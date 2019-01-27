@@ -9,6 +9,7 @@ import { IdentityView } from '../models/view/identityView';
 import { SecureNoteView } from '../models/view/secureNoteView';
 
 import { CipherType } from '../enums/cipherType';
+import { SecureNoteType } from '../enums/secureNoteType';
 
 const HandledResults = new Set(['ADDRESS', 'AUTHENTIFIANT', 'BANKSTATEMENT', 'IDCARD', 'IDENTITY',
     'PAYMENTMEANS_CREDITCARD', 'PAYMENTMEAN_PAYPAL', 'EMAIL']);
@@ -143,6 +144,7 @@ export class DashlaneJsonImporter extends BaseImporter implements Importer {
             const cipher = new CipherView();
             cipher.secureNote = new SecureNoteView();
             cipher.type = CipherType.SecureNote;
+            cipher.secureNote.type = SecureNoteType.Generic;
             if (name != null) {
                 cipher.name = name;
             } else {
