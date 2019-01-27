@@ -97,7 +97,7 @@ export class I18nService implements I18nServiceAbstraction {
                     const replaceToken = '\\$' + placeProp.toUpperCase() + '\\$';
                     let replaceContent = locales[prop].placeholders[placeProp].content;
                     if (replaceContent === '$1' || replaceContent === '$2' || replaceContent === '$3') {
-                        replaceContent = '__' + replaceContent + '__';
+                        replaceContent = '__$' + replaceContent + '__';
                     }
                     messagesObj[prop] = messagesObj[prop].replace(new RegExp(replaceToken, 'g'), replaceContent);
                 }
