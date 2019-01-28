@@ -38,6 +38,7 @@ import { FirefoxCsvImporter } from '../importers/firefoxCsvImporter';
 import { FSecureFskImporter } from '../importers/fsecureFskImporter';
 import { GnomeJsonImporter } from '../importers/gnomeJsonImporter';
 import { Importer } from '../importers/importer';
+import { KasperskyTxtImporter } from '../importers/kasperskyTxtImporter';
 import { KeePass2XmlImporter } from '../importers/keepass2XmlImporter';
 import { KeePassXCsvImporter } from '../importers/keepassxCsvImporter';
 import { KeeperCsvImporter } from '../importers/keeperCsvImporter';
@@ -109,6 +110,7 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'passmanjson', name: 'Passman (json)' },
         { id: 'avastcsv', name: 'Avast Passwords (csv)' },
         { id: 'fsecurefsk', name: 'F-Secure KEY (fsk)' },
+        { id: 'kasperskytxt', name: 'Kaspersky Password Manager (txt)' },
     ];
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -235,6 +237,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new AvastCsvImporter();
             case 'fsecurefsk':
                 return new FSecureFskImporter();
+            case 'kasperskytxt':
+                return new KasperskyTxtImporter();
             default:
                 return null;
         }
