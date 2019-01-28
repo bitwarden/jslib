@@ -120,7 +120,7 @@ class Foo {
     calls = 0;
 
     @sequentialize((args) => 'bar' + args[0])
-    bar(a: any) {
+    bar(a: number) {
         this.calls++;
         return new Promise((res) => {
             setTimeout(() => {
@@ -130,7 +130,7 @@ class Foo {
     }
 
     @sequentialize((args) => 'baz' + args[0])
-    baz(a: any) {
+    baz(a: number) {
         this.calls++;
         return new Promise((res) => {
             setTimeout(() => {
