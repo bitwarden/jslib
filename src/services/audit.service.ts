@@ -2,6 +2,7 @@ import { ApiService } from '../abstractions/api.service';
 import { AuditService as AuditServiceAbstraction } from '../abstractions/audit.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 
+import { throttle } from '../misc/throttle';
 import { Utils } from '../misc/utils';
 
 import { BreachAccountResponse } from '../models/response/breachAccountResponse';
@@ -12,6 +13,7 @@ const PwnedPasswordsApi = 'https://api.pwnedpasswords.com/range/';
 export class AuditService implements AuditServiceAbstraction {
     constructor(private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService) { }
 
+    @throttle(100, () => 'passwordLeaked')
     async passwordLeaked(password: string): Promise<number> {
         const hashBytes = await this.cryptoFunctionService.hash(password, 'sha1');
         const hash = Utils.fromBufferToHex(hashBytes).toUpperCase();
