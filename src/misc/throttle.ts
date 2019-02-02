@@ -25,26 +25,24 @@ export function throttle(limit: number, throttleKey: (args: any[]) => string) {
                 const throttles = getThrottles(this);
                 const argsThrottleKey = throttleKey(args);
                 let queue = throttles.get(argsThrottleKey);
-                if (!queue) {
+                if (queue == null) {
                     queue = [];
                     throttles.set(argsThrottleKey, queue);
                 }
 
                 return new Promise<T>((resolve, reject) => {
                     const exec = () => {
-                        originalMethod.apply(this, args)
-                            .finally(() => {
-                                queue.splice(queue.indexOf(exec), 1);
-                                if (queue.length >= limit) {
-                                    queue[limit - 1]();
-                                } else if (queue.length === 0) {
-                                    throttles.delete(argsThrottleKey);
-                                    if (throttles.size === 0) {
-                                        allThrottles.delete(this);
-                                    }
+                        originalMethod.apply(this, args).finally(() => {
+                            queue.splice(queue.indexOf(exec), 1);
+                            if (queue.length >= limit) {
+                                queue[limit - 1]();
+                            } else if (queue.length === 0) {
+                                throttles.delete(argsThrottleKey);
+                                if (throttles.size === 0) {
+                                    allThrottles.delete(this);
                                 }
-                            })
-                            .then(resolve, reject);
+                            }
+                        }).then(resolve, reject);
                     };
                     queue.push(exec);
                     if (queue.length <= limit) {
