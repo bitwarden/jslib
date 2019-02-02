@@ -6,7 +6,7 @@
  */
 export function throttle(limit: number, throttleKey: (args: any[]) => string) {
     return <T>(target: any, propertyKey: string | symbol,
-               descriptor: TypedPropertyDescriptor<(...args: any[]) => Promise<T>>) => {
+        descriptor: TypedPropertyDescriptor<(...args: any[]) => Promise<T>>) => {
         const originalMethod: () => Promise<T> = descriptor.value;
         const allThrottles = new Map<any, Map<string, Array<() => void>>>();
 
@@ -21,7 +21,7 @@ export function throttle(limit: number, throttleKey: (args: any[]) => string) {
         };
 
         return {
-            value: function(...args: any[]) {
+            value: function (...args: any[]) {
                 const throttles = getThrottles(this);
                 const argsThrottleKey = throttleKey(args);
                 let queue = throttles.get(argsThrottleKey);
