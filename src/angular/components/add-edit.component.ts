@@ -264,6 +264,10 @@ export class AddEditComponent implements OnInit {
         }
     }
 
+    trackByFunction(index: number, uri: LoginUriView) {
+        return index;
+    }
+
     cancel() {
         this.onCancelled.emit(this.cipher);
     }
