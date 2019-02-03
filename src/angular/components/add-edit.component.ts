@@ -264,7 +264,7 @@ export class AddEditComponent implements OnInit {
         }
     }
 
-    trackByFunction(index: number, uri: LoginUriView) {
+    trackByFunction(index: number, item: any) {
         return index;
     }
 
