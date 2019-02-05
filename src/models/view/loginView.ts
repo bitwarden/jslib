@@ -31,11 +31,11 @@ export class LoginView implements View {
     }
 
     get canLaunch(): boolean {
-        return this.hasUris && this.uris[0].canLaunch;
+        return this.hasUris && this.uris.some(uri => uri.canLaunch);
     }
 
     get launchUri(): string {
-        return this.canLaunch ? this.uris[0].launchUri : null;
+        return this.canLaunch ? this.uris.find(uri => uri.canLaunch).launchUri : null;
     }
 
     get hasUris(): boolean {
