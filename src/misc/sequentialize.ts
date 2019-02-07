@@ -24,7 +24,7 @@ export function sequentialize(cacheKey: (args: any[]) => string) {
         };
 
         return {
-            value: function (...args: any[]) {
+            value: function(...args: any[]) {
                 const cache = getCache(this);
                 const argsCacheKey = cacheKey(args);
                 let response = cache.get(argsCacheKey);
