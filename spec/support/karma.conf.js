@@ -12,6 +12,7 @@ module.exports = (config) => {
             'spec/common/**/*.ts',
             'spec/web/**/*.ts',
             'src/abstractions/**/*.ts',
+            'src/importers/**/*.ts',
             'src/enums/**/*.ts',
             'src/models/**/*.ts',
             'src/misc/**/*.ts',
