@@ -31,17 +31,16 @@ export class LoginView implements View {
     }
 
     get canLaunch(): boolean {
-        return this.hasUris && this.uris.some(uri => uri.canLaunch);
+        return this.hasUris && this.uris.some((u) => u.canLaunch);
     }
 
     get launchUri(): string {
         if (this.hasUris) {
-            const uri = this.uris.find(uri => uri.canLaunch)
+            const uri = this.uris.find((u) => u.canLaunch);
             if (uri != null) {
                 return uri.launchUri;
             }
         }
-
         return null;
     }
 

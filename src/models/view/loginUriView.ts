@@ -78,7 +78,7 @@ export class LoginUriView implements View {
         if (this._canLaunch != null) {
             return this._canLaunch;
         }
-        if (this.uri != null && this.match != UriMatchType.RegularExpression) {
+        if (this.uri != null && this.match !== UriMatchType.RegularExpression) {
             const uri = this.launchUri;
             for (let i = 0; i < CanLaunchWhitelist.length; i++) {
                 if (uri.indexOf(CanLaunchWhitelist[i]) === 0) {
