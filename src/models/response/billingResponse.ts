@@ -1,4 +1,5 @@
 import { PaymentMethodType } from '../../enums/paymentMethodType';
+import { TransactionType } from '../../enums/transactionType';
 
 export class BillingResponse {
     storageName: string;
@@ -6,8 +7,10 @@ export class BillingResponse {
     maxStorageGb: number;
     paymentSource: BillingSourceResponse;
     subscription: BillingSubscriptionResponse;
-    upcomingInvoice: BillingInvoiceResponse;
+    upcomingInvoice: BillingInvoiceInfoResponse;
     charges: BillingChargeResponse[] = [];
+    invoices: BillingInvoiceResponse[] = [];
+    transactions: BillingTransactionResponse[] = [];
     license: any;
     expiration: string;
 
@@ -19,9 +22,15 @@ export class BillingResponse {
         this.subscription = response.Subscription == null ?
             null : new BillingSubscriptionResponse(response.Subscription);
         this.upcomingInvoice = response.UpcomingInvoice == null ?
-            null : new BillingInvoiceResponse(response.UpcomingInvoice);
+            null : new BillingInvoiceInfoResponse(response.UpcomingInvoice);
         if (response.Charges != null) {
             this.charges = response.Charges.map((c: any) => new BillingChargeResponse(c));
+        }
+        if (response.Transactions != null) {
+            this.transactions = response.Transactions.map((t: any) => new BillingTransactionResponse(t));
+        }
+        if (response.Invoices != null) {
+            this.invoices = response.Invoices.map((i: any) => new BillingInvoiceResponse(i));
         }
         this.license = response.License;
         this.expiration = response.Expiration;
@@ -82,7 +91,7 @@ export class BillingSubscriptionItemResponse {
     }
 }
 
-export class BillingInvoiceResponse {
+export class BillingInvoiceInfoResponse {
     date: string;
     amount: number;
 
@@ -113,5 +122,42 @@ export class BillingChargeResponse {
         this.partiallyRefunded = response.PartiallyRefunded;
         this.refundedAmount = response.RefundedAmount;
         this.invoiceId = response.InvoiceId;
+    }
+}
+
+export class BillingInvoiceResponse extends BillingInvoiceInfoResponse {
+    url: string;
+    pdfUrl: string;
+    number: string;
+    paid: boolean;
+
+    constructor(response: any) {
+        super(response);
+        this.url = response.Url;
+        this.pdfUrl = response.PdfUrl;
+        this.number = response.Number;
+        this.paid = response.Paid;
+    }
+}
+
+export class BillingTransactionResponse {
+    createdDate: string;
+    amount: number;
+    refunded: boolean;
+    partiallyRefunded: boolean;
+    refundedAmount: number;
+    type: TransactionType;
+    paymentMethodType: PaymentMethodType;
+    details: string;
+
+    constructor(response: any) {
+        this.createdDate = response.CreatedDate;
+        this.amount = response.Amount;
+        this.refunded = response.Refunded;
+        this.partiallyRefunded = response.PartiallyRefunded;
+        this.refundedAmount = response.RefundedAmount;
+        this.type = response.Type;
+        this.paymentMethodType = response.PaymentMethodType;
+        this.details = response.Details;
     }
 }
