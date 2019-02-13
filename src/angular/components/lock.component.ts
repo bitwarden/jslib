@@ -92,7 +92,7 @@ export class LockComponent implements OnInit {
     togglePassword() {
         this.platformUtilsService.eventTrack('Toggled Master Password on Unlock');
         this.showPassword = !this.showPassword;
-        document.getElementById('masterPassword').focus();
+        document.getElementById(this.pinLock ? 'pin' : 'masterPassword').focus();
     }
 
     private async setKeyAndContinue(key: SymmetricCryptoKey) {
