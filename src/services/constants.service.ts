@@ -18,6 +18,7 @@ export class ConstantsService {
     static readonly dontShowCardsCurrentTab: string = 'dontShowCardsCurrentTab';
     static readonly dontShowIdentitiesCurrentTab: string = 'dontShowIdentitiesCurrentTab';
     static readonly defaultUriMatch: string = 'defaultUriMatch';
+    static readonly pinProtectedKey: string = 'pinProtectedKey';
 
     readonly environmentUrlsKey: string = ConstantsService.environmentUrlsKey;
     readonly disableGaKey: string = ConstantsService.disableGaKey;
@@ -37,4 +38,5 @@ export class ConstantsService {
     readonly dontShowCardsCurrentTab: string = ConstantsService.dontShowCardsCurrentTab;
     readonly dontShowIdentitiesCurrentTab: string = ConstantsService.dontShowIdentitiesCurrentTab;
     readonly defaultUriMatch: string = ConstantsService.defaultUriMatch;
+    readonly pinProtectedKey: string = ConstantsService.pinProtectedKey;
 }

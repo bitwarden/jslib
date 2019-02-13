@@ -266,6 +266,10 @@ export class CryptoService implements CryptoServiceAbstraction {
         return this.storageService.remove(Keys.encOrgKeys);
     }
 
+    clearPinProtectedKey(): Promise<any> {
+        return this.storageService.remove(ConstantsService.pinProtectedKey);
+    }
+
     clearKeys(): Promise<any> {
         return Promise.all([
             this.clearKey(),
@@ -273,6 +277,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             this.clearOrgKeys(),
             this.clearEncKey(),
             this.clearKeyPair(),
+            this.clearPinProtectedKey(),
         ]);
     }
 
@@ -317,6 +322,11 @@ export class CryptoService implements CryptoServiceAbstraction {
         const publicB64 = Utils.fromBufferToB64(keyPair[0]);
         const privateEnc = await this.encrypt(keyPair[1], key);
         return [publicB64, privateEnc];
+    }
+
+    async makePinKey(pin: string, salt: string): Promise<SymmetricCryptoKey> {
+        const pinKey = await this.makeKey(pin, salt, KdfType.PBKDF2_SHA256, 100000);
+        return await this.stretchKey(pinKey);
     }
 
     async hashPassword(password: string, key: SymmetricCryptoKey): Promise<string> {

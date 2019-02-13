@@ -87,4 +87,9 @@ export class LockService implements LockServiceAbstraction {
         await this.storageService.save(ConstantsService.lockOptionKey, lockOption);
         await this.cryptoService.toggleKey();
     }
+
+    async isPinLockSet(): Promise<boolean> {
+        const pinProtectedKey = await this.storageService.get<string>(ConstantsService.pinProtectedKey);
+        return pinProtectedKey != null;
+    }
 }
