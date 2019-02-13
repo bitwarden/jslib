@@ -324,8 +324,8 @@ export class CryptoService implements CryptoServiceAbstraction {
         return [publicB64, privateEnc];
     }
 
-    async makePinKey(pin: string, salt: string): Promise<SymmetricCryptoKey> {
-        const pinKey = await this.makeKey(pin, salt, KdfType.PBKDF2_SHA256, 100000);
+    async makePinKey(pin: string, salt: string, kdf: KdfType, kdfIterations: number): Promise<SymmetricCryptoKey> {
+        const pinKey = await this.makeKey(pin, salt, kdf, kdfIterations);
         return await this.stretchKey(pinKey);
     }
 

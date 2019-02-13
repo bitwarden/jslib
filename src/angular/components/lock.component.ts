@@ -37,18 +37,25 @@ export class LockComponent implements OnInit {
     }
 
     async submit() {
-        // PIN
-        if (this.pinLock) {
-            if (this.pin == null || this.pin === '') {
-                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                    this.i18nService.t('pinRequired'));
-                return;
-            }
+        if (this.pinLock && (this.pin == null || this.pin === '')) {
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                this.i18nService.t('pinRequired'));
+            return;
+        }
+        if (!this.pinLock && (this.masterPassword == null || this.masterPassword === '')) {
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                this.i18nService.t('masterPassRequired'));
+            return;
+        }
 
+        const kdf = await this.userService.getKdf();
+        const kdfIterations = await this.userService.getKdfIterations();
+
+        if (this.pinLock) {
             const pinProtectedKey = await this.storageService.get<string>(ConstantsService.pinProtectedKey);
             try {
                 const protectedKeyCs = new CipherString(pinProtectedKey);
-                const pinKey = await this.cryptoService.makePinKey(this.pin, this.email);
+                const pinKey = await this.cryptoService.makePinKey(this.pin, this.email, kdf, kdfIterations);
                 const decKey = await this.cryptoService.decryptToBytes(protectedKeyCs, pinKey);
                 await this.setKeyAndContinue(new SymmetricCryptoKey(decKey));
             } catch {
@@ -60,27 +67,17 @@ export class LockComponent implements OnInit {
                 this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                     this.i18nService.t('invalidPin'));
             }
-            return;
-        }
-
-        // Master Password
-        if (this.masterPassword == null || this.masterPassword === '') {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('masterPassRequired'));
-            return;
-        }
-
-        const kdf = await this.userService.getKdf();
-        const kdfIterations = await this.userService.getKdfIterations();
-        const key = await this.cryptoService.makeKey(this.masterPassword, this.email, kdf, kdfIterations);
-        const keyHash = await this.cryptoService.hashPassword(this.masterPassword, key);
-        const storedKeyHash = await this.cryptoService.getKeyHash();
-
-        if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
-            this.setKeyAndContinue(key);
         } else {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('invalidMasterPassword'));
+            const key = await this.cryptoService.makeKey(this.masterPassword, this.email, kdf, kdfIterations);
+            const keyHash = await this.cryptoService.hashPassword(this.masterPassword, key);
+            const storedKeyHash = await this.cryptoService.getKeyHash();
+
+            if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
+                this.setKeyAndContinue(key);
+            } else {
+                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                    this.i18nService.t('invalidMasterPassword'));
+            }
         }
     }
 
