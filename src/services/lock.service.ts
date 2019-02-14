@@ -35,10 +35,10 @@ export class LockService implements LockServiceAbstraction {
     }
 
     async isLocked(): Promise<boolean> {
-        if (this.pinLocked) {
+        const hasKey = await this.cryptoService.hasKey();
+        if (hasKey && this.pinLocked) {
             return true;
         }
-        const hasKey = await this.cryptoService.hasKey();
         return !hasKey;
     }
 
@@ -48,13 +48,7 @@ export class LockService implements LockServiceAbstraction {
             return;
         }
 
-        if (this.pinLocked) {
-            return;
-        }
-
-        const hasKey = await this.cryptoService.hasKey();
-        if (!hasKey) {
-            // no key so no need to lock
+        if (this.isLocked()) {
             return;
         }
 
@@ -83,7 +77,11 @@ export class LockService implements LockServiceAbstraction {
         if (allowSoftLock) {
             const pinSet = await this.isPinLockSet();
             if (pinSet[0]) {
-                await this.pinLock();
+                this.pinLocked = true;
+                this.messagingService.send('locked');
+                if (this.lockedCallback != null) {
+                    await this.lockedCallback();
+                }
                 return;
             }
         }
@@ -118,13 +116,5 @@ export class LockService implements LockServiceAbstraction {
 
     clear(): Promise<any> {
         return this.storageService.remove(ConstantsService.protectedPin);
-    }
-
-    private async pinLock(): Promise<void> {
-        this.pinLocked = true;
-        this.messagingService.send('locked');
-        if (this.lockedCallback != null) {
-            await this.lockedCallback();
-        }
     }
 }
