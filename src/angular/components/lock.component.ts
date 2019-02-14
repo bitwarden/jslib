@@ -25,6 +25,7 @@ export class LockComponent implements OnInit {
     protected onSuccessfulSubmit: () => void;
 
     private invalidPinAttempts = 0;
+    private pinSet: [boolean, boolean];
 
     constructor(protected router: Router, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected messagingService: MessagingService,
@@ -32,7 +33,9 @@ export class LockComponent implements OnInit {
         protected storageService: StorageService, protected lockService: LockService) { }
 
     async ngOnInit() {
-        this.pinLock = await this.lockService.isPinLockSet();
+        this.pinSet = await this.lockService.isPinLockSet();
+        const hasKey = await this.cryptoService.hasKey();
+        this.pinLock = (this.pinSet[0] && hasKey) || this.pinSet[1];
         this.email = await this.userService.getEmail();
     }
 
@@ -52,13 +55,25 @@ export class LockComponent implements OnInit {
         const kdfIterations = await this.userService.getKdfIterations();
 
         if (this.pinLock) {
-            const pinProtectedKey = await this.storageService.get<string>(ConstantsService.pinProtectedKey);
+            let failed = true;
             try {
-                const protectedKeyCs = new CipherString(pinProtectedKey);
-                const pinKey = await this.cryptoService.makePinKey(this.pin, this.email, kdf, kdfIterations);
-                const decKey = await this.cryptoService.decryptToBytes(protectedKeyCs, pinKey);
-                await this.setKeyAndContinue(new SymmetricCryptoKey(decKey));
-            } catch {
+                if (this.pinSet[0]) {
+                    const protectedPin = await this.storageService.get<string>(ConstantsService.protectedPin);
+                    const decPin = await this.cryptoService.decryptToUtf8(new CipherString(protectedPin));
+                    this.lockService.pinLocked = false;
+                    failed = decPin !== this.pin;
+                    this.doContinue();
+                } else {
+                    const pinProtectedKey = await this.storageService.get<string>(ConstantsService.pinProtectedKey);
+                    const protectedKeyCs = new CipherString(pinProtectedKey);
+                    const pinKey = await this.cryptoService.makePinKey(this.pin, this.email, kdf, kdfIterations);
+                    const decKey = await this.cryptoService.decryptToBytes(protectedKeyCs, pinKey);
+                    failed = false;
+                    await this.setKeyAndContinue(new SymmetricCryptoKey(decKey));
+                }
+            } catch { }
+
+            if (failed) {
                 this.invalidPinAttempts++;
                 if (this.invalidPinAttempts >= 5) {
                     this.messagingService.send('logout');
@@ -97,6 +112,10 @@ export class LockComponent implements OnInit {
 
     private async setKeyAndContinue(key: SymmetricCryptoKey) {
         await this.cryptoService.setKey(key);
+        this.doContinue();
+    }
+
+    private doContinue() {
         this.messagingService.send('unlocked');
         if (this.onSuccessfulSubmit != null) {
             this.onSuccessfulSubmit();

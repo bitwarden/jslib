@@ -11,6 +11,8 @@ import { SearchService } from '../abstractions/search.service';
 import { StorageService } from '../abstractions/storage.service';
 
 export class LockService implements LockServiceAbstraction {
+    pinLocked = false;
+
     private inited = false;
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -32,9 +34,21 @@ export class LockService implements LockServiceAbstraction {
         }
     }
 
+    async isLocked(): Promise<boolean> {
+        if (this.pinLocked) {
+            return true;
+        }
+        const hasKey = await this.cryptoService.hasKey();
+        return !hasKey;
+    }
+
     async checkLock(): Promise<void> {
         if (this.platformUtilsService.isViewOpen()) {
             // Do not lock
+            return;
+        }
+
+        if (this.pinLocked) {
             return;
         }
 
@@ -61,11 +75,19 @@ export class LockService implements LockServiceAbstraction {
         const diffSeconds = ((new Date()).getTime() - lastActive) / 1000;
         if (diffSeconds >= lockOptionSeconds) {
             // need to lock now
-            await this.lock();
+            await this.lock(true);
         }
     }
 
-    async lock(): Promise<void> {
+    async lock(allowSoftLock = false): Promise<void> {
+        if (allowSoftLock) {
+            const pinSet = await this.isPinLockSet();
+            if (pinSet[0]) {
+                await this.pinLock();
+                return;
+            }
+        }
+
         await Promise.all([
             this.cryptoService.clearKey(),
             this.cryptoService.clearOrgKeys(true),
@@ -88,8 +110,21 @@ export class LockService implements LockServiceAbstraction {
         await this.cryptoService.toggleKey();
     }
 
-    async isPinLockSet(): Promise<boolean> {
+    async isPinLockSet(): Promise<[boolean, boolean]> {
+        const protectedPin = await this.storageService.get<string>(ConstantsService.protectedPin);
         const pinProtectedKey = await this.storageService.get<string>(ConstantsService.pinProtectedKey);
-        return pinProtectedKey != null;
+        return [protectedPin != null, pinProtectedKey != null];
+    }
+
+    clear(): Promise<any> {
+        return this.storageService.remove(ConstantsService.protectedPin);
+    }
+
+    private async pinLock(): Promise<void> {
+        this.pinLocked = true;
+        this.messagingService.send('locked');
+        if (this.lockedCallback != null) {
+            await this.lockedCallback();
+        }
     }
 }

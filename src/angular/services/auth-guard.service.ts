@@ -4,13 +4,13 @@ import {
     Router,
 } from '@angular/router';
 
-import { CryptoService } from '../../abstractions/crypto.service';
+import { LockService } from '../../abstractions/lock.service';
 import { MessagingService } from '../../abstractions/messaging.service';
 import { UserService } from '../../abstractions/user.service';
 
 @Injectable()
 export class AuthGuardService implements CanActivate {
-    constructor(private cryptoService: CryptoService, private userService: UserService, private router: Router,
+    constructor(private lockService: LockService, private userService: UserService, private router: Router,
         private messagingService: MessagingService) { }
 
     async canActivate() {
@@ -20,8 +20,8 @@ export class AuthGuardService implements CanActivate {
             return false;
         }
 
-        const hasKey = await this.cryptoService.hasKey();
-        if (!hasKey) {
+        const locked = await this.lockService.isLocked();
+        if (locked) {
             this.router.navigate(['lock']);
             return false;
         }

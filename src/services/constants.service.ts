@@ -19,6 +19,7 @@ export class ConstantsService {
     static readonly dontShowIdentitiesCurrentTab: string = 'dontShowIdentitiesCurrentTab';
     static readonly defaultUriMatch: string = 'defaultUriMatch';
     static readonly pinProtectedKey: string = 'pinProtectedKey';
+    static readonly protectedPin: string = 'protectedPin';
 
     readonly environmentUrlsKey: string = ConstantsService.environmentUrlsKey;
     readonly disableGaKey: string = ConstantsService.disableGaKey;
@@ -39,4 +40,5 @@ export class ConstantsService {
     readonly dontShowIdentitiesCurrentTab: string = ConstantsService.dontShowIdentitiesCurrentTab;
     readonly defaultUriMatch: string = ConstantsService.defaultUriMatch;
     readonly pinProtectedKey: string = ConstantsService.pinProtectedKey;
+    readonly protectedPin: string = ConstantsService.protectedPin;
 }
