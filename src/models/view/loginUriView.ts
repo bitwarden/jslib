@@ -13,6 +13,7 @@ const CanLaunchWhitelist = [
     'ftp://',
     'sftp://',
     'irc://',
+    'vnc://',
     'chrome://',
 ];
 
