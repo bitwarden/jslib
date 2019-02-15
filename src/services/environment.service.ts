@@ -103,6 +103,6 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
             url = 'https://' + url;
         }
 
-        return url;
+        return url.trim();
     }
 }
