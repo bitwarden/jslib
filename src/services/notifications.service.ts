@@ -185,7 +185,8 @@ export class NotificationsService implements NotificationsServiceAbstraction {
 
     private async isAuthedAndUnlocked() {
         if (await this.userService.isAuthenticated()) {
-            return this.lockService.isLocked();
+            const locked = await this.lockService.isLocked();
+            return !locked;
         }
         return false;
     }
