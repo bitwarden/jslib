@@ -68,8 +68,8 @@ import {
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
-import { OrganizationBillingResponse } from '../models/response/organizationBillingResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
+import { OrganizationSubscriptionResponse } from '../models/response/organizationSubscriptionResponse';
 import {
     OrganizationUserDetailsResponse,
     OrganizationUserUserDetailsResponse,
@@ -77,6 +77,7 @@ import {
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
+import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
 import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
@@ -101,6 +102,7 @@ export abstract class ApiService {
 
     getProfile: () => Promise<ProfileResponse>;
     getUserBilling: () => Promise<BillingResponse>;
+    getUserSubscription: () => Promise<SubscriptionResponse>;
     putProfile: (request: UpdateProfileRequest) => Promise<ProfileResponse>;
     postPrelogin: (request: PreloginRequest) => Promise<PreloginResponse>;
     postEmailToken: (request: EmailTokenRequest) => Promise<any>;
@@ -224,7 +226,8 @@ export abstract class ApiService {
     postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
 
     getOrganization: (id: string) => Promise<OrganizationResponse>;
-    getOrganizationBilling: (id: string) => Promise<OrganizationBillingResponse>;
+    getOrganizationBilling: (id: string) => Promise<BillingResponse>;
+    getOrganizationSubscription: (id: string) => Promise<OrganizationSubscriptionResponse>;
     getOrganizationLicense: (id: string, installationId: string) => Promise<any>;
     postOrganization: (request: OrganizationCreateRequest) => Promise<OrganizationResponse>;
     putOrganization: (id: string, request: OrganizationUpdateRequest) => Promise<OrganizationResponse>;

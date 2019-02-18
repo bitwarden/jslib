@@ -75,8 +75,8 @@ import {
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
-import { OrganizationBillingResponse } from '../models/response/organizationBillingResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
+import { OrganizationSubscriptionResponse } from '../models/response/organizationSubscriptionResponse';
 import {
     OrganizationUserDetailsResponse,
     OrganizationUserUserDetailsResponse,
@@ -84,6 +84,7 @@ import {
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
+import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
 import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
@@ -198,6 +199,11 @@ export class ApiService implements ApiServiceAbstraction {
     async getUserBilling(): Promise<BillingResponse> {
         const r = await this.send('GET', '/accounts/billing', null, true, true);
         return new BillingResponse(r);
+    }
+
+    async getUserSubscription(): Promise<SubscriptionResponse> {
+        const r = await this.send('GET', '/accounts/subscription', null, true, true);
+        return new SubscriptionResponse(r);
     }
 
     async putProfile(request: UpdateProfileRequest): Promise<ProfileResponse> {
@@ -722,9 +728,14 @@ export class ApiService implements ApiServiceAbstraction {
         return new OrganizationResponse(r);
     }
 
-    async getOrganizationBilling(id: string): Promise<OrganizationBillingResponse> {
+    async getOrganizationBilling(id: string): Promise<BillingResponse> {
         const r = await this.send('GET', '/organizations/' + id + '/billing', null, true, true);
-        return new OrganizationBillingResponse(r);
+        return new BillingResponse(r);
+    }
+
+    async getOrganizationSubscription(id: string): Promise<OrganizationSubscriptionResponse> {
+        const r = await this.send('GET', '/organizations/' + id + '/subscription', null, true, true);
+        return new OrganizationSubscriptionResponse(r);
     }
 
     async getOrganizationLicense(id: string, installationId: string): Promise<any> {
