@@ -2,16 +2,14 @@ import { PaymentMethodType } from '../../enums/paymentMethodType';
 import { TransactionType } from '../../enums/transactionType';
 
 export class BillingResponse {
+    balance: number;
     paymentSource: BillingSourceResponse;
-    charges: BillingChargeResponse[] = [];
     invoices: BillingInvoiceResponse[] = [];
     transactions: BillingTransactionResponse[] = [];
 
     constructor(response: any) {
+        this.balance = response.Balance;
         this.paymentSource = response.PaymentSource == null ? null : new BillingSourceResponse(response.PaymentSource);
-        if (response.Charges != null) {
-            this.charges = response.Charges.map((c: any) => new BillingChargeResponse(c));
-        }
         if (response.Transactions != null) {
             this.transactions = response.Transactions.map((t: any) => new BillingTransactionResponse(t));
         }
@@ -32,30 +30,6 @@ export class BillingSourceResponse {
         this.cardBrand = response.CardBrand;
         this.description = response.Description;
         this.needsVerification = response.NeedsVerification;
-    }
-}
-
-export class BillingChargeResponse {
-    createdDate: string;
-    amount: number;
-    paymentSource: BillingSourceResponse;
-    status: string;
-    failureMessage: string;
-    refunded: boolean;
-    partiallyRefunded: boolean;
-    refundedAmount: number;
-    invoiceId: string;
-
-    constructor(response: any) {
-        this.createdDate = response.CreatedDate;
-        this.amount = response.Amount;
-        this.paymentSource = response.PaymentSource != null ? new BillingSourceResponse(response.PaymentSource) : null;
-        this.status = response.Status;
-        this.failureMessage = response.FailureMessage;
-        this.refunded = response.Refunded;
-        this.partiallyRefunded = response.PartiallyRefunded;
-        this.refundedAmount = response.RefundedAmount;
-        this.invoiceId = response.InvoiceId;
     }
 }
 
