@@ -11,5 +11,4 @@ export class OrganizationCreateRequest {
     additionalStorageGb: number;
     premiumAccessAddon: boolean;
     collectionName: string;
-    country: string;
 }
