@@ -12,7 +12,7 @@ import { WindowMain } from './window.main';
 import { isMacAppStore } from './utils';
 
 export class BaseMenu {
-    protected editMenuItemOptions: MenuItemConstructorOptions;
+    protected editSubMenuItemOptions: MenuItemConstructorOptions[];
     protected viewSubMenuItemOptions: MenuItemConstructorOptions[];
     protected windowMenuItemOptions: MenuItemConstructorOptions;
     protected macAppMenuItemOptions: MenuItemConstructorOptions[];
@@ -21,37 +21,34 @@ export class BaseMenu {
     constructor(protected i18nService: I18nService, protected windowMain: WindowMain) { }
 
     protected initProperties() {
-        this.editMenuItemOptions = {
-            label: this.i18nService.t('edit'),
-            submenu: [
-                {
-                    label: this.i18nService.t('undo'),
-                    role: 'undo',
-                },
-                {
-                    label: this.i18nService.t('redo'),
-                    role: 'redo',
-                },
-                { type: 'separator' },
-                {
-                    label: this.i18nService.t('cut'),
-                    role: 'cut',
-                },
-                {
-                    label: this.i18nService.t('copy'),
-                    role: 'copy',
-                },
-                {
-                    label: this.i18nService.t('paste'),
-                    role: 'paste',
-                },
-                { type: 'separator' },
-                {
-                    label: this.i18nService.t('selectAll'),
-                    role: 'selectall',
-                },
-            ],
-        };
+        this.editSubMenuItemOptions = [
+            {
+                label: this.i18nService.t('undo'),
+                role: 'undo',
+            },
+            {
+                label: this.i18nService.t('redo'),
+                role: 'redo',
+            },
+            { type: 'separator' },
+            {
+                label: this.i18nService.t('cut'),
+                role: 'cut',
+            },
+            {
+                label: this.i18nService.t('copy'),
+                role: 'copy',
+            },
+            {
+                label: this.i18nService.t('paste'),
+                role: 'paste',
+            },
+            { type: 'separator' },
+            {
+                label: this.i18nService.t('selectAll'),
+                role: 'selectall',
+            },
+        ];
 
         this.viewSubMenuItemOptions = [
             {
