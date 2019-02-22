@@ -27,7 +27,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
             let folderIndex = result.folders.length;
             let grouping = value.grouping;
             if (grouping != null) {
-                grouping = grouping.replace(/\\/g, '/');
+                grouping = grouping.replace(/\\/g, '/').replace(/[\x00-\x1F\x7F-\x9F]/g, '');
             }
             const hasFolder = this.getValueOrDefault(grouping, '(none)') !== '(none)';
             let addFolder = hasFolder;
