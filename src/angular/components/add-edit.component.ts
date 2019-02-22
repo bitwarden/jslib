@@ -298,6 +298,7 @@ export class AddEditComponent implements OnInit {
             this.platformUtilsService.eventTrack('Deleted Cipher');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedItem'));
             this.onDeletedCipher.emit(this.cipher);
+            this.messagingService.send('deletedCipher');
         } catch { }
 
         return true;
