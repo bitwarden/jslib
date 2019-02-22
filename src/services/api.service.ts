@@ -6,6 +6,7 @@ import { TokenService } from '../abstractions/token.service';
 
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
+import { BitPayInvoiceRequest } from '../models/request/bitPayInvoiceRequest';
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
 import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
 import { CipherBulkShareRequest } from '../models/request/cipherBulkShareRequest';
@@ -835,6 +836,13 @@ export class ApiService implements ApiServiceAbstraction {
     async getHibpBreach(username: string): Promise<BreachAccountResponse[]> {
         const r = await this.send('GET', '/hibp/breach?username=' + username, null, true, true);
         return r.map((a: any) => new BreachAccountResponse(a));
+    }
+
+    // Misc
+
+    async postBitPayInvoice(request: BitPayInvoiceRequest): Promise<string> {
+        const r = await this.send('POST', '/bitpay-invoice', request, true, true);
+        return r as string;
     }
 
     // Helpers

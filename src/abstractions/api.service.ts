@@ -1,5 +1,6 @@
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
+import { BitPayInvoiceRequest } from '../models/request/bitPayInvoiceRequest';
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
 import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
 import { CipherBulkShareRequest } from '../models/request/cipherBulkShareRequest';
@@ -252,6 +253,8 @@ export abstract class ApiService {
     getUserPublicKey: (id: string) => Promise<UserKeyResponse>;
 
     getHibpBreach: (username: string) => Promise<BreachAccountResponse[]>;
+
+    postBitPayInvoice: (request: BitPayInvoiceRequest) => Promise<string>;
 
     getActiveBearerToken: () => Promise<string>;
     fetch: (request: Request) => Promise<Response>;
