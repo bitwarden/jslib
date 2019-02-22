@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import {
+    ActivatedRouteSnapshot,
     CanActivate,
     Router,
+    RouterStateSnapshot,
 } from '@angular/router';
 
 import { LockService } from '../../abstractions/lock.service';
@@ -13,7 +15,7 @@ export class AuthGuardService implements CanActivate {
     constructor(private lockService: LockService, private userService: UserService, private router: Router,
         private messagingService: MessagingService) { }
 
-    async canActivate() {
+    async canActivate(route: ActivatedRouteSnapshot, routerState: RouterStateSnapshot) {
         const isAuthed = await this.userService.isAuthenticated();
         if (!isAuthed) {
             this.messagingService.send('logout');
@@ -22,6 +24,9 @@ export class AuthGuardService implements CanActivate {
 
         const locked = await this.lockService.isLocked();
         if (locked) {
+            if (routerState != null) {
+                this.messagingService.send('lockedUrl', { url: routerState.url });
+            }
             this.router.navigate(['lock']);
             return false;
         }
