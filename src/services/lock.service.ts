@@ -20,7 +20,7 @@ export class LockService implements LockServiceAbstraction {
         private collectionService: CollectionService, private cryptoService: CryptoService,
         private platformUtilsService: PlatformUtilsService, private storageService: StorageService,
         private messagingService: MessagingService, private searchService: SearchService,
-        private lockedCallback: () => Promise<void>) {
+        private lockedCallback: () => Promise<void> = null, private reloadCallback: () => Promise<void> = null) {
     }
 
     init(checkOnInterval: boolean) {
@@ -49,7 +49,7 @@ export class LockService implements LockServiceAbstraction {
             return;
         }
 
-        if (this.isLocked()) {
+        if (await this.isLocked()) {
             return;
         }
 
@@ -135,6 +135,9 @@ export class LockService implements LockServiceAbstraction {
                 clearInterval(this.reloadInterval);
                 this.reloadInterval = null;
                 this.messagingService.send('reloadProcess');
+                if (this.reloadCallback != null) {
+                    await this.reloadCallback();
+                }
             }
         }, 10000);
     }
