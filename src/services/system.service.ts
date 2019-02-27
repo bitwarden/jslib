@@ -48,7 +48,7 @@ export class SystemService implements SystemServiceAbstraction {
         }
     }
 
-    clearClipboard(clipboardValue: string, timeoutMs = 30000): void {
+    clearClipboard(clipboardValue: string, timeoutMs: number = null): void {
         if (this.clearClipboardTimeout != null) {
             clearTimeout(this.clearClipboardTimeout);
             this.clearClipboardTimeout = null;
@@ -56,11 +56,19 @@ export class SystemService implements SystemServiceAbstraction {
         if (Utils.isNullOrWhitespace(clipboardValue)) {
             return;
         }
-        this.clearClipboardTimeout = setTimeout(async () => {
-            const clipboardValueNow = await this.platformUtilsService.readFromClipboard();
-            if (clipboardValue === clipboardValueNow) {
-                this.platformUtilsService.copyToClipboard('');
+        this.storageService.get<number>(ConstantsService.clearClipboardKey).then((clearSeconds) => {
+            if (clearSeconds == null) {
+                return;
             }
-        }, timeoutMs);
+            if (timeoutMs == null) {
+                timeoutMs = clearSeconds * 1000;
+            }
+            this.clearClipboardTimeout = setTimeout(async () => {
+                const clipboardValueNow = await this.platformUtilsService.readFromClipboard();
+                if (clipboardValue === clipboardValueNow) {
+                    this.platformUtilsService.copyToClipboard('');
+                }
+            }, timeoutMs);
+        });
     }
 }

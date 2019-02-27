@@ -20,6 +20,7 @@ export class ConstantsService {
     static readonly defaultUriMatch: string = 'defaultUriMatch';
     static readonly pinProtectedKey: string = 'pinProtectedKey';
     static readonly protectedPin: string = 'protectedPin';
+    static readonly clearClipboardKey: string = 'clearClipboardKey';
 
     readonly environmentUrlsKey: string = ConstantsService.environmentUrlsKey;
     readonly disableGaKey: string = ConstantsService.disableGaKey;
@@ -41,4 +42,5 @@ export class ConstantsService {
     readonly defaultUriMatch: string = ConstantsService.defaultUriMatch;
     readonly pinProtectedKey: string = ConstantsService.pinProtectedKey;
     readonly protectedPin: string = ConstantsService.protectedPin;
+    readonly clearClipboardKey: string = ConstantsService.clearClipboardKey;
 }
