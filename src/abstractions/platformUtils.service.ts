@@ -28,4 +28,5 @@ export abstract class PlatformUtilsService {
     isDev: () => boolean;
     isSelfHost: () => boolean;
     copyToClipboard: (text: string, options?: any) => void;
+    readFromClipboard: (options?: any) => Promise<string>;
 }
