@@ -14,13 +14,12 @@ export class LockService implements LockServiceAbstraction {
     pinLocked = false;
 
     private inited = false;
-    private reloadInterval: any = null;
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private cryptoService: CryptoService,
         private platformUtilsService: PlatformUtilsService, private storageService: StorageService,
         private messagingService: MessagingService, private searchService: SearchService,
-        private lockedCallback: () => Promise<void> = null, private reloadCallback: () => Promise<void> = null) {
+        private lockedCallback: () => Promise<void> = null) {
     }
 
     init(checkOnInterval: boolean) {
@@ -117,35 +116,5 @@ export class LockService implements LockServiceAbstraction {
 
     clear(): Promise<any> {
         return this.storageService.remove(ConstantsService.protectedPin);
-    }
-
-    startLockReload(): void {
-        if (this.pinLocked || this.reloadInterval != null) {
-            return;
-        }
-        this.reloadInterval = setInterval(async () => {
-            let doRefresh = false;
-            const lastActive = await this.storageService.get<number>(ConstantsService.lastActiveKey);
-            if (lastActive != null) {
-                const diffSeconds = (new Date()).getTime() - lastActive;
-                // Don't refresh if they are still active in the window
-                doRefresh = diffSeconds >= 5000;
-            }
-            if (doRefresh) {
-                clearInterval(this.reloadInterval);
-                this.reloadInterval = null;
-                this.messagingService.send('reloadProcess');
-                if (this.reloadCallback != null) {
-                    await this.reloadCallback();
-                }
-            }
-        }, 10000);
-    }
-
-    cancelLockReload(): void {
-        if (this.reloadInterval != null) {
-            clearInterval(this.reloadInterval);
-            this.reloadInterval = null;
-        }
     }
 }

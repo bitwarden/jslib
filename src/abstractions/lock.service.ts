@@ -6,6 +6,4 @@ export abstract class LockService {
     setLockOption: (lockOption: number) => Promise<void>;
     isPinLockSet: () => Promise<[boolean, boolean]>;
     clear: () => Promise<any>;
-    startLockReload: () => void;
-    cancelLockReload: () => void;
 }
