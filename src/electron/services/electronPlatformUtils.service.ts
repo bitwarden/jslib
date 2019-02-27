@@ -188,4 +188,9 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         const type = options ? options.type : null;
         clipboard.writeText(text, type);
     }
+
+    readFromClipboard(options?: any): Promise<string> {
+        const type = options ? options.type : null;
+        return Promise.resolve(clipboard.readText(type));
+    }
 }
