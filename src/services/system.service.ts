@@ -48,7 +48,7 @@ export class SystemService implements SystemServiceAbstraction {
         }
     }
 
-    clearClipboard(clipboardValue: string, timeoutMs = 5000): void {
+    clearClipboard(clipboardValue: string, timeoutMs = 30000): void {
         if (this.clearClipboardTimeout != null) {
             clearTimeout(this.clearClipboardTimeout);
             this.clearClipboardTimeout = null;
