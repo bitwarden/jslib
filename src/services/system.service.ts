@@ -11,6 +11,7 @@ import { Utils } from '../misc/utils';
 export class SystemService implements SystemServiceAbstraction {
     private reloadInterval: any = null;
     private clearClipboardTimeout: any = null;
+    private clearClipboardTimeoutFunction: () => Promise<any> = null;
 
     constructor(private storageService: StorageService, private lockService: LockService,
         private messagingService: MessagingService, private platformUtilsService: PlatformUtilsService,
@@ -63,12 +64,22 @@ export class SystemService implements SystemServiceAbstraction {
             if (timeoutMs == null) {
                 timeoutMs = clearSeconds * 1000;
             }
-            this.clearClipboardTimeout = setTimeout(async () => {
+            this.clearClipboardTimeoutFunction = async () => {
                 const clipboardValueNow = await this.platformUtilsService.readFromClipboard();
                 if (clipboardValue === clipboardValueNow) {
                     this.platformUtilsService.copyToClipboard('');
                 }
+            };
+            this.clearClipboardTimeout = setTimeout(async () => {
+                await this.clearPendingClipboard();
             }, timeoutMs);
         });
+    }
+
+    async clearPendingClipboard() {
+        if (this.clearClipboardTimeoutFunction != null) {
+            await this.clearClipboardTimeoutFunction();
+            this.clearClipboardTimeoutFunction = null;
+        }
     }
 }
