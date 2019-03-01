@@ -1,6 +1,7 @@
+import { BaseResponse } from './baseResponse';
 import { SelectionReadOnlyResponse } from './selectionReadOnlyResponse';
 
-export class GroupResponse {
+export class GroupResponse extends BaseResponse {
     id: string;
     organizationId: string;
     name: string;
@@ -8,11 +9,12 @@ export class GroupResponse {
     externalId: string;
 
     constructor(response: any) {
-        this.id = response.Id;
-        this.organizationId = response.OrganizationId;
-        this.name = response.Name;
-        this.accessAll = response.AccessAll;
-        this.externalId = response.ExternalId;
+        super(response);
+        this.id = this.getResponseProperty('Id');
+        this.organizationId = this.getResponseProperty('OrganizationId');
+        this.name = this.getResponseProperty('Name');
+        this.accessAll = this.getResponseProperty('AccessAll');
+        this.externalId = this.getResponseProperty('ExternalId');
     }
 }
 
@@ -21,8 +23,9 @@ export class GroupDetailsResponse extends GroupResponse {
 
     constructor(response: any) {
         super(response);
-        if (response.Collections != null) {
-            this.collections = response.Collections.map((c: any) => new SelectionReadOnlyResponse(c));
+        const collections = this.getResponseProperty('Collections');
+        if (collections != null) {
+            this.collections = collections.map((c: any) => new SelectionReadOnlyResponse(c));
         }
     }
 }

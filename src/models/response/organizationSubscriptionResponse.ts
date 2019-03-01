@@ -13,12 +13,13 @@ export class OrganizationSubscriptionResponse extends OrganizationResponse {
 
     constructor(response: any) {
         super(response);
-        this.storageName = response.StorageName;
-        this.storageGb = response.StorageGb;
-        this.subscription = response.Subscription == null ?
-            null : new BillingSubscriptionResponse(response.Subscription);
-        this.upcomingInvoice = response.UpcomingInvoice == null ?
-            null : new BillingSubscriptionUpcomingInvoiceResponse(response.UpcomingInvoice);
-        this.expiration = response.Expiration;
+        this.storageName = this.getResponseProperty('StorageName');
+        this.storageGb = this.getResponseProperty('StorageGb');
+        const subscription = this.getResponseProperty('Subscription');
+        this.subscription = subscription == null ? null : new BillingSubscriptionResponse(subscription);
+        const upcomingInvoice = this.getResponseProperty('UpcomingInvoice');
+        this.upcomingInvoice = upcomingInvoice == null ? null :
+            new BillingSubscriptionUpcomingInvoiceResponse(upcomingInvoice);
+        this.expiration = this.getResponseProperty('Expiration');
     }
 }

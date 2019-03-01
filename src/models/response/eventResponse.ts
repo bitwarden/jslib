@@ -1,7 +1,9 @@
+import { BaseResponse } from './baseResponse';
+
 import { DeviceType } from '../../enums/deviceType';
 import { EventType } from '../../enums/eventType';
 
-export class EventResponse {
+export class EventResponse extends BaseResponse {
     type: EventType;
     userId: string;
     organizationId: string;
@@ -15,16 +17,17 @@ export class EventResponse {
     ipAddress: string;
 
     constructor(response: any) {
-        this.type = response.Type;
-        this.userId = response.UserId;
-        this.organizationId = response.OrganizationId;
-        this.cipherId = response.CipherId;
-        this.collectionId = response.CollectionId;
-        this.groupId = response.GroupId;
-        this.organizationUserId = response.OrganizationUserId;
-        this.actingUserId = response.ActingUserId;
-        this.date = response.Date;
-        this.deviceType = response.DeviceType;
-        this.ipAddress = response.IpAddress;
+        super(response);
+        this.type = this.getResponseProperty('Type');
+        this.userId = this.getResponseProperty('UserId');
+        this.organizationId = this.getResponseProperty('OrganizationId');
+        this.cipherId = this.getResponseProperty('CipherId');
+        this.collectionId = this.getResponseProperty('CollectionId');
+        this.groupId = this.getResponseProperty('GroupId');
+        this.organizationUserId = this.getResponseProperty('OrganizationUserId');
+        this.actingUserId = this.getResponseProperty('ActingUserId');
+        this.date = this.getResponseProperty('Date');
+        this.deviceType = this.getResponseProperty('DeviceType');
+        this.ipAddress = this.getResponseProperty('IpAddress');
     }
 }

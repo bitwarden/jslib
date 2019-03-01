@@ -6,6 +6,7 @@ import { CardApi } from '../api/cardApi';
 import { FieldApi } from '../api/fieldApi';
 import { IdentityApi } from '../api/identityApi';
 import { LoginApi } from '../api/loginApi';
+import { LoginUriApi } from '../api/loginUriApi';
 import { SecureNoteApi } from '../api/secureNoteApi';
 
 import { AttachmentRequest } from './attachmentRequest';
@@ -38,79 +39,85 @@ export class CipherRequest {
 
         switch (this.type) {
             case CipherType.Login:
-                this.login = {
-                    uris: null,
-                    username: cipher.login.username ? cipher.login.username.encryptedString : null,
-                    password: cipher.login.password ? cipher.login.password.encryptedString : null,
-                    passwordRevisionDate: cipher.login.passwordRevisionDate != null ?
-                        cipher.login.passwordRevisionDate.toISOString() : null,
-                    totp: cipher.login.totp ? cipher.login.totp.encryptedString : null,
-                };
+                this.login = new LoginApi();
+                this.login.uris = null;
+                this.login.username = cipher.login.username ? cipher.login.username.encryptedString : null;
+                this.login.password = cipher.login.password ? cipher.login.password.encryptedString : null;
+                this.login.passwordRevisionDate = cipher.login.passwordRevisionDate != null ?
+                    cipher.login.passwordRevisionDate.toISOString() : null;
+                this.login.totp = cipher.login.totp ? cipher.login.totp.encryptedString : null;
 
-                if (cipher.login.uris) {
-                    this.login.uris = [];
-                    cipher.login.uris.forEach((u) => {
-                        this.login.uris.push({
-                            uri: u.uri ? u.uri.encryptedString : null,
-                            match: u.match != null ? u.match : null,
-                        });
+                if (cipher.login.uris != null) {
+                    this.login.uris = cipher.login.uris.map((u) => {
+                        const uri = new LoginUriApi();
+                        uri.uri = u.uri != null ? u.uri.encryptedString : null;
+                        uri.match = u.match != null ? u.match : null;
+                        return uri;
                     });
                 }
                 break;
             case CipherType.SecureNote:
-                this.secureNote = {
-                    type: cipher.secureNote.type,
-                };
+                this.secureNote = new SecureNoteApi();
+                this.secureNote.type = cipher.secureNote.type;
                 break;
             case CipherType.Card:
-                this.card = {
-                    cardholderName: cipher.card.cardholderName ? cipher.card.cardholderName.encryptedString : null,
-                    brand: cipher.card.brand ? cipher.card.brand.encryptedString : null,
-                    number: cipher.card.number ? cipher.card.number.encryptedString : null,
-                    expMonth: cipher.card.expMonth ? cipher.card.expMonth.encryptedString : null,
-                    expYear: cipher.card.expYear ? cipher.card.expYear.encryptedString : null,
-                    code: cipher.card.code ? cipher.card.code.encryptedString : null,
-                };
+                this.card = new CardApi();
+                this.card.cardholderName = cipher.card.cardholderName != null ?
+                    cipher.card.cardholderName.encryptedString : null;
+                this.card.brand = cipher.card.brand != null ? cipher.card.brand.encryptedString : null;
+                this.card.number = cipher.card.number != null ? cipher.card.number.encryptedString : null;
+                this.card.expMonth = cipher.card.expMonth != null ? cipher.card.expMonth.encryptedString : null;
+                this.card.expYear = cipher.card.expYear != null ? cipher.card.expYear.encryptedString : null;
+                this.card.code = cipher.card.code != null ? cipher.card.code.encryptedString : null;
                 break;
             case CipherType.Identity:
-                this.identity = {
-                    title: cipher.identity.title ? cipher.identity.title.encryptedString : null,
-                    firstName: cipher.identity.firstName ? cipher.identity.firstName.encryptedString : null,
-                    middleName: cipher.identity.middleName ? cipher.identity.middleName.encryptedString : null,
-                    lastName: cipher.identity.lastName ? cipher.identity.lastName.encryptedString : null,
-                    address1: cipher.identity.address1 ? cipher.identity.address1.encryptedString : null,
-                    address2: cipher.identity.address2 ? cipher.identity.address2.encryptedString : null,
-                    address3: cipher.identity.address3 ? cipher.identity.address3.encryptedString : null,
-                    city: cipher.identity.city ? cipher.identity.city.encryptedString : null,
-                    state: cipher.identity.state ? cipher.identity.state.encryptedString : null,
-                    postalCode: cipher.identity.postalCode ? cipher.identity.postalCode.encryptedString : null,
-                    country: cipher.identity.country ? cipher.identity.country.encryptedString : null,
-                    company: cipher.identity.company ? cipher.identity.company.encryptedString : null,
-                    email: cipher.identity.email ? cipher.identity.email.encryptedString : null,
-                    phone: cipher.identity.phone ? cipher.identity.phone.encryptedString : null,
-                    ssn: cipher.identity.ssn ? cipher.identity.ssn.encryptedString : null,
-                    username: cipher.identity.username ? cipher.identity.username.encryptedString : null,
-                    passportNumber: cipher.identity.passportNumber ?
-                        cipher.identity.passportNumber.encryptedString : null,
-                    licenseNumber: cipher.identity.licenseNumber ? cipher.identity.licenseNumber.encryptedString : null,
-                };
+                this.identity = new IdentityApi();
+                this.identity.title = cipher.identity.title != null ? cipher.identity.title.encryptedString : null;
+                this.identity.firstName = cipher.identity.firstName != null ?
+                    cipher.identity.firstName.encryptedString : null;
+                this.identity.middleName = cipher.identity.middleName != null ?
+                    cipher.identity.middleName.encryptedString : null;
+                this.identity.lastName = cipher.identity.lastName != null ?
+                    cipher.identity.lastName.encryptedString : null;
+                this.identity.address1 = cipher.identity.address1 != null ?
+                    cipher.identity.address1.encryptedString : null;
+                this.identity.address2 = cipher.identity.address2 != null ?
+                    cipher.identity.address2.encryptedString : null;
+                this.identity.address3 = cipher.identity.address3 != null ?
+                    cipher.identity.address3.encryptedString : null;
+                this.identity.city = cipher.identity.city != null ? cipher.identity.city.encryptedString : null;
+                this.identity.state = cipher.identity.state != null ? cipher.identity.state.encryptedString : null;
+                this.identity.postalCode = cipher.identity.postalCode != null ?
+                    cipher.identity.postalCode.encryptedString : null;
+                this.identity.country = cipher.identity.country != null ?
+                    cipher.identity.country.encryptedString : null;
+                this.identity.company = cipher.identity.company != null ?
+                    cipher.identity.company.encryptedString : null;
+                this.identity.email = cipher.identity.email != null ? cipher.identity.email.encryptedString : null;
+                this.identity.phone = cipher.identity.phone != null ? cipher.identity.phone.encryptedString : null;
+                this.identity.ssn = cipher.identity.ssn != null ? cipher.identity.ssn.encryptedString : null;
+                this.identity.username = cipher.identity.username != null ?
+                    cipher.identity.username.encryptedString : null;
+                this.identity.passportNumber = cipher.identity.passportNumber != null ?
+                    cipher.identity.passportNumber.encryptedString : null;
+                this.identity.licenseNumber = cipher.identity.licenseNumber != null ?
+                    cipher.identity.licenseNumber.encryptedString : null;
                 break;
             default:
                 break;
         }
 
-        if (cipher.fields) {
-            this.fields = [];
-            cipher.fields.forEach((field) => {
-                this.fields.push({
-                    type: field.type,
-                    name: field.name ? field.name.encryptedString : null,
-                    value: field.value ? field.value.encryptedString : null,
-                });
+        if (cipher.fields != null) {
+            this.fields = cipher.fields.map((f) => {
+                const field = new FieldApi();
+                field.type = f.type;
+                field.name = f.name ? f.name.encryptedString : null;
+                field.value = f.value ? f.value.encryptedString : null;
+                return field;
             });
         }
 
-        if (cipher.passwordHistory) {
+        if (cipher.passwordHistory != null) {
             this.passwordHistory = [];
             cipher.passwordHistory.forEach((ph) => {
                 this.passwordHistory.push({
@@ -120,7 +127,7 @@ export class CipherRequest {
             });
         }
 
-        if (cipher.attachments) {
+        if (cipher.attachments != null) {
             this.attachments = {};
             this.attachments2 = {};
             cipher.attachments.forEach((attachment) => {

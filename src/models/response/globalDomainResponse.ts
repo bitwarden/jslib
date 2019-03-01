@@ -1,11 +1,14 @@
-export class GlobalDomainResponse {
+import { BaseResponse } from './baseResponse';
+
+export class GlobalDomainResponse extends BaseResponse {
     type: number;
     domains: string[];
     excluded: number[];
 
     constructor(response: any) {
-        this.type = response.Type;
-        this.domains = response.Domains;
-        this.excluded = response.Excluded;
+        super(response);
+        this.type = this.getResponseProperty('Type');
+        this.domains = this.getResponseProperty('Domains');
+        this.excluded = this.getResponseProperty('Excluded');
     }
 }

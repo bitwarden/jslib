@@ -1,4 +1,6 @@
-export class IdentityApi {
+import { BaseResponse } from '../response/baseResponse';
+
+export class IdentityApi extends BaseResponse {
     title: string;
     firstName: string;
     middleName: string;
@@ -18,24 +20,28 @@ export class IdentityApi {
     passportNumber: string;
     licenseNumber: string;
 
-    constructor(data: any) {
-        this.title = data.Title;
-        this.firstName = data.FirstName;
-        this.middleName = data.MiddleName;
-        this.lastName = data.LastName;
-        this.address1 = data.Address1;
-        this.address2 = data.Address2;
-        this.address3 = data.Address3;
-        this.city = data.City;
-        this.state = data.State;
-        this.postalCode = data.PostalCode;
-        this.country = data.Country;
-        this.company = data.Company;
-        this.email = data.Email;
-        this.phone = data.Phone;
-        this.ssn = data.SSN;
-        this.username = data.Username;
-        this.passportNumber = data.PassportNumber;
-        this.licenseNumber = data.LicenseNumber;
+    constructor(data: any = null) {
+        super(data);
+        if (data == null) {
+            return;
+        }
+        this.title = this.getResponseProperty('Title');
+        this.firstName = this.getResponseProperty('FirstName');
+        this.middleName = this.getResponseProperty('MiddleName');
+        this.lastName = this.getResponseProperty('LastName');
+        this.address1 = this.getResponseProperty('Address1');
+        this.address2 = this.getResponseProperty('Address2');
+        this.address3 = this.getResponseProperty('Address3');
+        this.city = this.getResponseProperty('City');
+        this.state = this.getResponseProperty('State');
+        this.postalCode = this.getResponseProperty('PostalCode');
+        this.country = this.getResponseProperty('Country');
+        this.company = this.getResponseProperty('Company');
+        this.email = this.getResponseProperty('Email');
+        this.phone = this.getResponseProperty('Phone');
+        this.ssn = this.getResponseProperty('SSN');
+        this.username = this.getResponseProperty('Username');
+        this.passportNumber = this.getResponseProperty('PassportNumber');
+        this.licenseNumber = this.getResponseProperty('LicenseNumber');
     }
 }

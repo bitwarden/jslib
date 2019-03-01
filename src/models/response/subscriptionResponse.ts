@@ -1,4 +1,6 @@
-export class SubscriptionResponse {
+import { BaseResponse } from './baseResponse';
+
+export class SubscriptionResponse extends BaseResponse {
     storageName: string;
     storageGb: number;
     maxStorageGb: number;
@@ -8,19 +10,21 @@ export class SubscriptionResponse {
     expiration: string;
 
     constructor(response: any) {
-        this.storageName = response.StorageName;
-        this.storageGb = response.StorageGb;
-        this.maxStorageGb = response.MaxStorageGb;
-        this.subscription = response.Subscription == null ?
-            null : new BillingSubscriptionResponse(response.Subscription);
-        this.upcomingInvoice = response.UpcomingInvoice == null ?
-            null : new BillingSubscriptionUpcomingInvoiceResponse(response.UpcomingInvoice);
-        this.license = response.License;
-        this.expiration = response.Expiration;
+        super(response);
+        this.storageName = this.getResponseProperty('StorageName');
+        this.storageGb = this.getResponseProperty('StorageGb');
+        this.maxStorageGb = this.getResponseProperty('MaxStorageGb');
+        this.license = this.getResponseProperty('License');
+        this.expiration = this.getResponseProperty('Expiration');
+        const subscription = this.getResponseProperty('Subscription');
+        const upcomingInvoice = this.getResponseProperty('UpcomingInvoice');
+        this.subscription = subscription == null ? null : new BillingSubscriptionResponse(subscription);
+        this.upcomingInvoice = upcomingInvoice == null ? null :
+            new BillingSubscriptionUpcomingInvoiceResponse(upcomingInvoice);
     }
 }
 
-export class BillingSubscriptionResponse {
+export class BillingSubscriptionResponse extends BaseResponse {
     trialStartDate: string;
     trialEndDate: string;
     periodStartDate: string;
@@ -32,40 +36,44 @@ export class BillingSubscriptionResponse {
     items: BillingSubscriptionItemResponse[] = [];
 
     constructor(response: any) {
-        this.trialEndDate = response.TrialStartDate;
-        this.trialEndDate = response.TrialEndDate;
-        this.periodStartDate = response.PeriodStartDate;
-        this.periodEndDate = response.PeriodEndDate;
-        this.cancelledDate = response.CancelledDate;
-        this.cancelAtEndDate = response.CancelAtEndDate;
-        this.status = response.Status;
-        this.cancelled = response.Cancelled;
-        if (response.Items != null) {
-            this.items = response.Items.map((i: any) => new BillingSubscriptionItemResponse(i));
+        super(response);
+        this.trialEndDate = this.getResponseProperty('TrialStartDate');
+        this.trialEndDate = this.getResponseProperty('TrialEndDate');
+        this.periodStartDate = this.getResponseProperty('PeriodStartDate');
+        this.periodEndDate = this.getResponseProperty('PeriodEndDate');
+        this.cancelledDate = this.getResponseProperty('CancelledDate');
+        this.cancelAtEndDate = this.getResponseProperty('CancelAtEndDate');
+        this.status = this.getResponseProperty('Status');
+        this.cancelled = this.getResponseProperty('Cancelled');
+        const items = this.getResponseProperty('Items');
+        if (items != null) {
+            this.items = items.map((i: any) => new BillingSubscriptionItemResponse(i));
         }
     }
 }
 
-export class BillingSubscriptionItemResponse {
+export class BillingSubscriptionItemResponse extends BaseResponse {
     name: string;
     amount: number;
     quantity: number;
     interval: string;
 
     constructor(response: any) {
-        this.name = response.Name;
-        this.amount = response.Amount;
-        this.quantity = response.Quantity;
-        this.interval = response.Interval;
+        super(response);
+        this.name = this.getResponseProperty('Name');
+        this.amount = this.getResponseProperty('Amount');
+        this.quantity = this.getResponseProperty('Quantity');
+        this.interval = this.getResponseProperty('Interval');
     }
 }
 
-export class BillingSubscriptionUpcomingInvoiceResponse {
+export class BillingSubscriptionUpcomingInvoiceResponse extends BaseResponse {
     date: string;
     amount: number;
 
     constructor(response: any) {
-        this.date = response.Date;
-        this.amount = response.Amount;
+        super(response);
+        this.date = this.getResponseProperty('Date');
+        this.amount = this.getResponseProperty('Amount');
     }
 }

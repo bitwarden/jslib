@@ -1,9 +1,12 @@
-export class SelectionReadOnlyResponse {
+import { BaseResponse } from './baseResponse';
+
+export class SelectionReadOnlyResponse extends BaseResponse {
     id: string;
     readOnly: boolean;
 
     constructor(response: any) {
-        this.id = response.Id;
-        this.readOnly = response.ReadOnly;
+        super(response);
+        this.id = this.getResponseProperty('Id');
+        this.readOnly = this.getResponseProperty('ReadOnly');
     }
 }

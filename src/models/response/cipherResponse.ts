@@ -1,4 +1,5 @@
 import { AttachmentResponse } from './attachmentResponse';
+import { BaseResponse } from './baseResponse';
 import { PasswordHistoryResponse } from './passwordHistoryResponse';
 
 import { CardApi } from '../api/cardApi';
@@ -7,7 +8,7 @@ import { IdentityApi } from '../api/identityApi';
 import { LoginApi } from '../api/loginApi';
 import { SecureNoteApi } from '../api/secureNoteApi';
 
-export class CipherResponse {
+export class CipherResponse extends BaseResponse {
     id: string;
     organizationId: string;
     folderId: string;
@@ -28,59 +29,52 @@ export class CipherResponse {
     collectionIds: string[];
 
     constructor(response: any) {
-        this.id = response.Id;
-        this.organizationId = response.OrganizationId;
-        this.folderId = response.FolderId || null;
-        this.type = response.Type;
-        this.name = response.Name;
-        this.notes = response.Notes;
-        this.favorite = response.Favorite || false;
-        this.edit = response.Edit || true;
-        this.organizationUseTotp = response.OrganizationUseTotp;
-        this.revisionDate = response.RevisionDate;
+        super(response);
+        this.id = this.getResponseProperty('Id');
+        this.organizationId = this.getResponseProperty('OrganizationId');
+        this.folderId = this.getResponseProperty('FolderId') || null;
+        this.type = this.getResponseProperty('Type');
+        this.name = this.getResponseProperty('Name');
+        this.notes = this.getResponseProperty('Notes');
+        this.favorite = this.getResponseProperty('Favorite') || false;
+        this.edit = this.getResponseProperty('Edit') || true;
+        this.organizationUseTotp = this.getResponseProperty('OrganizationUseTotp');
+        this.revisionDate = this.getResponseProperty('RevisionDate');
+        this.collectionIds = this.getResponseProperty('CollectionIds');
 
-        if (response.Login != null) {
-            this.login = new LoginApi(response.Login);
+        const login = this.getResponseProperty('Login');
+        if (login != null) {
+            this.login = new LoginApi(login);
         }
 
-        if (response.Card != null) {
-            this.card = new CardApi(response.Card);
+        const card = this.getResponseProperty('Card');
+        if (card != null) {
+            this.card = new CardApi(card);
         }
 
-        if (response.Identity != null) {
-            this.identity = new IdentityApi(response.Identity);
+        const identity = this.getResponseProperty('Identity');
+        if (identity != null) {
+            this.identity = new IdentityApi(identity);
         }
 
-        if (response.SecureNote != null) {
-            this.secureNote = new SecureNoteApi(response.SecureNote);
+        const secureNote = this.getResponseProperty('SecureNote');
+        if (secureNote != null) {
+            this.secureNote = new SecureNoteApi(secureNote);
         }
 
-        if (response.Fields != null) {
-            this.fields = [];
-            response.Fields.forEach((field: any) => {
-                this.fields.push(new FieldApi(field));
-            });
+        const fields = this.getResponseProperty('Fields');
+        if (fields != null) {
+            this.fields = fields.map((f: any) => new FieldApi(f));
         }
 
-        if (response.Attachments != null) {
-            this.attachments = [];
-            response.Attachments.forEach((attachment: any) => {
-                this.attachments.push(new AttachmentResponse(attachment));
-            });
+        const attachments = this.getResponseProperty('Attachments');
+        if (attachments != null) {
+            this.attachments = attachments.map((a: any) => new AttachmentResponse(a));
         }
 
-        if (response.PasswordHistory != null) {
-            this.passwordHistory = [];
-            response.PasswordHistory.forEach((ph: any) => {
-                this.passwordHistory.push(new PasswordHistoryResponse(ph));
-            });
-        }
-
-        if (response.CollectionIds) {
-            this.collectionIds = [];
-            response.CollectionIds.forEach((id: string) => {
-                this.collectionIds.push(id);
-            });
+        const passwordHistory = this.getResponseProperty('PasswordHistory');
+        if (passwordHistory != null) {
+            this.passwordHistory = passwordHistory.map((h: any) => new PasswordHistoryResponse(h));
         }
     }
 }

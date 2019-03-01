@@ -1,4 +1,6 @@
-export class IdentityTokenResponse {
+import { BaseResponse } from './baseResponse';
+
+export class IdentityTokenResponse extends BaseResponse {
     accessToken: string;
     expiresIn: number;
     refreshToken: string;
@@ -9,13 +11,14 @@ export class IdentityTokenResponse {
     twoFactorToken: string;
 
     constructor(response: any) {
+        super(response);
         this.accessToken = response.access_token;
         this.expiresIn = response.expires_in;
         this.refreshToken = response.refresh_token;
         this.tokenType = response.token_type;
 
-        this.privateKey = response.PrivateKey;
-        this.key = response.Key;
-        this.twoFactorToken = response.TwoFactorToken;
+        this.privateKey = this.getResponseProperty('PrivateKey');
+        this.key = this.getResponseProperty('Key');
+        this.twoFactorToken = this.getResponseProperty('TwoFactorToken');
     }
 }

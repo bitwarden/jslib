@@ -1,10 +1,11 @@
+import { BaseResponse } from './baseResponse';
 import { CipherResponse } from './cipherResponse';
 import { CollectionDetailsResponse } from './collectionResponse';
 import { DomainsResponse } from './domainsResponse';
 import { FolderResponse } from './folderResponse';
 import { ProfileResponse } from './profileResponse';
 
-export class SyncResponse {
+export class SyncResponse extends BaseResponse {
     profile?: ProfileResponse;
     folders: FolderResponse[] = [];
     collections: CollectionDetailsResponse[] = [];
@@ -12,30 +13,31 @@ export class SyncResponse {
     domains?: DomainsResponse;
 
     constructor(response: any) {
-        if (response.Profile) {
-            this.profile = new ProfileResponse(response.Profile);
+        super(response);
+
+        const profile = this.getResponseProperty('Profile');
+        if (profile != null) {
+            this.profile = new ProfileResponse(profile);
         }
 
-        if (response.Folders) {
-            response.Folders.forEach((folder: any) => {
-                this.folders.push(new FolderResponse(folder));
-            });
+        const folders = this.getResponseProperty('Folders');
+        if (folders != null) {
+            this.folders = folders.map((f: any) => new FolderResponse(f));
         }
 
-        if (response.Collections) {
-            response.Collections.forEach((collection: any) => {
-                this.collections.push(new CollectionDetailsResponse(collection));
-            });
+        const collections = this.getResponseProperty('Collections');
+        if (collections != null) {
+            this.collections = collections.map((c: any) => new CollectionDetailsResponse(c));
         }
 
-        if (response.Ciphers) {
-            response.Ciphers.forEach((cipher: any) => {
-                this.ciphers.push(new CipherResponse(cipher));
-            });
+        const ciphers = this.getResponseProperty('Ciphers');
+        if (ciphers != null) {
+            this.ciphers = ciphers.map((c: any) => new CipherResponse(c));
         }
 
-        if (response.Domains) {
-            this.domains = new DomainsResponse(response.Domains);
+        const domains = this.getResponseProperty('Domains');
+        if (domains != null) {
+            this.domains = new DomainsResponse(domains);
         }
     }
 }

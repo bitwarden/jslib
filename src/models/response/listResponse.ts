@@ -1,9 +1,13 @@
-export class ListResponse<T> {
+import { BaseResponse } from './baseResponse';
+
+export class ListResponse<T> extends BaseResponse {
     data: T[];
     continuationToken: string;
 
     constructor(response: any, t: new (dataResponse: any) => T) {
-        this.data = response.Data == null ? [] : response.Data.map((dr: any) => new t(dr));
-        this.continuationToken = response.ContinuationToken;
+        super(response);
+        const data = this.getResponseProperty('Data');
+        this.data = data == null ? [] : data.map((dr: any) => new t(dr));
+        this.continuationToken = this.getResponseProperty('ContinuationToken');
     }
 }

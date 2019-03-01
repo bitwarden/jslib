@@ -1,19 +1,23 @@
-export class ErrorResponse {
+import { BaseResponse } from './baseResponse';
+
+export class ErrorResponse extends BaseResponse {
     message: string;
     validationErrors: { [key: string]: string[]; };
     statusCode: number;
 
     constructor(response: any, status: number, identityResponse?: boolean) {
+        super(response);
         let errorModel = null;
-        if (identityResponse && response && response.ErrorModel) {
-            errorModel = response.ErrorModel;
+        const responseErrorModel = this.getResponseProperty('ErrorModel');
+        if (responseErrorModel && identityResponse && response) {
+            errorModel = responseErrorModel;
         } else if (response) {
             errorModel = response;
         }
 
         if (errorModel) {
-            this.message = errorModel.Message;
-            this.validationErrors = errorModel.ValidationErrors;
+            this.message = this.getResponseProperty('Message', errorModel);
+            this.validationErrors = this.getResponseProperty('ValidationErrors', errorModel);
         } else {
             if (status === 429) {
                 this.message = 'Rate limit exceeded. Try again later.';

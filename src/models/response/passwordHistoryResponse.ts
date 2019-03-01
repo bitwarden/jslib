@@ -1,9 +1,12 @@
-export class PasswordHistoryResponse {
+import { BaseResponse } from './baseResponse';
+
+export class PasswordHistoryResponse extends BaseResponse {
     password: string;
     lastUsedDate: string;
 
     constructor(response: any) {
-        this.password = response.Password;
-        this.lastUsedDate = response.LastUsedDate;
+        super(response);
+        this.password = this.getResponseProperty('Password');
+        this.lastUsedDate = this.getResponseProperty('LastUsedDate');
     }
 }

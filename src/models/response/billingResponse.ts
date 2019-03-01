@@ -1,39 +1,46 @@
+import { BaseResponse } from './baseResponse';
+
 import { PaymentMethodType } from '../../enums/paymentMethodType';
 import { TransactionType } from '../../enums/transactionType';
 
-export class BillingResponse {
+export class BillingResponse extends BaseResponse {
     balance: number;
     paymentSource: BillingSourceResponse;
     invoices: BillingInvoiceResponse[] = [];
     transactions: BillingTransactionResponse[] = [];
 
     constructor(response: any) {
-        this.balance = response.Balance;
-        this.paymentSource = response.PaymentSource == null ? null : new BillingSourceResponse(response.PaymentSource);
-        if (response.Transactions != null) {
-            this.transactions = response.Transactions.map((t: any) => new BillingTransactionResponse(t));
+        super(response);
+        this.balance = this.getResponseProperty('Balance');
+        const paymentSource = this.getResponseProperty('PaymentSource');
+        const transactions = this.getResponseProperty('Transactions');
+        const invoices = this.getResponseProperty('Invoices');
+        this.paymentSource = paymentSource == null ? null : new BillingSourceResponse(paymentSource);
+        if (transactions != null) {
+            this.transactions = transactions.map((t: any) => new BillingTransactionResponse(t));
         }
-        if (response.Invoices != null) {
-            this.invoices = response.Invoices.map((i: any) => new BillingInvoiceResponse(i));
+        if (invoices != null) {
+            this.invoices = invoices.map((i: any) => new BillingInvoiceResponse(i));
         }
     }
 }
 
-export class BillingSourceResponse {
+export class BillingSourceResponse extends BaseResponse {
     type: PaymentMethodType;
     cardBrand: string;
     description: string;
     needsVerification: boolean;
 
     constructor(response: any) {
-        this.type = response.Type;
-        this.cardBrand = response.CardBrand;
-        this.description = response.Description;
-        this.needsVerification = response.NeedsVerification;
+        super(response);
+        this.type = this.getResponseProperty('Type');
+        this.cardBrand = this.getResponseProperty('CardBrand');
+        this.description = this.getResponseProperty('Description');
+        this.needsVerification = this.getResponseProperty('NeedsVerification');
     }
 }
 
-export class BillingInvoiceResponse {
+export class BillingInvoiceResponse extends BaseResponse {
     url: string;
     pdfUrl: string;
     number: string;
@@ -42,16 +49,17 @@ export class BillingInvoiceResponse {
     amount: number;
 
     constructor(response: any) {
-        this.url = response.Url;
-        this.pdfUrl = response.PdfUrl;
-        this.number = response.Number;
-        this.paid = response.Paid;
-        this.date = response.Date;
-        this.amount = response.Amount;
+        super(response);
+        this.url = this.getResponseProperty('Url');
+        this.pdfUrl = this.getResponseProperty('PdfUrl');
+        this.number = this.getResponseProperty('Number');
+        this.paid = this.getResponseProperty('Paid');
+        this.date = this.getResponseProperty('Date');
+        this.amount = this.getResponseProperty('Amount');
     }
 }
 
-export class BillingTransactionResponse {
+export class BillingTransactionResponse extends BaseResponse {
     createdDate: string;
     amount: number;
     refunded: boolean;
@@ -62,13 +70,14 @@ export class BillingTransactionResponse {
     details: string;
 
     constructor(response: any) {
-        this.createdDate = response.CreatedDate;
-        this.amount = response.Amount;
-        this.refunded = response.Refunded;
-        this.partiallyRefunded = response.PartiallyRefunded;
-        this.refundedAmount = response.RefundedAmount;
-        this.type = response.Type;
-        this.paymentMethodType = response.PaymentMethodType;
-        this.details = response.Details;
+        super(response);
+        this.createdDate = this.getResponseProperty('CreatedDate');
+        this.amount = this.getResponseProperty('Amount');
+        this.refunded = this.getResponseProperty('Refunded');
+        this.partiallyRefunded = this.getResponseProperty('PartiallyRefunded');
+        this.refundedAmount = this.getResponseProperty('RefundedAmount');
+        this.type = this.getResponseProperty('Type');
+        this.paymentMethodType = this.getResponseProperty('PaymentMethodType');
+        this.details = this.getResponseProperty('Details');
     }
 }
