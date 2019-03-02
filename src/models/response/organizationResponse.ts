@@ -22,6 +22,7 @@ export class OrganizationResponse extends BaseResponse {
     useEvents: boolean;
     useTotp: boolean;
     use2fa: boolean;
+    useApi: boolean;
 
     constructor(response: any) {
         super(response);
@@ -44,5 +45,6 @@ export class OrganizationResponse extends BaseResponse {
         this.useEvents = this.getResponseProperty('UseEvents');
         this.useTotp = this.getResponseProperty('UseTotp');
         this.use2fa = this.getResponseProperty('Use2fa');
+        this.useApi = this.getResponseProperty('UseApi');
     }
 }
