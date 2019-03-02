@@ -14,6 +14,7 @@ export class Organization {
     useEvents: boolean;
     useTotp: boolean;
     use2fa: boolean;
+    useApi: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
     seats: number;
@@ -35,6 +36,7 @@ export class Organization {
         this.useEvents = obj.useEvents;
         this.useTotp = obj.useTotp;
         this.use2fa = obj.use2fa;
+        this.useApi = obj.useApi;
         this.selfHost = obj.selfHost;
         this.usersGetPremium = obj.usersGetPremium;
         this.seats = obj.seats;
