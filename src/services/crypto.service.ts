@@ -310,6 +310,18 @@ export class CryptoService implements CryptoServiceAbstraction {
         return new SymmetricCryptoKey(key);
     }
 
+    async makeKeyFromPin(pin: string, salt: string, kdf: KdfType, kdfIterations: number):
+        Promise<SymmetricCryptoKey> {
+        const pinProtectedKey = await this.storageService.get<string>(ConstantsService.pinProtectedKey);
+        if (pinProtectedKey == null) {
+            throw new Error('No PIN protected key found.');
+        }
+        const protectedKeyCs = new CipherString(pinProtectedKey);
+        const pinKey = await this.makePinKey(pin, salt, kdf, kdfIterations);
+        const decKey = await this.decryptToBytes(protectedKeyCs, pinKey);
+        return new SymmetricCryptoKey(decKey);
+    }
+
     async makeShareKey(): Promise<[CipherString, SymmetricCryptoKey]> {
         const shareKey = await this.cryptoFunctionService.randomBytes(64);
         const publicKey = await this.getPublicKey();

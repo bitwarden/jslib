@@ -30,6 +30,7 @@ export abstract class CryptoService {
     clearKeys: () => Promise<any>;
     toggleKey: () => Promise<any>;
     makeKey: (password: string, salt: string, kdf: KdfType, kdfIterations: number) => Promise<SymmetricCryptoKey>;
+    makeKeyFromPin: (pin: string, salt: string, kdf: KdfType, kdfIterations: number) => Promise<SymmetricCryptoKey>;
     makeShareKey: () => Promise<[CipherString, SymmetricCryptoKey]>;
     makeKeyPair: (key?: SymmetricCryptoKey) => Promise<[string, CipherString]>;
     makePinKey: (pin: string, salt: string, kdf: KdfType, kdfIterations: number) => Promise<SymmetricCryptoKey>;

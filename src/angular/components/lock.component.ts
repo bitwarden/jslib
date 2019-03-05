@@ -66,12 +66,9 @@ export class LockComponent implements OnInit {
                         this.doContinue();
                     }
                 } else {
-                    const pinProtectedKey = await this.storageService.get<string>(ConstantsService.pinProtectedKey);
-                    const protectedKeyCs = new CipherString(pinProtectedKey);
-                    const pinKey = await this.cryptoService.makePinKey(this.pin, this.email, kdf, kdfIterations);
-                    const decKey = await this.cryptoService.decryptToBytes(protectedKeyCs, pinKey);
+                    const key = await this.cryptoService.makeKeyFromPin(this.pin, this.email, kdf, kdfIterations);
                     failed = false;
-                    await this.setKeyAndContinue(new SymmetricCryptoKey(decKey));
+                    await this.setKeyAndContinue(key);
                 }
             } catch {
                 failed = true;
