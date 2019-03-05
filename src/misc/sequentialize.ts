@@ -32,11 +32,18 @@ export function sequentialize(cacheKey: (args: any[]) => string) {
                     return response;
                 }
 
-                response = originalMethod.apply(this, args).finally(() => {
+                const onFinally = () => {
                     cache.delete(argsCacheKey);
                     if (cache.size === 0) {
                         caches.delete(this);
                     }
+                };
+                response = originalMethod.apply(this, args).then((val: any) => {
+                    onFinally();
+                    return val;
+                }).catch((err: any) => {
+                    onFinally();
+                    throw err;
                 });
 
                 cache.set(argsCacheKey, response);

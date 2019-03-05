@@ -32,7 +32,7 @@ export function throttle(limit: number, throttleKey: (args: any[]) => string) {
 
                 return new Promise<T>((resolve, reject) => {
                     const exec = () => {
-                        originalMethod.apply(this, args).finally(() => {
+                        const onFinally = () => {
                             queue.splice(queue.indexOf(exec), 1);
                             if (queue.length >= limit) {
                                 queue[limit - 1]();
@@ -42,6 +42,13 @@ export function throttle(limit: number, throttleKey: (args: any[]) => string) {
                                     allThrottles.delete(this);
                                 }
                             }
+                        };
+                        originalMethod.apply(this, args).then((val: any) => {
+                            onFinally();
+                            return val;
+                        }).catch((err: any) => {
+                            onFinally();
+                            throw err;
                         }).then(resolve, reject);
                     };
                     queue.push(exec);
