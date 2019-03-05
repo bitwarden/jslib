@@ -62,7 +62,9 @@ export class LockComponent implements OnInit {
                     const decPin = await this.cryptoService.decryptToUtf8(new CipherString(protectedPin));
                     this.lockService.pinLocked = false;
                     failed = decPin !== this.pin;
-                    this.doContinue();
+                    if (!failed) {
+                        this.doContinue();
+                    }
                 } else {
                     const pinProtectedKey = await this.storageService.get<string>(ConstantsService.pinProtectedKey);
                     const protectedKeyCs = new CipherString(pinProtectedKey);
@@ -71,7 +73,9 @@ export class LockComponent implements OnInit {
                     failed = false;
                     await this.setKeyAndContinue(new SymmetricCryptoKey(decKey));
                 }
-            } catch { }
+            } catch {
+                failed = true;
+            }
 
             if (failed) {
                 this.invalidPinAttempts++;
