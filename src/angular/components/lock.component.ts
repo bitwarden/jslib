@@ -60,8 +60,8 @@ export class LockComponent implements OnInit {
                 if (this.pinSet[0]) {
                     const protectedPin = await this.storageService.get<string>(ConstantsService.protectedPin);
                     const decPin = await this.cryptoService.decryptToUtf8(new CipherString(protectedPin));
-                    this.lockService.pinLocked = false;
                     failed = decPin !== this.pin;
+                    this.lockService.pinLocked = failed;
                     if (!failed) {
                         this.doContinue();
                     }
