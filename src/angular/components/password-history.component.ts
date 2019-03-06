@@ -14,9 +14,7 @@ export class PasswordHistoryComponent implements OnInit {
         protected i18nService: I18nService, private win: Window) { }
 
     async ngOnInit() {
-        const cipher = await this.cipherService.get(this.cipherId);
-        const decCipher = await cipher.decrypt();
-        this.history = decCipher.passwordHistory == null ? [] : decCipher.passwordHistory;
+        await this.init();
     }
 
     copy(password: string) {
@@ -25,5 +23,11 @@ export class PasswordHistoryComponent implements OnInit {
         this.platformUtilsService.copyToClipboard(password, copyOptions);
         this.platformUtilsService.showToast('info', null,
             this.i18nService.t('valueCopied', this.i18nService.t('password')));
+    }
+
+    protected async init() {
+        const cipher = await this.cipherService.get(this.cipherId);
+        const decCipher = await cipher.decrypt();
+        this.history = decCipher.passwordHistory == null ? [] : decCipher.passwordHistory;
     }
 }

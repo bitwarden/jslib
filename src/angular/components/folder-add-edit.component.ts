@@ -26,16 +26,7 @@ export class FolderAddEditComponent implements OnInit {
         protected platformUtilsService: PlatformUtilsService) { }
 
     async ngOnInit() {
-        this.editMode = this.folderId != null;
-
-        if (this.editMode) {
-            this.editMode = true;
-            this.title = this.i18nService.t('editFolder');
-            const folder = await this.folderService.get(this.folderId);
-            this.folder = await folder.decrypt();
-        } else {
-            this.title = this.i18nService.t('addFolder');
-        }
+        await this.init();
     }
 
     async submit(): Promise<boolean> {
@@ -76,5 +67,18 @@ export class FolderAddEditComponent implements OnInit {
         } catch { }
 
         return true;
+    }
+
+    protected async init() {
+        this.editMode = this.folderId != null;
+
+        if (this.editMode) {
+            this.editMode = true;
+            this.title = this.i18nService.t('editFolder');
+            const folder = await this.folderService.get(this.folderId);
+            this.folder = await folder.decrypt();
+        } else {
+            this.title = this.i18nService.t('addFolder');
+        }
     }
 }
