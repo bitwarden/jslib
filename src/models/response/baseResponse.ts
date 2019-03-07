@@ -9,8 +9,10 @@ export abstract class BaseResponse {
         if (propertyName == null || propertyName === '') {
             throw new Error('propertyName must not be null/empty.');
         }
-        if (response == null) {
+        if (response == null && this.response != null) {
             response = this.response;
+        } else {
+            return null;
         }
         if (!exactName && response[propertyName] === undefined) {
             let otherCasePropertyName: string = null;

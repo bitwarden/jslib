@@ -8,11 +8,13 @@ export class ErrorResponse extends BaseResponse {
     constructor(response: any, status: number, identityResponse?: boolean) {
         super(response);
         let errorModel = null;
-        const responseErrorModel = this.getResponseProperty('ErrorModel');
-        if (responseErrorModel && identityResponse && response) {
-            errorModel = responseErrorModel;
-        } else if (response) {
-            errorModel = response;
+        if (response != null) {
+            const responseErrorModel = this.getResponseProperty('ErrorModel');
+            if (responseErrorModel && identityResponse) {
+                errorModel = responseErrorModel;
+            } else {
+                errorModel = response;
+            }
         }
 
         if (errorModel) {
