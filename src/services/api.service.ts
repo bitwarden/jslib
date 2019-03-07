@@ -58,6 +58,7 @@ import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
+import { ApiKeyResponse } from '../models/response/apiKeyResponse';
 import { BillingResponse } from '../models/response/billingResponse';
 import { BreachAccountResponse } from '../models/response/breachAccountResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
@@ -765,6 +766,16 @@ export class ApiService implements ApiServiceAbstraction {
 
     async postOrganizationLicenseUpdate(id: string, data: FormData): Promise<any> {
         return this.send('POST', '/organizations/' + id + '/license', data, true, false);
+    }
+
+    async postOrganizationApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+        const r = await this.send('POST', '/organizations/' + id + '/api-key', request, true, true);
+        return new ApiKeyResponse(r);
+    }
+
+    async postOrganizationRotateApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+        const r = await this.send('POST', '/organizations/' + id + '/rotate-api-key', request, true, true);
+        return new ApiKeyResponse(r);
     }
 
     postOrganizationSeat(id: string, request: SeatRequest): Promise<any> {

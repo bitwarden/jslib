@@ -52,6 +52,7 @@ import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
+import { ApiKeyResponse } from '../models/response/apiKeyResponse';
 import { BillingResponse } from '../models/response/billingResponse';
 import { BreachAccountResponse } from '../models/response/breachAccountResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
@@ -235,6 +236,8 @@ export abstract class ApiService {
     postLeaveOrganization: (id: string) => Promise<any>;
     postOrganizationLicense: (data: FormData) => Promise<OrganizationResponse>;
     postOrganizationLicenseUpdate: (id: string, data: FormData) => Promise<any>;
+    postOrganizationApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
+    postOrganizationRotateApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
     postOrganizationSeat: (id: string, request: SeatRequest) => Promise<any>;
     postOrganizationStorage: (id: string, request: StorageRequest) => Promise<any>;
     postOrganizationPayment: (id: string, request: PaymentRequest) => Promise<any>;
