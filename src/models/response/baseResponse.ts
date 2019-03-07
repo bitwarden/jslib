@@ -11,7 +11,8 @@ export abstract class BaseResponse {
         }
         if (response == null && this.response != null) {
             response = this.response;
-        } else {
+        }
+        if (response == null) {
             return null;
         }
         if (!exactName && response[propertyName] === undefined) {
