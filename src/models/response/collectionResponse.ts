@@ -5,12 +5,14 @@ export class CollectionResponse extends BaseResponse {
     id: string;
     organizationId: string;
     name: string;
+    externalId: string;
 
     constructor(response: any) {
         super(response);
         this.id = this.getResponseProperty('Id');
         this.organizationId = this.getResponseProperty('OrganizationId');
         this.name = this.getResponseProperty('Name');
+        this.externalId = this.getResponseProperty('ExternalId');
     }
 }
 
