@@ -11,7 +11,7 @@ export class TwoFactorYubiKeyResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.enabled = this.getResponseProperty('Enable');
+        this.enabled = this.getResponseProperty('Enabled');
         this.key1 = this.getResponseProperty('Key1');
         this.key2 = this.getResponseProperty('Key2');
         this.key3 = this.getResponseProperty('Key3');
