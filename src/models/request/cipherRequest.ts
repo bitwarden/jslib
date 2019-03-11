@@ -19,6 +19,7 @@ export class CipherRequest {
     name: string;
     notes: string;
     favorite: boolean;
+    pwned: boolean;
     login: LoginApi;
     secureNote: SecureNoteApi;
     card: CardApi;
@@ -28,6 +29,7 @@ export class CipherRequest {
     // Deprecated, remove at some point and rename attachments2 to attachments
     attachments: { [id: string]: string; };
     attachments2: { [id: string]: AttachmentRequest; };
+    pwnedCheckDate: string;
 
     constructor(cipher: Cipher) {
         this.type = cipher.type;
@@ -55,6 +57,8 @@ export class CipherRequest {
                         return uri;
                     });
                 }
+                this.pwned = cipher.pwned;
+                this.pwnedCheckDate = cipher.pwnedCheckDate.toISOString();
                 break;
             case CipherType.SecureNote:
                 this.secureNote = new SecureNoteApi();

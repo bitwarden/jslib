@@ -17,6 +17,7 @@ export class PasswordGeneratorComponent implements OnInit {
     password: string = '-';
     showOptions = false;
     avoidAmbiguous = false;
+    unpwnPassword = true;
 
     constructor(protected passwordGenerationService: PasswordGenerationService,
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
@@ -25,6 +26,7 @@ export class PasswordGeneratorComponent implements OnInit {
     async ngOnInit() {
         this.options = await this.passwordGenerationService.getOptions();
         this.avoidAmbiguous = !this.options.ambiguous;
+        this.unpwnPassword = this.options.unpwnPassword;
         this.options.type = this.options.type === 'passphrase' ? 'passphrase' : 'password';
         this.password = await this.passwordGenerationService.generatePassword(this.options);
         this.platformUtilsService.eventTrack('Generated Password');
@@ -78,6 +80,7 @@ export class PasswordGeneratorComponent implements OnInit {
         this.options.minLowercase = 0;
         this.options.minUppercase = 0;
         this.options.ambiguous = !this.avoidAmbiguous;
+        this.options.unpwnPassword = this.unpwnPassword;
 
         if (!this.options.uppercase && !this.options.lowercase && !this.options.number && !this.options.special) {
             this.options.lowercase = true;

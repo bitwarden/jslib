@@ -22,9 +22,11 @@ export class Cipher extends Domain {
     notes: CipherString;
     type: CipherType;
     favorite: boolean;
+    pwned: boolean;
     organizationUseTotp: boolean;
     edit: boolean;
     revisionDate: Date;
+    pwnedCheckDate: Date;
     localData: any;
     login: Login;
     identity: Identity;
@@ -52,9 +54,11 @@ export class Cipher extends Domain {
 
         this.type = obj.type;
         this.favorite = obj.favorite;
+        this.pwned = obj.pwned;
         this.organizationUseTotp = obj.organizationUseTotp;
         this.edit = obj.edit;
         this.revisionDate = obj.revisionDate != null ? new Date(obj.revisionDate) : null;
+        this.pwnedCheckDate = obj.pwnedCheckDate != null ? new Date(obj.pwnedCheckDate) : null;
         this.collectionIds = obj.collectionIds;
         this.localData = localData;
 
@@ -178,7 +182,9 @@ export class Cipher extends Domain {
         c.edit = this.edit;
         c.organizationUseTotp = this.organizationUseTotp;
         c.favorite = this.favorite;
+        c.pwned = this.pwned;
         c.revisionDate = this.revisionDate != null ? this.revisionDate.toISOString() : null;
+        c.pwnedCheckDate = this.pwnedCheckDate != null ? this.pwnedCheckDate.toISOString() : null;
         c.type = this.type;
         c.collectionIds = this.collectionIds;
 

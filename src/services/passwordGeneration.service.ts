@@ -1,7 +1,10 @@
 import * as zxcvbn from 'zxcvbn';
 
+import { AuditService } from '../abstractions/audit.service';
 import { CipherString } from '../models/domain/cipherString';
 import { GeneratedPasswordHistory } from '../models/domain/generatedPasswordHistory';
+import { I18nService } from '../abstractions/i18n.service';
+import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 
 import { CryptoService } from '../abstractions/crypto.service';
 import {
@@ -25,6 +28,7 @@ const DefaultOptions = {
     type: 'password',
     numWords: 3,
     wordSeparator: '-',
+    unpwnPassword: true,
 };
 
 const Keys = {
@@ -38,7 +42,9 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     private optionsCache: any;
     private history: GeneratedPasswordHistory[];
 
-    constructor(private cryptoService: CryptoService, private storageService: StorageService) { }
+    constructor(private cryptoService: CryptoService, private storageService: StorageService,
+                private i18nService: I18nService, private platformUtilsService: PlatformUtilsService,
+                private auditService: AuditService) { }
 
     async generatePassword(options: any): Promise<string> {
         // overload defaults with given options
@@ -96,69 +102,87 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             positions.push('a');
         }
 
-        // shuffle
-        await this.shuffleArray(positions);
+        let password;
+        let matches;
+        let passwordGenerationCounter = 0;
+        do {
+            password = '';
 
-        // build out the char sets
-        let allCharSet = '';
+            // shuffle
+            await this.shuffleArray(positions);
 
-        let lowercaseCharSet = 'abcdefghijkmnopqrstuvwxyz';
-        if (o.ambiguous) {
-            lowercaseCharSet += 'l';
-        }
-        if (o.lowercase) {
-            allCharSet += lowercaseCharSet;
-        }
-
-        let uppercaseCharSet = 'ABCDEFGHIJKLMNPQRSTUVWXYZ';
-        if (o.ambiguous) {
-            uppercaseCharSet += 'O';
-        }
-        if (o.uppercase) {
-            allCharSet += uppercaseCharSet;
-        }
-
-        let numberCharSet = '23456789';
-        if (o.ambiguous) {
-            numberCharSet += '01';
-        }
-        if (o.number) {
-            allCharSet += numberCharSet;
-        }
-
-        const specialCharSet = '!@#$%^&*';
-        if (o.special) {
-            allCharSet += specialCharSet;
-        }
-
-        let password = '';
-        for (let i = 0; i < o.length; i++) {
-            let positionChars: string;
-            switch (positions[i]) {
-                case 'l':
-                    positionChars = lowercaseCharSet;
-                    break;
-                case 'u':
-                    positionChars = uppercaseCharSet;
-                    break;
-                case 'n':
-                    positionChars = numberCharSet;
-                    break;
-                case 's':
-                    positionChars = specialCharSet;
-                    break;
-                case 'a':
-                    positionChars = allCharSet;
-                    break;
-                default:
-                    break;
+            // build out the char sets
+            let allCharSet = '';
+            let lowercaseCharSet = 'abcdefghijkmnopqrstuvwxyz';
+            if (o.ambiguous) {
+                lowercaseCharSet += 'l';
             }
+            if (o.lowercase) {
+                allCharSet += lowercaseCharSet;
 
-            const randomCharIndex = await this.cryptoService.randomNumber(0, positionChars.length - 1);
-            password += positionChars.charAt(randomCharIndex);
-        }
+            }
+            let uppercaseCharSet = 'ABCDEFGHIJKLMNPQRSTUVWXYZ';
+            if (o.ambiguous) {
+                uppercaseCharSet += 'O';
+            }
+            if (o.uppercase) {
+                allCharSet += uppercaseCharSet;
 
+            }
+            let numberCharSet = '23456789';
+            if (o.ambiguous) {
+                numberCharSet += '01';
+            }
+            if (o.number) {
+                allCharSet += numberCharSet;
+
+            }
+            const specialCharSet = '!@#$%^&*';
+            if (o.special) {
+                allCharSet += specialCharSet;
+
+            }
+            for (let i = 0; i < o.length; i++) {
+                let positionChars: string;
+                switch (positions[i]) {
+                    case 'l':
+                        positionChars = lowercaseCharSet;
+                        break;
+                    case 'u':
+                        positionChars = uppercaseCharSet;
+                        break;
+                    case 'n':
+                        positionChars = numberCharSet;
+                        break;
+                    case 's':
+                        positionChars = specialCharSet;
+                        break;
+                    case 'a':
+                        positionChars = allCharSet;
+                        break;
+                    default:
+                        break;
+                }
+
+                const randomCharIndex = await this.cryptoService.randomNumber(0, positionChars.length - 1);
+                password += positionChars.charAt(randomCharIndex);
+            }
+            matches = 0;
+            if (o.unpwnPassword) {
+                matches = await this.auditService.passwordLeaked(password);
+                passwordGenerationCounter++;
+            }
+        } while ((matches > 0) && this.isMaxPasswordGeneration(passwordGenerationCounter));
         return password;
+    }
+
+    isMaxPasswordGeneration(counter: number): boolean {
+        if (counter === 100) {
+            this.platformUtilsService.showToast('error', null,
+                this.i18nService.t('maxPasswordGeneration'));
+            return false;
+        }
+        return true;
     }
 
     async generatePassphrase(options: any): Promise<string> {

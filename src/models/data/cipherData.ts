@@ -18,7 +18,9 @@ export class CipherData {
     edit: boolean;
     organizationUseTotp: boolean;
     favorite: boolean;
+    pwned: boolean;
     revisionDate: string;
+    pwnedCheckDate: string;
     type: CipherType;
     sizeName: string;
     name: string;
@@ -44,6 +46,7 @@ export class CipherData {
         this.edit = response.edit;
         this.organizationUseTotp = response.organizationUseTotp;
         this.favorite = response.favorite;
+        this.pwned = response.pwned;
         this.revisionDate = response.revisionDate;
         this.type = response.type;
         this.name = response.name;

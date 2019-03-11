@@ -208,7 +208,16 @@ export class AddEditComponent implements OnInit {
                 this.collections.filter((c) => (c as any).checked).map((c) => c.id);
         }
 
+        const matches = await this.auditService.passwordLeaked(this.cipher.login.password);
+        if (matches > 0) {
+            this.cipher.pwned = true;
+        } else {
+            this.cipher.pwned = false;
+        }
+        this.cipher.pwnedCheckDate = new Date();
+
         const cipher = await this.encryptCipher();
+
         try {
             this.formPromise = this.saveCipher(cipher);
             await this.formPromise;
@@ -220,7 +229,6 @@ export class AddEditComponent implements OnInit {
             this.messagingService.send(this.editMode ? 'editedCipher' : 'addedCipher');
             return true;
         } catch { }
-
         return false;
     }
 
@@ -377,8 +385,10 @@ export class AddEditComponent implements OnInit {
         if (matches > 0) {
             this.platformUtilsService.showToast('warning', null,
                 this.i18nService.t('passwordExposed', matches.toString()));
+            this.cipher.pwned = true;
         } else {
             this.platformUtilsService.showToast('success', null, this.i18nService.t('passwordSafe'));
+            this.cipher.pwned = false;
         }
     }
 

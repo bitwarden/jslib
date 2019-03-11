@@ -19,6 +19,7 @@ export class CipherView implements View {
     notes: string = null;
     type: CipherType = null;
     favorite = false;
+    pwned = false;
     organizationUseTotp = false;
     edit = false;
     localData: any;
@@ -31,6 +32,7 @@ export class CipherView implements View {
     passwordHistory: PasswordHistoryView[] = null;
     collectionIds: string[] = null;
     revisionDate: Date = null;
+    pwnedCheckDate: Date = null;
 
     constructor(c?: Cipher) {
         if (!c) {
@@ -41,12 +43,14 @@ export class CipherView implements View {
         this.organizationId = c.organizationId;
         this.folderId = c.folderId;
         this.favorite = c.favorite;
+        this.pwned = c.pwned;
         this.organizationUseTotp = c.organizationUseTotp;
         this.edit = c.edit;
         this.type = c.type;
         this.localData = c.localData;
         this.collectionIds = c.collectionIds;
         this.revisionDate = c.revisionDate;
+        this.pwnedCheckDate = c.pwnedCheckDate;
     }
 
     get subTitle(): string {

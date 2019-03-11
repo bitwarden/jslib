@@ -20,6 +20,8 @@ import { TokenService } from '../../abstractions/token.service';
 import { TotpService } from '../../abstractions/totp.service';
 import { UserService } from '../../abstractions/user.service';
 
+import { Cipher } from '../../models/domain/cipher';
+
 import { AttachmentView } from '../../models/view/attachmentView';
 import { CipherView } from '../../models/view/cipherView';
 import { FieldView } from '../../models/view/fieldView';
@@ -118,8 +120,13 @@ export class ViewComponent implements OnDestroy, OnInit {
         if (matches > 0) {
             this.platformUtilsService.showToast('warning', null,
                 this.i18nService.t('passwordExposed', matches.toString()));
+            this.cipher.pwned = true;
         } else {
             this.platformUtilsService.showToast('success', null, this.i18nService.t('passwordSafe'));
+            this.cipher.pwned = false;
+            this.cipher.pwnedCheckDate = new Date();
+            const cipher = await this.encryptCipher();
+            this.saveCipher(cipher);
         }
     }
 
@@ -180,6 +187,14 @@ export class ViewComponent implements OnDestroy, OnInit {
         }
 
         a.downloading = false;
+    }
+
+    protected encryptCipher() {
+        return this.cipherService.encrypt(this.cipher);
+    }
+
+    protected saveCipher(cipher: Cipher) {
+        return this.cipherService.saveWithServer(cipher);
     }
 
     private cleanUp() {
