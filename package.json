@@ -24,6 +24,7 @@
     "test:node:watch": "concurrently -k -n TSC,Node -c yellow,cyan \"npm run build:watch\" \"nodemon -w ./dist --delay 500ms --exec jasmine\""
   },
   "devDependencies": {
+    "@types/commander": "^2.12.2",
     "@types/form-data": "^2.2.1",
     "@types/jasmine": "^2.8.8",
     "@types/lowdb": "^1.0.5",
@@ -72,6 +73,7 @@
     "@aspnet/signalr": "1.0.4",
     "@aspnet/signalr-protocol-msgpack": "1.0.4",
     "big-integer": "1.6.36",
+    "commander": "2.18.0",
     "core-js": "2.6.2",
     "duo_web_sdk": "git+https://github.com/duosecurity/duo_web_sdk.git",
     "electron-log": "2.2.17",
