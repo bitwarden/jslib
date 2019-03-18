@@ -1,6 +1,7 @@
 import * as program from 'commander';
 import * as fetch from 'node-fetch';
 
+import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 import { Response } from '../models/response';
@@ -9,8 +10,8 @@ import { MessageResponse } from '../models/response/messageResponse';
 export class UpdateCommand {
     inPkg: boolean = false;
 
-    constructor(private platformUtilsService: PlatformUtilsService, private repoName: string,
-        private executableName: string) {
+    constructor(private platformUtilsService: PlatformUtilsService, private i18nService: I18nService,
+        private repoName: string, private executableName: string, private showExtendedMessage: boolean) {
         this.inPkg = !!(process as any).pkg;
     }
 
@@ -68,12 +69,14 @@ export class UpdateCommand {
 
             res.message += 'You can download this update at ' + downloadUrl;
 
-            if (this.inPkg) {
-                res.message += '\n\nIf you installed this CLI through a package manager ' +
-                    'you should probably update using its update command instead.';
-            } else {
-                res.message += '\n\nIf you installed this CLI through NPM ' +
-                    'you should update using `npm install -g @bitwarden/' + this.repoName + '`';
+            if (this.showExtendedMessage) {
+                if (this.inPkg) {
+                    res.message += '\n\nIf you installed this CLI through a package manager ' +
+                        'you should probably update using its update command instead.';
+                } else {
+                    res.message += '\n\nIf you installed this CLI through NPM ' +
+                        'you should update using `npm install -g @bitwarden/' + this.repoName + '`';
+                }
             }
             return Response.success(res);
         } else {
