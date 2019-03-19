@@ -69,7 +69,7 @@ export abstract class BaseProgram {
 
     protected getMessage(response: Response) {
         const message = (response.data as MessageResponse);
-        if (process.env.BW_RAW === 'true' && message.raw != null) {
+        if (process.env.BW_RAW === 'true') {
             return message.raw;
         }
 
