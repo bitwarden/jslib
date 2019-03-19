@@ -9,6 +9,7 @@ import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { SearchService } from '../abstractions/search.service';
 import { StorageService } from '../abstractions/storage.service';
+import { UserService } from '../abstractions/user.service';
 
 export class LockService implements LockServiceAbstraction {
     pinLocked = false;
@@ -19,7 +20,7 @@ export class LockService implements LockServiceAbstraction {
         private collectionService: CollectionService, private cryptoService: CryptoService,
         private platformUtilsService: PlatformUtilsService, private storageService: StorageService,
         private messagingService: MessagingService, private searchService: SearchService,
-        private lockedCallback: () => Promise<void> = null) {
+        private userService: UserService, private lockedCallback: () => Promise<void> = null) {
     }
 
     init(checkOnInterval: boolean) {
@@ -45,6 +46,11 @@ export class LockService implements LockServiceAbstraction {
     async checkLock(): Promise<void> {
         if (this.platformUtilsService.isViewOpen()) {
             // Do not lock
+            return;
+        }
+
+        const authed = await this.userService.isAuthenticated();
+        if (!authed) {
             return;
         }
 
@@ -74,6 +80,11 @@ export class LockService implements LockServiceAbstraction {
     }
 
     async lock(allowSoftLock = false): Promise<void> {
+        const authed = await this.userService.isAuthenticated();
+        if (!authed) {
+            return;
+        }
+
         if (allowSoftLock) {
             const pinSet = await this.isPinLockSet();
             if (pinSet[0]) {
