@@ -29,7 +29,10 @@ export class FlexCopyDirective {
             let stringEndPos = text.length;
             const newLinePos = text.search(/(?:\r\n|\r|\n)/);
             if (newLinePos > -1) {
-                stringEndPos = newLinePos;
+                const otherPart = text.substr(newLinePos).trim();
+                if (otherPart === '') {
+                    stringEndPos = newLinePos;
+                }
             }
             copyText += text.substring(0, stringEndPos);
         }
