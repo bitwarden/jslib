@@ -23,10 +23,14 @@ export class FlexCopyDirective {
             const text = range.toString();
 
             // The selection should only contain one line of text. In some cases however, the
-            // selection contains newlines and space characters from the identation of following
+            // selection contains newlines and space characters from the indentation of following
             // sibling nodes. To avoid copying passwords containing trailing newlines and spaces
-            // that aren’t part of the password, the selection has to be trimmed.
-            const stringEndPos = text.includes('\n') ? text.search(/\r?\n/) : text.length;
+            // that aren't part of the password, the selection has to be trimmed.
+            let stringEndPos = text.length;
+            const newLinePos = text.search(/(?:\r\n|\r|\n)/);
+            if (newLinePos > -1) {
+                stringEndPos = newLinePos;
+            }
             copyText += text.substring(0, stringEndPos);
         }
         this.platformUtilsService.copyToClipboard(copyText, { window: window });
