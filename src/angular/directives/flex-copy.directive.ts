@@ -21,7 +21,13 @@ export class FlexCopyDirective {
         for (let i = 0; i < selection.rangeCount; i++) {
             const range = selection.getRangeAt(i);
             const text = range.toString();
-            copyText += text;
+
+            // The selection should only contain one line of text. In some cases however, the
+            // selection contains newlines and space characters from the identation of following
+            // sibling nodes. To avoid copying passwords containing trailing newlines and spaces
+            // that aren’t part of the password, the selection has to be trimmed.
+            const stringEndPos = text.includes('\n') ? text.search(/\r?\n/) : text.length;
+            copyText += text.substring(0, stringEndPos);
         }
         this.platformUtilsService.copyToClipboard(copyText, { window: window });
     }
