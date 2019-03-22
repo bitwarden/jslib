@@ -27,6 +27,7 @@ import { KdfRequest } from '../models/request/kdfRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
+import { OrganizationUpgradeRequest } from '../models/request/organizationUpgradeRequest';
 import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
 import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
 import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
@@ -776,6 +777,10 @@ export class ApiService implements ApiServiceAbstraction {
     async postOrganizationRotateApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
         const r = await this.send('POST', '/organizations/' + id + '/rotate-api-key', request, true, true);
         return new ApiKeyResponse(r);
+    }
+
+    postOrganizationUpgrade(id: string, request: OrganizationUpgradeRequest): Promise<any> {
+        return this.send('POST', '/organizations/' + id + '/upgrade', request, true, false);
     }
 
     postOrganizationSeat(id: string, request: SeatRequest): Promise<any> {

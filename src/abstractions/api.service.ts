@@ -21,6 +21,7 @@ import { KdfRequest } from '../models/request/kdfRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
+import { OrganizationUpgradeRequest } from '../models/request/organizationUpgradeRequest';
 import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
 import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
 import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
@@ -238,6 +239,7 @@ export abstract class ApiService {
     postOrganizationLicenseUpdate: (id: string, data: FormData) => Promise<any>;
     postOrganizationApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
     postOrganizationRotateApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
+    postOrganizationUpgrade: (id: string, request: OrganizationUpgradeRequest) => Promise<any>;
     postOrganizationSeat: (id: string, request: SeatRequest) => Promise<any>;
     postOrganizationStorage: (id: string, request: StorageRequest) => Promise<any>;
     postOrganizationPayment: (id: string, request: PaymentRequest) => Promise<any>;
