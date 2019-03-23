@@ -49,6 +49,12 @@ const TestData: string = '***aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee***\n' +
                 name: 'admin_console',
             },
         ],
+        passwordHistory: [
+          {
+            value: 'old-password',
+            time: 1447791421,
+          },
+        ],
     },
     URLs: [
         {
@@ -91,5 +97,16 @@ describe('1Password 1Pif Importer', () => {
         expect(field.name).toEqual('console password');
         expect(field.value).toEqual('console-password-123');
         expect(field.type).toEqual(FieldType.Hidden);
+    });
+
+    it('should create password history', async () => {
+        const importer = new Importer();
+        const result = importer.parse(TestData);
+        const cipher = result.ciphers.shift();
+
+        expect(cipher.passwordHistory.length).toEqual(1);
+        const ph = cipher.passwordHistory.shift();
+        expect(ph.password).toEqual('old-password');
+        expect(ph.lastUsedDate.toISOString()).toEqual('2015-11-17T20:17:01.000Z');
     });
 });

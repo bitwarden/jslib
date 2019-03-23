@@ -5,6 +5,7 @@ import { ImportResult } from '../models/domain/importResult';
 
 import { CardView } from '../models/view/cardView';
 import { CipherView } from '../models/view/cipherView';
+import { PasswordHistoryView } from '../models/view/passwordHistoryView';
 import { SecureNoteView } from '../models/view/secureNoteView';
 
 import { CipherType } from '../enums/cipherType';
@@ -118,6 +119,15 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                     if (section.fields != null) {
                         this.parseFields(section.fields, cipher, 'n', 'v', 't');
                     }
+                });
+            }
+            if (item.secureContents.passwordHistory != null) {
+                cipher.passwordHistory = cipher.passwordHistory || [];
+                item.secureContents.passwordHistory.forEach((entry: any) => {
+                    const phv = new PasswordHistoryView();
+                    phv.password = entry.value;
+                    phv.lastUsedDate = new Date(entry.time * 1000);
+                    cipher.passwordHistory.push(phv);
                 });
             }
         }
