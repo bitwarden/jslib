@@ -8,6 +8,7 @@ import { CipherView } from '../models/view/cipherView';
 import { SecureNoteView } from '../models/view/secureNoteView';
 
 import { CipherType } from '../enums/cipherType';
+import { FieldType } from '../enums/fieldType';
 import { SecureNoteType } from '../enums/secureNoteType';
 
 export class OnePassword1PifImporter extends BaseImporter implements Importer {
@@ -168,8 +169,13 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                 }
             }
 
+            let fieldType = FieldType.Text;
+            if (field.k === 'concealed') {
+              fieldType = FieldType.Hidden;
+            }
+
             const fieldName = this.isNullOrWhitespace(field[nameKey]) ? 'no_name' : field[nameKey];
-            this.processKvp(cipher, fieldName, fieldValue);
+            this.processKvp(cipher, fieldName, fieldValue, fieldType);
         });
     }
 }
