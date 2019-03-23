@@ -195,10 +195,10 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                 } else if (fieldDesignation === 'address') {
                     // fieldValue is an object casted into a string, so access the plain value instead
                     const { street, city, country, zip } = field[valueKey];
-                    identity.address1 = street;
-                    identity.city = city;
-                    identity.country = country; // lower case iso code
-                    identity.postalCode = zip;
+                    identity.address1 = this.getValueOrDefault(street);
+                    identity.city = this.getValueOrDefault(city);
+                    identity.country = this.getValueOrDefault(country); // lower case iso code
+                    identity.postalCode = this.getValueOrDefault(zip);
                     return;
                 }
             }
