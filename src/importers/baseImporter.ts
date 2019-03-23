@@ -302,7 +302,7 @@ export abstract class BaseImporter {
         }
     }
 
-    protected processKvp(cipher: CipherView, key: string, value: string) {
+    protected processKvp(cipher: CipherView, key: string, value: string, type: FieldType = FieldType.Text) {
         if (this.isNullOrWhitespace(value)) {
             return;
         }
@@ -319,7 +319,7 @@ export abstract class BaseImporter {
                 cipher.fields = [];
             }
             const field = new FieldView();
-            field.type = FieldType.Text;
+            field.type = type;
             field.name = key;
             field.value = value;
             cipher.fields.push(field);
