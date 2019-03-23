@@ -61,7 +61,7 @@ const TestData: string = `***aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee***\n` +
     typeName: 'webforms.WebForm',
 });
 
-fdescribe('1Password 1Pif Importer', () => {
+describe('1Password 1Pif Importer', () => {
     it('should parse data', async () => {
         const importer = new Importer();
         const result = importer.parse(TestData);
