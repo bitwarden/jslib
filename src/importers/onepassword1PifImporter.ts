@@ -169,11 +169,7 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                 }
             }
 
-            let fieldType = FieldType.Text;
-            if (field.k === 'concealed') {
-              fieldType = FieldType.Hidden;
-            }
-
+            const fieldType = (field.k === 'concealed') ? FieldType.Hidden : FieldType.Text;
             const fieldName = this.isNullOrWhitespace(field[nameKey]) ? 'no_name' : field[nameKey];
             this.processKvp(cipher, fieldName, fieldValue, fieldType);
         });
