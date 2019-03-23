@@ -10,7 +10,7 @@ if (Utils.isNode) {
     (global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;
 }
 
-const TestData: string = `***aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee***\n` +
+const TestData: string = '***aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee***\n' +
     JSON.stringify({
     uuid: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
     updatedAt: 1486071244,
