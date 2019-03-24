@@ -6,6 +6,7 @@ import { ImportResult } from '../models/domain/importResult';
 import { CardView } from '../models/view/cardView';
 import { CipherView } from '../models/view/cipherView';
 import { IdentityView } from '../models/view/identityView';
+import { PasswordHistoryView } from '../models/view/passwordHistoryView';
 import { SecureNoteView } from '../models/view/secureNoteView';
 
 import { CipherType } from '../enums/cipherType';
@@ -77,7 +78,20 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                     }
                 });
             }
+            if (item.details.passwordHistory != null) {
+                this.processPasswordHistory(item.details.passwordHistory, cipher);
+            }
         }
+    }
+
+    private processPasswordHistory(items: any[], cipher: CipherView) {
+        cipher.passwordHistory = cipher.passwordHistory || [];
+        items.forEach((entry: any) => {
+            const phv = new PasswordHistoryView();
+            phv.password = entry.value;
+            phv.lastUsedDate = new Date(entry.time * 1000);
+            cipher.passwordHistory.push(phv);
+        });
     }
 
     private processStandardItem(item: any, cipher: CipherView) {
@@ -127,6 +141,9 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                         this.parseFields(section.fields, cipher, 'n', 'v', 't');
                     }
                 });
+            }
+            if (item.secureContents.passwordHistory != null) {
+                this.processPasswordHistory(item.secureContents.passwordHistory, cipher);
             }
         }
     }

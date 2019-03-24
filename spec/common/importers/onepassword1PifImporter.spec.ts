@@ -49,6 +49,12 @@ const TestData: string = '***aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee***\n' +
                 name: 'admin_console',
             },
         ],
+        passwordHistory: [
+          {
+            value: 'old-password',
+            time: 1447791421,
+          },
+        ],
     },
     URLs: [
         {
@@ -59,6 +65,76 @@ const TestData: string = '***aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee***\n' +
     txTimestamp: 1508941334,
     createdAt: 1390426636,
     typeName: 'webforms.WebForm',
+});
+
+const WindowsTestData = JSON.stringify({
+    category: '001',
+    created: 1544823719,
+    hmac: 'NtyBmTTPOb88HV3JUKPx1xl/vcMhac9kvCfe/NtszY0=',
+    k: 'XC/z20QveYCoV8xQ4tCJZZp/uum77xLkMSMEhlUULndryXgSmkG+VBtkW7AfuerfKc8Rtu43a4Sd078j7XfZTcwUCEKtBECUTDNbEgv4+4hoFVk1EzZgEUy/0bW1Ap+jNLmmdSU9h74+REu6pdxsvQ==',
+    tx: 1553395669,
+    updated: 1553395669,
+    uuid: '528AB076FB5F4FBF960884B8E01619AC',
+    overview: {
+        title: 'Google',
+        URLs: [
+            {
+                u: 'google.com',
+            },
+        ],
+        url: 'google.com',
+        ps: 26,
+        ainfo: 'googluser',
+    },
+    details: {
+        passwordHistory: [
+            {
+                value: 'oldpass2',
+                time: 1553394449,
+            },
+            {
+                value: 'oldpass1',
+                time: 1553394457,
+            },
+        ],
+        fields: [
+            {
+                type: 'T',
+                id: 'username',
+                name: 'username',
+                value: 'googluser',
+                designation: 'username',
+            },
+            {
+                type: 'P',
+                id: 'password',
+                name: 'password',
+                value: '12345678901',
+                designation: 'password',
+            },
+        ],
+        notesPlain: 'This is a note\r\n\r\nline1\r\nline2',
+        sections: [
+            {
+                title: 'test',
+                name: '1214FD88CD30405D9EED14BEB4D61B60',
+                fields: [
+                    {
+                        k: 'string',
+                        n: '6CC3BD77482D4559A4B8BB2D360F821B',
+                        v: 'fgfg',
+                        t: 'fgggf',
+                    },
+                    {
+                        k: 'concealed',
+                        n: '5CFE7BCAA1DF4578BBF7EB508959BFF3',
+                        v: 'dfgdfgfdg',
+                        t: 'pwfield',
+                    },
+                ],
+            },
+        ],
+    },
 });
 
 const IdentityTestData = JSON.stringify({
@@ -392,5 +468,31 @@ describe('1Password 1Pif Importer', () => {
 
         // remaining fields as custom fields
         expect(cipher.fields.length).toEqual(6);
+    });
+
+    it('should create password history', async () => {
+        const importer = new Importer();
+        const result = importer.parse(TestData);
+        const cipher = result.ciphers.shift();
+
+        expect(cipher.passwordHistory.length).toEqual(1);
+        const ph = cipher.passwordHistory.shift();
+        expect(ph.password).toEqual('old-password');
+        expect(ph.lastUsedDate.toISOString()).toEqual('2015-11-17T20:17:01.000Z');
+    });
+
+    it('should create password history from windows 1pif format', async () => {
+        const importer = new Importer();
+        const result = importer.parse(WindowsTestData);
+        const cipher = result.ciphers.shift();
+
+        expect(cipher.passwordHistory.length).toEqual(2);
+        let ph = cipher.passwordHistory.shift();
+        expect(ph.password).toEqual('oldpass2');
+        expect(ph.lastUsedDate.toISOString()).toEqual('2019-03-24T02:27:29.000Z');
+
+        ph = cipher.passwordHistory.shift();
+        expect(ph.password).toEqual('oldpass1');
+        expect(ph.lastUsedDate.toISOString()).toEqual('2019-03-24T02:27:37.000Z');
     });
 });
