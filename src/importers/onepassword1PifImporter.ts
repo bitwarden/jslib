@@ -78,7 +78,20 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                     }
                 });
             }
+            if (item.details.passwordHistory != null) {
+                this.processPasswordHistory(item.details.passwordHistory, cipher);
+            }
         }
+    }
+
+    private processPasswordHistory(items: any[], cipher: CipherView) {
+        cipher.passwordHistory = cipher.passwordHistory || [];
+        items.forEach((entry: any) => {
+            const phv = new PasswordHistoryView();
+            phv.password = entry.value;
+            phv.lastUsedDate = new Date(entry.time * 1000);
+            cipher.passwordHistory.push(phv);
+        });
     }
 
     private processStandardItem(item: any, cipher: CipherView) {
@@ -130,13 +143,7 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                 });
             }
             if (item.secureContents.passwordHistory != null) {
-                cipher.passwordHistory = cipher.passwordHistory || [];
-                item.secureContents.passwordHistory.forEach((entry: any) => {
-                    const phv = new PasswordHistoryView();
-                    phv.password = entry.value;
-                    phv.lastUsedDate = new Date(entry.time * 1000);
-                    cipher.passwordHistory.push(phv);
-                });
+                this.processPasswordHistory(item.secureContents.passwordHistory, cipher);
             }
         }
     }
