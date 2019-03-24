@@ -384,7 +384,7 @@ describe('1Password 1Pif Importer', () => {
         expect(identity.lastName).toEqual('Fritzenberger');
         expect(identity.company).toEqual('Web Inc.');
         expect(identity.address1).toEqual('Mainstreet 1');
-        expect(identity.country).toEqual('de');
+        expect(identity.country).toEqual('DE');
         expect(identity.city).toEqual('Berlin');
         expect(identity.postalCode).toEqual('223344');
         expect(identity.phone).toEqual('+49 001 222 333 44');
