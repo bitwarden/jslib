@@ -5,6 +5,7 @@ import { ImportResult } from '../models/domain/importResult';
 
 import { CardView } from '../models/view/cardView';
 import { CipherView } from '../models/view/cipherView';
+import { IdentityView } from '../models/view/identityView';
 import { SecureNoteView } from '../models/view/secureNoteView';
 
 import { CipherType } from '../enums/cipherType';
@@ -86,6 +87,9 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
         } else if (item.typeName === 'wallet.financial.CreditCard') {
             cipher.type = CipherType.Card;
             cipher.card = new CardView();
+        } else if (item.typeName === 'identities.Identity') {
+            cipher.type = CipherType.Identity;
+            cipher.identity = new IdentityView();
         } else {
             cipher.login.uris = this.makeUriArray(item.location);
         }
@@ -165,6 +169,36 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                     return;
                 } else if (fieldDesignation === 'type') {
                     // Skip since brand was determined from number above
+                    return;
+                }
+            } else if (cipher.type === CipherType.Identity) {
+                const identity = cipher.identity;
+
+                if (this.isNullOrWhitespace(identity.firstName) && fieldDesignation === 'firstname') {
+                    identity.firstName = fieldValue;
+                    return;
+                } else if (this.isNullOrWhitespace(identity.lastName) && fieldDesignation === 'lastname') {
+                    identity.lastName = fieldValue;
+                    return;
+                } else if (this.isNullOrWhitespace(identity.middleName) && fieldDesignation === 'initial') {
+                    identity.middleName = fieldValue;
+                    return;
+                } else if (this.isNullOrWhitespace(identity.phone) && fieldDesignation === 'defphone') {
+                    identity.phone = fieldValue;
+                    return;
+                } else if (this.isNullOrWhitespace(identity.company) && fieldDesignation === 'company') {
+                    identity.company = fieldValue;
+                    return;
+                } else if (this.isNullOrWhitespace(identity.email) && fieldDesignation === 'email') {
+                    identity.email = fieldValue;
+                    return;
+                } else if (fieldDesignation === 'address') {
+                    // fieldValue is an object casted into a string, so access the plain value instead
+                    const { street, city, country, zip } = field[valueKey];
+                    identity.address1 = this.getValueOrDefault(street);
+                    identity.city = this.getValueOrDefault(city);
+                    identity.country = this.getValueOrDefault(country); // lower case iso code
+                    identity.postalCode = this.getValueOrDefault(zip);
                     return;
                 }
             }
