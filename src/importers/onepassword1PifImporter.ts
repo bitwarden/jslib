@@ -56,6 +56,10 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
             if (!this.isNullOrWhitespace(item.details.ccnum) || !this.isNullOrWhitespace(item.details.cvv)) {
                 cipher.type = CipherType.Card;
                 cipher.card = new CardView();
+            } else if (!this.isNullOrWhitespace(item.details.firstname) ||
+                !this.isNullOrWhitespace(item.details.address1)) {
+                cipher.type = CipherType.Identity;
+                cipher.identity = new IdentityView();
             }
             if (cipher.type === CipherType.Login && !this.isNullOrWhitespace(item.details.password)) {
                 cipher.login.password = item.details.password;
@@ -173,7 +177,6 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                 }
             } else if (cipher.type === CipherType.Identity) {
                 const identity = cipher.identity;
-
                 if (this.isNullOrWhitespace(identity.firstName) && fieldDesignation === 'firstname') {
                     identity.firstName = fieldValue;
                     return;
@@ -192,12 +195,17 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                 } else if (this.isNullOrWhitespace(identity.email) && fieldDesignation === 'email') {
                     identity.email = fieldValue;
                     return;
+                } else if (this.isNullOrWhitespace(identity.username) && fieldDesignation === 'username') {
+                    identity.username = fieldValue;
+                    return;
                 } else if (fieldDesignation === 'address') {
                     // fieldValue is an object casted into a string, so access the plain value instead
                     const { street, city, country, zip } = field[valueKey];
                     identity.address1 = this.getValueOrDefault(street);
                     identity.city = this.getValueOrDefault(city);
-                    identity.country = this.getValueOrDefault(country); // lower case iso code
+                    if (!this.isNullOrWhitespace(country)) {
+                        identity.country = country.toUpperCase();
+                    }
                     identity.postalCode = this.getValueOrDefault(zip);
                     return;
                 }
