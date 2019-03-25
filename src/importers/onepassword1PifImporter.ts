@@ -79,19 +79,9 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                 });
             }
             if (item.details.passwordHistory != null) {
-                this.processPasswordHistory(item.details.passwordHistory, cipher);
+                this.parsePasswordHistory(item.details.passwordHistory, cipher);
             }
         }
-    }
-
-    private processPasswordHistory(items: any[], cipher: CipherView) {
-        cipher.passwordHistory = cipher.passwordHistory || [];
-        items.forEach((entry: any) => {
-            const phv = new PasswordHistoryView();
-            phv.password = entry.value;
-            phv.lastUsedDate = new Date(entry.time * 1000);
-            cipher.passwordHistory.push(phv);
-        });
     }
 
     private processStandardItem(item: any, cipher: CipherView) {
@@ -143,9 +133,19 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                 });
             }
             if (item.secureContents.passwordHistory != null) {
-                this.processPasswordHistory(item.secureContents.passwordHistory, cipher);
+                this.parsePasswordHistory(item.secureContents.passwordHistory, cipher);
             }
         }
+    }
+
+    private parsePasswordHistory(items: any[], cipher: CipherView) {
+        const maxSize = items.length > 5 ? 5 : items.length;
+        cipher.passwordHistory = items.sort((a, b) => b.time - a.time).slice(0, maxSize).map((entry: any) => {
+            const ph = new PasswordHistoryView();
+            ph.password = entry.value;
+            ph.lastUsedDate = new Date(entry.time * 1000);
+            return ph;
+        });
     }
 
     private parseFields(fields: any[], cipher: CipherView, designationKey: string, valueKey: string, nameKey: string) {

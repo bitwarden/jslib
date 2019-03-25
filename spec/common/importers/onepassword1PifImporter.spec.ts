@@ -12,62 +12,62 @@ if (Utils.isNode) {
 
 const TestData: string = '***aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee***\n' +
     JSON.stringify({
-    uuid: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-    updatedAt: 1486071244,
-    securityLevel: 'SL5',
-    contentsHash: 'aaaaaaaa',
-    title: 'Imported Entry',
-    location: 'https://www.google.com',
-    secureContents: {
-        fields: [
-            {
-                value: 'user@test.net',
-                id: 'email-input',
-                name: 'email',
-                type: 'T',
-                designation: 'username',
-            },
-            {
-                value: 'myservicepassword',
-                id: 'password-input',
-                name: 'password',
-                type: 'P',
-                designation: 'password',
-            },
-        ],
-        sections: [
-            {
-                fields: [
-                    {
-                        k: 'concealed',
-                        n: 'AAAAAAAAAAAABBBBBBBBBBBCCCCCCCCC',
-                        v: 'console-password-123',
-                        t: 'console password',
-                    },
-                ],
-                title: 'Admin Console',
-                name: 'admin_console',
-            },
-        ],
-        passwordHistory: [
-          {
-            value: 'old-password',
-            time: 1447791421,
-          },
-        ],
-    },
-    URLs: [
-        {
-            label: 'website',
-            url: 'https://www.google.com',
+        uuid: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+        updatedAt: 1486071244,
+        securityLevel: 'SL5',
+        contentsHash: 'aaaaaaaa',
+        title: 'Imported Entry',
+        location: 'https://www.google.com',
+        secureContents: {
+            fields: [
+                {
+                    value: 'user@test.net',
+                    id: 'email-input',
+                    name: 'email',
+                    type: 'T',
+                    designation: 'username',
+                },
+                {
+                    value: 'myservicepassword',
+                    id: 'password-input',
+                    name: 'password',
+                    type: 'P',
+                    designation: 'password',
+                },
+            ],
+            sections: [
+                {
+                    fields: [
+                        {
+                            k: 'concealed',
+                            n: 'AAAAAAAAAAAABBBBBBBBBBBCCCCCCCCC',
+                            v: 'console-password-123',
+                            t: 'console password',
+                        },
+                    ],
+                    title: 'Admin Console',
+                    name: 'admin_console',
+                },
+            ],
+            passwordHistory: [
+                {
+                    value: 'old-password',
+                    time: 1447791421,
+                },
+            ],
         },
-    ],
-    txTimestamp: 1508941334,
-    createdAt: 1390426636,
-    typeName: 'webforms.WebForm',
-});
+        URLs: [
+            {
+                label: 'website',
+                url: 'https://www.google.com',
+            },
+        ],
+        txTimestamp: 1508941334,
+        createdAt: 1390426636,
+        typeName: 'webforms.WebForm',
+    });
 
-const WindowsTestData = JSON.stringify({
+const WindowsOpVaultTestData = JSON.stringify({
     category: '001',
     created: 1544823719,
     hmac: 'NtyBmTTPOb88HV3JUKPx1xl/vcMhac9kvCfe/NtszY0=',
@@ -89,12 +89,28 @@ const WindowsTestData = JSON.stringify({
     details: {
         passwordHistory: [
             {
-                value: 'oldpass2',
+                value: 'oldpass1',
                 time: 1553394449,
             },
             {
-                value: 'oldpass1',
+                value: 'oldpass2',
                 time: 1553394457,
+            },
+            {
+                value: 'oldpass3',
+                time: 1553394458,
+            },
+            {
+                value: 'oldpass4',
+                time: 1553394459,
+            },
+            {
+                value: 'oldpass5',
+                time: 1553394460,
+            },
+            {
+                value: 'oldpass6',
+                time: 1553394461,
             },
         ],
         fields: [
@@ -481,18 +497,26 @@ describe('1Password 1Pif Importer', () => {
         expect(ph.lastUsedDate.toISOString()).toEqual('2015-11-17T20:17:01.000Z');
     });
 
-    it('should create password history from windows 1pif format', async () => {
+    it('should create password history from windows opvault 1pif format', async () => {
         const importer = new Importer();
-        const result = importer.parse(WindowsTestData);
+        const result = importer.parse(WindowsOpVaultTestData);
         const cipher = result.ciphers.shift();
 
-        expect(cipher.passwordHistory.length).toEqual(2);
+        expect(cipher.passwordHistory.length).toEqual(5);
         let ph = cipher.passwordHistory.shift();
-        expect(ph.password).toEqual('oldpass2');
-        expect(ph.lastUsedDate.toISOString()).toEqual('2019-03-24T02:27:29.000Z');
-
+        expect(ph.password).toEqual('oldpass6');
+        expect(ph.lastUsedDate.toISOString()).toEqual('2019-03-24T02:27:41.000Z');
         ph = cipher.passwordHistory.shift();
-        expect(ph.password).toEqual('oldpass1');
+        expect(ph.password).toEqual('oldpass5');
+        expect(ph.lastUsedDate.toISOString()).toEqual('2019-03-24T02:27:40.000Z');
+        ph = cipher.passwordHistory.shift();
+        expect(ph.password).toEqual('oldpass4');
+        expect(ph.lastUsedDate.toISOString()).toEqual('2019-03-24T02:27:39.000Z');
+        ph = cipher.passwordHistory.shift();
+        expect(ph.password).toEqual('oldpass3');
+        expect(ph.lastUsedDate.toISOString()).toEqual('2019-03-24T02:27:38.000Z');
+        ph = cipher.passwordHistory.shift();
+        expect(ph.password).toEqual('oldpass2');
         expect(ph.lastUsedDate.toISOString()).toEqual('2019-03-24T02:27:37.000Z');
     });
 });
