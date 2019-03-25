@@ -46,6 +46,11 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
             cipher.organizationId = null;
             cipher.collectionIds = null;
 
+            // make sure password history is limited
+            if (cipher.passwordHistory != null && cipher.passwordHistory.length > 5) {
+                cipher.passwordHistory = cipher.passwordHistory.slice(0, 5);
+            }
+
             if (!this.organization && c.folderId != null && groupingsMap.has(c.folderId)) {
                 result.folderRelationships.push([result.ciphers.length, groupingsMap.get(c.folderId)]);
             } else if (this.organization && c.collectionIds != null) {
