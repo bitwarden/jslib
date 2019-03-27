@@ -1,6 +1,7 @@
 {
   "extends": "tslint:recommended",
   "rules": {
+    "interface-name": [false],
     "align": [ true, "statements", "members" ],
     "ban-types": {
       "options": [

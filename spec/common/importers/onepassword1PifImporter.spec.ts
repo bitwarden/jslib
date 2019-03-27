@@ -71,7 +71,7 @@ const WindowsOpVaultTestData = JSON.stringify({
     category: '001',
     created: 1544823719,
     hmac: 'NtyBmTTPOb88HV3JUKPx1xl/vcMhac9kvCfe/NtszY0=',
-    k: 'XC/z20QveYCoV8xQ4tCJZZp/uum77xLkMSMEhlUULndryXgSmkG+VBtkW7AfuerfKc8Rtu43a4Sd078j7XfZTcwUCEKtBECUTDNbEgv4+4hoFVk1EzZgEUy/0bW1Ap+jNLmmdSU9h74+REu6pdxsvQ==',
+    k: '**REMOVED LONG LINE FOR LINTER** -Kyle',
     tx: 1553395669,
     updated: 1553395669,
     uuid: '528AB076FB5F4FBF960884B8E01619AC',

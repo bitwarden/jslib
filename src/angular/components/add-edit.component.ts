@@ -1,4 +1,7 @@
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import {
+    CdkDragDrop,
+    moveItemInArray,
+} from '@angular/cdk/drag-drop';
 import {
     EventEmitter,
     Input,
@@ -345,7 +348,6 @@ export class AddEditComponent implements OnInit {
         const u = (uri as any);
         u.showOptions = u.showOptions == null ? true : u.showOptions;
     }
-
 
     drop(event: CdkDragDrop<string[]>) {
         moveItemInArray(this.cipher.fields, event.previousIndex, event.currentIndex);

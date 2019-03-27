@@ -20,7 +20,8 @@ describe('Utils Service', () => {
             expect(Utils.getDomain('https://bitwarden.com')).toBe('bitwarden.com');
             expect(Utils.getDomain('http://bitwarden.com')).toBe('bitwarden.com');
             expect(Utils.getDomain('http://vault.bitwarden.com')).toBe('bitwarden.com');
-            expect(Utils.getDomain('https://user:password@bitwarden.com:8080/password/sites?and&query#hash')).toBe('bitwarden.com');
+            expect(Utils.getDomain('https://user:password@bitwarden.com:8080/password/sites?and&query#hash'))
+                .toBe('bitwarden.com');
             expect(Utils.getDomain('https://bitwarden.unknown')).toBe('bitwarden.unknown');
         });
 
