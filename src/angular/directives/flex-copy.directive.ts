@@ -7,9 +7,9 @@ import {
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 @Directive({
-    selector: '[appFlexCopy]',
+    selector: '[appSelectCopy]',
 })
-export class FlexCopyDirective {
+export class SelectCopyDirective {
     constructor(private el: ElementRef, private platformUtilsService: PlatformUtilsService) { }
 
     @HostListener('copy') onCopy() {
