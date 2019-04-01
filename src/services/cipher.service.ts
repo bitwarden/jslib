@@ -569,8 +569,8 @@ export class CipherService implements CipherServiceAbstraction {
 
         const fd = new FormData();
         try {
-            fd.append('key', dataEncKey[1].encryptedString);
             const blob = new Blob([encData], { type: 'application/octet-stream' });
+            fd.append('key', dataEncKey[1].encryptedString);
             fd.append('data', blob, encFileName.encryptedString);
         } catch (e) {
             if (Utils.isNode && !Utils.isBrowser) {
@@ -808,8 +808,8 @@ export class CipherService implements CipherServiceAbstraction {
 
         const fd = new FormData();
         try {
-            fd.append('key', dataEncKey[1].encryptedString);
             const blob = new Blob([encData], { type: 'application/octet-stream' });
+            fd.append('key', dataEncKey[1].encryptedString);
             fd.append('data', blob, encFileName.encryptedString);
         } catch (e) {
             if (Utils.isNode && !Utils.isBrowser) {
