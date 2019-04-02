@@ -9,6 +9,8 @@ import {
     ViewContainerRef,
 } from '@angular/core';
 
+import { MessagingService } from '../../abstractions/messaging.service';
+
 @Component({
     selector: 'app-modal',
     template: `<ng-template #container></ng-template>`,
@@ -22,7 +24,8 @@ export class ModalComponent implements OnDestroy {
     parentContainer: ViewContainerRef = null;
     fade: boolean = true;
 
-    constructor(protected componentFactoryResolver: ComponentFactoryResolver) { }
+    constructor(protected componentFactoryResolver: ComponentFactoryResolver,
+        protected messagingService: MessagingService) { }
 
     ngOnDestroy() {
         document.body.classList.remove('modal-open');
@@ -31,6 +34,7 @@ export class ModalComponent implements OnDestroy {
 
     show<T>(type: Type<T>, parentContainer: ViewContainerRef, fade: boolean = true): T {
         this.onShow.emit();
+        this.messagingService.send('modalShow');
         this.parentContainer = parentContainer;
         this.fade = fade;
 
@@ -54,12 +58,15 @@ export class ModalComponent implements OnDestroy {
         }
 
         this.onShown.emit();
+        this.messagingService.send('modalShown');
         return componentRef.instance;
     }
 
     close() {
         this.onClose.emit();
+        this.messagingService.send('modalClose');
         this.onClosed.emit();
+        this.messagingService.send('modalClosed');
         if (this.parentContainer != null) {
             this.parentContainer.clear();
         }
