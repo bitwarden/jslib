@@ -96,12 +96,17 @@ export class CryptoService implements CryptoServiceAbstraction {
         return key == null ? null : this.key;
     }
 
-    getKeyHash(): Promise<string> {
+    async getKeyHash(): Promise<string> {
         if (this.keyHash != null) {
-            return Promise.resolve(this.keyHash);
+            return this.keyHash;
         }
 
-        return this.storageService.get<string>(Keys.keyHash);
+        const keyHash = await this.secureStorageService.get<string>(Keys.keyHash);
+        if (keyHash != null) {
+            this.keyHash = keyHash;
+        }
+
+        return keyHash == null ? null : this.keyHash;
     }
 
     @sequentialize(() => 'getEncKey')
@@ -380,7 +385,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         const iv = Utils.fromBufferToB64(encObj.iv);
         const data = Utils.fromBufferToB64(encObj.data);
         const mac = encObj.mac != null ? Utils.fromBufferToB64(encObj.mac) : null;
-        return new CipherString(encObj.key.encType, iv, data, mac);
+        return new CipherString(encObj.key.encType, data, iv, mac);
     }
 
     async encryptToBytes(plainValue: ArrayBuffer, key?: SymmetricCryptoKey): Promise<ArrayBuffer> {
