@@ -714,7 +714,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         return phrase;
     }
 
-    private async buildEncKey(key: SymmetricCryptoKey, encKey: ArrayBuffer = null)
+    private async buildEncKey(key: SymmetricCryptoKey, encKey: ArrayBuffer)
         : Promise<[SymmetricCryptoKey, CipherString]> {
         let encKeyEnc: CipherString = null;
         if (key.key.byteLength === 32) {
