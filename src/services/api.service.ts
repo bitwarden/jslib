@@ -166,8 +166,7 @@ export class ApiService implements ApiServiceAbstraction {
         }));
 
         let responseJson: any = null;
-        const typeHeader = response.headers.get('content-type');
-        if (typeHeader != null && typeHeader.indexOf('application/json') > -1) {
+        if (this.isJsonResponse(response)) {
             responseJson = await response.json();
         }
 
@@ -932,8 +931,7 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         let responseJson: any = null;
-        const typeHeader = response.headers.get('content-type');
-        if (typeHeader != null && typeHeader.indexOf('application/json') > -1) {
+        if (this.isJsonResponse(response)) {
             responseJson = await response.json();
         }
 
@@ -1000,5 +998,10 @@ export class ApiService implements ApiServiceAbstraction {
             base += ('continuationToken=' + token);
         }
         return base;
+    }
+
+    private isJsonResponse(response: Response): boolean {
+        const typeHeader = response.headers.get('content-type');
+        return typeHeader != null && typeHeader.indexOf('application/json') > -1;
     }
 }
