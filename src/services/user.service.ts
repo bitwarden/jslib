@@ -45,47 +45,37 @@ export class UserService implements UserServiceAbstraction {
     }
 
     async getUserId(): Promise<string> {
-        if (this.userId != null) {
-            return this.userId;
+        if (this.userId == null) {
+            this.userId = await this.storageService.get<string>(Keys.userId);
         }
-
-        this.userId = await this.storageService.get<string>(Keys.userId);
         return this.userId;
     }
 
     async getEmail(): Promise<string> {
-        if (this.email != null) {
-            return this.email;
+        if (this.email == null) {
+            this.email = await this.storageService.get<string>(Keys.userEmail);
         }
-
-        this.email = await this.storageService.get<string>(Keys.userEmail);
         return this.email;
     }
 
     async getSecurityStamp(): Promise<string> {
-        if (this.stamp != null) {
-            return this.stamp;
+        if (this.stamp == null) {
+            this.stamp = await this.storageService.get<string>(Keys.stamp);
         }
-
-        this.stamp = await this.storageService.get<string>(Keys.stamp);
         return this.stamp;
     }
 
     async getKdf(): Promise<KdfType> {
-        if (this.kdf != null) {
-            return this.kdf;
+        if (this.kdf == null) {
+            this.kdf = await this.storageService.get<KdfType>(Keys.kdf);
         }
-
-        this.kdf = await this.storageService.get<KdfType>(Keys.kdf);
         return this.kdf;
     }
 
     async getKdfIterations(): Promise<number> {
-        if (this.kdfIterations != null) {
-            return this.kdfIterations;
+        if (this.kdfIterations == null) {
+            this.kdfIterations = await this.storageService.get<number>(Keys.kdfIterations);
         }
-
-        this.kdfIterations = await this.storageService.get<number>(Keys.kdfIterations);
         return this.kdfIterations;
     }
 
@@ -117,7 +107,7 @@ export class UserService implements UserServiceAbstraction {
     }
 
     async canAccessPremium(): Promise<boolean> {
-        const tokenPremium = await this.tokenService.getPremium();
+        const tokenPremium = this.tokenService.getPremium();
         if (tokenPremium) {
             return true;
         }
