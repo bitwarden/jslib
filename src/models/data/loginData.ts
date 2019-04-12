@@ -20,10 +20,7 @@ export class LoginData {
         this.totp = data.totp;
 
         if (data.uris) {
-            this.uris = [];
-            data.uris.forEach((u) => {
-                this.uris.push(new LoginUriData(u));
-            });
+            this.uris = data.uris.map((u) => new LoginUriData(u));
         }
     }
 }
