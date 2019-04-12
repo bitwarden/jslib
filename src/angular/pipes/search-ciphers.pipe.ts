@@ -5,19 +5,11 @@ import {
 
 import { CipherView } from '../../models/view/cipherView';
 
-import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
-
-import { DeviceType } from '../../enums';
-
 @Pipe({
     name: 'searchCiphers',
 })
 export class SearchCiphersPipe implements PipeTransform {
     private onlySearchName = false;
-
-    constructor(platformUtilsService: PlatformUtilsService) {
-        this.onlySearchName = platformUtilsService.getDevice() === DeviceType.EdgeExtension;
-    }
 
     transform(ciphers: CipherView[], searchText: string): CipherView[] {
         if (ciphers == null || ciphers.length === 0) {
