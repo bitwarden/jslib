@@ -94,6 +94,7 @@ export class WindowMain {
             y: this.windowStates[Keys.mainWindowSize].y,
             title: app.getName(),
             icon: process.platform === 'linux' ? path.join(__dirname, '/images/icon.png') : undefined,
+            titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : undefined,
             show: false,
         });
 
