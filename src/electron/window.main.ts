@@ -18,7 +18,8 @@ export class WindowMain {
     private windowStateChangeTimer: NodeJS.Timer;
     private windowStates: { [key: string]: any; } = {};
 
-    constructor(private storageService: StorageService, private defaultWidth = 950, private defaultHeight = 600) { }
+    constructor(private storageService: StorageService, private hideTitleBar = false,
+        private defaultWidth = 950, private defaultHeight = 600) { }
 
     init(): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -94,7 +95,7 @@ export class WindowMain {
             y: this.windowStates[Keys.mainWindowSize].y,
             title: app.getName(),
             icon: process.platform === 'linux' ? path.join(__dirname, '/images/icon.png') : undefined,
-            titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : undefined,
+            titleBarStyle: this.hideTitleBar && process.platform === 'darwin' ? 'hiddenInset' : undefined,
             show: false,
         });
 
