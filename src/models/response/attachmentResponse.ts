@@ -5,7 +5,7 @@ export class AttachmentResponse extends BaseResponse {
     url: string;
     fileName: string;
     key: string;
-    size: number;
+    size: string;
     sizeName: string;
 
     constructor(response: any) {

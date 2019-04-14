@@ -76,28 +76,19 @@ export class Cipher extends Domain {
         }
 
         if (obj.attachments != null) {
-            this.attachments = [];
-            obj.attachments.forEach((attachment) => {
-                this.attachments.push(new Attachment(attachment, alreadyEncrypted));
-            });
+            this.attachments = obj.attachments.map((a) => new Attachment(a, alreadyEncrypted));
         } else {
             this.attachments = null;
         }
 
         if (obj.fields != null) {
-            this.fields = [];
-            obj.fields.forEach((field) => {
-                this.fields.push(new Field(field, alreadyEncrypted));
-            });
+            this.fields = obj.fields.map((f) => new Field(f, alreadyEncrypted));
         } else {
             this.fields = null;
         }
 
         if (obj.passwordHistory != null) {
-            this.passwordHistory = [];
-            obj.passwordHistory.forEach((ph) => {
-                this.passwordHistory.push(new Password(ph, alreadyEncrypted));
-            });
+            this.passwordHistory = obj.passwordHistory.map((ph) => new Password(ph, alreadyEncrypted));
         } else {
             this.passwordHistory = null;
         }
@@ -205,24 +196,13 @@ export class Cipher extends Domain {
         }
 
         if (this.fields != null) {
-            c.fields = [];
-            this.fields.forEach((field) => {
-                c.fields.push(field.toFieldData());
-            });
+            c.fields = this.fields.map((f) => f.toFieldData());
         }
-
         if (this.attachments != null) {
-            c.attachments = [];
-            this.attachments.forEach((attachment) => {
-                c.attachments.push(attachment.toAttachmentData());
-            });
+            c.attachments = this.attachments.map((a) => a.toAttachmentData());
         }
-
         if (this.passwordHistory != null) {
-            c.passwordHistory = [];
-            this.passwordHistory.forEach((ph) => {
-                c.passwordHistory.push(ph.toPasswordHistoryData());
-            });
+            c.passwordHistory = this.passwordHistory.map((ph) => ph.toPasswordHistoryData());
         }
         return c;
     }

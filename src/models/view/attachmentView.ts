@@ -6,7 +6,7 @@ import { SymmetricCryptoKey } from '../domain/symmetricCryptoKey';
 export class AttachmentView implements View {
     id: string = null;
     url: string = null;
-    size: number = null;
+    size: string = null;
     sizeName: string = null;
     fileName: string = null;
     key: SymmetricCryptoKey = null;

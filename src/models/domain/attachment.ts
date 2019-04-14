@@ -13,7 +13,7 @@ import { Utils } from '../../misc/utils';
 export class Attachment extends Domain {
     id: string;
     url: string;
-    size: number;
+    size: string;
     sizeName: string;
     key: CipherString;
     fileName: CipherString;
@@ -62,6 +62,7 @@ export class Attachment extends Domain {
 
     toAttachmentData(): AttachmentData {
         const a = new AttachmentData();
+        a.size = this.size;
         this.buildDataModel(this, a, {
             id: null,
             url: null,
