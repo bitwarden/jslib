@@ -101,7 +101,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             return this.keyHash;
         }
 
-        const keyHash = await this.secureStorageService.get<string>(Keys.keyHash);
+        const keyHash = await this.storageService.get<string>(Keys.keyHash);
         if (keyHash != null) {
             this.keyHash = keyHash;
         }
