@@ -90,8 +90,8 @@ export class CipherString {
     }
 
     async decrypt(orgId: string): Promise<string> {
-        if (this.decryptedValue) {
-            return Promise.resolve(this.decryptedValue);
+        if (this.decryptedValue != null) {
+            return this.decryptedValue;
         }
 
         let cryptoService: CryptoService;
