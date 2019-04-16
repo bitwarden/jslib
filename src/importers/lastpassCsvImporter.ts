@@ -210,31 +210,37 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
         let notes: string = null;
         const dataObj: any = {};
 
+        let processingNotes = false;
         extraParts.forEach((extraPart) => {
-            if (this.isNullOrWhitespace(extraPart)) {
-                return;
-            }
             let key: string = null;
             let val: string = null;
-            const colonIndex = extraPart.indexOf(':');
-            if (colonIndex === -1) {
-                key = extraPart;
-            } else {
-                key = extraPart.substring(0, colonIndex);
-                if (extraPart.length > colonIndex) {
-                    val = extraPart.substring(colonIndex + 1);
+            if (!processingNotes) {
+                if (this.isNullOrWhitespace(extraPart)) {
+                    return;
+                }
+                const colonIndex = extraPart.indexOf(':');
+                if (colonIndex === -1) {
+                    key = extraPart;
+                } else {
+                    key = extraPart.substring(0, colonIndex);
+                    if (extraPart.length > colonIndex) {
+                        val = extraPart.substring(colonIndex + 1);
+                    }
+                }
+                if (this.isNullOrWhitespace(key) || this.isNullOrWhitespace(val) || key === 'NoteType') {
+                    return;
                 }
             }
-            if (this.isNullOrWhitespace(key) || this.isNullOrWhitespace(val) || key === 'NoteType') {
-                return;
-            }
 
-            if (key === 'Notes') {
+            if (processingNotes) {
+                notes += ('\n' + extraPart);
+            } else if (key === 'Notes') {
                 if (!this.isNullOrWhitespace(notes)) {
                     notes += ('\n' + val);
                 } else {
                     notes = val;
                 }
+                processingNotes = true;
             } else if (map.hasOwnProperty(key)) {
                 dataObj[map[key]] = val;
             } else {
