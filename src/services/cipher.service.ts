@@ -112,8 +112,8 @@ export class CipherService implements CipherServiceAbstraction {
                     const hiddenFields = model.fields == null ? [] :
                         model.fields.filter((f) => f.type === FieldType.Hidden && f.name != null && f.name !== '');
                     existingHiddenFields.forEach((ef) => {
-                        const matchedField = hiddenFields.filter((f) => f.name === ef.name);
-                        if (matchedField.length === 0 || matchedField[0].value !== ef.value) {
+                        const matchedField = hiddenFields.find((f) => f.name === ef.name);
+                        if (matchedField == null || matchedField.value !== ef.value) {
                             const ph = new PasswordHistoryView();
                             ph.password = ef.name + ': ' + ef.value;
                             ph.lastUsedDate = new Date();
@@ -320,7 +320,7 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async getAllDecryptedForUrl(url: string, includeOtherTypes?: CipherType[]): Promise<CipherView[]> {
-        if (url == null && !includeOtherTypes) {
+        if (url == null && includeOtherTypes == null) {
             return Promise.resolve([]);
         }
 
@@ -351,7 +351,7 @@ export class CipherService implements CipherServiceAbstraction {
         }
 
         return ciphers.filter((cipher) => {
-            if (includeOtherTypes && includeOtherTypes.indexOf(cipher.type) > -1) {
+            if (includeOtherTypes != null && includeOtherTypes.indexOf(cipher.type) > -1) {
                 return true;
             }
 
