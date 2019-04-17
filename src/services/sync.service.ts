@@ -246,7 +246,6 @@ export class SyncService implements SyncServiceAbstraction {
         await this.cryptoService.setEncPrivateKey(response.privateKey);
         await this.cryptoService.setOrgKeys(response.organizations);
         await this.userService.setSecurityStamp(response.securityStamp);
-        await this.userService.setSecurityStamp(response.securityStamp);
 
         const organizations: { [id: string]: OrganizationData; } = {};
         response.organizations.forEach((o) => {
