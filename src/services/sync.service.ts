@@ -160,7 +160,7 @@ export class SyncService implements SyncServiceAbstraction {
                     const collections = await this.collectionService.getAll();
                     if (collections != null) {
                         for (let i = 0; i < collections.length; i++) {
-                            if (notification.collectionIds.indexOf(collections[i].id)) {
+                            if (notification.collectionIds.indexOf(collections[i].id) > -1) {
                                 shouldUpdate = true;
                                 break;
                             }
