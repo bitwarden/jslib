@@ -598,7 +598,7 @@ export class CipherService implements CipherServiceAbstraction {
         const userId = await this.userService.getUserId();
         const cData = new CipherData(response, userId, cipher.collectionIds);
         if (!admin) {
-            this.upsert(cData);
+            await this.upsert(cData);
         }
         return new Cipher(cData);
     }
@@ -728,14 +728,15 @@ export class CipherService implements CipherServiceAbstraction {
         const aLastUsed = a.localData && a.localData.lastUsedDate ? a.localData.lastUsedDate as number : null;
         const bLastUsed = b.localData && b.localData.lastUsedDate ? b.localData.lastUsedDate as number : null;
 
-        if (aLastUsed != null && bLastUsed != null && aLastUsed < bLastUsed) {
+        const bothNotNull = aLastUsed != null && bLastUsed != null;
+        if (bothNotNull && aLastUsed < bLastUsed) {
             return 1;
         }
         if (aLastUsed != null && bLastUsed == null) {
             return -1;
         }
 
-        if (bLastUsed != null && aLastUsed != null && aLastUsed > bLastUsed) {
+        if (bothNotNull && aLastUsed > bLastUsed) {
             return -1;
         }
         if (bLastUsed != null && aLastUsed == null) {

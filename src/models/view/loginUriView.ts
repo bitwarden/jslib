@@ -15,6 +15,8 @@ const CanLaunchWhitelist = [
     'irc://',
     'vnc://',
     'chrome://',
+    'iosapp://',
+    'androidapp://',
 ];
 
 export class LoginUriView implements View {

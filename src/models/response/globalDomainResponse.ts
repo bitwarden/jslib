@@ -3,7 +3,7 @@ import { BaseResponse } from './baseResponse';
 export class GlobalDomainResponse extends BaseResponse {
     type: number;
     domains: string[];
-    excluded: number[];
+    excluded: boolean;
 
     constructor(response: any) {
         super(response);
