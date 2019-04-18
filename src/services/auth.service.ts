@@ -252,7 +252,7 @@ export class AuthService {
 
         const tokenResponse = response as IdentityTokenResponse;
         if (tokenResponse.twoFactorToken != null) {
-            this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken, email);
+            await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken, email);
         }
 
         await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken);
