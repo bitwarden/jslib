@@ -94,6 +94,7 @@ class Foo {
         });
     }
 
+    @sequentialize((args) => 'qux' + args[0])
     @throttle(1, () => 'qux')
     qux(a: number) {
         this.calls++;
