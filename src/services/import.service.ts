@@ -55,6 +55,7 @@ import { PasswordAgentCsvImporter } from '../importers/passwordAgentCsvImporter'
 import { PasswordBossJsonImporter } from '../importers/passwordBossJsonImporter';
 import { PasswordDragonXmlImporter } from '../importers/passwordDragonXmlImporter';
 import { PasswordSafeXmlImporter } from '../importers/passwordSafeXmlImporter';
+import { PasswordWalletTxtImporter } from '../importers/passwordWalletTxtImporter';
 import { RememBearCsvImporter } from '../importers/rememBearCsvImporter';
 import { RoboFormCsvImporter } from '../importers/roboformCsvImporter';
 import { SafeInCloudXmlImporter } from '../importers/safeInCloudXmlImporter';
@@ -113,6 +114,7 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'fsecurefsk', name: 'F-Secure KEY (fsk)' },
         { id: 'kasperskytxt', name: 'Kaspersky Password Manager (txt)' },
         { id: 'remembearcsv', name: 'RememBear (csv)' },
+        { id: 'passwordwallettxt', name: 'PasswordWallet (txt)' },
     ];
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -243,6 +245,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new KasperskyTxtImporter();
             case 'remembearcsv':
                 return new RememBearCsvImporter();
+            case 'passwordwallettxt':
+                return new PasswordWalletTxtImporter();
             default:
                 return null;
         }
