@@ -110,9 +110,9 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             allCharSet += lowercaseCharSet;
         }
 
-        let uppercaseCharSet = 'ABCDEFGHIJKLMNPQRSTUVWXYZ';
+        let uppercaseCharSet = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
         if (o.ambiguous) {
-            uppercaseCharSet += 'O';
+            uppercaseCharSet += 'IO';
         }
         if (o.uppercase) {
             allCharSet += uppercaseCharSet;
