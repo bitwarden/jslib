@@ -88,14 +88,14 @@ export class IdentityView implements View {
 
     get fullAddress(): string {
         let address = this.address1;
-        if (Utils.isNullOrWhitespace(this.address2)) {
-            if (Utils.isNullOrWhitespace(address)) {
+        if (!Utils.isNullOrWhitespace(this.address2)) {
+            if (!Utils.isNullOrWhitespace(address)) {
                 address += ', ';
             }
             address += this.address2;
         }
-        if (Utils.isNullOrWhitespace(this.address3)) {
-            if (Utils.isNullOrWhitespace(address)) {
+        if (!Utils.isNullOrWhitespace(this.address3)) {
+            if (!Utils.isNullOrWhitespace(address)) {
                 address += ', ';
             }
             address += this.address3;
