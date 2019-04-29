@@ -102,4 +102,14 @@ export class IdentityView implements View {
         }
         return address;
     }
+
+    get fullAddressPart2(): string {
+        if (this.city == null && this.state == null && this.postalCode == null) {
+            return null;
+        }
+        const city = this.city || '-';
+        const state = this.state || '-';
+        const postalCode = this.postalCode || '-';
+        return city + ', ' + state + ', ' + postalCode;
+    }
 }
