@@ -21,4 +21,13 @@ export class AttachmentView implements View {
         this.size = a.size;
         this.sizeName = a.sizeName;
     }
+
+    get fileSize(): number {
+        try {
+            if (this.size != null) {
+                return parseInt(this.size, null);
+            }
+        } catch { }
+        return 0;
+    }
 }
