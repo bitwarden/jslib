@@ -4,4 +4,5 @@ import { ImportDirectoryRequestUser } from './importDirectoryRequestUser';
 export class ImportDirectoryRequest {
     groups: ImportDirectoryRequestGroup[] = [];
     users: ImportDirectoryRequestUser[] = [];
+    overwriteExisting = false;
 }
