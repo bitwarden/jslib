@@ -5,6 +5,8 @@ import {
     Output,
 } from '@angular/core';
 
+import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
+
 import { CipherService } from '../../abstractions/cipher.service';
 import { CollectionService } from '../../abstractions/collection.service';
 import { I18nService } from '../../abstractions/i18n.service';
@@ -39,10 +41,10 @@ export class ShareComponent implements OnInit {
 
     async load() {
         const allCollections = await this.collectionService.getAllDecrypted();
-        this.writeableCollections = allCollections.map((c) => c).filter((c) => !c.readOnly)
-            .sort(Utils.getSortFunction(this.i18nService, 'name'));
+        this.writeableCollections = allCollections.map((c) => c).filter((c) => !c.readOnly);
         const orgs = await this.userService.getAllOrganizations();
-        this.organizations = orgs.sort(Utils.getSortFunction(this.i18nService, 'name'));
+        this.organizations = orgs.sort(Utils.getSortFunction(this.i18nService, 'name'))
+            .filter((o) => o.enabled && o.status === OrganizationUserStatusType.Confirmed);
 
         const cipherDomain = await this.cipherService.get(this.cipherId);
         this.cipher = await cipherDomain.decrypt();
@@ -61,7 +63,7 @@ export class ShareComponent implements OnInit {
         }
     }
 
-    async submit() {
+    async submit(): Promise<boolean> {
         const cipherDomain = await this.cipherService.get(this.cipherId);
         const cipherView = await cipherDomain.decrypt();
 
@@ -74,7 +76,9 @@ export class ShareComponent implements OnInit {
                     this.platformUtilsService.showToast('success', null, this.i18nService.t('sharedItem'));
                 });
             await this.formPromise;
+            return true;
         } catch { }
+        return false;
     }
 
     get canSave() {
