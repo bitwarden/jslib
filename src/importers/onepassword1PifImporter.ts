@@ -140,12 +140,16 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
 
     private parsePasswordHistory(items: any[], cipher: CipherView) {
         const maxSize = items.length > 5 ? 5 : items.length;
-        cipher.passwordHistory = items.sort((a, b) => b.time - a.time).slice(0, maxSize).map((entry: any) => {
-            const ph = new PasswordHistoryView();
-            ph.password = entry.value;
-            ph.lastUsedDate = new Date(entry.time * 1000);
-            return ph;
-        });
+        cipher.passwordHistory = items
+            .filter((h: any) => !this.isNullOrWhitespace(h.value) && h.time != null)
+            .sort((a, b) => b.time - a.time)
+            .slice(0, maxSize)
+            .map((h: any) => {
+                const ph = new PasswordHistoryView();
+                ph.password = h.value;
+                ph.lastUsedDate = new Date(h.time * 1000);
+                return ph;
+            });
     }
 
     private parseFields(fields: any[], cipher: CipherView, designationKey: string, valueKey: string, nameKey: string) {
