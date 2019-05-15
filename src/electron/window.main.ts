@@ -81,13 +81,7 @@ export class WindowMain {
         });
     }
 
-    async recreateWindow(): Promise<void> {
-        if (this.win === null) {
-            await this.createWindow();
-        }
-    }
-
-    private async createWindow(): Promise<void> {
+    async createWindow(): Promise<void> {
         this.windowStates[Keys.mainWindowSize] = await this.getWindowState(Keys.mainWindowSize, this.defaultWidth,
             this.defaultHeight);
 
