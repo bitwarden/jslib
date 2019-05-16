@@ -121,19 +121,19 @@ export class TrayMain {
     }
 
     private toggleWindow() {
-        if (this.windowMain.win === null) {
+        if (this.windowMain.win == null) {
             if (process.platform === 'darwin') {
                 // On MacOS, closing the window via the red button destroys the BrowserWindow instance.
                 this.windowMain.createWindow().then(() => {
                     this.windowMain.win.show();
                 });
             }
+            return;
+        }
+        if (this.windowMain.win.isVisible()) {
+            this.windowMain.win.hide();
         } else {
-            if (this.windowMain.win.isVisible()) {
-                this.windowMain.win.hide();
-            } else {
-                this.windowMain.win.show();
-            }
+            this.windowMain.win.show();
         }
     }
 
