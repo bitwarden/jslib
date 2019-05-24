@@ -136,7 +136,7 @@ export abstract class BaseImporter {
         if (uri == null) {
             return null;
         }
-        uri = uri.toLowerCase().trim();
+        uri = uri.trim();
         if (uri.indexOf('://') === -1 && uri.indexOf('.') >= 0) {
             uri = 'http://' + uri;
         }
