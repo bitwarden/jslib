@@ -48,7 +48,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
 
     async ngOnInit() {
         if (this.authService.email == null || this.authService.masterPasswordHash == null ||
-            this.authService.twoFactorProviders == null) {
+            this.authService.twoFactorProvidersData == null) {
             this.router.navigate([this.loginRoute]);
             return;
         }
@@ -90,18 +90,18 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
 
         this.cleanupU2f();
         this.title = (TwoFactorProviders as any)[this.selectedProviderType].name;
-        const params = this.authService.twoFactorProviders.get(this.selectedProviderType);
+        const providerData = this.authService.twoFactorProvidersData.get(this.selectedProviderType);
         switch (this.selectedProviderType) {
             case TwoFactorProviderType.U2f:
                 if (!this.u2fSupported || this.u2f == null) {
                     break;
                 }
 
-                if (params.Challenge != null) {
-                    this.u2f.init(JSON.parse(params.Challenge));
+                if (providerData.Challenge != null) {
+                    this.u2f.init(JSON.parse(providerData.Challenge));
                 } else {
                     // TODO: Deprecated. Remove in future version.
-                    const challenges = JSON.parse(params.Challenges);
+                    const challenges = JSON.parse(providerData.Challenges);
                     if (challenges != null && challenges.length > 0) {
                         this.u2f.init({
                             appId: challenges[0].appId,
@@ -125,8 +125,8 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 setTimeout(() => {
                     DuoWebSDK.init({
                         iframe: undefined,
-                        host: params.Host,
-                        sig_request: params.Signature,
+                        host: providerData.Host,
+                        sig_request: providerData.Signature,
                         submit_callback: async (f: HTMLFormElement) => {
                             const sig = f.querySelector('input[name="sig_response"]') as HTMLInputElement;
                             if (sig != null) {
@@ -138,8 +138,8 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 }, 0);
                 break;
             case TwoFactorProviderType.Email:
-                this.twoFactorEmail = params.Email;
-                if (this.authService.twoFactorProviders.size > 1) {
+                this.twoFactorEmail = providerData.Email;
+                if (this.authService.twoFactorProvidersData.size > 1) {
                     await this.sendEmail(false);
                 }
                 break;
