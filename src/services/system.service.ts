@@ -67,7 +67,7 @@ export class SystemService implements SystemServiceAbstraction {
             this.clearClipboardTimeoutFunction = async () => {
                 const clipboardValueNow = await this.platformUtilsService.readFromClipboard();
                 if (clipboardValue === clipboardValueNow) {
-                    this.platformUtilsService.copyToClipboard('');
+                    this.platformUtilsService.copyToClipboard('', { clearing: true });
                 }
             };
             this.clearClipboardTimeout = setTimeout(async () => {

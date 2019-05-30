@@ -186,12 +186,17 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
 
     copyToClipboard(text: string, options?: any): void {
         const type = options ? options.type : null;
+        const clearing = options ? !!options.clearing : false;
         const clearMs: number = options && options.clearMs ? options.clearMs : null;
         clipboard.writeText(text, type);
-        this.messagingService.send('copiedToClipboard', {
-            clipboardValue: text,
-            clearMs: clearMs,
-        });
+        if (!clearing) {
+            this.messagingService.send('copiedToClipboard', {
+                clipboardValue: text,
+                clearMs: clearMs,
+                type: type,
+                clearing: clearing,
+            });
+        }
     }
 
     readFromClipboard(options?: any): Promise<string> {
