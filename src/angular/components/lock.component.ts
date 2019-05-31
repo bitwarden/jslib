@@ -2,6 +2,7 @@ import { OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { CryptoService } from '../../abstractions/crypto.service';
+import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { LockService } from '../../abstractions/lock.service';
 import { MessagingService } from '../../abstractions/messaging.service';
@@ -20,6 +21,7 @@ export class LockComponent implements OnInit {
     showPassword: boolean = false;
     email: string;
     pinLock: boolean = false;
+    webVaultHostname: string = '';
 
     protected successRoute: string = 'vault';
     protected onSuccessfulSubmit: () => void;
@@ -30,13 +32,15 @@ export class LockComponent implements OnInit {
     constructor(protected router: Router, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected messagingService: MessagingService,
         protected userService: UserService, protected cryptoService: CryptoService,
-        protected storageService: StorageService, protected lockService: LockService) { }
+        protected storageService: StorageService, protected lockService: LockService,
+                protected environmentService: EnvironmentService) { }
 
     async ngOnInit() {
         this.pinSet = await this.lockService.isPinLockSet();
         const hasKey = await this.cryptoService.hasKey();
         this.pinLock = (this.pinSet[0] && hasKey) || this.pinSet[1];
         this.email = await this.userService.getEmail();
+        this.webVaultHostname = await new URL(this.environmentService.getWebVaultUrl()).hostname;
     }
 
     async submit() {
