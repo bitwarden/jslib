@@ -1,9 +1,10 @@
 import { app, BrowserWindow, screen } from 'electron';
+import { ElectronConstants } from 'jslib/electron/electronConstants';
+
 import * as path from 'path';
 import * as url from 'url';
 
 import { isDev, isMacAppStore, isSnapStore } from './utils';
-
 import { StorageService } from '../abstractions/storage.service';
 
 const WindowEventHandlingDelay = 100;
@@ -14,6 +15,7 @@ const Keys = {
 export class WindowMain {
     win: BrowserWindow;
     isQuitting: boolean = false;
+    enableAlwaysOnTop: boolean = false;
 
     private windowStateChangeTimer: NodeJS.Timer;
     private windowStates: { [key: string]: any; } = {};
@@ -84,6 +86,7 @@ export class WindowMain {
     async createWindow(): Promise<void> {
         this.windowStates[Keys.mainWindowSize] = await this.getWindowState(Keys.mainWindowSize, this.defaultWidth,
             this.defaultHeight);
+        this.enableAlwaysOnTop = await this.storageService.get<boolean>(ElectronConstants.enableAlwaysOnTopKey);
 
         // Create the browser window.
         this.win = new BrowserWindow({
@@ -97,6 +100,7 @@ export class WindowMain {
             icon: process.platform === 'linux' ? path.join(__dirname, '/images/icon.png') : undefined,
             titleBarStyle: this.hideTitleBar && process.platform === 'darwin' ? 'hiddenInset' : undefined,
             show: false,
+            alwaysOnTop: this.enableAlwaysOnTop,
         });
 
         if (this.windowStates[Keys.mainWindowSize].isMaximized) {
@@ -147,6 +151,15 @@ export class WindowMain {
         this.win.on('move', () => {
             this.windowStateChangeHandler(Keys.mainWindowSize, this.win);
         });
+
+    }
+
+    async alwaysOnTop(){
+
+        this.enableAlwaysOnTop = this.win.isAlwaysOnTop() ? false : true;
+        this.win.setAlwaysOnTop(this.enableAlwaysOnTop ? true : false);
+
+        await this.storageService.save(ElectronConstants.enableAlwaysOnTopKey, this.enableAlwaysOnTop);
     }
 
     private windowStateChangeHandler(configKey: string, win: BrowserWindow) {
