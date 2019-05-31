@@ -1,5 +1,5 @@
 import { app, BrowserWindow, screen } from 'electron';
-import { ElectronConstants } from 'jslib/electron/electronConstants';
+import { ElectronConstants } from './electronConstants';
 
 import * as path from 'path';
 import * as url from 'url';
