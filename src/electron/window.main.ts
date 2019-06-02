@@ -154,11 +154,9 @@ export class WindowMain {
 
     }
 
-    async alwaysOnTop(){
-
-        this.enableAlwaysOnTop = this.win.isAlwaysOnTop() ? false : true;
-        this.win.setAlwaysOnTop(this.enableAlwaysOnTop ? true : false);
-
+    async toggleAlwaysOnTop(){
+        this.enableAlwaysOnTop = !this.win.isAlwaysOnTop();
+        this.win.setAlwaysOnTop(this.enableAlwaysOnTop);
         await this.storageService.save(ElectronConstants.enableAlwaysOnTopKey, this.enableAlwaysOnTop);
     }
 
