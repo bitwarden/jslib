@@ -5,6 +5,7 @@ import * as path from 'path';
 import * as url from 'url';
 
 import { isDev, isMacAppStore, isSnapStore } from './utils';
+
 import { StorageService } from '../abstractions/storage.service';
 
 const WindowEventHandlingDelay = 100;
@@ -15,10 +16,10 @@ const Keys = {
 export class WindowMain {
     win: BrowserWindow;
     isQuitting: boolean = false;
-    enableAlwaysOnTop: boolean = false;
 
     private windowStateChangeTimer: NodeJS.Timer;
     private windowStates: { [key: string]: any; } = {};
+    private enableAlwaysOnTop: boolean = false;
 
     constructor(private storageService: StorageService, private hideTitleBar = false,
         private defaultWidth = 950, private defaultHeight = 600) { }
@@ -154,7 +155,7 @@ export class WindowMain {
 
     }
 
-    async toggleAlwaysOnTop(){
+    async toggleAlwaysOnTop() {
         this.enableAlwaysOnTop = !this.win.isAlwaysOnTop();
         this.win.setAlwaysOnTop(this.enableAlwaysOnTop);
         await this.storageService.save(ElectronConstants.enableAlwaysOnTopKey, this.enableAlwaysOnTop);
