@@ -15,6 +15,8 @@ import { ConstantsService } from '../../services/constants.service';
 import { CipherString } from '../../models/domain/cipherString';
 import { SymmetricCryptoKey } from '../../models/domain/symmetricCryptoKey';
 
+import { Utils } from '../../misc/utils';
+
 export class LockComponent implements OnInit {
     masterPassword: string = '';
     pin: string = '';
@@ -33,14 +35,18 @@ export class LockComponent implements OnInit {
         protected platformUtilsService: PlatformUtilsService, protected messagingService: MessagingService,
         protected userService: UserService, protected cryptoService: CryptoService,
         protected storageService: StorageService, protected lockService: LockService,
-                protected environmentService: EnvironmentService) { }
+        protected environmentService: EnvironmentService) { }
 
     async ngOnInit() {
         this.pinSet = await this.lockService.isPinLockSet();
         const hasKey = await this.cryptoService.hasKey();
         this.pinLock = (this.pinSet[0] && hasKey) || this.pinSet[1];
         this.email = await this.userService.getEmail();
-        this.webVaultHostname = await new URL(this.environmentService.getWebVaultUrl()).hostname;
+        let vaultUrl = this.environmentService.getWebVaultUrl();
+        if (vaultUrl == null) {
+            vaultUrl = 'https://bitwarden.com';
+        }
+        this.webVaultHostname = Utils.getHostname(vaultUrl);
     }
 
     async submit() {
