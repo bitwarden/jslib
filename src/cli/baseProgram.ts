@@ -10,15 +10,17 @@ import { UserService } from '../abstractions/user.service';
 const chalk = chk.default;
 
 export abstract class BaseProgram {
-    constructor(private userService: UserService, private writeLn: (s: string, finalLine: boolean) => void) { }
+    constructor(
+        private userService: UserService,
+        private writeLn: (s: string, finalLine: boolean, error: boolean) => void) { }
 
     protected processResponse(response: Response, exitImmediately = false, dataProcessor: () => string = null) {
         if (!response.success) {
             if (process.env.BW_QUIET !== 'true') {
                 if (process.env.BW_RESPONSE === 'true') {
-                    this.writeLn(this.getJson(response), true);
+                    this.writeLn(this.getJson(response), true, true);
                 } else {
-                    this.writeLn(chalk.redBright(response.message), true);
+                    this.writeLn(chalk.redBright(response.message), true, true);
                 }
             }
             if (exitImmediately) {
@@ -30,7 +32,7 @@ export abstract class BaseProgram {
         }
 
         if (process.env.BW_RESPONSE === 'true') {
-            this.writeLn(this.getJson(response), true);
+            this.writeLn(this.getJson(response), true, false);
         } else if (response.data != null) {
             let out: string = dataProcessor != null ? dataProcessor() : null;
             if (out == null) {
@@ -49,7 +51,7 @@ export abstract class BaseProgram {
             }
 
             if (out != null && process.env.BW_QUIET !== 'true') {
-                this.writeLn(out, true);
+                this.writeLn(out, true, false);
             }
         }
         if (exitImmediately) {
