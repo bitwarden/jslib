@@ -25,6 +25,8 @@ const DefaultOptions = {
     type: 'password',
     numWords: 3,
     wordSeparator: '-',
+    capitalize: false,
+    includeNumber: false,
 };
 
 const Keys = {
@@ -171,12 +173,29 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             o.wordSeparator = ' ';
         }
 
+        if (o.capitalize == null) {
+            o.addCommonRequirements = false;
+        }
+
+        if (o.includeNumber == null) {
+            o.includeNumber = false;
+        }
+
         const listLength = EEFLongWordList.length - 1;
-        const wordList = new Array(o.numWords);
+        let wordList = new Array(o.numWords);
         for (let i = 0; i < o.numWords; i++) {
             const wordIndex = await this.cryptoService.randomNumber(0, listLength);
-            wordList[i] = EEFLongWordList[wordIndex];
+            if (o.capitalize) {
+                wordList[i] = this.capitalize(EEFLongWordList[wordIndex]);
+            } else {
+                wordList[i] = EEFLongWordList[wordIndex];
+            }
         }
+
+        if (o.includeNumber) {
+            return await this.insertNumber(wordList.join(o.wordSeparator));
+        }
+
         return wordList.join(o.wordSeparator);
     }
 
@@ -254,6 +273,16 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         const finalUserInputs = Array.from(new Set(globalUserInputs));
         const result = zxcvbn(password, finalUserInputs);
         return result;
+    }
+
+    private capitalize(str: string) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    private async insertNumber(word: string) {
+        const charIndex = await this.cryptoService.randomNumber(0, word.length - 1);
+        const addedNumber = await this.cryptoService.randomNumber(0, 9);
+        return word.substring(0, charIndex) + addedNumber + word.substring(charIndex, word.length);
     }
 
     private async encryptHistory(history: GeneratedPasswordHistory[]): Promise<GeneratedPasswordHistory[]> {
