@@ -172,17 +172,15 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         if (o.wordSeparator == null || o.wordSeparator.length === 0 || o.wordSeparator.length > 1) {
             o.wordSeparator = ' ';
         }
-
         if (o.capitalize == null) {
             o.addCommonRequirements = false;
         }
-
         if (o.includeNumber == null) {
             o.includeNumber = false;
         }
 
         const listLength = EEFLongWordList.length - 1;
-        let wordList = new Array(o.numWords);
+        const wordList = new Array(o.numWords);
         for (let i = 0; i < o.numWords; i++) {
             const wordIndex = await this.cryptoService.randomNumber(0, listLength);
             if (o.capitalize) {
@@ -193,9 +191,8 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         }
 
         if (o.includeNumber) {
-            return await this.insertNumber(wordList.join(o.wordSeparator));
+            await this.appendRandomNumberToRandomWord(wordList);
         }
-
         return wordList.join(o.wordSeparator);
     }
 
@@ -279,10 +276,13 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    private async insertNumber(word: string) {
-        const charIndex = await this.cryptoService.randomNumber(0, word.length - 1);
-        const addedNumber = await this.cryptoService.randomNumber(0, 9);
-        return word.substring(0, charIndex) + addedNumber + word.substring(charIndex, word.length);
+    private async appendRandomNumberToRandomWord(wordList: string[]) {
+        if (wordList == null || wordList.length < 0) {
+            return;
+        }
+        const index = await this.cryptoService.randomNumber(0, wordList.length - 1);
+        const num = await this.cryptoService.randomNumber(0, 9);
+        wordList[index] = wordList[index] + num;
     }
 
     private async encryptHistory(history: GeneratedPasswordHistory[]): Promise<GeneratedPasswordHistory[]> {
