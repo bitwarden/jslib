@@ -25,7 +25,8 @@ const DefaultOptions = {
     type: 'password',
     numWords: 3,
     wordSeparator: '-',
-    commonRequirements: false,
+    capitalize: false,
+    includeNumber: false,
 };
 
 const Keys = {
@@ -172,21 +173,27 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             o.wordSeparator = ' ';
         }
 
-        if (o.commonRequirements == null) {
+        if (o.capitalize == null) {
             o.addCommonRequirements = false;
+        }
+
+        if (o.includeNumber == null) {
+            o.includeNumber = false;
         }
 
         const listLength = EEFLongWordList.length - 1;
         let wordList = new Array(o.numWords);
         for (let i = 0; i < o.numWords; i++) {
             const wordIndex = await this.cryptoService.randomNumber(0, listLength);
-            wordList[i] = EEFLongWordList[wordIndex];
+            if (o.capitalize) {
+                wordList[i] = this.capitalize(EEFLongWordList[wordIndex]);
+            } else {
+                wordList[i] = EEFLongWordList[wordIndex];
+            }
         }
 
-        if (o.commonRequirements) {
-            wordList = wordList.map(this.capitalizeFirstLetter);
-            const wordIndex = await this.cryptoService.randomNumber(0, o.numWords - 1);
-            wordList[wordIndex] = await this.insertNumber(wordList[wordIndex]);
+        if (o.includeNumber) {
+            return await this.insertNumber(wordList.join(o.wordSeparator));
         }
 
         return wordList.join(o.wordSeparator);
@@ -268,7 +275,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         return result;
     }
 
-    private capitalizeFirstLetter(str: string) {
+    private capitalize(str: string) {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
