@@ -12,6 +12,7 @@ import { CollectionRequest } from '../models/request/collectionRequest';
 import { DeleteRecoverRequest } from '../models/request/deleteRecoverRequest';
 import { EmailRequest } from '../models/request/emailRequest';
 import { EmailTokenRequest } from '../models/request/emailTokenRequest';
+import { EventRequest } from '../models/request/eventRequest';
 import { FolderRequest } from '../models/request/folderRequest';
 import { GroupRequest } from '../models/request/groupRequest';
 import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
@@ -98,6 +99,7 @@ export abstract class ApiService {
     urlsSet: boolean;
     apiBaseUrl: string;
     identityBaseUrl: string;
+    eventsBaseUrl: string;
 
     setUrls: (urls: EnvironmentUrls) => void;
     postIdentityToken: (request: TokenRequest) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse>;
@@ -254,6 +256,7 @@ export abstract class ApiService {
         token: string) => Promise<ListResponse<EventResponse>>;
     getEventsOrganizationUser: (organizationId: string, id: string,
         start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
+    postEventsCollect: (request: EventRequest) => Promise<any>;
 
     getUserPublicKey: (id: string) => Promise<UserKeyResponse>;
 

@@ -6,6 +6,7 @@ export enum EventType {
     User_Recovered2fa = 1004,
     User_FailedLogIn = 1005,
     User_FailedLogIn2fa = 1006,
+    User_ExportedVault = 1007,
 
     Cipher_Created = 1100,
     Cipher_Updated = 1101,
@@ -14,6 +15,12 @@ export enum EventType {
     Cipher_AttachmentDeleted = 1104,
     Cipher_Shared = 1105,
     Cipher_UpdatedCollections = 1106,
+    Cipher_ClientViewed = 1107,
+    Cipher_ClientToggledPasswordVisible = 1108,
+    Cipher_ClientToggledHiddenFieldVisible = 1109,
+    Cipher_ClientCopiedPassword = 1110,
+    Cipher_ClientCopedHiddenField = 1111,
+    Cipher_ClientAutofilled = 1112,
 
     Collection_Created = 1300,
     Collection_Updated = 1301,

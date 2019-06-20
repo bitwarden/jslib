@@ -18,6 +18,7 @@ import { CollectionRequest } from '../models/request/collectionRequest';
 import { DeleteRecoverRequest } from '../models/request/deleteRecoverRequest';
 import { EmailRequest } from '../models/request/emailRequest';
 import { EmailTokenRequest } from '../models/request/emailTokenRequest';
+import { EventRequest } from '../models/request/eventRequest';
 import { FolderRequest } from '../models/request/folderRequest';
 import { GroupRequest } from '../models/request/groupRequest';
 import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
@@ -105,6 +106,7 @@ export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
     apiBaseUrl: string;
     identityBaseUrl: string;
+    eventsBaseUrl: string;
 
     private deviceType: string;
     private isWebClient = false;
@@ -130,24 +132,24 @@ export class ApiService implements ApiServiceAbstraction {
             this.usingBaseUrl = true;
             this.apiBaseUrl = urls.base + '/api';
             this.identityBaseUrl = urls.base + '/identity';
+            this.eventsBaseUrl = urls.base + '/events';
             return;
         }
 
-        if (urls.api != null && urls.identity != null) {
-            this.apiBaseUrl = urls.api;
-            this.identityBaseUrl = urls.identity;
-            return;
-        }
-
-        /* tslint:disable */
-        // Local Dev
-        //this.apiBaseUrl = 'http://localhost:4000';
-        //this.identityBaseUrl = 'http://localhost:33656';
+        this.apiBaseUrl = urls.api;
+        this.identityBaseUrl = urls.identity;
+        this.eventsBaseUrl = urls.events;
 
         // Production
-        this.apiBaseUrl = 'https://api.bitwarden.com';
-        this.identityBaseUrl = 'https://identity.bitwarden.com';
-        /* tslint:enable */
+        if (this.apiBaseUrl == null) {
+            this.apiBaseUrl = 'https://api.bitwarden.com';
+        }
+        if (this.identityBaseUrl == null) {
+            this.identityBaseUrl = 'https://identity.bitwarden.com';
+        }
+        if (this.eventsBaseUrl == null) {
+            this.eventsBaseUrl = 'https://events.bitwarden.com';
+        }
     }
 
     // Auth APIs
@@ -837,6 +839,25 @@ export class ApiService implements ApiServiceAbstraction {
             this.addEventParameters('/organizations/' + organizationId + '/users/' + id + '/events', start, end, token),
             null, true, true);
         return new ListResponse(r, EventResponse);
+    }
+
+    async postEventsCollect(request: EventRequest): Promise<any> {
+        const authHeader = await this.getActiveBearerToken();
+        const headers = new Headers({
+            'Device-Type': this.deviceType,
+            'Authorization': 'Bearer ' + authHeader,
+            'Content-Type': 'application/json; charset=utf-8',
+        });
+        const response = await this.fetch(new Request(this.eventsBaseUrl + '/collect', {
+            cache: 'no-cache',
+            credentials: this.getCredentials(),
+            method: 'POST',
+            body: JSON.stringify(request),
+            headers: headers,
+        }));
+        if (response.status !== 200) {
+            return Promise.reject('Event post failed.');
+        }
     }
 
     // User APIs

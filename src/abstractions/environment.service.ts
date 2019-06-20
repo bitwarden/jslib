@@ -5,6 +5,7 @@ export abstract class EnvironmentService {
     identityUrl: string;
     iconsUrl: string;
     notificationsUrl: string;
+    eventsUrl: string;
 
     getWebVaultUrl: () => string;
     setUrlsFromStorage: () => Promise<void>;
