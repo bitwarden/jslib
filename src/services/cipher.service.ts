@@ -794,7 +794,8 @@ export class CipherService implements CipherServiceAbstraction {
 
     private async shareAttachmentWithServer(attachmentView: AttachmentView, cipherId: string,
         organizationId: string): Promise<any> {
-        const attachmentResponse = await fetch(new Request(attachmentView.url, { cache: 'no-cache' }));
+        const attachmentResponse = await this.apiService.nativeFetch(
+            new Request(attachmentView.url, { cache: 'no-cache' }));
         if (attachmentResponse.status !== 200) {
             throw Error('Failed to download attachment: ' + attachmentResponse.status.toString());
         }

@@ -266,4 +266,5 @@ export abstract class ApiService {
 
     getActiveBearerToken: () => Promise<string>;
     fetch: (request: Request) => Promise<Response>;
+    nativeFetch: (request: Request) => Promise<Response>;
 }

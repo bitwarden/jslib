@@ -897,6 +897,10 @@ export class ApiService implements ApiServiceAbstraction {
             request.headers.set('Cache-Control', 'no-cache');
             request.headers.set('Pragma', 'no-cache');
         }
+        return this.nativeFetch(request);
+    }
+
+    nativeFetch(request: Request): Promise<Response> {
         return fetch(request);
     }
 
