@@ -162,8 +162,13 @@ export class AddEditComponent implements OnInit {
             this.title = this.i18nService.t('addItem');
         }
 
-        this.cipher = await this.stateService.get<CipherView>('addEditCipher');
-        await this.stateService.remove('addEditCipher');
+        const addEditCipherInfo: any = await this.stateService.get<any>('addEditCipherInfo');
+        if (addEditCipherInfo != null) {
+            this.cipher = addEditCipherInfo.cipher;
+            this.collectionIds = addEditCipherInfo.collectionIds;
+        }
+        await this.stateService.remove('addEditCipherInfo');
+
         if (this.cipher == null) {
             if (this.editMode) {
                 const cipher = await this.loadCipher();
@@ -179,15 +184,17 @@ export class AddEditComponent implements OnInit {
                 this.cipher.identity = new IdentityView();
                 this.cipher.secureNote = new SecureNoteView();
                 this.cipher.secureNote.type = SecureNoteType.Generic;
+            }
+        }
 
-                await this.organizationChanged();
-                if (this.collectionIds != null && this.collectionIds.length > 0 && this.collections.length > 0) {
-                    this.collections.forEach((c) => {
-                        if (this.collectionIds.indexOf(c.id) > -1) {
-                            (c as any).checked = true;
-                        }
-                    });
-                }
+        if (this.cipher != null && (!this.editMode || addEditCipherInfo != null)) {
+            await this.organizationChanged();
+            if (this.collectionIds != null && this.collectionIds.length > 0 && this.collections.length > 0) {
+                this.collections.forEach((c) => {
+                    if (this.collectionIds.indexOf(c.id) > -1) {
+                        (c as any).checked = true;
+                    }
+                });
             }
         }
 
