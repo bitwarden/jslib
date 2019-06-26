@@ -70,6 +70,7 @@ export class ShareComponent implements OnInit {
         if (selectedCollectionIds.length === 0) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('selectOneCollection'));
+            return;
         }
 
         const cipherDomain = await this.cipherService.get(this.cipherId);
