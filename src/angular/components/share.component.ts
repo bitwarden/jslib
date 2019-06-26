@@ -64,13 +64,20 @@ export class ShareComponent implements OnInit {
     }
 
     async submit(): Promise<boolean> {
+        const selectedCollectionIds = this.collections
+            .filter((c) => !!(c as any).checked)
+            .map((c) => c.id);
+        if (selectedCollectionIds.length === 0) {
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                this.i18nService.t('selectOneCollection'));
+        }
+
         const cipherDomain = await this.cipherService.get(this.cipherId);
         const cipherView = await cipherDomain.decrypt();
 
-        const checkedCollectionIds = this.collections.filter((c) => (c as any).checked).map((c) => c.id);
         try {
             this.formPromise = this.cipherService.shareWithServer(cipherView, this.organizationId,
-                checkedCollectionIds).then(async () => {
+                selectedCollectionIds).then(async () => {
                     this.onSharedCipher.emit();
                     this.platformUtilsService.eventTrack('Shared Cipher');
                     this.platformUtilsService.showToast('success', null, this.i18nService.t('sharedItem'));

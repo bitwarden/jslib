@@ -17,6 +17,7 @@ import { Cipher } from '../../models/domain/cipher';
 
 export class CollectionsComponent implements OnInit {
     @Input() cipherId: string;
+    @Input() allowSelectNone = false;
     @Output() onSavedCollections = new EventEmitter();
 
     formPromise: Promise<any>;
@@ -48,9 +49,14 @@ export class CollectionsComponent implements OnInit {
     }
 
     async submit() {
-        this.cipherDomain.collectionIds = this.collections
+        const selectedCollectionIds = this.collections
             .filter((c) => !!(c as any).checked)
             .map((c) => c.id);
+        if (!this.allowSelectNone && selectedCollectionIds.length === 0) {
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                this.i18nService.t('selectOneCollection'));
+        }
+        this.cipherDomain.collectionIds = selectedCollectionIds;
         try {
             this.formPromise = this.saveCollections();
             await this.formPromise;
