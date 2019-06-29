@@ -4,4 +4,7 @@ export class ElectronConstants {
     static readonly enableTrayKey: string = 'enableTray';
     static readonly enableStartToTrayKey: string = 'enableStartToTrayKey';
     static readonly enableAlwaysOnTopKey: string = 'enableAlwaysOnTopKey';
+    static readonly enableAutoTypeKey: string = 'enableAutoType';
+    static readonly AutoTypeHotkeyKey: string = 'AutoTypeHotkey';
+    static readonly AutoTypeDefaultSequenceKey: string = 'AutoTypeDefaultSequence';
 }

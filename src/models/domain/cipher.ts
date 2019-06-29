@@ -1,18 +1,19 @@
-import { CipherType } from '../../enums/cipherType';
+import {CipherType} from '../../enums/cipherType';
 
-import { CipherData } from '../data/cipherData';
+import {CipherData} from '../data/cipherData';
 
-import { CipherView } from '../view/cipherView';
+import {CipherView} from '../view/cipherView';
 
-import { Attachment } from './attachment';
-import { Card } from './card';
-import { CipherString } from './cipherString';
+import {Attachment} from './attachment';
+import {AutoType} from './autoType';
+import {Card} from './card';
+import {CipherString} from './cipherString';
 import Domain from './domainBase';
-import { Field } from './field';
-import { Identity } from './identity';
-import { Login } from './login';
-import { Password } from './password';
-import { SecureNote } from './secureNote';
+import {Field} from './field';
+import {Identity} from './identity';
+import {Login} from './login';
+import {Password} from './password';
+import {SecureNote} from './secureNote';
 
 export class Cipher extends Domain {
     id: string;
@@ -20,6 +21,7 @@ export class Cipher extends Domain {
     folderId: string;
     name: CipherString;
     notes: CipherString;
+    enableAutoType: boolean;
     type: CipherType;
     favorite: boolean;
     organizationUseTotp: boolean;
@@ -34,6 +36,7 @@ export class Cipher extends Domain {
     fields: Field[];
     passwordHistory: Password[];
     collectionIds: string[];
+    autoTypeTargets: AutoType[];
 
     constructor(obj?: CipherData, alreadyEncrypted: boolean = false, localData: any = null) {
         super();
@@ -57,6 +60,7 @@ export class Cipher extends Domain {
         this.revisionDate = obj.revisionDate != null ? new Date(obj.revisionDate) : null;
         this.collectionIds = obj.collectionIds;
         this.localData = localData;
+        this.enableAutoType = obj.enableAutoType;
 
         switch (this.type) {
             case CipherType.Login:
@@ -91,6 +95,12 @@ export class Cipher extends Domain {
             this.passwordHistory = obj.passwordHistory.map((ph) => new Password(ph, alreadyEncrypted));
         } else {
             this.passwordHistory = null;
+        }
+
+        if (obj.autoTypeTargets != null) {
+            this.autoTypeTargets = obj.autoTypeTargets.map((f) => new AutoType(f, alreadyEncrypted));
+        } else {
+            this.autoTypeTargets = null;
         }
     }
 
@@ -157,6 +167,18 @@ export class Cipher extends Domain {
             model.passwordHistory = passwordHistory;
         }
 
+        if (this.autoTypeTargets != null && this.autoTypeTargets.length > 0) {
+            const autoTypeTargets: any[] = [];
+            await this.autoTypeTargets.reduce((promise, target) => {
+                return promise.then(() => {
+                    return target.decrypt(orgId);
+                }).then((decTarget) => {
+                    autoTypeTargets.push(decTarget);
+                });
+            }, Promise.resolve());
+            model.autoTypeTargets = autoTypeTargets;
+        }
+
         return model;
     }
 
@@ -172,6 +194,7 @@ export class Cipher extends Domain {
         c.revisionDate = this.revisionDate != null ? this.revisionDate.toISOString() : null;
         c.type = this.type;
         c.collectionIds = this.collectionIds;
+        c.enableAutoType = this.enableAutoType;
 
         this.buildDataModel(this, c, {
             name: null,
@@ -203,6 +226,9 @@ export class Cipher extends Domain {
         }
         if (this.passwordHistory != null) {
             c.passwordHistory = this.passwordHistory.map((ph) => ph.toPasswordHistoryData());
+        }
+        if (this.autoTypeTargets != null) {
+            c.autoTypeTargets = this.autoTypeTargets.map((f) => f.toAutoTypeData());
         }
         return c;
     }

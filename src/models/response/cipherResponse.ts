@@ -1,12 +1,13 @@
-import { AttachmentResponse } from './attachmentResponse';
-import { BaseResponse } from './baseResponse';
-import { PasswordHistoryResponse } from './passwordHistoryResponse';
+import {AttachmentResponse} from './attachmentResponse';
+import {BaseResponse} from './baseResponse';
+import {PasswordHistoryResponse} from './passwordHistoryResponse';
 
-import { CardApi } from '../api/cardApi';
-import { FieldApi } from '../api/fieldApi';
-import { IdentityApi } from '../api/identityApi';
-import { LoginApi } from '../api/loginApi';
-import { SecureNoteApi } from '../api/secureNoteApi';
+import {AutoTypeApi} from '../api/autoTypeApi';
+import {CardApi} from '../api/cardApi';
+import {FieldApi} from '../api/fieldApi';
+import {IdentityApi} from '../api/identityApi';
+import {LoginApi} from '../api/loginApi';
+import {SecureNoteApi} from '../api/secureNoteApi';
 
 export class CipherResponse extends BaseResponse {
     id: string;
@@ -15,6 +16,7 @@ export class CipherResponse extends BaseResponse {
     type: number;
     name: string;
     notes: string;
+    enableAutoType: boolean;
     fields: FieldApi[];
     login: LoginApi;
     card: CardApi;
@@ -27,6 +29,7 @@ export class CipherResponse extends BaseResponse {
     attachments: AttachmentResponse[];
     passwordHistory: PasswordHistoryResponse[];
     collectionIds: string[];
+    autoTypeTargets: AutoTypeApi[];
 
     constructor(response: any) {
         super(response);
@@ -36,6 +39,7 @@ export class CipherResponse extends BaseResponse {
         this.type = this.getResponseProperty('Type');
         this.name = this.getResponseProperty('Name');
         this.notes = this.getResponseProperty('Notes');
+        this.enableAutoType = this.getResponseProperty('EnableAutoType') || false;
         this.favorite = this.getResponseProperty('Favorite') || false;
         this.edit = this.getResponseProperty('Edit') || true;
         this.organizationUseTotp = this.getResponseProperty('OrganizationUseTotp');
@@ -65,6 +69,11 @@ export class CipherResponse extends BaseResponse {
         const fields = this.getResponseProperty('Fields');
         if (fields != null) {
             this.fields = fields.map((f: any) => new FieldApi(f));
+        }
+
+        const autoTypeTargets = this.getResponseProperty('AutoTypeTargets');
+        if (autoTypeTargets != null) {
+            this.autoTypeTargets = autoTypeTargets.map((f: any) => new AutoTypeApi(f));
         }
 
         const attachments = this.getResponseProperty('Attachments');

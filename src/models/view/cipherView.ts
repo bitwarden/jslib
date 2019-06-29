@@ -1,15 +1,16 @@
-import { CipherType } from '../../enums/cipherType';
+import {CipherType} from '../../enums/cipherType';
 
-import { Cipher } from '../domain/cipher';
+import {Cipher} from '../domain/cipher';
 
-import { AttachmentView } from './attachmentView';
-import { CardView } from './cardView';
-import { FieldView } from './fieldView';
-import { IdentityView } from './identityView';
-import { LoginView } from './loginView';
-import { PasswordHistoryView } from './passwordHistoryView';
-import { SecureNoteView } from './secureNoteView';
-import { View } from './view';
+import {AttachmentView} from './attachmentView';
+import {AutoTypeView} from './autoTypeView';
+import {CardView} from './cardView';
+import {FieldView} from './fieldView';
+import {IdentityView} from './identityView';
+import {LoginView} from './loginView';
+import {PasswordHistoryView} from './passwordHistoryView';
+import {SecureNoteView} from './secureNoteView';
+import {View} from './view';
 
 export class CipherView implements View {
     id: string = null;
@@ -17,6 +18,7 @@ export class CipherView implements View {
     folderId: string = null;
     name: string = null;
     notes: string = null;
+    enableAutoType = false;
     type: CipherType = null;
     favorite = false;
     organizationUseTotp = false;
@@ -31,6 +33,7 @@ export class CipherView implements View {
     passwordHistory: PasswordHistoryView[] = null;
     collectionIds: string[] = null;
     revisionDate: Date = null;
+    autoTypeTargets: AutoTypeView[] = null;
 
     constructor(c?: Cipher) {
         if (!c) {
@@ -41,6 +44,7 @@ export class CipherView implements View {
         this.organizationId = c.organizationId;
         this.folderId = c.folderId;
         this.favorite = c.favorite;
+        this.enableAutoType = c.enableAutoType;
         this.organizationUseTotp = c.organizationUseTotp;
         this.edit = c.edit;
         this.type = c.type;
@@ -87,6 +91,10 @@ export class CipherView implements View {
 
     get hasFields(): boolean {
         return this.fields && this.fields.length > 0;
+    }
+
+    get hasAutoTypeTargets(): boolean {
+        return this.autoTypeTargets && this.autoTypeTargets.length > 0;
     }
 
     get passwordRevisionDisplayDate(): Date {

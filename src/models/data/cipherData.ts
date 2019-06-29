@@ -1,14 +1,15 @@
-import { CipherType } from '../../enums/cipherType';
+import {CipherType} from '../../enums/cipherType';
 
-import { AttachmentData } from './attachmentData';
-import { CardData } from './cardData';
-import { FieldData } from './fieldData';
-import { IdentityData } from './identityData';
-import { LoginData } from './loginData';
-import { PasswordHistoryData } from './passwordHistoryData';
-import { SecureNoteData } from './secureNoteData';
+import {AttachmentData} from './attachmentData';
+import {AutoTypeData} from './autoTypeData';
+import {CardData} from './cardData';
+import {FieldData} from './fieldData';
+import {IdentityData} from './identityData';
+import {LoginData} from './loginData';
+import {PasswordHistoryData} from './passwordHistoryData';
+import {SecureNoteData} from './secureNoteData';
 
-import { CipherResponse } from '../response/cipherResponse';
+import {CipherResponse} from '../response/cipherResponse';
 
 export class CipherData {
     id: string;
@@ -23,6 +24,7 @@ export class CipherData {
     sizeName: string;
     name: string;
     notes: string;
+    enableAutoType: boolean;
     login?: LoginData;
     secureNote?: SecureNoteData;
     card?: CardData;
@@ -31,6 +33,7 @@ export class CipherData {
     attachments?: AttachmentData[];
     passwordHistory?: PasswordHistoryData[];
     collectionIds?: string[];
+    autoTypeTargets?: AutoTypeData[];
 
     constructor(response?: CipherResponse, userId?: string, collectionIds?: string[]) {
         if (response == null) {
@@ -48,6 +51,7 @@ export class CipherData {
         this.type = response.type;
         this.name = response.name;
         this.notes = response.notes;
+        this.enableAutoType = response.enableAutoType;
         this.collectionIds = collectionIds != null ? collectionIds : response.collectionIds;
 
         switch (this.type) {
@@ -75,6 +79,9 @@ export class CipherData {
         }
         if (response.passwordHistory != null) {
             this.passwordHistory = response.passwordHistory.map((ph) => new PasswordHistoryData(ph));
+        }
+        if (response.autoTypeTargets != null) {
+            this.autoTypeTargets = response.autoTypeTargets.map((f) => new AutoTypeData(f));
         }
     }
 }

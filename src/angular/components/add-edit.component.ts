@@ -1,43 +1,37 @@
-import {
-    CdkDragDrop,
-    moveItemInArray,
-} from '@angular/cdk/drag-drop';
-import {
-    EventEmitter,
-    Input,
-    OnInit,
-    Output,
-} from '@angular/core';
+import {CdkDragDrop, moveItemInArray,} from '@angular/cdk/drag-drop';
+import {EventEmitter, Input, OnInit, Output,} from '@angular/core';
 
-import { CipherType } from '../../enums/cipherType';
-import { FieldType } from '../../enums/fieldType';
-import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
-import { SecureNoteType } from '../../enums/secureNoteType';
-import { UriMatchType } from '../../enums/uriMatchType';
+import {CipherType} from '../../enums/cipherType';
+import {FieldType} from '../../enums/fieldType';
+import {OrganizationUserStatusType} from '../../enums/organizationUserStatusType';
+import {SecureNoteType} from '../../enums/secureNoteType';
+import {UriMatchType} from '../../enums/uriMatchType';
 
-import { AuditService } from '../../abstractions/audit.service';
-import { CipherService } from '../../abstractions/cipher.service';
-import { CollectionService } from '../../abstractions/collection.service';
-import { FolderService } from '../../abstractions/folder.service';
-import { I18nService } from '../../abstractions/i18n.service';
-import { MessagingService } from '../../abstractions/messaging.service';
-import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
-import { StateService } from '../../abstractions/state.service';
-import { UserService } from '../../abstractions/user.service';
+import {AuditService} from '../../abstractions/audit.service';
+import {AutoTypeService} from '../../abstractions/auto-type.service';
+import {CipherService} from '../../abstractions/cipher.service';
+import {CollectionService} from '../../abstractions/collection.service';
+import {FolderService} from '../../abstractions/folder.service';
+import {I18nService} from '../../abstractions/i18n.service';
+import {MessagingService} from '../../abstractions/messaging.service';
+import {PlatformUtilsService} from '../../abstractions/platformUtils.service';
+import {StateService} from '../../abstractions/state.service';
+import {UserService} from '../../abstractions/user.service';
 
-import { Cipher } from '../../models/domain/cipher';
+import {Cipher} from '../../models/domain/cipher';
 
-import { CardView } from '../../models/view/cardView';
-import { CipherView } from '../../models/view/cipherView';
-import { CollectionView } from '../../models/view/collectionView';
-import { FieldView } from '../../models/view/fieldView';
-import { FolderView } from '../../models/view/folderView';
-import { IdentityView } from '../../models/view/identityView';
-import { LoginUriView } from '../../models/view/loginUriView';
-import { LoginView } from '../../models/view/loginView';
-import { SecureNoteView } from '../../models/view/secureNoteView';
+import {AutoTypeView} from '../../models/view/autoTypeView';
+import {CardView} from '../../models/view/cardView';
+import {CipherView} from '../../models/view/cipherView';
+import {CollectionView} from '../../models/view/collectionView';
+import {FieldView} from '../../models/view/fieldView';
+import {FolderView} from '../../models/view/folderView';
+import {IdentityView} from '../../models/view/identityView';
+import {LoginUriView} from '../../models/view/loginUriView';
+import {LoginView} from '../../models/view/loginView';
+import {SecureNoteView} from '../../models/view/secureNoteView';
 
-import { Utils } from '../../misc/utils';
+import {Utils} from '../../misc/utils';
 
 export class AddEditComponent implements OnInit {
     @Input() folderId: string = null;
@@ -80,7 +74,7 @@ export class AddEditComponent implements OnInit {
         protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected auditService: AuditService, protected stateService: StateService,
         protected userService: UserService, protected collectionService: CollectionService,
-        protected messagingService: MessagingService) {
+        protected messagingService: MessagingService, protected autoTypeService: AutoTypeService) {
         this.typeOptions = [
             { name: i18nService.t('typeLogin'), value: CipherType.Login },
             { name: i18nService.t('typeCard'), value: CipherType.Card },
@@ -268,6 +262,22 @@ export class AddEditComponent implements OnInit {
         }
     }
 
+    addAutoTypeTarget() {
+        if (this.cipher.autoTypeTargets == null) {
+            this.cipher.autoTypeTargets = [];
+        }
+
+        const f = new AutoTypeView();
+        this.cipher.autoTypeTargets.push(f);
+    }
+
+    removeAutoTypeTarget(target: AutoTypeView) {
+        const i = this.cipher.autoTypeTargets.indexOf(target);
+        if (i > -1) {
+            this.cipher.autoTypeTargets.splice(i, 1);
+        }
+    }
+
     trackByFunction(index: number, item: any) {
         return index;
     }
@@ -351,6 +361,15 @@ export class AddEditComponent implements OnInit {
 
     drop(event: CdkDragDrop<string[]>) {
         moveItemInArray(this.cipher.fields, event.previousIndex, event.currentIndex);
+    }
+
+    async selectTarget(target: AutoTypeView) {
+        target.target = await this.autoTypeService.getTarget();
+        this.messagingService.send('showWindow');
+    }
+
+    getPossibleTargets() {
+        return this.autoTypeService.getPossibleTargets();
     }
 
     async organizationChanged() {
