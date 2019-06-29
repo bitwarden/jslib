@@ -45,6 +45,7 @@ import { KeeperCsvImporter } from '../importers/keeperCsvImporter';
 import { LastPassCsvImporter } from '../importers/lastpassCsvImporter';
 import { MeldiumCsvImporter } from '../importers/meldiumCsvImporter';
 import { MSecureCsvImporter } from '../importers/msecureCsvImporter';
+import { MykiCsvImporter } from '../importers/mykiCsvImporter';
 import { OnePassword1PifImporter } from '../importers/onepassword1PifImporter';
 import { OnePasswordWinCsvImporter } from '../importers/onepasswordWinCsvImporter';
 import { PadlockCsvImporter } from '../importers/padlockCsvImporter';
@@ -115,6 +116,7 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'kasperskytxt', name: 'Kaspersky Password Manager (txt)' },
         { id: 'remembearcsv', name: 'RememBear (csv)' },
         { id: 'passwordwallettxt', name: 'PasswordWallet (txt)' },
+        { id: 'mykicsv', name: 'Myki (csv)' },
     ];
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -247,6 +249,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new RememBearCsvImporter();
             case 'passwordwallettxt':
                 return new PasswordWalletTxtImporter();
+            case 'mykicsv':
+                return new MykiCsvImporter();
             default:
                 return null;
         }
