@@ -277,7 +277,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     }
 
     private async appendRandomNumberToRandomWord(wordList: string[]) {
-        if (wordList == null || wordList.length < 0) {
+        if (wordList == null || wordList.length <= 0) {
             return;
         }
         const index = await this.cryptoService.randomNumber(0, wordList.length - 1);
