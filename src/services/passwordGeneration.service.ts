@@ -173,7 +173,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             o.wordSeparator = ' ';
         }
         if (o.capitalize == null) {
-            o.addCommonRequirements = false;
+            o.capitalize = false;
         }
         if (o.includeNumber == null) {
             o.includeNumber = false;
