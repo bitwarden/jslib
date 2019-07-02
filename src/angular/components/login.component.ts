@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit {
 
     constructor(protected authService: AuthService, protected router: Router,
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
-        private storageService: StorageService, private stateService: StorageService) { }
+        private storageService: StorageService, protected stateService: StorageService) { }
 
     async ngOnInit() {
         if (this.email == null || this.email === '') {
