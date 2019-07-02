@@ -14,8 +14,11 @@ import { AuthService } from '../../abstractions/auth.service';
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
+import { StateService } from '../../abstractions/state.service';
+import { StorageService } from '../../abstractions/storage.service';
 
 import { TwoFactorProviders } from '../../services/auth.service';
+import { ConstantsService } from '../../services/constants.service';
 
 import * as DuoWebSDK from 'duo_web_sdk';
 import { U2f } from '../../misc/u2f';
@@ -42,7 +45,8 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     constructor(protected authService: AuthService, protected router: Router,
         protected i18nService: I18nService, protected apiService: ApiService,
         protected platformUtilsService: PlatformUtilsService, protected win: Window,
-        protected environmentService: EnvironmentService) {
+        protected environmentService: EnvironmentService, protected stateService: StateService,
+        protected storageService: StorageService) {
         this.u2fSupported = this.platformUtilsService.supportsU2f(win);
     }
 
@@ -169,6 +173,8 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         try {
             this.formPromise = this.authService.logInTwoFactor(this.selectedProviderType, this.token, this.remember);
             await this.formPromise;
+            const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
+            await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
             if (this.onSuccessfulLogin != null) {
                 this.onSuccessfulLogin();
             }

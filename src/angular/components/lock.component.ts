@@ -7,6 +7,7 @@ import { I18nService } from '../../abstractions/i18n.service';
 import { LockService } from '../../abstractions/lock.service';
 import { MessagingService } from '../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
+import { StateService } from '../../abstractions/state.service';
 import { StorageService } from '../../abstractions/storage.service';
 import { UserService } from '../../abstractions/user.service';
 
@@ -35,7 +36,7 @@ export class LockComponent implements OnInit {
         protected platformUtilsService: PlatformUtilsService, protected messagingService: MessagingService,
         protected userService: UserService, protected cryptoService: CryptoService,
         protected storageService: StorageService, protected lockService: LockService,
-        protected environmentService: EnvironmentService) { }
+        protected environmentService: EnvironmentService, protected stateService: StateService) { }
 
     async ngOnInit() {
         this.pinSet = await this.lockService.isPinLockSet();
@@ -126,7 +127,9 @@ export class LockComponent implements OnInit {
         this.doContinue();
     }
 
-    private doContinue() {
+    private async doContinue() {
+        const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
+        await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
         this.messagingService.send('unlocked');
         if (this.onSuccessfulSubmit != null) {
             this.onSuccessfulSubmit();

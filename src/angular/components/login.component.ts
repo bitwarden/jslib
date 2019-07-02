@@ -9,7 +9,10 @@ import { AuthResult } from '../../models/domain/authResult';
 import { AuthService } from '../../abstractions/auth.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
+import { StateService } from '../../abstractions/state.service';
 import { StorageService } from '../../abstractions/storage.service';
+
+import { ConstantsService } from '../../services/constants.service';
 
 import { Utils } from '../../misc/utils';
 
@@ -34,7 +37,7 @@ export class LoginComponent implements OnInit {
 
     constructor(protected authService: AuthService, protected router: Router,
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
-        private storageService: StorageService) { }
+        private storageService: StorageService, private stateService: StorageService) { }
 
     async ngOnInit() {
         if (this.email == null || this.email === '') {
@@ -86,6 +89,8 @@ export class LoginComponent implements OnInit {
                     this.router.navigate([this.twoFactorRoute]);
                 }
             } else {
+                const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
+                await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
                 if (this.onSuccessfulLogin != null) {
                     this.onSuccessfulLogin();
                 }
