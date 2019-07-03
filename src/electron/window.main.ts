@@ -37,7 +37,7 @@ export class WindowMain {
                             // Someone tried to run a second instance, we should focus our window.
                             if (this.win != null) {
                                 if (this.win.isMinimized()) {
-                                    this.win.restore();
+                                    this.win.show();
                                 }
                                 this.win.focus();
                             }
