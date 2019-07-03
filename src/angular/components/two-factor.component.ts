@@ -27,6 +27,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     token: string = '';
     remember: boolean = false;
     u2fReady: boolean = false;
+    initU2f: boolean = true;
     providers = TwoFactorProviders;
     providerType = TwoFactorProviderType;
     selectedProviderType: TwoFactorProviderType = TwoFactorProviderType.Authenticator;
@@ -57,7 +58,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (this.win != null && this.u2fSupported) {
+        if (this.initU2f && this.win != null && this.u2fSupported) {
             let customWebVaultUrl: string = null;
             if (this.environmentService.baseUrl != null) {
                 customWebVaultUrl = this.environmentService.baseUrl;
@@ -102,7 +103,9 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 }
 
                 if (providerData.Challenge != null) {
-                    this.u2f.init(JSON.parse(providerData.Challenge));
+                    setTimeout(() => {
+                        this.u2f.init(JSON.parse(providerData.Challenge));
+                    }, 500);
                 } else {
                     // TODO: Deprecated. Remove in future version.
                     const challenges = JSON.parse(providerData.Challenges);
