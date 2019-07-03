@@ -21,6 +21,7 @@ export class ConstantsService {
     static readonly pinProtectedKey: string = 'pinProtectedKey';
     static readonly protectedPin: string = 'protectedPin';
     static readonly clearClipboardKey: string = 'clearClipboardKey';
+    static readonly eventCollectionKey: string = 'eventCollection';
 
     readonly environmentUrlsKey: string = ConstantsService.environmentUrlsKey;
     readonly disableGaKey: string = ConstantsService.disableGaKey;
@@ -43,4 +44,5 @@ export class ConstantsService {
     readonly pinProtectedKey: string = ConstantsService.pinProtectedKey;
     readonly protectedPin: string = ConstantsService.protectedPin;
     readonly clearClipboardKey: string = ConstantsService.clearClipboardKey;
+    readonly eventCollectionKey: string = ConstantsService.eventCollectionKey;
 }
