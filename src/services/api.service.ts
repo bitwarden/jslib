@@ -841,14 +841,14 @@ export class ApiService implements ApiServiceAbstraction {
         return new ListResponse(r, EventResponse);
     }
 
-    async postEventsCollect(request: EventRequest): Promise<any> {
+    async postEventsCollectMany(request: EventRequest[]): Promise<any> {
         const authHeader = await this.getActiveBearerToken();
         const headers = new Headers({
             'Device-Type': this.deviceType,
             'Authorization': 'Bearer ' + authHeader,
             'Content-Type': 'application/json; charset=utf-8',
         });
-        const response = await this.fetch(new Request(this.eventsBaseUrl + '/collect', {
+        const response = await this.fetch(new Request(this.eventsBaseUrl + '/collect/many', {
             cache: 'no-cache',
             credentials: this.getCredentials(),
             method: 'POST',
