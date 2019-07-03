@@ -71,7 +71,7 @@ export class EventService implements EventServiceAbstraction {
             return req;
         });
         try {
-            await this.apiService.postEventsCollectMany(request);
+            await this.apiService.postEventsCollect(request);
             await this.storageService.remove(ConstantsService.eventCollectionKey);
         } catch { }
     }

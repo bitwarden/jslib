@@ -256,7 +256,7 @@ export abstract class ApiService {
         token: string) => Promise<ListResponse<EventResponse>>;
     getEventsOrganizationUser: (organizationId: string, id: string,
         start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
-    postEventsCollectMany: (request: EventRequest[]) => Promise<any>;
+    postEventsCollect: (request: EventRequest[]) => Promise<any>;
 
     getUserPublicKey: (id: string) => Promise<UserKeyResponse>;
 
