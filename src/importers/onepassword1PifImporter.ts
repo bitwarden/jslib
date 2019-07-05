@@ -147,7 +147,7 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
             .map((h: any) => {
                 const ph = new PasswordHistoryView();
                 ph.password = h.value;
-                ph.lastUsedDate = new Date(h.time * 1000);
+                ph.lastUsedDate = new Date(('' + h.time).length >= 13 ? h.time : h.time * 1000);
                 return ph;
             });
     }
