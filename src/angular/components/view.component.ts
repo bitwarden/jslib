@@ -9,11 +9,13 @@ import {
 } from '@angular/core';
 
 import { CipherType } from '../../enums/cipherType';
+import { EventType } from '../../enums/eventType';
 import { FieldType } from '../../enums/fieldType';
 
 import { AuditService } from '../../abstractions/audit.service';
 import { CipherService } from '../../abstractions/cipher.service';
 import { CryptoService } from '../../abstractions/crypto.service';
+import { EventService } from '../../abstractions/event.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { TokenService } from '../../abstractions/token.service';
@@ -51,9 +53,11 @@ export class ViewComponent implements OnDestroy, OnInit {
         protected cryptoService: CryptoService, protected platformUtilsService: PlatformUtilsService,
         protected auditService: AuditService, protected win: Window,
         protected broadcasterService: BroadcasterService, protected ngZone: NgZone,
-        protected changeDetectorRef: ChangeDetectorRef, protected userService: UserService) { }
+        protected changeDetectorRef: ChangeDetectorRef, protected userService: UserService,
+        protected eventService: EventService) { }
 
     ngOnInit() {
+        this.eventService.collect(EventType.Cipher_ClientViewed);
         this.broadcasterService.subscribe(BroadcasterSubscriptionId, (message: any) => {
             this.ngZone.run(async () => {
                 switch (message.command) {
@@ -99,11 +103,17 @@ export class ViewComponent implements OnDestroy, OnInit {
     togglePassword() {
         this.platformUtilsService.eventTrack('Toggled Password');
         this.showPassword = !this.showPassword;
+        if (this.showPassword) {
+            this.eventService.collect(EventType.Cipher_ClientToggledPasswordVisible);
+        }
     }
 
     toggleCardCode() {
         this.platformUtilsService.eventTrack('Toggled Card Code');
         this.showCardCode = !this.showCardCode;
+        if (this.showCardCode) {
+            this.eventService.collect(EventType.Cipher_ClientToggledCardCodeVisible);
+        }
     }
 
     async checkPassword() {
@@ -126,6 +136,9 @@ export class ViewComponent implements OnDestroy, OnInit {
     toggleFieldValue(field: FieldView) {
         const f = (field as any);
         f.showValue = !f.showValue;
+        if (f.showValue) {
+            this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible);
+        }
     }
 
     launch(uri: LoginUriView) {
@@ -147,6 +160,14 @@ export class ViewComponent implements OnDestroy, OnInit {
         this.platformUtilsService.copyToClipboard(value, copyOptions);
         this.platformUtilsService.showToast('info', null,
             this.i18nService.t('valueCopied', this.i18nService.t(typeI18nKey)));
+
+        if (typeI18nKey === 'password') {
+            this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible);
+        } else if (typeI18nKey === 'securityCode') {
+            this.eventService.collect(EventType.Cipher_ClientCopiedCardCode);
+        } else if (aType === 'H_Field') {
+            this.eventService.collect(EventType.Cipher_ClientCopiedHiddenField);
+        }
     }
 
     async downloadAttachment(attachment: AttachmentView) {
