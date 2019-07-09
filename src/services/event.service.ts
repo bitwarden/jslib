@@ -31,6 +31,10 @@ export class EventService implements EventServiceAbstraction {
     }
 
     async collect(eventType: EventType, cipherId: string = null, uploadImmediately = false): Promise<any> {
+        const authed = await this.userService.isAuthenticated();
+        if (!authed) {
+            return;
+        }
         const organizations = await this.userService.getAllOrganizations();
         if (organizations == null) {
             return;
@@ -52,6 +56,7 @@ export class EventService implements EventServiceAbstraction {
         const event = new EventData();
         event.type = eventType;
         event.cipherId = cipherId;
+        event.date = new Date().toISOString();
         eventCollection.push(event);
         await this.storageService.save(ConstantsService.eventCollectionKey, eventCollection);
         if (uploadImmediately) {
@@ -60,6 +65,10 @@ export class EventService implements EventServiceAbstraction {
     }
 
     async uploadEvents(): Promise<any> {
+        const authed = await this.userService.isAuthenticated();
+        if (!authed) {
+            return;
+        }
         const eventCollection = await this.storageService.get<EventData[]>(ConstantsService.eventCollectionKey);
         if (eventCollection == null || eventCollection.length === 0) {
             return;
@@ -68,11 +77,16 @@ export class EventService implements EventServiceAbstraction {
             const req = new EventRequest();
             req.type = e.type;
             req.cipherId = e.cipherId;
+            req.date = e.date;
             return req;
         });
         try {
             await this.apiService.postEventsCollect(request);
-            await this.storageService.remove(ConstantsService.eventCollectionKey);
+            this.clearEvents();
         } catch { }
+    }
+
+    async clearEvents(): Promise<any> {
+        await this.storageService.remove(ConstantsService.eventCollectionKey);
     }
 }

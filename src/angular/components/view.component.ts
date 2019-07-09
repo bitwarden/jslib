@@ -47,6 +47,7 @@ export class ViewComponent implements OnDestroy, OnInit {
     checkPasswordPromise: Promise<number>;
 
     private totpInterval: any;
+    private previousCipherId: string;
 
     constructor(protected cipherService: CipherService, protected totpService: TotpService,
         protected tokenService: TokenService, protected i18nService: I18nService,
@@ -57,7 +58,6 @@ export class ViewComponent implements OnDestroy, OnInit {
         protected eventService: EventService) { }
 
     ngOnInit() {
-        this.eventService.collect(EventType.Cipher_ClientViewed);
         this.broadcasterService.subscribe(BroadcasterSubscriptionId, (message: any) => {
             this.ngZone.run(async () => {
                 switch (message.command) {
@@ -94,6 +94,11 @@ export class ViewComponent implements OnDestroy, OnInit {
                 await this.totpTick(interval);
             }, 1000);
         }
+
+        if (this.previousCipherId !== this.cipherId) {
+            this.eventService.collect(EventType.Cipher_ClientViewed, this.cipherId);
+        }
+        this.previousCipherId = this.cipherId;
     }
 
     edit() {
@@ -104,7 +109,7 @@ export class ViewComponent implements OnDestroy, OnInit {
         this.platformUtilsService.eventTrack('Toggled Password');
         this.showPassword = !this.showPassword;
         if (this.showPassword) {
-            this.eventService.collect(EventType.Cipher_ClientToggledPasswordVisible);
+            this.eventService.collect(EventType.Cipher_ClientToggledPasswordVisible, this.cipherId);
         }
     }
 
@@ -112,7 +117,7 @@ export class ViewComponent implements OnDestroy, OnInit {
         this.platformUtilsService.eventTrack('Toggled Card Code');
         this.showCardCode = !this.showCardCode;
         if (this.showCardCode) {
-            this.eventService.collect(EventType.Cipher_ClientToggledCardCodeVisible);
+            this.eventService.collect(EventType.Cipher_ClientToggledCardCodeVisible, this.cipherId);
         }
     }
 
@@ -137,7 +142,7 @@ export class ViewComponent implements OnDestroy, OnInit {
         const f = (field as any);
         f.showValue = !f.showValue;
         if (f.showValue) {
-            this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible);
+            this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible, this.cipherId);
         }
     }
 
@@ -162,11 +167,11 @@ export class ViewComponent implements OnDestroy, OnInit {
             this.i18nService.t('valueCopied', this.i18nService.t(typeI18nKey)));
 
         if (typeI18nKey === 'password') {
-            this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible);
+            this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible, this.cipherId);
         } else if (typeI18nKey === 'securityCode') {
-            this.eventService.collect(EventType.Cipher_ClientCopiedCardCode);
+            this.eventService.collect(EventType.Cipher_ClientCopiedCardCode, this.cipherId);
         } else if (aType === 'H_Field') {
-            this.eventService.collect(EventType.Cipher_ClientCopiedHiddenField);
+            this.eventService.collect(EventType.Cipher_ClientCopiedHiddenField, this.cipherId);
         }
     }
 
