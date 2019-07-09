@@ -36,7 +36,7 @@ export class WindowMain {
                         app.on('second-instance', (event, commandLine, workingDirectory) => {
                             // Someone tried to run a second instance, we should focus our window.
                             if (this.win != null) {
-                                if (this.win.isMinimized()) {
+                                if (this.win.isMinimized() || !this.win.isVisible()) {
                                     this.win.show();
                                 }
                                 this.win.focus();
