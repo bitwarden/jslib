@@ -46,6 +46,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
 
         if (this.signalrConnection != null) {
             this.signalrConnection.off('ReceiveMessage');
+            this.signalrConnection.off('Heartbeat');
             await this.signalrConnection.stop();
             this.connected = false;
             this.signalrConnection = null;
@@ -61,6 +62,8 @@ export class NotificationsService implements NotificationsServiceAbstraction {
 
         this.signalrConnection.on('ReceiveMessage',
             (data: any) => this.processNotification(new NotificationResponse(data)));
+        this.signalrConnection.on('Heartbeat',
+            (data: any) => { /*console.log('Heartbeat!');*/ });
         this.signalrConnection.onclose(() => {
             this.connected = false;
             this.reconnect(true);
