@@ -91,8 +91,8 @@ export class PasswordGeneratorComponent implements OnInit {
 
         if (!this.options.length || this.options.length < 5) {
             this.options.length = 5;
-        } else if (this.options.length > 128) {
-            this.options.length = 128;
+        } else if (this.options.length > 256) {
+            this.options.length = 256;
         }
 
         if (!this.options.minNumber) {
