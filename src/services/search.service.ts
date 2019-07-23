@@ -92,6 +92,13 @@ export class SearchService implements SearchServiceAbstraction {
             return ciphers;
         }
 
+        if (this.indexing) {
+            await new Promise((r) => setTimeout(r, 250));
+            if (this.indexing) {
+                await new Promise((r) => setTimeout(r, 500));
+            }
+        }
+
         const index = this.getIndexForSearch();
         if (index == null) {
             // Fall back to basic search if index is not available
