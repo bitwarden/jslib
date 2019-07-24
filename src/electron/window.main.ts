@@ -102,6 +102,10 @@ export class WindowMain {
             titleBarStyle: this.hideTitleBar && process.platform === 'darwin' ? 'hiddenInset' : undefined,
             show: false,
             alwaysOnTop: this.enableAlwaysOnTop,
+            webPreferences: {
+                nodeIntegration: true,
+                webviewTag: true,
+            },
         });
 
         if (this.windowStates[Keys.mainWindowSize].isMaximized) {
