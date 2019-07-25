@@ -32,7 +32,8 @@ export class ModalComponent implements OnDestroy {
         document.body.removeChild(document.querySelector('.modal-backdrop'));
     }
 
-    show<T>(type: Type<T>, parentContainer: ViewContainerRef, fade: boolean = true): T {
+    show<T>(type: Type<T>, parentContainer: ViewContainerRef, fade: boolean = true,
+        setComponentParameters: (component: T) => void = null): T {
         this.onShow.emit();
         this.messagingService.send('modalShow');
         this.parentContainer = parentContainer;
@@ -45,6 +46,9 @@ export class ModalComponent implements OnDestroy {
 
         const factory = this.componentFactoryResolver.resolveComponentFactory<T>(type);
         const componentRef = this.container.createComponent<T>(factory);
+        if (setComponentParameters != null) {
+            setComponentParameters(componentRef.instance);
+        }
 
         document.querySelector('.modal-dialog').addEventListener('click', (e: Event) => {
             e.stopPropagation();
