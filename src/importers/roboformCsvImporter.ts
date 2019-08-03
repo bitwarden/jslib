@@ -42,6 +42,7 @@ export class RoboFormCsvImporter extends BaseImporter implements Importer {
                 });
             }
 
+            this.convertToNoteIfNeeded(cipher);
             this.cleanupCipher(cipher);
 
             if (i === results.length && cipher.name === '--' && this.isNullOrWhitespace(cipher.login.password)) {
