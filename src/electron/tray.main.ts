@@ -80,7 +80,7 @@ export class TrayMain {
         this.windowMain.win.on('show', async (e: Event) => {
             const enableTray = await this.storageService.get<boolean>(ElectronConstants.enableTrayKey);
             if (!enableTray) {
-                this.removeTray(false);
+                setTimeout(() =>  this.removeTray(false), 100);
             }
         });
     }
