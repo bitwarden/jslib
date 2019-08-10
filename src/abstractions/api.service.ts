@@ -78,6 +78,7 @@ import {
     OrganizationUserDetailsResponse,
     OrganizationUserUserDetailsResponse,
 } from '../models/response/organizationUserResponse';
+import { PaymentResponse } from '../models/response/paymentResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
@@ -118,7 +119,7 @@ export abstract class ApiService {
     getAccountRevisionDate: () => Promise<number>;
     postPasswordHint: (request: PasswordHintRequest) => Promise<any>;
     postRegister: (request: RegisterRequest) => Promise<any>;
-    postPremium: (data: FormData) => Promise<any>;
+    postPremium: (data: FormData) => Promise<PaymentResponse>;
     postReinstatePremium: () => Promise<any>;
     postCancelPremium: () => Promise<any>;
     postAccountStorage: (request: StorageRequest) => Promise<any>;
@@ -241,7 +242,7 @@ export abstract class ApiService {
     postOrganizationLicenseUpdate: (id: string, data: FormData) => Promise<any>;
     postOrganizationApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
     postOrganizationRotateApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
-    postOrganizationUpgrade: (id: string, request: OrganizationUpgradeRequest) => Promise<any>;
+    postOrganizationUpgrade: (id: string, request: OrganizationUpgradeRequest) => Promise<PaymentResponse>;
     postOrganizationSeat: (id: string, request: SeatRequest) => Promise<any>;
     postOrganizationStorage: (id: string, request: StorageRequest) => Promise<any>;
     postOrganizationPayment: (id: string, request: PaymentRequest) => Promise<any>;
@@ -263,6 +264,7 @@ export abstract class ApiService {
     getHibpBreach: (username: string) => Promise<BreachAccountResponse[]>;
 
     postBitPayInvoice: (request: BitPayInvoiceRequest) => Promise<string>;
+    postSetupPayment: () => Promise<string>;
 
     getActiveBearerToken: () => Promise<string>;
     fetch: (request: Request) => Promise<Response>;

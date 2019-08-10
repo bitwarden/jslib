@@ -85,6 +85,7 @@ import {
     OrganizationUserDetailsResponse,
     OrganizationUserUserDetailsResponse,
 } from '../models/response/organizationUserResponse';
+import { PaymentResponse } from '../models/response/paymentResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
@@ -253,8 +254,9 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/register', request, false, false);
     }
 
-    postPremium(data: FormData): Promise<any> {
-        return this.send('POST', '/accounts/premium', data, true, false);
+    async postPremium(data: FormData): Promise<PaymentResponse> {
+        const r = await this.send('POST', '/accounts/premium', data, true, true);
+        return new PaymentResponse(r);
     }
 
     postReinstatePremium(): Promise<any> {
@@ -780,8 +782,9 @@ export class ApiService implements ApiServiceAbstraction {
         return new ApiKeyResponse(r);
     }
 
-    postOrganizationUpgrade(id: string, request: OrganizationUpgradeRequest): Promise<any> {
-        return this.send('POST', '/organizations/' + id + '/upgrade', request, true, false);
+    async postOrganizationUpgrade(id: string, request: OrganizationUpgradeRequest): Promise<PaymentResponse> {
+        const r = await this.send('POST', '/organizations/' + id + '/upgrade', request, true, true);
+        return new PaymentResponse(r);
     }
 
     postOrganizationSeat(id: string, request: SeatRequest): Promise<any> {
@@ -878,6 +881,11 @@ export class ApiService implements ApiServiceAbstraction {
 
     async postBitPayInvoice(request: BitPayInvoiceRequest): Promise<string> {
         const r = await this.send('POST', '/bitpay-invoice', request, true, true);
+        return r as string;
+    }
+
+    async postSetupPayment(): Promise<string> {
+        const r = await this.send('POST', '/setup-payment', null, true, true);
         return r as string;
     }
 
