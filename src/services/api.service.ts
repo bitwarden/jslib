@@ -788,8 +788,9 @@ export class ApiService implements ApiServiceAbstraction {
         return new PaymentResponse(r);
     }
 
-    postOrganizationSeat(id: string, request: SeatRequest): Promise<any> {
-        return this.send('POST', '/organizations/' + id + '/seat', request, true, false);
+    async postOrganizationSeat(id: string, request: SeatRequest): Promise<PaymentResponse> {
+        const r = await this.send('POST', '/organizations/' + id + '/seat', request, true, true);
+        return new PaymentResponse(r);
     }
 
     async postOrganizationStorage(id: string, request: StorageRequest): Promise<PaymentResponse> {
