@@ -267,8 +267,9 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/cancel-premium', null, true, false);
     }
 
-    postAccountStorage(request: StorageRequest): Promise<any> {
-        return this.send('POST', '/accounts/storage', request, true, false);
+    async postAccountStorage(request: StorageRequest): Promise<PaymentResponse> {
+        const r = await this.send('POST', '/accounts/storage', request, true, true);
+        return new PaymentResponse(r);
     }
 
     postAccountPayment(request: PaymentRequest): Promise<any> {
@@ -791,8 +792,9 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/organizations/' + id + '/seat', request, true, false);
     }
 
-    postOrganizationStorage(id: string, request: StorageRequest): Promise<any> {
-        return this.send('POST', '/organizations/' + id + '/storage', request, true, false);
+    async postOrganizationStorage(id: string, request: StorageRequest): Promise<PaymentResponse> {
+        const r = await this.send('POST', '/organizations/' + id + '/storage', request, true, true);
+        return new PaymentResponse(r);
     }
 
     postOrganizationPayment(id: string, request: PaymentRequest): Promise<any> {

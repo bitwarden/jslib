@@ -122,7 +122,7 @@ export abstract class ApiService {
     postPremium: (data: FormData) => Promise<PaymentResponse>;
     postReinstatePremium: () => Promise<any>;
     postCancelPremium: () => Promise<any>;
-    postAccountStorage: (request: StorageRequest) => Promise<any>;
+    postAccountStorage: (request: StorageRequest) => Promise<PaymentResponse>;
     postAccountPayment: (request: PaymentRequest) => Promise<any>;
     postAccountLicense: (data: FormData) => Promise<any>;
     postAccountKey: (request: UpdateKeyRequest) => Promise<any>;
