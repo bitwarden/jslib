@@ -113,6 +113,7 @@ export class ApiService implements ApiServiceAbstraction {
     private isWebClient = false;
     private isDesktopClient = false;
     private usingBaseUrl = false;
+    private useCredentials = true;
 
     constructor(private tokenService: TokenService, private platformUtilsService: PlatformUtilsService,
         private logoutCallback: (expired: boolean) => Promise<void>) {
@@ -124,6 +125,7 @@ export class ApiService implements ApiServiceAbstraction {
             device === DeviceType.UnknownBrowser || device === DeviceType.VivaldiBrowser;
         this.isDesktopClient = device === DeviceType.WindowsDesktop || device === DeviceType.MacOsDesktop ||
             device === DeviceType.LinuxDesktop;
+        this.useCredentials = device !== DeviceType.SafariBrowser;
     }
 
     setUrls(urls: EnvironmentUrls): void {
@@ -1015,7 +1017,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     private getCredentials(): RequestCredentials {
-        if (!this.isWebClient || this.usingBaseUrl) {
+        if (this.useCredentials && (!this.isWebClient || this.usingBaseUrl)) {
             return 'include';
         }
         return undefined;
