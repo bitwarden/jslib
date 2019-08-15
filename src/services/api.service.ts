@@ -125,7 +125,7 @@ export class ApiService implements ApiServiceAbstraction {
             device === DeviceType.UnknownBrowser || device === DeviceType.VivaldiBrowser;
         this.isDesktopClient = device === DeviceType.WindowsDesktop || device === DeviceType.MacOsDesktop ||
             device === DeviceType.LinuxDesktop;
-        this.useCredentials = device !== DeviceType.SafariBrowser;
+        this.useCredentials = device !== DeviceType.SafariExtension;
     }
 
     setUrls(urls: EnvironmentUrls): void {
