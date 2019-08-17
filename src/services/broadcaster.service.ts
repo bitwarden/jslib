@@ -17,10 +17,6 @@ export class BroadcasterService implements BroadcasterServiceAbstraction {
     }
 
     subscribe(id: string, messageCallback: (message: any) => any) {
-        if (this.subscribers.has(id)) {
-            return;
-        }
-
         this.subscribers.set(id, messageCallback);
     }
 
