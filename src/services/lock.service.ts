@@ -44,7 +44,7 @@ export class LockService implements LockServiceAbstraction {
     }
 
     async checkLock(): Promise<void> {
-        if (this.platformUtilsService.isViewOpen()) {
+        if (await this.platformUtilsService.isViewOpen()) {
             // Do not lock
             return;
         }

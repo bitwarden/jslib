@@ -73,7 +73,7 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     }
 
     isViewOpen() {
-        return false;
+        return Promise.resolve(false);
     }
 
     lockTimeout(): number {

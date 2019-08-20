@@ -98,8 +98,8 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return this.analyticsIdCache;
     }
 
-    isViewOpen(): boolean {
-        return false;
+    isViewOpen(): Promise<boolean> {
+        return Promise.resolve(false);
     }
 
     lockTimeout(): number {
