@@ -125,9 +125,11 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 break;
             case TwoFactorProviderType.Duo:
             case TwoFactorProviderType.OrganizationDuo:
+                /*
                 if (this.platformUtilsService.getDevice() === DeviceType.SafariExtension) {
                     break;
                 }
+                */
 
                 setTimeout(() => {
                     DuoWebSDK.init({
