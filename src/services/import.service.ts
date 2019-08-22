@@ -61,6 +61,7 @@ import { RememBearCsvImporter } from '../importers/rememBearCsvImporter';
 import { RoboFormCsvImporter } from '../importers/roboformCsvImporter';
 import { SafeInCloudXmlImporter } from '../importers/safeInCloudXmlImporter';
 import { SaferPassCsvImporter } from '../importers/saferpassCsvImport';
+import { SecureSafeCsvImporter } from '../importers/secureSafeCsvImporter';
 import { SplashIdCsvImporter } from '../importers/splashIdCsvImporter';
 import { StickyPasswordXmlImporter } from '../importers/stickyPasswordXmlImporter';
 import { TrueKeyCsvImporter } from '../importers/truekeyCsvImporter';
@@ -117,6 +118,7 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'remembearcsv', name: 'RememBear (csv)' },
         { id: 'passwordwallettxt', name: 'PasswordWallet (txt)' },
         { id: 'mykicsv', name: 'Myki (csv)' },
+        { id: 'securesafecsv', name: 'SecureSafe (csv)' },
     ];
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -251,6 +253,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new PasswordWalletTxtImporter();
             case 'mykicsv':
                 return new MykiCsvImporter();
+            case 'securesafecsv':
+                return new SecureSafeCsvImporter();
             default:
                 return null;
         }
