@@ -109,23 +109,22 @@ export class ApiService implements ApiServiceAbstraction {
     identityBaseUrl: string;
     eventsBaseUrl: string;
 
+    private device: DeviceType;
     private deviceType: string;
     private isWebClient = false;
     private isDesktopClient = false;
     private usingBaseUrl = false;
-    private useCredentials = true;
 
     constructor(private tokenService: TokenService, private platformUtilsService: PlatformUtilsService,
         private logoutCallback: (expired: boolean) => Promise<void>) {
-        const device = platformUtilsService.getDevice();
-        this.deviceType = device.toString();
-        this.isWebClient = device === DeviceType.IEBrowser || device === DeviceType.ChromeBrowser ||
-            device === DeviceType.EdgeBrowser || device === DeviceType.FirefoxBrowser ||
-            device === DeviceType.OperaBrowser || device === DeviceType.SafariBrowser ||
-            device === DeviceType.UnknownBrowser || device === DeviceType.VivaldiBrowser;
-        this.isDesktopClient = device === DeviceType.WindowsDesktop || device === DeviceType.MacOsDesktop ||
-            device === DeviceType.LinuxDesktop;
-        this.useCredentials = device !== DeviceType.SafariExtension;
+        this.device = platformUtilsService.getDevice();
+        this.deviceType = this.device.toString();
+        this.isWebClient = this.device === DeviceType.IEBrowser || this.device === DeviceType.ChromeBrowser ||
+            this.device === DeviceType.EdgeBrowser || this.device === DeviceType.FirefoxBrowser ||
+            this.device === DeviceType.OperaBrowser || this.device === DeviceType.SafariBrowser ||
+            this.device === DeviceType.UnknownBrowser || this.device === DeviceType.VivaldiBrowser;
+        this.isDesktopClient = this.device === DeviceType.WindowsDesktop || this.device === DeviceType.MacOsDesktop ||
+            this.device === DeviceType.LinuxDesktop;
     }
 
     setUrls(urls: EnvironmentUrls): void {
@@ -1017,7 +1016,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     private getCredentials(): RequestCredentials {
-        if (this.useCredentials && (!this.isWebClient || this.usingBaseUrl)) {
+        if (this.device !== DeviceType.SafariExtension && (!this.isWebClient || this.usingBaseUrl)) {
             return 'include';
         }
         return undefined;
