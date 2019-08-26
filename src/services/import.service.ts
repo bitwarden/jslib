@@ -43,6 +43,7 @@ import { KeePass2XmlImporter } from '../importers/keepass2XmlImporter';
 import { KeePassXCsvImporter } from '../importers/keepassxCsvImporter';
 import { KeeperCsvImporter } from '../importers/keeperCsvImporter';
 import { LastPassCsvImporter } from '../importers/lastpassCsvImporter';
+import { LogMeOnceCsvImporter } from '../importers/logMeOnceCsvImporter';
 import { MeldiumCsvImporter } from '../importers/meldiumCsvImporter';
 import { MSecureCsvImporter } from '../importers/msecureCsvImporter';
 import { MykiCsvImporter } from '../importers/mykiCsvImporter';
@@ -119,6 +120,7 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'passwordwallettxt', name: 'PasswordWallet (txt)' },
         { id: 'mykicsv', name: 'Myki (csv)' },
         { id: 'securesafecsv', name: 'SecureSafe (csv)' },
+        { id: 'logmeoncecsv', name: 'LogMeOnce (csv)' },
     ];
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -255,6 +257,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new MykiCsvImporter();
             case 'securesafecsv':
                 return new SecureSafeCsvImporter();
+            case 'logmeoncecsv':
+                return new LogMeOnceCsvImporter();
             default:
                 return null;
         }
