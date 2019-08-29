@@ -19,7 +19,7 @@ export class SystemService implements SystemServiceAbstraction {
     }
 
     startProcessReload(): void {
-        if (this.lockService.pinLocked || this.reloadInterval != null) {
+        if (this.lockService.pinProtectedKey != null || this.reloadInterval != null) {
             return;
         }
         this.cancelProcessReload();

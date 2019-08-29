@@ -40,8 +40,7 @@ export class LockComponent implements OnInit {
 
     async ngOnInit() {
         this.pinSet = await this.lockService.isPinLockSet();
-        const hasKey = await this.cryptoService.hasKey();
-        this.pinLock = (this.pinSet[0] && hasKey) || this.pinSet[1];
+        this.pinLock = (this.pinSet[0] && this.lockService.pinProtectedKey != null) || this.pinSet[1];
         this.email = await this.userService.getEmail();
         let vaultUrl = this.environmentService.getWebVaultUrl();
         if (vaultUrl == null) {
@@ -69,12 +68,14 @@ export class LockComponent implements OnInit {
             let failed = true;
             try {
                 if (this.pinSet[0]) {
+                    const key = await this.cryptoService.makeKeyFromPin(this.pin, this.email, kdf, kdfIterations,
+                        this.lockService.pinProtectedKey);
+                    const encKey = await this.cryptoService.getEncKey(key);
                     const protectedPin = await this.storageService.get<string>(ConstantsService.protectedPin);
-                    const decPin = await this.cryptoService.decryptToUtf8(new CipherString(protectedPin));
+                    const decPin = await this.cryptoService.decryptToUtf8(new CipherString(protectedPin), encKey);
                     failed = decPin !== this.pin;
-                    this.lockService.pinLocked = failed;
                     if (!failed) {
-                        this.doContinue();
+                        await this.setKeyAndContinue(key);
                     }
                 } else {
                     const key = await this.cryptoService.makeKeyFromPin(this.pin, this.email, kdf, kdfIterations);
@@ -100,6 +101,13 @@ export class LockComponent implements OnInit {
             const storedKeyHash = await this.cryptoService.getKeyHash();
 
             if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
+                if (this.pinSet[0]) {
+                    const protectedPin = await this.storageService.get<string>(ConstantsService.protectedPin);
+                    const encKey = await this.cryptoService.getEncKey(key);
+                    const decPin = await this.cryptoService.decryptToUtf8(new CipherString(protectedPin), encKey);
+                    const pinKey = await this.cryptoService.makePinKey(decPin, this.email, kdf, kdfIterations);
+                    this.lockService.pinProtectedKey = await this.cryptoService.encrypt(key.key, pinKey);
+                }
                 this.setKeyAndContinue(key);
             } else {
                 this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),

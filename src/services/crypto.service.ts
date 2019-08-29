@@ -110,7 +110,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     @sequentialize(() => 'getEncKey')
-    async getEncKey(): Promise<SymmetricCryptoKey> {
+    async getEncKey(key: SymmetricCryptoKey = null): Promise<SymmetricCryptoKey> {
         if (this.encKey != null) {
             return this.encKey;
         }
@@ -120,7 +120,9 @@ export class CryptoService implements CryptoServiceAbstraction {
             return null;
         }
 
-        const key = await this.getKey();
+        if (key == null) {
+            key = await this.getKey();
+        }
         if (key == null) {
             return null;
         }
@@ -315,13 +317,16 @@ export class CryptoService implements CryptoServiceAbstraction {
         return new SymmetricCryptoKey(key);
     }
 
-    async makeKeyFromPin(pin: string, salt: string, kdf: KdfType, kdfIterations: number):
+    async makeKeyFromPin(pin: string, salt: string, kdf: KdfType, kdfIterations: number,
+        protectedKeyCs: CipherString = null):
         Promise<SymmetricCryptoKey> {
-        const pinProtectedKey = await this.storageService.get<string>(ConstantsService.pinProtectedKey);
-        if (pinProtectedKey == null) {
-            throw new Error('No PIN protected key found.');
+        if (protectedKeyCs == null) {
+            const pinProtectedKey = await this.storageService.get<string>(ConstantsService.pinProtectedKey);
+            if (pinProtectedKey == null) {
+                throw new Error('No PIN protected key found.');
+            }
+            protectedKeyCs = new CipherString(pinProtectedKey);
         }
-        const protectedKeyCs = new CipherString(pinProtectedKey);
         const pinKey = await this.makePinKey(pin, salt, kdf, kdfIterations);
         const decKey = await this.decryptToBytes(protectedKeyCs, pinKey);
         return new SymmetricCryptoKey(decKey);

@@ -13,7 +13,7 @@ export abstract class CryptoService {
     setOrgKeys: (orgs: ProfileOrganizationResponse[]) => Promise<{}>;
     getKey: () => Promise<SymmetricCryptoKey>;
     getKeyHash: () => Promise<string>;
-    getEncKey: () => Promise<SymmetricCryptoKey>;
+    getEncKey: (key?: SymmetricCryptoKey) => Promise<SymmetricCryptoKey>;
     getPublicKey: () => Promise<ArrayBuffer>;
     getPrivateKey: () => Promise<ArrayBuffer>;
     getFingerprint: (userId: string, publicKey?: ArrayBuffer) => Promise<string[]>;
@@ -30,7 +30,8 @@ export abstract class CryptoService {
     clearKeys: () => Promise<any>;
     toggleKey: () => Promise<any>;
     makeKey: (password: string, salt: string, kdf: KdfType, kdfIterations: number) => Promise<SymmetricCryptoKey>;
-    makeKeyFromPin: (pin: string, salt: string, kdf: KdfType, kdfIterations: number) => Promise<SymmetricCryptoKey>;
+    makeKeyFromPin: (pin: string, salt: string, kdf: KdfType, kdfIterations: number,
+        protectedKeyCs?: CipherString) => Promise<SymmetricCryptoKey>;
     makeShareKey: () => Promise<[CipherString, SymmetricCryptoKey]>;
     makeKeyPair: (key?: SymmetricCryptoKey) => Promise<[string, CipherString]>;
     makePinKey: (pin: string, salt: string, kdf: KdfType, kdfIterations: number) => Promise<SymmetricCryptoKey>;

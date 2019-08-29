@@ -11,8 +11,10 @@ import { SearchService } from '../abstractions/search.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
+import { CipherString } from '../models/domain/cipherString';
+
 export class LockService implements LockServiceAbstraction {
-    pinLocked = false;
+    pinProtectedKey: CipherString = null;
 
     private inited = false;
 
@@ -37,9 +39,6 @@ export class LockService implements LockServiceAbstraction {
 
     async isLocked(): Promise<boolean> {
         const hasKey = await this.cryptoService.hasKey();
-        if (hasKey && this.pinLocked) {
-            return true;
-        }
         return !hasKey;
     }
 
@@ -85,18 +84,6 @@ export class LockService implements LockServiceAbstraction {
             return;
         }
 
-        if (allowSoftLock) {
-            const pinSet = await this.isPinLockSet();
-            if (pinSet[0]) {
-                this.pinLocked = true;
-                this.messagingService.send('locked');
-                if (this.lockedCallback != null) {
-                    await this.lockedCallback();
-                }
-                return;
-            }
-        }
-
         await Promise.all([
             this.cryptoService.clearKey(),
             this.cryptoService.clearOrgKeys(true),
@@ -126,6 +113,7 @@ export class LockService implements LockServiceAbstraction {
     }
 
     clear(): Promise<any> {
+        this.pinProtectedKey = null;
         return this.storageService.remove(ConstantsService.protectedPin);
     }
 }
