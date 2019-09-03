@@ -9,7 +9,7 @@ import {
 import { I18nService } from '../abstractions/i18n.service';
 import { WindowMain } from './window.main';
 
-import { isMacAppStore } from './utils';
+import { isDev, isMacAppStore } from './utils';
 
 export class BaseMenu {
     protected editMenuItemOptions: MenuItemConstructorOptions;
@@ -71,17 +71,24 @@ export class BaseMenu {
                 label: this.i18nService.t('toggleFullScreen'),
                 role: 'togglefullscreen',
             },
-            { type: 'separator' },
-            {
-                label: this.i18nService.t('reload'),
-                role: 'forcereload',
-            },
-            {
-                label: this.i18nService.t('toggleDevTools'),
-                role: 'toggledevtools',
-                accelerator: 'F12',
-            },
         ];
+
+        if (isDev()) {
+            let devViewOptions : MenuItemConstructorOptions[] = [
+                { type: 'separator' },
+                {
+                    label: this.i18nService.t('reload'),
+                    role: 'forcereload',
+                },
+                {
+                    label: this.i18nService.t('toggleDevTools'),
+                    role: 'toggledevtools',
+                    accelerator: 'F12',
+                },
+            ];
+
+            this.viewSubMenuItemOptions.push(...devViewOptions);
+        }
 
         this.windowMenuItemOptions = {
             label: this.i18nService.t('window'),
