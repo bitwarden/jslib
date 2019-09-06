@@ -11,6 +11,7 @@ export class Utils {
     static isNode = false;
     static isBrowser = true;
     static isMobileBrowser = false;
+    static isAppleMobileBrowser = false;
     static global: any = null;
     static tldEndingRegex = /.*\.(com|net|org|edu|uk|gov|ca|de|jp|fr|au|ru|ch|io|es|us|co|xyz|info|ly|mil)$/;
 
@@ -25,6 +26,7 @@ export class Utils {
         Utils.isBrowser = typeof window !== 'undefined';
         Utils.isNativeScript = !Utils.isNode && !Utils.isBrowser;
         Utils.isMobileBrowser = Utils.isBrowser && this.isMobile(window);
+        Utils.isAppleMobileBrowser = Utils.isBrowser && this.isAppleMobile(window);
         Utils.global = Utils.isNativeScript ? global : (Utils.isNode && !Utils.isBrowser ? global : window);
     }
 
@@ -255,6 +257,10 @@ export class Utils {
             }
         })(win.navigator.userAgent || win.navigator.vendor || (win as any).opera);
         return mobile || win.navigator.userAgent.match(/iPad/i) != null;
+    }
+
+    private static isAppleMobile(win: Window) {
+        return win.navigator.userAgent.match(/iPhone/i) != null || win.navigator.userAgent.match(/iPad/i) != null;
     }
 
     private static getUrl(uriString: string): URL {
