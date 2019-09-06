@@ -6,6 +6,46 @@ export class I18nService implements I18nServiceAbstraction {
     supportedTranslationLocales: string[] = ['en'];
     translationLocale: string;
     collator: Intl.Collator;
+    localeNames = new Map<string, string>([
+        ['af', 'Afrikaans'],
+        ['bg', 'български'],
+        ['ca', 'català'],
+        ['cs', 'čeština'],
+        ['da', 'dansk'],
+        ['de', 'Deutsch'],
+        ['el', 'Ελληνικά'],
+        ['en', 'English'],
+        ['en-GB', 'English (British)'],
+        ['eo', 'Esperanto'],
+        ['es', 'español'],
+        ['et', 'eesti'],
+        ['fa', 'فارسی'],
+        ['fi', 'suomi'],
+        ['fr', 'français'],
+        ['he', 'עברית'],
+        ['hi', 'हिन्दी'],
+        ['hr', 'hrvatski'],
+        ['hu', 'magyar'],
+        ['id', 'Bahasa Indonesia'],
+        ['it', 'italiano'],
+        ['ja', '日本語'],
+        ['ko', '한국어'],
+        ['nb', 'norsk (bokmål)'],
+        ['nl', 'Nederlands'],
+        ['pl', 'polski'],
+        ['pt-BR', 'português do Brasil'],
+        ['pt-PT', 'português'],
+        ['ro', 'română'],
+        ['ru', 'русский'],
+        ['sk', 'slovenčina'],
+        ['sv', 'svenska'],
+        ['th', 'ไทย'],
+        ['tr', 'Türkçe'],
+        ['uk', 'українська'],
+        ['vi', 'Tiếng Việt'],
+        ['zh-CN', '中文（中国大陆）'],
+        ['zh-TW', '中文（台灣）'],
+    ]);
 
     protected inited: boolean;
     protected defaultMessages: any = {};
