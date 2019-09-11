@@ -28,6 +28,7 @@ import { AvastCsvImporter } from '../importers/avastCsvImporter';
 import { AviraCsvImporter } from '../importers/aviraCsvImporter';
 import { BitwardenCsvImporter } from '../importers/bitwardenCsvImporter';
 import { BitwardenJsonImporter } from '../importers/bitwardenJsonImporter';
+import { BlackBerryCsvImporter } from '../importers/blackBerryCsvImporter';
 import { BlurCsvImporter } from '../importers/blurCsvImporter';
 import { ChromeCsvImporter } from '../importers/chromeCsvImporter';
 import { ClipperzHtmlImporter } from '../importers/clipperzHtmlImporter';
@@ -121,6 +122,7 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'mykicsv', name: 'Myki (csv)' },
         { id: 'securesafecsv', name: 'SecureSafe (csv)' },
         { id: 'logmeoncecsv', name: 'LogMeOnce (csv)' },
+        { id: 'blackberrycsv', name: 'BlackBerry Password Keeper (csv)' },
     ];
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -259,6 +261,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new SecureSafeCsvImporter();
             case 'logmeoncecsv':
                 return new LogMeOnceCsvImporter();
+            case 'blackberrycsv':
+                return new BlackBerryCsvImporter();
             default:
                 return null;
         }
