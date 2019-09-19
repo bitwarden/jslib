@@ -21,6 +21,7 @@ import { EmailTokenRequest } from '../models/request/emailTokenRequest';
 import { EventRequest } from '../models/request/eventRequest';
 import { FolderRequest } from '../models/request/folderRequest';
 import { GroupRequest } from '../models/request/groupRequest';
+import { IapCheckRequest } from '../models/request/iapCheckRequest';
 import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
@@ -258,6 +259,10 @@ export class ApiService implements ApiServiceAbstraction {
     async postPremium(data: FormData): Promise<PaymentResponse> {
         const r = await this.send('POST', '/accounts/premium', data, true, true);
         return new PaymentResponse(r);
+    }
+
+    async postIapCheck(request: IapCheckRequest): Promise<any> {
+        return this.send('POST', '/accounts/iap-check', request, true, false);
     }
 
     postReinstatePremium(): Promise<any> {

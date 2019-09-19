@@ -15,6 +15,7 @@ import { EmailTokenRequest } from '../models/request/emailTokenRequest';
 import { EventRequest } from '../models/request/eventRequest';
 import { FolderRequest } from '../models/request/folderRequest';
 import { GroupRequest } from '../models/request/groupRequest';
+import { IapCheckRequest } from '../models/request/iapCheckRequest';
 import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
@@ -120,6 +121,7 @@ export abstract class ApiService {
     postPasswordHint: (request: PasswordHintRequest) => Promise<any>;
     postRegister: (request: RegisterRequest) => Promise<any>;
     postPremium: (data: FormData) => Promise<PaymentResponse>;
+    postIapCheck: (request: IapCheckRequest) => Promise<any>;
     postReinstatePremium: () => Promise<any>;
     postCancelPremium: () => Promise<any>;
     postAccountStorage: (request: StorageRequest) => Promise<PaymentResponse>;
