@@ -24,7 +24,7 @@ export class OrganizationUserResponse extends BaseResponse {
 export class OrganizationUserUserDetailsResponse extends OrganizationUserResponse {
     name: string;
     email: string;
-    twoFactorEnabled: string;
+    twoFactorEnabled: boolean;
 
     constructor(response: any) {
         super(response);
