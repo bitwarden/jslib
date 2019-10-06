@@ -53,15 +53,26 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         // sanitize
         if (o.uppercase && o.minUppercase <= 0) {
             o.minUppercase = 1;
+        } else if (!o.uppercase) {
+            o.minUppercase = 0;
         }
+
         if (o.lowercase && o.minLowercase <= 0) {
             o.minLowercase = 1;
+        } else if (!o.lowercase) {
+            o.minLowercase = 0;
         }
+
         if (o.number && o.minNumber <= 0) {
             o.minNumber = 1;
+        } else if (!o.number) {
+            o.minNumber = 0;
         }
+
         if (o.special && o.minSpecial <= 0) {
             o.minSpecial = 1;
+        } else if (!o.special) {
+            o.minSpecial = 0;
         }
 
         if (!o.length || o.length < 1) {
