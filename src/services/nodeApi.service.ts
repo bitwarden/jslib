@@ -15,8 +15,8 @@ import { TokenService } from '../abstractions/token.service';
 
 export class NodeApiService extends ApiService {
     constructor(tokenService: TokenService, platformUtilsService: PlatformUtilsService,
-        logoutCallback: (expired: boolean) => Promise<void>) {
-        super(tokenService, platformUtilsService, logoutCallback);
+        logoutCallback: (expired: boolean) => Promise<void>, customUserAgent: string = null) {
+        super(tokenService, platformUtilsService, logoutCallback, customUserAgent);
     }
 
     nativeFetch(request: Request): Promise<Response> {
