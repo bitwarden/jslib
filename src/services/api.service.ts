@@ -117,7 +117,7 @@ export class ApiService implements ApiServiceAbstraction {
     private usingBaseUrl = false;
 
     constructor(private tokenService: TokenService, private platformUtilsService: PlatformUtilsService,
-        private logoutCallback: (expired: boolean) => Promise<void>) {
+        private logoutCallback: (expired: boolean) => Promise<void>, private customUserAgent: string = null) {
         this.device = platformUtilsService.getDevice();
         this.deviceType = this.device.toString();
         this.isWebClient = this.device === DeviceType.IEBrowser || this.device === DeviceType.ChromeBrowser ||
@@ -158,15 +158,19 @@ export class ApiService implements ApiServiceAbstraction {
     // Auth APIs
 
     async postIdentityToken(request: TokenRequest): Promise<IdentityTokenResponse | IdentityTwoFactorResponse> {
+        const headers = new Headers({
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+            'Accept': 'application/json',
+            'Device-Type': this.deviceType,
+        });
+        if (this.customUserAgent != null) {
+            headers.set('User-Agent', this.customUserAgent);
+        }
         const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
             body: this.qsStringify(request.toIdentityToken(this.platformUtilsService.identityClientId)),
             credentials: this.getCredentials(),
             cache: 'no-cache',
-            headers: new Headers({
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-                'Accept': 'application/json',
-                'Device-Type': this.deviceType,
-            }),
+            headers: headers,
             method: 'POST',
         }));
 
@@ -860,6 +864,9 @@ export class ApiService implements ApiServiceAbstraction {
             'Authorization': 'Bearer ' + authHeader,
             'Content-Type': 'application/json; charset=utf-8',
         });
+        if (this.customUserAgent != null) {
+            headers.set('User-Agent', this.customUserAgent);
+        }
         const response = await this.fetch(new Request(this.eventsBaseUrl + '/collect', {
             cache: 'no-cache',
             credentials: this.getCredentials(),
@@ -926,6 +933,9 @@ export class ApiService implements ApiServiceAbstraction {
         const headers = new Headers({
             'Device-Type': this.deviceType,
         });
+        if (this.customUserAgent != null) {
+            headers.set('User-Agent', this.customUserAgent);
+        }
 
         const requestInit: RequestInit = {
             cache: 'no-cache',
@@ -985,6 +995,14 @@ export class ApiService implements ApiServiceAbstraction {
         if (refreshToken == null || refreshToken === '') {
             throw new Error();
         }
+        const headers = new Headers({
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+            'Accept': 'application/json',
+            'Device-Type': this.deviceType,
+        });
+        if (this.customUserAgent != null) {
+            headers.set('User-Agent', this.customUserAgent);
+        }
 
         const decodedToken = this.tokenService.decodeToken();
         const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
@@ -995,11 +1013,7 @@ export class ApiService implements ApiServiceAbstraction {
             }),
             cache: 'no-cache',
             credentials: this.getCredentials(),
-            headers: new Headers({
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-                'Accept': 'application/json',
-                'Device-Type': this.deviceType,
-            }),
+            headers: headers,
             method: 'POST',
         }));
 
