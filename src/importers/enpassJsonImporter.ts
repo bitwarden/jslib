@@ -5,6 +5,7 @@ import { ImportResult } from '../models/domain/importResult';
 
 import { CardView } from '../models/view/cardView';
 import { CipherView } from '../models/view/cipherView';
+import { FolderView } from '../models/view/folderView';
 
 import { CipherType } from '../enums/cipherType';
 
@@ -17,7 +18,22 @@ export class EnpassJsonImporter extends BaseImporter implements Importer {
             return result;
         }
 
+        const foldersMap = new Map<string, string>();
+        const foldersIndexMap = new Map<string, number>();
+        const folderTree = this.buildFolderTree(results.folders);
+        this.flattenFolderTree(null, folderTree, foldersMap);
+        foldersMap.forEach((val, key) => {
+            foldersIndexMap.set(key, result.folders.length);
+            const f = new FolderView();
+            f.name = val;
+            result.folders.push(f);
+        });
+
         results.items.forEach((item: any) => {
+            if (item.folders != null && item.folders.length > 0 && foldersIndexMap.has(item.folders[0])) {
+                result.folderRelationships.push([result.ciphers.length, foldersIndexMap.get(item.folders[0])]);
+            }
+
             const cipher = this.initLoginCipher();
             cipher.name = this.getValueOrDefault(item.title);
             cipher.favorite = item.favorite > 0;
@@ -99,6 +115,44 @@ export class EnpassJsonImporter extends BaseImporter implements Importer {
                 return;
             }
             this.processKvp(cipher, field.label, field.value);
+        });
+    }
+
+    private buildFolderTree(folders: any[]): any[] {
+        if (folders == null) {
+            return [];
+        }
+        const folderTree: any[] = [];
+        const map = new Map<string, any>([]);
+        folders.forEach((obj: any) => {
+            map.set(obj.uuid, obj);
+            obj.children = [];
+        });
+        folders.forEach((obj: any) => {
+            if (obj.parent_uuid != null && obj.parent_uuid !== '' && map.has(obj.parent_uuid)) {
+                map.get(obj.parent_uuid).children.push(obj);
+            } else {
+                folderTree.push(obj);
+            }
+        });
+        return folderTree;
+    }
+
+    private flattenFolderTree(titlePrefix: string, tree: any[], map: Map<string, string>) {
+        if (tree == null) {
+            return;
+        }
+        tree.forEach((f: any) => {
+            if (f.title != null && f.title.trim() !== '') {
+                let title = f.title.trim();
+                if (titlePrefix != null && titlePrefix.trim() !== '') {
+                    title = titlePrefix + '/' + title;
+                }
+                map.set(f.uuid, title);
+                if (f.children != null && f.children.length !== 0) {
+                    this.flattenFolderTree(title, f.children, map);
+                }
+            }
         });
     }
 }
