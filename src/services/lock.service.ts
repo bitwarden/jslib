@@ -12,6 +12,7 @@ import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
 import { CipherString } from '../models/domain/cipherString';
+import { AuditService } from '../abstractions';
 
 export class LockService implements LockServiceAbstraction {
     pinProtectedKey: CipherString = null;
@@ -22,7 +23,8 @@ export class LockService implements LockServiceAbstraction {
         private collectionService: CollectionService, private cryptoService: CryptoService,
         private platformUtilsService: PlatformUtilsService, private storageService: StorageService,
         private messagingService: MessagingService, private searchService: SearchService,
-        private userService: UserService, private lockedCallback: () => Promise<void> = null) {
+        private userService: UserService, private auditService: AuditService,
+        private lockedCallback: () => Promise<void> = null) {
     }
 
     init(checkOnInterval: boolean) {
@@ -91,6 +93,7 @@ export class LockService implements LockServiceAbstraction {
             this.cryptoService.clearEncKey(true),
         ]);
 
+        this.auditService.clearCache();
         this.folderService.clearCache();
         this.cipherService.clearCache();
         this.collectionService.clearCache();
