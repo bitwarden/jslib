@@ -28,7 +28,8 @@ export class UpdaterMain {
 
     constructor(private i18nService: I18nService, private windowMain: WindowMain,
         private gitHubProject: string, private onCheckingForUpdate: () => void = null,
-        private onReset: () => void = null, private onUpdateDownloaded: () => void = null) {
+        private onReset: () => void = null, private onUpdateDownloaded: () => void = null,
+        private projectName: string) {
         autoUpdater.logger = log;
 
         const linuxCanUpdate = process.platform === 'linux' && isAppImage();
@@ -58,7 +59,7 @@ export class UpdaterMain {
 
                 const result = dialog.showMessageBox(this.windowMain.win, {
                     type: 'info',
-                    title: this.i18nService.t('updateAvailable'),
+                    title: this.i18nService.t(this.projectName) + ' - ' + this.i18nService.t('updateAvailable'),
                     message: this.i18nService.t('updateAvailable'),
                     detail: this.i18nService.t('updateAvailableDesc'),
                     buttons: [this.i18nService.t('yes'), this.i18nService.t('no')],
@@ -99,7 +100,7 @@ export class UpdaterMain {
 
             const result = dialog.showMessageBox(this.windowMain.win, {
                 type: 'info',
-                title: this.i18nService.t('restartToUpdate'),
+                title: this.i18nService.t(this.projectName) + ' - ' + this.i18nService.t('restartToUpdate'),
                 message: this.i18nService.t('restartToUpdate'),
                 detail: this.i18nService.t('restartToUpdateDesc', info.version),
                 buttons: [this.i18nService.t('restart'), this.i18nService.t('later')],

@@ -1,15 +1,18 @@
+import { BaseResponse } from './baseResponse';
+
 import { NotificationType } from '../../enums/notificationType';
 
-export class NotificationResponse {
+export class NotificationResponse extends BaseResponse {
     contextId: string;
     type: NotificationType;
     payload: any;
 
     constructor(response: any) {
-        this.contextId = response.contextId || response.ContextId;
-        this.type = response.type != null ? response.type : response.Type;
+        super(response);
+        this.contextId = this.getResponseProperty('ContextId');
+        this.type = this.getResponseProperty('Type');
 
-        const payload = response.payload || response.Payload;
+        const payload = this.getResponseProperty('Payload');
         switch (this.type) {
             case NotificationType.SyncCipherCreate:
             case NotificationType.SyncCipherDelete:
@@ -35,7 +38,7 @@ export class NotificationResponse {
     }
 }
 
-export class SyncCipherNotification {
+export class SyncCipherNotification extends BaseResponse {
     id: string;
     userId: string;
     organizationId: string;
@@ -43,32 +46,35 @@ export class SyncCipherNotification {
     revisionDate: Date;
 
     constructor(response: any) {
-        this.id = response.id || response.Id;
-        this.userId = response.userId || response.UserId;
-        this.organizationId = response.organizationId || response.OrganizationId;
-        this.collectionIds = response.collectionIds || response.CollectionIds;
-        this.revisionDate = new Date(response.revisionDate || response.RevisionDate);
+        super(response);
+        this.id = this.getResponseProperty('Id');
+        this.userId = this.getResponseProperty('UserId');
+        this.organizationId = this.getResponseProperty('OrganizationId');
+        this.collectionIds = this.getResponseProperty('CollectionIds');
+        this.revisionDate = new Date(this.getResponseProperty('RevisionDate'));
     }
 }
 
-export class SyncFolderNotification {
+export class SyncFolderNotification extends BaseResponse {
     id: string;
     userId: string;
     revisionDate: Date;
 
     constructor(response: any) {
-        this.id = response.id || response.Id;
-        this.userId = response.userId || response.UserId;
-        this.revisionDate = new Date(response.revisionDate || response.RevisionDate);
+        super(response);
+        this.id = this.getResponseProperty('Id');
+        this.userId = this.getResponseProperty('UserId');
+        this.revisionDate = new Date(this.getResponseProperty('RevisionDate'));
     }
 }
 
-export class UserNotification {
+export class UserNotification extends BaseResponse {
     userId: string;
     date: Date;
 
     constructor(response: any) {
-        this.userId = response.userId || response.UserId;
-        this.date = new Date(response.date || response.Date);
+        super(response);
+        this.userId = this.getResponseProperty('UserId');
+        this.date = new Date(this.getResponseProperty('Date'));
     }
 }

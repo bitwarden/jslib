@@ -37,7 +37,7 @@ export class IconComponent implements OnChanges {
 
     private iconsUrl: string;
 
-    constructor(private environmentService: EnvironmentService, private stateService: StateService) {
+    constructor(environmentService: EnvironmentService, protected stateService: StateService) {
         this.iconsUrl = environmentService.iconsUrl;
         if (!this.iconsUrl) {
             if (environmentService.baseUrl) {
@@ -50,7 +50,14 @@ export class IconComponent implements OnChanges {
 
     async ngOnChanges() {
         this.imageEnabled = !(await this.stateService.get<boolean>(ConstantsService.disableFaviconKey));
+        this.load();
+    }
 
+    get iconCode(): string {
+        return IconMap[this.icon];
+    }
+
+    protected load() {
         switch (this.cipher.type) {
             case CipherType.Login:
                 this.icon = 'fa-globe';
@@ -68,10 +75,6 @@ export class IconComponent implements OnChanges {
             default:
                 break;
         }
-    }
-
-    get iconCode(): string {
-        return IconMap[this.icon];
     }
 
     private setLoginIcon() {

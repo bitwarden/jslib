@@ -13,6 +13,10 @@ import { TreeNode } from '../../models/domain/treeNode';
 
 import { CollectionService } from '../../abstractions/collection.service';
 import { FolderService } from '../../abstractions/folder.service';
+import { StorageService } from '../../abstractions/storage.service';
+import { UserService } from '../../abstractions/user.service';
+
+import { ConstantsService } from '../../services/constants.service';
 
 export class GroupingsComponent {
     @Input() showFolders = true;
@@ -40,9 +44,22 @@ export class GroupingsComponent {
     selectedFolderId: string = null;
     selectedCollectionId: string = null;
 
-    constructor(protected collectionService: CollectionService, protected folderService: FolderService) { }
+    private collapsedGroupings: Set<string>;
+    private collapsedGroupingsKey: string;
+
+    constructor(protected collectionService: CollectionService, protected folderService: FolderService,
+        protected storageService: StorageService, protected userService: UserService) { }
 
     async load(setLoaded = true) {
+        const userId = await this.userService.getUserId();
+        this.collapsedGroupingsKey = ConstantsService.collapsedGroupingsKey + '_' + userId;
+        const collapsedGroupings = await this.storageService.get<string[]>(this.collapsedGroupingsKey);
+        if (collapsedGroupings == null) {
+            this.collapsedGroupings = new Set<string>();
+        } else {
+            this.collapsedGroupings = new Set(collapsedGroupings);
+        }
+
         await this.loadFolders();
         await this.loadCollections();
 
@@ -118,5 +135,22 @@ export class GroupingsComponent {
         this.selectedFolder = false;
         this.selectedFolderId = null;
         this.selectedCollectionId = null;
+    }
+
+    collapse(grouping: FolderView | CollectionView, idPrefix = '') {
+        if (grouping.id == null) {
+            return;
+        }
+        const id = idPrefix + grouping.id;
+        if (this.isCollapsed(grouping, idPrefix)) {
+            this.collapsedGroupings.delete(id);
+        } else {
+            this.collapsedGroupings.add(id);
+        }
+        this.storageService.save(this.collapsedGroupingsKey, this.collapsedGroupings);
+    }
+
+    isCollapsed(grouping: FolderView | CollectionView, idPrefix = '') {
+        return this.collapsedGroupings.has(idPrefix + grouping.id);
     }
 }

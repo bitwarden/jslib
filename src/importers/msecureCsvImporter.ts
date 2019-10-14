@@ -28,7 +28,7 @@ export class MSecureCsvImporter extends BaseImporter implements Importer {
             const cipher = this.initLoginCipher();
             cipher.name = this.getValueOrDefault(value[2], '--');
 
-            if (value[1] === 'Web Logins') {
+            if (value[1] === 'Web Logins' || value[1] === 'Login') {
                 cipher.login.uris = this.makeUriArray(value[4]);
                 cipher.login.username = this.getValueOrDefault(value[5]);
                 cipher.login.password = this.getValueOrDefault(value[6]);

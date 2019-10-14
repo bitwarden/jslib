@@ -11,7 +11,9 @@ export class Utils {
     static isNode = false;
     static isBrowser = true;
     static isMobileBrowser = false;
+    static isAppleMobileBrowser = false;
     static global: any = null;
+    static tldEndingRegex = /.*\.(com|net|org|edu|uk|gov|ca|de|jp|fr|au|ru|ch|io|es|us|co|xyz|info|ly|mil)$/;
 
     static init() {
         if (Utils.inited) {
@@ -24,6 +26,7 @@ export class Utils {
         Utils.isBrowser = typeof window !== 'undefined';
         Utils.isNativeScript = !Utils.isNode && !Utils.isBrowser;
         Utils.isMobileBrowser = Utils.isBrowser && this.isMobile(window);
+        Utils.isAppleMobileBrowser = Utils.isBrowser && this.isAppleMobile(window);
         Utils.global = Utils.isNativeScript ? global : (Utils.isNode && !Utils.isBrowser ? global : window);
     }
 
@@ -147,6 +150,10 @@ export class Utils {
         });
     }
 
+    static isGuid(id: string) {
+        return RegExp(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/, 'i').test(id);
+    }
+
     static getHostname(uriString: string): string {
         const url = Utils.getUrl(uriString);
         try {
@@ -175,7 +182,13 @@ export class Utils {
             return null;
         }
 
-        if (uriString.startsWith('http://') || uriString.startsWith('https://')) {
+        let httpUrl = uriString.startsWith('http://') || uriString.startsWith('https://');
+        if (!httpUrl && uriString.indexOf('://') < 0 && Utils.tldEndingRegex.test(uriString)) {
+            uriString = 'http://' + uriString;
+            httpUrl = true;
+        }
+
+        if (httpUrl) {
             try {
                 const url = Utils.getUrlObject(uriString);
                 if (url.hostname === 'localhost' || Utils.validIpAddress(url.hostname)) {
@@ -229,6 +242,10 @@ export class Utils {
         };
     }
 
+    static isNullOrWhitespace(str: string): boolean {
+        return str == null || typeof str !== 'string' || str.trim() === '';
+    }
+
     private static validIpAddress(ipString: string): boolean {
         // tslint:disable-next-line
         const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
@@ -244,6 +261,10 @@ export class Utils {
             }
         })(win.navigator.userAgent || win.navigator.vendor || (win as any).opera);
         return mobile || win.navigator.userAgent.match(/iPad/i) != null;
+    }
+
+    private static isAppleMobile(win: Window) {
+        return win.navigator.userAgent.match(/iPhone/i) != null || win.navigator.userAgent.match(/iPad/i) != null;
     }
 
     private static getUrl(uriString: string): URL {

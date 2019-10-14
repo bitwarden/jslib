@@ -14,6 +14,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
     identityUrl: string;
     iconsUrl: string;
     notificationsUrl: string;
+    eventsUrl: string;
 
     constructor(private apiService: ApiService, private storageService: StorageService,
         private notificationsService: NotificationsService) { }
@@ -35,6 +36,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
             identity: null,
             icons: null,
             notifications: null,
+            events: null,
             webVault: null,
         };
 
@@ -51,6 +53,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         this.identityUrl = envUrls.identity = urls.identity;
         this.iconsUrl = urls.icons;
         this.notificationsUrl = urls.notifications;
+        this.eventsUrl = envUrls.events = urls.events;
         this.apiService.setUrls(envUrls);
     }
 
@@ -61,6 +64,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         urls.identity = this.formatUrl(urls.identity);
         urls.icons = this.formatUrl(urls.icons);
         urls.notifications = this.formatUrl(urls.notifications);
+        urls.events = this.formatUrl(urls.events);
 
         await this.storageService.save(ConstantsService.environmentUrlsKey, {
             base: urls.base,
@@ -69,6 +73,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
             webVault: urls.webVault,
             icons: urls.icons,
             notifications: urls.notifications,
+            events: urls.events,
         });
 
         this.baseUrl = urls.base;
@@ -77,6 +82,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         this.identityUrl = urls.identity;
         this.iconsUrl = urls.icons;
         this.notificationsUrl = urls.notifications;
+        this.eventsUrl = urls.events;
 
         const envUrls = new EnvironmentUrls();
         if (this.baseUrl) {
@@ -84,6 +90,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         } else {
             envUrls.api = this.apiUrl;
             envUrls.identity = this.identityUrl;
+            envUrls.events = this.eventsUrl;
         }
 
         this.apiService.setUrls(envUrls);
@@ -103,6 +110,6 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
             url = 'https://' + url;
         }
 
-        return url;
+        return url.trim();
     }
 }

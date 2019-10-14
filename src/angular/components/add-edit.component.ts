@@ -1,4 +1,8 @@
 import {
+    CdkDragDrop,
+    moveItemInArray,
+} from '@angular/cdk/drag-drop';
+import {
     EventEmitter,
     Input,
     OnInit,
@@ -6,6 +10,7 @@ import {
 } from '@angular/core';
 
 import { CipherType } from '../../enums/cipherType';
+import { EventType } from '../../enums/eventType';
 import { FieldType } from '../../enums/fieldType';
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { SecureNoteType } from '../../enums/secureNoteType';
@@ -14,8 +19,10 @@ import { UriMatchType } from '../../enums/uriMatchType';
 import { AuditService } from '../../abstractions/audit.service';
 import { CipherService } from '../../abstractions/cipher.service';
 import { CollectionService } from '../../abstractions/collection.service';
+import { EventService } from '../../abstractions/event.service';
 import { FolderService } from '../../abstractions/folder.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { MessagingService } from '../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
 import { UserService } from '../../abstractions/user.service';
@@ -70,11 +77,13 @@ export class AddEditComponent implements OnInit {
     ownershipOptions: any[] = [];
 
     protected writeableCollections: CollectionView[];
+    private previousCipherId: string;
 
     constructor(protected cipherService: CipherService, protected folderService: FolderService,
         protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected auditService: AuditService, protected stateService: StateService,
-        protected userService: UserService, protected collectionService: CollectionService) {
+        protected userService: UserService, protected collectionService: CollectionService,
+        protected messagingService: MessagingService, protected eventService: EventService) {
         this.typeOptions = [
             { name: i18nService.t('typeLogin'), value: CipherType.Login },
             { name: i18nService.t('typeCard'), value: CipherType.Card },
@@ -156,8 +165,13 @@ export class AddEditComponent implements OnInit {
             this.title = this.i18nService.t('addItem');
         }
 
-        this.cipher = await this.stateService.get<CipherView>('addEditCipher');
-        await this.stateService.remove('addEditCipher');
+        const addEditCipherInfo: any = await this.stateService.get<any>('addEditCipherInfo');
+        if (addEditCipherInfo != null) {
+            this.cipher = addEditCipherInfo.cipher;
+            this.collectionIds = addEditCipherInfo.collectionIds;
+        }
+        await this.stateService.remove('addEditCipherInfo');
+
         if (this.cipher == null) {
             if (this.editMode) {
                 const cipher = await this.loadCipher();
@@ -173,19 +187,26 @@ export class AddEditComponent implements OnInit {
                 this.cipher.identity = new IdentityView();
                 this.cipher.secureNote = new SecureNoteView();
                 this.cipher.secureNote.type = SecureNoteType.Generic;
+            }
+        }
 
-                await this.organizationChanged();
-                if (this.collectionIds != null && this.collectionIds.length > 0 && this.collections.length > 0) {
-                    this.collections.forEach((c) => {
-                        if (this.collectionIds.indexOf(c.id) > -1) {
-                            (c as any).checked = true;
-                        }
-                    });
-                }
+        if (this.cipher != null && (!this.editMode || addEditCipherInfo != null)) {
+            await this.organizationChanged();
+            if (this.collectionIds != null && this.collectionIds.length > 0 && this.collections.length > 0) {
+                this.collections.forEach((c) => {
+                    if (this.collectionIds.indexOf(c.id) > -1) {
+                        (c as any).checked = true;
+                    }
+                });
             }
         }
 
         this.folders = await this.folderService.getAllDecrypted();
+
+        if (this.editMode && this.previousCipherId !== this.cipherId) {
+            this.eventService.collect(EventType.Cipher_ClientViewed, this.cipherId);
+        }
+        this.previousCipherId = this.cipherId;
     }
 
     async submit(): Promise<boolean> {
@@ -215,6 +236,7 @@ export class AddEditComponent implements OnInit {
             this.platformUtilsService.showToast('success', null,
                 this.i18nService.t(this.editMode ? 'editedItem' : 'addedItem'));
             this.onSavedCipher.emit(this.cipher);
+            this.messagingService.send(this.editMode ? 'editedCipher' : 'addedCipher');
             return true;
         } catch { }
 
@@ -261,6 +283,10 @@ export class AddEditComponent implements OnInit {
         }
     }
 
+    trackByFunction(index: number, item: any) {
+        return index;
+    }
+
     cancel() {
         this.onCancelled.emit(this.cipher);
     }
@@ -291,6 +317,7 @@ export class AddEditComponent implements OnInit {
             this.platformUtilsService.eventTrack('Deleted Cipher');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedItem'));
             this.onDeletedCipher.emit(this.cipher);
+            this.messagingService.send('deletedCipher');
         } catch { }
 
         return true;
@@ -314,17 +341,26 @@ export class AddEditComponent implements OnInit {
         this.platformUtilsService.eventTrack('Toggled Password on Edit');
         this.showPassword = !this.showPassword;
         document.getElementById('loginPassword').focus();
+        if (this.editMode && this.showPassword) {
+            this.eventService.collect(EventType.Cipher_ClientToggledPasswordVisible, this.cipherId);
+        }
     }
 
     toggleCardCode() {
         this.platformUtilsService.eventTrack('Toggled CardCode on Edit');
         this.showCardCode = !this.showCardCode;
         document.getElementById('cardCode').focus();
+        if (this.editMode && this.showCardCode) {
+            this.eventService.collect(EventType.Cipher_ClientToggledCardCodeVisible, this.cipherId);
+        }
     }
 
     toggleFieldValue(field: FieldView) {
         const f = (field as any);
         f.showValue = !f.showValue;
+        if (this.editMode && f.showValue) {
+            this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible, this.cipherId);
+        }
     }
 
     toggleUriOptions(uri: LoginUriView) {
@@ -335,6 +371,10 @@ export class AddEditComponent implements OnInit {
     loginUriMatchChanged(uri: LoginUriView) {
         const u = (uri as any);
         u.showOptions = u.showOptions == null ? true : u.showOptions;
+    }
+
+    drop(event: CdkDragDrop<string[]>) {
+        moveItemInArray(this.cipher.fields, event.previousIndex, event.currentIndex);
     }
 
     async organizationChanged() {

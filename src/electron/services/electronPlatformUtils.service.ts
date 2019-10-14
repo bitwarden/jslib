@@ -98,8 +98,8 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return this.analyticsIdCache;
     }
 
-    isViewOpen(): boolean {
-        return false;
+    isViewOpen(): Promise<boolean> {
+        return Promise.resolve(false);
     }
 
     lockTimeout(): number {
@@ -186,6 +186,21 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
 
     copyToClipboard(text: string, options?: any): void {
         const type = options ? options.type : null;
+        const clearing = options ? !!options.clearing : false;
+        const clearMs: number = options && options.clearMs ? options.clearMs : null;
         clipboard.writeText(text, type);
+        if (!clearing) {
+            this.messagingService.send('copiedToClipboard', {
+                clipboardValue: text,
+                clearMs: clearMs,
+                type: type,
+                clearing: clearing,
+            });
+        }
+    }
+
+    readFromClipboard(options?: any): Promise<string> {
+        const type = options ? options.type : null;
+        return Promise.resolve(clipboard.readText(type));
     }
 }

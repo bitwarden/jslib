@@ -6,7 +6,6 @@
  *
  * Results are not cached, once the promise has returned, the next call will result in a fresh call
  *
- * WARNING: The decorator's scope is singleton, so using it on transient objects can lead to memory leaks.
  * Read more at https://github.com/bitwarden/jslib/pull/7
  */
 export function sequentialize(cacheKey: (args: any[]) => string) {
@@ -26,18 +25,24 @@ export function sequentialize(cacheKey: (args: any[]) => string) {
 
         return {
             value: function(...args: any[]) {
-                const argsCacheKey = cacheKey(args);
                 const cache = getCache(this);
+                const argsCacheKey = cacheKey(args);
                 let response = cache.get(argsCacheKey);
                 if (response != null) {
                     return response;
                 }
 
-                response = originalMethod.apply(this, args).then((val: any) => {
+                const onFinally = () => {
                     cache.delete(argsCacheKey);
+                    if (cache.size === 0) {
+                        caches.delete(this);
+                    }
+                };
+                response = originalMethod.apply(this, args).then((val: any) => {
+                    onFinally();
                     return val;
                 }).catch((err: any) => {
-                    cache.delete(argsCacheKey);
+                    onFinally();
                     throw err;
                 });
 

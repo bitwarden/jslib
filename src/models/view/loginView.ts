@@ -4,11 +4,11 @@ import { View } from './view';
 import { Login } from '../domain/login';
 
 export class LoginView implements View {
-    username: string;
-    password: string;
-    passwordRevisionDate?: Date;
-    totp: string;
-    uris: LoginUriView[];
+    username: string = null;
+    password: string = null;
+    passwordRevisionDate?: Date = null;
+    totp: string = null;
+    uris: LoginUriView[] = null;
 
     constructor(l?: Login) {
         if (!l) {
@@ -31,7 +31,17 @@ export class LoginView implements View {
     }
 
     get canLaunch(): boolean {
-        return this.hasUris && this.uris[0].canLaunch;
+        return this.hasUris && this.uris.some((u) => u.canLaunch);
+    }
+
+    get launchUri(): string {
+        if (this.hasUris) {
+            const uri = this.uris.find((u) => u.canLaunch);
+            if (uri != null) {
+                return uri.launchUri;
+            }
+        }
+        return null;
     }
 
     get hasUris(): boolean {

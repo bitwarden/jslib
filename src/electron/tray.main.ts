@@ -66,12 +66,21 @@ export class TrayMain {
                     this.hideToTray();
                 }
             });
+
+            this.windowMain.win.on('close', async (e: Event) => {
+                if (await this.storageService.get<boolean>(ElectronConstants.enableCloseToTrayKey)) {
+                    if (!this.windowMain.isQuitting) {
+                        e.preventDefault();
+                        this.hideToTray();
+                    }
+                }
+            });
         }
 
         this.windowMain.win.on('show', async (e: Event) => {
             const enableTray = await this.storageService.get<boolean>(ElectronConstants.enableTrayKey);
             if (!enableTray) {
-                this.removeTray(false);
+                setTimeout(() =>  this.removeTray(false), 100);
             }
         });
     }
@@ -113,9 +122,14 @@ export class TrayMain {
 
     private toggleWindow() {
         if (this.windowMain.win == null) {
+            if (process.platform === 'darwin') {
+                // On MacOS, closing the window via the red button destroys the BrowserWindow instance.
+                this.windowMain.createWindow().then(() => {
+                    this.windowMain.win.show();
+                });
+            }
             return;
         }
-
         if (this.windowMain.win.isVisible()) {
             this.windowMain.win.hide();
         } else {
@@ -124,6 +138,7 @@ export class TrayMain {
     }
 
     private closeWindow() {
+        this.windowMain.isQuitting = true;
         if (this.windowMain.win != null) {
             this.windowMain.win.close();
         }

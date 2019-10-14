@@ -1,7 +1,10 @@
-export class TwoFactorRecoverResponse {
+import { BaseResponse } from './baseResponse';
+
+export class TwoFactorRecoverResponse extends BaseResponse {
     code: string;
 
     constructor(response: any) {
-        this.code = response.Code;
+        super(response);
+        this.code = this.getResponseProperty('Code');
     }
 }

@@ -27,7 +27,7 @@ export class SettingsService implements SettingsServiceAbstraction {
 
     async clear(userId: string): Promise<void> {
         await this.storageService.remove(Keys.settingsPrefix + userId);
-        this.settingsCache = null;
+        this.clearCache();
     }
 
     // Helpers

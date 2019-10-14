@@ -1,4 +1,6 @@
 import { app, BrowserWindow, screen } from 'electron';
+import { ElectronConstants } from './electronConstants';
+
 import * as path from 'path';
 import * as url from 'url';
 
@@ -13,31 +15,41 @@ const Keys = {
 
 export class WindowMain {
     win: BrowserWindow;
+    isQuitting: boolean = false;
 
     private windowStateChangeTimer: NodeJS.Timer;
     private windowStates: { [key: string]: any; } = {};
+    private enableAlwaysOnTop: boolean = false;
 
-    constructor(private storageService: StorageService, private defaultWidth = 950, private defaultHeight = 600) { }
+    constructor(private storageService: StorageService, private hideTitleBar = false,
+        private defaultWidth = 950, private defaultHeight = 600) { }
 
     init(): Promise<any> {
         return new Promise((resolve, reject) => {
             try {
                 if (!isMacAppStore() && !isSnapStore()) {
-                    const shouldQuit = app.makeSingleInstance((args, dir) => {
-                        // Someone tried to run a second instance, we should focus our window.
-                        if (this.win != null) {
-                            if (this.win.isMinimized()) {
-                                this.win.restore();
-                            }
-                            this.win.focus();
-                        }
-                    });
-
-                    if (shouldQuit) {
+                    const gotTheLock = app.requestSingleInstanceLock();
+                    if (!gotTheLock) {
                         app.quit();
                         return;
+                    } else {
+                        app.on('second-instance', (event, commandLine, workingDirectory) => {
+                            // Someone tried to run a second instance, we should focus our window.
+                            if (this.win != null) {
+                                if (this.win.isMinimized() || !this.win.isVisible()) {
+                                    this.win.show();
+                                }
+                                this.win.focus();
+                            }
+                        });
                     }
                 }
+
+                // This method will be called when Electron is shutting
+                // down the application.
+                app.on('before-quit', () => {
+                    this.isQuitting = true;
+                });
 
                 // This method will be called when Electron has finished
                 // initialization and is ready to create browser windows.
@@ -72,9 +84,10 @@ export class WindowMain {
         });
     }
 
-    private async createWindow() {
+    async createWindow(): Promise<void> {
         this.windowStates[Keys.mainWindowSize] = await this.getWindowState(Keys.mainWindowSize, this.defaultWidth,
             this.defaultHeight);
+        this.enableAlwaysOnTop = await this.storageService.get<boolean>(ElectronConstants.enableAlwaysOnTopKey);
 
         // Create the browser window.
         this.win = new BrowserWindow({
@@ -86,7 +99,13 @@ export class WindowMain {
             y: this.windowStates[Keys.mainWindowSize].y,
             title: app.getName(),
             icon: process.platform === 'linux' ? path.join(__dirname, '/images/icon.png') : undefined,
+            titleBarStyle: this.hideTitleBar && process.platform === 'darwin' ? 'hiddenInset' : undefined,
             show: false,
+            alwaysOnTop: this.enableAlwaysOnTop,
+            webPreferences: {
+                nodeIntegration: true,
+                webviewTag: true,
+            },
         });
 
         if (this.windowStates[Keys.mainWindowSize].isMaximized) {
@@ -101,7 +120,9 @@ export class WindowMain {
             protocol: 'file:',
             pathname: path.join(__dirname, '/index.html'),
             slashes: true,
-        }));
+        }), {
+                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:67.0) Gecko/20100101 Firefox/67.0',
+            });
 
         // Open the DevTools.
         if (isDev()) {
@@ -137,6 +158,13 @@ export class WindowMain {
         this.win.on('move', () => {
             this.windowStateChangeHandler(Keys.mainWindowSize, this.win);
         });
+
+    }
+
+    async toggleAlwaysOnTop() {
+        this.enableAlwaysOnTop = !this.win.isAlwaysOnTop();
+        this.win.setAlwaysOnTop(this.enableAlwaysOnTop);
+        await this.storageService.save(ElectronConstants.enableAlwaysOnTopKey, this.enableAlwaysOnTop);
     }
 
     private windowStateChangeHandler(configKey: string, win: BrowserWindow) {

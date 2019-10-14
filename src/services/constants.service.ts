@@ -13,6 +13,15 @@ export class ConstantsService {
     static readonly installedVersionKey: string = 'installedVersion';
     static readonly localeKey: string = 'locale';
     static readonly themeKey: string = 'theme';
+    static readonly collapsedGroupingsKey: string = 'collapsedGroupings';
+    static readonly autoConfirmFingerprints: string = 'autoConfirmFingerprints';
+    static readonly dontShowCardsCurrentTab: string = 'dontShowCardsCurrentTab';
+    static readonly dontShowIdentitiesCurrentTab: string = 'dontShowIdentitiesCurrentTab';
+    static readonly defaultUriMatch: string = 'defaultUriMatch';
+    static readonly pinProtectedKey: string = 'pinProtectedKey';
+    static readonly protectedPin: string = 'protectedPin';
+    static readonly clearClipboardKey: string = 'clearClipboardKey';
+    static readonly eventCollectionKey: string = 'eventCollection';
 
     readonly environmentUrlsKey: string = ConstantsService.environmentUrlsKey;
     readonly disableGaKey: string = ConstantsService.disableGaKey;
@@ -27,4 +36,13 @@ export class ConstantsService {
     readonly installedVersionKey: string = ConstantsService.installedVersionKey;
     readonly localeKey: string = ConstantsService.localeKey;
     readonly themeKey: string = ConstantsService.themeKey;
+    readonly collapsedGroupingsKey: string = ConstantsService.collapsedGroupingsKey;
+    readonly autoConfirmFingerprints: string = ConstantsService.autoConfirmFingerprints;
+    readonly dontShowCardsCurrentTab: string = ConstantsService.dontShowCardsCurrentTab;
+    readonly dontShowIdentitiesCurrentTab: string = ConstantsService.dontShowIdentitiesCurrentTab;
+    readonly defaultUriMatch: string = ConstantsService.defaultUriMatch;
+    readonly pinProtectedKey: string = ConstantsService.pinProtectedKey;
+    readonly protectedPin: string = ConstantsService.protectedPin;
+    readonly clearClipboardKey: string = ConstantsService.clearClipboardKey;
+    readonly eventCollectionKey: string = ConstantsService.eventCollectionKey;
 }

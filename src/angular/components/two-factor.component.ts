@@ -14,16 +14,20 @@ import { AuthService } from '../../abstractions/auth.service';
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
+import { StateService } from '../../abstractions/state.service';
+import { StorageService } from '../../abstractions/storage.service';
 
 import { TwoFactorProviders } from '../../services/auth.service';
+import { ConstantsService } from '../../services/constants.service';
 
-import * as DuoWebSDK from '../../misc/duo';
+import * as DuoWebSDK from 'duo_web_sdk';
 import { U2f } from '../../misc/u2f';
 
 export class TwoFactorComponent implements OnInit, OnDestroy {
     token: string = '';
     remember: boolean = false;
     u2fReady: boolean = false;
+    initU2f: boolean = true;
     providers = TwoFactorProviders;
     providerType = TwoFactorProviderType;
     selectedProviderType: TwoFactorProviderType = TwoFactorProviderType.Authenticator;
@@ -42,18 +46,19 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     constructor(protected authService: AuthService, protected router: Router,
         protected i18nService: I18nService, protected apiService: ApiService,
         protected platformUtilsService: PlatformUtilsService, protected win: Window,
-        protected environmentService: EnvironmentService) {
+        protected environmentService: EnvironmentService, protected stateService: StateService,
+        protected storageService: StorageService) {
         this.u2fSupported = this.platformUtilsService.supportsU2f(win);
     }
 
     async ngOnInit() {
         if (this.authService.email == null || this.authService.masterPasswordHash == null ||
-            this.authService.twoFactorProviders == null) {
+            this.authService.twoFactorProvidersData == null) {
             this.router.navigate([this.loginRoute]);
             return;
         }
 
-        if (this.win != null && this.u2fSupported) {
+        if (this.initU2f && this.win != null && this.u2fSupported) {
             let customWebVaultUrl: string = null;
             if (this.environmentService.baseUrl != null) {
                 customWebVaultUrl = this.environmentService.baseUrl;
@@ -90,18 +95,20 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
 
         this.cleanupU2f();
         this.title = (TwoFactorProviders as any)[this.selectedProviderType].name;
-        const params = this.authService.twoFactorProviders.get(this.selectedProviderType);
+        const providerData = this.authService.twoFactorProvidersData.get(this.selectedProviderType);
         switch (this.selectedProviderType) {
             case TwoFactorProviderType.U2f:
                 if (!this.u2fSupported || this.u2f == null) {
                     break;
                 }
 
-                if (params.Challenge != null) {
-                    this.u2f.init(JSON.parse(params.Challenge));
+                if (providerData.Challenge != null) {
+                    setTimeout(() => {
+                        this.u2f.init(JSON.parse(providerData.Challenge));
+                    }, 500);
                 } else {
                     // TODO: Deprecated. Remove in future version.
-                    const challenges = JSON.parse(params.Challenges);
+                    const challenges = JSON.parse(providerData.Challenges);
                     if (challenges != null && challenges.length > 0) {
                         this.u2f.init({
                             appId: challenges[0].appId,
@@ -118,15 +125,11 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 break;
             case TwoFactorProviderType.Duo:
             case TwoFactorProviderType.OrganizationDuo:
-                if (this.platformUtilsService.getDevice() === DeviceType.SafariExtension) {
-                    break;
-                }
-
                 setTimeout(() => {
                     DuoWebSDK.init({
                         iframe: undefined,
-                        host: params.Host,
-                        sig_request: params.Signature,
+                        host: providerData.Host,
+                        sig_request: providerData.Signature,
                         submit_callback: async (f: HTMLFormElement) => {
                             const sig = f.querySelector('input[name="sig_response"]') as HTMLInputElement;
                             if (sig != null) {
@@ -138,8 +141,8 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 }, 0);
                 break;
             case TwoFactorProviderType.Email:
-                this.twoFactorEmail = params.Email;
-                if (this.authService.twoFactorProviders.size > 1) {
+                this.twoFactorEmail = providerData.Email;
+                if (this.authService.twoFactorProvidersData.size > 1) {
                     await this.sendEmail(false);
                 }
                 break;
@@ -169,6 +172,8 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         try {
             this.formPromise = this.authService.logInTwoFactor(this.selectedProviderType, this.token, this.remember);
             await this.formPromise;
+            const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
+            await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
             if (this.onSuccessfulLogin != null) {
                 this.onSuccessfulLogin();
             }

@@ -1,6 +1,8 @@
+import { BaseResponse } from './baseResponse';
+
 import { PlanType } from '../../enums/planType';
 
-export class OrganizationResponse {
+export class OrganizationResponse extends BaseResponse {
     id: string;
     name: string;
     businessName: string;
@@ -20,26 +22,29 @@ export class OrganizationResponse {
     useEvents: boolean;
     useTotp: boolean;
     use2fa: boolean;
+    useApi: boolean;
 
     constructor(response: any) {
-        this.id = response.Id;
-        this.name = response.Name;
-        this.businessName = response.BusinessName;
-        this.businessAddress1 = response.BusinessAddress1;
-        this.businessAddress2 = response.BusinessAddress2;
-        this.businessAddress3 = response.BusinessAddress3;
-        this.businessCountry = response.BusinessCountry;
-        this.businessTaxNumber = response.BusinessTaxNumber;
-        this.billingEmail = response.BillingEmail;
-        this.plan = response.Plan;
-        this.planType = response.PlanType;
-        this.seats = response.Seats;
-        this.maxCollections = response.MaxCollections;
-        this.maxStorageGb = response.MaxStorageGb;
-        this.useGroups = response.UseGroups;
-        this.useDirectory = response.UseDirectory;
-        this.useEvents = response.UseEvents;
-        this.useTotp = response.UseTotp;
-        this.use2fa = response.Use2fa;
+        super(response);
+        this.id = this.getResponseProperty('Id');
+        this.name = this.getResponseProperty('Name');
+        this.businessName = this.getResponseProperty('BusinessName');
+        this.businessAddress1 = this.getResponseProperty('BusinessAddress1');
+        this.businessAddress2 = this.getResponseProperty('BusinessAddress2');
+        this.businessAddress3 = this.getResponseProperty('BusinessAddress3');
+        this.businessCountry = this.getResponseProperty('BusinessCountry');
+        this.businessTaxNumber = this.getResponseProperty('BusinessTaxNumber');
+        this.billingEmail = this.getResponseProperty('BillingEmail');
+        this.plan = this.getResponseProperty('Plan');
+        this.planType = this.getResponseProperty('PlanType');
+        this.seats = this.getResponseProperty('Seats');
+        this.maxCollections = this.getResponseProperty('MaxCollections');
+        this.maxStorageGb = this.getResponseProperty('MaxStorageGb');
+        this.useGroups = this.getResponseProperty('UseGroups');
+        this.useDirectory = this.getResponseProperty('UseDirectory');
+        this.useEvents = this.getResponseProperty('UseEvents');
+        this.useTotp = this.getResponseProperty('UseTotp');
+        this.use2fa = this.getResponseProperty('Use2fa');
+        this.useApi = this.getResponseProperty('UseApi');
     }
 }

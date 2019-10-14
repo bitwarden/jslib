@@ -25,12 +25,16 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
         results.forEach((value, index) => {
             const cipherIndex = result.ciphers.length;
             let folderIndex = result.folders.length;
-            const hasFolder = this.getValueOrDefault(value.grouping, '(none)') !== '(none)';
+            let grouping = value.grouping;
+            if (grouping != null) {
+                grouping = grouping.replace(/\\/g, '/').replace(/[\x00-\x1F\x7F-\x9F]/g, '');
+            }
+            const hasFolder = this.getValueOrDefault(grouping, '(none)') !== '(none)';
             let addFolder = hasFolder;
 
             if (hasFolder) {
                 for (let i = 0; i < result.folders.length; i++) {
-                    if (result.folders[i].name === value.grouping) {
+                    if (result.folders[i].name === grouping) {
                         addFolder = false;
                         folderIndex = i;
                         break;
@@ -67,7 +71,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
 
             if (addFolder) {
                 const f = new FolderView();
-                f.name = value.grouping;
+                f.name = grouping;
                 result.folders.push(f);
             }
             if (hasFolder) {
@@ -206,29 +210,46 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
         let notes: string = null;
         const dataObj: any = {};
 
+        let processingNotes = false;
         extraParts.forEach((extraPart) => {
-            const fieldParts = extraPart.split(':');
-            if (fieldParts.length < 1 || this.isNullOrWhitespace(fieldParts[0]) ||
-                this.isNullOrWhitespace(fieldParts[1]) || fieldParts[0] === 'NoteType') {
-                return;
+            let key: string = null;
+            let val: string = null;
+            if (!processingNotes) {
+                if (this.isNullOrWhitespace(extraPart)) {
+                    return;
+                }
+                const colonIndex = extraPart.indexOf(':');
+                if (colonIndex === -1) {
+                    key = extraPart;
+                } else {
+                    key = extraPart.substring(0, colonIndex);
+                    if (extraPart.length > colonIndex) {
+                        val = extraPart.substring(colonIndex + 1);
+                    }
+                }
+                if (this.isNullOrWhitespace(key) || this.isNullOrWhitespace(val) || key === 'NoteType') {
+                    return;
+                }
             }
 
-            if (fieldParts[0] === 'Notes') {
+            if (processingNotes) {
+                notes += ('\n' + extraPart);
+            } else if (key === 'Notes') {
                 if (!this.isNullOrWhitespace(notes)) {
-                    notes += ('\n' + fieldParts[1]);
+                    notes += ('\n' + val);
                 } else {
-                    notes = fieldParts[1];
+                    notes = val;
                 }
-            } else if (map.hasOwnProperty(fieldParts[0])) {
-                dataObj[map[fieldParts[0]]] = fieldParts[1];
+                processingNotes = true;
+            } else if (map.hasOwnProperty(key)) {
+                dataObj[map[key]] = val;
             } else {
                 if (!this.isNullOrWhitespace(notes)) {
                     notes += '\n';
                 } else {
                     notes = '';
                 }
-
-                notes += (fieldParts[0] + ': ' + fieldParts[1]);
+                notes += (key + ': ' + val);
             }
         });
 

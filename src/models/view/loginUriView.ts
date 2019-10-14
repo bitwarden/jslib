@@ -13,17 +13,20 @@ const CanLaunchWhitelist = [
     'ftp://',
     'sftp://',
     'irc://',
+    'vnc://',
     'chrome://',
+    'iosapp://',
+    'androidapp://',
 ];
 
 export class LoginUriView implements View {
     match: UriMatchType = null;
 
     // tslint:disable
-    private _uri: string;
-    private _domain: string;
-    private _hostname: string;
-    private _canLaunch: boolean;
+    private _uri: string = null;
+    private _domain: string = null;
+    private _hostname: string = null;
+    private _canLaunch: boolean = null;
     // tslint:enable
 
     constructor(u?: LoginUri) {
@@ -70,16 +73,18 @@ export class LoginUriView implements View {
     }
 
     get isWebsite(): boolean {
-        return this.uri != null && (this.uri.indexOf('http://') === 0 || this.uri.indexOf('https://') === 0);
+        return this.uri != null && (this.uri.indexOf('http://') === 0 || this.uri.indexOf('https://') === 0 ||
+            (this.uri.indexOf('://') < 0 && Utils.tldEndingRegex.test(this.uri)));
     }
 
     get canLaunch(): boolean {
         if (this._canLaunch != null) {
             return this._canLaunch;
         }
-        if (this.uri != null) {
+        if (this.uri != null && this.match !== UriMatchType.RegularExpression) {
+            const uri = this.launchUri;
             for (let i = 0; i < CanLaunchWhitelist.length; i++) {
-                if (this.uri.indexOf(CanLaunchWhitelist[i]) === 0) {
+                if (uri.indexOf(CanLaunchWhitelist[i]) === 0) {
                     this._canLaunch = true;
                     return this._canLaunch;
                 }
@@ -87,5 +92,9 @@ export class LoginUriView implements View {
         }
         this._canLaunch = false;
         return this._canLaunch;
+    }
+
+    get launchUri(): string {
+        return this.uri.indexOf('://') < 0 && Utils.tldEndingRegex.test(this.uri) ? ('http://' + this.uri) : this.uri;
     }
 }

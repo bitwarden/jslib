@@ -1,7 +1,9 @@
+import { BaseResponse } from './baseResponse';
+
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
 
-export class ProfileOrganizationResponse {
+export class ProfileOrganizationResponse extends BaseResponse {
     id: string;
     name: string;
     useGroups: boolean;
@@ -9,6 +11,7 @@ export class ProfileOrganizationResponse {
     useEvents: boolean;
     useTotp: boolean;
     use2fa: boolean;
+    useApi: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
     seats: number;
@@ -20,21 +23,23 @@ export class ProfileOrganizationResponse {
     enabled: boolean;
 
     constructor(response: any) {
-        this.id = response.Id;
-        this.name = response.Name;
-        this.useGroups = response.UseGroups;
-        this.useDirectory = response.UseDirectory;
-        this.useEvents = response.UseEvents;
-        this.useTotp = response.UseTotp;
-        this.use2fa = response.Use2fa;
-        this.selfHost = response.SelfHost;
-        this.usersGetPremium = response.UsersGetPremium;
-        this.seats = response.Seats;
-        this.maxCollections = response.MaxCollections;
-        this.maxStorageGb = response.MaxStorageGb;
-        this.key = response.Key;
-        this.status = response.Status;
-        this.type = response.Type;
-        this.enabled = response.Enabled;
+        super(response);
+        this.id = this.getResponseProperty('Id');
+        this.name = this.getResponseProperty('Name');
+        this.useGroups = this.getResponseProperty('UseGroups');
+        this.useDirectory = this.getResponseProperty('UseDirectory');
+        this.useEvents = this.getResponseProperty('UseEvents');
+        this.useTotp = this.getResponseProperty('UseTotp');
+        this.use2fa = this.getResponseProperty('Use2fa');
+        this.useApi = this.getResponseProperty('UseApi');
+        this.selfHost = this.getResponseProperty('SelfHost');
+        this.usersGetPremium = this.getResponseProperty('UsersGetPremium');
+        this.seats = this.getResponseProperty('Seats');
+        this.maxCollections = this.getResponseProperty('MaxCollections');
+        this.maxStorageGb = this.getResponseProperty('MaxStorageGb');
+        this.key = this.getResponseProperty('Key');
+        this.status = this.getResponseProperty('Status');
+        this.type = this.getResponseProperty('Type');
+        this.enabled = this.getResponseProperty('Enabled');
     }
 }

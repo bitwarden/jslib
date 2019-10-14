@@ -1,3 +1,5 @@
+import * as bigInt from 'big-integer';
+
 import { EncryptionType } from '../enums/encryptionType';
 import { KdfType } from '../enums/kdfType';
 
@@ -14,6 +16,7 @@ import { ConstantsService } from './constants.service';
 
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
+import { EEFLongWordList } from '../misc/wordlist';
 
 const Keys = {
     key: 'key',
@@ -93,16 +96,21 @@ export class CryptoService implements CryptoServiceAbstraction {
         return key == null ? null : this.key;
     }
 
-    getKeyHash(): Promise<string> {
+    async getKeyHash(): Promise<string> {
         if (this.keyHash != null) {
-            return Promise.resolve(this.keyHash);
+            return this.keyHash;
         }
 
-        return this.storageService.get<string>(Keys.keyHash);
+        const keyHash = await this.storageService.get<string>(Keys.keyHash);
+        if (keyHash != null) {
+            this.keyHash = keyHash;
+        }
+
+        return keyHash == null ? null : this.keyHash;
     }
 
     @sequentialize(() => 'getEncKey')
-    async getEncKey(): Promise<SymmetricCryptoKey> {
+    async getEncKey(key: SymmetricCryptoKey = null): Promise<SymmetricCryptoKey> {
         if (this.encKey != null) {
             return this.encKey;
         }
@@ -112,7 +120,9 @@ export class CryptoService implements CryptoServiceAbstraction {
             return null;
         }
 
-        const key = await this.getKey();
+        if (key == null) {
+            key = await this.getKey();
+        }
         if (key == null) {
             return null;
         }
@@ -161,6 +171,18 @@ export class CryptoService implements CryptoServiceAbstraction {
 
         this.privateKey = await this.decryptToBytes(new CipherString(encPrivateKey), null);
         return this.privateKey;
+    }
+
+    async getFingerprint(userId: string, publicKey?: ArrayBuffer): Promise<string[]> {
+        if (publicKey == null) {
+            publicKey = await this.getPublicKey();
+        }
+        if (publicKey === null) {
+            throw new Error('No public key available.');
+        }
+        const keyFingerprint = await this.cryptoFunctionService.hash(publicKey, 'sha256');
+        const userFingerprint = await this.hkdfExpand(keyFingerprint, Utils.fromUtf8ToArray(userId), 32);
+        return this.hashPhrase(userFingerprint.buffer);
     }
 
     @sequentialize(() => 'getOrgKeys')
@@ -251,6 +273,10 @@ export class CryptoService implements CryptoServiceAbstraction {
         return this.storageService.remove(Keys.encOrgKeys);
     }
 
+    clearPinProtectedKey(): Promise<any> {
+        return this.storageService.remove(ConstantsService.pinProtectedKey);
+    }
+
     clearKeys(): Promise<any> {
         return Promise.all([
             this.clearKey(),
@@ -258,6 +284,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             this.clearOrgKeys(),
             this.clearEncKey(),
             this.clearKeyPair(),
+            this.clearPinProtectedKey(),
         ]);
     }
 
@@ -290,11 +317,25 @@ export class CryptoService implements CryptoServiceAbstraction {
         return new SymmetricCryptoKey(key);
     }
 
+    async makeKeyFromPin(pin: string, salt: string, kdf: KdfType, kdfIterations: number,
+        protectedKeyCs: CipherString = null):
+        Promise<SymmetricCryptoKey> {
+        if (protectedKeyCs == null) {
+            const pinProtectedKey = await this.storageService.get<string>(ConstantsService.pinProtectedKey);
+            if (pinProtectedKey == null) {
+                throw new Error('No PIN protected key found.');
+            }
+            protectedKeyCs = new CipherString(pinProtectedKey);
+        }
+        const pinKey = await this.makePinKey(pin, salt, kdf, kdfIterations);
+        const decKey = await this.decryptToBytes(protectedKeyCs, pinKey);
+        return new SymmetricCryptoKey(decKey);
+    }
+
     async makeShareKey(): Promise<[CipherString, SymmetricCryptoKey]> {
         const shareKey = await this.cryptoFunctionService.randomBytes(64);
         const publicKey = await this.getPublicKey();
-        const encKey = await this.getEncKey();
-        const encShareKey = await this.rsaEncrypt(shareKey, publicKey, encKey);
+        const encShareKey = await this.rsaEncrypt(shareKey, publicKey);
         return [encShareKey, new SymmetricCryptoKey(shareKey)];
     }
 
@@ -303,6 +344,11 @@ export class CryptoService implements CryptoServiceAbstraction {
         const publicB64 = Utils.fromBufferToB64(keyPair[0]);
         const privateEnc = await this.encrypt(keyPair[1], key);
         return [publicB64, privateEnc];
+    }
+
+    async makePinKey(pin: string, salt: string, kdf: KdfType, kdfIterations: number): Promise<SymmetricCryptoKey> {
+        const pinKey = await this.makeKey(pin, salt, kdf, kdfIterations);
+        return await this.stretchKey(pinKey);
     }
 
     async hashPassword(password: string, key: SymmetricCryptoKey): Promise<string> {
@@ -318,8 +364,9 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     async makeEncKey(key: SymmetricCryptoKey): Promise<[SymmetricCryptoKey, CipherString]> {
+        const theKey = await this.getKeyForEncryption(key);
         const encKey = await this.cryptoFunctionService.randomBytes(64);
-        return this.buildEncKey(key, encKey);
+        return this.buildEncKey(theKey, encKey);
     }
 
     async remakeEncKey(key: SymmetricCryptoKey): Promise<[SymmetricCryptoKey, CipherString]> {
@@ -343,7 +390,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         const iv = Utils.fromBufferToB64(encObj.iv);
         const data = Utils.fromBufferToB64(encObj.data);
         const mac = encObj.mac != null ? Utils.fromBufferToB64(encObj.mac) : null;
-        return new CipherString(encObj.key.encType, iv, data, mac);
+        return new CipherString(encObj.key.encType, data, iv, mac);
     }
 
     async encryptToBytes(plainValue: ArrayBuffer, key?: SymmetricCryptoKey): Promise<ArrayBuffer> {
@@ -364,7 +411,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         return encBytes.buffer;
     }
 
-    async rsaEncrypt(data: ArrayBuffer, publicKey?: ArrayBuffer, key?: SymmetricCryptoKey): Promise<CipherString> {
+    async rsaEncrypt(data: ArrayBuffer, publicKey?: ArrayBuffer): Promise<CipherString> {
         if (publicKey == null) {
             publicKey = await this.getPublicKey();
         }
@@ -372,15 +419,8 @@ export class CryptoService implements CryptoServiceAbstraction {
             throw new Error('Public key unavailable.');
         }
 
-        let type = EncryptionType.Rsa2048_OaepSha1_B64;
         const encBytes = await this.cryptoFunctionService.rsaEncrypt(data, publicKey, 'sha1');
-        let mac: string = null;
-        if (key != null && key.macKey != null) {
-            type = EncryptionType.Rsa2048_OaepSha1_HmacSha256_B64;
-            const macBytes = await this.cryptoFunctionService.hmac(encBytes, key.macKey, 'sha256');
-            mac = Utils.fromBufferToB64(macBytes);
-        }
-        return new CipherString(type, Utils.fromBufferToB64(encBytes), null, mac);
+        return new CipherString(EncryptionType.Rsa2048_OaepSha1_B64, Utils.fromBufferToB64(encBytes));
     }
 
     async decryptToBytes(cipherString: CipherString, key?: SymmetricCryptoKey): Promise<ArrayBuffer> {
@@ -575,15 +615,9 @@ export class CryptoService implements CryptoServiceAbstraction {
         switch (encType) {
             case EncryptionType.Rsa2048_OaepSha256_B64:
             case EncryptionType.Rsa2048_OaepSha1_B64:
-                if (encPieces.length !== 1) {
-                    throw new Error('Invalid cipher format.');
-                }
-                break;
+            // HmacSha256 types are deprecated
             case EncryptionType.Rsa2048_OaepSha256_HmacSha256_B64:
             case EncryptionType.Rsa2048_OaepSha1_HmacSha256_B64:
-                if (encPieces.length !== 2) {
-                    throw new Error('Invalid cipher format.');
-                }
                 break;
             default:
                 throw new Error('encType unavailable.');
@@ -594,16 +628,6 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
 
         const data = Utils.fromB64ToArray(encPieces[0]).buffer;
-        const key = await this.getEncKey();
-        if (key != null && key.macKey != null && encPieces.length > 1) {
-            const mac = Utils.fromB64ToArray(encPieces[1]).buffer;
-            const computedMac = await this.cryptoFunctionService.hmac(data, key.macKey, 'sha256');
-            const macsEqual = await this.cryptoFunctionService.compare(mac, computedMac);
-            if (!macsEqual) {
-                throw new Error('MAC failed.');
-            }
-        }
-
         const privateKey = await this.getPrivateKey();
         if (privateKey == null) {
             throw new Error('No private key.');
@@ -675,7 +699,27 @@ export class CryptoService implements CryptoServiceAbstraction {
         return okm;
     }
 
-    private async buildEncKey(key: SymmetricCryptoKey, encKey: ArrayBuffer = null)
+    private async hashPhrase(hash: ArrayBuffer, minimumEntropy: number = 64) {
+        const entropyPerWord = Math.log(EEFLongWordList.length) / Math.log(2);
+        let numWords = Math.ceil(minimumEntropy / entropyPerWord);
+
+        const hashArr = Array.from(new Uint8Array(hash));
+        const entropyAvailable = hashArr.length * 4;
+        if (numWords * entropyPerWord > entropyAvailable) {
+            throw new Error('Output entropy of hash function is too small');
+        }
+
+        const phrase: string[] = [];
+        let hashNumber = bigInt.fromArray(hashArr, 256);
+        while (numWords--) {
+            const remainder = hashNumber.mod(EEFLongWordList.length);
+            hashNumber = hashNumber.divide(EEFLongWordList.length);
+            phrase.push(EEFLongWordList[remainder as any]);
+        }
+        return phrase;
+    }
+
+    private async buildEncKey(key: SymmetricCryptoKey, encKey: ArrayBuffer)
         : Promise<[SymmetricCryptoKey, CipherString]> {
         let encKeyEnc: CipherString = null;
         if (key.key.byteLength === 32) {

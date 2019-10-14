@@ -5,9 +5,9 @@ import { View } from './view';
 import { Field } from '../domain/field';
 
 export class FieldView implements View {
-    name: string;
-    value: string;
-    type: FieldType;
+    name: string = null;
+    value: string = null;
+    type: FieldType = null;
 
     constructor(f?: Field) {
         if (!f) {

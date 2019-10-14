@@ -6,6 +6,7 @@ import { TokenService } from '../abstractions/token.service';
 
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
+import { BitPayInvoiceRequest } from '../models/request/bitPayInvoiceRequest';
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
 import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
 import { CipherBulkShareRequest } from '../models/request/cipherBulkShareRequest';
@@ -17,8 +18,10 @@ import { CollectionRequest } from '../models/request/collectionRequest';
 import { DeleteRecoverRequest } from '../models/request/deleteRecoverRequest';
 import { EmailRequest } from '../models/request/emailRequest';
 import { EmailTokenRequest } from '../models/request/emailTokenRequest';
+import { EventRequest } from '../models/request/eventRequest';
 import { FolderRequest } from '../models/request/folderRequest';
 import { GroupRequest } from '../models/request/groupRequest';
+import { IapCheckRequest } from '../models/request/iapCheckRequest';
 import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
@@ -26,6 +29,7 @@ import { KdfRequest } from '../models/request/kdfRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
+import { OrganizationUpgradeRequest } from '../models/request/organizationUpgradeRequest';
 import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
 import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
 import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
@@ -57,7 +61,9 @@ import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
+import { ApiKeyResponse } from '../models/response/apiKeyResponse';
 import { BillingResponse } from '../models/response/billingResponse';
+import { BreachAccountResponse } from '../models/response/breachAccountResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
 import {
     CollectionGroupDetailsResponse,
@@ -74,15 +80,17 @@ import {
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
-import { OrganizationBillingResponse } from '../models/response/organizationBillingResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
+import { OrganizationSubscriptionResponse } from '../models/response/organizationSubscriptionResponse';
 import {
     OrganizationUserDetailsResponse,
     OrganizationUserUserDetailsResponse,
 } from '../models/response/organizationUserResponse';
+import { PaymentResponse } from '../models/response/paymentResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
+import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
 import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
@@ -100,22 +108,24 @@ export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
     apiBaseUrl: string;
     identityBaseUrl: string;
+    eventsBaseUrl: string;
 
+    private device: DeviceType;
     private deviceType: string;
     private isWebClient = false;
     private isDesktopClient = false;
     private usingBaseUrl = false;
 
     constructor(private tokenService: TokenService, private platformUtilsService: PlatformUtilsService,
-        private logoutCallback: (expired: boolean) => Promise<void>) {
-        const device = platformUtilsService.getDevice();
-        this.deviceType = device.toString();
-        this.isWebClient = device === DeviceType.IEBrowser || device === DeviceType.ChromeBrowser ||
-            device === DeviceType.EdgeBrowser || device === DeviceType.FirefoxBrowser ||
-            device === DeviceType.OperaBrowser || device === DeviceType.SafariBrowser ||
-            device === DeviceType.UnknownBrowser || device === DeviceType.VivaldiBrowser;
-        this.isDesktopClient = device === DeviceType.WindowsDesktop || device === DeviceType.MacOsDesktop ||
-            device === DeviceType.LinuxDesktop;
+        private logoutCallback: (expired: boolean) => Promise<void>, private customUserAgent: string = null) {
+        this.device = platformUtilsService.getDevice();
+        this.deviceType = this.device.toString();
+        this.isWebClient = this.device === DeviceType.IEBrowser || this.device === DeviceType.ChromeBrowser ||
+            this.device === DeviceType.EdgeBrowser || this.device === DeviceType.FirefoxBrowser ||
+            this.device === DeviceType.OperaBrowser || this.device === DeviceType.SafariBrowser ||
+            this.device === DeviceType.UnknownBrowser || this.device === DeviceType.VivaldiBrowser;
+        this.isDesktopClient = this.device === DeviceType.WindowsDesktop || this.device === DeviceType.MacOsDesktop ||
+            this.device === DeviceType.LinuxDesktop;
     }
 
     setUrls(urls: EnvironmentUrls): void {
@@ -125,44 +135,47 @@ export class ApiService implements ApiServiceAbstraction {
             this.usingBaseUrl = true;
             this.apiBaseUrl = urls.base + '/api';
             this.identityBaseUrl = urls.base + '/identity';
+            this.eventsBaseUrl = urls.base + '/events';
             return;
         }
 
-        if (urls.api != null && urls.identity != null) {
-            this.apiBaseUrl = urls.api;
-            this.identityBaseUrl = urls.identity;
-            return;
-        }
-
-        /* tslint:disable */
-        // Local Dev
-        //this.apiBaseUrl = 'http://localhost:4000';
-        //this.identityBaseUrl = 'http://localhost:33656';
+        this.apiBaseUrl = urls.api;
+        this.identityBaseUrl = urls.identity;
+        this.eventsBaseUrl = urls.events;
 
         // Production
-        this.apiBaseUrl = 'https://api.bitwarden.com';
-        this.identityBaseUrl = 'https://identity.bitwarden.com';
-        /* tslint:enable */
+        if (this.apiBaseUrl == null) {
+            this.apiBaseUrl = 'https://api.bitwarden.com';
+        }
+        if (this.identityBaseUrl == null) {
+            this.identityBaseUrl = 'https://identity.bitwarden.com';
+        }
+        if (this.eventsBaseUrl == null) {
+            this.eventsBaseUrl = 'https://events.bitwarden.com';
+        }
     }
 
     // Auth APIs
 
     async postIdentityToken(request: TokenRequest): Promise<IdentityTokenResponse | IdentityTwoFactorResponse> {
+        const headers = new Headers({
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+            'Accept': 'application/json',
+            'Device-Type': this.deviceType,
+        });
+        if (this.customUserAgent != null) {
+            headers.set('User-Agent', this.customUserAgent);
+        }
         const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
             body: this.qsStringify(request.toIdentityToken(this.platformUtilsService.identityClientId)),
             credentials: this.getCredentials(),
             cache: 'no-cache',
-            headers: new Headers({
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-                'Accept': 'application/json',
-                'Device-Type': this.deviceType,
-            }),
+            headers: headers,
             method: 'POST',
         }));
 
         let responseJson: any = null;
-        const typeHeader = response.headers.get('content-type');
-        if (typeHeader != null && typeHeader.indexOf('application/json') > -1) {
+        if (this.isJsonResponse(response)) {
             responseJson = await response.json();
         }
 
@@ -197,6 +210,11 @@ export class ApiService implements ApiServiceAbstraction {
     async getUserBilling(): Promise<BillingResponse> {
         const r = await this.send('GET', '/accounts/billing', null, true, true);
         return new BillingResponse(r);
+    }
+
+    async getUserSubscription(): Promise<SubscriptionResponse> {
+        const r = await this.send('GET', '/accounts/subscription', null, true, true);
+        return new SubscriptionResponse(r);
     }
 
     async putProfile(request: UpdateProfileRequest): Promise<ProfileResponse> {
@@ -242,8 +260,13 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/register', request, false, false);
     }
 
-    postPremium(data: FormData): Promise<any> {
-        return this.send('POST', '/accounts/premium', data, true, false);
+    async postPremium(data: FormData): Promise<PaymentResponse> {
+        const r = await this.send('POST', '/accounts/premium', data, true, true);
+        return new PaymentResponse(r);
+    }
+
+    async postIapCheck(request: IapCheckRequest): Promise<any> {
+        return this.send('POST', '/accounts/iap-check', request, true, false);
     }
 
     postReinstatePremium(): Promise<any> {
@@ -254,8 +277,9 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/cancel-premium', null, true, false);
     }
 
-    postAccountStorage(request: StorageRequest): Promise<any> {
-        return this.send('POST', '/accounts/storage', request, true, false);
+    async postAccountStorage(request: StorageRequest): Promise<PaymentResponse> {
+        const r = await this.send('POST', '/accounts/storage', request, true, true);
+        return new PaymentResponse(r);
     }
 
     postAccountPayment(request: PaymentRequest): Promise<any> {
@@ -721,9 +745,14 @@ export class ApiService implements ApiServiceAbstraction {
         return new OrganizationResponse(r);
     }
 
-    async getOrganizationBilling(id: string): Promise<OrganizationBillingResponse> {
+    async getOrganizationBilling(id: string): Promise<BillingResponse> {
         const r = await this.send('GET', '/organizations/' + id + '/billing', null, true, true);
-        return new OrganizationBillingResponse(r);
+        return new BillingResponse(r);
+    }
+
+    async getOrganizationSubscription(id: string): Promise<OrganizationSubscriptionResponse> {
+        const r = await this.send('GET', '/organizations/' + id + '/subscription', null, true, true);
+        return new OrganizationSubscriptionResponse(r);
     }
 
     async getOrganizationLicense(id: string, installationId: string): Promise<any> {
@@ -754,12 +783,29 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/organizations/' + id + '/license', data, true, false);
     }
 
-    postOrganizationSeat(id: string, request: SeatRequest): Promise<any> {
-        return this.send('POST', '/organizations/' + id + '/seat', request, true, false);
+    async postOrganizationApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+        const r = await this.send('POST', '/organizations/' + id + '/api-key', request, true, true);
+        return new ApiKeyResponse(r);
     }
 
-    postOrganizationStorage(id: string, request: StorageRequest): Promise<any> {
-        return this.send('POST', '/organizations/' + id + '/storage', request, true, false);
+    async postOrganizationRotateApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+        const r = await this.send('POST', '/organizations/' + id + '/rotate-api-key', request, true, true);
+        return new ApiKeyResponse(r);
+    }
+
+    async postOrganizationUpgrade(id: string, request: OrganizationUpgradeRequest): Promise<PaymentResponse> {
+        const r = await this.send('POST', '/organizations/' + id + '/upgrade', request, true, true);
+        return new PaymentResponse(r);
+    }
+
+    async postOrganizationSeat(id: string, request: SeatRequest): Promise<PaymentResponse> {
+        const r = await this.send('POST', '/organizations/' + id + '/seat', request, true, true);
+        return new PaymentResponse(r);
+    }
+
+    async postOrganizationStorage(id: string, request: StorageRequest): Promise<PaymentResponse> {
+        const r = await this.send('POST', '/organizations/' + id + '/storage', request, true, true);
+        return new PaymentResponse(r);
     }
 
     postOrganizationPayment(id: string, request: PaymentRequest): Promise<any> {
@@ -811,11 +857,52 @@ export class ApiService implements ApiServiceAbstraction {
         return new ListResponse(r, EventResponse);
     }
 
+    async postEventsCollect(request: EventRequest[]): Promise<any> {
+        const authHeader = await this.getActiveBearerToken();
+        const headers = new Headers({
+            'Device-Type': this.deviceType,
+            'Authorization': 'Bearer ' + authHeader,
+            'Content-Type': 'application/json; charset=utf-8',
+        });
+        if (this.customUserAgent != null) {
+            headers.set('User-Agent', this.customUserAgent);
+        }
+        const response = await this.fetch(new Request(this.eventsBaseUrl + '/collect', {
+            cache: 'no-cache',
+            credentials: this.getCredentials(),
+            method: 'POST',
+            body: JSON.stringify(request),
+            headers: headers,
+        }));
+        if (response.status !== 200) {
+            return Promise.reject('Event post failed.');
+        }
+    }
+
     // User APIs
 
     async getUserPublicKey(id: string): Promise<UserKeyResponse> {
         const r = await this.send('GET', '/users/' + id + '/public-key', null, true, true);
         return new UserKeyResponse(r);
+    }
+
+    // HIBP APIs
+
+    async getHibpBreach(username: string): Promise<BreachAccountResponse[]> {
+        const r = await this.send('GET', '/hibp/breach?username=' + username, null, true, true);
+        return r.map((a: any) => new BreachAccountResponse(a));
+    }
+
+    // Misc
+
+    async postBitPayInvoice(request: BitPayInvoiceRequest): Promise<string> {
+        const r = await this.send('POST', '/bitpay-invoice', request, true, true);
+        return r as string;
+    }
+
+    async postSetupPayment(): Promise<string> {
+        const r = await this.send('POST', '/setup-payment', null, true, true);
+        return r as string;
     }
 
     // Helpers
@@ -834,6 +921,10 @@ export class ApiService implements ApiServiceAbstraction {
             request.headers.set('Cache-Control', 'no-cache');
             request.headers.set('Pragma', 'no-cache');
         }
+        return this.nativeFetch(request);
+    }
+
+    nativeFetch(request: Request): Promise<Response> {
         return fetch(request);
     }
 
@@ -842,6 +933,9 @@ export class ApiService implements ApiServiceAbstraction {
         const headers = new Headers({
             'Device-Type': this.deviceType,
         });
+        if (this.customUserAgent != null) {
+            headers.set('User-Agent', this.customUserAgent);
+        }
 
         const requestInit: RequestInit = {
             cache: 'no-cache',
@@ -889,8 +983,7 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         let responseJson: any = null;
-        const typeHeader = response.headers.get('content-type');
-        if (typeHeader != null && typeHeader.indexOf('application/json') > -1) {
+        if (this.isJsonResponse(response)) {
             responseJson = await response.json();
         }
 
@@ -902,6 +995,14 @@ export class ApiService implements ApiServiceAbstraction {
         if (refreshToken == null || refreshToken === '') {
             throw new Error();
         }
+        const headers = new Headers({
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+            'Accept': 'application/json',
+            'Device-Type': this.deviceType,
+        });
+        if (this.customUserAgent != null) {
+            headers.set('User-Agent', this.customUserAgent);
+        }
 
         const decodedToken = this.tokenService.decodeToken();
         const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
@@ -912,11 +1013,7 @@ export class ApiService implements ApiServiceAbstraction {
             }),
             cache: 'no-cache',
             credentials: this.getCredentials(),
-            headers: new Headers({
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-                'Accept': 'application/json',
-                'Device-Type': this.deviceType,
-            }),
+            headers: headers,
             method: 'POST',
         }));
 
@@ -938,7 +1035,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     private getCredentials(): RequestCredentials {
-        if (!this.isWebClient || this.usingBaseUrl) {
+        if (this.device !== DeviceType.SafariExtension && (!this.isWebClient || this.usingBaseUrl)) {
             return 'include';
         }
         return undefined;
@@ -957,5 +1054,10 @@ export class ApiService implements ApiServiceAbstraction {
             base += ('continuationToken=' + token);
         }
         return base;
+    }
+
+    private isJsonResponse(response: Response): boolean {
+        const typeHeader = response.headers.get('content-type');
+        return typeHeader != null && typeHeader.indexOf('application/json') > -1;
     }
 }

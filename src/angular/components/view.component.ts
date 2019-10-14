@@ -9,11 +9,13 @@ import {
 } from '@angular/core';
 
 import { CipherType } from '../../enums/cipherType';
+import { EventType } from '../../enums/eventType';
 import { FieldType } from '../../enums/fieldType';
 
 import { AuditService } from '../../abstractions/audit.service';
 import { CipherService } from '../../abstractions/cipher.service';
 import { CryptoService } from '../../abstractions/crypto.service';
+import { EventService } from '../../abstractions/event.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { TokenService } from '../../abstractions/token.service';
@@ -45,13 +47,15 @@ export class ViewComponent implements OnDestroy, OnInit {
     checkPasswordPromise: Promise<number>;
 
     private totpInterval: any;
+    private previousCipherId: string;
 
     constructor(protected cipherService: CipherService, protected totpService: TotpService,
         protected tokenService: TokenService, protected i18nService: I18nService,
         protected cryptoService: CryptoService, protected platformUtilsService: PlatformUtilsService,
         protected auditService: AuditService, protected win: Window,
         protected broadcasterService: BroadcasterService, protected ngZone: NgZone,
-        protected changeDetectorRef: ChangeDetectorRef, protected userService: UserService) { }
+        protected changeDetectorRef: ChangeDetectorRef, protected userService: UserService,
+        protected eventService: EventService) { }
 
     ngOnInit() {
         this.broadcasterService.subscribe(BroadcasterSubscriptionId, (message: any) => {
@@ -90,6 +94,11 @@ export class ViewComponent implements OnDestroy, OnInit {
                 await this.totpTick(interval);
             }, 1000);
         }
+
+        if (this.previousCipherId !== this.cipherId) {
+            this.eventService.collect(EventType.Cipher_ClientViewed, this.cipherId);
+        }
+        this.previousCipherId = this.cipherId;
     }
 
     edit() {
@@ -99,11 +108,17 @@ export class ViewComponent implements OnDestroy, OnInit {
     togglePassword() {
         this.platformUtilsService.eventTrack('Toggled Password');
         this.showPassword = !this.showPassword;
+        if (this.showPassword) {
+            this.eventService.collect(EventType.Cipher_ClientToggledPasswordVisible, this.cipherId);
+        }
     }
 
     toggleCardCode() {
         this.platformUtilsService.eventTrack('Toggled Card Code');
         this.showCardCode = !this.showCardCode;
+        if (this.showCardCode) {
+            this.eventService.collect(EventType.Cipher_ClientToggledCardCodeVisible, this.cipherId);
+        }
     }
 
     async checkPassword() {
@@ -126,6 +141,9 @@ export class ViewComponent implements OnDestroy, OnInit {
     toggleFieldValue(field: FieldView) {
         const f = (field as any);
         f.showValue = !f.showValue;
+        if (f.showValue) {
+            this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible, this.cipherId);
+        }
     }
 
     launch(uri: LoginUriView) {
@@ -134,7 +152,7 @@ export class ViewComponent implements OnDestroy, OnInit {
         }
 
         this.platformUtilsService.eventTrack('Launched Login URI');
-        this.platformUtilsService.launchUri(uri.uri);
+        this.platformUtilsService.launchUri(uri.launchUri);
     }
 
     copy(value: string, typeI18nKey: string, aType: string) {
@@ -147,6 +165,14 @@ export class ViewComponent implements OnDestroy, OnInit {
         this.platformUtilsService.copyToClipboard(value, copyOptions);
         this.platformUtilsService.showToast('info', null,
             this.i18nService.t('valueCopied', this.i18nService.t(typeI18nKey)));
+
+        if (typeI18nKey === 'password') {
+            this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible, this.cipherId);
+        } else if (typeI18nKey === 'securityCode') {
+            this.eventService.collect(EventType.Cipher_ClientCopiedCardCode, this.cipherId);
+        } else if (aType === 'H_Field') {
+            this.eventService.collect(EventType.Cipher_ClientCopiedHiddenField, this.cipherId);
+        }
     }
 
     async downloadAttachment(attachment: AttachmentView) {
@@ -171,7 +197,8 @@ export class ViewComponent implements OnDestroy, OnInit {
 
         try {
             const buf = await response.arrayBuffer();
-            const key = await this.cryptoService.getOrgKey(this.cipher.organizationId);
+            const key = attachment.key != null ? attachment.key :
+                await this.cryptoService.getOrgKey(this.cipher.organizationId);
             const decBuf = await this.cryptoService.decryptFromBytes(buf, key);
             this.platformUtilsService.saveFile(this.win, decBuf, null, attachment.fileName);
         } catch (e) {

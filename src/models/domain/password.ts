@@ -21,11 +21,10 @@ export class Password extends Domain {
         this.lastUsedDate = new Date(obj.lastUsedDate);
     }
 
-    async decrypt(orgId: string): Promise<PasswordHistoryView> {
-        const view = await this.decryptObj(new PasswordHistoryView(this), {
+    decrypt(orgId: string): Promise<PasswordHistoryView> {
+         return this.decryptObj(new PasswordHistoryView(this), {
             password: null,
         }, orgId);
-        return view;
     }
 
     toPasswordHistoryData(): PasswordHistoryData {

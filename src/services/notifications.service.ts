@@ -5,8 +5,8 @@ import { NotificationType } from '../enums/notificationType';
 
 import { ApiService } from '../abstractions/api.service';
 import { AppIdService } from '../abstractions/appId.service';
-import { CryptoService } from '../abstractions/crypto.service';
 import { EnvironmentService } from '../abstractions/environment.service';
+import { LockService } from '../abstractions/lock.service';
 import { NotificationsService as NotificationsServiceAbstraction } from '../abstractions/notifications.service';
 import { SyncService } from '../abstractions/sync.service';
 import { UserService } from '../abstractions/user.service';
@@ -27,7 +27,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
 
     constructor(private userService: UserService, private syncService: SyncService,
         private appIdService: AppIdService, private apiService: ApiService,
-        private cryptoService: CryptoService, private logoutCallback: () => Promise<void>) { }
+        private lockService: LockService, private logoutCallback: () => Promise<void>) { }
 
     async init(environmentService: EnvironmentService): Promise<void> {
         this.inited = false;
@@ -46,6 +46,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
 
         if (this.signalrConnection != null) {
             this.signalrConnection.off('ReceiveMessage');
+            this.signalrConnection.off('Heartbeat');
             await this.signalrConnection.stop();
             this.connected = false;
             this.signalrConnection = null;
@@ -61,6 +62,8 @@ export class NotificationsService implements NotificationsServiceAbstraction {
 
         this.signalrConnection.on('ReceiveMessage',
             (data: any) => this.processNotification(new NotificationResponse(data)));
+        this.signalrConnection.on('Heartbeat',
+            (data: any) => { /*console.log('Heartbeat!');*/ });
         this.signalrConnection.onclose(() => {
             this.connected = false;
             this.reconnect(true);
@@ -185,7 +188,8 @@ export class NotificationsService implements NotificationsServiceAbstraction {
 
     private async isAuthedAndUnlocked() {
         if (await this.userService.isAuthenticated()) {
-            return this.cryptoService.hasKey();
+            const locked = await this.lockService.isLocked();
+            return !locked;
         }
         return false;
     }

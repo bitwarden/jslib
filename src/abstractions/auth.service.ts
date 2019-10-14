@@ -6,7 +6,7 @@ import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 export abstract class AuthService {
     email: string;
     masterPasswordHash: string;
-    twoFactorProviders: Map<TwoFactorProviderType, { [key: string]: string; }>;
+    twoFactorProvidersData: Map<TwoFactorProviderType, { [key: string]: string; }>;
     selectedTwoFactorProviderType: TwoFactorProviderType;
 
     logIn: (email: string, masterPassword: string) => Promise<AuthResult>;

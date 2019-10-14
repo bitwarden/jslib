@@ -1,3 +1,5 @@
+import * as zxcvbn from 'zxcvbn';
+
 import { CipherString } from '../models/domain/cipherString';
 import { GeneratedPasswordHistory } from '../models/domain/generatedPasswordHistory';
 
@@ -23,6 +25,8 @@ const DefaultOptions = {
     type: 'password',
     numWords: 3,
     wordSeparator: '-',
+    capitalize: false,
+    includeNumber: false,
 };
 
 const Keys = {
@@ -49,15 +53,26 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         // sanitize
         if (o.uppercase && o.minUppercase <= 0) {
             o.minUppercase = 1;
+        } else if (!o.uppercase) {
+            o.minUppercase = 0;
         }
+
         if (o.lowercase && o.minLowercase <= 0) {
             o.minLowercase = 1;
+        } else if (!o.lowercase) {
+            o.minLowercase = 0;
         }
+
         if (o.number && o.minNumber <= 0) {
             o.minNumber = 1;
+        } else if (!o.number) {
+            o.minNumber = 0;
         }
+
         if (o.special && o.minSpecial <= 0) {
             o.minSpecial = 1;
+        } else if (!o.special) {
+            o.minSpecial = 0;
         }
 
         if (!o.length || o.length < 1) {
@@ -108,9 +123,9 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             allCharSet += lowercaseCharSet;
         }
 
-        let uppercaseCharSet = 'ABCDEFGHIJKLMNPQRSTUVWXYZ';
+        let uppercaseCharSet = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
         if (o.ambiguous) {
-            uppercaseCharSet += 'O';
+            uppercaseCharSet += 'IO';
         }
         if (o.uppercase) {
             allCharSet += uppercaseCharSet;
@@ -168,12 +183,26 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         if (o.wordSeparator == null || o.wordSeparator.length === 0 || o.wordSeparator.length > 1) {
             o.wordSeparator = ' ';
         }
+        if (o.capitalize == null) {
+            o.capitalize = false;
+        }
+        if (o.includeNumber == null) {
+            o.includeNumber = false;
+        }
 
         const listLength = EEFLongWordList.length - 1;
         const wordList = new Array(o.numWords);
         for (let i = 0; i < o.numWords; i++) {
             const wordIndex = await this.cryptoService.randomNumber(0, listLength);
-            wordList[i] = EEFLongWordList[wordIndex];
+            if (o.capitalize) {
+                wordList[i] = this.capitalize(EEFLongWordList[wordIndex]);
+            } else {
+                wordList[i] = EEFLongWordList[wordIndex];
+            }
+        }
+
+        if (o.includeNumber) {
+            await this.appendRandomNumberToRandomWord(wordList);
         }
         return wordList.join(o.wordSeparator);
     }
@@ -238,6 +267,33 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     async clear(): Promise<any> {
         this.history = [];
         return await this.storageService.remove(Keys.history);
+    }
+
+    passwordStrength(password: string, userInputs: string[] = null): zxcvbn.ZXCVBNResult {
+        if (password == null || password.length === 0) {
+            return null;
+        }
+        let globalUserInputs = ['bitwarden', 'bit', 'warden'];
+        if (userInputs != null && userInputs.length > 0) {
+            globalUserInputs = globalUserInputs.concat(userInputs);
+        }
+        // Use a hash set to get rid of any duplicate user inputs
+        const finalUserInputs = Array.from(new Set(globalUserInputs));
+        const result = zxcvbn(password, finalUserInputs);
+        return result;
+    }
+
+    private capitalize(str: string) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    private async appendRandomNumberToRandomWord(wordList: string[]) {
+        if (wordList == null || wordList.length <= 0) {
+            return;
+        }
+        const index = await this.cryptoService.randomNumber(0, wordList.length - 1);
+        const num = await this.cryptoService.randomNumber(0, 9);
+        wordList[index] = wordList[index] + num;
     }
 
     private async encryptHistory(history: GeneratedPasswordHistory[]): Promise<GeneratedPasswordHistory[]> {

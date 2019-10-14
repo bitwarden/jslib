@@ -1,17 +1,18 @@
+import { BaseResponse } from './baseResponse';
 import { GlobalDomainResponse } from './globalDomainResponse';
 
-export class DomainsResponse {
+export class DomainsResponse extends BaseResponse {
     equivalentDomains: string[][];
     globalEquivalentDomains: GlobalDomainResponse[] = [];
 
     constructor(response: any) {
-        this.equivalentDomains = response.EquivalentDomains;
-
-        this.globalEquivalentDomains = [];
-        if (response.GlobalEquivalentDomains) {
-            response.GlobalEquivalentDomains.forEach((domain: any) => {
-                this.globalEquivalentDomains.push(new GlobalDomainResponse(domain));
-            });
+        super(response);
+        this.equivalentDomains = this.getResponseProperty('EquivalentDomains');
+        const globalEquivalentDomains = this.getResponseProperty('GlobalEquivalentDomains');
+        if (globalEquivalentDomains != null) {
+            this.globalEquivalentDomains = globalEquivalentDomains.map((d: any) => new GlobalDomainResponse(d));
+        } else {
+            this.globalEquivalentDomains = [];
         }
     }
 }

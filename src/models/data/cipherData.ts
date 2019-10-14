@@ -48,12 +48,7 @@ export class CipherData {
         this.type = response.type;
         this.name = response.name;
         this.notes = response.notes;
-
-        if (collectionIds != null) {
-            this.collectionIds = collectionIds;
-        } else {
-            this.collectionIds = response.collectionIds;
-        }
+        this.collectionIds = collectionIds != null ? collectionIds : response.collectionIds;
 
         switch (this.type) {
             case CipherType.Login:
@@ -73,24 +68,13 @@ export class CipherData {
         }
 
         if (response.fields != null) {
-            this.fields = [];
-            response.fields.forEach((field) => {
-                this.fields.push(new FieldData(field));
-            });
+            this.fields = response.fields.map((f) => new FieldData(f));
         }
-
         if (response.attachments != null) {
-            this.attachments = [];
-            response.attachments.forEach((attachment) => {
-                this.attachments.push(new AttachmentData(attachment));
-            });
+            this.attachments = response.attachments.map((a) => new AttachmentData(a));
         }
-
         if (response.passwordHistory != null) {
-            this.passwordHistory = [];
-            response.passwordHistory.forEach((ph) => {
-                this.passwordHistory.push(new PasswordHistoryData(ph));
-            });
+            this.passwordHistory = response.passwordHistory.map((ph) => new PasswordHistoryData(ph));
         }
     }
 }

@@ -5,7 +5,7 @@ import { View } from './view';
 import { SecureNote } from '../domain/secureNote';
 
 export class SecureNoteView implements View {
-    type: SecureNoteType;
+    type: SecureNoteType = null;
 
     constructor(n?: SecureNote) {
         if (!n) {

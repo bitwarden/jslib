@@ -16,11 +16,11 @@ export class CipherString {
         if (data != null) {
             // data and header
             const encType = encryptedStringOrType as EncryptionType;
-            this.encryptedString = encType + '.' + data;
 
-            // iv
             if (iv != null) {
-                this.encryptedString += ('|' + iv);
+                this.encryptedString = encType + '.' + iv + '|' + data;
+            } else {
+                this.encryptedString = encType + '.' + data;
             }
 
             // mac
@@ -90,8 +90,8 @@ export class CipherString {
     }
 
     async decrypt(orgId: string): Promise<string> {
-        if (this.decryptedValue) {
-            return Promise.resolve(this.decryptedValue);
+        if (this.decryptedValue != null) {
+            return this.decryptedValue;
         }
 
         let cryptoService: CryptoService;

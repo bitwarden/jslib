@@ -13,7 +13,7 @@ export abstract class PlatformUtilsService {
     isIE: () => boolean;
     isMacAppStore: () => boolean;
     analyticsId: () => string;
-    isViewOpen: () => boolean;
+    isViewOpen: () => Promise<boolean>;
     lockTimeout: () => number;
     launchUri: (uri: string, options?: any) => void;
     saveFile: (win: Window, blobData: any, blobOptions: any, fileName: string) => void;
@@ -28,4 +28,5 @@ export abstract class PlatformUtilsService {
     isDev: () => boolean;
     isSelfHost: () => boolean;
     copyToClipboard: (text: string, options?: any) => void;
+    readFromClipboard: (options?: any) => Promise<string>;
 }

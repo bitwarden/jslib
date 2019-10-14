@@ -81,24 +81,8 @@ export class EnpassCsvImporter extends BaseImporter implements Importer {
                             continue;
                         } else if (fieldNameLower === 'expiry date' && this.isNullOrWhitespace(cipher.card.expMonth) &&
                             this.isNullOrWhitespace(cipher.card.expYear)) {
-                            const parts = fieldValue.split('/');
-                            if (parts.length === 2) {
-                                let month: string = null;
-                                let year: string = null;
-                                if (parts[0].length === 1 || parts[0].length === 2) {
-                                    month = parts[0];
-                                    if (month.length === 2 && month[0] === '0') {
-                                        month = month.substr(1, 1);
-                                    }
-                                }
-                                if (parts[1].length === 2 || parts[1].length === 4) {
-                                    year = month.length === 2 ? '20' + parts[1] : parts[1];
-                                }
-                                if (month != null && year != null) {
-                                    cipher.card.expMonth = month;
-                                    cipher.card.expYear = year;
-                                    continue;
-                                }
+                            if (this.setCardExpiration(cipher, fieldValue)) {
+                                continue;
                             }
                         } else if (fieldNameLower === 'type') {
                             // Skip since brand was determined from number above

@@ -2,12 +2,13 @@ import { ApiService } from '../abstractions/api.service';
 import { AuditService as AuditServiceAbstraction } from '../abstractions/audit.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 
+import { throttle } from '../misc/throttle';
 import { Utils } from '../misc/utils';
 
 import { BreachAccountResponse } from '../models/response/breachAccountResponse';
+import { ErrorResponse } from '../models/response/errorResponse';
 
 const PwnedPasswordsApi = 'https://api.pwnedpasswords.com/range/';
-const HibpBreachApi = 'https://haveibeenpwned.com/api/v2/breachedaccount/';
 
 export class AuditService implements AuditServiceAbstraction {
 
@@ -15,6 +16,7 @@ export class AuditService implements AuditServiceAbstraction {
 
     constructor(private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService) { }
 
+    @throttle(100, () => 'passwordLeaked')
     async passwordLeaked(password: string): Promise<number> {
         const hashBytes = await this.cryptoFunctionService.hash(password, 'sha1');
         const hash = Utils.fromBufferToHex(hashBytes).toUpperCase();
@@ -22,12 +24,13 @@ export class AuditService implements AuditServiceAbstraction {
         const hashEnding = hash.substr(5);
 
         if (!this.cachedPasswordLeaked.has(hashStart)) {
-            const response = await fetch(new Request(PwnedPasswordsApi + hashStart));
+            const response = await this.apiService.nativeFetch(new Request(PwnedPasswordsApi + hashStart));
             const leakedHashes = await response.text();
             this.cachedPasswordLeaked.set(hashStart, leakedHashes);
         }
 
         const match = this.cachedPasswordLeaked.get(hashStart).split(/\r?\n/).find((v) => {
+
             return v.split(':')[0] === hashEnding;
         });
 
@@ -35,14 +38,15 @@ export class AuditService implements AuditServiceAbstraction {
     }
 
     async breachedAccounts(username: string): Promise<BreachAccountResponse[]> {
-        const response = await fetch(new Request(HibpBreachApi + username));
-        if (response.status === 404) {
-            return [];
-        } else if (response.status !== 200) {
+        try {
+            return await this.apiService.getHibpBreach(username);
+        } catch (e) {
+            const error = e as ErrorResponse;
+            if (error.statusCode === 404) {
+                return [];
+            }
             throw new Error();
         }
-        const responseJson = await response.json();
-        return responseJson.map((a: any) => new BreachAccountResponse(a));
     }
 
     clearCache(): void {

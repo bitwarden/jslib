@@ -1,6 +1,7 @@
+import { BaseResponse } from './baseResponse';
 import { ProfileOrganizationResponse } from './profileOrganizationResponse';
 
-export class ProfileResponse {
+export class ProfileResponse extends BaseResponse {
     id: string;
     name: string;
     email: string;
@@ -15,22 +16,22 @@ export class ProfileResponse {
     organizations: ProfileOrganizationResponse[] = [];
 
     constructor(response: any) {
-        this.id = response.Id;
-        this.name = response.Name;
-        this.email = response.Email;
-        this.emailVerified = response.EmailVerified;
-        this.masterPasswordHint = response.MasterPasswordHint;
-        this.premium = response.Premium;
-        this.culture = response.Culture;
-        this.twoFactorEnabled = response.TwoFactorEnabled;
-        this.key = response.Key;
-        this.privateKey = response.PrivateKey;
-        this.securityStamp = response.SecurityStamp;
+        super(response);
+        this.id = this.getResponseProperty('Id');
+        this.name = this.getResponseProperty('Name');
+        this.email = this.getResponseProperty('Email');
+        this.emailVerified = this.getResponseProperty('EmailVerified');
+        this.masterPasswordHint = this.getResponseProperty('MasterPasswordHint');
+        this.premium = this.getResponseProperty('Premium');
+        this.culture = this.getResponseProperty('Culture');
+        this.twoFactorEnabled = this.getResponseProperty('TwoFactorEnabled');
+        this.key = this.getResponseProperty('Key');
+        this.privateKey = this.getResponseProperty('PrivateKey');
+        this.securityStamp = this.getResponseProperty('SecurityStamp');
 
-        if (response.Organizations) {
-            response.Organizations.forEach((org: any) => {
-                this.organizations.push(new ProfileOrganizationResponse(org));
-            });
+        const organizations = this.getResponseProperty('Organizations');
+        if (organizations != null) {
+            this.organizations = organizations.map((o: any) => new ProfileOrganizationResponse(o));
         }
     }
 }

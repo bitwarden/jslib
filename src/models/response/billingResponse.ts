@@ -1,117 +1,83 @@
-import { PaymentMethodType } from '../../enums/paymentMethodType';
+import { BaseResponse } from './baseResponse';
 
-export class BillingResponse {
-    storageName: string;
-    storageGb: number;
-    maxStorageGb: number;
+import { PaymentMethodType } from '../../enums/paymentMethodType';
+import { TransactionType } from '../../enums/transactionType';
+
+export class BillingResponse extends BaseResponse {
+    balance: number;
     paymentSource: BillingSourceResponse;
-    subscription: BillingSubscriptionResponse;
-    upcomingInvoice: BillingInvoiceResponse;
-    charges: BillingChargeResponse[] = [];
-    license: any;
-    expiration: string;
+    invoices: BillingInvoiceResponse[] = [];
+    transactions: BillingTransactionResponse[] = [];
 
     constructor(response: any) {
-        this.storageName = response.StorageName;
-        this.storageGb = response.StorageGb;
-        this.maxStorageGb = response.MaxStorageGb;
-        this.paymentSource = response.PaymentSource == null ? null : new BillingSourceResponse(response.PaymentSource);
-        this.subscription = response.Subscription == null ?
-            null : new BillingSubscriptionResponse(response.Subscription);
-        this.upcomingInvoice = response.UpcomingInvoice == null ?
-            null : new BillingInvoiceResponse(response.UpcomingInvoice);
-        if (response.Charges != null) {
-            this.charges = response.Charges.map((c: any) => new BillingChargeResponse(c));
+        super(response);
+        this.balance = this.getResponseProperty('Balance');
+        const paymentSource = this.getResponseProperty('PaymentSource');
+        const transactions = this.getResponseProperty('Transactions');
+        const invoices = this.getResponseProperty('Invoices');
+        this.paymentSource = paymentSource == null ? null : new BillingSourceResponse(paymentSource);
+        if (transactions != null) {
+            this.transactions = transactions.map((t: any) => new BillingTransactionResponse(t));
         }
-        this.license = response.License;
-        this.expiration = response.Expiration;
+        if (invoices != null) {
+            this.invoices = invoices.map((i: any) => new BillingInvoiceResponse(i));
+        }
     }
 }
 
-export class BillingSourceResponse {
+export class BillingSourceResponse extends BaseResponse {
     type: PaymentMethodType;
     cardBrand: string;
     description: string;
     needsVerification: boolean;
 
     constructor(response: any) {
-        this.type = response.Type;
-        this.cardBrand = response.CardBrand;
-        this.description = response.Description;
-        this.needsVerification = response.NeedsVerification;
+        super(response);
+        this.type = this.getResponseProperty('Type');
+        this.cardBrand = this.getResponseProperty('CardBrand');
+        this.description = this.getResponseProperty('Description');
+        this.needsVerification = this.getResponseProperty('NeedsVerification');
     }
 }
 
-export class BillingSubscriptionResponse {
-    trialStartDate: string;
-    trialEndDate: string;
-    periodStartDate: string;
-    periodEndDate: string;
-    cancelledDate: string;
-    cancelAtEndDate: boolean;
-    status: string;
-    cancelled: boolean;
-    items: BillingSubscriptionItemResponse[] = [];
-
-    constructor(response: any) {
-        this.trialEndDate = response.TrialStartDate;
-        this.trialEndDate = response.TrialEndDate;
-        this.periodStartDate = response.PeriodStartDate;
-        this.periodEndDate = response.PeriodEndDate;
-        this.cancelledDate = response.CancelledDate;
-        this.cancelAtEndDate = response.CancelAtEndDate;
-        this.status = response.Status;
-        this.cancelled = response.Cancelled;
-        if (response.Items != null) {
-            this.items = response.Items.map((i: any) => new BillingSubscriptionItemResponse(i));
-        }
-    }
-}
-
-export class BillingSubscriptionItemResponse {
-    name: string;
-    amount: number;
-    quantity: number;
-    interval: string;
-
-    constructor(response: any) {
-        this.name = response.Name;
-        this.amount = response.Amount;
-        this.quantity = response.Quantity;
-        this.interval = response.Interval;
-    }
-}
-
-export class BillingInvoiceResponse {
+export class BillingInvoiceResponse extends BaseResponse {
+    url: string;
+    pdfUrl: string;
+    number: string;
+    paid: boolean;
     date: string;
     amount: number;
 
     constructor(response: any) {
-        this.date = response.Date;
-        this.amount = response.Amount;
+        super(response);
+        this.url = this.getResponseProperty('Url');
+        this.pdfUrl = this.getResponseProperty('PdfUrl');
+        this.number = this.getResponseProperty('Number');
+        this.paid = this.getResponseProperty('Paid');
+        this.date = this.getResponseProperty('Date');
+        this.amount = this.getResponseProperty('Amount');
     }
 }
 
-export class BillingChargeResponse {
+export class BillingTransactionResponse extends BaseResponse {
     createdDate: string;
     amount: number;
-    paymentSource: BillingSourceResponse;
-    status: string;
-    failureMessage: string;
     refunded: boolean;
     partiallyRefunded: boolean;
     refundedAmount: number;
-    invoiceId: string;
+    type: TransactionType;
+    paymentMethodType: PaymentMethodType;
+    details: string;
 
     constructor(response: any) {
-        this.createdDate = response.CreatedDate;
-        this.amount = response.Amount;
-        this.paymentSource = response.PaymentSource != null ? new BillingSourceResponse(response.PaymentSource) : null;
-        this.status = response.Status;
-        this.failureMessage = response.FailureMessage;
-        this.refunded = response.Refunded;
-        this.partiallyRefunded = response.PartiallyRefunded;
-        this.refundedAmount = response.RefundedAmount;
-        this.invoiceId = response.InvoiceId;
+        super(response);
+        this.createdDate = this.getResponseProperty('CreatedDate');
+        this.amount = this.getResponseProperty('Amount');
+        this.refunded = this.getResponseProperty('Refunded');
+        this.partiallyRefunded = this.getResponseProperty('PartiallyRefunded');
+        this.refundedAmount = this.getResponseProperty('RefundedAmount');
+        this.type = this.getResponseProperty('Type');
+        this.paymentMethodType = this.getResponseProperty('PaymentMethodType');
+        this.details = this.getResponseProperty('Details');
     }
 }

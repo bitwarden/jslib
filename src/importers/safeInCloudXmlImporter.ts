@@ -71,6 +71,8 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
                         cipher.login.username = text;
                     } else if (fieldType === 'password') {
                         cipher.login.password = text;
+                    } else if (fieldType === 'one_time_password') {
+                        cipher.login.totp = text;
                     } else if (fieldType === 'notes') {
                         cipher.notes += (text + '\n');
                     } else if (fieldType === 'weblogin' || fieldType === 'website') {

@@ -1,4 +1,6 @@
-export class BreachAccountResponse {
+import { BaseResponse } from './baseResponse';
+
+export class BreachAccountResponse extends BaseResponse {
     addedDate: string;
     breachDate: string;
     dataClasses: string[];
@@ -6,24 +8,25 @@ export class BreachAccountResponse {
     domain: string;
     isActive: boolean;
     isVerified: boolean;
-    logoType: string;
+    logoPath: string;
     modifiedDate: string;
     name: string;
     pwnCount: number;
     title: string;
 
     constructor(response: any) {
-        this.addedDate = response.AddedDate;
-        this.breachDate = response.BreachDate;
-        this.dataClasses = response.DataClasses;
-        this.description = response.Description;
-        this.domain = response.Domain;
-        this.isActive = response.IsActive;
-        this.isVerified = response.IsVerified;
-        this.logoType = response.LogoType;
-        this.modifiedDate = response.ModifiedDate;
-        this.name = response.Name;
-        this.pwnCount = response.PwnCount;
-        this.title = response.Title;
+        super(response);
+        this.addedDate = this.getResponseProperty('AddedDate');
+        this.breachDate = this.getResponseProperty('BreachDate');
+        this.dataClasses = this.getResponseProperty('DataClasses');
+        this.description = this.getResponseProperty('Description');
+        this.domain = this.getResponseProperty('Domain');
+        this.isActive = this.getResponseProperty('IsActive');
+        this.isVerified = this.getResponseProperty('IsVerified');
+        this.logoPath = this.getResponseProperty('LogoPath');
+        this.modifiedDate = this.getResponseProperty('ModifiedDate');
+        this.name = this.getResponseProperty('Name');
+        this.pwnCount = this.getResponseProperty('PwnCount');
+        this.title = this.getResponseProperty('Title');
     }
 }

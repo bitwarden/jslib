@@ -30,7 +30,9 @@ export class BoxRowDirective implements OnInit {
     }
 
     @HostListener('click', ['$event']) onClick(event: Event) {
-        if (event.target !== this.el) {
+        const target = event.target as HTMLElement;
+        if (target !== this.el && !target.classList.contains('progress') &&
+            !target.classList.contains('progress-bar')) {
             return;
         }
 

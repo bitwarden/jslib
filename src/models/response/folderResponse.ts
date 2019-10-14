@@ -1,11 +1,14 @@
-export class FolderResponse {
+import { BaseResponse } from './baseResponse';
+
+export class FolderResponse extends BaseResponse {
     id: string;
     name: string;
     revisionDate: string;
 
     constructor(response: any) {
-        this.id = response.Id;
-        this.name = response.Name;
-        this.revisionDate = response.RevisionDate;
+        super(response);
+        this.id = this.getResponseProperty('Id');
+        this.name = this.getResponseProperty('Name');
+        this.revisionDate = this.getResponseProperty('RevisionDate');
     }
 }

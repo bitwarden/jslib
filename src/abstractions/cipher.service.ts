@@ -22,6 +22,7 @@ export abstract class CipherService {
     getAllDecrypted: () => Promise<CipherView[]>;
     getAllDecryptedForGrouping: (groupingId: string, folder?: boolean) => Promise<CipherView[]>;
     getAllDecryptedForUrl: (url: string, includeOtherTypes?: CipherType[]) => Promise<CipherView[]>;
+    getAllFromApiForOrganization: (organizationId: string) => Promise<CipherView[]>;
     getLastUsedForUrl: (url: string) => Promise<CipherView>;
     updateLastUsedDate: (id: string) => Promise<void>;
     saveNeverDomain: (domain: string) => Promise<void>;

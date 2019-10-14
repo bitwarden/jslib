@@ -160,7 +160,7 @@ export class SyncService implements SyncServiceAbstraction {
                     const collections = await this.collectionService.getAll();
                     if (collections != null) {
                         for (let i = 0; i < collections.length; i++) {
-                            if (notification.collectionIds.indexOf(collections[i].id)) {
+                            if (notification.collectionIds.indexOf(collections[i].id) > -1) {
                                 shouldUpdate = true;
                                 break;
                             }
@@ -245,7 +245,6 @@ export class SyncService implements SyncServiceAbstraction {
         await this.cryptoService.setEncKey(response.key);
         await this.cryptoService.setEncPrivateKey(response.privateKey);
         await this.cryptoService.setOrgKeys(response.organizations);
-        await this.userService.setSecurityStamp(response.securityStamp);
         await this.userService.setSecurityStamp(response.securityStamp);
 
         const organizations: { [id: string]: OrganizationData; } = {};

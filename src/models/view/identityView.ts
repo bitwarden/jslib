@@ -2,28 +2,30 @@ import { View } from './view';
 
 import { Identity } from '../domain/identity';
 
+import { Utils } from '../../misc/utils';
+
 export class IdentityView implements View {
     title: string = null;
-    middleName: string;
-    address1: string;
-    address2: string;
-    address3: string;
-    city: string;
-    state: string;
-    postalCode: string;
-    country: string;
-    company: string;
-    email: string;
-    phone: string;
-    ssn: string;
-    username: string;
-    passportNumber: string;
-    licenseNumber: string;
+    middleName: string = null;
+    address1: string = null;
+    address2: string = null;
+    address3: string = null;
+    city: string = null;
+    state: string = null;
+    postalCode: string = null;
+    country: string = null;
+    company: string = null;
+    email: string = null;
+    phone: string = null;
+    ssn: string = null;
+    username: string = null;
+    passportNumber: string = null;
+    licenseNumber: string = null;
 
     // tslint:disable
-    private _firstName: string;
-    private _lastName: string;
-    private _subTitle: string;
+    private _firstName: string = null;
+    private _lastName: string = null;
+    private _subTitle: string = null;
     // tslint:enable
 
     constructor(i?: Identity) {
@@ -82,5 +84,32 @@ export class IdentityView implements View {
         }
 
         return null;
+    }
+
+    get fullAddress(): string {
+        let address = this.address1;
+        if (!Utils.isNullOrWhitespace(this.address2)) {
+            if (!Utils.isNullOrWhitespace(address)) {
+                address += ', ';
+            }
+            address += this.address2;
+        }
+        if (!Utils.isNullOrWhitespace(this.address3)) {
+            if (!Utils.isNullOrWhitespace(address)) {
+                address += ', ';
+            }
+            address += this.address3;
+        }
+        return address;
+    }
+
+    get fullAddressPart2(): string {
+        if (this.city == null && this.state == null && this.postalCode == null) {
+            return null;
+        }
+        const city = this.city || '-';
+        const state = this.state || '-';
+        const postalCode = this.postalCode || '-';
+        return city + ', ' + state + ', ' + postalCode;
     }
 }

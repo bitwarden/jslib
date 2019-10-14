@@ -1,8 +1,10 @@
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
+
+import { BaseResponse } from './baseResponse';
 import { SelectionReadOnlyResponse } from './selectionReadOnlyResponse';
 
-export class OrganizationUserResponse {
+export class OrganizationUserResponse extends BaseResponse {
     id: string;
     userId: string;
     type: OrganizationUserType;
@@ -10,22 +12,25 @@ export class OrganizationUserResponse {
     accessAll: boolean;
 
     constructor(response: any) {
-        this.id = response.Id;
-        this.userId = response.UserId;
-        this.type = response.Type;
-        this.status = response.Status;
-        this.accessAll = response.AccessAll;
+        super(response);
+        this.id = this.getResponseProperty('Id');
+        this.userId = this.getResponseProperty('UserId');
+        this.type = this.getResponseProperty('Type');
+        this.status = this.getResponseProperty('Status');
+        this.accessAll = this.getResponseProperty('AccessAll');
     }
 }
 
 export class OrganizationUserUserDetailsResponse extends OrganizationUserResponse {
     name: string;
     email: string;
+    twoFactorEnabled: boolean;
 
     constructor(response: any) {
         super(response);
-        this.name = response.Name;
-        this.email = response.Email;
+        this.name = this.getResponseProperty('Name');
+        this.email = this.getResponseProperty('Email');
+        this.twoFactorEnabled = this.getResponseProperty('TwoFactorEnabled');
     }
 }
 
@@ -34,8 +39,9 @@ export class OrganizationUserDetailsResponse extends OrganizationUserResponse {
 
     constructor(response: any) {
         super(response);
-        if (response.Collections != null) {
-            this.collections = response.Collections.map((c: any) => new SelectionReadOnlyResponse(c));
+        const collections = this.getResponseProperty('Collections');
+        if (collections != null) {
+            this.collections = collections.map((c: any) => new SelectionReadOnlyResponse(c));
         }
     }
 }

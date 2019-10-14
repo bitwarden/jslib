@@ -12,25 +12,37 @@ export class PasswordAgentCsvImporter extends BaseImporter implements Importer {
             return result;
         }
 
+        let newVersion = true;
         results.forEach((value) => {
-            if (value.length < 9) {
+            if (value.length !== 5 && value.length < 9) {
                 return;
             }
-            const folder = this.getValueOrDefault(value[8], '(None)');
-            const folderName = folder !== '(None)' ? folder.split('\\').join('/') : null;
-            this.processFolder(result, folderName);
+            const altFormat = value.length === 10 && value[0] === '0';
             const cipher = this.initLoginCipher();
-            cipher.notes = this.getValueOrDefault(value[3]);
-            cipher.name = this.getValueOrDefault(value[0], '--');
-            cipher.login.username = this.getValueOrDefault(value[1]);
-            cipher.login.password = this.getValueOrDefault(value[2]);
-            cipher.login.uris = this.makeUriArray(value[4]);
+            cipher.name = this.getValueOrDefault(value[altFormat ? 1 : 0], '--');
+            cipher.login.username = this.getValueOrDefault(value[altFormat ? 2 : 1]);
+            cipher.login.password = this.getValueOrDefault(value[altFormat ? 3 : 2]);
+            if (value.length === 5) {
+                newVersion = false;
+                cipher.notes = this.getValueOrDefault(value[4]);
+                cipher.login.uris = this.makeUriArray(value[3]);
+            } else {
+                const folder = this.getValueOrDefault(value[altFormat ? 9 : 8], '(None)');
+                let folderName = folder !== '(None)' ? folder.split('\\').join('/') : null;
+                if (folderName != null) {
+                    folderName = folder.split(' > ').join('/');
+                    folderName = folder.split('>').join('/');
+                }
+                this.processFolder(result, folderName);
+                cipher.notes = this.getValueOrDefault(value[altFormat ? 5 : 3]);
+                cipher.login.uris = this.makeUriArray(value[4]);
+            }
             this.convertToNoteIfNeeded(cipher);
             this.cleanupCipher(cipher);
             result.ciphers.push(cipher);
         });
 
-        if (this.organization) {
+        if (newVersion && this.organization) {
             this.moveFoldersToCollections(result);
         }
 

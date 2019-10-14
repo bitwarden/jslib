@@ -1,5 +1,6 @@
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
+import { BitPayInvoiceRequest } from '../models/request/bitPayInvoiceRequest';
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
 import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
 import { CipherBulkShareRequest } from '../models/request/cipherBulkShareRequest';
@@ -11,8 +12,10 @@ import { CollectionRequest } from '../models/request/collectionRequest';
 import { DeleteRecoverRequest } from '../models/request/deleteRecoverRequest';
 import { EmailRequest } from '../models/request/emailRequest';
 import { EmailTokenRequest } from '../models/request/emailTokenRequest';
+import { EventRequest } from '../models/request/eventRequest';
 import { FolderRequest } from '../models/request/folderRequest';
 import { GroupRequest } from '../models/request/groupRequest';
+import { IapCheckRequest } from '../models/request/iapCheckRequest';
 import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
@@ -20,6 +23,7 @@ import { KdfRequest } from '../models/request/kdfRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
+import { OrganizationUpgradeRequest } from '../models/request/organizationUpgradeRequest';
 import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
 import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
 import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
@@ -51,7 +55,9 @@ import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
+import { ApiKeyResponse } from '../models/response/apiKeyResponse';
 import { BillingResponse } from '../models/response/billingResponse';
+import { BreachAccountResponse } from '../models/response/breachAccountResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
 import {
     CollectionGroupDetailsResponse,
@@ -67,15 +73,17 @@ import {
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
-import { OrganizationBillingResponse } from '../models/response/organizationBillingResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
+import { OrganizationSubscriptionResponse } from '../models/response/organizationSubscriptionResponse';
 import {
     OrganizationUserDetailsResponse,
     OrganizationUserUserDetailsResponse,
 } from '../models/response/organizationUserResponse';
+import { PaymentResponse } from '../models/response/paymentResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
+import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
 import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
@@ -93,6 +101,7 @@ export abstract class ApiService {
     urlsSet: boolean;
     apiBaseUrl: string;
     identityBaseUrl: string;
+    eventsBaseUrl: string;
 
     setUrls: (urls: EnvironmentUrls) => void;
     postIdentityToken: (request: TokenRequest) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse>;
@@ -100,6 +109,7 @@ export abstract class ApiService {
 
     getProfile: () => Promise<ProfileResponse>;
     getUserBilling: () => Promise<BillingResponse>;
+    getUserSubscription: () => Promise<SubscriptionResponse>;
     putProfile: (request: UpdateProfileRequest) => Promise<ProfileResponse>;
     postPrelogin: (request: PreloginRequest) => Promise<PreloginResponse>;
     postEmailToken: (request: EmailTokenRequest) => Promise<any>;
@@ -110,10 +120,11 @@ export abstract class ApiService {
     getAccountRevisionDate: () => Promise<number>;
     postPasswordHint: (request: PasswordHintRequest) => Promise<any>;
     postRegister: (request: RegisterRequest) => Promise<any>;
-    postPremium: (data: FormData) => Promise<any>;
+    postPremium: (data: FormData) => Promise<PaymentResponse>;
+    postIapCheck: (request: IapCheckRequest) => Promise<any>;
     postReinstatePremium: () => Promise<any>;
     postCancelPremium: () => Promise<any>;
-    postAccountStorage: (request: StorageRequest) => Promise<any>;
+    postAccountStorage: (request: StorageRequest) => Promise<PaymentResponse>;
     postAccountPayment: (request: PaymentRequest) => Promise<any>;
     postAccountLicense: (data: FormData) => Promise<any>;
     postAccountKey: (request: UpdateKeyRequest) => Promise<any>;
@@ -223,14 +234,18 @@ export abstract class ApiService {
     postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
 
     getOrganization: (id: string) => Promise<OrganizationResponse>;
-    getOrganizationBilling: (id: string) => Promise<OrganizationBillingResponse>;
+    getOrganizationBilling: (id: string) => Promise<BillingResponse>;
+    getOrganizationSubscription: (id: string) => Promise<OrganizationSubscriptionResponse>;
     getOrganizationLicense: (id: string, installationId: string) => Promise<any>;
     postOrganization: (request: OrganizationCreateRequest) => Promise<OrganizationResponse>;
     putOrganization: (id: string, request: OrganizationUpdateRequest) => Promise<OrganizationResponse>;
     postLeaveOrganization: (id: string) => Promise<any>;
     postOrganizationLicense: (data: FormData) => Promise<OrganizationResponse>;
     postOrganizationLicenseUpdate: (id: string, data: FormData) => Promise<any>;
-    postOrganizationSeat: (id: string, request: SeatRequest) => Promise<any>;
+    postOrganizationApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
+    postOrganizationRotateApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
+    postOrganizationUpgrade: (id: string, request: OrganizationUpgradeRequest) => Promise<PaymentResponse>;
+    postOrganizationSeat: (id: string, request: SeatRequest) => Promise<PaymentResponse>;
     postOrganizationStorage: (id: string, request: StorageRequest) => Promise<any>;
     postOrganizationPayment: (id: string, request: PaymentRequest) => Promise<any>;
     postOrganizationVerifyBank: (id: string, request: VerifyBankRequest) => Promise<any>;
@@ -244,9 +259,16 @@ export abstract class ApiService {
         token: string) => Promise<ListResponse<EventResponse>>;
     getEventsOrganizationUser: (organizationId: string, id: string,
         start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
+    postEventsCollect: (request: EventRequest[]) => Promise<any>;
 
     getUserPublicKey: (id: string) => Promise<UserKeyResponse>;
 
+    getHibpBreach: (username: string) => Promise<BreachAccountResponse[]>;
+
+    postBitPayInvoice: (request: BitPayInvoiceRequest) => Promise<string>;
+    postSetupPayment: () => Promise<string>;
+
     getActiveBearerToken: () => Promise<string>;
     fetch: (request: Request) => Promise<Response>;
+    nativeFetch: (request: Request) => Promise<Response>;
 }

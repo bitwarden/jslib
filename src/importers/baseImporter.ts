@@ -136,7 +136,7 @@ export abstract class BaseImporter {
         if (uri == null) {
             return null;
         }
-        uri = uri.toLowerCase().trim();
+        uri = uri.trim();
         if (uri.indexOf('://') === -1 && uri.indexOf('.') >= 0) {
             uri = 'http://' + uri;
         }
@@ -155,7 +155,7 @@ export abstract class BaseImporter {
     }
 
     protected isNullOrWhitespace(str: string): boolean {
-        return str == null || str.trim() === '';
+        return Utils.isNullOrWhitespace(str);
     }
 
     protected getValueOrDefault(str: string, defaultValue: string = null): string {
@@ -227,6 +227,31 @@ export abstract class BaseImporter {
         return null;
     }
 
+    protected setCardExpiration(cipher: CipherView, expiration: string): boolean {
+        if (!this.isNullOrWhitespace(expiration)) {
+            const parts = expiration.split('/');
+            if (parts.length === 2) {
+                let month: string = null;
+                let year: string = null;
+                if (parts[0].length === 1 || parts[0].length === 2) {
+                    month = parts[0];
+                    if (month.length === 2 && month[0] === '0') {
+                        month = month.substr(1, 1);
+                    }
+                }
+                if (parts[1].length === 2 || parts[1].length === 4) {
+                    year = month.length === 2 ? '20' + parts[1] : parts[1];
+                }
+                if (month != null && year != null) {
+                    cipher.card.expMonth = month;
+                    cipher.card.expYear = year;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     protected moveFoldersToCollections(result: ImportResult) {
         result.folderRelationships.forEach((r) => result.collectionRelationships.push(r));
         result.collections = result.folders.map((f) => {
@@ -277,7 +302,7 @@ export abstract class BaseImporter {
         }
     }
 
-    protected processKvp(cipher: CipherView, key: string, value: string) {
+    protected processKvp(cipher: CipherView, key: string, value: string, type: FieldType = FieldType.Text) {
         if (this.isNullOrWhitespace(value)) {
             return;
         }
@@ -294,7 +319,7 @@ export abstract class BaseImporter {
                 cipher.fields = [];
             }
             const field = new FieldView();
-            field.type = FieldType.Text;
+            field.type = type;
             field.name = key;
             field.value = value;
             cipher.fields.push(field);

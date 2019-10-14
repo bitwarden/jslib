@@ -3,15 +3,15 @@ import { View } from './view';
 import { Card } from '../domain/card';
 
 export class CardView implements View {
-    cardholderName: string;
+    cardholderName: string = null;
     expMonth: string = null;
-    expYear: string;
-    code: string;
+    expYear: string = null;
+    code: string = null;
 
     // tslint:disable
     private _brand: string = null;
-    private _number: string;
-    private _subTitle: string;
+    private _number: string = null;
+    private _subTitle: string = null;
     // tslint:enable
 
     constructor(c?: Card) {
@@ -47,7 +47,10 @@ export class CardView implements View {
                 } else {
                     this._subTitle = '';
                 }
-                this._subTitle += ('*' + this.number.substr(this.number.length - 4));
+
+                // Show last 5 on amex, last 4 for all others
+                const count = this.number.length >= 5 && this.number.match(new RegExp('^3[47]')) != null ? 5 : 4;
+                this._subTitle += ('*' + this.number.substr(this.number.length - count));
             }
         }
         return this._subTitle;

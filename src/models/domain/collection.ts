@@ -9,6 +9,7 @@ export class Collection extends Domain {
     id: string;
     organizationId: string;
     name: CipherString;
+    externalId: string;
     readOnly: boolean;
 
     constructor(obj?: CollectionData, alreadyEncrypted: boolean = false) {
@@ -21,8 +22,9 @@ export class Collection extends Domain {
             id: null,
             organizationId: null,
             name: null,
+            externalId: null,
             readOnly: null,
-        }, alreadyEncrypted, ['id', 'organizationId', 'readOnly']);
+        }, alreadyEncrypted, ['id', 'organizationId', 'externalId', 'readOnly']);
     }
 
     decrypt(): Promise<CollectionView> {

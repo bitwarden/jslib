@@ -7,6 +7,7 @@ import { ApiService } from '../../abstractions/api.service';
 import { AuthService } from '../../abstractions/auth.service';
 import { CryptoService } from '../../abstractions/crypto.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
 
@@ -20,13 +21,46 @@ export class RegisterComponent {
     hint: string = '';
     showPassword: boolean = false;
     formPromise: Promise<any>;
+    masterPasswordScore: number;
 
     protected successRoute = 'login';
+    private masterPasswordStrengthTimeout: any;
 
     constructor(protected authService: AuthService, protected router: Router,
         protected i18nService: I18nService, protected cryptoService: CryptoService,
         protected apiService: ApiService, protected stateService: StateService,
-        protected platformUtilsService: PlatformUtilsService) { }
+        protected platformUtilsService: PlatformUtilsService,
+        protected passwordGenerationService: PasswordGenerationService) { }
+
+    get masterPasswordScoreWidth() {
+        return this.masterPasswordScore == null ? 0 : (this.masterPasswordScore + 1) * 20;
+    }
+
+    get masterPasswordScoreColor() {
+        switch (this.masterPasswordScore) {
+            case 4:
+                return 'success';
+            case 3:
+                return 'primary';
+            case 2:
+                return 'warning';
+            default:
+                return 'danger';
+        }
+    }
+
+    get masterPasswordScoreText() {
+        switch (this.masterPasswordScore) {
+            case 4:
+                return this.i18nService.t('strong');
+            case 3:
+                return this.i18nService.t('good');
+            case 2:
+                return this.i18nService.t('weak');
+            default:
+                return this.masterPasswordScore != null ? this.i18nService.t('weak') : null;
+        }
+    }
 
     async submit() {
         if (this.email == null || this.email === '') {
@@ -53,6 +87,17 @@ export class RegisterComponent {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('masterPassDoesntMatch'));
             return;
+        }
+
+        const strengthResult = this.passwordGenerationService.passwordStrength(this.masterPassword,
+            this.getPasswordStrengthUserInput());
+        if (strengthResult != null && strengthResult.score < 3) {
+            const result = await this.platformUtilsService.showDialog(this.i18nService.t('weakMasterPasswordDesc'),
+                this.i18nService.t('weakMasterPassword'), this.i18nService.t('yes'), this.i18nService.t('no'),
+                'warning');
+            if (!result) {
+                return;
+            }
         }
 
         this.name = this.name === '' ? null : this.name;
@@ -86,5 +131,28 @@ export class RegisterComponent {
         this.platformUtilsService.eventTrack('Toggled Master Password on Register');
         this.showPassword = !this.showPassword;
         document.getElementById(confirmField ? 'masterPasswordRetype' : 'masterPassword').focus();
+    }
+
+    updatePasswordStrength() {
+        if (this.masterPasswordStrengthTimeout != null) {
+            clearTimeout(this.masterPasswordStrengthTimeout);
+        }
+        this.masterPasswordStrengthTimeout = setTimeout(() => {
+            const strengthResult = this.passwordGenerationService.passwordStrength(this.masterPassword,
+                this.getPasswordStrengthUserInput());
+            this.masterPasswordScore = strengthResult == null ? null : strengthResult.score;
+        }, 300);
+    }
+
+    private getPasswordStrengthUserInput() {
+        let userInput: string[] = [];
+        const atPosition = this.email.indexOf('@');
+        if (atPosition > -1) {
+            userInput = userInput.concat(this.email.substr(0, atPosition).trim().toLowerCase().split(/[^A-Za-z0-9]/));
+        }
+        if (this.name != null && this.name !== '') {
+            userInput = userInput.concat(this.name.trim().toLowerCase().split(' '));
+        }
+        return userInput;
     }
 }

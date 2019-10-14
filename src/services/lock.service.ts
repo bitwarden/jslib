@@ -9,15 +9,20 @@ import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { SearchService } from '../abstractions/search.service';
 import { StorageService } from '../abstractions/storage.service';
+import { UserService } from '../abstractions/user.service';
+
+import { CipherString } from '../models/domain/cipherString';
 
 export class LockService implements LockServiceAbstraction {
+    pinProtectedKey: CipherString = null;
+
     private inited = false;
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private cryptoService: CryptoService,
         private platformUtilsService: PlatformUtilsService, private storageService: StorageService,
         private messagingService: MessagingService, private searchService: SearchService,
-        private lockedCallback: () => Promise<void>) {
+        private userService: UserService, private lockedCallback: () => Promise<void> = null) {
     }
 
     init(checkOnInterval: boolean) {
@@ -32,15 +37,23 @@ export class LockService implements LockServiceAbstraction {
         }
     }
 
+    async isLocked(): Promise<boolean> {
+        const hasKey = await this.cryptoService.hasKey();
+        return !hasKey;
+    }
+
     async checkLock(): Promise<void> {
-        if (this.platformUtilsService.isViewOpen()) {
+        if (await this.platformUtilsService.isViewOpen()) {
             // Do not lock
             return;
         }
 
-        const hasKey = await this.cryptoService.hasKey();
-        if (!hasKey) {
-            // no key so no need to lock
+        const authed = await this.userService.isAuthenticated();
+        if (!authed) {
+            return;
+        }
+
+        if (await this.isLocked()) {
             return;
         }
 
@@ -61,11 +74,16 @@ export class LockService implements LockServiceAbstraction {
         const diffSeconds = ((new Date()).getTime() - lastActive) / 1000;
         if (diffSeconds >= lockOptionSeconds) {
             // need to lock now
-            await this.lock();
+            await this.lock(true);
         }
     }
 
-    async lock(): Promise<void> {
+    async lock(allowSoftLock = false): Promise<void> {
+        const authed = await this.userService.isAuthenticated();
+        if (!authed) {
+            return;
+        }
+
         await Promise.all([
             this.cryptoService.clearKey(),
             this.cryptoService.clearOrgKeys(true),
@@ -86,5 +104,16 @@ export class LockService implements LockServiceAbstraction {
     async setLockOption(lockOption: number): Promise<void> {
         await this.storageService.save(ConstantsService.lockOptionKey, lockOption);
         await this.cryptoService.toggleKey();
+    }
+
+    async isPinLockSet(): Promise<[boolean, boolean]> {
+        const protectedPin = await this.storageService.get<string>(ConstantsService.protectedPin);
+        const pinProtectedKey = await this.storageService.get<string>(ConstantsService.pinProtectedKey);
+        return [protectedPin != null, pinProtectedKey != null];
+    }
+
+    clear(): Promise<any> {
+        this.pinProtectedKey = null;
+        return this.storageService.remove(ConstantsService.protectedPin);
     }
 }

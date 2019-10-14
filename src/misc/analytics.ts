@@ -53,6 +53,8 @@ export class Analytics {
     }
 
     async ga(action: string, param1: any, param2?: any) {
+        return;
+
         if (this.gaFilter != null && this.gaFilter()) {
             return;
         }

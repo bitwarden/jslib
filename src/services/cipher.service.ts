@@ -43,6 +43,8 @@ import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
+import { ConstantsService } from './constants.service';
+
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
 
@@ -51,6 +53,10 @@ const Keys = {
     localData: 'sitesLocalData',
     neverDomains: 'neverDomains',
 };
+
+const DomainMatchBlacklist = new Map<string, Set<string>>([
+    ['google.com', new Set(['script.google.com'])],
+]);
 
 export class CipherService implements CipherServiceAbstraction {
     // tslint:disable-next-line
@@ -106,8 +112,8 @@ export class CipherService implements CipherServiceAbstraction {
                     const hiddenFields = model.fields == null ? [] :
                         model.fields.filter((f) => f.type === FieldType.Hidden && f.name != null && f.name !== '');
                     existingHiddenFields.forEach((ef) => {
-                        const matchedField = hiddenFields.filter((f) => f.name === ef.name);
-                        if (matchedField.length === 0 || matchedField[0].value !== ef.value) {
+                        const matchedField = hiddenFields.find((f) => f.name === ef.name);
+                        if (matchedField == null || matchedField.value !== ef.value) {
                             const ph = new PasswordHistoryView();
                             ph.password = ef.name + ': ' + ef.value;
                             ph.lastUsedDate = new Date();
@@ -173,7 +179,10 @@ export class CipherService implements CipherServiceAbstraction {
             attachment.url = model.url;
             const promise = this.encryptObjProperty(model, attachment, {
                 fileName: null,
-            }, key).then(() => {
+            }, key).then(async () => {
+                if (model.key != null) {
+                    attachment.key = await this.cryptoService.encrypt(model.key.key, key);
+                }
                 encAttachments.push(attachment);
             });
             promises.push(promise);
@@ -204,6 +213,10 @@ export class CipherService implements CipherServiceAbstraction {
     async encryptField(fieldModel: FieldView, key: SymmetricCryptoKey): Promise<Field> {
         const field = new Field();
         field.type = fieldModel.type;
+        // normalize boolean type field values
+        if (fieldModel.type === FieldType.Boolean && fieldModel.value !== 'true') {
+            fieldModel.value = 'false';
+        }
 
         await this.encryptObjProperty(fieldModel, field, {
             name: null,
@@ -307,7 +320,7 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async getAllDecryptedForUrl(url: string, includeOtherTypes?: CipherType[]): Promise<CipherView[]> {
-        if (url == null && !includeOtherTypes) {
+        if (url == null && includeOtherTypes == null) {
             return Promise.resolve([]);
         }
 
@@ -332,8 +345,13 @@ export class CipherService implements CipherServiceAbstraction {
         const matchingDomains = result[0];
         const ciphers = result[1];
 
+        let defaultMatch = await this.storageService.get<UriMatchType>(ConstantsService.defaultUriMatch);
+        if (defaultMatch == null) {
+            defaultMatch = UriMatchType.Domain;
+        }
+
         return ciphers.filter((cipher) => {
-            if (includeOtherTypes && includeOtherTypes.indexOf(cipher.type) > -1) {
+            if (includeOtherTypes != null && includeOtherTypes.indexOf(cipher.type) > -1) {
                 return true;
             }
 
@@ -344,12 +362,18 @@ export class CipherService implements CipherServiceAbstraction {
                         continue;
                     }
 
-                    switch (u.match) {
-                        case null:
-                        case undefined:
+                    const match = u.match == null ? defaultMatch : u.match;
+                    switch (match) {
                         case UriMatchType.Domain:
                             if (domain != null && u.domain != null && matchingDomains.indexOf(u.domain) > -1) {
-                                return true;
+                                if (DomainMatchBlacklist.has(u.domain)) {
+                                    const domainUrlHost = Utils.getHost(url);
+                                    if (!DomainMatchBlacklist.get(u.domain).has(domainUrlHost)) {
+                                        return true;
+                                    }
+                                } else {
+                                    return true;
+                                }
                             }
                             break;
                         case UriMatchType.Host:
@@ -385,6 +409,24 @@ export class CipherService implements CipherServiceAbstraction {
 
             return false;
         });
+    }
+
+    async getAllFromApiForOrganization(organizationId: string): Promise<CipherView[]> {
+        const ciphers = await this.apiService.getCiphersOrganization(organizationId);
+        if (ciphers != null && ciphers.data != null && ciphers.data.length) {
+            const decCiphers: CipherView[] = [];
+            const promises: any[] = [];
+            ciphers.data.forEach((r) => {
+                const data = new CipherData(r);
+                const cipher = new Cipher(data);
+                promises.push(cipher.decrypt().then((c) => decCiphers.push(c)));
+            });
+            await Promise.all(promises);
+            decCiphers.sort(this.getLocaleSortingFunction());
+            return decCiphers;
+        } else {
+            return [];
+        }
     }
 
     async getLastUsedForUrl(url: string): Promise<CipherView> {
@@ -464,7 +506,9 @@ export class CipherService implements CipherServiceAbstraction {
         const attachmentPromises: Array<Promise<any>> = [];
         if (cipher.attachments != null) {
             cipher.attachments.forEach((attachment) => {
-                attachmentPromises.push(this.shareAttachmentWithServer(attachment, cipher.id, organizationId));
+                if (attachment.key == null) {
+                    attachmentPromises.push(this.shareAttachmentWithServer(attachment, cipher.id, organizationId));
+                }
             });
         }
         await Promise.all(attachmentPromises);
@@ -519,14 +563,18 @@ export class CipherService implements CipherServiceAbstraction {
         data: ArrayBuffer, admin = false): Promise<Cipher> {
         const key = await this.cryptoService.getOrgKey(cipher.organizationId);
         const encFileName = await this.cryptoService.encrypt(filename, key);
-        const encData = await this.cryptoService.encryptToBytes(data, key);
+
+        const dataEncKey = await this.cryptoService.makeEncKey(key);
+        const encData = await this.cryptoService.encryptToBytes(data, dataEncKey[0]);
 
         const fd = new FormData();
         try {
             const blob = new Blob([encData], { type: 'application/octet-stream' });
+            fd.append('key', dataEncKey[1].encryptedString);
             fd.append('data', blob, encFileName.encryptedString);
         } catch (e) {
             if (Utils.isNode && !Utils.isBrowser) {
+                fd.append('key', dataEncKey[1].encryptedString);
                 fd.append('data', Buffer.from(encData) as any, {
                     filepath: encFileName.encryptedString,
                     contentType: 'application/octet-stream',
@@ -550,7 +598,7 @@ export class CipherService implements CipherServiceAbstraction {
         const userId = await this.userService.getUserId();
         const cData = new CipherData(response, userId, cipher.collectionIds);
         if (!admin) {
-            this.upsert(cData);
+            await this.upsert(cData);
         }
         return new Cipher(cData);
     }
@@ -680,14 +728,15 @@ export class CipherService implements CipherServiceAbstraction {
         const aLastUsed = a.localData && a.localData.lastUsedDate ? a.localData.lastUsedDate as number : null;
         const bLastUsed = b.localData && b.localData.lastUsedDate ? b.localData.lastUsedDate as number : null;
 
-        if (aLastUsed != null && bLastUsed != null && aLastUsed < bLastUsed) {
+        const bothNotNull = aLastUsed != null && bLastUsed != null;
+        if (bothNotNull && aLastUsed < bLastUsed) {
             return 1;
         }
         if (aLastUsed != null && bLastUsed == null) {
             return -1;
         }
 
-        if (bLastUsed != null && aLastUsed != null && aLastUsed > bLastUsed) {
+        if (bothNotNull && aLastUsed > bLastUsed) {
             return -1;
         }
         if (bLastUsed != null && aLastUsed == null) {
@@ -745,7 +794,8 @@ export class CipherService implements CipherServiceAbstraction {
 
     private async shareAttachmentWithServer(attachmentView: AttachmentView, cipherId: string,
         organizationId: string): Promise<any> {
-        const attachmentResponse = await fetch(new Request(attachmentView.url, { cache: 'no-cache' }));
+        const attachmentResponse = await this.apiService.nativeFetch(
+            new Request(attachmentView.url, { cache: 'no-cache' }));
         if (attachmentResponse.status !== 200) {
             throw Error('Failed to download attachment: ' + attachmentResponse.status.toString());
         }
@@ -753,15 +803,19 @@ export class CipherService implements CipherServiceAbstraction {
         const buf = await attachmentResponse.arrayBuffer();
         const decBuf = await this.cryptoService.decryptFromBytes(buf, null);
         const key = await this.cryptoService.getOrgKey(organizationId);
-        const encData = await this.cryptoService.encryptToBytes(decBuf, key);
         const encFileName = await this.cryptoService.encrypt(attachmentView.fileName, key);
+
+        const dataEncKey = await this.cryptoService.makeEncKey(key);
+        const encData = await this.cryptoService.encryptToBytes(decBuf, dataEncKey[0]);
 
         const fd = new FormData();
         try {
             const blob = new Blob([encData], { type: 'application/octet-stream' });
+            fd.append('key', dataEncKey[1].encryptedString);
             fd.append('data', blob, encFileName.encryptedString);
         } catch (e) {
             if (Utils.isNode && !Utils.isBrowser) {
+                fd.append('key', dataEncKey[1].encryptedString);
                 fd.append('data', Buffer.from(encData) as any, {
                     filepath: encFileName.encryptedString,
                     contentType: 'application/octet-stream',

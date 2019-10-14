@@ -15,6 +15,7 @@ import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorR
 
 import { ApiService } from '../abstractions/api.service';
 import { AppIdService } from '../abstractions/appId.service';
+import { AuthService as AuthServiceAbstraction } from '../abstractions/auth.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { I18nService } from '../abstractions/i18n.service';
 import { MessagingService } from '../abstractions/messaging.service';
@@ -73,10 +74,10 @@ export const TwoFactorProviders = {
     },
 };
 
-export class AuthService {
+export class AuthService implements AuthServiceAbstraction {
     email: string;
     masterPasswordHash: string;
-    twoFactorProviders: Map<TwoFactorProviderType, { [key: string]: string; }>;
+    twoFactorProvidersData: Map<TwoFactorProviderType, { [key: string]: string; }>;
     selectedTwoFactorProviderType: TwoFactorProviderType = null;
 
     private key: SymmetricCryptoKey;
@@ -139,32 +140,32 @@ export class AuthService {
 
     getSupportedTwoFactorProviders(win: Window): any[] {
         const providers: any[] = [];
-        if (this.twoFactorProviders == null) {
+        if (this.twoFactorProvidersData == null) {
             return providers;
         }
 
-        if (this.twoFactorProviders.has(TwoFactorProviderType.OrganizationDuo) &&
+        if (this.twoFactorProvidersData.has(TwoFactorProviderType.OrganizationDuo) &&
             this.platformUtilsService.supportsDuo()) {
             providers.push(TwoFactorProviders[TwoFactorProviderType.OrganizationDuo]);
         }
 
-        if (this.twoFactorProviders.has(TwoFactorProviderType.Authenticator)) {
+        if (this.twoFactorProvidersData.has(TwoFactorProviderType.Authenticator)) {
             providers.push(TwoFactorProviders[TwoFactorProviderType.Authenticator]);
         }
 
-        if (this.twoFactorProviders.has(TwoFactorProviderType.Yubikey)) {
+        if (this.twoFactorProvidersData.has(TwoFactorProviderType.Yubikey)) {
             providers.push(TwoFactorProviders[TwoFactorProviderType.Yubikey]);
         }
 
-        if (this.twoFactorProviders.has(TwoFactorProviderType.Duo) && this.platformUtilsService.supportsDuo()) {
+        if (this.twoFactorProvidersData.has(TwoFactorProviderType.Duo) && this.platformUtilsService.supportsDuo()) {
             providers.push(TwoFactorProviders[TwoFactorProviderType.Duo]);
         }
 
-        if (this.twoFactorProviders.has(TwoFactorProviderType.U2f) && this.platformUtilsService.supportsU2f(win)) {
+        if (this.twoFactorProvidersData.has(TwoFactorProviderType.U2f) && this.platformUtilsService.supportsU2f(win)) {
             providers.push(TwoFactorProviders[TwoFactorProviderType.U2f]);
         }
 
-        if (this.twoFactorProviders.has(TwoFactorProviderType.Email)) {
+        if (this.twoFactorProvidersData.has(TwoFactorProviderType.Email)) {
             providers.push(TwoFactorProviders[TwoFactorProviderType.Email]);
         }
 
@@ -172,18 +173,18 @@ export class AuthService {
     }
 
     getDefaultTwoFactorProvider(u2fSupported: boolean): TwoFactorProviderType {
-        if (this.twoFactorProviders == null) {
+        if (this.twoFactorProvidersData == null) {
             return null;
         }
 
         if (this.selectedTwoFactorProviderType != null &&
-            this.twoFactorProviders.has(this.selectedTwoFactorProviderType)) {
+            this.twoFactorProvidersData.has(this.selectedTwoFactorProviderType)) {
             return this.selectedTwoFactorProviderType;
         }
 
         let providerType: TwoFactorProviderType = null;
         let providerPriority = -1;
-        this.twoFactorProviders.forEach((value, type) => {
+        this.twoFactorProvidersData.forEach((value, type) => {
             const provider = (TwoFactorProviders as any)[type];
             if (provider != null && provider.priority > providerPriority) {
                 if (type === TwoFactorProviderType.U2f && !u2fSupported) {
@@ -245,14 +246,14 @@ export class AuthService {
             this.email = email;
             this.masterPasswordHash = hashedPassword;
             this.key = this.setCryptoKeys ? key : null;
-            this.twoFactorProviders = twoFactorResponse.twoFactorProviders2;
+            this.twoFactorProvidersData = twoFactorResponse.twoFactorProviders2;
             result.twoFactorProviders = twoFactorResponse.twoFactorProviders2;
             return result;
         }
 
         const tokenResponse = response as IdentityTokenResponse;
         if (tokenResponse.twoFactorToken != null) {
-            this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken, email);
+            await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken, email);
         }
 
         await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken);
@@ -285,7 +286,7 @@ export class AuthService {
     private clearState(): void {
         this.email = null;
         this.masterPasswordHash = null;
-        this.twoFactorProviders = null;
+        this.twoFactorProvidersData = null;
         this.selectedTwoFactorProviderType = null;
     }
 }

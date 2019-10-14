@@ -14,6 +14,7 @@ export class OrganizationData {
     useEvents: boolean;
     useTotp: boolean;
     use2fa: boolean;
+    useApi: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
     seats: number;
@@ -31,6 +32,7 @@ export class OrganizationData {
         this.useEvents = response.useEvents;
         this.useTotp = response.useTotp;
         this.use2fa = response.use2fa;
+        this.useApi = response.useApi;
         this.selfHost = response.selfHost;
         this.usersGetPremium = response.usersGetPremium;
         this.seats = response.seats;

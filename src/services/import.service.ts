@@ -10,6 +10,10 @@ import {
 
 import { ImportResult } from '../models/domain/importResult';
 
+import { CipherType } from '../enums/cipherType';
+
+import { Utils } from '../misc/utils';
+
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CollectionRequest } from '../models/request/collectionRequest';
 import { FolderRequest } from '../models/request/folderRequest';
@@ -20,22 +24,31 @@ import { KvpRequest } from '../models/request/kvpRequest';
 import { CipherView } from '../models/view/cipherView';
 
 import { AscendoCsvImporter } from '../importers/ascendoCsvImporter';
+import { AvastCsvImporter } from '../importers/avastCsvImporter';
 import { AviraCsvImporter } from '../importers/aviraCsvImporter';
 import { BitwardenCsvImporter } from '../importers/bitwardenCsvImporter';
+import { BitwardenJsonImporter } from '../importers/bitwardenJsonImporter';
+import { BlackBerryCsvImporter } from '../importers/blackBerryCsvImporter';
 import { BlurCsvImporter } from '../importers/blurCsvImporter';
+import { ButtercupCsvImporter } from '../importers/buttercupCsvImporter';
 import { ChromeCsvImporter } from '../importers/chromeCsvImporter';
 import { ClipperzHtmlImporter } from '../importers/clipperzHtmlImporter';
-import { DashlaneCsvImporter } from '../importers/dashlaneCsvImporter';
+import { DashlaneJsonImporter } from '../importers/dashlaneJsonImporter';
 import { EnpassCsvImporter } from '../importers/enpassCsvImporter';
+import { EnpassJsonImporter } from '../importers/enpassJsonImporter';
 import { FirefoxCsvImporter } from '../importers/firefoxCsvImporter';
+import { FSecureFskImporter } from '../importers/fsecureFskImporter';
 import { GnomeJsonImporter } from '../importers/gnomeJsonImporter';
 import { Importer } from '../importers/importer';
+import { KasperskyTxtImporter } from '../importers/kasperskyTxtImporter';
 import { KeePass2XmlImporter } from '../importers/keepass2XmlImporter';
 import { KeePassXCsvImporter } from '../importers/keepassxCsvImporter';
 import { KeeperCsvImporter } from '../importers/keeperCsvImporter';
 import { LastPassCsvImporter } from '../importers/lastpassCsvImporter';
+import { LogMeOnceCsvImporter } from '../importers/logMeOnceCsvImporter';
 import { MeldiumCsvImporter } from '../importers/meldiumCsvImporter';
 import { MSecureCsvImporter } from '../importers/msecureCsvImporter';
+import { MykiCsvImporter } from '../importers/mykiCsvImporter';
 import { OnePassword1PifImporter } from '../importers/onepassword1PifImporter';
 import { OnePasswordWinCsvImporter } from '../importers/onepasswordWinCsvImporter';
 import { PadlockCsvImporter } from '../importers/padlockCsvImporter';
@@ -46,9 +59,12 @@ import { PasswordAgentCsvImporter } from '../importers/passwordAgentCsvImporter'
 import { PasswordBossJsonImporter } from '../importers/passwordBossJsonImporter';
 import { PasswordDragonXmlImporter } from '../importers/passwordDragonXmlImporter';
 import { PasswordSafeXmlImporter } from '../importers/passwordSafeXmlImporter';
+import { PasswordWalletTxtImporter } from '../importers/passwordWalletTxtImporter';
+import { RememBearCsvImporter } from '../importers/rememBearCsvImporter';
 import { RoboFormCsvImporter } from '../importers/roboformCsvImporter';
 import { SafeInCloudXmlImporter } from '../importers/safeInCloudXmlImporter';
 import { SaferPassCsvImporter } from '../importers/saferpassCsvImport';
+import { SecureSafeCsvImporter } from '../importers/secureSafeCsvImporter';
 import { SplashIdCsvImporter } from '../importers/splashIdCsvImporter';
 import { StickyPasswordXmlImporter } from '../importers/stickyPasswordXmlImporter';
 import { TrueKeyCsvImporter } from '../importers/truekeyCsvImporter';
@@ -57,13 +73,14 @@ import { ZohoVaultCsvImporter } from '../importers/zohoVaultCsvImporter';
 
 export class ImportService implements ImportServiceAbstraction {
     featuredImportOptions = [
+        { id: 'bitwardenjson', name: 'Bitwarden (json)' },
         { id: 'bitwardencsv', name: 'Bitwarden (csv)' },
         { id: 'lastpasscsv', name: 'LastPass (csv)' },
         { id: 'chromecsv', name: 'Chrome (csv)' },
         { id: 'firefoxcsv', name: 'Firefox (csv)' },
         { id: 'keepass2xml', name: 'KeePass 2 (xml)' },
         { id: '1password1pif', name: '1Password (1pif)' },
-        { id: 'dashlanecsv', name: 'Dashlane (csv)' },
+        { id: 'dashlanejson', name: 'Dashlane (json)' },
     ];
 
     regularImportOptions: ImportOption[] = [
@@ -72,6 +89,7 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'roboformcsv', name: 'RoboForm (csv)' },
         { id: 'keepercsv', name: 'Keeper (csv)' },
         { id: 'enpasscsv', name: 'Enpass (csv)' },
+        { id: 'enpassjson', name: 'Enpass (json)' },
         { id: 'safeincloudxml', name: 'SafeInCloud (xml)' },
         { id: 'pwsafexml', name: 'Password Safe (xml)' },
         { id: 'stickypasswordxml', name: 'Sticky Password (xml)' },
@@ -97,6 +115,16 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'passwordagentcsv', name: 'Password Agent (csv)' },
         { id: 'passpackcsv', name: 'Passpack (csv)' },
         { id: 'passmanjson', name: 'Passman (json)' },
+        { id: 'avastcsv', name: 'Avast Passwords (csv)' },
+        { id: 'fsecurefsk', name: 'F-Secure KEY (fsk)' },
+        { id: 'kasperskytxt', name: 'Kaspersky Password Manager (txt)' },
+        { id: 'remembearcsv', name: 'RememBear (csv)' },
+        { id: 'passwordwallettxt', name: 'PasswordWallet (txt)' },
+        { id: 'mykicsv', name: 'Myki (csv)' },
+        { id: 'securesafecsv', name: 'SecureSafe (csv)' },
+        { id: 'logmeoncecsv', name: 'LogMeOnce (csv)' },
+        { id: 'blackberrycsv', name: 'BlackBerry Password Keeper (csv)' },
+        { id: 'buttercupcsv', name: 'Buttercup (csv)' },
     ];
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -146,6 +174,8 @@ export class ImportService implements ImportServiceAbstraction {
         switch (format) {
             case 'bitwardencsv':
                 return new BitwardenCsvImporter();
+            case 'bitwardenjson':
+                return new BitwardenJsonImporter();
             case 'lastpasscsv':
             case 'passboltcsv':
                 return new LastPassCsvImporter();
@@ -183,10 +213,12 @@ export class ImportService implements ImportServiceAbstraction {
                 return new PasswordDragonXmlImporter();
             case 'enpasscsv':
                 return new EnpassCsvImporter();
+            case 'enpassjson':
+                return new EnpassJsonImporter();
             case 'pwsafexml':
                 return new PasswordSafeXmlImporter();
-            case 'dashlanecsv':
-                return new DashlaneCsvImporter();
+            case 'dashlanejson':
+                return new DashlaneJsonImporter();
             case 'msecurecsv':
                 return new MSecureCsvImporter();
             case 'stickypasswordxml':
@@ -215,6 +247,26 @@ export class ImportService implements ImportServiceAbstraction {
                 return new PasspackCsvImporter();
             case 'passmanjson':
                 return new PassmanJsonImporter();
+            case 'avastcsv':
+                return new AvastCsvImporter();
+            case 'fsecurefsk':
+                return new FSecureFskImporter();
+            case 'kasperskytxt':
+                return new KasperskyTxtImporter();
+            case 'remembearcsv':
+                return new RememBearCsvImporter();
+            case 'passwordwallettxt':
+                return new PasswordWalletTxtImporter();
+            case 'mykicsv':
+                return new MykiCsvImporter();
+            case 'securesafecsv':
+                return new SecureSafeCsvImporter();
+            case 'logmeoncecsv':
+                return new LogMeOnceCsvImporter();
+            case 'blackberrycsv':
+                return new BlackBerryCsvImporter();
+            case 'buttercupcsv':
+                return new ButtercupCsvImporter();
             default:
                 return null;
         }
@@ -262,6 +314,6 @@ export class ImportService implements ImportServiceAbstraction {
 
     private badData(c: CipherView) {
         return (c.name == null || c.name === '--') &&
-            (c.login != null && (c.login.password == null || c.login.password === ''));
+            (c.type === CipherType.Login && c.login != null && Utils.isNullOrWhitespace(c.login.password));
     }
 }

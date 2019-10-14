@@ -1,4 +1,6 @@
-export class CardApi {
+import { BaseResponse } from '../response/baseResponse';
+
+export class CardApi extends BaseResponse {
     cardholderName: string;
     brand: string;
     number: string;
@@ -6,12 +8,16 @@ export class CardApi {
     expYear: string;
     code: string;
 
-    constructor(data: any) {
-        this.cardholderName = data.CardholderName;
-        this.brand = data.Brand;
-        this.number = data.Number;
-        this.expMonth = data.ExpMonth;
-        this.expYear = data.ExpYear;
-        this.code = data.Code;
+    constructor(data: any = null) {
+        super(data);
+        if (data == null) {
+            return;
+        }
+        this.cardholderName = this.getResponseProperty('CardholderName');
+        this.brand = this.getResponseProperty('Brand');
+        this.number = this.getResponseProperty('Number');
+        this.expMonth = this.getResponseProperty('ExpMonth');
+        this.expYear = this.getResponseProperty('ExpYear');
+        this.code = this.getResponseProperty('Code');
     }
 }
