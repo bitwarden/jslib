@@ -9,23 +9,10 @@ import { BreachAccountResponse } from '../models/response/breachAccountResponse'
 import { ErrorResponse } from '../models/response/errorResponse';
 
 const PwnedPasswordsApi = 'https://api.pwnedpasswords.com/range/';
-const MaximumCacheDuaation = 1000 * 60 * 60 * 24; // 24 hours
-
-class CachedHashResponse {
-    created: number;
-    
-    constructor(public response: string) {
-        this.created = Date.now();
-    }
-
-    public isValid(): boolean {
-        return this.created > (Date.now() - MaximumCacheDuaation);
-    };
-}
 
 export class AuditService implements AuditServiceAbstraction {
 
-    private cachedPasswordLeaked = new Map<string, CachedHashResponse>();
+    private cachedPasswordLeaked = new Map<string, string>();
 
     constructor(private cryptoFunctionService: CryptoFunctionService, private apiService: ApiService) { }
 
@@ -36,13 +23,14 @@ export class AuditService implements AuditServiceAbstraction {
         const hashStart = hash.substr(0, 5);
         const hashEnding = hash.substr(5);
 
-        if (!this.cachedPasswordLeaked.has(hashStart) || !this.cachedPasswordLeaked.get(hashStart).isValid) {
+        if (!this.cachedPasswordLeaked.has(hashStart)) {
             const response = await this.apiService.nativeFetch(new Request(PwnedPasswordsApi + hashStart));
             const leakedHashes = await response.text();
-            this.cachedPasswordLeaked.set(hashStart, new CachedHashResponse(leakedHashes));
+            this.cachedPasswordLeaked.set(hashStart, leakedHashes);
         }
 
-        const match = this.cachedPasswordLeaked.get(hashStart).response.split(/\r?\n/).find((v) => {
+        const match = this.cachedPasswordLeaked.get(hashStart).split(/\r?\n/).find((v) => {
+
             return v.split(':')[0] === hashEnding;
         });
 
