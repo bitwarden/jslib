@@ -8,7 +8,7 @@ export abstract class SyncService {
 
     getLastSync: () => Promise<Date>;
     setLastSync: (date: Date) => Promise<any>;
-    fullSync: (forceSync: boolean) => Promise<boolean>;
+    fullSync: (forceSync: boolean, allowThrowOnError?: boolean) => Promise<boolean>;
     syncUpsertFolder: (notification: SyncFolderNotification, isEdit: boolean) => Promise<boolean>;
     syncDeleteFolder: (notification: SyncFolderNotification) => Promise<boolean>;
     syncUpsertCipher: (notification: SyncCipherNotification, isEdit: boolean) => Promise<boolean>;

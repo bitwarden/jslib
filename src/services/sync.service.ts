@@ -61,7 +61,7 @@ export class SyncService implements SyncServiceAbstraction {
         await this.storageService.save(Keys.lastSyncPrefix + userId, date.toJSON());
     }
 
-    async fullSync(forceSync: boolean): Promise<boolean> {
+    async fullSync(forceSync: boolean, allowThrowOnError = false): Promise<boolean> {
         this.syncStarted();
         const isAuthenticated = await this.userService.isAuthenticated();
         if (!isAuthenticated) {
@@ -95,7 +95,11 @@ export class SyncService implements SyncServiceAbstraction {
             await this.setLastSync(now);
             return this.syncCompleted(true);
         } catch (e) {
-            return this.syncCompleted(false);
+            if (allowThrowOnError) {
+                throw e;
+            } else {
+                return this.syncCompleted(false);
+            }
         }
     }
 
