@@ -175,6 +175,10 @@ export class ViewComponent implements OnDestroy, OnInit {
         }
     }
 
+    setTextDataOnDrag(event: DragEvent, data: string) {
+        event.dataTransfer.setData('text', data);
+    }
+
     async downloadAttachment(attachment: AttachmentView) {
         const a = (attachment as any);
         if (a.downloading) {
