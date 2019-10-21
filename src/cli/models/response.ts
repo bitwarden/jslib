@@ -1,7 +1,7 @@
 import { BaseResponse } from './response/baseResponse';
 
 export class Response {
-    static error(error: any): Response {
+    static error(error: any, data?: any): Response {
         const res = new Response();
         res.success = false;
         if (typeof (error) === 'string') {
@@ -9,6 +9,7 @@ export class Response {
         } else {
             res.message = error.message != null ? error.message : error.toString();
         }
+        res.data = data;
         return res;
     }
 
@@ -26,7 +27,7 @@ export class Response {
         ids.forEach((id) => {
             msg += '\n' + id;
         });
-        return Response.error(msg);
+        return Response.error(msg, ids);
     }
 
     static success(data?: BaseResponse): Response {
