@@ -22,7 +22,8 @@ export class LoginCommand {
         protected i18nService: I18nService) { }
 
     async run(email: string, password: string, cmd: program.Command) {
-        if (email == null || email === '') {
+        const canInteract = process.stdout.isTTY && process.env.BW_NOINTERACTION !== 'true';
+        if ((email == null || email === '') && canInteract) {
             const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                 type: 'input',
                 name: 'email',
@@ -37,7 +38,7 @@ export class LoginCommand {
             return Response.badRequest('Email address is invalid.');
         }
 
-        if (password == null || password === '') {
+        if ((password == null || password === '') && canInteract) {
             const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                 type: 'password',
                 name: 'password',
@@ -88,7 +89,7 @@ export class LoginCommand {
                     if (selectedProvider == null) {
                         if (twoFactorProviders.length === 1) {
                             selectedProvider = twoFactorProviders[0];
-                        } else {
+                        } else if (canInteract) {
                             const options = twoFactorProviders.map((p) => p.name);
                             options.push(new inquirer.Separator());
                             options.push('Cancel');
@@ -105,6 +106,9 @@ export class LoginCommand {
                             }
                             selectedProvider = twoFactorProviders[i];
                         }
+                        if (selectedProvider == null) {
+                            return Response.error('Login failed. No provider selected.');
+                        }
                     }
 
                     if (twoFactorToken == null && response.twoFactorProviders.size > 1 &&
@@ -115,13 +119,15 @@ export class LoginCommand {
                     }
 
                     if (twoFactorToken == null) {
-                        const answer: inquirer.Answers =
-                            await inquirer.createPromptModule({ output: process.stderr })({
-                                type: 'input',
-                                name: 'token',
-                                message: 'Two-step login code:',
-                            });
-                        twoFactorToken = answer.token;
+                        if (canInteract) {
+                            const answer: inquirer.Answers =
+                                await inquirer.createPromptModule({ output: process.stderr })({
+                                    type: 'input',
+                                    name: 'token',
+                                    message: 'Two-step login code:',
+                                });
+                            twoFactorToken = answer.token;
+                        }
                         if (twoFactorToken == null || twoFactorToken === '') {
                             return Response.badRequest('Code is required.');
                         }
