@@ -1,6 +1,8 @@
 import { BaseImporter } from './baseImporter';
 import { Importer } from './importer';
 
+import { FieldType } from '../enums/fieldType';
+
 import { ImportResult } from '../models/domain/importResult';
 
 import { FolderView } from '../models/view/folderView';
@@ -71,7 +73,12 @@ export class KeePass2XmlImporter extends BaseImporter implements Importer {
                 } else if (key === 'Notes') {
                     cipher.notes += (value + '\n');
                 } else {
-                    this.processKvp(cipher, key, value);
+                    let type = FieldType.Text;
+                    if (valueEl.attributes.length > 0 && valueEl.attributes['ProtectInMemory'] != null &&
+                        valueEl.attributes['ProtectInMemory'].value === 'True') {
+                        type = FieldType.Hidden;
+                    }
+                    this.processKvp(cipher, key, value, type);
                 }
             });
 
