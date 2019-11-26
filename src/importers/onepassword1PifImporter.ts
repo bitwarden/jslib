@@ -54,6 +54,9 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
         }
 
         if (item.details != null) {
+            if (item.details.passwordHistory != null) {
+                this.parsePasswordHistory(item.details.passwordHistory, cipher);
+            }
             if (!this.isNullOrWhitespace(item.details.ccnum) || !this.isNullOrWhitespace(item.details.cvv)) {
                 cipher.type = CipherType.Card;
                 cipher.card = new CardView();
@@ -78,9 +81,6 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                     }
                 });
             }
-            if (item.details.passwordHistory != null) {
-                this.parsePasswordHistory(item.details.passwordHistory, cipher);
-            }
         }
     }
 
@@ -103,6 +103,9 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
         }
 
         if (item.secureContents != null) {
+            if (item.secureContents.passwordHistory != null) {
+                this.parsePasswordHistory(item.secureContents.passwordHistory, cipher);
+            }
             if (!this.isNullOrWhitespace(item.secureContents.notesPlain)) {
                 cipher.notes = item.secureContents.notesPlain.split(this.newLineRegex).join('\n') + '\n';
             }
@@ -131,9 +134,6 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                         this.parseFields(section.fields, cipher, 'n', 'v', 't');
                     }
                 });
-            }
-            if (item.secureContents.passwordHistory != null) {
-                this.parsePasswordHistory(item.secureContents.passwordHistory, cipher);
             }
         }
     }
@@ -232,8 +232,13 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                 }
             }
 
-            const fieldType = field.k === 'concealed' ? FieldType.Hidden : FieldType.Text;
             const fieldName = this.isNullOrWhitespace(field[nameKey]) ? 'no_name' : field[nameKey];
+            if (fieldName === 'password' && cipher.passwordHistory != null &&
+                cipher.passwordHistory.some((h) => h.password === fieldValue)) {
+                return;
+            }
+
+            const fieldType = field.k === 'concealed' ? FieldType.Hidden : FieldType.Text;
             this.processKvp(cipher, fieldName, fieldValue, fieldType);
         });
     }
