@@ -4,6 +4,7 @@ import { Importer } from './importer';
 import { ImportResult } from '../models/domain/importResult';
 
 import { CardView } from '../models/view/cardView';
+import { FolderView } from '../models/view/folderView';
 
 import { CipherType } from '../enums/cipherType';
 
@@ -11,15 +12,31 @@ export class PasswordBossJsonImporter extends BaseImporter implements Importer {
     parse(data: string): ImportResult {
         const result = new ImportResult();
         const results = JSON.parse(data);
-        if (results == null) {
+        if (results == null || results.items == null) {
             result.success = false;
             return result;
         }
 
-        results.forEach((value: any) => {
+        const foldersMap = new Map<string, string>();
+        results.folders.forEach((value: any) => {
+            foldersMap.set(value.id, value.name);
+        });
+        const foldersIndexMap = new Map<string, number>();
+        foldersMap.forEach((val, key) => {
+            foldersIndexMap.set(key, result.folders.length);
+            const f = new FolderView();
+            f.name = val;
+            result.folders.push(f);
+        });
+
+        results.items.forEach((value: any) => {
             const cipher = this.initLoginCipher();
             cipher.name = this.getValueOrDefault(value.name, '--');
             cipher.login.uris = this.makeUriArray(value.login_url);
+
+            if (value.folder != null && foldersIndexMap.has(value.folder)) {
+                result.folderRelationships.push([result.ciphers.length, foldersIndexMap.get(value.folder)]);
+            }
 
             if (value.identifiers == null) {
                 return;
@@ -41,6 +58,13 @@ export class PasswordBossJsonImporter extends BaseImporter implements Importer {
                 const valObj = value.identifiers[property];
                 const val = valObj != null ? valObj.toString() : null;
                 if (this.isNullOrWhitespace(val) || property === 'notes' || property === 'ignoreItemInSecurityScore') {
+                    continue;
+                }
+
+                if (property === 'custom_fields') {
+                    valObj.forEach((cf: any) => {
+                        this.processKvp(cipher, cf.name, cf.value);
+                    });
                     continue;
                 }
 
@@ -66,11 +90,15 @@ export class PasswordBossJsonImporter extends BaseImporter implements Importer {
                         continue;
                     }
                 } else {
-                    if (property === 'username') {
+                    if ((property === 'username' || property === 'email') &&
+                        this.isNullOrWhitespace(cipher.login.username)) {
                         cipher.login.username = val;
                         continue;
                     } else if (property === 'password') {
                         cipher.login.password = val;
+                        continue;
+                    } else if (property === 'totp') {
+                        cipher.login.totp = val;
                         continue;
                     } else if ((cipher.login.uris == null || cipher.login.uris.length === 0) &&
                         this.uriFieldNames.indexOf(property) > -1) {
