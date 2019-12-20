@@ -91,7 +91,6 @@ export class CipherService implements CipherServiceAbstraction {
         if (existingItem != null && existingItem !== '' && existingItem !== currentItem) {
             const ph = new PasswordHistoryView();
             ph.password = this.i18nService.t(type) + ": " + existingItem;
-            ph.type = type;
             ph.lastUsedDate = model.login.passwordRevisionDate = new Date();
 
             model.passwordHistory.splice(0, 0, ph);
@@ -123,7 +122,6 @@ export class CipherService implements CipherServiceAbstraction {
                         if (matchedField == null || matchedField.value !== ef.value) {
                             const ph = new PasswordHistoryView();
                             ph.password = ef.name + ': ' + ef.value;
-                            ph.type = "customFields";
                             ph.lastUsedDate = new Date();
                             model.passwordHistory.splice(0, 0, ph);
                         }
