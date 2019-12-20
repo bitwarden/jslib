@@ -87,19 +87,15 @@ export class CipherService implements CipherServiceAbstraction {
         this.decryptedCipherCache = null;
     }
 
-    addToEditHistory(model, existingItem, currentItem, type) {
+    addToEditHistory(model: CipherView, existingItem: string, currentItem: string, type: string) {
         if (existingItem != null && existingItem !== '' && existingItem !== currentItem) {
             const ph = new PasswordHistoryView();
-            ph.password = existingItem;
-            ph.type = this.i18nService.t(type);
+            ph.password = this.i18nService.t(type) + ": " + existingItem;
+            ph.type = type;
             ph.lastUsedDate = model.login.passwordRevisionDate = new Date();
 
             model.passwordHistory.splice(0, 0, ph);
-
-            return true;
         }
-
-        return false;
     }
 
     async encrypt(model: CipherView, key?: SymmetricCryptoKey, originalCipher: Cipher = null): Promise<Cipher> {
@@ -127,6 +123,7 @@ export class CipherService implements CipherServiceAbstraction {
                         if (matchedField == null || matchedField.value !== ef.value) {
                             const ph = new PasswordHistoryView();
                             ph.password = ef.name + ': ' + ef.value;
+                            ph.type = "customFields";
                             ph.lastUsedDate = new Date();
                             model.passwordHistory.splice(0, 0, ph);
                         }
