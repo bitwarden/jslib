@@ -47,6 +47,7 @@ import { ConstantsService } from './constants.service';
 
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
+import { i18n } from '@angular/core/src/render3';
 
 const Keys = {
     ciphersPrefix: 'ciphers_',
@@ -86,6 +87,21 @@ export class CipherService implements CipherServiceAbstraction {
         this.decryptedCipherCache = null;
     }
 
+    addToEditHistory(model, existingItem, currentItem, type) {
+        if (existingItem != null && existingItem !== '' && existingItem !== currentItem) {
+            const ph = new PasswordHistoryView();
+            ph.password = existingItem;
+            ph.type = this.i18nService.t(type);
+            ph.lastUsedDate = model.login.passwordRevisionDate = new Date();
+
+            model.passwordHistory.splice(0, 0, ph);
+
+            return true;
+        }
+
+        return false;
+    }
+
     async encrypt(model: CipherView, key?: SymmetricCryptoKey, originalCipher: Cipher = null): Promise<Cipher> {
         // Adjust password history
         if (model.id != null) {
@@ -95,24 +111,19 @@ export class CipherService implements CipherServiceAbstraction {
             if (originalCipher != null) {
                 const existingCipher = await originalCipher.decrypt();
                 model.passwordHistory = existingCipher.passwordHistory || [];
-                if (model.type === CipherType.Login && existingCipher.type === CipherType.Login) {
-                    if (existingCipher.login.password != null && existingCipher.login.password !== '' &&
-                        existingCipher.login.password !== model.login.password) {
-                        const ph = new PasswordHistoryView();
-                        ph.password = existingCipher.login.password;
-                        ph.lastUsedDate = model.login.passwordRevisionDate = new Date();
-                        model.passwordHistory.splice(0, 0, ph);
-                    } else {
-                        model.login.passwordRevisionDate = existingCipher.login.passwordRevisionDate;
-                    }
-                }
+
+                model.login.passwordRevisionDate = existingCipher.login.passwordRevisionDate;
+
+                this.addToEditHistory(model, existingCipher.login.password, model.login.password, "password");
+                this.addToEditHistory(model, existingCipher.login.username, model.login.username, "username");
+                this.addToEditHistory(model, existingCipher.name, model.name, "name");
+                this.addToEditHistory(model, existingCipher.notes, model.notes, "notes");
                 if (existingCipher.hasFields) {
-                    const existingHiddenFields = existingCipher.fields.filter((f) => f.type === FieldType.Hidden &&
-                        f.name != null && f.name !== '' && f.value != null && f.value !== '');
-                    const hiddenFields = model.fields == null ? [] :
-                        model.fields.filter((f) => f.type === FieldType.Hidden && f.name != null && f.name !== '');
-                    existingHiddenFields.forEach((ef) => {
-                        const matchedField = hiddenFields.find((f) => f.name === ef.name);
+                    const existingFields = existingCipher.fields.filter((f) => f.name != null && f.name !== '' && f.value != null && f.value !== '');
+                    const currentFields = model.fields == null ? [] :
+                        model.fields.filter((f) => f.name != null && f.name !== '');
+                    existingFields.forEach((ef) => {
+                        const matchedField = currentFields.find((f) => f.name === ef.name);
                         if (matchedField == null || matchedField.value !== ef.value) {
                             const ph = new PasswordHistoryView();
                             ph.password = ef.name + ': ' + ef.value;

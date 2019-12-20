@@ -4,6 +4,7 @@ import { Password } from '../domain/password';
 
 export class PasswordHistoryView implements View {
     password: string = null;
+    type: string = null;
     lastUsedDate: Date = null;
 
     constructor(ph?: Password) {
