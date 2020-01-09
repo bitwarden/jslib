@@ -1,5 +1,5 @@
-import * as signalR from '@aspnet/signalr';
-import * as signalRMsgPack from '@aspnet/signalr-protocol-msgpack';
+import * as signalR from '@microsoft/signalr';
+import * as signalRMsgPack from '@microsoft/signalr-protocol-msgpack';
 
 import { NotificationType } from '../enums/notificationType';
 
