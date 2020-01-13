@@ -192,7 +192,7 @@ export class ViewComponent implements OnDestroy, OnInit {
         }
 
         a.downloading = true;
-        const response = await fetch(new Request(attachment.url, { cache: 'no-cache' }));
+        const response = await fetch(new Request(attachment.url, { cache: 'no-store' }));
         if (response.status !== 200) {
             this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
             a.downloading = false;

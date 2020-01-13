@@ -115,7 +115,7 @@ export class AttachmentsComponent implements OnInit {
         }
 
         a.downloading = true;
-        const response = await fetch(new Request(attachment.url, { cache: 'no-cache' }));
+        const response = await fetch(new Request(attachment.url, { cache: 'no-store' }));
         if (response.status !== 200) {
             this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
             a.downloading = false;
@@ -170,7 +170,7 @@ export class AttachmentsComponent implements OnInit {
             this.reuploadPromises[attachment.id] = Promise.resolve().then(async () => {
                 // 1. Download
                 a.downloading = true;
-                const response = await fetch(new Request(attachment.url, { cache: 'no-cache' }));
+                const response = await fetch(new Request(attachment.url, { cache: 'no-store' }));
                 if (response.status !== 200) {
                     this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
                     a.downloading = false;

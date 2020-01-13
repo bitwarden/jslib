@@ -169,7 +169,7 @@ export class ApiService implements ApiServiceAbstraction {
         const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
             body: this.qsStringify(request.toIdentityToken(this.platformUtilsService.identityClientId)),
             credentials: this.getCredentials(),
-            cache: 'no-cache',
+            cache: 'no-store',
             headers: headers,
             method: 'POST',
         }));
@@ -868,7 +868,7 @@ export class ApiService implements ApiServiceAbstraction {
             headers.set('User-Agent', this.customUserAgent);
         }
         const response = await this.fetch(new Request(this.eventsBaseUrl + '/collect', {
-            cache: 'no-cache',
+            cache: 'no-store',
             credentials: this.getCredentials(),
             method: 'POST',
             body: JSON.stringify(request),
@@ -918,7 +918,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     fetch(request: Request): Promise<Response> {
         if (request.method === 'GET') {
-            request.headers.set('Cache-Control', 'no-cache');
+            request.headers.set('Cache-Control', 'no-store');
             request.headers.set('Pragma', 'no-cache');
         }
         return this.nativeFetch(request);
@@ -938,7 +938,7 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         const requestInit: RequestInit = {
-            cache: 'no-cache',
+            cache: 'no-store',
             credentials: this.getCredentials(),
             method: method,
         };
@@ -1011,7 +1011,7 @@ export class ApiService implements ApiServiceAbstraction {
                 client_id: decodedToken.client_id,
                 refresh_token: refreshToken,
             }),
-            cache: 'no-cache',
+            cache: 'no-store',
             credentials: this.getCredentials(),
             headers: headers,
             method: 'POST',
