@@ -6,6 +6,7 @@ import { OrganizationUserType } from '../../enums/organizationUserType';
 export class ProfileOrganizationResponse extends BaseResponse {
     id: string;
     name: string;
+    usePolicies: boolean;
     useGroups: boolean;
     useDirectory: boolean;
     useEvents: boolean;
@@ -26,6 +27,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
         super(response);
         this.id = this.getResponseProperty('Id');
         this.name = this.getResponseProperty('Name');
+        this.usePolicies = this.getResponseProperty('UsePolicies');
         this.useGroups = this.getResponseProperty('UseGroups');
         this.useDirectory = this.getResponseProperty('UseDirectory');
         this.useEvents = this.getResponseProperty('UseEvents');
