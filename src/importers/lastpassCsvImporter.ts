@@ -166,11 +166,25 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
             if (typeParts.length > 1 && typeParts[0] === 'NoteType' &&
                 (typeParts[1] === 'Credit Card' || typeParts[1] === 'Address')) {
                 if (typeParts[1] === 'Credit Card') {
-                    const mappedData = this.parseSecureNoteMapping<CardView>(extraParts, {
+                    let mappedData = this.parseSecureNoteMapping<CardView>(extraParts, {
                         'Number': 'number',
                         'Name on Card': 'cardholderName',
                         'Security Code': 'code',
+                        'Expiration Date': 'expMonth',
                     });
+                    
+                    if (mappedData[0] && mappedData[0].expMonth) {
+                        // Split string 'January,2020' into two
+                        const tempExpDate = mappedData[0].expMonth.split(',');
+                        // Parse month name into number
+                        mappedData[0].expMonth = (
+                            new Date(
+                                Date.parse(tempExpDate[0] + '1, 2012')
+                            ).getMonth() + 1
+                        ).toString();
+                        mappedData[0].expYear = tempExpDate[1];
+                    }
+                            
                     cipher.type = CipherType.Card;
                     cipher.card = mappedData[0];
                     cipher.notes = mappedData[1];
