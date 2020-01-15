@@ -9,6 +9,7 @@ export class OrganizationData {
     status: OrganizationUserStatusType;
     type: OrganizationUserType;
     enabled: boolean;
+    usePolicies: boolean;
     useGroups: boolean;
     useDirectory: boolean;
     useEvents: boolean;
@@ -27,6 +28,7 @@ export class OrganizationData {
         this.status = response.status;
         this.type = response.type;
         this.enabled = response.enabled;
+        this.usePolicies = response.usePolicies;
         this.useGroups = response.useGroups;
         this.useDirectory = response.useDirectory;
         this.useEvents = response.useEvents;

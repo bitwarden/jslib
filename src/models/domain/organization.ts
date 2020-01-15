@@ -9,6 +9,7 @@ export class Organization {
     status: OrganizationUserStatusType;
     type: OrganizationUserType;
     enabled: boolean;
+    usePolicies: boolean;
     useGroups: boolean;
     useDirectory: boolean;
     useEvents: boolean;
@@ -31,6 +32,7 @@ export class Organization {
         this.status = obj.status;
         this.type = obj.type;
         this.enabled = obj.enabled;
+        this.usePolicies = obj.usePolicies;
         this.useGroups = obj.useGroups;
         this.useDirectory = obj.useDirectory;
         this.useEvents = obj.useEvents;
