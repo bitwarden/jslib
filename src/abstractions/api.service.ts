@@ -33,6 +33,7 @@ import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
 import { PaymentRequest } from '../models/request/paymentRequest';
+import { PolicyRequest } from '../models/request/policyRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
@@ -80,6 +81,7 @@ import {
     OrganizationUserUserDetailsResponse,
 } from '../models/response/organizationUserResponse';
 import { PaymentResponse } from '../models/response/paymentResponse';
+import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
@@ -185,6 +187,12 @@ export abstract class ApiService {
     putGroupUsers: (organizationId: string, id: string, request: string[]) => Promise<any>;
     deleteGroup: (organizationId: string, id: string) => Promise<any>;
     deleteGroupUser: (organizationId: string, id: string, organizationUserId: string) => Promise<any>;
+
+    getPolicy: (organizationId: string, id: string) => Promise<PolicyResponse>;
+    getPolicies: (organizationId: string) => Promise<ListResponse<PolicyResponse>>;
+    postPolicy: (organizationId: string, request: PolicyRequest) => Promise<PolicyResponse>;
+    putPolicy: (organizationId: string, id: string, request: PolicyRequest) => Promise<PolicyResponse>;
+    deletePolicy: (organizationId: string, id: string) => Promise<any>;
 
     getOrganizationUser: (organizationId: string, id: string) => Promise<OrganizationUserDetailsResponse>;
     getOrganizationUserGroups: (organizationId: string, id: string) => Promise<string[]>;

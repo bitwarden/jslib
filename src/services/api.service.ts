@@ -39,6 +39,7 @@ import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
 import { PaymentRequest } from '../models/request/paymentRequest';
+import { PolicyRequest } from '../models/request/policyRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
@@ -87,6 +88,7 @@ import {
     OrganizationUserUserDetailsResponse,
 } from '../models/response/organizationUserResponse';
 import { PaymentResponse } from '../models/response/paymentResponse';
+import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
@@ -547,6 +549,32 @@ export class ApiService implements ApiServiceAbstraction {
     deleteGroupUser(organizationId: string, id: string, organizationUserId: string): Promise<any> {
         return this.send('DELETE',
             '/organizations/' + organizationId + '/groups/' + id + '/user/' + organizationUserId, null, true, false);
+    }
+
+    // Policy APIs
+
+    async getPolicy(organizationId: string, id: string): Promise<PolicyResponse> {
+        const r = await this.send('GET', '/organizations/' + organizationId + '/policies/' + id, null, true, true);
+        return new PolicyResponse(r);
+    }
+
+    async getPolicies(organizationId: string): Promise<ListResponse<PolicyResponse>> {
+        const r = await this.send('GET', '/organizations/' + organizationId + '/policies', null, true, true);
+        return new ListResponse(r, PolicyResponse);
+    }
+
+    async postPolicy(organizationId: string, request: PolicyRequest): Promise<PolicyResponse> {
+        const r = await this.send('POST', '/organizations/' + organizationId + '/policies', request, true, true);
+        return new PolicyResponse(r);
+    }
+
+    async putPolicy(organizationId: string, id: string, request: PolicyRequest): Promise<PolicyResponse> {
+        const r = await this.send('PUT', '/organizations/' + organizationId + '/policies/' + id, request, true, true);
+        return new PolicyResponse(r);
+    }
+
+    deletePolicy(organizationId: string, id: string): Promise<any> {
+        return this.send('DELETE', '/organizations/' + organizationId + '/policies/' + id, null, true, false);
     }
 
     // Organization User APIs
