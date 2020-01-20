@@ -1,4 +1,5 @@
 import { DeviceType } from '../enums/deviceType';
+import { PolicyType } from '../enums/policyType';
 
 import { ApiService as ApiServiceAbstraction } from '../abstractions/api.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
@@ -553,8 +554,8 @@ export class ApiService implements ApiServiceAbstraction {
 
     // Policy APIs
 
-    async getPolicy(organizationId: string, id: string): Promise<PolicyResponse> {
-        const r = await this.send('GET', '/organizations/' + organizationId + '/policies/' + id, null, true, true);
+    async getPolicy(organizationId: string, type: PolicyType): Promise<PolicyResponse> {
+        const r = await this.send('GET', '/organizations/' + organizationId + '/policies/' + type, null, true, true);
         return new PolicyResponse(r);
     }
 
@@ -563,18 +564,9 @@ export class ApiService implements ApiServiceAbstraction {
         return new ListResponse(r, PolicyResponse);
     }
 
-    async postPolicy(organizationId: string, request: PolicyRequest): Promise<PolicyResponse> {
-        const r = await this.send('POST', '/organizations/' + organizationId + '/policies', request, true, true);
+    async putPolicy(organizationId: string, type: PolicyType, request: PolicyRequest): Promise<PolicyResponse> {
+        const r = await this.send('PUT', '/organizations/' + organizationId + '/policies/' + type, request, true, true);
         return new PolicyResponse(r);
-    }
-
-    async putPolicy(organizationId: string, id: string, request: PolicyRequest): Promise<PolicyResponse> {
-        const r = await this.send('PUT', '/organizations/' + organizationId + '/policies/' + id, request, true, true);
-        return new PolicyResponse(r);
-    }
-
-    deletePolicy(organizationId: string, id: string): Promise<any> {
-        return this.send('DELETE', '/organizations/' + organizationId + '/policies/' + id, null, true, false);
     }
 
     // Organization User APIs

@@ -1,3 +1,5 @@
+import { PolicyType } from '../enums/policyType';
+
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
 import { BitPayInvoiceRequest } from '../models/request/bitPayInvoiceRequest';
@@ -188,11 +190,9 @@ export abstract class ApiService {
     deleteGroup: (organizationId: string, id: string) => Promise<any>;
     deleteGroupUser: (organizationId: string, id: string, organizationUserId: string) => Promise<any>;
 
-    getPolicy: (organizationId: string, id: string) => Promise<PolicyResponse>;
+    getPolicy: (organizationId: string, type: PolicyType) => Promise<PolicyResponse>;
     getPolicies: (organizationId: string) => Promise<ListResponse<PolicyResponse>>;
-    postPolicy: (organizationId: string, request: PolicyRequest) => Promise<PolicyResponse>;
-    putPolicy: (organizationId: string, id: string, request: PolicyRequest) => Promise<PolicyResponse>;
-    deletePolicy: (organizationId: string, id: string) => Promise<any>;
+    putPolicy: (organizationId: string, type: PolicyType, request: PolicyRequest) => Promise<PolicyResponse>;
 
     getOrganizationUser: (organizationId: string, id: string) => Promise<OrganizationUserDetailsResponse>;
     getOrganizationUserGroups: (organizationId: string, id: string) => Promise<string[]>;
