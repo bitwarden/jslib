@@ -182,6 +182,10 @@ export class Utils {
             return null;
         }
 
+        if (uriString.startsWith('data:')) {
+            return null;
+        }
+
         let httpUrl = uriString.startsWith('http://') || uriString.startsWith('https://');
         if (!httpUrl && uriString.indexOf('://') < 0 && Utils.tldEndingRegex.test(uriString)) {
             uriString = 'http://' + uriString;
