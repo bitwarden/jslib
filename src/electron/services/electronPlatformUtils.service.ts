@@ -114,9 +114,9 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
             defaultPath: fileName,
             showsTagField: false,
-        }, (path) => {
-            if (path != null) {
-                fs.writeFile(path, Buffer.from(blobData), (err) => {
+        }).then((ret) => {
+            if (ret.filePath != null) {
+                fs.writeFile(ret.filePath, Buffer.from(blobData), (err) => {
                     // error check?
                 });
             }
@@ -147,14 +147,14 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         });
     }
 
-    showDialog(text: string, title?: string, confirmText?: string, cancelText?: string, type?: string):
+    async showDialog(text: string, title?: string, confirmText?: string, cancelText?: string, type?: string):
         Promise<boolean> {
         const buttons = [confirmText == null ? this.i18nService.t('ok') : confirmText];
         if (cancelText != null) {
             buttons.push(cancelText);
         }
 
-        const result = remote.dialog.showMessageBox(remote.getCurrentWindow(), {
+        const result = await remote.dialog.showMessageBox(remote.getCurrentWindow(), {
             type: type,
             title: title,
             message: title,
@@ -165,7 +165,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
             noLink: true,
         });
 
-        return Promise.resolve(result === 0);
+        return Promise.resolve(result.response === 0);
     }
 
     eventTrack(action: string, label?: string, options?: any) {

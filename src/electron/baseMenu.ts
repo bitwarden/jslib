@@ -48,7 +48,7 @@ export class BaseMenu {
                 { type: 'separator' },
                 {
                     label: this.i18nService.t('selectAll'),
-                    role: 'selectall',
+                    role: 'selectAll',
                 },
             ],
         };
@@ -56,15 +56,18 @@ export class BaseMenu {
         this.viewSubMenuItemOptions = [
             {
                 label: this.i18nService.t('zoomIn'),
-                role: 'zoomin', accelerator: 'CmdOrCtrl+=',
+                role: 'zoomIn',
+                accelerator: 'CmdOrCtrl+=',
             },
             {
                 label: this.i18nService.t('zoomOut'),
-                role: 'zoomout', accelerator: 'CmdOrCtrl+-',
+                role: 'zoomOut',
+                accelerator: 'CmdOrCtrl+-',
             },
             {
                 label: this.i18nService.t('resetZoom'),
-                role: 'resetzoom', accelerator: 'CmdOrCtrl+0',
+                role: 'resetZoom',
+                accelerator: 'CmdOrCtrl+0',
             },
             { type: 'separator' },
             {
@@ -74,11 +77,11 @@ export class BaseMenu {
             { type: 'separator' },
             {
                 label: this.i18nService.t('reload'),
-                role: 'forcereload',
+                role: 'forceReload',
             },
             {
                 label: this.i18nService.t('toggleDevTools'),
-                role: 'toggledevtools',
+                role: 'toggleDevTools',
                 accelerator: 'F12',
             },
         ];
@@ -111,7 +114,7 @@ export class BaseMenu {
                 },
                 {
                     label: this.i18nService.t('hideOthers'),
-                    role: 'hideothers',
+                    role: 'hideOthers',
                 },
                 {
                     label: this.i18nService.t('showAll'),
@@ -159,7 +162,7 @@ export class BaseMenu {
             { type: 'separator' },
             {
                 label: this.i18nService.t('selectAll'),
-                role: 'selectall',
+                role: 'selectAll',
             },
         ]);
 
@@ -190,7 +193,7 @@ export class BaseMenu {
             { type: 'separator' },
             {
                 label: this.i18nService.t('selectAll'),
-                role: 'selectall',
+                role: 'selectAll',
             },
         ]);
 
@@ -210,7 +213,7 @@ export class BaseMenu {
             { type: 'separator' },
             {
                 label: this.i18nService.t('selectAll'),
-                role: 'selectall',
+                role: 'selectAll',
             },
         ]);
 

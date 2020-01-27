@@ -50,14 +50,14 @@ export class UpdaterMain {
             this.doingUpdateCheck = true;
         });
 
-        autoUpdater.on('update-available', () => {
+        autoUpdater.on('update-available', async () => {
             if (this.doingUpdateCheckWithFeedback) {
                 if (this.windowMain.win == null) {
                     this.reset();
                     return;
                 }
 
-                const result = dialog.showMessageBox(this.windowMain.win, {
+                const result = await dialog.showMessageBox(this.windowMain.win, {
                     type: 'info',
                     title: this.i18nService.t(this.projectName) + ' - ' + this.i18nService.t('updateAvailable'),
                     message: this.i18nService.t('updateAvailable'),
@@ -68,7 +68,7 @@ export class UpdaterMain {
                     noLink: true,
                 });
 
-                if (result === 0) {
+                if (result.response === 0) {
                     autoUpdater.downloadUpdate();
                 } else {
                     this.reset();
@@ -89,7 +89,7 @@ export class UpdaterMain {
             this.reset();
         });
 
-        autoUpdater.on('update-downloaded', (info) => {
+        autoUpdater.on('update-downloaded', async (info) => {
             if (this.onUpdateDownloaded != null) {
                 this.onUpdateDownloaded();
             }
@@ -98,7 +98,7 @@ export class UpdaterMain {
                 return;
             }
 
-            const result = dialog.showMessageBox(this.windowMain.win, {
+            const result = await dialog.showMessageBox(this.windowMain.win, {
                 type: 'info',
                 title: this.i18nService.t(this.projectName) + ' - ' + this.i18nService.t('restartToUpdate'),
                 message: this.i18nService.t('restartToUpdate'),
@@ -109,7 +109,7 @@ export class UpdaterMain {
                 noLink: true,
             });
 
-            if (result === 0) {
+            if (result.response === 0) {
                 autoUpdater.quitAndInstall(false, true);
             }
         });
