@@ -42,6 +42,7 @@ import { SecureNoteView } from '../../models/view/secureNoteView';
 import { Utils } from '../../misc/utils';
 
 export class AddEditComponent implements OnInit {
+    @Input() cloneMode: boolean = false;
     @Input() folderId: string = null;
     @Input() cipherId: string;
     @Input() type: CipherType;
@@ -160,7 +161,12 @@ export class AddEditComponent implements OnInit {
         this.editMode = this.cipherId != null;
         if (this.editMode) {
             this.editMode = true;
-            this.title = this.i18nService.t('editItem');
+            if (this.cloneMode) {
+                this.cloneMode = true;
+                this.title = this.i18nService.t('addItem');
+            } else{
+                this.title = this.i18nService.t('editItem');
+            }
         } else {
             this.title = this.i18nService.t('addItem');
         }
@@ -176,6 +182,11 @@ export class AddEditComponent implements OnInit {
             if (this.editMode) {
                 const cipher = await this.loadCipher();
                 this.cipher = await cipher.decrypt();
+
+                // Adjust Cipher Name if Cloning
+                if (this.cloneMode) {
+                    this.cipher.name += " - " + this.i18nService.t('clone');
+                }
             } else {
                 this.cipher = new CipherView();
                 this.cipher.organizationId = this.organizationId == null ? null : this.organizationId;
@@ -227,16 +238,21 @@ export class AddEditComponent implements OnInit {
                 this.collections.filter((c) => (c as any).checked).map((c) => c.id);
         }
 
+        // Clear current Cipher Id to trigger "Add" cipher flow
+        if (this.cloneMode) {
+            this.cipher.id = null;
+        }
+
         const cipher = await this.encryptCipher();
         try {
             this.formPromise = this.saveCipher(cipher);
             await this.formPromise;
             this.cipher.id = cipher.id;
-            this.platformUtilsService.eventTrack(this.editMode ? 'Edited Cipher' : 'Added Cipher');
+            this.platformUtilsService.eventTrack(this.editMode && !this.cloneMode ? 'Edited Cipher' : 'Added Cipher');
             this.platformUtilsService.showToast('success', null,
-                this.i18nService.t(this.editMode ? 'editedItem' : 'addedItem'));
+                this.i18nService.t(this.editMode && !this.cloneMode ? 'editedItem' : 'addedItem'));
             this.onSavedCipher.emit(this.cipher);
-            this.messagingService.send(this.editMode ? 'editedCipher' : 'addedCipher');
+            this.messagingService.send(this.editMode && !this.cloneMode ? 'editedCipher' : 'addedCipher');
             return true;
         } catch { }
 
