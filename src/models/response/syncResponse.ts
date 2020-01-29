@@ -3,6 +3,7 @@ import { CipherResponse } from './cipherResponse';
 import { CollectionDetailsResponse } from './collectionResponse';
 import { DomainsResponse } from './domainsResponse';
 import { FolderResponse } from './folderResponse';
+import { PolicyResponse } from './policyResponse';
 import { ProfileResponse } from './profileResponse';
 
 export class SyncResponse extends BaseResponse {
@@ -11,6 +12,7 @@ export class SyncResponse extends BaseResponse {
     collections: CollectionDetailsResponse[] = [];
     ciphers: CipherResponse[] = [];
     domains?: DomainsResponse;
+    policies?: PolicyResponse[] = [];
 
     constructor(response: any) {
         super(response);
@@ -38,6 +40,11 @@ export class SyncResponse extends BaseResponse {
         const domains = this.getResponseProperty('Domains');
         if (domains != null) {
             this.domains = new DomainsResponse(domains);
+        }
+
+        const policies = this.getResponseProperty('Policies');
+        if (policies != null) {
+            this.policies = policies.map((p: any) => new PolicyResponse(p));
         }
     }
 }
