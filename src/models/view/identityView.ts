@@ -110,11 +110,11 @@ export class IdentityView implements View {
         const city = this.city || '-';
         const state = this.state;
         const postalCode = this.postalCode || '-';
-        let addressPart2 = city
+        let addressPart2 = city;
         if (!Utils.isNullOrWhitespace(state)) {
-            addressPart2 += ', ' + state
+            addressPart2 += ', ' + state;
         }
-        addressPart2 += ', ' + postalCode
+        addressPart2 += ', ' + postalCode;
         return addressPart2;
     }
 }
