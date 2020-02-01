@@ -108,8 +108,13 @@ export class IdentityView implements View {
             return null;
         }
         const city = this.city || '-';
-        const state = this.state || '-';
+        const state = this.state;
         const postalCode = this.postalCode || '-';
-        return city + ', ' + state + ', ' + postalCode;
+        let addressPart2 = city;
+        if (!Utils.isNullOrWhitespace(state)) {
+            addressPart2 += ', ' + state;
+        }
+        addressPart2 += ', ' + postalCode;
+        return addressPart2;
     }
 }
