@@ -232,8 +232,9 @@ export class AddEditComponent implements OnInit {
             (this.cipher.login.uris[0].uri == null || this.cipher.login.uris[0].uri === '')) {
             this.cipher.login.uris = null;
         }
-
-        if (!this.editMode && this.cipher.organizationId != null) {
+        
+        // Allows saving of selected collections during "Add" and "Clone" flows
+        if ((!this.editMode || this.cloneMode) && this.cipher.organizationId != null) {
             this.cipher.collectionIds = this.collections == null ? [] :
                 this.collections.filter((c) => (c as any).checked).map((c) => c.id);
         }
