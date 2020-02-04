@@ -164,7 +164,7 @@ export class AddEditComponent implements OnInit {
             if (this.cloneMode) {
                 this.cloneMode = true;
                 this.title = this.i18nService.t('addItem');
-            } else{
+            } else {
                 this.title = this.i18nService.t('editItem');
             }
         } else {
@@ -185,7 +185,7 @@ export class AddEditComponent implements OnInit {
 
                 // Adjust Cipher Name if Cloning
                 if (this.cloneMode) {
-                    this.cipher.name += " - " + this.i18nService.t('clone');
+                    this.cipher.name += ' - ' + this.i18nService.t('clone');
                 }
             } else {
                 this.cipher = new CipherView();
@@ -232,7 +232,7 @@ export class AddEditComponent implements OnInit {
             (this.cipher.login.uris[0].uri == null || this.cipher.login.uris[0].uri === '')) {
             this.cipher.login.uris = null;
         }
-        
+
         // Allows saving of selected collections during "Add" and "Clone" flows
         if ((!this.editMode || this.cloneMode) && this.cipher.organizationId != null) {
             this.cipher.collectionIds = this.collections == null ? [] :
