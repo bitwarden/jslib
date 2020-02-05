@@ -181,13 +181,13 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
                     } else {
                         const [monthString, year] = mappedData[0].expMonth.split(',');
                         // Parse month name into number
-                        if (monthString) {
+                        if (!this.isNullOrWhitespace(monthString)) {
                             const month = new Date(Date.parse(monthString + '1, 2012')).getMonth() + 1;
                             mappedData[0].expMonth = month.toString();
                         } else {
                             delete mappedData[0].expMonth;
                         }
-                        if (year) {
+                        if (!this.isNullOrWhitespace(year)) {
                             mappedData[0].expYear = year;
                         }
                     }
