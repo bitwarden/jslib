@@ -166,22 +166,31 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
             if (typeParts.length > 1 && typeParts[0] === 'NoteType' &&
                 (typeParts[1] === 'Credit Card' || typeParts[1] === 'Address')) {
                 if (typeParts[1] === 'Credit Card') {
-                    let mappedData = this.parseSecureNoteMapping<CardView>(extraParts, {
+                    const mappedData = this.parseSecureNoteMapping<CardView>(extraParts, {
                         'Number': 'number',
                         'Name on Card': 'cardholderName',
                         'Security Code': 'code',
+                        // LP provides date in a format like 'June,2020'
+                        // Store in expMonth, then parse and modify
                         'Expiration Date': 'expMonth',
                     });
 
-                    // Split string 'January,2020' into two
-                    const tempExpDate = mappedData[0].expMonth.split(',');
-                    // Parse month name into number
-                    mappedData[0].expMonth = (
-                        new Date(
-                            Date.parse(tempExpDate[0] + '1, 2012')
-                        ).getMonth() + 1
-                    ).toString();
-                    mappedData[0].expYear = tempExpDate[1];
+                    if (mappedData[0].expMonth === ',') {
+                        // No expiration data
+                        delete mappedData[0].expMonth;
+                    } else {
+                        const [monthString, year] = mappedData[0].expMonth.split(',');
+                        // Parse month name into number
+                        if (monthString) {
+                            const month = new Date(Date.parse(monthString + '1, 2012')).getMonth() + 1;
+                            mappedData[0].expMonth = month.toString();
+                        } else {
+                            delete mappedData[0].expMonth;
+                        }
+                        if (year) {
+                            mappedData[0].expYear = year;
+                        }
+                    }
 
                     cipher.type = CipherType.Card;
                     cipher.card = mappedData[0];
