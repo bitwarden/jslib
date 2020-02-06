@@ -166,7 +166,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
             if (typeParts.length > 1 && typeParts[0] === 'NoteType' &&
                 (typeParts[1] === 'Credit Card' || typeParts[1] === 'Address')) {
                 if (typeParts[1] === 'Credit Card') {
-                    const mappedData = this.parseSecureNoteMapping<CardView>(extraParts, {
+                    const mappedData = this.parseSecureNoteMapping<CardView>(cipher, extraParts, {
                         'Number': 'number',
                         'Name on Card': 'cardholderName',
                         'Security Code': 'code',
@@ -175,29 +175,31 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
                         'Expiration Date': 'expMonth',
                     });
 
-                    const exp = mappedData[0].expMonth;
-                    if (exp === ',' || this.isNullOrWhitespace(exp)) {
+                    if (this.isNullOrWhitespace(mappedData.expMonth) || mappedData.expMonth === ',') {
                         // No expiration data
-                        delete mappedData[0].expMonth;
+                        mappedData.expMonth = null;
                     } else {
-                        const [monthString, year] = exp.split(',');
+                        const [monthString, year] = mappedData.expMonth.split(',');
                         // Parse month name into number
                         if (!this.isNullOrWhitespace(monthString)) {
-                            const month = new Date(Date.parse(monthString + '1, 2012')).getMonth() + 1;
-                            mappedData[0].expMonth = month.toString();
+                            const month = new Date(Date.parse(monthString.trim() + ' 1, 2012')).getMonth() + 1;
+                            if (isNaN(month)) {
+                                mappedData.expMonth = null;
+                            } else {
+                                mappedData.expMonth = month.toString();
+                            }
                         } else {
-                            delete mappedData[0].expMonth;
+                            mappedData.expMonth = null;
                         }
                         if (!this.isNullOrWhitespace(year)) {
-                            mappedData[0].expYear = year;
+                            mappedData.expYear = year;
                         }
                     }
 
                     cipher.type = CipherType.Card;
-                    cipher.card = mappedData[0];
-                    cipher.notes = mappedData[1];
+                    cipher.card = mappedData;
                 } else if (typeParts[1] === 'Address') {
-                    const mappedData = this.parseSecureNoteMapping<IdentityView>(extraParts, {
+                    const mappedData = this.parseSecureNoteMapping<IdentityView>(cipher, extraParts, {
                         'Title': 'title',
                         'First Name': 'firstName',
                         'Last Name': 'lastName',
@@ -214,8 +216,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
                         'Username': 'username',
                     });
                     cipher.type = CipherType.Identity;
-                    cipher.identity = mappedData[0];
-                    cipher.notes = mappedData[1];
+                    cipher.identity = mappedData;
                 }
                 processedNote = true;
             }
@@ -228,8 +229,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
         }
     }
 
-    private parseSecureNoteMapping<T>(extraParts: string[], map: any): [T, string] {
-        let notes: string = null;
+    private parseSecureNoteMapping<T>(cipher: CipherView, extraParts: string[], map: any): T {
         const dataObj: any = {};
 
         let processingNotes = false;
@@ -255,26 +255,21 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
             }
 
             if (processingNotes) {
-                notes += ('\n' + extraPart);
+                cipher.notes += ('\n' + extraPart);
             } else if (key === 'Notes') {
-                if (!this.isNullOrWhitespace(notes)) {
-                    notes += ('\n' + val);
+                if (!this.isNullOrWhitespace(cipher.notes)) {
+                    cipher.notes += ('\n' + val);
                 } else {
-                    notes = val;
+                    cipher.notes = val;
                 }
                 processingNotes = true;
             } else if (map.hasOwnProperty(key)) {
                 dataObj[map[key]] = val;
             } else {
-                if (!this.isNullOrWhitespace(notes)) {
-                    notes += '\n';
-                } else {
-                    notes = '';
-                }
-                notes += (key + ': ' + val);
+                this.processKvp(cipher, key, val);
             }
         });
 
-        return [dataObj as T, notes];
+        return dataObj;
     }
 }
