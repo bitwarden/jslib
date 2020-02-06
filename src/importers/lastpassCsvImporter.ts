@@ -170,7 +170,29 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
                         'Number': 'number',
                         'Name on Card': 'cardholderName',
                         'Security Code': 'code',
+                        // LP provides date in a format like 'June,2020'
+                        // Store in expMonth, then parse and modify
+                        'Expiration Date': 'expMonth',
                     });
+
+                    const exp = mappedData[0].expMonth;
+                    if (exp === ',' || this.isNullOrWhitespace(exp)) {
+                        // No expiration data
+                        delete mappedData[0].expMonth;
+                    } else {
+                        const [monthString, year] = exp.split(',');
+                        // Parse month name into number
+                        if (!this.isNullOrWhitespace(monthString)) {
+                            const month = new Date(Date.parse(monthString + '1, 2012')).getMonth() + 1;
+                            mappedData[0].expMonth = month.toString();
+                        } else {
+                            delete mappedData[0].expMonth;
+                        }
+                        if (!this.isNullOrWhitespace(year)) {
+                            mappedData[0].expYear = year;
+                        }
+                    }
+
                     cipher.type = CipherType.Card;
                     cipher.card = mappedData[0];
                     cipher.notes = mappedData[1];
