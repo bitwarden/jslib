@@ -177,19 +177,19 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
 
                     if (this.isNullOrWhitespace(mappedData.expMonth) || mappedData.expMonth === ',') {
                         // No expiration data
-                        mappedData.expMonth = null;
+                        mappedData.expMonth = undefined;
                     } else {
                         const [monthString, year] = mappedData.expMonth.split(',');
                         // Parse month name into number
                         if (!this.isNullOrWhitespace(monthString)) {
                             const month = new Date(Date.parse(monthString.trim() + ' 1, 2012')).getMonth() + 1;
                             if (isNaN(month)) {
-                                mappedData.expMonth = null;
+                                mappedData.expMonth = undefined;
                             } else {
                                 mappedData.expMonth = month.toString();
                             }
                         } else {
-                            mappedData.expMonth = null;
+                            mappedData.expMonth = undefined;
                         }
                         if (!this.isNullOrWhitespace(year)) {
                             mappedData.expYear = year;

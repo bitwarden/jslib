@@ -1,7 +1,11 @@
 import { LastPassCsvImporter as Importer } from '../../../src/importers/lastpassCsvImporter';
+
 import { CipherView } from '../../../src/models/view/cipherView';
+import { FieldView } from '../../../src/models/view/fieldView';
 
 import { Utils } from '../../../src/misc/utils';
+
+import { FieldType } from '../../../src/enums';
 
 if (Utils.isNode) {
     // Polyfills
@@ -24,19 +28,26 @@ Expiration Date:June,2020
 Notes:some text
 ",Credit-card,,0`,
         expected: Object.assign(new CipherView(), {
-                id: null,
-                organizationId: null,
-                folderId: null,
-                name: 'Credit-card',
-                notes: 'Start Date: October,2017\nsome text\n',
-                type: 3,
-                card: {
-                    cardholderName: 'John Doe',
-                    number: '1234567812345678',
-                    code: '123',
-                    expYear: '2020',
-                    expMonth: '6',
-                },
+            id: null,
+            organizationId: null,
+            folderId: null,
+            name: 'Credit-card',
+            notes: 'some text\n',
+            type: 3,
+            card: {
+                cardholderName: 'John Doe',
+                number: '1234567812345678',
+                code: '123',
+                expYear: '2020',
+                expMonth: '6',
+            },
+            fields: [
+                Object.assign(new FieldView(), {
+                    name: 'Start Date',
+                    value: 'October,2017',
+                    type: FieldType.Text,
+                }),
+            ],
         }),
     },
     {
@@ -51,13 +62,22 @@ Start Date:,
 Expiration Date:,
 Notes:",empty,,0`,
         expected: Object.assign(new CipherView(), {
-                id: null,
-                organizationId: null,
-                folderId: null,
-                name: 'empty',
-                notes: `Start Date: ,`,
-                type: 3,
-                card: {},
+            id: null,
+            organizationId: null,
+            folderId: null,
+            name: 'empty',
+            notes: null,
+            type: 3,
+            card: {
+                expMonth: undefined,
+            },
+            fields: [
+                Object.assign(new FieldView(), {
+                    name: 'Start Date',
+                    value: ',',
+                    type: FieldType.Text,
+                }),
+            ],
         }),
     },
     {
@@ -72,19 +92,30 @@ Start Date:,
 Expiration Date:January,
 Notes:",noyear,,0`,
         expected: Object.assign(new CipherView(), {
-                id: null,
-                organizationId: null,
-                folderId: null,
-                name: 'noyear',
-                notes: `Type: Visa
-Start Date: ,`,
-                type: 3,
-                card: {
-                    cardholderName: 'John Doe',
-                    number: '1234567887654321',
-                    code: '321',
-                    expMonth: '1',
-                },
+            id: null,
+            organizationId: null,
+            folderId: null,
+            name: 'noyear',
+            notes: null,
+            type: 3,
+            card: {
+                cardholderName: 'John Doe',
+                number: '1234567887654321',
+                code: '321',
+                expMonth: '1',
+            },
+            fields: [
+                Object.assign(new FieldView(), {
+                    name: 'Type',
+                    value: 'Visa',
+                    type: FieldType.Text,
+                }),
+                Object.assign(new FieldView(), {
+                    name: 'Start Date',
+                    value: ',',
+                    type: FieldType.Text,
+                }),
+            ],
         }),
     },
     {
@@ -99,19 +130,31 @@ Start Date:,
 Expiration Date:,2020
 Notes:",nomonth,,0`,
         expected: Object.assign(new CipherView(), {
-                id: null,
-                organizationId: null,
-                folderId: null,
-                name: 'nomonth',
-                notes: `Type: Mastercard
-Start Date: ,`,
-                type: 3,
-                card: {
-                    cardholderName: 'John Doe',
-                    number: '8765432112345678',
-                    code: '987',
-                    expYear: '2020',
-                },
+            id: null,
+            organizationId: null,
+            folderId: null,
+            name: 'nomonth',
+            notes: null,
+            type: 3,
+            card: {
+                cardholderName: 'John Doe',
+                number: '8765432112345678',
+                code: '987',
+                expYear: '2020',
+                expMonth: undefined,
+            },
+            fields: [
+                Object.assign(new FieldView(), {
+                    name: 'Type',
+                    value: 'Mastercard',
+                    type: FieldType.Text,
+                }),
+                Object.assign(new FieldView(), {
+                    name: 'Start Date',
+                    value: ',',
+                    type: FieldType.Text,
+                }),
+            ],
         }),
     },
 ];
