@@ -116,6 +116,22 @@ Start Date: ,`,
     },
 ];
 
+const Imports = [
+    {
+        title: 'should parse custom note type date',
+        csv: `url,username,password,extra,name,grouping,fav
+http://sn,,,"NoteType:Custom_1399315180831972306
+Language:en-US
+textfield:frank
+copytextfield:willowby
+monthdayyear:January,1,2020
+monthyear:January,2021
+passkey:fr@nk
+Notes:some notes",test-import-custom-type,Social,0`,
+        expected: {},
+    },
+];
+
 describe('Lastpass CSV Importer', () => {
     CipherData.forEach((data) => {
         it(data.title, async () => {
@@ -131,6 +147,14 @@ describe('Lastpass CSV Importer', () => {
                     expect(cipher[property]).toEqual(data.expected[property]);
                 }
             }
+        });
+    });
+    Imports.forEach((data) => {
+        it(data.title, async () => {
+            const importer = new Importer();
+            const result = importer.parse(data.csv);
+            expect(result != null).toBe(true);
+            expect(result.ciphers.length).toBeGreaterThan(0);
         });
     });
 });

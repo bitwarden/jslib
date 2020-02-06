@@ -1,0 +1,241 @@
+url,username,password,extra,name,grouping,fav
+http://password.com,frank,fr@nk,"my notes
+",test-import-password,Social,0
+http://sn,,,"some notes
+on multiple lines",test-import-note,Social,0
+http://sn,,,"NoteType:Address
+Language:en-US
+Title:mr
+First Name:Frank
+Middle Name:Ashby
+Last Name:Willowby
+Username:fwillow
+Gender:m
+Birthday:January,1,1980
+Company:Frank and Associates
+Address 1:123 Fake St
+Address 2:Apt #2
+Address 3:CO Frank
+City / Town:Franktown
+County:Mars
+State:CA
+Zip / Postal Code:90210
+Country:US
+Timezone:-08:00,1
+Email Address:frank@example.com
+Phone:{""num"":""15555551234"",""ext"":""5"",""cc3l"":""USA""}
+Evening Phone:{""num"":""2131234"",""ext"":""5"",""cc3l"":""DZA""}
+Mobile Phone:{""num"":""3751234"",""ext"":""5"",""cc3l"":""BLR""}
+Fax:{""num"":""531234"",""ext"":""5"",""cc3l"":""CUB""}
+Notes:some notes",test-import-address,Social,0
+http://sn,,,"NoteType:Credit Card
+Language:en-US
+Name on Card:Frank Willowby
+Type:Credit
+Number:4321123456789876
+Security Code:123
+Start Date:January,2019
+Expiration Date:March,2022
+Notes:some notes",test-import-payment-card,Social,0
+http://sn,,,"NoteType:Credit Card
+Language:en-US
+Name on Card:Frank Willowby
+Type:Credit
+Number:4321 1234 5678 9876
+Security Code:123
+Start Date:,
+Expiration Date:March,2022
+Notes:some notes",test-import-payment-card-spaces,Social,0
+http://sn,,,"NoteType:Bank Account
+Language:en-US
+Bank Name:Chase
+Account Type:Checking
+Routing Number:044000037
+Account Number:1234567890
+SWIFT Code:CHASUS33XXX
+IBAN Number:GB82WEST123456987654 32
+Pin:1234
+Branch Address:123 Fake St
+Branch Phone:555-555-1234
+Notes:some notes",test-import-bank-account,Social,0
+http://sn,,,"NoteType:Driver's License
+Language:en-US
+Number:A123-456-789-123
+Expiration Date:January,1,2024
+License Class:D
+Name:Frank Willowby
+Address:123 Fake St
+City / Town:Franktown
+State:California
+ZIP / Postal Code:90210
+Country:USA
+Date of Birth:January,1,1985
+Sex:M
+Height:5'10""
+Notes:some notes",test-import-drivers-license,Social,0
+http://sn,,,"NoteType:Passport
+Language:en-US
+Type:Diplomatic
+Name:Frank Willowby
+Country:USA
+Number:31195855
+Sex:M
+Nationality:USA
+Issuing Authority:United States Department of State
+Date of Birth:January,1,1985
+Issued Date:January,02,2015
+Expiration Date:January,3,2025
+Notes:some notes",test-import-passport,Social,0
+http://sn,,,"NoteType:Social Security
+Language:en-US
+Name:Frank Willowby
+Number:123-45-6789
+Notes:some notes",test-import-social-security-number,Social,0
+http://sn,,,"NoteType:Insurance
+Language:en-US
+Company:Gecko
+Policy Type:Auto
+Policy Number:123456789
+Expiration:January,2,2022
+Agent Name:Sally Sitwell
+Agent Phone:555-555-4321
+URL:gecko-insurance.com
+Notes:some notes",test-import-insurance-policy,Social,0
+http://sn,,,"NoteType:Health Insurance
+Language:en-US
+Company:Kaiser
+Company Phone:555-555-9876
+Policy Type:PPO
+Policy Number:12345678
+Group ID:9876543
+Member Name:Frank Willowby
+Member ID:159753-A
+Physician Name:Dr. House
+Physician Phone:555-555-6543
+Physician Address:124 Fake St
+Co-pay:$20
+Notes:some notes",test-import-health-insurance,Social,0
+http://sn,,fr@nk,"NoteType:Membership
+Language:en-US
+Organization:Ikea
+Membership Number:123456789
+Member Name:Frank Willowby
+Start Date:January,1,2018
+Expiration Date:January,2,2024
+Website:ikea.com
+Telephone:555-555-8523
+Password:fr@nk
+Notes:some notes",test-import-membership,Social,0
+http://sn,,swissarmy,"NoteType:Wi-Fi Password
+Language:en-US
+SSID:tell my wifi love her
+Password:swissarmy
+Connection Type:fast
+Connection Mode:automatic
+Authentication:yes
+Encryption:WPA2
+Use 802.1X:sure
+FIPS Mode:maybe
+Key Type:shared
+Protected:ok?
+Key Index:7
+Notes:some notes",test-import-wifi,Social,0
+http://sn,frank,fr@nk,"NoteType:Email Account
+Language:en-US
+Username:frank
+Password:fr@nk
+Server:example.com
+Port:443
+Type:IMAP
+SMTP Server:smtp.example.com
+SMTP Port:80
+Notes:some notes",test-import-email,Social,0
+http://sn,frank,fr@nk,"NoteType:Instant Messenger
+Language:en-US
+Type:AIM
+Username:frank
+Password:fr@nk
+Server:chat.aol.com
+Port:1024
+Notes:some notes",test-import-instant-messenger,Social,0
+http://sn,frank,fr@nk,"NoteType:Database
+Language:en-US
+Type:sqlite
+Hostname:sqlite.example.com
+Port:3306
+Database:users
+Username:frank
+Password:fr@nk
+SID:ORCL
+Alias:no
+Notes:some notes",test-import-database,Social,0
+http://sn,frank,fr@nk,"NoteType:Server
+Language:en-US
+Hostname:example.com
+Username:frank
+Password:fr@nk
+Notes:some notes",test-import-server,Social,0
+http://sn,,,"NoteType:SSH Key
+Language:en-US
+Bit Strength:1024
+Format:PEM
+Passphrase:fr@nk
+Private Key:-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEArWq88uJUJkhIxIEOvH4OYjnGCfC9LbPwJ/TXaXWNQfpVlITE
+CcPkGwhdwqaJd6hl6tSeti3alIg6IjozyWaj35msLu4EzCD6zfUGyLpjAvvrGVuj
+RtGgwtc0i+iRn4f4faoHlN5NLH5VKRrs0RtOhCA79tTl3ntbSdngUE6SDVw5bmOa
+ub+2kBeiZHqONCoyjfYiyWvnxy4rkv8I5GfyFyfhA2lGfUa5dDB152e1WAPiOvfC
+D/5U1mEI0JYRoK3XBIv/5vFQKOS7Mvw8txCJeeAGEUHlHUE02sfpkx0pdEqWuorB
+AbabmuAQkt4xZYpI8cmi+I23OybzL/m8JQ+qUwIDAQABAoIBAFOXuyL9VIDroSAP
+8fGMdhSFMuBByn9IWIB6NoggYQonyK8B3Jm0crVRMBkPO/6RDyfGfAbnTZEBpbww
+AByaPG4hXm100J0xXJSBA1co+WdL1gTwNmGB1RN2t16lqeSTn4W7u1HYYq0K7LQW
+xYb6ubtY6m7OK0w2fEe6HbW4WhDT01A/ChONk86D/cs5I5bzGbGDeKXOmDm//2nI
+Z0cs6L/nDDyRVz5qul725ie3uDkh/HGne/LQ/m4vbWsfkNYACd2l6L4vREZpphDq
+LYw6FgM/VGFW+of8gMdZEOBa0ATkHS0KBI49TjZ39VwTBV5wIu5i4PCe9tuNDLeF
+UIisY8ECgYEA4M28CH7CKEAJKcNwQFc8OBA1BMHopSWSAllEo40AGGPmujC9e+Om
+6dEe9YVdq3q/lTVs1sad3wP2YHSGQj+p3BvWtU4Y32s5BSAgo3YgfzxhgqVoPFsT
+4YshL5MYFa8NxilZ9jYVx/WOkLd8LyRmZJLr9vmpheJwnPcCAKMOFCECgYEAxXt2
+4/M+hPPMibvlYsLrbcJ0g044+XxS2tNAdf1VOp7X3m/TvEZic9mtGOU0ZXn2wt3i
+ZGytKqr+cAkKcA9lufxYTs1S+pn7tLEFeWMa9F/C7T+gSXX0XgiLLkI2XDHKvXtj
+8flfwFpd9L4eJVjpeG0+QXZIOCpihwipe+Dwr/MCgYEAr4k2eFOyfAd0oD3RmwwD
+I6vUGoDnjn0Fw/u8kxD4sBLiCSUh8GlU3mLCj+ixucLBclsjP5obkBbh/XM/mt9n
+XU4Hm879sQdioNPzaHBG89NMON27xNVBcu5W3XU4a0YjtUZ4zr5wx5DA39PGjnEX
+2xS2WEWez8J/OLHPyHuJ9MECgYAykCYkv0cmq3WXXnChFN9Kvxst831LA7YDKUu7
+6h1EYR9MaL2B21Oh7f4P/b+oq82unzk0FU9ROW7kKKxvfMHDGQVTR+cTGxIDdb+9
+EM75+vrh3ASiSn1DBlT8hx98A5OxaEJy1jLaAUlFPNhjH5zHpNDn2e0r1E5d3K3o
+dfOqWQKBgCo0HZyG7LNdf4p9uhu1hIn6iIt9EkaYpPgrXKO/NevkjzPrZsUn5reH
+HPqAcOB3NaEsSy4bXfrFXIG8lHmyoJJCXUxmreA126yuBUyv2c6rVv6ChWk7YAti
+02pUCRtEJ/s/2aa//TgFT3FKyN8KIcHwEH9j3pECBBMQS/+9YCk1
+-----END RSA PRIVATE KEY-----
+Public Key:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCtarzy4lQmSEjEgQ68fg5iOcYJ8L0ts/An9NdpdY1B+lWUhMQJw+QbCF3Cpol3qGXq1J62LdqUiDoiOjPJZqPfmawu7gTMIPrN9QbIumMC++sZW6NG0aDC1zSL6JGfh/h9qgeU3k0sflUpGuzRG06EIDv21OXee1tJ2eBQTpINXDluY5q5v7aQF6Jkeo40KjKN9iLJa+fHLiuS/wjkZ/IXJ+EDaUZ9Rrl0MHXnZ7VYA+I698IP/lTWYQjQlhGgrdcEi//m8VAo5Lsy/Dy3EIl54AYRQeUdQTTax+mTHSl0Spa6isEBtpua4BCS3jFlikjxyaL4jbc7JvMv+bwlD6pT frank@frank-PC
+Hostname:home.example.com
+Date:January,3,1999
+Notes:some notes",test-import-ssh-key,Social,0
+http://sn,,,"NoteType:Software License
+Language:en-US
+License Key:1234567890
+Licensee:Frank
+Version:1.2.3
+Publisher:Squaresoft
+Support Email:support@example.com
+Website:example.com
+Price:$49.99
+Purchase Date:January,4,2020
+Order Number:9877654
+Number of Licenses:13
+Order Total:$649.87
+Notes:some notes",test-import-software-license,Social,0
+http://sn,,,"NoteType:Custom_1399315180831972306
+Language:en-US
+textfield:frank
+copytextfield:willowby
+monthdayyear:January,1,2020
+monthyear:January,2021
+passkey:fr@nk
+Notes:some notes",test-import-custom-type,Social,0
+http://sn,franco,fr@nc0,"NoteType:Server
+Language:es-ES
+Hostname:example.es
+Username:franco
+Password:fr@nc0
+Notes:unas notas",test-import-spanish-autofill,Social,0
