@@ -7,4 +7,5 @@ export enum PaymentMethodType {
     WireTransfer = 5,
     AppleInApp = 6,
     GoogleInApp = 7,
+    Check = 8,
 }
