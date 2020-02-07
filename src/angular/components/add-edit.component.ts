@@ -201,7 +201,7 @@ export class AddEditComponent implements OnInit {
             }
         }
 
-        if (this.cipher != null && (!this.editMode || addEditCipherInfo != null)) {
+        if (this.cipher != null && (!this.editMode || addEditCipherInfo != null || this.cloneMode)) {
             await this.organizationChanged();
             if (this.collectionIds != null && this.collectionIds.length > 0 && this.collections.length > 0) {
                 this.collections.forEach((c) => {
