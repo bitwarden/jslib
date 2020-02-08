@@ -302,7 +302,24 @@ export abstract class BaseImporter {
         }
     }
 
-    protected processKvp(cipher: CipherView, key: string, value: string, type: FieldType = FieldType.Text) {
+    protected getFieldTypeByKey(key: string) {
+        // Infer custom field type based on the field's name
+        const hiddenKeywords = [
+            'password',
+            'passphrase',
+            'secret',
+            'private',
+        ];
+        for (const hiddenKeyword of hiddenKeywords) {
+            const index = key.toLowerCase().indexOf(hiddenKeyword.toLowerCase());
+            if (index >= 0) {
+                return FieldType.Hidden;
+            }
+        }
+        return FieldType.Text;
+    }
+
+    protected processKvp(cipher: CipherView, key: string, value: string, type: FieldType = null) {
         if (this.isNullOrWhitespace(value)) {
             return;
         }
@@ -320,6 +337,9 @@ export abstract class BaseImporter {
             }
             const field = new FieldView();
             field.type = type;
+            if (type === null) {
+                field.type = this.getFieldTypeByKey(key);
+            }
             field.name = key;
             field.value = value;
             cipher.fields.push(field);

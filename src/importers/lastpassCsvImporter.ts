@@ -225,7 +225,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
         if (!processedNote) {
             cipher.secureNote = new SecureNoteView();
             cipher.secureNote.type = SecureNoteType.Generic;
-            cipher.notes = this.getValueOrDefault(value.extra);
+            this.parseSecureNoteMapping(cipher, this.splitNewLine(value.extra), {});
         }
     }
 
