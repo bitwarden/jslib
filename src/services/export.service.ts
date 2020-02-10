@@ -44,7 +44,9 @@ export class ExportService implements ExportServiceAbstraction {
         if (format === 'csv') {
             const foldersMap = new Map<string, FolderView>();
             decFolders.forEach((f) => {
-                foldersMap.set(f.id, f);
+                if (f.id != null) {
+                    foldersMap.set(f.id, f);
+                }
             });
 
             const exportCiphers: any[] = [];
