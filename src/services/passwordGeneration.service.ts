@@ -11,6 +11,17 @@ import { StorageService } from '../abstractions/storage.service';
 
 import { EEFLongWordList } from '../misc/wordlist';
 
+const specialCharactersValues = {
+    '!': true,
+    '@': true,
+    '#': true,
+    '$': true,
+    '%': true,
+    '^': true,
+    '&': true,
+    '*': true,
+};
+
 const DefaultOptions = {
     length: 14,
     ambiguous: false,
@@ -27,6 +38,8 @@ const DefaultOptions = {
     wordSeparator: '-',
     capitalize: false,
     includeNumber: false,
+    specialCharacters: Object.keys(specialCharactersValues),
+    specialCharactersValues,
 };
 
 const Keys = {
@@ -139,7 +152,10 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             allCharSet += numberCharSet;
         }
 
-        const specialCharSet = '!@#$%^&*';
+        const specialCharSet = Object.keys(o.specialCharactersValues).reduce((acc, key) => {
+            if (o.specialCharactersValues[key]) acc += key;
+            return acc;
+        }, '');
         if (o.special) {
             allCharSet += specialCharSet;
         }
