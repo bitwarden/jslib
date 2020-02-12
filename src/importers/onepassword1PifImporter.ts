@@ -22,7 +22,7 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
                 return;
             }
             const item = JSON.parse(line);
-            if(item.trashed === true) {
+            if (item.trashed === true) {
                 return;
             }
             const cipher = this.initLoginCipher();
