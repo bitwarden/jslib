@@ -22,7 +22,7 @@ export class LockService implements LockServiceAbstraction {
         private collectionService: CollectionService, private cryptoService: CryptoService,
         private platformUtilsService: PlatformUtilsService, private storageService: StorageService,
         private messagingService: MessagingService, private searchService: SearchService,
-        private userService: UserService, private lockedCallback: () => Promise<void> = null) {
+        private userService: UserService, private lockedCallback: () => Promise<void> = null, private logoutCallback: () => Promise<void> = null) {
     }
 
     init(checkOnInterval: boolean) {
@@ -99,6 +99,11 @@ export class LockService implements LockServiceAbstraction {
         if (this.lockedCallback != null) {
             await this.lockedCallback();
         }
+
+        const shouldLogout = await this.isLogoutInstead();
+        if (shouldLogout) {
+            await this.logoutCallback();
+        }
     }
 
     async setLockOption(lockOption: number): Promise<void> {
@@ -110,6 +115,11 @@ export class LockService implements LockServiceAbstraction {
         const protectedPin = await this.storageService.get<string>(ConstantsService.protectedPin);
         const pinProtectedKey = await this.storageService.get<string>(ConstantsService.pinProtectedKey);
         return [protectedPin != null, pinProtectedKey != null];
+    }
+
+    async isLogoutInstead(): Promise<boolean> {
+        const lockOptionsLogout = await this.storageService.get<boolean>(ConstantsService.lockOptionLogout);
+        return lockOptionsLogout;
     }
 
     clear(): Promise<any> {

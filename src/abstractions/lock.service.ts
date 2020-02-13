@@ -7,5 +7,6 @@ export abstract class LockService {
     lock: (allowSoftLock?: boolean) => Promise<void>;
     setLockOption: (lockOption: number) => Promise<void>;
     isPinLockSet: () => Promise<[boolean, boolean]>;
+    isLogoutInstead: () => Promise<boolean>;
     clear: () => Promise<any>;
 }
