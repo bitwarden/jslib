@@ -227,7 +227,7 @@ export class AddEditComponent implements OnInit {
             return false;
         }
 
-        if (!this.editMode && this.cipher.type === CipherType.Login &&
+        if ((!this.editMode || this.cloneMode) && this.cipher.type === CipherType.Login &&
             this.cipher.login.uris != null && this.cipher.login.uris.length === 1 &&
             (this.cipher.login.uris[0].uri == null || this.cipher.login.uris[0].uri === '')) {
             this.cipher.login.uris = null;
