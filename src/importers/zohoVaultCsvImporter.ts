@@ -21,8 +21,10 @@ export class ZohoVaultCsvImporter extends BaseImporter implements Importer {
             const cipher = this.initLoginCipher();
             cipher.favorite = this.getValueOrDefault(value.Favorite, '0') === '1';
             cipher.notes = this.getValueOrDefault(value.Notes);
-            cipher.name = this.getValueOrDefault(value['Password Name'], this.getValueOrDefault(value['Secret Name'], '--'));
-            cipher.login.uris = this.makeUriArray(this.getValueOrDefault(value['Password URL'], this.getValueOrDefault(value['Secret URL'])));
+            cipher.name = this.getValueOrDefault(
+                value['Password Name'], this.getValueOrDefault(value['Secret Name'], '--'));
+            cipher.login.uris = this.makeUriArray(
+                this.getValueOrDefault(value['Password URL'], this.getValueOrDefault(value['Secret URL'])));
             this.parseData(cipher, value.SecretData);
             this.parseData(cipher, value.CustomData);
             this.convertToNoteIfNeeded(cipher);

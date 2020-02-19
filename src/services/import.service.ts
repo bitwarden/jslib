@@ -36,6 +36,7 @@ import { ChromeCsvImporter } from '../importers/chromeCsvImporter';
 import { ClipperzHtmlImporter } from '../importers/clipperzHtmlImporter';
 import { CodebookCsvImporter } from '../importers/codebookCsvImporter';
 import { DashlaneJsonImporter } from '../importers/dashlaneJsonImporter';
+import { EncryptrCsvImporter } from '../importers/encryptrCsvImporter';
 import { EnpassCsvImporter } from '../importers/enpassCsvImporter';
 import { EnpassJsonImporter } from '../importers/enpassJsonImporter';
 import { FirefoxCsvImporter } from '../importers/firefoxCsvImporter';
@@ -129,6 +130,7 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'blackberrycsv', name: 'BlackBerry Password Keeper (csv)' },
         { id: 'buttercupcsv', name: 'Buttercup (csv)' },
         { id: 'codebookcsv', name: 'Codebook (csv)' },
+        { id: 'encryptrcsv', name: 'Encryptr (csv)' },
     ];
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -275,6 +277,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new ButtercupCsvImporter();
             case 'codebookcsv':
                 return new CodebookCsvImporter();
+            case 'encryptrcsv':
+                return new EncryptrCsvImporter();
             default:
                 return null;
         }
