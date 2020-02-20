@@ -20,6 +20,14 @@ export class EncryptrCsvImporter extends BaseImporter implements Importer {
             const cipher = this.initLoginCipher();
             cipher.name = this.getValueOrDefault(value.Label, '--');
             cipher.notes = this.getValueOrDefault(value.Notes);
+            const text = this.getValueOrDefault(value.Text);
+            if (!this.isNullOrWhitespace(text)) {
+                if (this.isNullOrWhitespace(cipher.notes)) {
+                    cipher.notes = text;
+                } else {
+                    cipher.notes += ('\n\n' + text);
+                }
+            }
 
             const type = value['Entry Type'];
             if (type === 'Password') {
