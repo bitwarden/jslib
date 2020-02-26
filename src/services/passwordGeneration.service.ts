@@ -223,31 +223,43 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             }
         }
 
-        const enforcedPolicyOptions = await this.getPasswordGeneratorPolicyOptions();
-        if (this.optionsCache.length < enforcedPolicyOptions.minLength) {
-            this.optionsCache.length = enforcedPolicyOptions.minLength;
-        }
-        if (enforcedPolicyOptions.useUppercase) {
-            this.optionsCache.uppercase = true;
-        }
-        if (enforcedPolicyOptions.useLowercase) {
-            this.optionsCache.lowercase = true;
-        }
-        if (enforcedPolicyOptions.useNumbers) {
-            this.optionsCache.number = true;
-        }
-        if (this.optionsCache.minNumber < enforcedPolicyOptions.numberCount) {
-            this.optionsCache.minNumber = enforcedPolicyOptions.numberCount;
-        }
-        if (enforcedPolicyOptions.useSpecial) {
-            this.optionsCache.special = true;
-        }
-        if (this.optionsCache.minSpecial < enforcedPolicyOptions.specialCount) {
-            this.optionsCache.minSpecial = enforcedPolicyOptions.specialCount;
-        }
-        // Must normalize these fields because the receiving call expects all options to pass the current rules
-        if (this.optionsCache.minSpecial + this.optionsCache.minNumber > this.optionsCache.length) {
-            this.optionsCache.minSpecial = this.optionsCache.length - this.optionsCache.minNumber;
+        let enforcedPolicyOptions = await this.getPasswordGeneratorPolicyOptions();
+
+        if (enforcedPolicyOptions != null) {
+            if (this.optionsCache.length < enforcedPolicyOptions.minLength) {
+                this.optionsCache.length = enforcedPolicyOptions.minLength;
+            }
+
+            if (enforcedPolicyOptions.useUppercase) {
+                this.optionsCache.uppercase = true;
+            }
+
+            if (enforcedPolicyOptions.useLowercase) {
+                this.optionsCache.lowercase = true;
+            }
+
+            if (enforcedPolicyOptions.useNumbers) {
+                this.optionsCache.number = true;
+            }
+
+            if (this.optionsCache.minNumber < enforcedPolicyOptions.numberCount) {
+                this.optionsCache.minNumber = enforcedPolicyOptions.numberCount;
+            }
+
+            if (enforcedPolicyOptions.useSpecial) {
+                this.optionsCache.special = true;
+            }
+
+            if (this.optionsCache.minSpecial < enforcedPolicyOptions.specialCount) {
+                this.optionsCache.minSpecial = enforcedPolicyOptions.specialCount;
+            }
+
+            // Must normalize these fields because the receiving call expects all options to pass the current rules
+            if (this.optionsCache.minSpecial + this.optionsCache.minNumber > this.optionsCache.length) {
+                this.optionsCache.minSpecial = this.optionsCache.length - this.optionsCache.minNumber;
+            }
+        } else { // UI layer expects an instantiated object to prevent more explicit null checks
+            enforcedPolicyOptions = new PasswordGeneratorPolicyOptions();
         }
 
         return [this.optionsCache, enforcedPolicyOptions];
@@ -255,7 +267,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
 
     async getPasswordGeneratorPolicyOptions(): Promise<PasswordGeneratorPolicyOptions> {
         const policies: Policy[] = await this.policyService.getAll(PolicyType.PasswordGenerator);
-        const enforcedOptions: PasswordGeneratorPolicyOptions = new PasswordGeneratorPolicyOptions();
+        let enforcedOptions: PasswordGeneratorPolicyOptions = null;
 
         if (policies == null || policies.length === 0) {
             return enforcedOptions;
@@ -265,39 +277,43 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             if (!currentPolicy.enabled || currentPolicy.data == null) {
                 return;
             }
-            const currentPolicyData = currentPolicy.data;
 
-            if (currentPolicyData.minLength != null
-                && currentPolicyData.minLength > enforcedOptions.minLength) {
-                enforcedOptions.minLength = currentPolicyData.minLength;
+            if (enforcedOptions == null) {
+                enforcedOptions = new PasswordGeneratorPolicyOptions();
             }
 
-            if (currentPolicyData.useUpper && !enforcedOptions.useUppercase) {
+            if (currentPolicy.data.minLength != null
+                && currentPolicy.data.minLength > enforcedOptions.minLength) {
+                enforcedOptions.minLength = currentPolicy.data.minLength;
+            }
+
+            if (currentPolicy.data.useUpper) {
                 enforcedOptions.useUppercase = true;
             }
 
-            if (currentPolicyData.useLower && !enforcedOptions.useLowercase) {
+            if (currentPolicy.data.useLower) {
                 enforcedOptions.useLowercase = true;
             }
 
-            if (currentPolicyData.useNumbers && !enforcedOptions.useNumbers) {
+            if (currentPolicy.data.useNumbers) {
                 enforcedOptions.useNumbers = true;
             }
 
-            if (currentPolicyData.minNumbers != null
-                && currentPolicyData.minNumbers > enforcedOptions.numberCount) {
-                enforcedOptions.numberCount = currentPolicyData.minNumbers;
+            if (currentPolicy.data.minNumbers != null
+                && currentPolicy.data.minNumbers > enforcedOptions.numberCount) {
+                enforcedOptions.numberCount = currentPolicy.data.minNumbers;
             }
 
-            if (currentPolicyData.useSpecial && !enforcedOptions.useSpecial) {
+            if (currentPolicy.data.useSpecial) {
                 enforcedOptions.useSpecial = true;
             }
 
-            if (currentPolicyData.minSpecial != null
-                && currentPolicyData.minSpecial > enforcedOptions.specialCount) {
-                enforcedOptions.specialCount = currentPolicyData.minSpecial;
+            if (currentPolicy.data.minSpecial != null
+                && currentPolicy.data.minSpecial > enforcedOptions.specialCount) {
+                enforcedOptions.specialCount = currentPolicy.data.minSpecial;
             }
         });
+
         return enforcedOptions;
     }
 
