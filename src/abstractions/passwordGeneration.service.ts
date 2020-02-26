@@ -1,9 +1,11 @@
 import { GeneratedPasswordHistory } from '../models/domain/generatedPasswordHistory';
+import { PasswordGeneratorPolicyOptions } from '../models/domain/passwordGeneratorPolicyOptions';
 
 export abstract class PasswordGenerationService {
     generatePassword: (options: any) => Promise<string>;
     generatePassphrase: (options: any) => Promise<string>;
-    getOptions: () => any;
+    getOptions: () => Promise<[any, PasswordGeneratorPolicyOptions]>;
+    getPasswordGeneratorPolicyOptions: () => Promise<PasswordGeneratorPolicyOptions>;
     saveOptions: (options: any) => Promise<any>;
     getHistory: () => Promise<GeneratedPasswordHistory[]>;
     addHistory: (password: string) => Promise<any>;

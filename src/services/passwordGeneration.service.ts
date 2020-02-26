@@ -2,14 +2,19 @@ import * as zxcvbn from 'zxcvbn';
 
 import { CipherString } from '../models/domain/cipherString';
 import { GeneratedPasswordHistory } from '../models/domain/generatedPasswordHistory';
+import { PasswordGeneratorPolicyOptions } from '../models/domain/passwordGeneratorPolicyOptions';
+import { Policy } from '../models/domain/policy';
 
 import { CryptoService } from '../abstractions/crypto.service';
 import {
     PasswordGenerationService as PasswordGenerationServiceAbstraction,
 } from '../abstractions/passwordGeneration.service';
+import { PolicyService } from '../abstractions/policy.service';
 import { StorageService } from '../abstractions/storage.service';
 
 import { EEFLongWordList } from '../misc/wordlist';
+
+import { PolicyType } from '../enums/policyType';
 
 const DefaultOptions = {
     length: 14,
@@ -40,7 +45,8 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     private optionsCache: any;
     private history: GeneratedPasswordHistory[];
 
-    constructor(private cryptoService: CryptoService, private storageService: StorageService) { }
+    constructor(private cryptoService: CryptoService, private storageService: StorageService,
+        private policyService: PolicyService) { }
 
     async generatePassword(options: any): Promise<string> {
         // overload defaults with given options
@@ -207,7 +213,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         return wordList.join(o.wordSeparator);
     }
 
-    async getOptions() {
+    async getOptions(): Promise<[any, PasswordGeneratorPolicyOptions]> {
         if (this.optionsCache == null) {
             const options = await this.storageService.get(Keys.options);
             if (options == null) {
@@ -217,7 +223,98 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             }
         }
 
-        return this.optionsCache;
+        let enforcedPolicyOptions = await this.getPasswordGeneratorPolicyOptions();
+
+        if (enforcedPolicyOptions != null) {
+            if (this.optionsCache.length < enforcedPolicyOptions.minLength) {
+                this.optionsCache.length = enforcedPolicyOptions.minLength;
+            }
+
+            if (enforcedPolicyOptions.useUppercase) {
+                this.optionsCache.uppercase = true;
+            }
+
+            if (enforcedPolicyOptions.useLowercase) {
+                this.optionsCache.lowercase = true;
+            }
+
+            if (enforcedPolicyOptions.useNumbers) {
+                this.optionsCache.number = true;
+            }
+
+            if (this.optionsCache.minNumber < enforcedPolicyOptions.numberCount) {
+                this.optionsCache.minNumber = enforcedPolicyOptions.numberCount;
+            }
+
+            if (enforcedPolicyOptions.useSpecial) {
+                this.optionsCache.special = true;
+            }
+
+            if (this.optionsCache.minSpecial < enforcedPolicyOptions.specialCount) {
+                this.optionsCache.minSpecial = enforcedPolicyOptions.specialCount;
+            }
+
+            // Must normalize these fields because the receiving call expects all options to pass the current rules
+            if (this.optionsCache.minSpecial + this.optionsCache.minNumber > this.optionsCache.length) {
+                this.optionsCache.minSpecial = this.optionsCache.length - this.optionsCache.minNumber;
+            }
+        } else { // UI layer expects an instantiated object to prevent more explicit null checks
+            enforcedPolicyOptions = new PasswordGeneratorPolicyOptions();
+        }
+
+        return [this.optionsCache, enforcedPolicyOptions];
+    }
+
+    async getPasswordGeneratorPolicyOptions(): Promise<PasswordGeneratorPolicyOptions> {
+        const policies: Policy[] = await this.policyService.getAll(PolicyType.PasswordGenerator);
+        let enforcedOptions: PasswordGeneratorPolicyOptions = null;
+
+        if (policies == null || policies.length === 0) {
+            return enforcedOptions;
+        }
+
+        policies.forEach((currentPolicy) => {
+            if (!currentPolicy.enabled || currentPolicy.data == null) {
+                return;
+            }
+
+            if (enforcedOptions == null) {
+                enforcedOptions = new PasswordGeneratorPolicyOptions();
+            }
+
+            if (currentPolicy.data.minLength != null
+                && currentPolicy.data.minLength > enforcedOptions.minLength) {
+                enforcedOptions.minLength = currentPolicy.data.minLength;
+            }
+
+            if (currentPolicy.data.useUpper) {
+                enforcedOptions.useUppercase = true;
+            }
+
+            if (currentPolicy.data.useLower) {
+                enforcedOptions.useLowercase = true;
+            }
+
+            if (currentPolicy.data.useNumbers) {
+                enforcedOptions.useNumbers = true;
+            }
+
+            if (currentPolicy.data.minNumbers != null
+                && currentPolicy.data.minNumbers > enforcedOptions.numberCount) {
+                enforcedOptions.numberCount = currentPolicy.data.minNumbers;
+            }
+
+            if (currentPolicy.data.useSpecial) {
+                enforcedOptions.useSpecial = true;
+            }
+
+            if (currentPolicy.data.minSpecial != null
+                && currentPolicy.data.minSpecial > enforcedOptions.specialCount) {
+                enforcedOptions.specialCount = currentPolicy.data.minSpecial;
+            }
+        });
+
+        return enforcedOptions;
     }
 
     async saveOptions(options: any) {

@@ -9,6 +9,8 @@ import { I18nService } from '../../abstractions/i18n.service';
 import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
+import { PasswordGeneratorPolicyOptions } from '../../models/domain/passwordGeneratorPolicyOptions';
+
 export class PasswordGeneratorComponent implements OnInit {
     @Input() showSelect: boolean = false;
     @Output() onSelected = new EventEmitter<string>();
@@ -17,13 +19,16 @@ export class PasswordGeneratorComponent implements OnInit {
     password: string = '-';
     showOptions = false;
     avoidAmbiguous = false;
+    enforcedPolicyOptions: PasswordGeneratorPolicyOptions;
 
     constructor(protected passwordGenerationService: PasswordGenerationService,
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
         private win: Window) { }
 
     async ngOnInit() {
-        this.options = await this.passwordGenerationService.getOptions();
+        const optionsResponse = await this.passwordGenerationService.getOptions();
+        this.options = optionsResponse[0];
+        this.enforcedPolicyOptions = optionsResponse[1];
         this.avoidAmbiguous = !this.options.ambiguous;
         this.options.type = this.options.type === 'passphrase' ? 'passphrase' : 'password';
         this.password = await this.passwordGenerationService.generatePassword(this.options);
@@ -95,6 +100,10 @@ export class PasswordGeneratorComponent implements OnInit {
             this.options.length = 128;
         }
 
+        if (this.options.length < this.enforcedPolicyOptions.minLength) {
+            this.options.length = this.enforcedPolicyOptions.minLength;
+        }
+
         if (!this.options.minNumber) {
             this.options.minNumber = 0;
         } else if (this.options.minNumber > this.options.length) {
@@ -103,12 +112,20 @@ export class PasswordGeneratorComponent implements OnInit {
             this.options.minNumber = 9;
         }
 
+        if (this.options.minNumber < this.enforcedPolicyOptions.numberCount) {
+            this.options.minNumber = this.enforcedPolicyOptions.numberCount;
+        }
+
         if (!this.options.minSpecial) {
             this.options.minSpecial = 0;
         } else if (this.options.minSpecial > this.options.length) {
             this.options.minSpecial = this.options.length;
         } else if (this.options.minSpecial > 9) {
             this.options.minSpecial = 9;
+        }
+
+        if (this.options.minSpecial < this.enforcedPolicyOptions.specialCount) {
+            this.options.minSpecial = this.enforcedPolicyOptions.specialCount;
         }
 
         if (this.options.minSpecial + this.options.minNumber > this.options.length) {
