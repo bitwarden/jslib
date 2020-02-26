@@ -8,6 +8,7 @@ import {
 import { I18nService } from '../../abstractions/i18n.service';
 import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
+
 import { PasswordGeneratorPolicyOptions } from '../../models/domain/passwordGeneratorPolicyOptions';
 
 export class PasswordGeneratorComponent implements OnInit {
@@ -112,7 +113,7 @@ export class PasswordGeneratorComponent implements OnInit {
         }
 
         if (this.options.minNumber < this.enforcedPolicyOptions.numberCount) {
-            this.options.minNumber = this.enforcedPolicyOptions.numberCountt;
+            this.options.minNumber = this.enforcedPolicyOptions.numberCount;
         }
 
         if (!this.options.minSpecial) {
