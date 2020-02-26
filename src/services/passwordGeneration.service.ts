@@ -2,14 +2,19 @@ import * as zxcvbn from 'zxcvbn';
 
 import { CipherString } from '../models/domain/cipherString';
 import { GeneratedPasswordHistory } from '../models/domain/generatedPasswordHistory';
+import { PasswordGeneratorPolicyOptions } from '../models/domain/passwordGeneratorPolicyOptions';
+import { Policy } from '../models/domain/policy';
 
 import { CryptoService } from '../abstractions/crypto.service';
 import {
     PasswordGenerationService as PasswordGenerationServiceAbstraction,
 } from '../abstractions/passwordGeneration.service';
+import { PolicyService } from '../abstractions/policy.service';
 import { StorageService } from '../abstractions/storage.service';
 
 import { EEFLongWordList } from '../misc/wordlist';
+
+import { PolicyType } from '../enums/policyType';
 
 const DefaultOptions = {
     length: 14,
@@ -40,7 +45,8 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     private optionsCache: any;
     private history: GeneratedPasswordHistory[];
 
-    constructor(private cryptoService: CryptoService, private storageService: StorageService) { }
+    constructor(private cryptoService: CryptoService, private storageService: StorageService,
+        private policyService: PolicyService) { }
 
     async generatePassword(options: any): Promise<string> {
         // overload defaults with given options
@@ -207,7 +213,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         return wordList.join(o.wordSeparator);
     }
 
-    async getOptions() {
+    async getOptions(): Promise<[any, PasswordGeneratorPolicyOptions]> {
         if (this.optionsCache == null) {
             const options = await this.storageService.get(Keys.options);
             if (options == null) {
@@ -217,7 +223,82 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             }
         }
 
-        return this.optionsCache;
+        const enforcedPolicyOptions = await this.getPasswordGeneratorPolicyOptions();
+        if (this.optionsCache.length < enforcedPolicyOptions.minLength) {
+            this.optionsCache.length = enforcedPolicyOptions.minLength;
+        }
+        if (enforcedPolicyOptions.useUppercase) {
+            this.optionsCache.uppercase = true;
+        }
+        if (enforcedPolicyOptions.useLowercase) {
+            this.optionsCache.lowercase = true;
+        }
+        if (enforcedPolicyOptions.useNumbers) {
+            this.optionsCache.number = true;
+        }
+        if (this.optionsCache.minNumber < enforcedPolicyOptions.numberCount) {
+            this.optionsCache.minNumber = enforcedPolicyOptions.numberCount;
+        }
+        if (enforcedPolicyOptions.useSpecial) {
+            this.optionsCache.special = true;
+        }
+        if (this.optionsCache.minSpecial < enforcedPolicyOptions.specialCount) {
+            this.optionsCache.minSpecial = enforcedPolicyOptions.specialCount;
+        }
+        // Must normalize these fields because the receiving call expects all options to pass the current rules
+        if (this.optionsCache.minSpecial + this.optionsCache.minNumber > this.optionsCache.length) {
+            this.optionsCache.minSpecial = this.optionsCache.length - this.optionsCache.minNumber;
+        }
+
+        return [this.optionsCache, enforcedPolicyOptions];
+    }
+
+    async getPasswordGeneratorPolicyOptions(): Promise<PasswordGeneratorPolicyOptions> {
+        const policies: Policy[] = await this.policyService.getAll(PolicyType.PasswordGenerator);
+        const enforcedOptions: PasswordGeneratorPolicyOptions = new PasswordGeneratorPolicyOptions();
+
+        if (policies == null || policies.length === 0) {
+            return enforcedOptions;
+        }
+
+        policies.forEach((currentPolicy) => {
+            if (!currentPolicy.enabled || currentPolicy.data == null) {
+                return;
+            }
+            const currentPolicyData = currentPolicy.data;
+
+            if (currentPolicyData.minLength != null
+                && currentPolicyData.minLength > enforcedOptions.minLength) {
+                enforcedOptions.minLength = currentPolicyData.minLength;
+            }
+
+            if (currentPolicyData.useUpper && !enforcedOptions.useUppercase) {
+                enforcedOptions.useUppercase = true;
+            }
+
+            if (currentPolicyData.useLower && !enforcedOptions.useLowercase) {
+                enforcedOptions.useLowercase = true;
+            }
+
+            if (currentPolicyData.useNumbers && !enforcedOptions.useNumbers) {
+                enforcedOptions.useNumbers = true;
+            }
+
+            if (currentPolicyData.minNumbers != null
+                && currentPolicyData.minNumbers > enforcedOptions.numberCount) {
+                enforcedOptions.numberCount = currentPolicyData.minNumbers;
+            }
+
+            if (currentPolicyData.useSpecial && !enforcedOptions.useSpecial) {
+                enforcedOptions.useSpecial = true;
+            }
+
+            if (currentPolicyData.minSpecial != null
+                && currentPolicyData.minSpecial > enforcedOptions.specialCount) {
+                enforcedOptions.specialCount = currentPolicyData.minSpecial;
+            }
+        });
+        return enforcedOptions;
     }
 
     async saveOptions(options: any) {
