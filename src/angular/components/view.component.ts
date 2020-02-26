@@ -17,7 +17,9 @@ import { CipherService } from '../../abstractions/cipher.service';
 import { CryptoService } from '../../abstractions/crypto.service';
 import { EventService } from '../../abstractions/event.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { MessagingService } from '../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
+import { StorageService } from '../../abstractions/storage.service';
 import { TokenService } from '../../abstractions/token.service';
 import { TotpService } from '../../abstractions/totp.service';
 import { UserService } from '../../abstractions/user.service';
@@ -27,6 +29,8 @@ import { CipherView } from '../../models/view/cipherView';
 import { FieldView } from '../../models/view/fieldView';
 import { LoginUriView } from '../../models/view/loginUriView';
 import { BroadcasterService } from '../services/broadcaster.service';
+
+import { ElectronConstants } from '../../electron/electronConstants';
 
 const BroadcasterSubscriptionId = 'ViewComponent';
 
@@ -56,7 +60,8 @@ export class ViewComponent implements OnDestroy, OnInit {
         protected auditService: AuditService, protected win: Window,
         protected broadcasterService: BroadcasterService, protected ngZone: NgZone,
         protected changeDetectorRef: ChangeDetectorRef, protected userService: UserService,
-        protected eventService: EventService) { }
+        protected eventService: EventService, protected messagingService: MessagingService,
+        protected storageService: StorageService) { }
 
     ngOnInit() {
         this.broadcasterService.subscribe(BroadcasterSubscriptionId, (message: any) => {
@@ -170,6 +175,7 @@ export class ViewComponent implements OnDestroy, OnInit {
         this.platformUtilsService.copyToClipboard(value, copyOptions);
         this.platformUtilsService.showToast('info', null,
             this.i18nService.t('valueCopied', this.i18nService.t(typeI18nKey)));
+        this.minimizeIfNeeded();
 
         if (typeI18nKey === 'password') {
             this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible, this.cipherId);
@@ -182,6 +188,14 @@ export class ViewComponent implements OnDestroy, OnInit {
 
     setTextDataOnDrag(event: DragEvent, data: string) {
         event.dataTransfer.setData('text', data);
+    }
+
+    public async minimizeIfNeeded(): Promise<void> {
+        const shouldMinimize =
+            await this.storageService.get<boolean>(ElectronConstants.minimizeOnCopyToClipboardKey);
+        if (shouldMinimize) {
+            this.messagingService.send('minimize');
+        }
     }
 
     async downloadAttachment(attachment: AttachmentView) {
