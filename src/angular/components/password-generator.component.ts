@@ -79,6 +79,24 @@ export class PasswordGeneratorComponent implements OnInit {
         this.showOptions = !this.showOptions;
     }
 
+    hasPolicyInEffect() {
+        if (this.enforcedPolicyOptions == null) {
+            return false;
+        }
+
+        if (this.enforcedPolicyOptions.minLength > 0
+            || this.enforcedPolicyOptions.numberCount > 0
+            || this.enforcedPolicyOptions.specialCount > 0
+            || this.enforcedPolicyOptions.useUppercase
+            || this.enforcedPolicyOptions.useLowercase
+            || this.enforcedPolicyOptions.useNumbers
+            || this.enforcedPolicyOptions.useSpecial) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private normalizeOptions() {
         this.options.minLowercase = 0;
         this.options.minUppercase = 0;
