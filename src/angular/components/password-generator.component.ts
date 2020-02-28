@@ -30,7 +30,7 @@ export class PasswordGeneratorComponent implements OnInit {
         const optionsResponse = await this.passwordGenerationService.getOptions();
         this.options = optionsResponse[0];
         this.enforcedPolicyOptions = optionsResponse[1];
-        this.policyInEffect = true || this.enforcedPolicyOptions != null && (
+        this.policyInEffect = this.enforcedPolicyOptions != null && (
             this.enforcedPolicyOptions.minLength > 0 ||
             this.enforcedPolicyOptions.numberCount > 0 ||
             this.enforcedPolicyOptions.specialCount > 0 ||
