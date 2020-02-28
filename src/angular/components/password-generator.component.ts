@@ -19,6 +19,7 @@ export class PasswordGeneratorComponent implements OnInit {
     password: string = '-';
     showOptions = false;
     avoidAmbiguous = false;
+    policyInEffect = false;
     enforcedPolicyOptions: PasswordGeneratorPolicyOptions;
 
     constructor(protected passwordGenerationService: PasswordGenerationService,
@@ -29,6 +30,14 @@ export class PasswordGeneratorComponent implements OnInit {
         const optionsResponse = await this.passwordGenerationService.getOptions();
         this.options = optionsResponse[0];
         this.enforcedPolicyOptions = optionsResponse[1];
+        this.policyInEffect = true || this.enforcedPolicyOptions != null && (
+            this.enforcedPolicyOptions.minLength > 0 ||
+            this.enforcedPolicyOptions.numberCount > 0 ||
+            this.enforcedPolicyOptions.specialCount > 0 ||
+            this.enforcedPolicyOptions.useUppercase ||
+            this.enforcedPolicyOptions.useLowercase ||
+            this.enforcedPolicyOptions.useNumbers ||
+            this.enforcedPolicyOptions.useSpecial);
         this.avoidAmbiguous = !this.options.ambiguous;
         this.options.type = this.options.type === 'passphrase' ? 'passphrase' : 'password';
         this.password = await this.passwordGenerationService.generatePassword(this.options);
@@ -77,24 +86,6 @@ export class PasswordGeneratorComponent implements OnInit {
 
     toggleOptions() {
         this.showOptions = !this.showOptions;
-    }
-
-    hasPolicyInEffect() {
-        if (this.enforcedPolicyOptions == null) {
-            return false;
-        }
-
-        if (this.enforcedPolicyOptions.minLength > 0
-            || this.enforcedPolicyOptions.numberCount > 0
-            || this.enforcedPolicyOptions.specialCount > 0
-            || this.enforcedPolicyOptions.useUppercase
-            || this.enforcedPolicyOptions.useLowercase
-            || this.enforcedPolicyOptions.useNumbers
-            || this.enforcedPolicyOptions.useSpecial) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     private normalizeOptions() {
