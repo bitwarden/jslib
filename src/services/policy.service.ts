@@ -5,6 +5,7 @@ import { UserService } from '../abstractions/user.service';
 import { PolicyData } from '../models/data/policyData';
 
 import { Policy } from '../models/domain/policy';
+import { MasterPasswordPolicyOptions } from '../models/domain/masterPasswordPolicyOptions'
 
 import { PolicyType } from '../enums/policyType';
 
@@ -51,5 +52,90 @@ export class PolicyService implements PolicyServiceAbstraction {
     async clear(userId: string): Promise<any> {
         await this.storageService.remove(Keys.policiesPrefix + userId);
         this.policyCache = null;
+    }
+
+    async getMasterPasswordPolicyOptions(policies?: Policy[]): Promise<MasterPasswordPolicyOptions> {
+        let enforcedOptions: MasterPasswordPolicyOptions = null;
+
+        if (policies == null) {
+            policies = await this.getAll(PolicyType.MasterPassword);
+        } else {
+            policies = policies.filter((p) => p.type === PolicyType.MasterPassword);
+        }
+
+        if (policies == null || policies.length === 0) {
+            return enforcedOptions;
+        }
+
+        policies.forEach((currentPolicy) => {
+            if (!currentPolicy.enabled || currentPolicy.data == null) {
+                return;
+            }
+
+            if (enforcedOptions == null) {
+                enforcedOptions = new MasterPasswordPolicyOptions();
+            }
+
+            if (currentPolicy.data.minComplexity != null
+                && currentPolicy.data.minComplexity > enforcedOptions.minComplexity) {
+                enforcedOptions.minComplexity = currentPolicy.data.minComplexity;
+            }
+
+            if (currentPolicy.data.minLength != null
+                && currentPolicy.data.minLength > enforcedOptions.minLength) {
+                enforcedOptions.minLength = currentPolicy.data.minLength;
+            }
+
+            if (currentPolicy.data.requireUpper) {
+                enforcedOptions.requireUpper = true;
+            }
+
+            if (currentPolicy.data.requireLower) {
+                enforcedOptions.requireLower = true;
+            }
+
+            if (currentPolicy.data.requireNumbers) {
+                enforcedOptions.requireNumbers = true;
+            }
+
+            if (currentPolicy.data.requireSpecial) {
+                enforcedOptions.requireSpecial = true;
+            }
+        });
+
+        return enforcedOptions;
+    }
+
+    evaluateMasterPassword(passwordStrength: number, newPassword: string,
+        enforcedPolicyOptions: MasterPasswordPolicyOptions): boolean {
+        if (enforcedPolicyOptions == null) {
+            return true;
+        }
+
+        if (enforcedPolicyOptions.minComplexity > 0 && enforcedPolicyOptions.minComplexity > passwordStrength) {
+            return false;
+        }
+
+        if (enforcedPolicyOptions.minLength > 0 && enforcedPolicyOptions.minLength > newPassword.length) {
+            return false;
+        }
+
+        if (enforcedPolicyOptions.requireUpper && newPassword.toLocaleLowerCase() === newPassword) {
+            return false;
+        }
+
+        if (enforcedPolicyOptions.requireLower && newPassword.toLocaleUpperCase() === newPassword) {
+            return false;
+        }
+
+        if (enforcedPolicyOptions.requireNumbers && !(/[0-9]/.test(newPassword))) {
+            return false;
+        }
+
+        if (enforcedPolicyOptions.requireSpecial && !(/[!@#$%\^&*]/g.test(newPassword))) {
+            return false;
+        }
+
+        return true;
     }
 }
