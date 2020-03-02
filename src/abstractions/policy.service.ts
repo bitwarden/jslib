@@ -14,5 +14,5 @@ export abstract class PolicyService {
     clear: (userId: string) => Promise<any>;
     getMasterPasswordPolicyOptions: () => Promise<MasterPasswordPolicyOptions>;
     evaluateMasterPassword: (passwordStrength: number, newPassword: string,
-        enforcedPolicyOptions?: MasterPasswordPolicyOptions) => Promise<boolean>;
+        enforcedPolicyOptions?: MasterPasswordPolicyOptions) => boolean;
 }

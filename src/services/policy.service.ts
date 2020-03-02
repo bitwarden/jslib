@@ -54,9 +54,14 @@ export class PolicyService implements PolicyServiceAbstraction {
         this.policyCache = null;
     }
 
-    async getMasterPasswordPolicyOptions(): Promise<MasterPasswordPolicyOptions> {
-        const policies: Policy[] = await this.getAll(PolicyType.MasterPassword);
+    async getMasterPasswordPolicyOptions(policies?: Policy[]): Promise<MasterPasswordPolicyOptions> {
         let enforcedOptions: MasterPasswordPolicyOptions = null;
+
+        if (policies == null) {
+            policies = await this.getAll(PolicyType.MasterPassword);
+        } else {
+            policies = policies.filter((p) => p.type === PolicyType.MasterPassword);
+        }
 
         if (policies == null || policies.length === 0) {
             return enforcedOptions;
@@ -101,8 +106,8 @@ export class PolicyService implements PolicyServiceAbstraction {
         return enforcedOptions;
     }
 
-    async evaluateMasterPassword(passwordStrength: number, newPassword: string,
-        enforcedPolicyOptions: MasterPasswordPolicyOptions): Promise<boolean> {
+    evaluateMasterPassword(passwordStrength: number, newPassword: string,
+        enforcedPolicyOptions: MasterPasswordPolicyOptions): boolean {
         if (enforcedPolicyOptions == null) {
             return true;
         }
@@ -115,11 +120,11 @@ export class PolicyService implements PolicyServiceAbstraction {
             return false;
         }
 
-        if (enforcedPolicyOptions.requireUpper && newPassword.toLowerCase() === newPassword) {
+        if (enforcedPolicyOptions.requireUpper && newPassword.toLocaleLowerCase() === newPassword) {
             return false;
         }
 
-        if (enforcedPolicyOptions.requireLower && newPassword.toUpperCase() === newPassword) {
+        if (enforcedPolicyOptions.requireLower && newPassword.toLocaleUpperCase() === newPassword) {
             return false;
         }
 
