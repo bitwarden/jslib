@@ -4,8 +4,8 @@ import { UserService } from '../abstractions/user.service';
 
 import { PolicyData } from '../models/data/policyData';
 
+import { MasterPasswordPolicyOptions } from '../models/domain/masterPasswordPolicyOptions';
 import { Policy } from '../models/domain/policy';
-import { MasterPasswordPolicyOptions } from '../models/domain/masterPasswordPolicyOptions'
 
 import { PolicyType } from '../enums/policyType';
 
