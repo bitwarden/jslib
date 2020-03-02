@@ -567,7 +567,7 @@ export class ApiService implements ApiServiceAbstraction {
     async getPoliciesByToken(organizationId: string, token: string, email: string, organizationUserId: string):
         Promise<ListResponse<PolicyResponse>> {
         const r = await this.send('GET', '/organizations/' + organizationId + '/policies?token=' + token +
-            '&email=' + email + '&organizationUserId=' + organizationUserId, null, true, true);
+            '&email=' + email + '&organizationUserId=' + organizationUserId, null, false, true);
         return new ListResponse(r, PolicyResponse);
     }
 
