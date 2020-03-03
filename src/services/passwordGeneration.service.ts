@@ -222,47 +222,50 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
                 this.optionsCache = Object.assign({}, DefaultOptions, options);
             }
         }
+        const enforcedOptions = await this.enforcePasswordGeneratorPoliciesOnOptions(this.optionsCache);
+        this.optionsCache = enforcedOptions[0];
+        return [this.optionsCache, enforcedOptions[1]];
+    }
 
+    async enforcePasswordGeneratorPoliciesOnOptions(options: any): Promise<[any, PasswordGeneratorPolicyOptions]> {
         let enforcedPolicyOptions = await this.getPasswordGeneratorPolicyOptions();
-
         if (enforcedPolicyOptions != null) {
-            if (this.optionsCache.length < enforcedPolicyOptions.minLength) {
-                this.optionsCache.length = enforcedPolicyOptions.minLength;
+            if (options.length < enforcedPolicyOptions.minLength) {
+                options.length = enforcedPolicyOptions.minLength;
             }
 
             if (enforcedPolicyOptions.useUppercase) {
-                this.optionsCache.uppercase = true;
+                options.uppercase = true;
             }
 
             if (enforcedPolicyOptions.useLowercase) {
-                this.optionsCache.lowercase = true;
+                options.lowercase = true;
             }
 
             if (enforcedPolicyOptions.useNumbers) {
-                this.optionsCache.number = true;
+                options.number = true;
             }
 
-            if (this.optionsCache.minNumber < enforcedPolicyOptions.numberCount) {
-                this.optionsCache.minNumber = enforcedPolicyOptions.numberCount;
+            if (options.minNumber < enforcedPolicyOptions.numberCount) {
+                options.minNumber = enforcedPolicyOptions.numberCount;
             }
 
             if (enforcedPolicyOptions.useSpecial) {
-                this.optionsCache.special = true;
+                options.special = true;
             }
 
-            if (this.optionsCache.minSpecial < enforcedPolicyOptions.specialCount) {
-                this.optionsCache.minSpecial = enforcedPolicyOptions.specialCount;
+            if (options.minSpecial < enforcedPolicyOptions.specialCount) {
+                options.minSpecial = enforcedPolicyOptions.specialCount;
             }
 
             // Must normalize these fields because the receiving call expects all options to pass the current rules
-            if (this.optionsCache.minSpecial + this.optionsCache.minNumber > this.optionsCache.length) {
-                this.optionsCache.minSpecial = this.optionsCache.length - this.optionsCache.minNumber;
+            if (options.minSpecial + options.minNumber > options.length) {
+                options.minSpecial = options.length - options.minNumber;
             }
         } else { // UI layer expects an instantiated object to prevent more explicit null checks
             enforcedPolicyOptions = new PasswordGeneratorPolicyOptions();
         }
-
-        return [this.optionsCache, enforcedPolicyOptions];
+        return [options, enforcedPolicyOptions];
     }
 
     async getPasswordGeneratorPolicyOptions(): Promise<PasswordGeneratorPolicyOptions> {
