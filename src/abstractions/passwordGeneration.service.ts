@@ -5,6 +5,7 @@ export abstract class PasswordGenerationService {
     generatePassword: (options: any) => Promise<string>;
     generatePassphrase: (options: any) => Promise<string>;
     getOptions: () => Promise<[any, PasswordGeneratorPolicyOptions]>;
+    enforcePasswordGeneratorPoliciesOnOptions: (options: any) => Promise<[any, PasswordGeneratorPolicyOptions]>;
     getPasswordGeneratorPolicyOptions: () => Promise<PasswordGeneratorPolicyOptions>;
     saveOptions: (options: any) => Promise<any>;
     getHistory: () => Promise<GeneratedPasswordHistory[]>;
