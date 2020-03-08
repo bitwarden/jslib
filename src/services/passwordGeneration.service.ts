@@ -17,6 +17,7 @@ import { EEFLongWordList } from '../misc/wordlist';
 import { PolicyType } from '../enums/policyType';
 
 const DefaultOptions = {
+    allowPassword: true,
     length: 14,
     ambiguous: false,
     number: true,
@@ -28,6 +29,7 @@ const DefaultOptions = {
     special: false,
     minSpecial: 1,
     type: 'password',
+    allowPassphrase: true,
     numWords: 3,
     wordSeparator: '-',
     capitalize: false,
@@ -230,6 +232,10 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     async enforcePasswordGeneratorPoliciesOnOptions(options: any): Promise<[any, PasswordGeneratorPolicyOptions]> {
         let enforcedPolicyOptions = await this.getPasswordGeneratorPolicyOptions();
         if (enforcedPolicyOptions != null) {
+            if (!enforcedPolicyOptions.allowPassword) {
+                options.allowPassword = false;
+            }
+
             if (options.length < enforcedPolicyOptions.minLength) {
                 options.length = enforcedPolicyOptions.minLength;
             }
@@ -262,6 +268,29 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             if (options.minSpecial + options.minNumber > options.length) {
                 options.minSpecial = options.length - options.minNumber;
             }
+
+            if (!enforcedPolicyOptions.allowPassphrase) {
+                options.allowPassphrase = false;
+            }
+
+            if (options.numWords < enforcedPolicyOptions.minNumberWords) {
+                options.numWords = enforcedPolicyOptions.minNumberWords;
+            }
+
+            if (enforcedPolicyOptions.capitalize) {
+                options.capitalize = true;
+            }
+
+            if (enforcedPolicyOptions.includeNumber) {
+                options.includeNumber = true;
+            }
+
+            // Make sure the selected type is allowed - if not, set the correct type
+            if (options.type === 'password' && !options.allowPassword) {
+                options.type = 'passphrase';
+            } else if (options.type === 'passphrase' && !options.allowPassphrase) {
+                options.type = 'password';
+            }
         } else { // UI layer expects an instantiated object to prevent more explicit null checks
             enforcedPolicyOptions = new PasswordGeneratorPolicyOptions();
         }
@@ -283,6 +312,11 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
 
             if (enforcedOptions == null) {
                 enforcedOptions = new PasswordGeneratorPolicyOptions();
+            }
+
+            // Could be null if the policy options weren't adjusted with new data
+            if (currentPolicy.data.allowPassword != null && !currentPolicy.data.allowPassword) {
+                enforcedOptions.allowPassword = false;
             }
 
             if (currentPolicy.data.minLength != null
@@ -315,7 +349,31 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
                 && currentPolicy.data.minSpecial > enforcedOptions.specialCount) {
                 enforcedOptions.specialCount = currentPolicy.data.minSpecial;
             }
+
+            // Could be null if the policy options weren't adjusted with new data
+            if (currentPolicy.data.allowPassphrase != null && !currentPolicy.data.allowPassphrase) {
+                enforcedOptions.allowPassphrase = false;
+            }
+
+            if (currentPolicy.data.minNumberWords != null
+                && currentPolicy.data.minNumberWords > enforcedOptions.minNumberWords) {
+                enforcedOptions.minNumberWords = currentPolicy.data.minNumberWords;
+            }
+
+            if (currentPolicy.data.capitalize) {
+                enforcedOptions.capitalize = true;
+            }
+
+            if (currentPolicy.data.includeNumber) {
+                enforcedOptions.includeNumber = true;
+            }
         });
+
+        // Must normalize the allowed types - if both disabled, reset both (only potential issue for multi org)
+        if (enforcedOptions != null && !enforcedOptions.allowPassword && !enforcedOptions.allowPassphrase) {
+            enforcedOptions.allowPassword = true;
+            enforcedOptions.allowPassphrase = true;
+        }
 
         return enforcedOptions;
     }
