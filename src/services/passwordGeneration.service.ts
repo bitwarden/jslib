@@ -304,9 +304,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             }
 
             // Password wins in multi-org collisions
-            if (currentPolicy.data.defaultType &&
-                currentPolicy.data.defaultType !== 'user' &&
-                enforcedOptions.defaultType !== 'password') {
+            if (currentPolicy.data.defaultType != null && enforcedOptions.defaultType !== 'password') {
                 enforcedOptions.defaultType = currentPolicy.data.defaultType;
             }
 
