@@ -262,6 +262,24 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             if (options.minSpecial + options.minNumber > options.length) {
                 options.minSpecial = options.length - options.minNumber;
             }
+
+            if (options.numWords < enforcedPolicyOptions.minNumberWords) {
+                options.numWords = enforcedPolicyOptions.minNumberWords;
+            }
+
+            if (enforcedPolicyOptions.capitalize) {
+                options.capitalize = true;
+            }
+
+            if (enforcedPolicyOptions.includeNumber) {
+                options.includeNumber = true;
+            }
+
+            // Force default type if password/passphrase selected via policy
+            if (enforcedPolicyOptions.defaultType === 'password' ||
+                enforcedPolicyOptions.defaultType === 'passphrase') {
+                options.type = enforcedPolicyOptions.defaultType;
+            }
         } else { // UI layer expects an instantiated object to prevent more explicit null checks
             enforcedPolicyOptions = new PasswordGeneratorPolicyOptions();
         }
@@ -283,6 +301,11 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
 
             if (enforcedOptions == null) {
                 enforcedOptions = new PasswordGeneratorPolicyOptions();
+            }
+
+            // Password wins in multi-org collisions
+            if (currentPolicy.data.defaultType != null && enforcedOptions.defaultType !== 'password') {
+                enforcedOptions.defaultType = currentPolicy.data.defaultType;
             }
 
             if (currentPolicy.data.minLength != null
@@ -314,6 +337,19 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             if (currentPolicy.data.minSpecial != null
                 && currentPolicy.data.minSpecial > enforcedOptions.specialCount) {
                 enforcedOptions.specialCount = currentPolicy.data.minSpecial;
+            }
+
+            if (currentPolicy.data.minNumberWords != null
+                && currentPolicy.data.minNumberWords > enforcedOptions.minNumberWords) {
+                enforcedOptions.minNumberWords = currentPolicy.data.minNumberWords;
+            }
+
+            if (currentPolicy.data.capitalize) {
+                enforcedOptions.capitalize = true;
+            }
+
+            if (currentPolicy.data.includeNumber) {
+                enforcedOptions.includeNumber = true;
             }
         });
 

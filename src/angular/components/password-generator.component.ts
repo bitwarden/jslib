@@ -19,7 +19,6 @@ export class PasswordGeneratorComponent implements OnInit {
     password: string = '-';
     showOptions = false;
     avoidAmbiguous = false;
-    policyInEffect = false;
     enforcedPolicyOptions: PasswordGeneratorPolicyOptions;
 
     constructor(protected passwordGenerationService: PasswordGenerationService,
@@ -30,14 +29,6 @@ export class PasswordGeneratorComponent implements OnInit {
         const optionsResponse = await this.passwordGenerationService.getOptions();
         this.options = optionsResponse[0];
         this.enforcedPolicyOptions = optionsResponse[1];
-        this.policyInEffect = this.enforcedPolicyOptions != null && (
-            this.enforcedPolicyOptions.minLength > 0 ||
-            this.enforcedPolicyOptions.numberCount > 0 ||
-            this.enforcedPolicyOptions.specialCount > 0 ||
-            this.enforcedPolicyOptions.useUppercase ||
-            this.enforcedPolicyOptions.useLowercase ||
-            this.enforcedPolicyOptions.useNumbers ||
-            this.enforcedPolicyOptions.useSpecial);
         this.avoidAmbiguous = !this.options.ambiguous;
         this.options.type = this.options.type === 'passphrase' ? 'passphrase' : 'password';
         this.password = await this.passwordGenerationService.generatePassword(this.options);
@@ -145,6 +136,10 @@ export class PasswordGeneratorComponent implements OnInit {
             this.options.numWords = 3;
         } else if (this.options.numWords > 20) {
             this.options.numWords = 20;
+        }
+
+        if (this.options.numWords < this.enforcedPolicyOptions.minNumberWords) {
+            this.options.numWords = this.enforcedPolicyOptions.minNumberWords;
         }
 
         if (this.options.wordSeparator != null && this.options.wordSeparator.length > 1) {
