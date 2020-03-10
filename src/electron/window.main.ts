@@ -121,7 +121,7 @@ export class WindowMain {
             pathname: path.join(__dirname, '/index.html'),
             slashes: true,
         }), {
-                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:71.0) Gecko/20100101 Firefox/71.0',
+                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:74.0) Gecko/20100101 Firefox/74.0',
             });
 
         // Open the DevTools.
