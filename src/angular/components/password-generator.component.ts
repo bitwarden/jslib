@@ -31,7 +31,7 @@ export class PasswordGeneratorComponent implements OnInit {
         this.options = optionsResponse[0];
         this.enforcedPolicyOptions = optionsResponse[1];
         this.policyInEffect = this.enforcedPolicyOptions != null && (
-            this.enforcedPolicyOptions.allowPassword ||
+            this.enforcedPolicyOptions.defaultType !== '' ||
             this.enforcedPolicyOptions.minLength > 0 ||
             this.enforcedPolicyOptions.numberCount > 0 ||
             this.enforcedPolicyOptions.specialCount > 0 ||
@@ -39,7 +39,6 @@ export class PasswordGeneratorComponent implements OnInit {
             this.enforcedPolicyOptions.useLowercase ||
             this.enforcedPolicyOptions.useNumbers ||
             this.enforcedPolicyOptions.useSpecial ||
-            this.enforcedPolicyOptions.allowPassphrase ||
             this.enforcedPolicyOptions.minNumberWords > 0 ||
             this.enforcedPolicyOptions.capitalize ||
             this.enforcedPolicyOptions.includeNumber);
