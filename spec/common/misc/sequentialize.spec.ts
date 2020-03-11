@@ -81,7 +81,7 @@ describe('sequentialize decorator', () => {
 
     it('should return correct result for each call', async () => {
         const foo = new Foo();
-        const allRes = [];
+        const allRes: number[] = [];
 
         await Promise.all([
             foo.bar(1).then((res) => allRes.push(res)),
@@ -99,7 +99,7 @@ describe('sequentialize decorator', () => {
 
     it('should return correct result for each call with key function', async () => {
         const foo = new Foo();
-        const allRes = [];
+        const allRes: number[] = [];
 
         await Promise.all([
             foo.baz(1).then((res) => allRes.push(res)),
@@ -120,7 +120,7 @@ class Foo {
     calls = 0;
 
     @sequentialize((args) => 'bar' + args[0])
-    bar(a: number) {
+    bar(a: number): Promise<number> {
         this.calls++;
         return new Promise((res) => {
             setTimeout(() => {
@@ -130,7 +130,7 @@ class Foo {
     }
 
     @sequentialize((args) => 'baz' + args[0])
-    baz(a: number) {
+    baz(a: number): Promise<number> {
         this.calls++;
         return new Promise((res) => {
             setTimeout(() => {
