@@ -168,7 +168,8 @@ describe('Lastpass CSV Importer', () => {
             expect(result.ciphers.length).toBeGreaterThan(0);
 
             const cipher = result.ciphers.shift();
-            for (const property in data.expected) {
+            let property: keyof typeof data.expected;
+            for (property in data.expected) {
                 if (data.expected.hasOwnProperty(property)) {
                     expect(cipher.hasOwnProperty(property)).toBe(true);
                     expect(cipher[property]).toEqual(data.expected[property]);
