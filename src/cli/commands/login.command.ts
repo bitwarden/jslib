@@ -22,7 +22,7 @@ export class LoginCommand {
         protected i18nService: I18nService) { }
 
     async run(email: string, password: string, cmd: program.Command) {
-        const canInteract = process.stdout.isTTY && process.env.BW_NOINTERACTION !== 'true';
+        const canInteract = process.env.BW_NOINTERACTION !== 'true';
         if ((email == null || email === '') && canInteract) {
             const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                 type: 'input',
