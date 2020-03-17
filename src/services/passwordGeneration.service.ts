@@ -419,6 +419,87 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         return result;
     }
 
+    normalizeOptions(options: any, enforcedPolicyOptions: PasswordGeneratorPolicyOptions) {
+        options.minLowercase = 0;
+        options.minUppercase = 0;
+
+        if (!options.length || options.length < 5) {
+            options.length = 5;
+        } else if (options.length > 128) {
+            options.length = 128;
+        }
+
+        if (options.length < enforcedPolicyOptions.minLength) {
+            options.length = enforcedPolicyOptions.minLength;
+        }
+
+        if (!options.minNumber) {
+            options.minNumber = 0;
+        } else if (options.minNumber > options.length) {
+            options.minNumber = options.length;
+        } else if (options.minNumber > 9) {
+            options.minNumber = 9;
+        }
+
+        if (options.minNumber < enforcedPolicyOptions.numberCount) {
+            options.minNumber = enforcedPolicyOptions.numberCount;
+        }
+
+        if (!options.minSpecial) {
+            options.minSpecial = 0;
+        } else if (options.minSpecial > options.length) {
+            options.minSpecial = options.length;
+        } else if (options.minSpecial > 9) {
+            options.minSpecial = 9;
+        }
+
+        if (options.minSpecial < enforcedPolicyOptions.specialCount) {
+            options.minSpecial = enforcedPolicyOptions.specialCount;
+        }
+
+        if (options.minSpecial + options.minNumber > options.length) {
+            options.minSpecial = options.length - options.minNumber;
+        }
+
+        if (options.numWords == null || options.length < 3) {
+            options.numWords = 3;
+        } else if (options.numWords > 20) {
+            options.numWords = 20;
+        }
+
+        if (options.numWords < enforcedPolicyOptions.minNumberWords) {
+            options.numWords = enforcedPolicyOptions.minNumberWords;
+        }
+
+        if (options.wordSeparator != null && options.wordSeparator.length > 1) {
+            options.wordSeparator = options.wordSeparator[0];
+        }
+
+        // Sanitize Length (Edge case)
+        if (options.uppercase && options.minUppercase <= 0) {
+            options.minUppercase = 1;
+        }
+
+        if (options.lowercase && options.minLowercase <= 0) {
+            options.minLowercase = 1;
+        }
+
+        let minNumberCalc = options.minNumber;
+        if (options.number && options.minNumber <= 0) {
+            minNumberCalc = 1;
+        }
+
+        let minSpecialCalc = options.minSpecial;
+        if (options.special && options.minSpecial <= 0) {
+            minSpecialCalc = 1;
+        }
+
+        const minLength: number = options.minUppercase + options.minLowercase + minNumberCalc + minSpecialCalc;
+        if (options.length < minLength) {
+            options.length = minLength;
+        }
+    }
+
     private capitalize(str: string) {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
