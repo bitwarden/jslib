@@ -508,8 +508,8 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     }
 
     private sanitizePasswordLength(options: any, forGeneration: boolean) {
-        let minUppercaseCalc: number = 0;
-        let minLowercaseCalc: number = 0;
+        let minUppercaseCalc = 0;
+        let minLowercaseCalc = 0;
         let minNumberCalc: number = options.minNumber;
         let minSpecialCalc: number = options.minSpecial;
 
