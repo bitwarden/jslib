@@ -89,29 +89,53 @@ export class GroupingsComponent {
         this.nestedFolders = await this.folderService.getAllNested();
     }
 
-    selectAll() {
-        this.clearSelections();
-        this.selectedAll = true;
+    selectAll(emitOnly?: boolean) {
+        if (emitOnly == null || emitOnly == undefined || !emitOnly) {
+            this.clearAndSelectAll();
+        }
         this.onAllClicked.emit();
     }
 
-    selectFavorites() {
+    clearAndSelectAll() {
         this.clearSelections();
-        this.selectedFavorites = true;
+        this.selectedAll = true;
+    }
+
+    selectFavorites(emitOnly?: boolean) {
+        if (emitOnly == null || emitOnly == undefined || !emitOnly) {
+            this.clearAndSelectFavorites();
+        }
         this.onFavoritesClicked.emit();
     }
 
-    selectType(type: CipherType) {
+    clearAndSelectFavorites() {
         this.clearSelections();
-        this.selectedType = type;
+        this.selectedFavorites = true;
+    }
+
+    selectType(type: CipherType, emitOnly?: boolean) {
+        if (emitOnly == null || emitOnly == undefined || !emitOnly) {
+            this.clearAndSelectType(type);
+        }
         this.onCipherTypeClicked.emit(type);
     }
 
-    selectFolder(folder: FolderView) {
+    clearAndSelectType(type: CipherType) {
+        this.clearSelections();
+        this.selectedType = type;
+    }
+
+    selectFolder(folder: FolderView, emitOnly?: boolean) {
+        if (emitOnly == null || emitOnly == undefined || !emitOnly) {
+            this.clearAndSelectFolder(folder.id);
+        }
+        this.onFolderClicked.emit(folder);
+    }
+
+    clearAndSelectFolder(folderId: string) {
         this.clearSelections();
         this.selectedFolder = true;
-        this.selectedFolderId = folder.id;
-        this.onFolderClicked.emit(folder);
+        this.selectedFolderId = folderId;
     }
 
     addFolder() {
@@ -122,10 +146,16 @@ export class GroupingsComponent {
         this.onEditFolder.emit(folder);
     }
 
-    selectCollection(collection: CollectionView) {
-        this.clearSelections();
-        this.selectedCollectionId = collection.id;
+    selectCollection(collection: CollectionView, emitOnly?: boolean) {
+        if (emitOnly == null || emitOnly == undefined || !emitOnly) {
+            this.clearAndSelectCollection(collection.id);
+        }
         this.onCollectionClicked.emit(collection);
+    }
+
+    clearAndSelectCollection(collectionId: string) {
+        this.clearSelections();
+        this.selectedCollectionId = collectionId;
     }
 
     clearSelections() {
