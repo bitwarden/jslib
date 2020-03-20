@@ -90,7 +90,7 @@ export class GroupingsComponent {
     }
 
     selectAll(emitOnly?: boolean) {
-        if (emitOnly == null || emitOnly == undefined || !emitOnly) {
+        if (emitOnly === null || emitOnly === undefined || !emitOnly) {
             this.clearAndSelectAll();
         }
         this.onAllClicked.emit();
@@ -102,7 +102,7 @@ export class GroupingsComponent {
     }
 
     selectFavorites(emitOnly?: boolean) {
-        if (emitOnly == null || emitOnly == undefined || !emitOnly) {
+        if (emitOnly === null || emitOnly === undefined || !emitOnly) {
             this.clearAndSelectFavorites();
         }
         this.onFavoritesClicked.emit();
@@ -114,7 +114,7 @@ export class GroupingsComponent {
     }
 
     selectType(type: CipherType, emitOnly?: boolean) {
-        if (emitOnly == null || emitOnly == undefined || !emitOnly) {
+        if (emitOnly === null || emitOnly === undefined || !emitOnly) {
             this.clearAndSelectType(type);
         }
         this.onCipherTypeClicked.emit(type);
@@ -126,7 +126,7 @@ export class GroupingsComponent {
     }
 
     selectFolder(folder: FolderView, emitOnly?: boolean) {
-        if (emitOnly == null || emitOnly == undefined || !emitOnly) {
+        if (emitOnly === null || emitOnly === undefined || !emitOnly) {
             this.clearAndSelectFolder(folder.id);
         }
         this.onFolderClicked.emit(folder);
@@ -147,7 +147,7 @@ export class GroupingsComponent {
     }
 
     selectCollection(collection: CollectionView, emitOnly?: boolean) {
-        if (emitOnly == null || emitOnly == undefined || !emitOnly) {
+        if (emitOnly === null || emitOnly === undefined || !emitOnly) {
             this.clearAndSelectCollection(collection.id);
         }
         this.onCollectionClicked.emit(collection);
