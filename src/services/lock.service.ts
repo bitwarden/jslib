@@ -69,6 +69,13 @@ export class LockService implements LockServiceAbstraction {
         if (lastActive == null) {
             return;
         }
+        
+        // If the on idle setting is enabled, don't lock when active
+        const lockAfterIdle = await this.storageService.get<boolean>(ConstantsService.lockAfterIdleKey);
+        const idleState = await this.storageService.get<string>(ConstantsService.idleStateKey);
+        if (lockAfterIdle && idleState === 'active') {
+            return;
+        }
 
         const lockOptionSeconds = lockOption * 60;
         const diffSeconds = ((new Date()).getTime() - lastActive) / 1000;

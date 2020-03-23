@@ -22,6 +22,9 @@ export class ConstantsService {
     static readonly protectedPin: string = 'protectedPin';
     static readonly clearClipboardKey: string = 'clearClipboardKey';
     static readonly eventCollectionKey: string = 'eventCollection';
+    static readonly idleStateKey: string = 'idleState';
+    static readonly lockAfterIdleKey: string = 'lockAfterIdle';
+    static readonly lockOnSystemLockKey: string = 'lockOnSystemLock';
 
     readonly environmentUrlsKey: string = ConstantsService.environmentUrlsKey;
     readonly disableGaKey: string = ConstantsService.disableGaKey;
