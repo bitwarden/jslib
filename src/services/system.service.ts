@@ -1,8 +1,8 @@
-import { LockService } from '../abstractions/lock.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { StorageService } from '../abstractions/storage.service';
 import { SystemService as SystemServiceAbstraction } from '../abstractions/system.service';
+import { VaultTimeoutService } from '../abstractions/vaultTimeout.service';
 
 import { ConstantsService } from './constants.service';
 
@@ -13,13 +13,13 @@ export class SystemService implements SystemServiceAbstraction {
     private clearClipboardTimeout: any = null;
     private clearClipboardTimeoutFunction: () => Promise<any> = null;
 
-    constructor(private storageService: StorageService, private lockService: LockService,
+    constructor(private storageService: StorageService, private vaultTimeoutService: VaultTimeoutService,
         private messagingService: MessagingService, private platformUtilsService: PlatformUtilsService,
         private reloadCallback: () => Promise<void> = null) {
     }
 
     startProcessReload(): void {
-        if (this.lockService.pinProtectedKey != null || this.reloadInterval != null) {
+        if (this.vaultTimeoutService.pinProtectedKey != null || this.reloadInterval != null) {
             return;
         }
         this.cancelProcessReload();
