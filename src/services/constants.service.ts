@@ -7,7 +7,7 @@ export class ConstantsService {
     static readonly disableFaviconKey: string = 'disableFavicon';
     static readonly disableAutoTotpCopyKey: string = 'disableAutoTotpCopy';
     static readonly enableAutoFillOnPageLoadKey: string = 'enableAutoFillOnPageLoad';
-    static readonly vaultTimeoutKey: string = 'vaultTimeout';
+    static readonly vaultTimeoutKey: string = 'lockOption';
     static readonly vaultTimeoutActionKey: string = 'vaultTimeoutAction';
     static readonly lastActiveKey: string = 'lastActive';
     static readonly neverDomainsKey: string = 'neverDomains';
