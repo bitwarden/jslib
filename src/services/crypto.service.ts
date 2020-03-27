@@ -19,10 +19,10 @@ import { Utils } from '../misc/utils';
 import { EEFLongWordList } from '../misc/wordlist';
 
 const Keys = {
-    key: 'key',
+    key: 'key', // Master Key
     encOrgKeys: 'encOrgKeys',
     encPrivateKey: 'encPrivateKey',
-    encKey: 'encKey',
+    encKey: 'encKey', // Generated Symmetric Key
     keyHash: 'keyHash',
 };
 
@@ -41,7 +41,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     async setKey(key: SymmetricCryptoKey): Promise<any> {
         this.key = key;
 
-        const option = await this.storageService.get<number>(ConstantsService.lockOptionKey);
+        const option = await this.storageService.get<number>(ConstantsService.vaultTimeoutKey);
         if (option != null) {
             // if we have a lock option set, we do not store the key
             return;
@@ -290,7 +290,7 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     async toggleKey(): Promise<any> {
         const key = await this.getKey();
-        const option = await this.storageService.get(ConstantsService.lockOptionKey);
+        const option = await this.storageService.get(ConstantsService.vaultTimeoutKey);
         if (option != null || option === 0) {
             // if we have a lock option set, clear the key
             await this.clearKey();

@@ -6,14 +6,14 @@ import {
     RouterStateSnapshot,
 } from '@angular/router';
 
-import { LockService } from '../../abstractions/lock.service';
 import { MessagingService } from '../../abstractions/messaging.service';
 import { UserService } from '../../abstractions/user.service';
+import { VaultTimeoutService } from '../../abstractions/vaultTimeout.service';
 
 @Injectable()
 export class AuthGuardService implements CanActivate {
-    constructor(private lockService: LockService, private userService: UserService, private router: Router,
-        private messagingService: MessagingService) { }
+    constructor(private vaultTimeoutService: VaultTimeoutService, private userService: UserService,
+        private router: Router, private messagingService: MessagingService) { }
 
     async canActivate(route: ActivatedRouteSnapshot, routerState: RouterStateSnapshot) {
         const isAuthed = await this.userService.isAuthenticated();
@@ -22,7 +22,7 @@ export class AuthGuardService implements CanActivate {
             return false;
         }
 
-        const locked = await this.lockService.isLocked();
+        const locked = await this.vaultTimeoutService.isLocked();
         if (locked) {
             if (routerState != null) {
                 this.messagingService.send('lockedUrl', { url: routerState.url });

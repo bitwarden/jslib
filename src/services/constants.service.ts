@@ -7,7 +7,8 @@ export class ConstantsService {
     static readonly disableFaviconKey: string = 'disableFavicon';
     static readonly disableAutoTotpCopyKey: string = 'disableAutoTotpCopy';
     static readonly enableAutoFillOnPageLoadKey: string = 'enableAutoFillOnPageLoad';
-    static readonly lockOptionKey: string = 'lockOption';
+    static readonly vaultTimeoutKey: string = 'lockOption';
+    static readonly vaultTimeoutActionKey: string = 'vaultTimeoutAction';
     static readonly lastActiveKey: string = 'lastActive';
     static readonly neverDomainsKey: string = 'neverDomains';
     static readonly installedVersionKey: string = 'installedVersion';
@@ -30,7 +31,8 @@ export class ConstantsService {
     readonly disableFaviconKey: string = ConstantsService.disableFaviconKey;
     readonly disableAutoTotpCopyKey: string = ConstantsService.disableAutoTotpCopyKey;
     readonly enableAutoFillOnPageLoadKey: string = ConstantsService.enableAutoFillOnPageLoadKey;
-    readonly lockOptionKey: string = ConstantsService.lockOptionKey;
+    readonly vaultTimeoutKey: string = ConstantsService.vaultTimeoutKey;
+    readonly vaultTimeoutActionKey: string = ConstantsService.vaultTimeoutActionKey;
     readonly lastActiveKey: string = ConstantsService.lastActiveKey;
     readonly neverDomainsKey: string = ConstantsService.neverDomainsKey;
     readonly installedVersionKey: string = ConstantsService.installedVersionKey;
