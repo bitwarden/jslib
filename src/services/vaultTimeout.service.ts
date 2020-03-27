@@ -107,7 +107,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         }
     }
 
-    async logout(): Promise<void> {
+    async logOut(): Promise<void> {
         if (this.loggedOutCallback != null) {
             await this.loggedOutCallback();
         }
