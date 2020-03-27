@@ -80,7 +80,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         if (diffSeconds >= vaultTimeoutSeconds) {
             // Pivot based on the saved vault timeout action
             await this.storageService.get<string>(ConstantsService.vaultTimeoutActionKey) === 'lock' ?
-                await this.lock(true) : await this.logout();
+                await this.lock(true) : await this.logOut();
         }
     }
 
