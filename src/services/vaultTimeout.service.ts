@@ -79,8 +79,8 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         const diffSeconds = ((new Date()).getTime() - lastActive) / 1000;
         if (diffSeconds >= vaultTimeoutSeconds) {
             // Pivot based on the saved vault timeout action
-            await this.storageService.get<string>(ConstantsService.vaultTimeoutActionKey) === 'lock' ?
-                await this.lock(true) : await this.logOut();
+            const timeoutAction = await this.storageService.get<string>(ConstantsService.vaultTimeoutActionKey);
+            timeoutAction === 'lock' ? await this.lock(true) : await this.logOut();
         }
     }
 
@@ -113,9 +113,9 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         }
     }
 
-    async setVaultTimeoutOptions(vaultTimeout: number, vaultTimeoutAction: string): Promise<void> {
-        await this.storageService.save(ConstantsService.vaultTimeoutKey, vaultTimeout);
-        await this.storageService.save(ConstantsService.vaultTimeoutActionKey, vaultTimeoutAction);
+    async setVaultTimeoutOptions(timeout: number, action: string): Promise<void> {
+        await this.storageService.save(ConstantsService.vaultTimeoutKey, timeout);
+        await this.storageService.save(ConstantsService.vaultTimeoutActionKey, action);
         await this.cryptoService.toggleKey();
     }
 
