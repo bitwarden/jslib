@@ -31,6 +31,7 @@ export class CipherData {
     attachments?: AttachmentData[];
     passwordHistory?: PasswordHistoryData[];
     collectionIds?: string[];
+    deletedDate: string;
 
     constructor(response?: CipherResponse, userId?: string, collectionIds?: string[]) {
         if (response == null) {
@@ -49,6 +50,7 @@ export class CipherData {
         this.name = response.name;
         this.notes = response.notes;
         this.collectionIds = collectionIds != null ? collectionIds : response.collectionIds;
+        this.deletedDate = response.deletedDate;
 
         switch (this.type) {
             case CipherType.Login:

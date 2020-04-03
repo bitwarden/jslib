@@ -45,4 +45,10 @@ export abstract class CipherService {
     sortCiphersByLastUsed: (a: any, b: any) => number;
     sortCiphersByLastUsedThenName: (a: any, b: any) => number;
     getLocaleSortingFunction: () => (a: CipherView, b: CipherView) => number;
+    softDelete: (id: string | string[]) => Promise<any>;
+    softDeleteWithServer: (id: string) => Promise<any>;
+    softDeleteManyWithServer: (ids: string[]) => Promise<any>;
+    restore: (id: string | string[]) => Promise<any>;
+    restoreWithServer: (id: string) => Promise<any>;
+    restoreManyWithServer: (ids: string[]) => Promise<any>;
 }

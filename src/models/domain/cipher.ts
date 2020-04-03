@@ -34,6 +34,7 @@ export class Cipher extends Domain {
     fields: Field[];
     passwordHistory: Password[];
     collectionIds: string[];
+    deletedDate: Date;
 
     constructor(obj?: CipherData, alreadyEncrypted: boolean = false, localData: any = null) {
         super();
@@ -57,6 +58,7 @@ export class Cipher extends Domain {
         this.revisionDate = obj.revisionDate != null ? new Date(obj.revisionDate) : null;
         this.collectionIds = obj.collectionIds;
         this.localData = localData;
+        this.deletedDate = obj.deletedDate != null ? new Date(obj.deletedDate) : null;
 
         switch (this.type) {
             case CipherType.Login:
@@ -172,6 +174,7 @@ export class Cipher extends Domain {
         c.revisionDate = this.revisionDate != null ? this.revisionDate.toISOString() : null;
         c.type = this.type;
         c.collectionIds = this.collectionIds;
+        c.deletedDate = this.deletedDate != null ? this.deletedDate.toISOString() : null;
 
         this.buildDataModel(this, c, {
             name: null,

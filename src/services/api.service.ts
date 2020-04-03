@@ -434,6 +434,30 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/ciphers/import-organization?organizationId=' + organizationId, request, true, false);
     }
 
+    putDeleteCipher(id: string): Promise<any> {
+        return this.send('PUT', '/ciphers/' + id + '/delete', null, true, false);
+    }
+
+    putDeleteCipherAdmin(id: string): Promise<any> {
+        return this.send('PUT', '/ciphers/' + id + '/delete-admin', null, true, false);
+    }
+
+    putDeleteManyCiphers(request: CipherBulkDeleteRequest): Promise<any> {
+        return this.send('PUT', '/ciphers/delete', request, true, false);
+    }
+
+    putRestoreCipher(id: string): Promise<any> {
+        return this.send('PUT', '/ciphers/' + id + '/restore', null, true, false);
+    }
+
+    putRestoreCipherAdmin(id: string): Promise<any> {
+        return this.send('PUT', '/ciphers/' + id + '/restore-admin', null, true, false);
+    }
+
+    putRestoreManyCiphers(request: CipherBulkDeleteRequest): Promise<any> {
+        return this.send('PUT', '/ciphers/restore', request, true, false);
+    }
+
     // Attachments APIs
 
     async postCipherAttachment(id: string, data: FormData): Promise<CipherResponse> {

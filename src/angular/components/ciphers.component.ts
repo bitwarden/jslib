@@ -21,6 +21,7 @@ export class CiphersComponent {
     searchText: string;
     searchPlaceholder: string = null;
     filter: (cipher: CipherView) => boolean = null;
+    deleted: boolean = false;
 
     protected searchPending = false;
     protected didScroll = false;
@@ -32,7 +33,8 @@ export class CiphersComponent {
 
     constructor(protected searchService: SearchService) { }
 
-    async load(filter: (cipher: CipherView) => boolean = null) {
+    async load(filter: (cipher: CipherView) => boolean = null, deleted: boolean = false) {
+        this.deleted = deleted || false;
         await this.applyFilter(filter);
         this.loaded = true;
     }
@@ -79,13 +81,13 @@ export class CiphersComponent {
             clearTimeout(this.searchTimeout);
         }
         if (timeout == null) {
-            this.ciphers = await this.searchService.searchCiphers(this.searchText, this.filter);
+            this.ciphers = await this.searchService.searchCiphers(this.searchText, this.filter, null, this.deleted);
             await this.resetPaging();
             return;
         }
         this.searchPending = true;
         this.searchTimeout = setTimeout(async () => {
-            this.ciphers = await this.searchService.searchCiphers(this.searchText, this.filter);
+            this.ciphers = await this.searchService.searchCiphers(this.searchText, this.filter, null, this.deleted);
             await this.resetPaging();
             this.searchPending = false;
         }, timeout);

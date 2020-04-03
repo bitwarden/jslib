@@ -23,6 +23,8 @@ export enum EventType {
     Cipher_ClientCopiedHiddenField = 1112,
     Cipher_ClientCopiedCardCode = 1113,
     Cipher_ClientAutofilled = 1114,
+    Cipher_SoftDeleted = 1115,
+    Cipher_Restored = 1116,
 
     Collection_Created = 1300,
     Collection_Updated = 1301,

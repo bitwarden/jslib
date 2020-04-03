@@ -27,6 +27,7 @@ export class CipherResponse extends BaseResponse {
     attachments: AttachmentResponse[];
     passwordHistory: PasswordHistoryResponse[];
     collectionIds: string[];
+    deletedDate: string;
 
     constructor(response: any) {
         super(response);
@@ -41,6 +42,7 @@ export class CipherResponse extends BaseResponse {
         this.organizationUseTotp = this.getResponseProperty('OrganizationUseTotp');
         this.revisionDate = this.getResponseProperty('RevisionDate');
         this.collectionIds = this.getResponseProperty('CollectionIds');
+        this.deletedDate = this.getResponseProperty('DeletedDate');
 
         const login = this.getResponseProperty('Login');
         if (login != null) {

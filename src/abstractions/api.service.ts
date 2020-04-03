@@ -5,6 +5,7 @@ import { EnvironmentUrls } from '../models/domain/environmentUrls';
 import { BitPayInvoiceRequest } from '../models/request/bitPayInvoiceRequest';
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
 import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
+import { CipherBulkRestoreRequest } from '../models/request/cipherBulkRestoreRequest';
 import { CipherBulkShareRequest } from '../models/request/cipherBulkShareRequest';
 import { CipherCollectionsRequest } from '../models/request/cipherCollectionsRequest';
 import { CipherCreateRequest } from '../models/request/cipherCreateRequest';
@@ -163,6 +164,12 @@ export abstract class ApiService {
     postPurgeCiphers: (request: PasswordVerificationRequest, organizationId?: string) => Promise<any>;
     postImportCiphers: (request: ImportCiphersRequest) => Promise<any>;
     postImportOrganizationCiphers: (organizationId: string, request: ImportOrganizationCiphersRequest) => Promise<any>;
+    putDeleteCipher: (id: string) => Promise<any>;
+    putDeleteCipherAdmin: (id: string) => Promise<any>;
+    putDeleteManyCiphers: (request: CipherBulkDeleteRequest) => Promise<any>;
+    putRestoreCipher: (id: string) => Promise<any>;
+    putRestoreCipherAdmin: (id: string) => Promise<any>;
+    putRestoreManyCiphers: (request: CipherBulkRestoreRequest) => Promise<any>;
 
     postCipherAttachment: (id: string, data: FormData) => Promise<CipherResponse>;
     postCipherAttachmentAdmin: (id: string, data: FormData) => Promise<CipherResponse>;
