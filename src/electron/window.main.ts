@@ -21,7 +21,7 @@ export class WindowMain {
     private windowStates: { [key: string]: any; } = {};
     private enableAlwaysOnTop: boolean = false;
 
-    constructor(protected storageService: StorageService, private hideTitleBar = false,
+    constructor(private storageService: StorageService, private hideTitleBar = false,
         private defaultWidth = 950, private defaultHeight = 600) { }
 
     init(): Promise<any> {
