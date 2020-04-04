@@ -4,12 +4,12 @@ import { Router } from '@angular/router';
 import { CryptoService } from '../../abstractions/crypto.service';
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
-import { LockService } from '../../abstractions/lock.service';
 import { MessagingService } from '../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
 import { StorageService } from '../../abstractions/storage.service';
 import { UserService } from '../../abstractions/user.service';
+import { VaultTimeoutService } from '../../abstractions/vaultTimeout.service';
 
 import { ConstantsService } from '../../services/constants.service';
 
@@ -35,12 +35,12 @@ export class LockComponent implements OnInit {
     constructor(protected router: Router, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected messagingService: MessagingService,
         protected userService: UserService, protected cryptoService: CryptoService,
-        protected storageService: StorageService, protected lockService: LockService,
+        protected storageService: StorageService, protected vaultTimeoutService: VaultTimeoutService,
         protected environmentService: EnvironmentService, protected stateService: StateService) { }
 
     async ngOnInit() {
-        this.pinSet = await this.lockService.isPinLockSet();
-        this.pinLock = (this.pinSet[0] && this.lockService.pinProtectedKey != null) || this.pinSet[1];
+        this.pinSet = await this.vaultTimeoutService.isPinLockSet();
+        this.pinLock = (this.pinSet[0] && this.vaultTimeoutService.pinProtectedKey != null) || this.pinSet[1];
         this.email = await this.userService.getEmail();
         let vaultUrl = this.environmentService.getWebVaultUrl();
         if (vaultUrl == null) {
@@ -69,7 +69,7 @@ export class LockComponent implements OnInit {
             try {
                 if (this.pinSet[0]) {
                     const key = await this.cryptoService.makeKeyFromPin(this.pin, this.email, kdf, kdfIterations,
-                        this.lockService.pinProtectedKey);
+                        this.vaultTimeoutService.pinProtectedKey);
                     const encKey = await this.cryptoService.getEncKey(key);
                     const protectedPin = await this.storageService.get<string>(ConstantsService.protectedPin);
                     const decPin = await this.cryptoService.decryptToUtf8(new CipherString(protectedPin), encKey);
@@ -106,7 +106,7 @@ export class LockComponent implements OnInit {
                     const encKey = await this.cryptoService.getEncKey(key);
                     const decPin = await this.cryptoService.decryptToUtf8(new CipherString(protectedPin), encKey);
                     const pinKey = await this.cryptoService.makePinKey(decPin, this.email, kdf, kdfIterations);
-                    this.lockService.pinProtectedKey = await this.cryptoService.encrypt(key.key, pinKey);
+                    this.vaultTimeoutService.pinProtectedKey = await this.cryptoService.encrypt(key.key, pinKey);
                 }
                 this.setKeyAndContinue(key);
             } else {
