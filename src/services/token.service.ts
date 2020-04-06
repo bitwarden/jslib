@@ -26,9 +26,15 @@ export class TokenService implements TokenServiceAbstraction {
         ]);
     }
 
-    setToken(token: string): Promise<any> {
+    async setToken(token: string): Promise<any> {
         this.token = token;
         this.decodedToken = null;
+
+        if (await this.skipTokenStorage()) {
+            // if we have a vault timeout and the action is log out, don't store token
+            return;
+        }
+
         return this.storageService.save(Keys.accessToken, token);
     }
 
@@ -41,8 +47,14 @@ export class TokenService implements TokenServiceAbstraction {
         return this.token;
     }
 
-    setRefreshToken(refreshToken: string): Promise<any> {
+    async setRefreshToken(refreshToken: string): Promise<any> {
         this.refreshToken = refreshToken;
+
+        if (await this.skipTokenStorage()) {
+            // if we have a vault timeout and the action is log out, don't store token
+            return;
+        }
+
         return this.storageService.save(Keys.refreshToken, refreshToken);
     }
 
@@ -53,6 +65,23 @@ export class TokenService implements TokenServiceAbstraction {
 
         this.refreshToken = await this.storageService.get<string>(Keys.refreshToken);
         return this.refreshToken;
+    }
+
+    async toggleTokens(): Promise<any> {
+        const token = await this.getToken();
+        const refreshToken = await this.getRefreshToken();
+        const timeout = await this.storageService.get(ConstantsService.vaultTimeoutKey);
+        const action = await this.storageService.get(ConstantsService.vaultTimeoutActionKey);
+        if ((timeout != null || timeout === 0) && action === 'logOut') {
+            // if we have a vault timeout and the action is log out, reset tokens
+            await this.clearToken();
+            this.token = token;
+            this.refreshToken = refreshToken;
+            return;
+        }
+
+        await this.setToken(token);
+        await this.setRefreshToken(refreshToken);
     }
 
     setTwoFactorToken(token: string, email: string): Promise<any> {
@@ -182,5 +211,11 @@ export class TokenService implements TokenServiceAbstraction {
         }
 
         return decoded.iss as string;
+    }
+
+    private async skipTokenStorage(): Promise<boolean> {
+        const timeout = await this.storageService.get<number>(ConstantsService.vaultTimeoutKey);
+        const action = await this.storageService.get<string>(ConstantsService.vaultTimeoutActionKey);
+        return timeout != null && action === 'logOut';
     }
 }

@@ -8,6 +8,7 @@ import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { SearchService } from '../abstractions/search.service';
 import { StorageService } from '../abstractions/storage.service';
+import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
 import { VaultTimeoutService as VaultTimeoutServiceAbstraction } from '../abstractions/vaultTimeout.service';
 
@@ -22,8 +23,8 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         private collectionService: CollectionService, private cryptoService: CryptoService,
         private platformUtilsService: PlatformUtilsService, private storageService: StorageService,
         private messagingService: MessagingService, private searchService: SearchService,
-        private userService: UserService, private lockedCallback: () => Promise<void> = null,
-        private loggedOutCallback: () => Promise<void> = null) {
+        private userService: UserService, private tokenService: TokenService,
+        private lockedCallback: () => Promise<void> = null, private loggedOutCallback: () => Promise<void> = null) {
     }
 
     init(checkOnInterval: boolean) {
@@ -117,6 +118,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         await this.storageService.save(ConstantsService.vaultTimeoutKey, timeout);
         await this.storageService.save(ConstantsService.vaultTimeoutActionKey, action);
         await this.cryptoService.toggleKey();
+        await this.tokenService.toggleTokens();
     }
 
     async isPinLockSet(): Promise<[boolean, boolean]> {
