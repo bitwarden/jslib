@@ -55,10 +55,10 @@ export class CiphersComponent {
         this.didScroll = this.pagedCiphers.length > this.pageSize;
     }
 
-    async reload(filter: (cipher: CipherView) => boolean = null) {
+    async reload(filter: (cipher: CipherView) => boolean = null, deleted: boolean = false) {
         this.loaded = false;
         this.ciphers = [];
-        await this.load(filter);
+        await this.load(filter, deleted);
     }
 
     async refresh() {
