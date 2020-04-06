@@ -19,7 +19,7 @@ export class TokenService implements TokenServiceAbstraction {
     constructor(private storageService: StorageService) {
     }
 
-    async setTokens(accessToken: string, refreshToken: string): Promise<any> {
+    setTokens(accessToken: string, refreshToken: string): Promise<any> {
         return Promise.all([
             this.setToken(accessToken),
             this.setRefreshToken(refreshToken),
