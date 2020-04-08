@@ -34,6 +34,7 @@ export class ViewComponent implements OnDestroy, OnInit {
     @Input() cipherId: string;
     @Output() onEditCipher = new EventEmitter<CipherView>();
     @Output() onCloneCipher = new EventEmitter<CipherView>();
+    @Output() onRestoreCipher = new EventEmitter<CipherView>();
 
     cipher: CipherView;
     showPassword: boolean;
@@ -108,6 +109,13 @@ export class ViewComponent implements OnDestroy, OnInit {
 
     clone() {
         this.onCloneCipher.emit(this.cipher);
+    }
+
+    restore() {
+        if (!this.cipher.isDeleted) {
+            return;
+        }
+        this.onRestoreCipher.emit(this.cipher);
     }
 
     togglePassword() {

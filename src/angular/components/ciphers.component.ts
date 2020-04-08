@@ -64,7 +64,7 @@ export class CiphersComponent {
     async refresh() {
         try {
             this.refreshing = true;
-            await this.reload(this.filter);
+            await this.reload(this.filter, this.deleted);
         } finally {
             this.refreshing = false;
         }
@@ -80,14 +80,15 @@ export class CiphersComponent {
         if (this.searchTimeout != null) {
             clearTimeout(this.searchTimeout);
         }
+        const deletedFilter: (cipher: CipherView) => boolean = (c) => c.isDeleted === this.deleted;
         if (timeout == null) {
-            this.ciphers = await this.searchService.searchCiphers(this.searchText, this.filter, null, this.deleted);
+            this.ciphers = await this.searchService.searchCiphers(this.searchText, [this.filter, deletedFilter], null);
             await this.resetPaging();
             return;
         }
         this.searchPending = true;
         this.searchTimeout = setTimeout(async () => {
-            this.ciphers = await this.searchService.searchCiphers(this.searchText, this.filter, null, this.deleted);
+            this.ciphers = await this.searchService.searchCiphers(this.searchText, [this.filter, deletedFilter], null);
             await this.resetPaging();
             this.searchPending = false;
         }, timeout);

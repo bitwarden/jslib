@@ -71,8 +71,9 @@ export class SearchService implements SearchServiceAbstraction {
         console.timeEnd('search indexing');
     }
 
-    async searchCiphers(query: string, filter: (cipher: CipherView) => boolean = null, ciphers: CipherView[] = null,
-        deleted: boolean = false):
+    async searchCiphers(query: string,
+        filter: (((cipher: CipherView) => boolean) | (Array<(cipher: CipherView) => boolean>)) = null,
+        ciphers: CipherView[] = null):
         Promise<CipherView[]> {
         const results: CipherView[] = [];
         if (query != null) {
@@ -86,15 +87,11 @@ export class SearchService implements SearchServiceAbstraction {
             ciphers = await this.cipherService.getAllDecrypted();
         }
 
-        ciphers = ciphers.filter((c) => {
-            if (deleted !== c.isDeleted) {
-                return false;
-            }
-            if (filter != null) {
-                return filter(c);
-            }
-            return true;
-        });
+        if (filter != null && Array.isArray(filter) && filter.length > 0) {
+            ciphers = ciphers.filter((c) => filter.every((f) => f == null || f(c)));
+        } else if (filter != null) {
+            ciphers = ciphers.filter(filter as (cipher: CipherView) => boolean);
+        }
 
         if (!this.isSearchable(query)) {
             return ciphers;

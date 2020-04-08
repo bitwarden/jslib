@@ -50,6 +50,7 @@ export class AddEditComponent implements OnInit {
     @Input() organizationId: string = null;
     @Output() onSavedCipher = new EventEmitter<CipherView>();
     @Output() onDeletedCipher = new EventEmitter<CipherView>();
+    @Output() onRestoredCipher = new EventEmitter<CipherView>();
     @Output() onCancelled = new EventEmitter<CipherView>();
     @Output() onEditAttachments = new EventEmitter<CipherView>();
     @Output() onShareCipher = new EventEmitter<CipherView>();
@@ -63,6 +64,7 @@ export class AddEditComponent implements OnInit {
     title: string;
     formPromise: Promise<any>;
     deletePromise: Promise<any>;
+    restorePromise: Promise<any>;
     checkPasswordPromise: Promise<number>;
     showPassword: boolean = false;
     showCardCode: boolean = false;
@@ -221,6 +223,10 @@ export class AddEditComponent implements OnInit {
     }
 
     async submit(): Promise<boolean> {
+        if (this.cipher.isDeleted) {
+            return this.restore();
+        }
+
         if (this.cipher.name == null || this.cipher.name === '') {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('nameRequired'));
@@ -331,10 +337,35 @@ export class AddEditComponent implements OnInit {
         try {
             this.deletePromise = this.deleteCipher();
             await this.deletePromise;
-            this.platformUtilsService.eventTrack('Deleted Cipher');
-            this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedItem'));
+            this.platformUtilsService.eventTrack((this.cipher.isDeleted ? 'Permanently ' : '') + 'Deleted Cipher');
+            this.platformUtilsService.showToast('success', null,
+                this.i18nService.t(this.cipher.isDeleted ? 'permanentlyDeletedItem' : 'deletedItem'));
             this.onDeletedCipher.emit(this.cipher);
-            this.messagingService.send('deletedCipher');
+            this.messagingService.send(this.cipher.isDeleted ? 'permanentlyDeletedCipher' : 'deletedCipher');
+        } catch { }
+
+        return true;
+    }
+
+    async restore(): Promise<boolean> {
+        if (!this.cipher.isDeleted) {
+            return false;
+        }
+
+        const confirmed = await this.platformUtilsService.showDialog(
+            this.i18nService.t('restoreItemConfirmation'), this.i18nService.t('restoreItem'),
+            this.i18nService.t('yes'), this.i18nService.t('no'), 'warning');
+        if (!confirmed) {
+            return false;
+        }
+
+        try {
+            this.restorePromise = this.restoreCipher();
+            await this.restorePromise;
+            this.platformUtilsService.eventTrack('Restored Cipher');
+            this.platformUtilsService.showToast('success', null, this.i18nService.t('restoredItem'));
+            this.onRestoredCipher.emit(this.cipher);
+            this.messagingService.send('restoredCipher');
         } catch { }
 
         return true;
@@ -449,6 +480,11 @@ export class AddEditComponent implements OnInit {
     }
 
     protected deleteCipher() {
-        return this.cipherService.deleteWithServer(this.cipher.id);
+        return this.cipher.isDeleted ? this.cipherService.deleteWithServer(this.cipher.id)
+            : this.cipherService.softDeleteWithServer(this.cipher.id);
+    }
+
+    protected restoreCipher() {
+        return this.cipherService.restoreWithServer(this.cipher.id);
     }
 }
