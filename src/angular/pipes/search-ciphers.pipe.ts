@@ -19,17 +19,22 @@ export class SearchCiphersPipe implements PipeTransform {
         this.onlySearchName = platformUtilsService.getDevice() === DeviceType.EdgeExtension;
     }
 
-    transform(ciphers: CipherView[], searchText: string): CipherView[] {
+    transform(ciphers: CipherView[], searchText: string, deleted: boolean = false): CipherView[] {
         if (ciphers == null || ciphers.length === 0) {
             return [];
         }
 
         if (searchText == null || searchText.length < 2) {
-            return ciphers;
+            return ciphers.filter((c) => {
+                return deleted !== c.isDeleted;
+            });
         }
 
         searchText = searchText.trim().toLowerCase();
         return ciphers.filter((c) => {
+            if (deleted !== c.isDeleted) {
+                return false;
+            }
             if (c.name != null && c.name.toLowerCase().indexOf(searchText) > -1) {
                 return true;
             }
