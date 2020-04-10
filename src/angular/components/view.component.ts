@@ -27,7 +27,6 @@ import { CipherView } from '../../models/view/cipherView';
 import { FieldView } from '../../models/view/fieldView';
 import { LoginUriView } from '../../models/view/loginUriView';
 import { BroadcasterService } from '../services/broadcaster.service';
-import { Cipher } from '../../models/domain';
 
 const BroadcasterSubscriptionId = 'ViewComponent';
 
@@ -35,8 +34,8 @@ export class ViewComponent implements OnDestroy, OnInit {
     @Input() cipherId: string;
     @Output() onEditCipher = new EventEmitter<CipherView>();
     @Output() onCloneCipher = new EventEmitter<CipherView>();
-    @Output() onRestoredCipher = new EventEmitter<CipherView>();
     @Output() onDeletedCipher = new EventEmitter<CipherView>();
+    @Output() onRestoredCipher = new EventEmitter<CipherView>();
 
     cipher: CipherView;
     showPassword: boolean;
