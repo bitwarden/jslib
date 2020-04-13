@@ -310,6 +310,9 @@ export class CipherService implements CipherServiceAbstraction {
         const ciphers = await this.getAllDecrypted();
 
         return ciphers.filter((cipher) => {
+            if (cipher.isDeleted) {
+                return false;
+            }
             if (folder && cipher.folderId === groupingId) {
                 return true;
             } else if (!folder && cipher.collectionIds != null && cipher.collectionIds.indexOf(groupingId) > -1) {
@@ -352,6 +355,9 @@ export class CipherService implements CipherServiceAbstraction {
         }
 
         return ciphers.filter((cipher) => {
+            if (cipher.deletedDate != null) {
+                return false;
+            }
             if (includeOtherTypes != null && includeOtherTypes.indexOf(cipher.type) > -1) {
                 return true;
             }

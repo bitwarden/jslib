@@ -328,8 +328,8 @@ export class AddEditComponent implements OnInit {
 
     async delete(): Promise<boolean> {
         const confirmed = await this.platformUtilsService.showDialog(
-            this.i18nService.t('deleteItemConfirmation'), this.i18nService.t('deleteItem'),
-            this.i18nService.t('yes'), this.i18nService.t('no'), 'warning');
+            this.i18nService.t(this.cipher.isDeleted ? 'permanentlyDeleteItemConfirmation' : 'deleteItemConfirmation'),
+            this.i18nService.t('deleteItem'), this.i18nService.t('yes'), this.i18nService.t('no'), 'warning');
         if (!confirmed) {
             return false;
         }
