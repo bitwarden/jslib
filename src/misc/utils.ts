@@ -281,14 +281,11 @@ export class Utils {
             return null;
         }
 
-        const hasProtocol = uriString.indexOf('://') > -1;
-        if (!hasProtocol && uriString.indexOf('.') > -1) {
-            uriString = 'http://' + uriString;
-        } else if (!hasProtocol) {
-            return null;
+        let url = Utils.getUrlObject(uriString);
+        if (url == null) {
+            url = Utils.getUrlObject('http://' + uriString);
         }
-
-        return Utils.getUrlObject(uriString);
+        return url;
     }
 
     private static getUrlObject(uriString: string): URL {
@@ -298,6 +295,12 @@ export class Utils {
             } else if (typeof URL === 'function') {
                 return new URL(uriString);
             } else if (window != null) {
+                const hasProtocol = uriString.indexOf('://') > -1;
+                if (!hasProtocol && uriString.indexOf('.') > -1) {
+                    uriString = 'http://' + uriString;
+                } else if (!hasProtocol) {
+                    return null;
+                }
                 const anchor = window.document.createElement('a');
                 anchor.href = uriString;
                 return anchor as any;
