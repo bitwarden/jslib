@@ -283,7 +283,10 @@ export class Utils {
 
         let url = Utils.getUrlObject(uriString);
         if (url == null) {
-            url = Utils.getUrlObject('http://' + uriString);
+            const hasHttpProtocol = uriString.indexOf('http://') === 0 || uriString.indexOf('https://') === 0;
+            if (!hasHttpProtocol && uriString.indexOf('.') > -1) {
+                url = Utils.getUrlObject('http://' + uriString);
+            }
         }
         return url;
     }
