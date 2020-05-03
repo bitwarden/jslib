@@ -95,6 +95,6 @@ export class LoginUriView implements View {
     }
 
     get launchUri(): string {
-        return this.uri.indexOf('://') < 0 && Utils.tldEndingRegex.test(this.uri) ? ('http://' + this.uri) : this.uri;
+        return this.uri.indexOf('://') < 0 ? ('http://' + this.uri) : this.uri;
     }
 }
