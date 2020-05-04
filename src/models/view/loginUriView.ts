@@ -74,7 +74,7 @@ export class LoginUriView implements View {
 
     get isWebsite(): boolean {
         const uri = this.launchUri;
-        return uri != null &&
+        return uri !== null && uri !== '' &&
             (uri.indexOf('http://') === 0 || uri.indexOf('https://') === 0);
     }
 
@@ -82,7 +82,7 @@ export class LoginUriView implements View {
         if (this._canLaunch != null) {
             return this._canLaunch;
         }
-        if (this.uri != null && this.match !== UriMatchType.RegularExpression) {
+        if (this.uri !== null && this.uri !== '' && this.match !== UriMatchType.RegularExpression) {
             const uri = this.launchUri;
             for (let i = 0; i < CanLaunchWhitelist.length; i++) {
                 if (uri.indexOf(CanLaunchWhitelist[i]) === 0) {
@@ -96,6 +96,6 @@ export class LoginUriView implements View {
     }
 
     get launchUri(): string {
-        return (this.uri != null && this.uri.indexOf('://') < 0) ? ('http://' + this.uri) : this.uri;
+        return (this.uri !== null && this.uri.indexOf('://') < 0) ? ('http://' + this.uri) : this.uri;
     }
 }
