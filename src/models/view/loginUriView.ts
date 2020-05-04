@@ -73,8 +73,9 @@ export class LoginUriView implements View {
     }
 
     get isWebsite(): boolean {
-        return this.uri != null && (this.uri.indexOf('http://') === 0 || this.uri.indexOf('https://') === 0 ||
-            (this.uri.indexOf('://') < 0 && Utils.tldEndingRegex.test(this.uri)));
+        const uri = this.launchUri;
+        return uri != null &&
+            (uri.indexOf('http://') === 0 || uri.indexOf('https://') === 0);
     }
 
     get canLaunch(): boolean {
@@ -95,6 +96,6 @@ export class LoginUriView implements View {
     }
 
     get launchUri(): string {
-        return this.uri.indexOf('://') < 0 ? ('http://' + this.uri) : this.uri;
+        return (this.uri != null && this.uri.indexOf('://') < 0) ? ('http://' + this.uri) : this.uri;
     }
 }
