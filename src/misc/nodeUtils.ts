@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as readline from 'readline';
 import * as path from 'path';
 
 export class NodeUtils {
@@ -12,5 +13,17 @@ export class NodeUtils {
             }
             return dir;
         }, initialDir);
+    }
+    static readFirstLine(fileName: string) {
+        return new Promise<string>((resolve, reject) => {
+            const readStream = fs.createReadStream(fileName, {encoding: 'utf8'});
+            const readInterface = readline.createInterface(readStream);
+            readInterface
+                .on('line', line => {
+                    readStream.close();
+                    resolve(line);
+                })
+                .on('error', err => reject(err));
+        });
     }
 }

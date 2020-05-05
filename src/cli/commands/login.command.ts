@@ -14,6 +14,8 @@ import { Response } from '../models/response';
 
 import { MessageResponse } from '../models/response/messageResponse';
 
+import { NodeUtils } from '../../misc/nodeUtils';
+
 export class LoginCommand {
     protected validatedParams: () => Promise<any>;
     protected success: () => Promise<MessageResponse>;
@@ -38,18 +40,28 @@ export class LoginCommand {
             return Response.badRequest('Email address is invalid.');
         }
 
-        if ((password == null || password === '') && canInteract) {
-            const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-                type: 'password',
-                name: 'password',
-                message: 'Master password:',
-            });
-            password = answer.password;
+        if (password == null || password === '') {
+            if (process.env.BW_PASSWORD) {
+                password = process.env.BW_PASSWORD;
+            } else if (canInteract) {
+                const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+                    type: 'password',
+                    name: 'password',
+                    message: 'Master password:',
+                });
+                password = answer.password;
+            }
         }
         if (password == null || password === '') {
             return Response.badRequest('Master password is required.');
         }
-
+        if (password.startsWith('file:')) {
+            const filename = password.substring(5);
+            password = await NodeUtils.readFirstLine(filename);
+        }
+        if (password.startsWith('env:') && process.env[password.substring(4)]) {
+            password = process.env[password.substring(4)];
+        }
         let twoFactorToken: string = cmd.code;
         let twoFactorMethod: TwoFactorProviderType = null;
         try {
