@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import * as readline from 'readline';
 import * as path from 'path';
+import * as readline from 'readline';
 
 export class NodeUtils {
     static mkdirpSync(targetDir: string, mode = '700', relative = false, relativeDir: string = null) {
@@ -19,11 +19,11 @@ export class NodeUtils {
             const readStream = fs.createReadStream(fileName, {encoding: 'utf8'});
             const readInterface = readline.createInterface(readStream);
             readInterface
-                .on('line', line => {
+                .on('line', (line) => {
                     readStream.close();
                     resolve(line);
                 })
-                .on('error', err => reject(err));
+                .on('error', (err) => reject(err));
         });
     }
 }
