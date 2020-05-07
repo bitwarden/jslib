@@ -41,8 +41,10 @@ export class LoginCommand {
         }
 
         if (password == null || password === '') {
-            if (process.env.BW_PASSWORD) {
-                password = process.env.BW_PASSWORD;
+            if (cmd.passwordFile) {
+                password = await NodeUtils.readFirstLine(cmd.passwordFile);
+            } else if (cmd.passwordEnv && process.env[cmd.passwordEnv]) {
+                password = process.env[cmd.passwordEnv];
             } else if (canInteract) {
                 const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                     type: 'password',
@@ -52,16 +54,11 @@ export class LoginCommand {
                 password = answer.password;
             }
         }
+
         if (password == null || password === '') {
             return Response.badRequest('Master password is required.');
         }
-        if (password.startsWith('file:')) {
-            const filename = password.substring(5);
-            password = await NodeUtils.readFirstLine(filename);
-        }
-        if (password.startsWith('env:') && process.env[password.substring(4)]) {
-            password = process.env[password.substring(4)];
-        }
+
         let twoFactorToken: string = cmd.code;
         let twoFactorMethod: TwoFactorProviderType = null;
         try {
