@@ -14,6 +14,8 @@ import { Response } from '../models/response';
 
 import { MessageResponse } from '../models/response/messageResponse';
 
+import { NodeUtils } from '../../misc/nodeUtils';
+
 export class LoginCommand {
     protected validatedParams: () => Promise<any>;
     protected success: () => Promise<MessageResponse>;
@@ -38,14 +40,21 @@ export class LoginCommand {
             return Response.badRequest('Email address is invalid.');
         }
 
-        if ((password == null || password === '') && canInteract) {
-            const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-                type: 'password',
-                name: 'password',
-                message: 'Master password:',
-            });
-            password = answer.password;
+        if (password == null || password === '') {
+            if (cmd.passwordfile) {
+                password = await NodeUtils.readFirstLine(cmd.passwordfile);
+            } else if (cmd.passwordenv && process.env[cmd.passwordenv]) {
+                password = process.env[cmd.passwordenv];
+            } else if (canInteract) {
+                const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+                    type: 'password',
+                    name: 'password',
+                    message: 'Master password:',
+                });
+                password = answer.password;
+            }
         }
+
         if (password == null || password === '') {
             return Response.badRequest('Master password is required.');
         }
