@@ -41,10 +41,10 @@ export class LoginCommand {
         }
 
         if (password == null || password === '') {
-            if (cmd.passwordFile) {
-                password = await NodeUtils.readFirstLine(cmd.passwordFile);
-            } else if (cmd.passwordEnv && process.env[cmd.passwordEnv]) {
-                password = process.env[cmd.passwordEnv];
+            if (cmd.passwordfile) {
+                password = await NodeUtils.readFirstLine(cmd.passwordfile);
+            } else if (cmd.passwordenv && process.env[cmd.passwordenv]) {
+                password = process.env[cmd.passwordenv];
             } else if (canInteract) {
                 const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                     type: 'password',
