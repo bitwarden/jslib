@@ -321,6 +321,11 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/kdf', request, true, false);
     }
 
+    async getEnterprisePortalSignInToken(): Promise<string> {
+        const r = await this.send('GET', '/accounts/enterprise-portal-signin-token', null, true, true);
+        return r as string;
+    }
+
     // Folder APIs
 
     async getFolder(id: string): Promise<FolderResponse> {

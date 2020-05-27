@@ -139,6 +139,7 @@ export abstract class ApiService {
     postAccountRecoverDelete: (request: DeleteRecoverRequest) => Promise<any>;
     postAccountRecoverDeleteToken: (request: VerifyDeleteRecoverRequest) => Promise<any>;
     postAccountKdf: (request: KdfRequest) => Promise<any>;
+    getEnterprisePortalSignInToken: () => Promise<string>;
 
     getFolder: (id: string) => Promise<FolderResponse>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
