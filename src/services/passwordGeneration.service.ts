@@ -12,7 +12,7 @@ import {
 import { PolicyService } from '../abstractions/policy.service';
 import { StorageService } from '../abstractions/storage.service';
 
-import { EEFLongWordList } from '../misc/wordlist';
+import * as WordList from '../misc/wordlist';
 
 import { PolicyType } from '../enums/policyType';
 
@@ -160,24 +160,30 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         if (o.numWords == null || o.numWords <= 2) {
             o.numWords = DefaultOptions.numWords;
         }
-        if (o.wordSeparator == null || o.wordSeparator.length === 0 || o.wordSeparator.length > 1) {
-            o.wordSeparator = ' ';
-        }
         if (o.capitalize == null) {
             o.capitalize = false;
         }
         if (o.includeNumber == null) {
             o.includeNumber = false;
         }
+        if (o.shortWords == null) {
+            o.shortWords = false;
+        }
+        if (o.wordSeparator == null || o.wordSeparator.length === 0) {
+            o.wordSeparator = '';
+        } else if (o.wordSeparator.length > 1) {
+            o.wordSeparator = ' ';
+        }
 
-        const listLength = EEFLongWordList.length - 1;
+        // Words with up to 5 chars are considered short
+        const listLength = (o.shortWords ? WordList.EEFLWL_OFFSET_6_CHAR : WordList.EEFLongWordList.length) - 1;
         const wordList = new Array(o.numWords);
         for (let i = 0; i < o.numWords; i++) {
             const wordIndex = await this.cryptoService.randomNumber(0, listLength);
             if (o.capitalize) {
-                wordList[i] = this.capitalize(EEFLongWordList[wordIndex]);
+                wordList[i] = this.capitalize(WordList.EEFLongWordList[wordIndex]);
             } else {
-                wordList[i] = EEFLongWordList[wordIndex];
+                wordList[i] = WordList.EEFLongWordList[wordIndex];
             }
         }
 
