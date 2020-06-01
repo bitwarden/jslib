@@ -29,6 +29,7 @@ const DefaultOptions = {
     minSpecial: 1,
     type: 'password',
     numWords: 3,
+    shortWords: false,
     wordSeparator: '-',
     capitalize: false,
     includeNumber: false,
@@ -232,6 +233,10 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
 
             if (enforcedPolicyOptions.useSpecial) {
                 options.special = true;
+            }
+
+            if (enforcedPolicyOptions.useShortWords) {
+                options.shortWords = true;
             }
 
             if (options.minSpecial < enforcedPolicyOptions.specialCount) {
