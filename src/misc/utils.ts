@@ -157,7 +157,7 @@ export class Utils {
     static getHostname(uriString: string): string {
         const url = Utils.getUrl(uriString);
         try {
-            return url != null ? url.hostname : null;
+            return url != null && url.hostname !== '' ? url.hostname : null;
         } catch {
             return null;
         }
@@ -166,7 +166,7 @@ export class Utils {
     static getHost(uriString: string): string {
         const url = Utils.getUrl(uriString);
         try {
-            return url != null ? url.host : null;
+            return url != null && url.host !== '' ? url.host : null;
         } catch {
             return null;
         }
