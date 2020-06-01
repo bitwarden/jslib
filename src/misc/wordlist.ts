@@ -1,13 +1,32 @@
 // EFF's Long Wordlist from https://www.eff.org/dice
 // Sorted by length and alphabet, enabling to access specific word lengths by offset
 
-export const EEFLWL_OFFSET_3_CHAR = 0;
-export const EEFLWL_OFFSET_4_CHAR = EEFLWL_OFFSET_3_CHAR + 82;
-export const EEFLWL_OFFSET_5_CHAR = EEFLWL_OFFSET_4_CHAR + 467;
-export const EEFLWL_OFFSET_6_CHAR = EEFLWL_OFFSET_5_CHAR + 928;
-export const EEFLWL_OFFSET_7_CHAR = EEFLWL_OFFSET_6_CHAR + 1372;
-export const EEFLWL_OFFSET_8_CHAR = EEFLWL_OFFSET_7_CHAR + 1591;
-export const EEFLWL_OFFSET_9_CHAR = EEFLWL_OFFSET_8_CHAR + 1779;
+export enum EEFLongWordListOffsets {
+    First_3_chars = 0,
+    Last_3_chars = First_3_chars + 81,
+
+    First_4_chars = Last_3_chars + 1,
+    Last_4_chars = First_4_chars + 466,
+
+    First_5_chars = Last_4_chars + 1,
+    Last_5_chars = First_5_chars + 927,
+
+    First_6_chars = Last_5_chars + 1,
+    Last_6_chars = First_6_chars + 1371,
+
+    First_7_chars = Last_6_chars + 1,
+    Last_7_chars = First_7_chars + 1590,
+
+    First_8_chars = Last_7_chars + 1,
+    Last_8_chars = First_8_chars + 1778,
+
+    First_9_chars = Last_8_chars + 1,
+    Last_9_chars = First_9_chars + 1556,
+
+    First = First_3_chars,
+    Last = Last_9_chars,
+    Elements = Last + 1,
+}
 
 export const EEFLongWordList = ['aim',
     'art',
@@ -7784,5 +7803,5 @@ export const EEFLongWordList = ['aim',
     'zestfully',
     'zigzagged',
     'zookeeper',
-    'zoologist'
+    'zoologist',
 ];

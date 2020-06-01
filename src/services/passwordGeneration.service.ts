@@ -177,7 +177,8 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         }
 
         // Words with up to 5 chars are considered short
-        const listLength = (o.shortWords ? WordList.EEFLWL_OFFSET_6_CHAR : WordList.EEFLongWordList.length) - 1;
+        const listLength = o.shortWords ? WordList.EEFLongWordListOffsets.Last_5_chars :
+                                          WordList.EEFLongWordListOffsets.Last;
         const wordList = new Array(o.numWords);
         for (let i = 0; i < o.numWords; i++) {
             const wordIndex = await this.cryptoService.randomNumber(0, listLength);
