@@ -53,7 +53,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         // overload defaults with given options
         const o = Object.assign({}, DefaultOptions, options);
 
-        if (o.type === 'passphrase') {
+        if (o.type === 'passphrase' || o.type === 'passphrase_limited') {
             return this.generatePassphrase(options);
         }
 
@@ -157,7 +157,14 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
 
     async generatePassphrase(options: any): Promise<string> {
         const o = Object.assign({}, DefaultOptions, options);
+        const isLimited = o.type === 'passphrase_limited';
 
+        // const longestWord = WordList.EEFLongWordList[WordList.EEFLongWordListOffsets.Last].length;
+        const shortestWord = WordList.EEFLongWordList[WordList.EEFLongWordListOffsets.First].length;
+
+        if (o.length == null || o.length < shortestWord) {
+            o.length = shortestWord;
+        }
         if (o.numWords == null || o.numWords <= 2) {
             o.numWords = DefaultOptions.numWords;
         }
@@ -179,19 +186,43 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         // Words with up to 5 chars are considered short
         const listLength = o.shortWords ? WordList.EEFLongWordListOffsets.Last_5_chars :
                                           WordList.EEFLongWordListOffsets.Last;
-        const wordList = new Array(o.numWords);
-        for (let i = 0; i < o.numWords; i++) {
-            const wordIndex = await this.cryptoService.randomNumber(0, listLength);
-            if (o.capitalize) {
-                wordList[i] = this.capitalize(WordList.EEFLongWordList[wordIndex]);
-            } else {
-                wordList[i] = WordList.EEFLongWordList[wordIndex];
+
+        const wordList = new Array<string>();
+
+        if (isLimited) { // by char limiting
+            let charsLeft: number;
+            do {
+                // Check, if the chars left are associated with a list position. If not, it's undefined.
+                // This limits the list to words, that will fit into the left space.
+                const charsLeftListPos: number = (WordList.EEFLongWordListOffsets as any)[`Last_${charsLeft}_chars`];
+                const maxListPosition = charsLeftListPos ? Math.min(listLength, charsLeftListPos) : listLength;
+                const wordIndex = await this.cryptoService.randomNumber(0, maxListPosition);
+
+                if (o.capitalize) {
+                    wordList.push(this.capitalize(WordList.EEFLongWordList[wordIndex]));
+                } else {
+                    wordList.push(WordList.EEFLongWordList[wordIndex]);
+                }
+
+                const password = wordList.join(o.wordSeparator);
+                charsLeft = o.length - password.length - o.wordSeparator.length - (o.includeNumber ? 1 : 0);
+            }
+            while (charsLeft >= shortestWord);
+        } else { // by word count
+            for (let i = 0; i < o.numWords; i++) {
+                const wordIndex = await this.cryptoService.randomNumber(0, listLength);
+                if (o.capitalize) {
+                    wordList.push(this.capitalize(WordList.EEFLongWordList[wordIndex]));
+                } else {
+                    wordList.push(WordList.EEFLongWordList[wordIndex]);
+                }
             }
         }
 
         if (o.includeNumber) {
             await this.appendRandomNumberToRandomWord(wordList);
         }
+
         return wordList.join(o.wordSeparator);
     }
 
