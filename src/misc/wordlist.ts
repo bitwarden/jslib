@@ -26,6 +26,8 @@ export enum EEFLongWordListOffsets {
     First = First_3_chars,
     Last = Last_9_chars,
     Elements = Last + 1,
+    LengthShortest = 3,
+    LengthLongest = 9,
 }
 
 export const EEFLongWordList = ['aim',

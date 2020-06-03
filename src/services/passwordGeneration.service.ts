@@ -157,13 +157,12 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
 
     async generatePassphrase(options: any): Promise<string> {
         const o = Object.assign({}, DefaultOptions, options);
-        const isLimited = o.type === 'passphrase_limited';
 
-        // const longestWord = WordList.EEFLongWordList[WordList.EEFLongWordListOffsets.Last].length;
-        const shortestWord = WordList.EEFLongWordList[WordList.EEFLongWordListOffsets.First].length;
+        const longestWord = WordList.EEFLongWordListOffsets.LengthLongest;
+        const shortestWord = WordList.EEFLongWordListOffsets.LengthShortest;
 
-        if (o.length == null || o.length < shortestWord) {
-            o.length = shortestWord;
+        if (o.length == null || o.length < longestWord) {
+            o.length = longestWord;
         }
         if (o.numWords == null || o.numWords <= 2) {
             o.numWords = DefaultOptions.numWords;
@@ -189,7 +188,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
 
         const wordList = new Array<string>();
 
-        if (isLimited) { // by char limiting
+        if (o.type === 'passphrase_limited') { // by char limiting
             let charsLeft: number;
             do {
                 // Check, if the chars left are associated with a list position. If not, it's undefined.
