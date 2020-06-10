@@ -77,6 +77,7 @@ export class AddEditComponent implements OnInit {
     identityTitleOptions: any[];
     addFieldTypeOptions: any[];
     uriMatchOptions: any[];
+    uriOptions: any[];
     ownershipOptions: any[] = [];
 
     protected writeableCollections: CollectionView[];
@@ -409,6 +410,11 @@ export class AddEditComponent implements OnInit {
         if (this.editMode && f.showValue) {
             this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible, this.cipherId);
         }
+    }
+
+    toggleUriInput(uri: LoginUriView) {
+        const u = (uri as any);
+        u.showUriOptionsInput = !u.showUriOptionsInput;
     }
 
     toggleUriOptions(uri: LoginUriView) {
