@@ -17,6 +17,7 @@ import { ConstantsService } from './constants.service';
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
 import { EEFLongWordList } from '../misc/wordlist';
+import { getUnsortedEEFWordlistEntry } from '../misc/wordlistLookup';
 
 const Keys = {
     key: 'key', // Master Key
@@ -714,7 +715,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         while (numWords--) {
             const remainder = hashNumber.mod(EEFLongWordList.length);
             hashNumber = hashNumber.divide(EEFLongWordList.length);
-            phrase.push(EEFLongWordList[remainder as any]);
+            phrase.push(getUnsortedEEFWordlistEntry(remainder as any));
         }
         return phrase;
     }
