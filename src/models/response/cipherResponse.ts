@@ -38,7 +38,7 @@ export class CipherResponse extends BaseResponse {
         this.name = this.getResponseProperty('Name');
         this.notes = this.getResponseProperty('Notes');
         this.favorite = this.getResponseProperty('Favorite') || false;
-        this.edit = this.getResponseProperty('Edit') || true;
+        this.edit = !!this.getResponseProperty('Edit');
         this.organizationUseTotp = this.getResponseProperty('OrganizationUseTotp');
         this.revisionDate = this.getResponseProperty('RevisionDate');
         this.collectionIds = this.getResponseProperty('CollectionIds');
