@@ -8,6 +8,7 @@ export class FieldView implements View {
     name: string = null;
     value: string = null;
     type: FieldType = null;
+    newField: boolean = false; // Marks if the field is new and hasn't been saved
 
     constructor(f?: Field) {
         if (!f) {

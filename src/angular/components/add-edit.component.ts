@@ -296,6 +296,7 @@ export class AddEditComponent implements OnInit {
 
         const f = new FieldView();
         f.type = this.addFieldType;
+        f.newField = true;
         this.cipher.fields.push(f);
     }
 

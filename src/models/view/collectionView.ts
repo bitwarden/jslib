@@ -11,6 +11,7 @@ export class CollectionView implements View, ITreeNodeObject {
     name: string = null;
     externalId: string = null;
     readOnly: boolean = null;
+    hidePasswords: boolean = null;
 
     constructor(c?: Collection | CollectionGroupDetailsResponse) {
         if (!c) {
@@ -22,6 +23,7 @@ export class CollectionView implements View, ITreeNodeObject {
         this.externalId = c.externalId;
         if (c instanceof Collection) {
             this.readOnly = c.readOnly;
+            this.hidePasswords = c.hidePasswords;
         }
     }
 }

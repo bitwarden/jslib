@@ -11,6 +11,7 @@ export class Collection extends Domain {
     name: CipherString;
     externalId: string;
     readOnly: boolean;
+    hidePasswords: boolean;
 
     constructor(obj?: CollectionData, alreadyEncrypted: boolean = false) {
         super();
@@ -24,7 +25,8 @@ export class Collection extends Domain {
             name: null,
             externalId: null,
             readOnly: null,
-        }, alreadyEncrypted, ['id', 'organizationId', 'externalId', 'readOnly']);
+            hidePasswords: null,
+        }, alreadyEncrypted, ['id', 'organizationId', 'externalId', 'readOnly', 'hidePasswords']);
     }
 
     decrypt(): Promise<CollectionView> {
