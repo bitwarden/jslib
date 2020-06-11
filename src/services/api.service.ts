@@ -112,7 +112,6 @@ export class ApiService implements ApiServiceAbstraction {
     apiBaseUrl: string;
     identityBaseUrl: string;
     eventsBaseUrl: string;
-    enterpriseBaseUrl: string;
 
     private device: DeviceType;
     private deviceType: string;
@@ -140,14 +139,12 @@ export class ApiService implements ApiServiceAbstraction {
             this.apiBaseUrl = urls.base + '/api';
             this.identityBaseUrl = urls.base + '/identity';
             this.eventsBaseUrl = urls.base + '/events';
-            this.enterpriseBaseUrl = urls.base + '/enterprise'
             return;
         }
 
         this.apiBaseUrl = urls.api;
         this.identityBaseUrl = urls.identity;
         this.eventsBaseUrl = urls.events;
-        this.enterpriseBaseUrl = urls.enterprise;
 
         // Production
         if (this.apiBaseUrl == null) {
@@ -158,10 +155,6 @@ export class ApiService implements ApiServiceAbstraction {
         }
         if (this.eventsBaseUrl == null) {
             this.eventsBaseUrl = 'https://events.bitwarden.com';
-        }
-        //  TODO Is this necessary?
-        if (this.enterpriseBaseUrl == null) {
-            this.enterpriseBaseUrl = 'https://enterprise.bitwarden.com';
         }
     }
 

@@ -3,5 +3,4 @@ export class EnvironmentUrls {
     api: string;
     identity: string;
     events: string;
-    enterprise: string;
 }

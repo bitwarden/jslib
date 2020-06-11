@@ -56,7 +56,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         this.iconsUrl = urls.icons;
         this.notificationsUrl = urls.notifications;
         this.eventsUrl = envUrls.events = urls.events;
-        this.enterpriseUrl = envUrls.enterprise = urls.enterprise;
+        this.enterpriseUrl = urls.enterprise;
         this.apiService.setUrls(envUrls);
     }
 
@@ -97,7 +97,6 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
             envUrls.api = this.apiUrl;
             envUrls.identity = this.identityUrl;
             envUrls.events = this.eventsUrl;
-            envUrls.enterprise = this.enterpriseUrl;
         }
 
         this.apiService.setUrls(envUrls);
