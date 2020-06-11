@@ -15,6 +15,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
     iconsUrl: string;
     notificationsUrl: string;
     eventsUrl: string;
+    enterpriseUrl: string;
 
     constructor(private apiService: ApiService, private storageService: StorageService,
         private notificationsService: NotificationsService) { }
@@ -38,6 +39,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
             notifications: null,
             events: null,
             webVault: null,
+            enterprise: null,
         };
 
         const envUrls = new EnvironmentUrls();
@@ -54,6 +56,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         this.iconsUrl = urls.icons;
         this.notificationsUrl = urls.notifications;
         this.eventsUrl = envUrls.events = urls.events;
+        this.enterpriseUrl = urls.enterprise;
         this.apiService.setUrls(envUrls);
     }
 
@@ -65,6 +68,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         urls.icons = this.formatUrl(urls.icons);
         urls.notifications = this.formatUrl(urls.notifications);
         urls.events = this.formatUrl(urls.events);
+        urls.enterprise = this.formatUrl(urls.enterprise);
 
         await this.storageService.save(ConstantsService.environmentUrlsKey, {
             base: urls.base,
@@ -74,6 +78,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
             icons: urls.icons,
             notifications: urls.notifications,
             events: urls.events,
+            enterprise: urls.enterprise,
         });
 
         this.baseUrl = urls.base;
@@ -83,6 +88,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         this.iconsUrl = urls.icons;
         this.notificationsUrl = urls.notifications;
         this.eventsUrl = urls.events;
+        this.enterpriseUrl = urls.enterprise;
 
         const envUrls = new EnvironmentUrls();
         if (this.baseUrl) {
