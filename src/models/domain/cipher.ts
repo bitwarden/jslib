@@ -56,7 +56,11 @@ export class Cipher extends Domain {
         this.favorite = obj.favorite;
         this.organizationUseTotp = obj.organizationUseTotp;
         this.edit = obj.edit;
-        this.viewPassword = obj.viewPassword;
+        if (obj.viewPassword != null) {
+            this.viewPassword = obj.viewPassword;
+        } else {
+            this.viewPassword = true; // Default for already synced Ciphers without viewPassword
+        }
         this.revisionDate = obj.revisionDate != null ? new Date(obj.revisionDate) : null;
         this.collectionIds = obj.collectionIds;
         this.localData = localData;
