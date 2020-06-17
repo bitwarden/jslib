@@ -13,4 +13,11 @@ export class OrganizationCreateRequest {
     additionalStorageGb: number;
     premiumAccessAddon: boolean;
     collectionName: string;
+    taxIdNumber: string;
+    billingAddressLine1: string;
+    billingAddressLine2: string;
+    billingAddressCity: string;
+    billingAddressState: string;
+    billingAddressPostalCode: string;
+    billingAddressCountry: string;
 }

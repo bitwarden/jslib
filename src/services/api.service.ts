@@ -29,6 +29,7 @@ import { ImportOrganizationCiphersRequest } from '../models/request/importOrgani
 import { KdfRequest } from '../models/request/kdfRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
+import { OrganizationTaxInfoUpdateRequest } from '../models/request/organizationTaxInfoUpdateRequest';
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
 import { OrganizationUpgradeRequest } from '../models/request/organizationUpgradeRequest';
 import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
@@ -46,6 +47,7 @@ import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
 import { StorageRequest } from '../models/request/storageRequest';
+import { TaxInfoUpdateRequest } from '../models/request/taxInfoUpdateRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
 import { TwoFactorProviderRequest } from '../models/request/twoFactorProviderRequest';
@@ -95,6 +97,7 @@ import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
 import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
+import { TaxInfoResponse } from '../models/response/taxInfoResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
 import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
 import { TwoFactorEmailResponse } from '../models/response/twoFactorEmailResponse';
@@ -220,9 +223,18 @@ export class ApiService implements ApiServiceAbstraction {
         return new SubscriptionResponse(r);
     }
 
+    async getTaxInfo(): Promise<TaxInfoResponse> {
+        const r = await this.send('GET', '/accounts/tax', null, true, true);
+        return new TaxInfoResponse(r);
+    }
+
     async putProfile(request: UpdateProfileRequest): Promise<ProfileResponse> {
         const r = await this.send('PUT', '/accounts/profile', request, true, true);
         return new ProfileResponse(r);
+    }
+
+    putTaxInfo(request: TaxInfoUpdateRequest): Promise<any> {
+        return this.send('PUT', '/accounts/tax', request, true, false);
     }
 
     async postPrelogin(request: PreloginRequest): Promise<PreloginResponse> {
@@ -817,6 +829,11 @@ export class ApiService implements ApiServiceAbstraction {
             null, true, true);
     }
 
+    async getOrganizationTaxInfo(id: string): Promise<TaxInfoResponse> {
+        const r = await this.send('GET', '/organizations/' + id + '/tax', null, true, true);
+        return new TaxInfoResponse(r);
+    }
+
     async postOrganization(request: OrganizationCreateRequest): Promise<OrganizationResponse> {
         const r = await this.send('POST', '/organizations', request, true, true);
         return new OrganizationResponse(r);
@@ -825,6 +842,10 @@ export class ApiService implements ApiServiceAbstraction {
     async putOrganization(id: string, request: OrganizationUpdateRequest): Promise<OrganizationResponse> {
         const r = await this.send('PUT', '/organizations/' + id, request, true, true);
         return new OrganizationResponse(r);
+    }
+
+    async putOrganizationTaxInfo(id: string, request: OrganizationTaxInfoUpdateRequest): Promise<any> {
+        return this.send('PUT', '/organizations/' + id + '/tax', request, true, false);
     }
 
     postLeaveOrganization(id: string): Promise<any> {
