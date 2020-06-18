@@ -58,6 +58,9 @@ export class LoginUriView implements View {
     }
 
     get hostname(): string {
+        if (this.match === UriMatchType.RegularExpression) {
+            return null;
+        }
         if (this._hostname == null && this.uri != null) {
             this._hostname = Utils.getHostname(this.uri);
             if (this._hostname === '') {
