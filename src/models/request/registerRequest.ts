@@ -13,9 +13,10 @@ export class RegisterRequest {
     organizationUserId: string;
     kdf: KdfType;
     kdfIterations: number;
+    referenceId: string;
 
     constructor(email: string, name: string, masterPasswordHash: string, masterPasswordHint: string, key: string,
-        kdf: KdfType, kdfIterations: number) {
+        kdf: KdfType, kdfIterations: number, referenceId: string) {
         this.name = name;
         this.email = email;
         this.masterPasswordHash = masterPasswordHash;
@@ -23,5 +24,6 @@ export class RegisterRequest {
         this.key = key;
         this.kdf = kdf;
         this.kdfIterations = kdfIterations;
+        this.referenceId = referenceId;
     }
 }
