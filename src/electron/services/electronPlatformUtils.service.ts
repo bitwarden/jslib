@@ -1,5 +1,6 @@
 import {
     clipboard,
+    ipcRenderer,
     remote,
     shell,
 } from 'electron';
@@ -16,7 +17,9 @@ import { I18nService } from '../../abstractions/i18n.service';
 import { MessagingService } from '../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
+import { StorageService } from '../../abstractions';
 import { AnalyticsIds } from '../../misc/analytics';
+import { ElectronConstants } from '../electronConstants';
 
 export class ElectronPlatformUtilsService implements PlatformUtilsService {
     identityClientId: string;
@@ -25,7 +28,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     private analyticsIdCache: string = null;
 
     constructor(private i18nService: I18nService, private messagingService: MessagingService,
-        private isDesktopApp: boolean) {
+        private isDesktopApp: boolean, private storageService: StorageService) {
         this.identityClientId = isDesktopApp ? 'desktop' : 'connector';
     }
 
@@ -202,5 +205,18 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     readFromClipboard(options?: any): Promise<string> {
         const type = options ? options.type : null;
         return Promise.resolve(clipboard.readText(type));
+    }
+
+    supportsBiometric(): Promise<boolean> {
+        return this.storageService.get(ElectronConstants.enableBiometric);
+    }
+
+    authenticateBiometric(): Promise<boolean> {
+        return new Promise((resolve) => {
+            const val = ipcRenderer.sendSync('biometric', {
+                action: 'authenticate',
+            });
+            resolve(val);
+        });
     }
 }

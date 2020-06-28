@@ -25,12 +25,14 @@ export class LockComponent implements OnInit {
     email: string;
     pinLock: boolean = false;
     webVaultHostname: string = '';
+    supportsBiometric: boolean;
 
     protected successRoute: string = 'vault';
     protected onSuccessfulSubmit: () => void;
 
     private invalidPinAttempts = 0;
     private pinSet: [boolean, boolean];
+    private biometricLock: boolean;
 
     constructor(protected router: Router, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected messagingService: MessagingService,
@@ -41,12 +43,14 @@ export class LockComponent implements OnInit {
     async ngOnInit() {
         this.pinSet = await this.vaultTimeoutService.isPinLockSet();
         this.pinLock = (this.pinSet[0] && this.vaultTimeoutService.pinProtectedKey != null) || this.pinSet[1];
+        this.biometricLock = await this.vaultTimeoutService.isBiometricLockSet();
         this.email = await this.userService.getEmail();
         let vaultUrl = this.environmentService.getWebVaultUrl();
         if (vaultUrl == null) {
             vaultUrl = 'https://bitwarden.com';
         }
         this.webVaultHostname = Utils.getHostname(vaultUrl);
+        this.supportsBiometric = await this.platformUtilsService.supportsBiometric();
     }
 
     async submit() {
@@ -124,6 +128,18 @@ export class LockComponent implements OnInit {
         }
     }
 
+    async unlockBiometric() {
+        if (!this.biometricLock) {
+            return;
+        }
+        const success = await this.platformUtilsService.authenticateBiometric();
+
+        this.vaultTimeoutService.biometricLocked = !success;
+        if (success) {
+            await this.doContinue();
+        }
+    }
+
     togglePassword() {
         this.platformUtilsService.eventTrack('Toggled Master Password on Unlock');
         this.showPassword = !this.showPassword;
@@ -136,6 +152,7 @@ export class LockComponent implements OnInit {
     }
 
     private async doContinue() {
+        this.vaultTimeoutService.biometricLocked = false;
         const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
         await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
         this.messagingService.send('unlocked');

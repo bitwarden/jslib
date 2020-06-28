@@ -42,7 +42,8 @@ export class CryptoService implements CryptoServiceAbstraction {
         this.key = key;
 
         const option = await this.storageService.get<number>(ConstantsService.vaultTimeoutKey);
-        if (option != null) {
+        const biometric = await this.storageService.get<boolean>(ConstantsService.biometricUnlockKey);
+        if (option != null && !biometric) {
             // if we have a lock option set, we do not store the key
             return;
         }
@@ -291,7 +292,8 @@ export class CryptoService implements CryptoServiceAbstraction {
     async toggleKey(): Promise<any> {
         const key = await this.getKey();
         const option = await this.storageService.get(ConstantsService.vaultTimeoutKey);
-        if (option != null || option === 0) {
+        const biometric = await this.storageService.get(ConstantsService.biometricUnlockKey);
+        if (!biometric && (option != null || option === 0)) {
             // if we have a lock option set, clear the key
             await this.clearKey();
             this.key = key;

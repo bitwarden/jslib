@@ -22,6 +22,7 @@ import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
+import { VaultTimeoutService } from '../abstractions/vaultTimeout.service';
 
 export const TwoFactorProviders = {
     [TwoFactorProviderType.Authenticator]: {
@@ -88,7 +89,7 @@ export class AuthService implements AuthServiceAbstraction {
         private userService: UserService, private tokenService: TokenService,
         private appIdService: AppIdService, private i18nService: I18nService,
         private platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
-        private setCryptoKeys = true) { }
+        private vaultTimeoutService: VaultTimeoutService, private setCryptoKeys = true) { }
 
     init() {
         TwoFactorProviders[TwoFactorProviderType.Email].name = this.i18nService.t('emailTitle');
@@ -279,6 +280,7 @@ export class AuthService implements AuthServiceAbstraction {
             await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
         }
 
+        this.vaultTimeoutService.biometricLocked = false;
         this.messagingService.send('loggedIn');
         return result;
     }
