@@ -1,23 +1,25 @@
-import { ipcMain } from 'electron';
 import * as util from 'util';
-import { StorageService } from '../abstractions';
-import { ElectronConstants } from './electronConstants';
+
 import {
+    UserConsentVerificationResult,
     UserConsentVerifier,
     UserConsentVerifierAvailability,
-    UserConsentVerificationResult,
 } from '@nodert-win10-rs4/windows.security.credentials.ui';
+import { I18nService, StorageService } from '../abstractions';
+
+import { ipcMain } from 'electron';
+import { ElectronConstants } from './electronConstants';
 
 const requestVerification: any = util.promisify(UserConsentVerifier.requestVerificationAsync);
-const checkAvailability: any= util.promisify(UserConsentVerifier.checkAvailabilityAsync);
+const checkAvailability: any = util.promisify(UserConsentVerifier.checkAvailabilityAsync);
 
 const allowedAvailabilities = [
     UserConsentVerifierAvailability.available,
-    UserConsentVerifierAvailability.deviceBusy
-]
+    UserConsentVerifierAvailability.deviceBusy,
+];
 
 export class BiometricMain {
-    constructor(private storageService: StorageService) {}
+    constructor(private storageService: StorageService, private i18nservice: I18nService) {}
 
     async init() {
         this.storageService.save(ElectronConstants.enableBiometric, await this.supportsBiometric());
@@ -30,11 +32,11 @@ export class BiometricMain {
     async supportsBiometric(): Promise<boolean> {
         const availability = await checkAvailability();
 
-        return allowedAvailabilities.includes(availability)
+        return allowedAvailabilities.includes(availability);
     }
 
     async requestCreate(): Promise<boolean> {
-        const verification = await requestVerification("Please authenticate yourself to unlock the Bitwarden Vault.");
+        const verification = await requestVerification(this.i18nservice.t('windowsHelloConsentMessage'));
 
         return verification === UserConsentVerificationResult.verified;
     }

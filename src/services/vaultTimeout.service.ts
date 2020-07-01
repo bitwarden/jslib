@@ -98,7 +98,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         }
 
         if (allowSoftLock) {
-            const biometricLocked = await this.isBiometricLockSet()
+            const biometricLocked = await this.isBiometricLockSet();
             if (biometricLocked) {
                 this.messagingService.send('locked');
                 if (this.lockedCallback != null) {
