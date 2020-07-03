@@ -25,14 +25,13 @@ export class LockComponent implements OnInit {
     email: string;
     pinLock: boolean = false;
     webVaultHostname: string = '';
-    supportsBiometric: boolean;
+    biometricLock: boolean;
 
     protected successRoute: string = 'vault';
     protected onSuccessfulSubmit: () => void;
 
     private invalidPinAttempts = 0;
     private pinSet: [boolean, boolean];
-    private biometricLock: boolean;
 
     constructor(protected router: Router, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected messagingService: MessagingService,
@@ -50,7 +49,6 @@ export class LockComponent implements OnInit {
             vaultUrl = 'https://bitwarden.com';
         }
         this.webVaultHostname = Utils.getHostname(vaultUrl);
-        this.supportsBiometric = await this.platformUtilsService.supportsBiometric();
     }
 
     async submit() {
