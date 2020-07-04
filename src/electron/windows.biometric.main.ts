@@ -8,6 +8,7 @@ import {
 import { I18nService, StorageService } from '../abstractions';
 
 import { ipcMain } from 'electron';
+import { BiometricMain } from '../abstractions/biometric.main';
 import { ElectronConstants } from './electronConstants';
 
 const requestVerification: any = util.promisify(UserConsentVerifier.requestVerificationAsync);
@@ -18,7 +19,7 @@ const allowedAvailabilities = [
     UserConsentVerifierAvailability.deviceBusy,
 ];
 
-export class BiometricMain {
+export class WindowsBiometricMain implements BiometricMain {
     constructor(private storageService: StorageService, private i18nservice: I18nService) {}
 
     async init() {
