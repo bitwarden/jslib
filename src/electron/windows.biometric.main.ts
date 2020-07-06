@@ -9,6 +9,7 @@ import { I18nService, StorageService } from '../abstractions';
 
 import { ipcMain } from 'electron';
 import { BiometricMain } from '../abstractions/biometric.main';
+import { ConstantsService } from '../services';
 import { ElectronConstants } from './electronConstants';
 
 const requestVerification: any = util.promisify(UserConsentVerifier.requestVerificationAsync);
@@ -24,6 +25,7 @@ export class WindowsBiometricMain implements BiometricMain {
 
     async init() {
         this.storageService.save(ElectronConstants.enableBiometric, await this.supportsBiometric());
+        this.storageService.save(ConstantsService.biometricText, 'unlockWithWindowsHello');
 
         ipcMain.on('biometric', async (event: any, message: any) => {
             event.returnValue = await this.requestCreate();
