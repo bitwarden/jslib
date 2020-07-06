@@ -23,7 +23,7 @@ export class ConstantsService {
     static readonly protectedPin: string = 'protectedPin';
     static readonly clearClipboardKey: string = 'clearClipboardKey';
     static readonly eventCollectionKey: string = 'eventCollection';
-    static readonly biometricUnlockKey: string = 'fingerprintUnlock';
+    static readonly biometricUnlockKey: string = 'biometric';
     static readonly biometricText: string = 'biometricText';
 
     readonly environmentUrlsKey: string = ConstantsService.environmentUrlsKey;

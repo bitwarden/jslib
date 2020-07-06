@@ -1,8 +1,9 @@
 declare function escape(s: string): string;
 declare function unescape(s: string): string;
-declare module "duo_web_sdk";
+declare module 'duo_web_sdk';
 
-declare module "@nodert-win10-rs4/windows.security.credentials.ui" {
+/* tslint:disable */
+declare module '@nodert-win10-rs4/windows.security.credentials.ui' {
     export enum AuthenticationProtocol {
         basic,
         digest,
