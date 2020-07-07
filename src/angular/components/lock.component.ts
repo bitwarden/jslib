@@ -25,6 +25,7 @@ export class LockComponent implements OnInit {
     email: string;
     pinLock: boolean = false;
     webVaultHostname: string = '';
+    supportsBiometric: boolean;
     biometricLock: boolean;
     biometricText: string;
 
@@ -43,6 +44,7 @@ export class LockComponent implements OnInit {
     async ngOnInit() {
         this.pinSet = await this.vaultTimeoutService.isPinLockSet();
         this.pinLock = (this.pinSet[0] && this.vaultTimeoutService.pinProtectedKey != null) || this.pinSet[1];
+        this.supportsBiometric = await this.platformUtilsService.supportsBiometric();
         this.biometricLock = await this.vaultTimeoutService.isBiometricLockSet();
         this.biometricText = await this.storageService.get(ConstantsService.biometricText);
         this.email = await this.userService.getEmail();
