@@ -337,8 +337,7 @@ export class CipherService implements CipherServiceAbstraction {
                         if (eqDomain.length && eqDomain.indexOf(domain) >= 0) {
                             matches = matches.concat(eqDomain);
                         }
-                    }
-                    catch {}
+                    } catch {}
                 });
 
                 if (!matches.length) {
