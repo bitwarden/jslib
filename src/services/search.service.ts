@@ -165,7 +165,6 @@ export class SearchService implements SearchServiceAbstraction {
                 return true;
             }
 
-
             if(c.hasFields){
                 for (let field of c.fields) {
                     if (field.value.toLowerCase().indexOf(query) > -1) {
