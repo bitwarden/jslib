@@ -171,7 +171,7 @@ export class SearchService implements SearchServiceAbstraction {
                         return true;
                     }
 
-                    if(field.name.toLowerCase().indexOf(query) > -1) {
+                    if (field.name.toLowerCase().indexOf(query) > -1) {
                         return true;
                     }
                 }
