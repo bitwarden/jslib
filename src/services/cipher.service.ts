@@ -333,11 +333,9 @@ export class CipherService implements CipherServiceAbstraction {
             this.settingsService.getEquivalentDomains().then((eqDomains: any[][]) => {
                 let matches: any[] = [];
                 eqDomains.forEach((eqDomain) => {
-                    try {
-                        if (eqDomain.length && eqDomain.indexOf(domain) >= 0) {
-                            matches = matches.concat(eqDomain);
-                        }
-                    } catch {}
+                    if (eqDomain.length && eqDomain.indexOf(domain) >= 0) {
+                        matches = matches.concat(eqDomain);
+                    }
                 });
 
                 if (!matches.length) {
