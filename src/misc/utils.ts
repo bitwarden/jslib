@@ -159,7 +159,7 @@ export class Utils {
         try {
             let hostname = url != null && url.hostname !== '' ? url.hostname : null;
 
-            if(hostname != null && url.port !== '') {
+            if (hostname != null && url.port !== '') {
                 hostname += ":" + url.port;
             }
 
