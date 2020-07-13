@@ -157,7 +157,13 @@ export class Utils {
     static getHostname(uriString: string): string {
         const url = Utils.getUrl(uriString);
         try {
-            return url != null && url.hostname !== '' ? url.hostname : null;
+            let hostname = url != null && url.hostname !== '' ? url.hostname : null;
+
+            if(hostname != null && url.port !== '') {
+                hostname += ":" + url.port;
+            }
+
+            return hostname;
         } catch {
             return null;
         }
