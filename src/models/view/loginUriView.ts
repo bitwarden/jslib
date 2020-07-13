@@ -62,7 +62,7 @@ export class LoginUriView implements View {
             return null;
         }
         if (this._hostname == null && this.uri != null) {
-            this._hostname = Utils.getHostname(this.uri);
+            this._hostname = Utils.getHost(this.uri);
             if (this._hostname === '') {
                 this._hostname = null;
             }
