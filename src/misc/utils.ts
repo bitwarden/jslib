@@ -204,9 +204,14 @@ export class Utils {
             } catch (e) { }
         }
 
-        const domain = tldjs != null && tldjs.getDomain != null ? tldjs.getDomain(uriString) : null;
-        if (domain != null) {
-            return domain;
+        try {
+            const domain = tldjs != null && tldjs.getDomain != null ? tldjs.getDomain(uriString) : null;
+
+            if (domain != null) {
+                return domain;
+            }
+        } catch {
+            return null;
         }
 
         return null;
