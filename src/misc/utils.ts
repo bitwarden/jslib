@@ -89,6 +89,14 @@ export class Utils {
         }
     }
 
+    static fromBufferToUrlB64(buffer: ArrayBuffer): string {
+        const output = this.fromBufferToB64(buffer)
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=/g, '');
+        return output;
+    }
+
     static fromBufferToUtf8(buffer: ArrayBuffer): string {
         if (Utils.isNode || Utils.isNativeScript) {
             return Buffer.from(buffer).toString('utf8');

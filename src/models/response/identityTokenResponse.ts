@@ -1,5 +1,7 @@
 import { BaseResponse } from './baseResponse';
 
+import { KdfType } from '../../enums/kdfType';
+
 export class IdentityTokenResponse extends BaseResponse {
     accessToken: string;
     expiresIn: number;
@@ -9,6 +11,8 @@ export class IdentityTokenResponse extends BaseResponse {
     privateKey: string;
     key: string;
     twoFactorToken: string;
+    kdf: KdfType;
+    kdfIterations: number;
 
     constructor(response: any) {
         super(response);
@@ -20,5 +24,7 @@ export class IdentityTokenResponse extends BaseResponse {
         this.privateKey = this.getResponseProperty('PrivateKey');
         this.key = this.getResponseProperty('Key');
         this.twoFactorToken = this.getResponseProperty('TwoFactorToken');
+        this.kdf = this.getResponseProperty('Kdf');
+        this.kdfIterations = this.getResponseProperty('KdfIterations');
     }
 }
