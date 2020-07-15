@@ -8,7 +8,7 @@ export class IdentityTokenResponse extends BaseResponse {
     refreshToken: string;
     tokenType: string;
 
-    createdMasterPassword: boolean;
+    resetMasterPassword: boolean;
     privateKey: string;
     key: string;
     twoFactorToken: string;
@@ -22,7 +22,7 @@ export class IdentityTokenResponse extends BaseResponse {
         this.refreshToken = response.refresh_token;
         this.tokenType = response.token_type;
 
-        this.createdMasterPassword = this.getResponseProperty('CreatedMasterPassword');
+        this.resetMasterPassword = this.getResponseProperty('ResetMasterPassword');
         this.privateKey = this.getResponseProperty('PrivateKey');
         this.key = this.getResponseProperty('Key');
         this.twoFactorToken = this.getResponseProperty('TwoFactorToken');
