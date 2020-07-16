@@ -321,6 +321,10 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/verify-email-token', request, false, false);
     }
 
+    postAccountVerifyPassword(request: PasswordVerificationRequest): Promise<any> {
+        return this.send('POST', '/accounts/verify-password', request, true, false);
+    }
+
     postAccountRecoverDelete(request: DeleteRecoverRequest): Promise<any> {
         return this.send('POST', '/accounts/delete-recover', request, false, false);
     }
