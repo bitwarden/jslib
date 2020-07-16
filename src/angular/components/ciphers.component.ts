@@ -31,6 +31,8 @@ export class CiphersComponent {
     private pagedCiphersCount = 0;
     private refreshing = false;
 
+    private maxCheckedCount = 500;
+
     constructor(protected searchService: SearchService) { }
 
     async load(filter: (cipher: CipherView) => boolean = null, deleted: boolean = false) {
@@ -125,5 +127,30 @@ export class CiphersComponent {
     async resetPaging() {
         this.pagedCiphers = [];
         this.loadMore();
+    }
+
+    selectAll(select: boolean) {
+        if (select) {
+            this.selectAll(false);
+        }
+        const selectCount = select && this.ciphers.length > this.maxCheckedCount ? this.maxCheckedCount : this.ciphers.length;
+        for (let i = 0; i < selectCount; i++) {
+            this.checkCipher(this.ciphers[i], select);
+        }
+    }
+
+    checkCipher(c: CipherView, select?: boolean) {
+        (c as any).checked = select == null ? !(c as any).checked : select;
+    }
+
+    getSelected(): CipherView[] {
+        if (this.ciphers == null) {
+            return [];
+        }
+        return this.ciphers.filter((c) => !!(c as any).checked);
+    }
+
+    getSelectedIds(): string[] {
+        return this.getSelected().map((c) => c.id);
     }
 }
