@@ -133,7 +133,9 @@ export class CiphersComponent {
         if (select) {
             this.selectAll(false);
         }
-        const selectCount = select && this.ciphers.length > this.maxCheckedCount ? this.maxCheckedCount : this.ciphers.length;
+        const selectCount = select && this.ciphers.length > this.maxCheckedCount
+            ? this.maxCheckedCount
+            : this.ciphers.length;
         for (let i = 0; i < selectCount; i++) {
             this.checkCipher(this.ciphers[i], select);
         }
