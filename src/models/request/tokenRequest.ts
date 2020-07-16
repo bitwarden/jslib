@@ -44,6 +44,8 @@ export class TokenRequest {
             obj.code = this.code;
             obj.code_verifier = this.codeVerifier;
             obj.redirect_uri = this.redirectUri;
+        } else {
+            throw new Error('must provide credentials or codes');
         }
 
         if (this.device) {
