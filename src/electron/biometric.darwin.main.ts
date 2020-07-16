@@ -5,7 +5,7 @@ import { BiometricMain } from '../abstractions/biometric.main';
 import { ConstantsService } from '../services';
 import { ElectronConstants } from './electronConstants';
 
-export class BiometricDarwinMain implements BiometricMain {
+export default class BiometricDarwinMain implements BiometricMain {
     constructor(private storageService: StorageService, private i18nservice: I18nService) {}
 
     async init() {

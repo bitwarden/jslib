@@ -20,7 +20,7 @@ const allowedAvailabilities = [
     UserConsentVerifierAvailability.deviceBusy,
 ];
 
-export class BiometricWindowsMain implements BiometricMain {
+export default class BiometricWindowsMain implements BiometricMain {
     constructor(private storageService: StorageService, private i18nservice: I18nService) {}
 
     async init() {
