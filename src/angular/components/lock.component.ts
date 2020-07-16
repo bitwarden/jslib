@@ -1,6 +1,7 @@
 import { OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
+import { ApiService } from '../../abstractions/api.service';
 import { CryptoService } from '../../abstractions/crypto.service';
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
@@ -16,6 +17,8 @@ import { ConstantsService } from '../../services/constants.service';
 import { CipherString } from '../../models/domain/cipherString';
 import { SymmetricCryptoKey } from '../../models/domain/symmetricCryptoKey';
 
+import { PasswordVerificationRequest } from '../../models/request/passwordVerificationRequest';
+
 import { Utils } from '../../misc/utils';
 
 export class LockComponent implements OnInit {
@@ -25,6 +28,7 @@ export class LockComponent implements OnInit {
     email: string;
     pinLock: boolean = false;
     webVaultHostname: string = '';
+    formPromise: Promise<any>;
     supportsBiometric: boolean;
     biometricLock: boolean;
     biometricText: string;
@@ -39,7 +43,8 @@ export class LockComponent implements OnInit {
         protected platformUtilsService: PlatformUtilsService, protected messagingService: MessagingService,
         protected userService: UserService, protected cryptoService: CryptoService,
         protected storageService: StorageService, protected vaultTimeoutService: VaultTimeoutService,
-        protected environmentService: EnvironmentService, protected stateService: StateService) { }
+        protected environmentService: EnvironmentService, protected stateService: StateService,
+        protected apiService: ApiService) { }
 
     async ngOnInit() {
         this.pinSet = await this.vaultTimeoutService.isPinLockSet();
@@ -104,9 +109,26 @@ export class LockComponent implements OnInit {
         } else {
             const key = await this.cryptoService.makeKey(this.masterPassword, this.email, kdf, kdfIterations);
             const keyHash = await this.cryptoService.hashPassword(this.masterPassword, key);
-            const storedKeyHash = await this.cryptoService.getKeyHash();
 
-            if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
+            let passwordValid = false;
+
+            if (keyHash != null) {
+                const storedKeyHash = await this.cryptoService.getKeyHash();
+                if (storedKeyHash != null) {
+                    passwordValid = storedKeyHash === keyHash;
+                } else {
+                    const request = new PasswordVerificationRequest();
+                    request.masterPasswordHash = keyHash;
+                    try {
+                        this.formPromise = this.apiService.postAccountVerifyPassword(request);
+                        await this.formPromise;
+                        passwordValid = true;
+                        await this.cryptoService.setKeyHash(keyHash);
+                    } catch { }
+                }
+            }
+
+            if (passwordValid) {
                 if (this.pinSet[0]) {
                     const protectedPin = await this.storageService.get<string>(ConstantsService.protectedPin);
                     const encKey = await this.cryptoService.getEncKey(key);

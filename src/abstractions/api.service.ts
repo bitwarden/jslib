@@ -141,6 +141,7 @@ export abstract class ApiService {
     postAccountKeys: (request: KeysRequest) => Promise<any>;
     postAccountVerifyEmail: () => Promise<any>;
     postAccountVerifyEmailToken: (request: VerifyEmailRequest) => Promise<any>;
+    postAccountVerifyPassword: (request: PasswordVerificationRequest) => Promise<any>;
     postAccountRecoverDelete: (request: DeleteRecoverRequest) => Promise<any>;
     postAccountRecoverDeleteToken: (request: VerifyDeleteRecoverRequest) => Promise<any>;
     postAccountKdf: (request: KdfRequest) => Promise<any>;

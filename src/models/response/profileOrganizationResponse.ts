@@ -13,6 +13,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
     useTotp: boolean;
     use2fa: boolean;
     useApi: boolean;
+    useBusinessPortal: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
     seats: number;
@@ -34,6 +35,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
         this.useTotp = this.getResponseProperty('UseTotp');
         this.use2fa = this.getResponseProperty('Use2fa');
         this.useApi = this.getResponseProperty('UseApi');
+        this.useBusinessPortal = this.getResponseProperty('UseBusinessPortal');
         this.selfHost = this.getResponseProperty('SelfHost');
         this.usersGetPremium = this.getResponseProperty('UsersGetPremium');
         this.seats = this.getResponseProperty('Seats');

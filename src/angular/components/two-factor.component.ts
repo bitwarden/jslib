@@ -52,10 +52,14 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
-        if (this.authService.email == null || this.authService.masterPasswordHash == null ||
+        if ((!this.authService.authingWithSso() && !this.authService.authingWithPassword()) ||
             this.authService.twoFactorProvidersData == null) {
             this.router.navigate([this.loginRoute]);
             return;
+        }
+
+        if (this.authService.authingWithSso()) {
+            this.successRoute = 'lock';
         }
 
         if (this.initU2f && this.win != null && this.u2fSupported) {

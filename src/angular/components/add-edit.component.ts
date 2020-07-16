@@ -78,6 +78,7 @@ export class AddEditComponent implements OnInit {
     addFieldTypeOptions: any[];
     uriMatchOptions: any[];
     ownershipOptions: any[] = [];
+    currentDate = new Date();
 
     protected writeableCollections: CollectionView[];
     private previousCipherId: string;

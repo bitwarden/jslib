@@ -16,6 +16,7 @@ export class Organization {
     useTotp: boolean;
     use2fa: boolean;
     useApi: boolean;
+    useBusinessPortal: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
     seats: number;
@@ -39,6 +40,7 @@ export class Organization {
         this.useTotp = obj.useTotp;
         this.use2fa = obj.use2fa;
         this.useApi = obj.useApi;
+        this.useBusinessPortal = obj.useBusinessPortal;
         this.selfHost = obj.selfHost;
         this.usersGetPremium = obj.usersGetPremium;
         this.seats = obj.seats;

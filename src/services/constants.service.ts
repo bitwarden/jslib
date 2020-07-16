@@ -23,6 +23,8 @@ export class ConstantsService {
     static readonly protectedPin: string = 'protectedPin';
     static readonly clearClipboardKey: string = 'clearClipboardKey';
     static readonly eventCollectionKey: string = 'eventCollection';
+    static readonly ssoCodeVerifierKey: string = 'ssoCodeVerifier';
+    static readonly ssoStateKey: string = 'ssoState';
     static readonly biometricUnlockKey: string = 'biometric';
     static readonly biometricText: string = 'biometricText';
 
@@ -49,6 +51,8 @@ export class ConstantsService {
     readonly protectedPin: string = ConstantsService.protectedPin;
     readonly clearClipboardKey: string = ConstantsService.clearClipboardKey;
     readonly eventCollectionKey: string = ConstantsService.eventCollectionKey;
+    readonly ssoCodeVerifierKey: string = ConstantsService.ssoCodeVerifierKey;
+    readonly ssoStateKey: string = ConstantsService.ssoStateKey;
     readonly biometricUnlockKey: string = ConstantsService.biometricUnlockKey;
     readonly biometricText: string = ConstantsService.biometricText;
 }

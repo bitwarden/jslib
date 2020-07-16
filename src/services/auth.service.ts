@@ -78,12 +78,13 @@ export const TwoFactorProviders = {
 export class AuthService implements AuthServiceAbstraction {
     email: string;
     masterPasswordHash: string;
+    code: string;
+    codeVerifier: string;
+    ssoRedirectUrl: string;
     twoFactorProvidersData: Map<TwoFactorProviderType, { [key: string]: string; }>;
     selectedTwoFactorProviderType: TwoFactorProviderType = null;
 
     private key: SymmetricCryptoKey;
-    private kdf: KdfType;
-    private kdfIterations: number;
 
     constructor(private cryptoService: CryptoService, private apiService: ApiService,
         private userService: UserService, private tokenService: TokenService,
@@ -117,13 +118,19 @@ export class AuthService implements AuthServiceAbstraction {
         this.selectedTwoFactorProviderType = null;
         const key = await this.makePreloginKey(masterPassword, email);
         const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
-        return await this.logInHelper(email, hashedPassword, key);
+        return await this.logInHelper(email, hashedPassword, null, null, null, key,
+            null, null, null);
+    }
+
+    async logInSso(code: string, codeVerifier: string, redirectUrl: string): Promise<AuthResult> {
+        this.selectedTwoFactorProviderType = null;
+        return await this.logInHelper(null, null, code, codeVerifier, redirectUrl, null, null, null, null);
     }
 
     async logInTwoFactor(twoFactorProvider: TwoFactorProviderType, twoFactorToken: string,
         remember?: boolean): Promise<AuthResult> {
-        return await this.logInHelper(this.email, this.masterPasswordHash, this.key, twoFactorProvider,
-            twoFactorToken, remember);
+        return await this.logInHelper(this.email, this.masterPasswordHash, this.code, this.codeVerifier,
+            this.ssoRedirectUrl, this.key, twoFactorProvider, twoFactorToken, remember);
     }
 
     async logInComplete(email: string, masterPassword: string, twoFactorProvider: TwoFactorProviderType,
@@ -131,7 +138,8 @@ export class AuthService implements AuthServiceAbstraction {
         this.selectedTwoFactorProviderType = null;
         const key = await this.makePreloginKey(masterPassword, email);
         const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
-        return await this.logInHelper(email, hashedPassword, key, twoFactorProvider, twoFactorToken, remember);
+        return await this.logInHelper(email, hashedPassword, null, null, null, key, twoFactorProvider, twoFactorToken,
+            remember);
     }
 
     logOut(callback: Function) {
@@ -202,37 +210,59 @@ export class AuthService implements AuthServiceAbstraction {
 
     async makePreloginKey(masterPassword: string, email: string): Promise<SymmetricCryptoKey> {
         email = email.trim().toLowerCase();
-        this.kdf = null;
-        this.kdfIterations = null;
+        let kdf: KdfType = null;
+        let kdfIterations: number = null;
         try {
             const preloginResponse = await this.apiService.postPrelogin(new PreloginRequest(email));
             if (preloginResponse != null) {
-                this.kdf = preloginResponse.kdf;
-                this.kdfIterations = preloginResponse.kdfIterations;
+                kdf = preloginResponse.kdf;
+                kdfIterations = preloginResponse.kdfIterations;
             }
         } catch (e) {
             if (e == null || e.statusCode !== 404) {
                 throw e;
             }
         }
-        return this.cryptoService.makeKey(masterPassword, email, this.kdf, this.kdfIterations);
+        return this.cryptoService.makeKey(masterPassword, email, kdf, kdfIterations);
     }
 
-    private async logInHelper(email: string, hashedPassword: string, key: SymmetricCryptoKey,
-        twoFactorProvider?: TwoFactorProviderType, twoFactorToken?: string, remember?: boolean): Promise<AuthResult> {
+    authingWithSso(): boolean {
+        return this.code != null && this.codeVerifier != null && this.ssoRedirectUrl != null;
+    }
+
+    authingWithPassword(): boolean {
+        return this.email != null && this.masterPasswordHash != null;
+    }
+
+    private async logInHelper(email: string, hashedPassword: string, code: string, codeVerifier: string,
+        redirectUrl: string, key: SymmetricCryptoKey, twoFactorProvider?: TwoFactorProviderType,
+        twoFactorToken?: string, remember?: boolean): Promise<AuthResult> {
         const storedTwoFactorToken = await this.tokenService.getTwoFactorToken(email);
         const appId = await this.appIdService.getAppId();
         const deviceRequest = new DeviceRequest(appId, this.platformUtilsService);
 
+        let emailPassword: string[] = [];
+        let codeCodeVerifier: string[] = [];
+        if (email != null && hashedPassword != null) {
+            emailPassword = [email, hashedPassword];
+        } else {
+            emailPassword = null;
+        }
+        if (code != null && codeVerifier != null && redirectUrl != null) {
+            codeCodeVerifier = [code, codeVerifier, redirectUrl];
+        } else {
+            codeCodeVerifier = null;
+        }
+
         let request: TokenRequest;
         if (twoFactorToken != null && twoFactorProvider != null) {
-            request = new TokenRequest(email, hashedPassword, twoFactorProvider, twoFactorToken, remember,
+            request = new TokenRequest(emailPassword, codeCodeVerifier, twoFactorProvider, twoFactorToken, remember,
                 deviceRequest);
         } else if (storedTwoFactorToken != null) {
-            request = new TokenRequest(email, hashedPassword, TwoFactorProviderType.Remember,
+            request = new TokenRequest(emailPassword, codeCodeVerifier, TwoFactorProviderType.Remember,
                 storedTwoFactorToken, false, deviceRequest);
         } else {
-            request = new TokenRequest(email, hashedPassword, null, null, false, deviceRequest);
+            request = new TokenRequest(emailPassword, codeCodeVerifier, null, null, false, deviceRequest);
         }
 
         const response = await this.apiService.postIdentityToken(request);
@@ -246,6 +276,9 @@ export class AuthService implements AuthServiceAbstraction {
             const twoFactorResponse = response as IdentityTwoFactorResponse;
             this.email = email;
             this.masterPasswordHash = hashedPassword;
+            this.code = code;
+            this.codeVerifier = codeVerifier;
+            this.ssoRedirectUrl = redirectUrl;
             this.key = this.setCryptoKeys ? key : null;
             this.twoFactorProvidersData = twoFactorResponse.twoFactorProviders2;
             result.twoFactorProviders = twoFactorResponse.twoFactorProviders2;
@@ -253,16 +286,21 @@ export class AuthService implements AuthServiceAbstraction {
         }
 
         const tokenResponse = response as IdentityTokenResponse;
+        result.resetMasterPassword = tokenResponse.resetMasterPassword;
         if (tokenResponse.twoFactorToken != null) {
             await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken, email);
         }
 
         await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken);
         await this.userService.setInformation(this.tokenService.getUserId(), this.tokenService.getEmail(),
-            this.kdf, this.kdfIterations);
+            tokenResponse.kdf, tokenResponse.kdfIterations);
         if (this.setCryptoKeys) {
-            await this.cryptoService.setKey(key);
-            await this.cryptoService.setKeyHash(hashedPassword);
+            if (key != null) {
+                await this.cryptoService.setKey(key);
+            }
+            if (hashedPassword != null) {
+                await this.cryptoService.setKeyHash(hashedPassword);
+            }
             await this.cryptoService.setEncKey(tokenResponse.key);
 
             // User doesn't have a key pair yet (old account), let's generate one for them
@@ -286,8 +324,12 @@ export class AuthService implements AuthServiceAbstraction {
     }
 
     private clearState(): void {
+        this.key = null;
         this.email = null;
         this.masterPasswordHash = null;
+        this.code = null;
+        this.codeVerifier = null;
+        this.ssoRedirectUrl = null;
         this.twoFactorProvidersData = null;
         this.selectedTwoFactorProviderType = null;
     }
