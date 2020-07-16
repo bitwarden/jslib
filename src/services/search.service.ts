@@ -164,19 +164,6 @@ export class SearchService implements SearchServiceAbstraction {
             if (c.login && c.login.uri != null && c.login.uri.toLowerCase().indexOf(query) > -1) {
                 return true;
             }
-
-            if (c.hasFields) {
-                for (const field of c.fields) {
-                    if (field.value.toLowerCase().indexOf(query) > -1) {
-                        return true;
-                    }
-
-                    if (field.name.toLowerCase().indexOf(query) > -1) {
-                        return true;
-                    }
-                }
-            }
-
             return false;
         });
     }
