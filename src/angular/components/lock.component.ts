@@ -1,5 +1,6 @@
 import { OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { first } from 'rxjs/operators'
 
 import { ApiService } from '../../abstractions/api.service';
 import { CryptoService } from '../../abstractions/crypto.service';
@@ -58,6 +59,11 @@ export class LockComponent implements OnInit {
             vaultUrl = 'https://bitwarden.com';
         }
         this.webVaultHostname = Utils.getHostname(vaultUrl);
+        this.router.routerState.root.queryParams.pipe(first()).subscribe(params => {
+            if (params['promptBiometric']) {
+                this.unlockBiometric();
+            }
+        });
     }
 
     async submit() {
