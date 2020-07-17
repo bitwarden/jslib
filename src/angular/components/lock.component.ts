@@ -60,7 +60,7 @@ export class LockComponent implements OnInit {
         }
         this.webVaultHostname = Utils.getHostname(vaultUrl);
         this.router.routerState.root.queryParams.pipe(first()).subscribe(params => {
-            if (params['promptBiometric']) {
+            if (this.supportsBiometric && params['promptBiometric']) {
                 this.unlockBiometric();
             }
         });
