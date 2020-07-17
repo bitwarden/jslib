@@ -12,6 +12,7 @@ import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
 
 import { KdfType } from '../../enums/kdfType';
+import { ReferenceEventData } from '../../models/domain/referenceEventData';
 
 export class RegisterComponent {
     name: string = '';
@@ -22,7 +23,7 @@ export class RegisterComponent {
     showPassword: boolean = false;
     formPromise: Promise<any>;
     masterPasswordScore: number;
-    referenceId: string;
+    referenceData: ReferenceEventData;
 
     protected successRoute = 'login';
     private masterPasswordStrengthTimeout: any;
@@ -111,7 +112,7 @@ export class RegisterComponent {
         const hashedPassword = await this.cryptoService.hashPassword(this.masterPassword, key);
         const keys = await this.cryptoService.makeKeyPair(encKey[0]);
         const request = new RegisterRequest(this.email, this.name, hashedPassword,
-            this.hint, encKey[1].encryptedString, kdf, kdfIterations, this.referenceId);
+            this.hint, encKey[1].encryptedString, kdf, kdfIterations, this.referenceData);
         request.keys = new KeysRequest(keys[0], keys[1].encryptedString);
         const orgInvite = await this.stateService.get<any>('orgInvitation');
         if (orgInvite != null && orgInvite.token != null && orgInvite.organizationUserId != null) {
