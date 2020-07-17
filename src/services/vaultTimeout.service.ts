@@ -1,3 +1,4 @@
+import { TimeoutValueType } from '../enums/timeoutType';
 import { ConstantsService } from './constants.service';
 
 import { CipherService } from '../abstractions/cipher.service';
@@ -114,7 +115,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         }
     }
 
-    async setVaultTimeoutOptions(timeout: number, action: string): Promise<void> {
+    async setVaultTimeoutOptions(timeout: TimeoutValueType, action: string): Promise<void> {
         await this.storageService.save(ConstantsService.vaultTimeoutKey, timeout);
         await this.storageService.save(ConstantsService.vaultTimeoutActionKey, action);
         await this.cryptoService.toggleKey();
