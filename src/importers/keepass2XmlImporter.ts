@@ -68,6 +68,8 @@ export class KeePass2XmlImporter extends BaseImporter implements Importer {
                     cipher.login.username = value;
                 } else if (key === 'Password') {
                     cipher.login.password = value;
+                }  else if (key === 'otp') {
+                    cipher.login.totp = value.replace('key=', '');
                 } else if (key === 'Title') {
                     cipher.name = value;
                 } else if (key === 'Notes') {
