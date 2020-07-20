@@ -162,6 +162,7 @@ export abstract class ApiService {
     deleteCipher: (id: string) => Promise<any>;
     deleteCipherAdmin: (id: string) => Promise<any>;
     deleteManyCiphers: (request: CipherBulkDeleteRequest) => Promise<any>;
+    deleteManyCiphersAdmin: (request: CipherBulkDeleteRequest) => Promise<any>;
     putMoveCiphers: (request: CipherBulkMoveRequest) => Promise<any>;
     putShareCipher: (id: string, request: CipherShareRequest) => Promise<CipherResponse>;
     putShareCiphers: (request: CipherBulkShareRequest) => Promise<any>;
@@ -173,6 +174,7 @@ export abstract class ApiService {
     putDeleteCipher: (id: string) => Promise<any>;
     putDeleteCipherAdmin: (id: string) => Promise<any>;
     putDeleteManyCiphers: (request: CipherBulkDeleteRequest) => Promise<any>;
+    putDeleteManyCiphersAdmin: (request: CipherBulkDeleteRequest) => Promise<any>;
     putRestoreCipher: (id: string) => Promise<any>;
     putRestoreCipherAdmin: (id: string) => Promise<any>;
     putRestoreManyCiphers: (request: CipherBulkRestoreRequest) => Promise<any>;

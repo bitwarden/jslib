@@ -414,6 +414,10 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('DELETE', '/ciphers', request, true, false);
     }
 
+    deleteManyCiphersAdmin(request: CipherBulkDeleteRequest): Promise<any> {
+        return this.send('DELETE', '/ciphers/admin', request, true, false);
+    }
+
     putMoveCiphers(request: CipherBulkMoveRequest): Promise<any> {
         return this.send('PUT', '/ciphers/move', request, true, false);
     }
@@ -461,6 +465,10 @@ export class ApiService implements ApiServiceAbstraction {
 
     putDeleteManyCiphers(request: CipherBulkDeleteRequest): Promise<any> {
         return this.send('PUT', '/ciphers/delete', request, true, false);
+    }
+
+    putDeleteManyCiphersAdmin(request: CipherBulkDeleteRequest): Promise<any> {
+        return this.send('PUT', '/ciphers/delete-admin', request, true, false);
     }
 
     putRestoreCipher(id: string): Promise<any> {
