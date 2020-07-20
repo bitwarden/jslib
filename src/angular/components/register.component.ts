@@ -1,6 +1,7 @@
 import { Router } from '@angular/router';
 
 import { KeysRequest } from '../../models/request/keysRequest';
+import { ReferenceEventRequest } from '../../models/request/referenceEventRequest';
 import { RegisterRequest } from '../../models/request/registerRequest';
 
 import { ApiService } from '../../abstractions/api.service';
@@ -12,7 +13,6 @@ import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
 
 import { KdfType } from '../../enums/kdfType';
-import { ReferenceEventRequest } from '../../models/request/referenceEventRequest';
 
 export class RegisterComponent {
     name: string = '';
