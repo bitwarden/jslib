@@ -14,10 +14,11 @@ export class FirefoxCsvImporter extends BaseImporter implements Importer {
 
         results.forEach((value) => {
             const cipher = this.initLoginCipher();
-            cipher.name = this.getValueOrDefault(this.nameFromUrl(value.hostname), '--');
+            const url = this.getValueOrDefault(value.url, this.getValueOrDefault(value.hostname));
+            cipher.name = this.getValueOrDefault(this.nameFromUrl(url), '--');
             cipher.login.username = this.getValueOrDefault(value.username);
             cipher.login.password = this.getValueOrDefault(value.password);
-            cipher.login.uris = this.makeUriArray(value.hostname);
+            cipher.login.uris = this.makeUriArray(url);
             this.cleanupCipher(cipher);
             result.ciphers.push(cipher);
         });
