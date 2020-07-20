@@ -12,7 +12,7 @@ import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
 
 import { KdfType } from '../../enums/kdfType';
-import { ReferenceEventData } from '../../models/domain/referenceEventData';
+import { ReferenceEventRequest } from '../../models/request/referenceEventRequest';
 
 export class RegisterComponent {
     name: string = '';
@@ -23,7 +23,7 @@ export class RegisterComponent {
     showPassword: boolean = false;
     formPromise: Promise<any>;
     masterPasswordScore: number;
-    referenceData: ReferenceEventData;
+    referenceData: ReferenceEventRequest;
 
     protected successRoute = 'login';
     private masterPasswordStrengthTimeout: any;

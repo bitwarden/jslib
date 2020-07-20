@@ -1,4 +1,4 @@
-export class ReferenceEventData {
+export class ReferenceEventRequest {
     id: string;
     layout: string;
     flow: string;
