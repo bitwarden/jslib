@@ -26,6 +26,7 @@ export class LoginUriView implements View {
     private _uri: string = null;
     private _domain: string = null;
     private _hostname: string = null;
+    private _host: string = null;
     private _canLaunch: boolean = null;
     // tslint:enable
 
@@ -71,8 +72,26 @@ export class LoginUriView implements View {
         return this._hostname;
     }
 
+    get host(): string {
+        if (this.match === UriMatchType.RegularExpression) {
+            return null;
+        }
+        if (this._host == null && this.uri != null) {
+            this._host = Utils.getHost(this.uri);
+            if (this._host === '') {
+                this._host = null;
+            }
+        }
+
+        return this._host;
+    }
+
     get hostnameOrUri(): string {
         return this.hostname != null ? this.hostname : this.uri;
+    }
+
+    get hostOrUri(): string {
+        return this.host != null ? this.host : this.uri;
     }
 
     get isWebsite(): boolean {

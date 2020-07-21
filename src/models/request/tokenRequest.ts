@@ -5,15 +5,24 @@ import { DeviceRequest } from './deviceRequest';
 export class TokenRequest {
     email: string;
     masterPasswordHash: string;
+    code: string;
+    codeVerifier: string;
+    redirectUri: string;
     token: string;
     provider: TwoFactorProviderType;
     remember: boolean;
     device?: DeviceRequest;
 
-    constructor(email: string, masterPasswordHash: string, provider: TwoFactorProviderType,
+    constructor(credentials: string[], codes: string[], provider: TwoFactorProviderType,
         token: string, remember: boolean, device?: DeviceRequest) {
-        this.email = email;
-        this.masterPasswordHash = masterPasswordHash;
+        if (credentials != null && credentials.length > 1) {
+            this.email = credentials[0];
+            this.masterPasswordHash = credentials[1];
+        } else if (codes != null && codes.length > 2) {
+            this.code = codes[0];
+            this.codeVerifier = codes[1];
+            this.redirectUri = codes[2];
+        }
         this.token = token;
         this.provider = provider;
         this.remember = remember;
@@ -22,12 +31,22 @@ export class TokenRequest {
 
     toIdentityToken(clientId: string) {
         const obj: any = {
-            grant_type: 'password',
-            username: this.email,
-            password: this.masterPasswordHash,
             scope: 'api offline_access',
             client_id: clientId,
         };
+
+        if (this.masterPasswordHash != null && this.email != null) {
+            obj.grant_type = 'password';
+            obj.username = this.email;
+            obj.password = this.masterPasswordHash;
+        } else if (this.code != null && this.codeVerifier != null && this.redirectUri != null) {
+            obj.grant_type = 'authorization_code';
+            obj.code = this.code;
+            obj.code_verifier = this.codeVerifier;
+            obj.redirect_uri = this.redirectUri;
+        } else {
+            throw new Error('must provide credentials or codes');
+        }
 
         if (this.device) {
             obj.deviceType = this.device.type;
