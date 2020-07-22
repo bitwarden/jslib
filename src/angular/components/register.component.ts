@@ -11,7 +11,8 @@ import { PasswordGenerationService } from '../../abstractions/passwordGeneration
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
 
-import { ResetMasterPasswordComponent as BaseResetMasterPasswordComponent } from '../../angular/components/reset-master-password.component';
+import { ResetMasterPasswordComponent as BaseResetMasterPasswordComponent }
+    from '../../angular/components/reset-master-password.component';
 
 import { KdfType } from '../../enums/kdfType';
 
