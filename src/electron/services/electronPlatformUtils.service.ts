@@ -16,8 +16,8 @@ import { DeviceType } from '../../enums/deviceType';
 import { I18nService } from '../../abstractions/i18n.service';
 import { MessagingService } from '../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
+import { StorageService } from '../../abstractions/storage.service';
 
-import { StorageService } from '../../abstractions';
 import { AnalyticsIds } from '../../misc/analytics';
 import { ElectronConstants } from '../electronConstants';
 

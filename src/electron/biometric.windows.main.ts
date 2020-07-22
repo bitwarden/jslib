@@ -15,7 +15,7 @@ import { ElectronConstants } from './electronConstants';
 const requestVerification: any = util.promisify(UserConsentVerifier.requestVerificationAsync);
 const checkAvailability: any = util.promisify(UserConsentVerifier.checkAvailabilityAsync);
 
-const allowedAvailabilities = [
+const AllowedAvailabilities = [
     UserConsentVerifierAvailability.available,
     UserConsentVerifierAvailability.deviceBusy,
 ];
@@ -35,7 +35,7 @@ export default class BiometricWindowsMain implements BiometricMain {
     async supportsBiometric(): Promise<boolean> {
         const availability = await checkAvailability();
 
-        return allowedAvailabilities.includes(availability);
+        return AllowedAvailabilities.includes(availability);
     }
 
     async requestCreate(): Promise<boolean> {
