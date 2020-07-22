@@ -1,7 +1,6 @@
 import { Router } from '@angular/router';
 
 import { KeysRequest } from '../../models/request/keysRequest';
-import { ReferenceEventRequest } from '../../models/request/referenceEventRequest';
 import { RegisterRequest } from '../../models/request/registerRequest';
 
 import { ApiService } from '../../abstractions/api.service';
@@ -12,56 +11,24 @@ import { PasswordGenerationService } from '../../abstractions/passwordGeneration
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
 
+import { ResetMasterPasswordComponent as BaseResetMasterPasswordComponent } from '../../angular/components/reset-master-password.component';
+
 import { KdfType } from '../../enums/kdfType';
 
-export class RegisterComponent {
+export class RegisterComponent extends BaseResetMasterPasswordComponent {
     name: string = '';
     email: string = '';
-    masterPassword: string = '';
-    confirmMasterPassword: string = '';
-    hint: string = '';
-    showPassword: boolean = false;
-    formPromise: Promise<any>;
-    masterPasswordScore: number;
-    referenceData: ReferenceEventRequest;
+    referenceId: string;
 
     protected successRoute = 'login';
-    private masterPasswordStrengthTimeout: any;
 
-    constructor(protected authService: AuthService, protected router: Router,
-        protected i18nService: I18nService, protected cryptoService: CryptoService,
-        protected apiService: ApiService, protected stateService: StateService,
-        protected platformUtilsService: PlatformUtilsService,
-        protected passwordGenerationService: PasswordGenerationService) { }
-
-    get masterPasswordScoreWidth() {
-        return this.masterPasswordScore == null ? 0 : (this.masterPasswordScore + 1) * 20;
-    }
-
-    get masterPasswordScoreColor() {
-        switch (this.masterPasswordScore) {
-            case 4:
-                return 'success';
-            case 3:
-                return 'primary';
-            case 2:
-                return 'warning';
-            default:
-                return 'danger';
-        }
-    }
-
-    get masterPasswordScoreText() {
-        switch (this.masterPasswordScore) {
-            case 4:
-                return this.i18nService.t('strong');
-            case 3:
-                return this.i18nService.t('good');
-            case 2:
-                return this.i18nService.t('weak');
-            default:
-                return this.masterPasswordScore != null ? this.i18nService.t('weak') : null;
-        }
+    constructor(authService: AuthService, router: Router,
+        i18nService: I18nService, cryptoService: CryptoService,
+        apiService: ApiService, stateService: StateService,
+        platformUtilsService: PlatformUtilsService,
+        passwordGenerationService: PasswordGenerationService) {
+        super(authService, router, i18nService, cryptoService, apiService, stateService, platformUtilsService,
+            passwordGenerationService);
     }
 
     async submit() {
@@ -75,78 +42,38 @@ export class RegisterComponent {
                 this.i18nService.t('invalidEmail'));
             return;
         }
-        if (this.masterPassword == null || this.masterPassword === '') {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('masterPassRequired'));
-            return;
-        }
-        if (this.masterPassword.length < 8) {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('masterPassLength'));
-            return;
-        }
-        if (this.masterPassword !== this.confirmMasterPassword) {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('masterPassDoesntMatch'));
-            return;
-        }
 
-        const strengthResult = this.passwordGenerationService.passwordStrength(this.masterPassword,
-            this.getPasswordStrengthUserInput());
-        if (strengthResult != null && strengthResult.score < 3) {
-            const result = await this.platformUtilsService.showDialog(this.i18nService.t('weakMasterPasswordDesc'),
-                this.i18nService.t('weakMasterPassword'), this.i18nService.t('yes'), this.i18nService.t('no'),
-                'warning');
-            if (!result) {
-                return;
+        if (await super.submit()) {
+            this.name = this.name === '' ? null : this.name;
+            this.email = this.email.trim().toLowerCase();
+            const kdf = KdfType.PBKDF2_SHA256;
+            const useLowerKdf = this.platformUtilsService.isEdge() || this.platformUtilsService.isIE();
+            const kdfIterations = useLowerKdf ? 10000 : 100000;
+            const key = await this.cryptoService.makeKey(this.masterPassword, this.email, kdf, kdfIterations);
+            const encKey = await this.cryptoService.makeEncKey(key);
+            const hashedPassword = await this.cryptoService.hashPassword(this.masterPassword, key);
+            const keys = await this.cryptoService.makeKeyPair(encKey[0]);
+            const request = new RegisterRequest(this.email, this.name, hashedPassword,
+                this.hint, encKey[1].encryptedString, kdf, kdfIterations, this.referenceId);
+            request.keys = new KeysRequest(keys[0], keys[1].encryptedString);
+            const orgInvite = await this.stateService.get<any>('orgInvitation');
+            if (orgInvite != null && orgInvite.token != null && orgInvite.organizationUserId != null) {
+                request.token = orgInvite.token;
+                request.organizationUserId = orgInvite.organizationUserId;
             }
-        }
 
-        this.name = this.name === '' ? null : this.name;
-        this.email = this.email.trim().toLowerCase();
-        const kdf = KdfType.PBKDF2_SHA256;
-        const useLowerKdf = this.platformUtilsService.isEdge() || this.platformUtilsService.isIE();
-        const kdfIterations = useLowerKdf ? 10000 : 100000;
-        const key = await this.cryptoService.makeKey(this.masterPassword, this.email, kdf, kdfIterations);
-        const encKey = await this.cryptoService.makeEncKey(key);
-        const hashedPassword = await this.cryptoService.hashPassword(this.masterPassword, key);
-        const keys = await this.cryptoService.makeKeyPair(encKey[0]);
-        const request = new RegisterRequest(this.email, this.name, hashedPassword,
-            this.hint, encKey[1].encryptedString, kdf, kdfIterations, this.referenceData);
-        request.keys = new KeysRequest(keys[0], keys[1].encryptedString);
-        const orgInvite = await this.stateService.get<any>('orgInvitation');
-        if (orgInvite != null && orgInvite.token != null && orgInvite.organizationUserId != null) {
-            request.token = orgInvite.token;
-            request.organizationUserId = orgInvite.organizationUserId;
+            try {
+                this.formPromise = this.apiService.postRegister(request);
+                await this.formPromise;
+                this.platformUtilsService.eventTrack('Registered');
+                this.platformUtilsService.showToast('success', null, this.i18nService.t('newAccountCreated'));
+                this.router.navigate([this.successRoute], { queryParams: { email: this.email } });
+                return true;
+            } catch { }
         }
-
-        try {
-            this.formPromise = this.apiService.postRegister(request);
-            await this.formPromise;
-            this.platformUtilsService.eventTrack('Registered');
-            this.platformUtilsService.showToast('success', null, this.i18nService.t('newAccountCreated'));
-            this.router.navigate([this.successRoute], { queryParams: { email: this.email } });
-        } catch { }
     }
 
-    togglePassword(confirmField: boolean) {
-        this.platformUtilsService.eventTrack('Toggled Master Password on Register');
-        this.showPassword = !this.showPassword;
-        document.getElementById(confirmField ? 'masterPasswordRetype' : 'masterPassword').focus();
-    }
-
-    updatePasswordStrength() {
-        if (this.masterPasswordStrengthTimeout != null) {
-            clearTimeout(this.masterPasswordStrengthTimeout);
-        }
-        this.masterPasswordStrengthTimeout = setTimeout(() => {
-            const strengthResult = this.passwordGenerationService.passwordStrength(this.masterPassword,
-                this.getPasswordStrengthUserInput());
-            this.masterPasswordScore = strengthResult == null ? null : strengthResult.score;
-        }, 300);
-    }
-
-    private getPasswordStrengthUserInput() {
+    protected getPasswordStrengthUserInput() {
         let userInput: string[] = [];
         const atPosition = this.email.indexOf('@');
         if (atPosition > -1) {
