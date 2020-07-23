@@ -1,0 +1,55 @@
+name: Build
+
+on: push
+
+jobs:
+  cloc:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Set up cloc
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install cloc
+
+      - name: Print lines of code
+        run: cloc --include-lang TypeScript,JavaScript,HTML,Sass,CSS --vcs git
+
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+
+      - name: Print environment
+        run: |
+          node --version
+          npm --version
+
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Install Node dependencies
+        run: npm install
+
+      - name: Run linter
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Upload test coverage
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: test-coverage
+          path: coverage/
