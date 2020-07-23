@@ -20,7 +20,11 @@ jobs:
 
   build:
 
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
 
     steps:
       - name: Set up Node
@@ -48,7 +52,7 @@ jobs:
       - name: Run tests
         run: npm run test
 
-      - name: Upload test coverage
+      - name: Upload test coverage artifact
         uses: actions/upload-artifact@v2-preview
         with:
           name: test-coverage
