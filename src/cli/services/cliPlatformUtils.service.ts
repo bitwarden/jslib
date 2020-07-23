@@ -129,4 +129,12 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     readFromClipboard(options?: any): Promise<string> {
         throw new Error('Not implemented.');
     }
+
+    supportsBiometric(): Promise<boolean> {
+        return Promise.resolve(false);
+    }
+
+    authenticateBiometric(): Promise<boolean> {
+        return Promise.resolve(false);
+    }
 }

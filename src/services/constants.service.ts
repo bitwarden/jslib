@@ -25,6 +25,8 @@ export class ConstantsService {
     static readonly eventCollectionKey: string = 'eventCollection';
     static readonly ssoCodeVerifierKey: string = 'ssoCodeVerifier';
     static readonly ssoStateKey: string = 'ssoState';
+    static readonly biometricUnlockKey: string = 'biometric';
+    static readonly biometricText: string = 'biometricText';
 
     readonly environmentUrlsKey: string = ConstantsService.environmentUrlsKey;
     readonly disableGaKey: string = ConstantsService.disableGaKey;
@@ -51,4 +53,6 @@ export class ConstantsService {
     readonly eventCollectionKey: string = ConstantsService.eventCollectionKey;
     readonly ssoCodeVerifierKey: string = ConstantsService.ssoCodeVerifierKey;
     readonly ssoStateKey: string = ConstantsService.ssoStateKey;
+    readonly biometricUnlockKey: string = ConstantsService.biometricUnlockKey;
+    readonly biometricText: string = ConstantsService.biometricText;
 }

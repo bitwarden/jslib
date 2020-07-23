@@ -32,4 +32,6 @@ export abstract class PlatformUtilsService {
     isSelfHost: () => boolean;
     copyToClipboard: (text: string, options?: any) => void;
     readFromClipboard: (options?: any) => Promise<string>;
+    supportsBiometric: () => Promise<boolean>;
+    authenticateBiometric: () => Promise<boolean>;
 }

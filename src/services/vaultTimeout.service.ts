@@ -16,6 +16,7 @@ import { CipherString } from '../models/domain/cipherString';
 
 export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     pinProtectedKey: CipherString = null;
+    biometricLocked: boolean = true;
 
     private inited = false;
 
@@ -42,6 +43,11 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     // Keys aren't stored for a device that is locked or logged out.
     async isLocked(): Promise<boolean> {
         const hasKey = await this.cryptoService.hasKey();
+        if (hasKey) {
+            if (await this.isBiometricLockSet() && this.biometricLocked) {
+                return true;
+            }
+        }
         return !hasKey;
     }
 
@@ -91,6 +97,17 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
             return;
         }
 
+        if (allowSoftLock) {
+            const biometricLocked = await this.isBiometricLockSet();
+            if (biometricLocked) {
+                this.messagingService.send('locked');
+                if (this.lockedCallback != null) {
+                    await this.lockedCallback();
+                }
+                return;
+            }
+        }
+
         await Promise.all([
             this.cryptoService.clearKey(),
             this.cryptoService.clearOrgKeys(true),
@@ -125,6 +142,10 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         const protectedPin = await this.storageService.get<string>(ConstantsService.protectedPin);
         const pinProtectedKey = await this.storageService.get<string>(ConstantsService.pinProtectedKey);
         return [protectedPin != null, pinProtectedKey != null];
+    }
+
+    async isBiometricLockSet(): Promise<boolean> {
+        return await this.storageService.get<boolean>(ConstantsService.biometricUnlockKey);
     }
 
     clear(): Promise<any> {

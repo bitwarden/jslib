@@ -27,7 +27,7 @@ export class AuthGuardService implements CanActivate {
             if (routerState != null) {
                 this.messagingService.send('lockedUrl', { url: routerState.url });
             }
-            this.router.navigate(['lock']);
+            this.router.navigate(['lock'], { queryParams: { promptBiometric: true }});
             return false;
         }
 
