@@ -82,6 +82,7 @@ module.exports = (config) => {
                 }
                 if (githubAction) {
                     removeBrowser('Firefox');
+                    removeBrowser('Safari');
                 }
 
                 return result;
