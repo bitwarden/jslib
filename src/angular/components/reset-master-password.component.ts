@@ -15,7 +15,7 @@ export class ResetMasterPasswordComponent {
     showPassword: boolean = false;
     formPromise: Promise<any>;
     masterPasswordScore: number;
-    isCompleteRegistration: boolean = false;
+    resetMasterPassword: boolean = false;
 
     private masterPasswordStrengthTimeout: any;
 
@@ -83,7 +83,7 @@ export class ResetMasterPasswordComponent {
             }
         }
 
-        if (this.isCompleteRegistration) {
+        if (this.resetMasterPassword) {
             // TODO Make API call to update password
             // Let superclass decide destination
         }
