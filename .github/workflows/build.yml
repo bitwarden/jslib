@@ -24,7 +24,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest, macos-latest]
+        os: [windows-latest, macos-latest, ubuntu-latest]
 
     steps:
       - name: Set up Node
@@ -50,9 +50,11 @@ jobs:
         run: npm run build
 
       - name: Run tests
+        if: runner.os != 'Linux'
         run: npm run test
 
       - name: Upload test coverage artifact
+        if: runner.os != 'Linux'
         uses: actions/upload-artifact@v2-preview
         with:
           name: test-coverage
