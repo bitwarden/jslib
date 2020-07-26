@@ -39,6 +39,7 @@ import { OrganizationUserUpdateGroupsRequest } from '../models/request/organizat
 import { OrganizationUserUpdateRequest } from '../models/request/organizationUserUpdateRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
+import { PasswordNoCompareRequest } from '../models/request/passwordNoCompareRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
 import { PaymentRequest } from '../models/request/paymentRequest';
 import { PolicyRequest } from '../models/request/policyRequest';
@@ -252,6 +253,10 @@ export class ApiService implements ApiServiceAbstraction {
 
     postPassword(request: PasswordRequest): Promise<any> {
         return this.send('POST', '/accounts/password', request, true, false);
+    }
+
+    postPasswordNoCompare(request: PasswordNoCompareRequest): Promise<any> {
+        return this.send('POST', '/accounts/password-no-compare', request, true, false);
     }
 
     postSecurityStamp(request: PasswordVerificationRequest): Promise<any> {

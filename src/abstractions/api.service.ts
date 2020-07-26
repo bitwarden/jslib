@@ -35,6 +35,7 @@ import { OrganizationUserUpdateGroupsRequest } from '../models/request/organizat
 import { OrganizationUserUpdateRequest } from '../models/request/organizationUserUpdateRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
+import { PasswordNoCompareRequest } from '../models/request/passwordNoCompareRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
 import { PaymentRequest } from '../models/request/paymentRequest';
 import { PolicyRequest } from '../models/request/policyRequest';
@@ -125,6 +126,7 @@ export abstract class ApiService {
     postEmailToken: (request: EmailTokenRequest) => Promise<any>;
     postEmail: (request: EmailRequest) => Promise<any>;
     postPassword: (request: PasswordRequest) => Promise<any>;
+    postPasswordNoCompare: (request: PasswordNoCompareRequest) => Promise<any>;
     postSecurityStamp: (request: PasswordVerificationRequest) => Promise<any>;
     deleteAccount: (request: PasswordVerificationRequest) => Promise<any>;
     getAccountRevisionDate: () => Promise<number>;
