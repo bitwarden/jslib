@@ -31,8 +31,7 @@ export class SsoComponent {
     protected twoFactorRoute = '2fa';
     protected successRoute = 'lock';
     protected changePasswordRoute = 'change-password';
-
-    private redirectUri = window.location.origin + '/sso-connector.html';
+    protected redirectUri: string;
 
     constructor(protected authService: AuthService, protected router: Router,
         protected i18nService: I18nService, protected route: ActivatedRoute,
