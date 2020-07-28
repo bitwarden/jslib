@@ -1,4 +1,4 @@
-export class PasswordNoCompareRequest {
+export class SetPasswordRequest {
     newMasterPasswordHash: string;
     key: string;
 }

@@ -25,7 +25,7 @@ import { SymmetricCryptoKey } from '../../models/domain/symmetricCryptoKey';
 import { CipherWithIdRequest } from '../../models/request/cipherWithIdRequest';
 import { FolderWithIdRequest } from '../../models/request/folderWithIdRequest';
 import { PasswordRequest } from '../../models/request/passwordRequest';
-import { PasswordNoCompareRequest } from '../../models/request/passwordNoCompareRequest';
+import { SetPasswordRequest } from '../../models/request/setPasswordRequest';
 import { UpdateKeyRequest } from '../../models/request/updateKeyRequest';
 
 export class ChangePasswordComponent implements OnInit {
@@ -134,12 +134,12 @@ export class ChangePasswordComponent implements OnInit {
         const newEncKey = await this.cryptoService.remakeEncKey(newKey);
 
         if (this.isChangePasswordNoCompare) {
-            const noCompareRequest = new PasswordNoCompareRequest();
-            noCompareRequest.newMasterPasswordHash = newMasterPasswordHash;
-            noCompareRequest.key = newEncKey[1].encryptedString;
+            const setRequest = new SetPasswordRequest();
+            setRequest.newMasterPasswordHash = newMasterPasswordHash;
+            setRequest.key = newEncKey[1].encryptedString;
 
             try {
-                this.formPromise = this.apiService.postPasswordNoCompare(noCompareRequest);
+                this.formPromise = this.apiService.setPassword(setRequest);
                 await this.formPromise;
 
                 if (this.onSuccessfulChangePassword != null) {

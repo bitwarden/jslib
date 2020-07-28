@@ -93,26 +93,22 @@ export class SsoComponent {
                 if (this.onSuccessfulLoginTwoFactorNavigate != null) {
                     this.onSuccessfulLoginTwoFactorNavigate();
                 } else {
-                    this.router.navigate([this.twoFactorRoute],
-                        {
-                            queryParams:
-                            {
-                                resetMasterPassword: response.resetMasterPassword,
-                            }
-                        });
+                    this.router.navigate([this.twoFactorRoute], {
+                        queryParams: {
+                            resetMasterPassword: response.resetMasterPassword,
+                        }
+                    });
                 }
             } else if (response.resetMasterPassword) {
                 this.platformUtilsService.eventTrack('SSO - routing to complete registration');
                 if (this.onSuccessfulLoginChangePasswordNavigate != null) {
                     this.onSuccessfulLoginChangePasswordNavigate();
                 } else {
-                    this.router.navigate([this.changePasswordRoute],
-                        {
-                            queryParams:
-                            {
-                                resetMasterPassword: true,
-                            }
-                        });
+                    this.router.navigate([this.changePasswordRoute], {
+                        queryParams: {
+                            resetMasterPassword: true,
+                        }
+                    });
                 }
             } else {
                 const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);

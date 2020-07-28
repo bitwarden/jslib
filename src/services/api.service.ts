@@ -39,7 +39,6 @@ import { OrganizationUserUpdateGroupsRequest } from '../models/request/organizat
 import { OrganizationUserUpdateRequest } from '../models/request/organizationUserUpdateRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
-import { PasswordNoCompareRequest } from '../models/request/passwordNoCompareRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
 import { PaymentRequest } from '../models/request/paymentRequest';
 import { PolicyRequest } from '../models/request/policyRequest';
@@ -47,6 +46,7 @@ import { PreloginRequest } from '../models/request/preloginRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
+import { SetPasswordRequest } from '../models/request/setPasswordRequest';
 import { StorageRequest } from '../models/request/storageRequest';
 import { TaxInfoUpdateRequest } from '../models/request/taxInfoUpdateRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
@@ -255,8 +255,8 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/password', request, true, false);
     }
 
-    postPasswordNoCompare(request: PasswordNoCompareRequest): Promise<any> {
-        return this.send('POST', '/accounts/password-no-compare', request, true, false);
+    setPassword(request: SetPasswordRequest): Promise<any> {
+        return this.send('POST', '/accounts/set-password', request, true, false);
     }
 
     postSecurityStamp(request: PasswordVerificationRequest): Promise<any> {
