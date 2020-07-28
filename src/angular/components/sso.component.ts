@@ -75,11 +75,11 @@ export class SsoComponent {
         await this.storageService.save(ConstantsService.ssoStateKey, state);
 
         const authorizeUrl = this.apiService.identityBaseUrl + '/connect/authorize?' +
-            'client_id=web&redirect_uri=' + this.redirectUri + '&' +
+            'client_id=web&redirect_uri=' + encodeURIComponent(this.redirectUri) + '&' +
             'response_type=code&scope=api offline_access&' +
             'state=' + state + '&code_challenge=' + codeChallenge + '&' +
             'code_challenge_method=S256&response_mode=query&' +
-            'domain_hint=' + this.identifier;
+            'domain_hint=' + encodeURIComponent(this.identifier);
         this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
     }
 

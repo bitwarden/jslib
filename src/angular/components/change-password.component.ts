@@ -147,7 +147,9 @@ export class ChangePasswordComponent implements OnInit {
                 } else {
                     this.router.navigate([this.successRoute]);
                 }
-            } catch { }
+            } catch {
+                this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
+            }
         } else {
             const request = new PasswordRequest();
             request.masterPasswordHash = await this.cryptoService.hashPassword(this.currentMasterPassword, null);
@@ -168,7 +170,9 @@ export class ChangePasswordComponent implements OnInit {
                 this.platformUtilsService.showToast('success', this.i18nService.t('masterPasswordChanged'),
                     this.i18nService.t('logBackIn'));
                 this.messagingService.send('logout');
-            } catch { }
+            } catch {
+                this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
+            }
         }
     }
 
