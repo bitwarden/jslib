@@ -105,6 +105,7 @@ import {
 } from '../models/response/twoFactorU2fResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
+import { Plan } from '../models/staticStore/plan';
 
 export abstract class ApiService {
     urlsSet: boolean;
@@ -282,6 +283,7 @@ export abstract class ApiService {
     postOrganizationCancel: (id: string) => Promise<any>;
     postOrganizationReinstate: (id: string) => Promise<any>;
     deleteOrganization: (id: string, request: PasswordVerificationRequest) => Promise<any>;
+    getPlans: () => Promise<Plan[]>;
 
     getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
     getEventsCipher: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;

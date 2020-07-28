@@ -110,6 +110,7 @@ import {
 } from '../models/response/twoFactorU2fResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
+import { Plan } from '../models/staticStore/plan';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
@@ -683,6 +684,12 @@ export class ApiService implements ApiServiceAbstraction {
 
     deleteOrganizationUser(organizationId: string, id: string): Promise<any> {
         return this.send('DELETE', '/organizations/' + organizationId + '/users/' + id, null, true, false);
+    }
+
+    // Plan APIs
+
+    async getPlans(): Promise<Plan[]> {
+        return this.send('GET', '/plans/', null, true, true);
     }
 
     // Sync APIs
