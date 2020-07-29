@@ -46,6 +46,7 @@ import { PreloginRequest } from '../models/request/preloginRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
+import { SetPasswordRequest } from '../models/request/setPasswordRequest';
 import { StorageRequest } from '../models/request/storageRequest';
 import { TaxInfoUpdateRequest } from '../models/request/taxInfoUpdateRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
@@ -252,6 +253,10 @@ export class ApiService implements ApiServiceAbstraction {
 
     postPassword(request: PasswordRequest): Promise<any> {
         return this.send('POST', '/accounts/password', request, true, false);
+    }
+
+    setPassword(request: SetPasswordRequest): Promise<any> {
+        return this.send('POST', '/accounts/set-password', request, true, false);
     }
 
     postSecurityStamp(request: PasswordVerificationRequest): Promise<any> {
