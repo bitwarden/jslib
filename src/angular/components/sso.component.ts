@@ -104,11 +104,7 @@ export class SsoComponent {
                 if (this.onSuccessfulLoginChangePasswordNavigate != null) {
                     this.onSuccessfulLoginChangePasswordNavigate();
                 } else {
-                    this.router.navigate([this.changePasswordRoute], {
-                        queryParams: {
-                            resetMasterPassword: true,
-                        }
-                    });
+                    this.router.navigate([this.changePasswordRoute]);
                 }
             } else {
                 const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
