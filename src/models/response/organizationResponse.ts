@@ -1,6 +1,7 @@
 import { BaseResponse } from './baseResponse';
 
 import { PlanType } from '../../enums/planType';
+import { Plan } from '../staticStore/plan';
 
 export class OrganizationResponse extends BaseResponse {
     id: string;
@@ -12,7 +13,7 @@ export class OrganizationResponse extends BaseResponse {
     businessCountry: string;
     businessTaxNumber: string;
     billingEmail: string;
-    plan: string;
+    plan: Plan;
     planType: PlanType;
     seats: number;
     maxCollections: number;
