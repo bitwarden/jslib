@@ -111,6 +111,8 @@ import {
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 import { Plan } from '../models/staticStore/plan';
+import { List } from 'lodash';
+import { PlanResponse } from '../models/response/planResponse';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
@@ -688,8 +690,9 @@ export class ApiService implements ApiServiceAbstraction {
 
     // Plan APIs
 
-    async getPlans(): Promise<Plan[]> {
-        return this.send('GET', '/plans/', null, true, true);
+    async getPlans(): Promise<ListResponse<PlanResponse>> {
+        const r = await this.send('GET', '/plans/', null, true, true);
+        return new ListResponse(r, PlanResponse)
     }
 
     // Sync APIs
