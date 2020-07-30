@@ -43,5 +43,5 @@ export class Plan {
     basePrice: number;
     seatPrice: number;
     additionalStoragePricePerGb: number;
-    premiumAccessOptionCost: number;
+    premiumAccessOptionPrice: number;
 }
