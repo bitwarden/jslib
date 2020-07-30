@@ -3,17 +3,20 @@ import { ProductType } from "../../enums/productType";
 
 export class Plan {
     type: PlanType;
-    productType: ProductType;
+    product: ProductType;
     name: string;
-    description: string;
+    isAnnual: boolean;
+    i18nNameItem: string;
+    i18nDescriptionItem: string;
     canBeUsedByBusiness: boolean;
-    basSeats: number;
+    baseSeats: number;
     baseStorageGb: number;
     maxCollections: number;
+    maxUsers: number;
 
     hasAdditionalSeatsOption: boolean;
     maxAdditionalSeats: number;
-    hasAdditionStorageOption: boolean;
+    hasAdditionalStorageOption: boolean;
     maxAdditionalStorage: number;
     hasPremiumAccessOption: boolean;
     trialPeriodDays: number;
@@ -30,7 +33,7 @@ export class Plan {
     usersGetPremium: boolean;
 
     sortOrder: number;
-    isLegacy: boolean;
+    legacyYear: number;
     disabled: boolean;
 
     stripePlanId: string;
@@ -40,5 +43,5 @@ export class Plan {
     basePrice: number;
     seatPrice: number;
     additionalStoragePricePerGb: number;
-    premiumAccessOptionCose: number;
+    premiumAccessOptionCost: number;
 }
