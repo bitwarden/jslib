@@ -7,7 +7,7 @@ import { ElectronConstants } from './electronConstants';
 
 export default class BiometricWindowsMain implements BiometricMain {
     isError: boolean = false;
-    
+
     private windowsSecurityCredentialsUiModule: any;
 
     constructor(private storageService: StorageService, private i18nservice: I18nService) { }
