@@ -142,6 +142,13 @@ export class AuthService implements AuthServiceAbstraction {
             remember);
     }
 
+    async logInSsoComplete(code: string, codeVerifier: string, redirectUrl: string,
+        twoFactorProvider: TwoFactorProviderType, twoFactorToken: string, remember?: boolean): Promise<AuthResult> {
+        this.selectedTwoFactorProviderType = null;
+        return await this.logInHelper(null, null, code, codeVerifier, redirectUrl, null,
+            twoFactorProvider, twoFactorToken, remember);
+    }
+
     logOut(callback: Function) {
         callback();
         this.messagingService.send('loggedOut');
