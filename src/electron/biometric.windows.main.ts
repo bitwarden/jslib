@@ -1,10 +1,3 @@
-import * as util from 'util';
-
-import {
-    UserConsentVerificationResult,
-    UserConsentVerifier,
-    UserConsentVerifierAvailability,
-} from '@nodert-win10-rs4/windows.security.credentials.ui';
 import { I18nService, StorageService } from '../abstractions';
 
 import { ipcMain } from 'electron';
@@ -12,19 +5,23 @@ import { BiometricMain } from '../abstractions/biometric.main';
 import { ConstantsService } from '../services';
 import { ElectronConstants } from './electronConstants';
 
-const requestVerification: any = util.promisify(UserConsentVerifier.requestVerificationAsync);
-const checkAvailability: any = util.promisify(UserConsentVerifier.checkAvailabilityAsync);
-
-const AllowedAvailabilities = [
-    UserConsentVerifierAvailability.available,
-    UserConsentVerifierAvailability.deviceBusy,
-];
-
 export default class BiometricWindowsMain implements BiometricMain {
-    constructor(private storageService: StorageService, private i18nservice: I18nService) {}
+    isError: boolean = false;
+    
+    private windowsSecurityCredentialsUiModule: any;
+
+    constructor(private storageService: StorageService, private i18nservice: I18nService) { }
 
     async init() {
-        this.storageService.save(ElectronConstants.enableBiometric, await this.supportsBiometric());
+        this.windowsSecurityCredentialsUiModule = this.getWindowsSecurityCredentialsUiModule();
+        let supportsBiometric = false;
+        try {
+            supportsBiometric = await this.supportsBiometric();
+        } catch {
+            // store error state so we can let the user know on the settings page
+            this.isError = true;
+        }
+        this.storageService.save(ElectronConstants.enableBiometric, supportsBiometric);
         this.storageService.save(ConstantsService.biometricText, 'unlockWithWindowsHello');
 
         ipcMain.on('biometric', async (event: any, message: any) => {
@@ -33,14 +30,72 @@ export default class BiometricWindowsMain implements BiometricMain {
     }
 
     async supportsBiometric(): Promise<boolean> {
-        const availability = await checkAvailability();
+        const availability = await this.checkAvailabilityAsync();
 
-        return AllowedAvailabilities.includes(availability);
+        return this.getAllowedAvailabilities().includes(availability);
     }
 
     async requestCreate(): Promise<boolean> {
-        const verification = await requestVerification(this.i18nservice.t('windowsHelloConsentMessage'));
+        const module = this.getWindowsSecurityCredentialsUiModule();
+        if (module == null) {
+            return false;
+        }
 
-        return verification === UserConsentVerificationResult.verified;
+        const verification = await this.requestVerificationAsync(this.i18nservice.t('windowsHelloConsentMessage'));
+
+        return verification === module.UserConsentVerificationResult.verified;
+    }
+
+    getWindowsSecurityCredentialsUiModule(): any {
+        try {
+            return null;
+            /*
+            return this._windowsSecurityCredentialsUiModule ||
+                require('@nodert-win10-rs4/windows.security.credentials.ui');
+                */
+        } catch {
+            this.isError = true;
+        }
+    }
+
+    async checkAvailabilityAsync(): Promise<any> {
+        const module = this.getWindowsSecurityCredentialsUiModule();
+        if (module != null) {
+            return new Promise((resolve, reject) => {
+                module.UserConsentVerifier.checkAvailabilityAsync((error: Error, result: any) => {
+                    if (error) {
+                        return resolve(null);
+                    }
+                    return resolve(result);
+                });
+            });
+        }
+        return Promise.resolve(null);
+    }
+
+    async requestVerificationAsync(message: string): Promise<any> {
+        const module = this.getWindowsSecurityCredentialsUiModule();
+        if (module != null) {
+            return new Promise((resolve, reject) => {
+                module.UserConsentVerifier.requestVerificationAsync(message, (error: Error, result: any) => {
+                    if (error) {
+                        return resolve(null);
+                    }
+                    return resolve(result);
+                });
+            });
+        }
+        return Promise.resolve(null);
+    }
+
+    getAllowedAvailabilities(): any[] {
+        const module = this.getWindowsSecurityCredentialsUiModule();
+        if (module != null) {
+            return [
+                module.UserConsentVerifierAvailability.available,
+                module.UserConsentVerifierAvailability.deviceBusy,
+            ];
+        }
+        return [];
     }
 }
