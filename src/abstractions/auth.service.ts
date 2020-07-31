@@ -18,6 +18,8 @@ export abstract class AuthService {
         remember?: boolean) => Promise<AuthResult>;
     logInComplete: (email: string, masterPassword: string, twoFactorProvider: TwoFactorProviderType,
         twoFactorToken: string, remember?: boolean) => Promise<AuthResult>;
+    logInSsoComplete: (code: string, codeVerifier: string, redirectUrl: string,
+        twoFactorProvider: TwoFactorProviderType, twoFactorToken: string, remember?: boolean) => Promise<AuthResult>;
     logOut: (callback: Function) => void;
     getSupportedTwoFactorProviders: (win: Window) => any[];
     getDefaultTwoFactorProvider: (u2fSupported: boolean) => TwoFactorProviderType;
