@@ -1,5 +1,5 @@
-import { PlanType } from "../../enums/planType";
-import { ProductType } from "../../enums/productType";
+import { PlanType } from '../../enums/planType';
+import { ProductType } from '../../enums/productType';
 
 export class Plan {
     type: PlanType;
