@@ -10,5 +10,5 @@ export enum PlanType {
     TeamsMonthly = 8,
     TeamsAnnually = 9,
     EnterpriseMonthly = 10,
-    EnterpriseAnnually = 11
+    EnterpriseAnnually = 11,
 }
