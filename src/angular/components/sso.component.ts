@@ -96,7 +96,7 @@ export class SsoComponent {
                     this.router.navigate([this.twoFactorRoute], {
                         queryParams: {
                             resetMasterPassword: response.resetMasterPassword,
-                        }
+                        },
                     });
                 }
             } else if (response.resetMasterPassword) {
