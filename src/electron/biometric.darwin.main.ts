@@ -6,6 +6,8 @@ import { ConstantsService } from '../services';
 import { ElectronConstants } from './electronConstants';
 
 export default class BiometricDarwinMain implements BiometricMain {
+    isError: boolean = false;
+
     constructor(private storageService: StorageService, private i18nservice: I18nService) {}
 
     async init() {
