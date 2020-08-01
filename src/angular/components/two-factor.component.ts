@@ -37,6 +37,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     twoFactorEmail: string = null;
     formPromise: Promise<any>;
     emailPromise: Promise<any>;
+    resetMasterPassword: boolean = false;
     onSuccessfulLogin: () => Promise<any>;
     onSuccessfulLoginNavigate: () => Promise<any>;
 
@@ -59,7 +60,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         }
 
         if (this.authService.authingWithSso()) {
-            this.successRoute = 'lock';
+            this.successRoute = this.resetMasterPassword ? 'reset-master-password' : 'lock';
         }
 
         if (this.initU2f && this.win != null && this.u2fSupported) {

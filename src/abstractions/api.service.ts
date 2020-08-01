@@ -42,6 +42,7 @@ import { PreloginRequest } from '../models/request/preloginRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
+import { SetPasswordRequest } from '../models/request/setPasswordRequest';
 import { StorageRequest } from '../models/request/storageRequest';
 import { TaxInfoUpdateRequest } from '../models/request/taxInfoUpdateRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
@@ -125,6 +126,7 @@ export abstract class ApiService {
     postEmailToken: (request: EmailTokenRequest) => Promise<any>;
     postEmail: (request: EmailRequest) => Promise<any>;
     postPassword: (request: PasswordRequest) => Promise<any>;
+    setPassword: (request: SetPasswordRequest) => Promise<any>;
     postSecurityStamp: (request: PasswordVerificationRequest) => Promise<any>;
     deleteAccount: (request: PasswordVerificationRequest) => Promise<any>;
     getAccountRevisionDate: () => Promise<number>;
