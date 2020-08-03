@@ -28,7 +28,7 @@ export class LoginCommand {
     protected validatedParams: () => Promise<any>;
     protected success: () => Promise<MessageResponse>;
     protected canInteract: boolean;
-    protected clientId: boolean;
+    protected clientId: string;
 
     private ssoRedirectUri: string = null;
 
