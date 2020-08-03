@@ -31,7 +31,10 @@ export class SsoComponent {
     protected twoFactorRoute = '2fa';
     protected successRoute = 'lock';
     protected changePasswordRoute = 'change-password';
+    protected clientId: string;
     protected redirectUri: string;
+    protected state: string;
+    protected codeChallenge: string;
 
     constructor(protected authService: AuthService, protected router: Router,
         protected i18nService: I18nService, protected route: ActivatedRoute,
@@ -50,6 +53,12 @@ export class SsoComponent {
                 if (qParams.code != null && codeVerifier != null && state != null && state === qParams.state) {
                     await this.logIn(qParams.code, codeVerifier);
                 }
+            } else if (qParams.clientId != null && qParams.redirectUri != null && qParams.state != null &&
+                qParams.codeChallenge != null) {
+                this.redirectUri = qParams.redirectUri;
+                this.state = qParams.state;
+                this.codeChallenge = qParams.codeChallenge;
+                this.clientId = qParams.clientId;
             }
             if (queryParamsSub != null) {
                 queryParamsSub.unsubscribe();
@@ -66,16 +75,21 @@ export class SsoComponent {
             numbers: true,
             special: false,
         };
-        const state = await this.passwordGenerationService.generatePassword(passwordOptions);
-        const codeVerifier = await this.passwordGenerationService.generatePassword(passwordOptions);
-        const codeVerifierHash = await this.cryptoFunctionService.hash(codeVerifier, 'sha256');
-        const codeChallenge = Utils.fromBufferToUrlB64(codeVerifierHash);
-
-        await this.storageService.save(ConstantsService.ssoCodeVerifierKey, codeVerifier);
-        await this.storageService.save(ConstantsService.ssoStateKey, state);
+        let codeChallenge = this.codeChallenge;
+        let state = this.state;
+        if (codeChallenge == null) {
+            const codeVerifier = await this.passwordGenerationService.generatePassword(passwordOptions);
+            const codeVerifierHash = await this.cryptoFunctionService.hash(codeVerifier, 'sha256');
+            codeChallenge = Utils.fromBufferToUrlB64(codeVerifierHash);
+            await this.storageService.save(ConstantsService.ssoCodeVerifierKey, codeVerifier);
+            await this.storageService.save(ConstantsService.ssoStateKey, state);
+        }
+        if (state == null) {
+            state = await this.passwordGenerationService.generatePassword(passwordOptions);
+        }
 
         const authorizeUrl = this.apiService.identityBaseUrl + '/connect/authorize?' +
-            'client_id=web&redirect_uri=' + encodeURIComponent(this.redirectUri) + '&' +
+            'client_id=' + this.clientId + '&redirect_uri=' + encodeURIComponent(this.redirectUri) + '&' +
             'response_type=code&scope=api offline_access&' +
             'state=' + state + '&code_challenge=' + codeChallenge + '&' +
             'code_challenge_method=S256&response_mode=query&' +

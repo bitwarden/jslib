@@ -93,6 +93,7 @@
     "ngx-infinite-scroll": "7.0.1",
     "node-fetch": "2.2.0",
     "node-forge": "0.7.6",
+    "open": "7.1.0",
     "papaparse": "4.6.0",
     "rxjs": "6.3.3",
     "tldjs": "2.3.1",
