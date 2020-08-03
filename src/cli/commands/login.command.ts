@@ -28,6 +28,7 @@ export class LoginCommand {
     protected validatedParams: () => Promise<any>;
     protected success: () => Promise<MessageResponse>;
     protected canInteract: boolean;
+    protected clientId: boolean;
 
     private ssoRedirectUri: string = null;
 
@@ -239,7 +240,7 @@ export class LoginCommand {
                 try {
                     this.ssoRedirectUri = 'http://localhost:' + port;
                     callbackServer.listen(port, async () => {
-                        await open(webUrl + '/#/sso?clientId=cli' +
+                        await open(webUrl + '/#/sso?clientId=' + this.clientId +
                             '&redirectUri=' + encodeURIComponent(this.ssoRedirectUri) +
                             '&state=' + state + '&codeChallenge=' + codeChallenge);
                     });
