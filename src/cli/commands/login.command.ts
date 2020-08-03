@@ -243,8 +243,8 @@ export class LoginCommand {
                             '&redirectUri=' + encodeURIComponent(this.ssoRedirectUri) +
                             '&state=' + state + '&codeChallenge=' + codeChallenge);
                     });
+                    break;
                 } catch { }
-                break;
             }
         });
     }
