@@ -234,7 +234,7 @@ export class LoginCommand {
                     callbackServer.close(() => reject());
                 }
             });
-            let foundPort = false;;
+            let foundPort = false;
             const webUrl = this.environmentService.webVaultUrl == null ? 'https://vault.bitwarden.com' :
                 this.environmentService.webVaultUrl;
             for (let port = 8065; port <= 8070; port++) {
