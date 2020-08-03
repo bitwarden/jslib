@@ -261,7 +261,8 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     }
 
     async getPasswordGeneratorPolicyOptions(): Promise<PasswordGeneratorPolicyOptions> {
-        const policies: Policy[] = await this.policyService.getAll(PolicyType.PasswordGenerator);
+        const policies: Policy[] = this.policyService == null ? null :
+            await this.policyService.getAll(PolicyType.PasswordGenerator);
         let enforcedOptions: PasswordGeneratorPolicyOptions = null;
 
         if (policies == null || policies.length === 0) {
