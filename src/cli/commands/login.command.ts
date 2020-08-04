@@ -35,7 +35,9 @@ export class LoginCommand {
     constructor(protected authService: AuthService, protected apiService: ApiService,
         protected i18nService: I18nService, protected environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
-        protected cryptoFunctionService: CryptoFunctionService) { }
+        protected cryptoFunctionService: CryptoFunctionService, clientId: string) {
+        this.clientId = clientId;
+    }
 
     async run(email: string, password: string, cmd: program.Command) {
         this.canInteract = process.env.BW_NOINTERACTION !== 'true';
