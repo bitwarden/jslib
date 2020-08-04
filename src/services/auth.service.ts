@@ -325,7 +325,9 @@ export class AuthService implements AuthServiceAbstraction {
             await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
         }
 
-        this.vaultTimeoutService.biometricLocked = false;
+        if (this.vaultTimeoutService != null) {
+            this.vaultTimeoutService.biometricLocked = false;
+        }
         this.messagingService.send('loggedIn');
         return result;
     }
