@@ -1,5 +1,6 @@
 import { PlanType } from '../../enums/planType';
 import { ProductType } from '../../enums/productType';
+
 import { BaseResponse } from './baseResponse';
 
 export class PlanResponse extends BaseResponse {
@@ -7,8 +8,8 @@ export class PlanResponse extends BaseResponse {
     product: ProductType;
     name: string;
     isAnnual: boolean;
-    i18nNameItem: string;
-    i18nDescriptionItem: string;
+    nameLocalizationKey: string;
+    descriptionLocalizationKey: string;
     canBeUsedByBusiness: boolean;
     baseSeats: number;
     baseStorageGb: number;
@@ -33,7 +34,8 @@ export class PlanResponse extends BaseResponse {
     hasSso: boolean;
     usersGetPremium: boolean;
 
-    sortOrder: number;
+    upgradeSortOrder: number;
+    displaySortOrder: number;
     legacyYear: number;
     disabled: boolean;
 
@@ -52,8 +54,8 @@ export class PlanResponse extends BaseResponse {
         this.product = this.getResponseProperty('product');
         this.name = this.getResponseProperty('name');
         this.isAnnual = this.getResponseProperty('isAnnual');
-        this.i18nNameItem = this.getResponseProperty('i18nNameItem');
-        this.i18nDescriptionItem = this.getResponseProperty('i18nDescriptionItem');
+        this.nameLocalizationKey = this.getResponseProperty('nameLocalizationKey');
+        this.descriptionLocalizationKey = this.getResponseProperty('descriptionLocalizationKey');
         this.canBeUsedByBusiness = this.getResponseProperty('canBeUsedByBusiness');
         this.baseSeats = this.getResponseProperty('baseSeats');
         this.baseStorageGb = this.getResponseProperty('baseStorageGb');
@@ -75,7 +77,8 @@ export class PlanResponse extends BaseResponse {
         this.hasApi = this.getResponseProperty('hasApi');
         this.hasSso = this.getResponseProperty('hasSso');
         this.usersGetPremium = this.getResponseProperty('usersGetPremium');
-        this.sortOrder = this.getResponseProperty('sortOrder');
+        this.upgradeSortOrder = this.getResponseProperty('upgradeSortOrder');
+        this.displaySortOrder = this.getResponseProperty('sortOrder');
         this.legacyYear = this.getResponseProperty('legacyYear');
         this.disabled = this.getResponseProperty('disabled');
         this.stripePlanId = this.getResponseProperty('stripePlanId');
