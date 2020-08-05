@@ -82,10 +82,10 @@ export class SsoComponent {
             const codeVerifierHash = await this.cryptoFunctionService.hash(codeVerifier, 'sha256');
             codeChallenge = Utils.fromBufferToUrlB64(codeVerifierHash);
             await this.storageService.save(ConstantsService.ssoCodeVerifierKey, codeVerifier);
-            await this.storageService.save(ConstantsService.ssoStateKey, state);
         }
         if (state == null) {
             state = await this.passwordGenerationService.generatePassword(passwordOptions);
+            await this.storageService.save(ConstantsService.ssoStateKey, state);
         }
 
         const authorizeUrl = this.apiService.identityBaseUrl + '/connect/authorize?' +
