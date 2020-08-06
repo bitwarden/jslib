@@ -63,6 +63,8 @@ export class CipherService implements CipherServiceAbstraction {
     // tslint:disable-next-line
     _decryptedCipherCache: CipherView[];
 
+    private lastSortedCiphers: CipherView[] = [];
+
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private settingsService: SettingsService, private apiService: ApiService,
         private storageService: StorageService, private i18nService: I18nService,
@@ -437,13 +439,11 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async getLastUsedForUrl(url: string): Promise<CipherView> {
-        const ciphers = await this.getAllDecryptedForUrl(url);
-        if (ciphers.length === 0) {
-            return null;
-        }
+        return this.getCipherForUrl(url, true);
+    }
 
-        const sortedCiphers = ciphers.sort(this.sortCiphersByLastUsed);
-        return sortedCiphers[0];
+    async getNextCipherForUrl(url: string): Promise<CipherView> {
+        return this.getCipherForUrl(url, false);
     }
 
     async updateLastUsedDate(id: string): Promise<void> {
@@ -1001,5 +1001,31 @@ export class CipherService implements CipherServiceAbstraction {
             default:
                 throw new Error('Unknown cipher type.');
         }
+    }
+
+    private async getCipherForUrl(url: string, lastUsed: boolean): Promise<CipherView> {
+        const ciphers = await this.getAllDecryptedForUrl(url);
+        if (ciphers.length === 0) {
+            return null;
+        }
+
+        ciphers.sort(this.sortCiphersByLastUsed);
+
+        const lastUsedCipher = ciphers[0];
+
+        if (lastUsed) {
+            return lastUsedCipher;
+        }
+
+        if (!this.arraysContainSameElements(this.lastSortedCiphers, ciphers)) {
+            this.lastSortedCiphers = ciphers;
+        }
+
+        const lastUsedIndex = this.lastSortedCiphers.indexOf(lastUsedCipher);
+        return this.lastSortedCiphers[(lastUsedIndex + 1) % this.lastSortedCiphers.length];
+    }
+
+    private arraysContainSameElements(arrayA: any[], arrayB: any[]) {
+        return arrayA.length === arrayB.length && arrayA.every((cipher) => arrayB.includes(cipher));
     }
 }
