@@ -62,12 +62,17 @@ export default class BiometricWindowsMain implements BiometricMain {
         const module = this.getWindowsSecurityCredentialsUiModule();
         if (module != null) {
             return new Promise((resolve, reject) => {
-                module.UserConsentVerifier.checkAvailabilityAsync((error: Error, result: any) => {
-                    if (error) {
-                        return resolve(null);
-                    }
-                    return resolve(result);
-                });
+                try {
+                    module.UserConsentVerifier.checkAvailabilityAsync((error: Error, result: any) => {
+                        if (error) {
+                            return resolve(null);
+                        }
+                        return resolve(result);
+                    });
+                } catch {
+                    this.isError = true;
+                    return resolve(null);
+                }
             });
         }
         return Promise.resolve(null);
@@ -77,25 +82,32 @@ export default class BiometricWindowsMain implements BiometricMain {
         const module = this.getWindowsSecurityCredentialsUiModule();
         if (module != null) {
             return new Promise((resolve, reject) => {
-                module.UserConsentVerifier.requestVerificationAsync(message, (error: Error, result: any) => {
-                    if (error) {
-                        return resolve(null);
-                    }
-                    return resolve(result);
-                });
+                try {
+                    module.UserConsentVerifier.requestVerificationAsync(message, (error: Error, result: any) => {
+                        if (error) {
+                            return resolve(null);
+                        }
+                        return resolve(result);
+                    });
+                } catch (error) {
+                    this.isError = true;
+                    return reject(error);
+                }
             });
         }
         return Promise.resolve(null);
     }
 
     getAllowedAvailabilities(): any[] {
-        const module = this.getWindowsSecurityCredentialsUiModule();
-        if (module != null) {
-            return [
-                module.UserConsentVerifierAvailability.available,
-                module.UserConsentVerifierAvailability.deviceBusy,
-            ];
-        }
+        try {
+            const module = this.getWindowsSecurityCredentialsUiModule();
+            if (module != null) {
+                return [
+                    module.UserConsentVerifierAvailability.available,
+                    module.UserConsentVerifierAvailability.deviceBusy,
+                ];
+            }
+        } catch { /*Ignore error*/ }
         return [];
     }
 }
