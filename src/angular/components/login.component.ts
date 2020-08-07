@@ -126,7 +126,7 @@ export class LoginComponent implements OnInit {
             special: false,
         };
         const state = await this.passwordGenerationService.generatePassword(passwordOptions);
-        let ssoCodeVerifier = await this.passwordGenerationService.generatePassword(passwordOptions);
+        const ssoCodeVerifier = await this.passwordGenerationService.generatePassword(passwordOptions);
         const codeVerifierHash = await this.cryptoFunctionService.hash(ssoCodeVerifier, 'sha256');
         const codeChallenge = Utils.fromBufferToUrlB64(codeVerifierHash);
 
