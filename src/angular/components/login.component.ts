@@ -130,6 +130,10 @@ export class LoginComponent implements OnInit {
         const codeVerifierHash = await this.cryptoFunctionService.hash(ssoCodeVerifier, 'sha256');
         const codeChallenge = Utils.fromBufferToUrlB64(codeVerifierHash);
 
+        // Save sso params
+        await this.storageService.save(ConstantsService.ssoStateKey, state);
+        await this.storageService.save(ConstantsService.ssoCodeVerifierKey, ssoCodeVerifier);
+
         // Build URI
         const webUrl = this.environmentService.webVaultUrl == null ? 'https://vault.bitwarden.com' :
             this.environmentService.webVaultUrl;
