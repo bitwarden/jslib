@@ -35,7 +35,7 @@ import { FieldView } from '../models/view/fieldView';
 import { PasswordHistoryView } from '../models/view/passwordHistoryView';
 import { View } from '../models/view/view';
 
-import { SortedCiphersCache } from '../misc/sortedCiphersCache';
+import { SortedCiphersCache } from '../models/domain/sortedCiphersCache';
 
 import { ApiService } from '../abstractions/api.service';
 import { CipherService as CipherServiceAbstraction } from '../abstractions/cipher.service';
@@ -1008,11 +1008,11 @@ export class CipherService implements CipherServiceAbstraction {
 
     private async getCipherForUrl(url: string, lastUsed: boolean): Promise<CipherView> {
         if (!this.sortedCiphersCache.isCached(url)) {
-            const sortedCiphers = await this.getAllDecryptedForUrl(url);
-            if (!sortedCiphers) {
+            const ciphers = await this.getAllDecryptedForUrl(url);
+            if (!ciphers) {
                 return null;
             }
-            this.sortedCiphersCache.addCiphers(url, sortedCiphers);
+            this.sortedCiphersCache.addCiphers(url, ciphers);
         }
 
         return lastUsed ? this.sortedCiphersCache.getLastUsed(url) : this.sortedCiphersCache.getNext(url);
