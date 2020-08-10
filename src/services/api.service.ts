@@ -91,6 +91,7 @@ import {
     OrganizationUserUserDetailsResponse,
 } from '../models/response/organizationUserResponse';
 import { PaymentResponse } from '../models/response/paymentResponse';
+import { PlanResponse } from '../models/response/planResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
@@ -670,6 +671,13 @@ export class ApiService implements ApiServiceAbstraction {
 
     deleteOrganizationUser(organizationId: string, id: string): Promise<any> {
         return this.send('DELETE', '/organizations/' + organizationId + '/users/' + id, null, true, false);
+    }
+
+    // Plan APIs
+
+    async getPlans(): Promise<ListResponse<PlanResponse>> {
+        const r = await this.send('GET', '/plans/', null, true, true);
+        return new ListResponse(r, PlanResponse);
     }
 
     // Sync APIs

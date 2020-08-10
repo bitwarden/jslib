@@ -86,6 +86,7 @@ import {
     OrganizationUserUserDetailsResponse,
 } from '../models/response/organizationUserResponse';
 import { PaymentResponse } from '../models/response/paymentResponse';
+import { PlanResponse } from '../models/response/planResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
@@ -278,6 +279,7 @@ export abstract class ApiService {
     postOrganizationCancel: (id: string) => Promise<any>;
     postOrganizationReinstate: (id: string) => Promise<any>;
     deleteOrganization: (id: string, request: PasswordVerificationRequest) => Promise<any>;
+    getPlans: () => Promise<ListResponse<PlanResponse>>;
 
     getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
     getEventsCipher: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
