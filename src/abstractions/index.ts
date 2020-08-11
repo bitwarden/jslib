@@ -1,3 +1,4 @@
+// Using index.ts is deprecated, please do not extend
 export { ApiService } from './api.service';
 export { AppIdService } from './appId.service';
 export { AuditService } from './audit.service';
