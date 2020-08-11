@@ -4,6 +4,7 @@ export { AuditService } from './audit.service';
 export { AuthService } from './auth.service';
 export { CipherService } from './cipher.service';
 export { CollectionService } from './collection.service';
+export { CryptoFunctionService } from './cryptoFunction.service';
 export { CryptoService } from './crypto.service';
 export { EnvironmentService } from './environment.service';
 export { FolderService } from './folder.service';

@@ -18,6 +18,7 @@ import { StorageService } from '../../abstractions/storage.service';
 import { ConstantsService } from '../../services/constants.service';
 
 import { Utils } from '../../misc/utils';
+import { StateService } from '../../abstractions';
 
 const Keys = {
     rememberedEmail: 'rememberedEmail',
@@ -40,7 +41,7 @@ export class LoginComponent implements OnInit {
 
     constructor(protected authService: AuthService, protected router: Router,
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
-        protected stateService: StorageService, protected environmentService: EnvironmentService,
+        protected stateService: StateService, protected environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
         protected cryptoFunctionService: CryptoFunctionService, private storageService: StorageService) { }
 
