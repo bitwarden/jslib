@@ -16,7 +16,7 @@ import {
     PlatformUtilsService,
     StateService,
     StorageService,
-} from '../../abstractions'
+} from '../../abstractions';
 
 import { ConstantsService } from '../../services/constants.service';
 
