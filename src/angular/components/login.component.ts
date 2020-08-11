@@ -7,18 +7,20 @@ import { Router } from '@angular/router';
 
 import { AuthResult } from '../../models/domain/authResult';
 
-import { AuthService } from '../../abstractions/auth.service';
-import { CryptoFunctionService } from '../../abstractions/cryptoFunction.service';
-import { EnvironmentService } from '../../abstractions/environment.service';
-import { I18nService } from '../../abstractions/i18n.service';
-import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
-import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
-import { StorageService } from '../../abstractions/storage.service';
+import {
+    AuthService,
+    CryptoFunctionService,
+    EnvironmentService,
+    I18nService,
+    PasswordGenerationService,
+    PlatformUtilsService,
+    StateService,
+    StorageService,
+} from '../../abstractions'
 
 import { ConstantsService } from '../../services/constants.service';
 
 import { Utils } from '../../misc/utils';
-import { StateService } from '../../abstractions';
 
 const Keys = {
     rememberedEmail: 'rememberedEmail',
