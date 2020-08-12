@@ -30,7 +30,7 @@
     "@types/jasmine": "^3.3.12",
     "@types/lowdb": "^1.0.5",
     "@types/lunr": "^2.3.3",
-    "@types/node": "^12.12.54",
+    "@types/node": "^10.17.28",
     "@types/node-fetch": "^2.1.2",
     "@types/node-forge": "^0.7.5",
     "@types/papaparse": "^4.5.3",
