@@ -61,7 +61,7 @@ export class SsoComponent {
                 this.clientId = qParams.clientId;
             }
 
-            if (qParams.clientId == ConstantsService.browserClientId) {
+            if (qParams.clientId === ConstantsService.browserClientId) {
                 this.redirectUri = qParams.redirectUri;
                 this.state = qParams.state;
                 this.codeChallenge = qParams.codeChallenge;
@@ -113,11 +113,10 @@ export class SsoComponent {
     private async logIn(code: string, codeVerifier: string, state: string) {
         this.loggingIn = true;
 
-        if (this.clientId == ConstantsService.browserClientId) {
-            window.postMessage({ type: "AUTH_RESULT", code: code, codeVerifier: codeVerifier, state: state }, "*");
+        if (this.clientId === ConstantsService.browserClientId) {
+            window.postMessage({ type: 'AUTH_RESULT', code: code, codeVerifier: codeVerifier, state: state }, '*');
             this.router.navigate(['sso-complete']);
-        }
-        else {
+        } else {
             try {
                 this.formPromise = this.authService.logInSso(code, codeVerifier, this.redirectUri);
                 const response = await this.formPromise;
