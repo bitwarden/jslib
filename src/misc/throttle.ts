@@ -8,14 +8,14 @@ export function throttle(limit: number, throttleKey: (args: any[]) => string) {
     return <T>(target: any, propertyKey: string | symbol,
         descriptor: TypedPropertyDescriptor<(...args: any[]) => Promise<T>>) => {
         const originalMethod: () => Promise<T> = descriptor.value;
-        const allThrottles = new Map<any, Map<string, Array<() => void>>>();
+        const allThrottles = new Map<any, Map<string, (() => void)[]>>();
 
         const getThrottles = (obj: any) => {
             let throttles = allThrottles.get(obj);
             if (throttles != null) {
                 return throttles;
             }
-            throttles = new Map<string, Array<() => void>>();
+            throttles = new Map<string, (() => void)[]>();
             allThrottles.set(obj, throttles);
             return throttles;
         };

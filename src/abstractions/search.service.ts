@@ -5,7 +5,7 @@ export abstract class SearchService {
     isSearchable: (query: string) => boolean;
     indexCiphers: () => Promise<void>;
     searchCiphers: (query: string,
-        filter?: ((cipher: CipherView) => boolean) | (Array<(cipher: CipherView) => boolean>),
+        filter?: ((cipher: CipherView) => boolean) | (((cipher: CipherView) => boolean)[]),
         ciphers?: CipherView[]) => Promise<CipherView[]>;
     searchCiphersBasic: (ciphers: CipherView[], query: string, deleted?: boolean) => CipherView[];
 }

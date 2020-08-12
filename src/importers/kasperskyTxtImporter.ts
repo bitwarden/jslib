@@ -75,11 +75,11 @@ export class KasperskyTxtImporter extends BaseImporter implements Importer {
         return result;
     }
 
-    private parseDataCategory(data: string): Array<Map<string, string>> {
+    private parseDataCategory(data: string): Map<string, string>[] {
         if (this.isNullOrWhitespace(data) || data.indexOf(Delimiter) === -1) {
             return [];
         }
-        const items: Array<Map<string, string>> = [];
+        const items: Map<string, string>[] = [];
         data.split(Delimiter).forEach((p) => {
             if (p.indexOf('\n') === -1) {
                 return;

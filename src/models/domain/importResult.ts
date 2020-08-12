@@ -7,7 +7,7 @@ export class ImportResult {
     errorMessage: string;
     ciphers: CipherView[] = [];
     folders: FolderView[] = [];
-    folderRelationships: Array<[number, number]> = [];
+    folderRelationships: [number, number][] = [];
     collections: CollectionView[] = [];
-    collectionRelationships: Array<[number, number]> = [];
+    collectionRelationships: [number, number][] = [];
 }
