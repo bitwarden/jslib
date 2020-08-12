@@ -81,7 +81,7 @@ export class FolderService implements FolderServiceAbstraction {
         }
 
         const decFolders: FolderView[] = [];
-        const promises: Array<Promise<any>> = [];
+        const promises: Promise<any>[] = [];
         const folders = await this.getAll();
         folders.forEach((folder) => {
             promises.push(folder.decrypt().then((f) => decFolders.push(f)));
@@ -98,9 +98,9 @@ export class FolderService implements FolderServiceAbstraction {
         return this.decryptedFolderCache;
     }
 
-    async getAllNested(): Promise<Array<TreeNode<FolderView>>> {
+    async getAllNested(): Promise<TreeNode<FolderView>[]> {
         const folders = await this.getAllDecrypted();
-        const nodes: Array<TreeNode<FolderView>> = [];
+        const nodes: TreeNode<FolderView>[] = [];
         folders.forEach((f) => {
             const folderCopy = new FolderView();
             folderCopy.id = f.id;

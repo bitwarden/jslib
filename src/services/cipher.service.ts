@@ -170,7 +170,7 @@ export class CipherService implements CipherServiceAbstraction {
             return null;
         }
 
-        const promises: Array<Promise<any>> = [];
+        const promises: Promise<any>[] = [];
         const encAttachments: Attachment[] = [];
         attachmentsModel.forEach(async (model) => {
             const attachment = new Attachment();
@@ -510,7 +510,7 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async shareWithServer(cipher: CipherView, organizationId: string, collectionIds: string[]): Promise<any> {
-        const attachmentPromises: Array<Promise<any>> = [];
+        const attachmentPromises: Promise<any>[] = [];
         if (cipher.attachments != null) {
             cipher.attachments.forEach((attachment) => {
                 if (attachment.key == null) {
@@ -531,7 +531,7 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async shareManyWithServer(ciphers: CipherView[], organizationId: string, collectionIds: string[]): Promise<any> {
-        const promises: Array<Promise<any>> = [];
+        const promises: Promise<any>[] = [];
         const encCiphers: Cipher[] = [];
         for (const cipher of ciphers) {
             cipher.organizationId = organizationId;

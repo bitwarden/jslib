@@ -5,5 +5,5 @@ import { KvpRequest } from './kvpRequest';
 export class ImportOrganizationCiphersRequest {
     ciphers: CipherRequest[] = [];
     collections: CollectionRequest[] = [];
-    collectionRelationships: Array<KvpRequest<number, number>> = [];
+    collectionRelationships: KvpRequest<number, number>[] = [];
 }

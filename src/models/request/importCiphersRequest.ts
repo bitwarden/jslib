@@ -5,5 +5,5 @@ import { KvpRequest } from './kvpRequest';
 export class ImportCiphersRequest {
     ciphers: CipherRequest[] = [];
     folders: FolderRequest[] = [];
-    folderRelationships: Array<KvpRequest<number, number>> = [];
+    folderRelationships: KvpRequest<number, number>[] = [];
 }

@@ -34,9 +34,9 @@ export class GroupingsComponent {
     @Output() onCollectionClicked = new EventEmitter<CollectionView>();
 
     folders: FolderView[];
-    nestedFolders: Array<TreeNode<FolderView>>;
+    nestedFolders: TreeNode<FolderView>[];
     collections: CollectionView[];
-    nestedCollections: Array<TreeNode<CollectionView>>;
+    nestedCollections: TreeNode<CollectionView>[];
     loaded: boolean = false;
     cipherType = CipherType;
     selectedAll: boolean = false;

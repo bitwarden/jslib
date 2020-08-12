@@ -1,7 +1,7 @@
 export class TreeNode<T extends ITreeNodeObject> {
     parent: T;
     node: T;
-    children: Array<TreeNode<T>> = [];
+    children: TreeNode<T>[] = [];
 
     constructor(node: T, name: string, parent: T) {
         this.parent = parent;

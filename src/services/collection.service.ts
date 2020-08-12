@@ -51,7 +51,7 @@ export class CollectionService implements CollectionServiceAbstraction {
             return [];
         }
         const decCollections: CollectionView[] = [];
-        const promises: Array<Promise<any>> = [];
+        const promises: Promise<any>[] = [];
         collections.forEach((collection) => {
             promises.push(collection.decrypt().then((c) => decCollections.push(c)));
         });
@@ -98,11 +98,11 @@ export class CollectionService implements CollectionServiceAbstraction {
         return this.decryptedCollectionCache;
     }
 
-    async getAllNested(collections: CollectionView[] = null): Promise<Array<TreeNode<CollectionView>>> {
+    async getAllNested(collections: CollectionView[] = null): Promise<TreeNode<CollectionView>[]> {
         if (collections == null) {
             collections = await this.getAllDecrypted();
         }
-        const nodes: Array<TreeNode<CollectionView>> = [];
+        const nodes: TreeNode<CollectionView>[] = [];
         collections.forEach((c) => {
             const collectionCopy = new CollectionView();
             collectionCopy.id = c.id;

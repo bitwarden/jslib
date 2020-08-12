@@ -4,7 +4,7 @@ import {
 } from '../models/domain/treeNode';
 
 export class ServiceUtils {
-    static nestedTraverse(nodeTree: Array<TreeNode<ITreeNodeObject>>, partIndex: number, parts: string[],
+    static nestedTraverse(nodeTree: TreeNode<ITreeNodeObject>[], partIndex: number, parts: string[],
         obj: ITreeNodeObject, parent: ITreeNodeObject, delimiter: string) {
         if (parts.length <= partIndex) {
             return;
@@ -38,7 +38,7 @@ export class ServiceUtils {
         }
     }
 
-    static getTreeNodeObject(nodeTree: Array<TreeNode<ITreeNodeObject>>, id: string): TreeNode<ITreeNodeObject> {
+    static getTreeNodeObject(nodeTree: TreeNode<ITreeNodeObject>[], id: string): TreeNode<ITreeNodeObject> {
         for (let i = 0; i < nodeTree.length; i++) {
             if (nodeTree[i].node.id === id) {
                 return nodeTree[i];
