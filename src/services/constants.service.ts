@@ -28,8 +28,8 @@ export class ConstantsService {
     static readonly ssoClientId: string = 'ssoClientId';
     static readonly biometricUnlockKey: string = 'biometric';
     static readonly biometricText: string = 'biometricText';
-    static readonly browserClientId: string = 'browser'
-    static readonly webClientId: string = 'web'
+    static readonly browserClientId: string = 'browser';
+    static readonly webClientId: string = 'web';
 
     readonly environmentUrlsKey: string = ConstantsService.environmentUrlsKey;
     readonly disableGaKey: string = ConstantsService.disableGaKey;
