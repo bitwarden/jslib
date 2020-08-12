@@ -51,7 +51,7 @@ export class SsoComponent {
                 await this.storageService.remove(ConstantsService.ssoCodeVerifierKey);
                 await this.storageService.remove(ConstantsService.ssoStateKey);
                 if (qParams.code != null && codeVerifier != null && state != null && state === qParams.state) {
-                    await this.logIn(qParams.code, codeVerifier);
+                    await this.logIn(qParams.code, codeVerifier, state);
                 }
             } else if (qParams.clientId != null && qParams.redirectUri != null && qParams.state != null &&
                 qParams.codeChallenge != null) {
@@ -60,6 +60,17 @@ export class SsoComponent {
                 this.codeChallenge = qParams.codeChallenge;
                 this.clientId = qParams.clientId;
             }
+
+            if (qParams.clientId == ConstantsService.browserClientId) {
+                this.redirectUri = qParams.redirectUri;
+                this.state = qParams.state;
+                this.codeChallenge = qParams.codeChallenge;
+                this.clientId = qParams.clientId;
+                await this.storageService.save(ConstantsService.ssoCodeVerifierKey, qParams.codeVerifier);
+                await this.storageService.save(ConstantsService.ssoStateKey, qParams.state);
+                await this.storageService.save(ConstantsService.ssoClientId, this.clientId);
+            }
+
             if (queryParamsSub != null) {
                 queryParamsSub.unsubscribe();
             }
@@ -82,6 +93,8 @@ export class SsoComponent {
             const codeVerifierHash = await this.cryptoFunctionService.hash(codeVerifier, 'sha256');
             codeChallenge = Utils.fromBufferToUrlB64(codeVerifierHash);
             await this.storageService.save(ConstantsService.ssoCodeVerifierKey, codeVerifier);
+            await this.storageService.save(ConstantsService.ssoStateKey, state);
+            await this.storageService.save(ConstantsService.ssoClientId, this.clientId);
         }
         if (state == null) {
             state = await this.passwordGenerationService.generatePassword(passwordOptions);
@@ -97,43 +110,50 @@ export class SsoComponent {
         this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
     }
 
-    private async logIn(code: string, codeVerifier: string) {
+    private async logIn(code: string, codeVerifier: string, state: string) {
         this.loggingIn = true;
-        try {
-            this.formPromise = this.authService.logInSso(code, codeVerifier, this.redirectUri);
-            const response = await this.formPromise;
-            if (response.twoFactor) {
-                this.platformUtilsService.eventTrack('SSO Logged In To Two-step');
-                if (this.onSuccessfulLoginTwoFactorNavigate != null) {
-                    this.onSuccessfulLoginTwoFactorNavigate();
+
+        if (this.clientId == ConstantsService.browserClientId) {
+            window.postMessage({ type: "AUTH_RESULT", code: code, codeVerifier: codeVerifier, state: state }, "*");
+            this.router.navigate(['sso-complete']);
+        }
+        else {
+            try {
+                this.formPromise = this.authService.logInSso(code, codeVerifier, this.redirectUri);
+                const response = await this.formPromise;
+                if (response.twoFactor) {
+                    this.platformUtilsService.eventTrack('SSO Logged In To Two-step');
+                    if (this.onSuccessfulLoginTwoFactorNavigate != null) {
+                        this.onSuccessfulLoginTwoFactorNavigate();
+                    } else {
+                        this.router.navigate([this.twoFactorRoute], {
+                            queryParams: {
+                                resetMasterPassword: response.resetMasterPassword,
+                            },
+                        });
+                    }
+                } else if (response.resetMasterPassword) {
+                    this.platformUtilsService.eventTrack('SSO - routing to complete registration');
+                    if (this.onSuccessfulLoginChangePasswordNavigate != null) {
+                        this.onSuccessfulLoginChangePasswordNavigate();
+                    } else {
+                        this.router.navigate([this.changePasswordRoute]);
+                    }
                 } else {
-                    this.router.navigate([this.twoFactorRoute], {
-                        queryParams: {
-                            resetMasterPassword: response.resetMasterPassword,
-                        },
-                    });
+                    const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
+                    await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
+                    if (this.onSuccessfulLogin != null) {
+                        this.onSuccessfulLogin();
+                    }
+                    this.platformUtilsService.eventTrack('SSO Logged In');
+                    if (this.onSuccessfulLoginNavigate != null) {
+                        this.onSuccessfulLoginNavigate();
+                    } else {
+                        this.router.navigate([this.successRoute]);
+                    }
                 }
-            } else if (response.resetMasterPassword) {
-                this.platformUtilsService.eventTrack('SSO - routing to complete registration');
-                if (this.onSuccessfulLoginChangePasswordNavigate != null) {
-                    this.onSuccessfulLoginChangePasswordNavigate();
-                } else {
-                    this.router.navigate([this.changePasswordRoute]);
-                }
-            } else {
-                const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
-                await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
-                if (this.onSuccessfulLogin != null) {
-                    this.onSuccessfulLogin();
-                }
-                this.platformUtilsService.eventTrack('SSO Logged In');
-                if (this.onSuccessfulLoginNavigate != null) {
-                    this.onSuccessfulLoginNavigate();
-                } else {
-                    this.router.navigate([this.successRoute]);
-                }
-            }
-        } catch { }
+            } catch { }
+        }
         this.loggingIn = false;
     }
 }
