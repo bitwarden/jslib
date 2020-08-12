@@ -35,6 +35,8 @@ import { FieldView } from '../models/view/fieldView';
 import { PasswordHistoryView } from '../models/view/passwordHistoryView';
 import { View } from '../models/view/view';
 
+import { SortedCiphersCache } from '../models/domain/sortedCiphersCache';
+
 import { ApiService } from '../abstractions/api.service';
 import { CipherService as CipherServiceAbstraction } from '../abstractions/cipher.service';
 import { CryptoService } from '../abstractions/crypto.service';
@@ -63,6 +65,8 @@ export class CipherService implements CipherServiceAbstraction {
     // tslint:disable-next-line
     _decryptedCipherCache: CipherView[];
 
+    private sortedCiphersCache: SortedCiphersCache = new SortedCiphersCache(this.sortCiphersByLastUsed);
+
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private settingsService: SettingsService, private apiService: ApiService,
         private storageService: StorageService, private i18nService: I18nService,
@@ -85,6 +89,7 @@ export class CipherService implements CipherServiceAbstraction {
 
     clearCache(): void {
         this.decryptedCipherCache = null;
+        this.sortedCiphersCache.clear();
     }
 
     async encrypt(model: CipherView, key?: SymmetricCryptoKey, originalCipher: Cipher = null): Promise<Cipher> {
@@ -437,13 +442,11 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async getLastUsedForUrl(url: string): Promise<CipherView> {
-        const ciphers = await this.getAllDecryptedForUrl(url);
-        if (ciphers.length === 0) {
-            return null;
-        }
+        return this.getCipherForUrl(url, true);
+    }
 
-        const sortedCiphers = ciphers.sort(this.sortCiphersByLastUsed);
-        return sortedCiphers[0];
+    async getNextCipherForUrl(url: string): Promise<CipherView> {
+        return this.getCipherForUrl(url, false);
     }
 
     async updateLastUsedDate(id: string): Promise<void> {
@@ -1001,5 +1004,17 @@ export class CipherService implements CipherServiceAbstraction {
             default:
                 throw new Error('Unknown cipher type.');
         }
+    }
+
+    private async getCipherForUrl(url: string, lastUsed: boolean): Promise<CipherView> {
+        if (!this.sortedCiphersCache.isCached(url)) {
+            const ciphers = await this.getAllDecryptedForUrl(url);
+            if (!ciphers) {
+                return null;
+            }
+            this.sortedCiphersCache.addCiphers(url, ciphers);
+        }
+
+        return lastUsed ? this.sortedCiphersCache.getLastUsed(url) : this.sortedCiphersCache.getNext(url);
     }
 }
