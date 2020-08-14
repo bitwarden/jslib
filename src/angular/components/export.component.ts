@@ -1,4 +1,8 @@
-import { EventEmitter, Output, Directive } from '@angular/core';
+import {
+    EventEmitter,
+    Output,
+    Directive,
+} from '@angular/core';
 
 import { CryptoService } from '../../abstractions/crypto.service';
 import { EventService } from '../../abstractions/event.service';

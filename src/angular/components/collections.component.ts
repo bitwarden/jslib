@@ -1,4 +1,10 @@
-import { EventEmitter, Input, OnInit, Output, Directive } from '@angular/core';
+import {
+    EventEmitter,
+    Input,
+    OnInit,
+    Output,
+    Directive,
+} from '@angular/core';
 
 import { CipherService } from '../../abstractions/cipher.service';
 import { CollectionService } from '../../abstractions/collection.service';

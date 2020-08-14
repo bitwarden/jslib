@@ -1,4 +1,10 @@
-import { EventEmitter, Input, OnInit, Output, Directive } from '@angular/core';
+import {
+    EventEmitter,
+    Input,
+    OnInit,
+    Output,
+    Directive,
+} from '@angular/core';
 
 import { FolderService } from '../../abstractions/folder.service';
 import { I18nService } from '../../abstractions/i18n.service';

@@ -1,4 +1,9 @@
-import { EventEmitter, Input, OnInit, Output, Directive } from '@angular/core';
+import {
+    EventEmitter,
+    OnInit,
+    Output,
+    Directive,
+} from '@angular/core';
 import { Router } from '@angular/router';
 
 import { TwoFactorProviderType } from '../../enums/twoFactorProviderType';
