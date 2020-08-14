@@ -1,10 +1,6 @@
-import {
-    OnInit,
-} from '@angular/core';
+import { OnInit } from '@angular/core';
 
-import {
-    Router,
-} from '@angular/router';
+import { Router } from '@angular/router';
 
 import { ApiService } from '../../abstractions/api.service';
 import { CipherService } from '../../abstractions/cipher.service';
@@ -22,12 +18,17 @@ import { CipherString } from '../../models/domain/cipherString';
 import { MasterPasswordPolicyOptions } from '../../models/domain/masterPasswordPolicyOptions';
 import { SymmetricCryptoKey } from '../../models/domain/symmetricCryptoKey';
 
+import { KdfType } from '../../enums/kdfType';
+
 export class ChangePasswordComponent implements OnInit {
-    newMasterPassword: string;
-    confirmNewMasterPassword: string;
+    masterPassword: string;
+    masterPasswordRetype: string;
     formPromise: Promise<any>;
     masterPasswordScore: number;
     enforcedPolicyOptions: MasterPasswordPolicyOptions;
+
+    protected kdf: KdfType;
+    protected kdfIterations: number;
 
     private masterPasswordStrengthTimeout: any;
     private email: string;
@@ -65,35 +66,29 @@ export class ChangePasswordComponent implements OnInit {
     }
 
     async submit() {
-        const hasEncKey = await this.cryptoService.hasEncKey();
-        if (!hasEncKey) {
-            this.platformUtilsService.showToast('error', null, this.i18nService.t('updateKey'));
-            return;
-        }
-
-        if (this.newMasterPassword == null || this.newMasterPassword === '') {
+        if (this.masterPassword == null || this.masterPassword === '') {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('masterPassRequired'));
             return;
         }
-        if (this.newMasterPassword.length < 8) {
+        if (this.masterPassword.length < 8) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('masterPassLength'));
             return;
         }
-        if (this.newMasterPassword !== this.confirmNewMasterPassword) {
+        if (this.masterPassword !== this.masterPasswordRetype) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('masterPassDoesntMatch'));
             return;
         }
 
-        const strengthResult = this.passwordGenerationService.passwordStrength(this.newMasterPassword,
+        const strengthResult = this.passwordGenerationService.passwordStrength(this.masterPassword,
             this.getPasswordStrengthUserInput());
 
         if (this.enforcedPolicyOptions != null &&
             !this.policyService.evaluateMasterPassword(
                 strengthResult.score,
-                this.newMasterPassword,
+                this.masterPassword,
                 this.enforcedPolicyOptions)) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('masterPasswordPolicyRequirementsNotMet'));
@@ -114,14 +109,25 @@ export class ChangePasswordComponent implements OnInit {
         }
 
         const email = await this.userService.getEmail();
-        const kdf = await this.userService.getKdf();
-        const kdfIterations = await this.userService.getKdfIterations();
-        const newKey = await this.cryptoService.makeKey(this.newMasterPassword, email.trim().toLowerCase(),
-            kdf, kdfIterations);
-        const newMasterPasswordHash = await this.cryptoService.hashPassword(this.newMasterPassword, newKey);
-        const newEncKey = await this.cryptoService.remakeEncKey(newKey);
+        if (this.kdf == null) {
+            this.kdf = await this.userService.getKdf();
+        }
+        if (this.kdfIterations == null) {
+            this.kdfIterations = await this.userService.getKdfIterations();
+        }
+        const key = await this.cryptoService.makeKey(this.masterPassword, email.trim().toLowerCase(),
+            this.kdf, this.kdfIterations);
+        const masterPasswordHash = await this.cryptoService.hashPassword(this.masterPassword, key);
 
-        await this.performSubmitActions(newMasterPasswordHash, newKey, newEncKey);
+        let encKey: [SymmetricCryptoKey, CipherString] = null;
+        const existingEncKey = await this.cryptoService.getEncKey();
+        if (existingEncKey == null) {
+            encKey = await this.cryptoService.makeEncKey(key);
+        } else {
+            encKey = await this.cryptoService.remakeEncKey(key);
+        }
+
+        await this.performSubmitActions(masterPasswordHash, key, encKey);
     }
 
     async setupSubmitActions(): Promise<boolean> {
@@ -130,8 +136,8 @@ export class ChangePasswordComponent implements OnInit {
         return true;
     }
 
-    async performSubmitActions(newMasterPasswordHash: string, newKey: SymmetricCryptoKey,
-        newEncKey: [SymmetricCryptoKey, CipherString]) {
+    async performSubmitActions(masterPasswordHash: string, key: SymmetricCryptoKey,
+        encKey: [SymmetricCryptoKey, CipherString]) {
         // Override in sub-class
     }
 
@@ -140,10 +146,18 @@ export class ChangePasswordComponent implements OnInit {
             clearTimeout(this.masterPasswordStrengthTimeout);
         }
         this.masterPasswordStrengthTimeout = setTimeout(() => {
-            const strengthResult = this.passwordGenerationService.passwordStrength(this.newMasterPassword,
+            const strengthResult = this.passwordGenerationService.passwordStrength(this.masterPassword,
                 this.getPasswordStrengthUserInput());
             this.masterPasswordScore = strengthResult == null ? null : strengthResult.score;
         }, 300);
+    }
+
+    async logOut() {
+        const confirmed = await this.platformUtilsService.showDialog(this.i18nService.t('logOutConfirmation'),
+            this.i18nService.t('logOut'), this.i18nService.t('logOut'), this.i18nService.t('cancel'));
+        if (confirmed) {
+            this.messagingService.send('logout');
+        }
     }
 
     private getPasswordStrengthUserInput() {
