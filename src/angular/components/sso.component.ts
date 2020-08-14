@@ -51,7 +51,7 @@ export class SsoComponent {
                 await this.storageService.remove(ConstantsService.ssoCodeVerifierKey);
                 await this.storageService.remove(ConstantsService.ssoStateKey);
                 if (qParams.code != null && codeVerifier != null && state != null && state === qParams.state) {
-                    await this.logIn(qParams.code, codeVerifier, state);
+                    await this.logIn(qParams.code, codeVerifier);
                 }
                 const clientId = await this.storageService.get<string>(ConstantsService.ssoClientId);
                 if (clientId === ConstantsService.browserClientId) {
@@ -118,7 +118,7 @@ export class SsoComponent {
         this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
     }
 
-    private async logIn(code: string, codeVerifier: string, state: string) {
+    private async logIn(code: string, codeVerifier: string) {
         this.loggingIn = true;
 
         try {
