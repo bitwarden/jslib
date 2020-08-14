@@ -1,9 +1,4 @@
-import {
-    EventEmitter,
-    Input,
-    OnInit,
-    Output,
-} from '@angular/core';
+import { EventEmitter, Input, OnInit, Output, Directive } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { TwoFactorProviderType } from '../../enums/twoFactorProviderType';
@@ -12,6 +7,7 @@ import { AuthService } from '../../abstractions/auth.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
+@Directive()
 export class TwoFactorOptionsComponent implements OnInit {
     @Output() onProviderSelected = new EventEmitter<TwoFactorProviderType>();
     @Output() onRecoverSelected = new EventEmitter();

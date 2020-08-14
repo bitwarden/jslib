@@ -1,13 +1,10 @@
-import {
-    EventEmitter,
-    Input,
-    Output,
-} from '@angular/core';
+import { EventEmitter, Input, Output, Directive } from '@angular/core';
 
 import { SearchService } from '../../abstractions/search.service';
 
 import { CipherView } from '../../models/view/cipherView';
 
+@Directive()
 export class CiphersComponent {
     @Input() activeCipherId: string = null;
     @Output() onCipherClicked = new EventEmitter<CipherView>();

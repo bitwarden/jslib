@@ -2,12 +2,7 @@ import {
     CdkDragDrop,
     moveItemInArray,
 } from '@angular/cdk/drag-drop';
-import {
-    EventEmitter,
-    Input,
-    OnInit,
-    Output,
-} from '@angular/core';
+import { EventEmitter, Input, OnInit, Output, Directive } from '@angular/core';
 
 import { CipherType } from '../../enums/cipherType';
 import { EventType } from '../../enums/eventType';
@@ -41,6 +36,7 @@ import { SecureNoteView } from '../../models/view/secureNoteView';
 
 import { Utils } from '../../misc/utils';
 
+@Directive()
 export class AddEditComponent implements OnInit {
     @Input() cloneMode: boolean = false;
     @Input() folderId: string = null;

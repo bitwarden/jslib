@@ -1,7 +1,4 @@
-import {
-    EventEmitter,
-    Output,
-} from '@angular/core';
+import { EventEmitter, Output, Directive } from '@angular/core';
 
 import { CryptoService } from '../../abstractions/crypto.service';
 import { EventService } from '../../abstractions/event.service';
@@ -10,6 +7,7 @@ import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { EventType } from '../../enums/eventType';
 
+@Directive()
 export class ExportComponent {
     @Output() onSaved = new EventEmitter();
 

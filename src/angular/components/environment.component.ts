@@ -1,12 +1,10 @@
-import {
-    EventEmitter,
-    Output,
-} from '@angular/core';
+import { EventEmitter, Output, Directive } from '@angular/core';
 
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
+@Directive()
 export class EnvironmentComponent {
     @Output() onSaved = new EventEmitter();
 

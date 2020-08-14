@@ -1,8 +1,4 @@
-import {
-    EventEmitter,
-    Input,
-    Output,
-} from '@angular/core';
+import { EventEmitter, Input, Output, Directive } from '@angular/core';
 
 import { CipherType } from '../../enums/cipherType';
 
@@ -18,6 +14,7 @@ import { UserService } from '../../abstractions/user.service';
 
 import { ConstantsService } from '../../services/constants.service';
 
+@Directive()
 export class GroupingsComponent {
     @Input() showFolders = true;
     @Input() showCollections = true;

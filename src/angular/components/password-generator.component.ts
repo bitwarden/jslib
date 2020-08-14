@@ -1,9 +1,4 @@
-import {
-    EventEmitter,
-    Input,
-    OnInit,
-    Output,
-} from '@angular/core';
+import { EventEmitter, Input, OnInit, Output, Directive } from '@angular/core';
 
 import { I18nService } from '../../abstractions/i18n.service';
 import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
@@ -11,6 +6,7 @@ import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 import { PasswordGeneratorPolicyOptions } from '../../models/domain/passwordGeneratorPolicyOptions';
 
+@Directive()
 export class PasswordGeneratorComponent implements OnInit {
     @Input() showSelect: boolean = false;
     @Output() onSelected = new EventEmitter<string>();

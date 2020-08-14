@@ -1,9 +1,4 @@
-import {
-    EventEmitter,
-    Input,
-    OnInit,
-    Output,
-} from '@angular/core';
+import { EventEmitter, Input, OnInit, Output, Directive } from '@angular/core';
 
 import { FolderService } from '../../abstractions/folder.service';
 import { I18nService } from '../../abstractions/i18n.service';
@@ -11,6 +6,7 @@ import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 import { FolderView } from '../../models/view/folderView';
 
+@Directive()
 export class FolderAddEditComponent implements OnInit {
     @Input() folderId: string;
     @Output() onSavedFolder = new EventEmitter<FolderView>();

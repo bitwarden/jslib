@@ -1,9 +1,4 @@
-import {
-    EventEmitter,
-    Input,
-    OnInit,
-    Output,
-} from '@angular/core';
+import { EventEmitter, Input, OnInit, Output, Directive } from '@angular/core';
 
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 
@@ -19,6 +14,7 @@ import { CollectionView } from '../../models/view/collectionView';
 
 import { Utils } from '../../misc/utils';
 
+@Directive()
 export class ShareComponent implements OnInit {
     @Input() cipherId: string;
     @Input() organizationId: string;

@@ -1,9 +1,4 @@
-import {
-    EventEmitter,
-    Input,
-    OnInit,
-    Output,
-} from '@angular/core';
+import { EventEmitter, Input, OnInit, Output, Directive } from '@angular/core';
 
 import { CipherService } from '../../abstractions/cipher.service';
 import { CollectionService } from '../../abstractions/collection.service';
@@ -15,6 +10,7 @@ import { CollectionView } from '../../models/view/collectionView';
 
 import { Cipher } from '../../models/domain/cipher';
 
+@Directive()
 export class CollectionsComponent implements OnInit {
     @Input() cipherId: string;
     @Input() allowSelectNone = false;
