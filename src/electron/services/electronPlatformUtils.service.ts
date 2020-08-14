@@ -113,6 +113,10 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         shell.openExternal(uri);
     }
 
+    closeCurrentTab(): void {
+        throw new Error('Not implemented.');
+    }
+
     saveFile(win: Window, blobData: any, blobOptions: any, fileName: string): void {
         remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
             defaultPath: fileName,

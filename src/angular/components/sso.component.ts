@@ -53,6 +53,14 @@ export class SsoComponent {
                 if (qParams.code != null && codeVerifier != null && state != null && state === qParams.state) {
                     await this.logIn(qParams.code, codeVerifier, state);
                 }
+                const clientId = await this.storageService.get<string>(ConstantsService.ssoClientId);
+                if (clientId === ConstantsService.browserClientId) {
+                    // Prevent entering this if we're not in the web vault.
+                    if (location.protocol === 'https://') {
+                        window.postMessage({ type: "AUTH_RESULT", code: qParams.code, state: qParams.state }, "*");
+                        this.router.navigate(['sso-complete']);
+                    }
+                }
             } else if (qParams.clientId != null && qParams.redirectUri != null && qParams.state != null &&
                 qParams.codeChallenge != null) {
                 this.redirectUri = qParams.redirectUri;
@@ -61,7 +69,7 @@ export class SsoComponent {
                 this.clientId = qParams.clientId;
             }
 
-            if (qParams.clientId === ConstantsService.browserClientId) {
+            if (qParams.clientId == ConstantsService.browserClientId) {
                 this.redirectUri = qParams.redirectUri;
                 this.state = qParams.state;
                 this.codeChallenge = qParams.codeChallenge;
@@ -113,46 +121,42 @@ export class SsoComponent {
     private async logIn(code: string, codeVerifier: string, state: string) {
         this.loggingIn = true;
 
-        if (this.clientId === ConstantsService.browserClientId) {
-            window.postMessage({ type: 'AUTH_RESULT', code: code, codeVerifier: codeVerifier, state: state }, '*');
-            this.router.navigate(['sso-complete']);
-        } else {
-            try {
-                this.formPromise = this.authService.logInSso(code, codeVerifier, this.redirectUri);
-                const response = await this.formPromise;
-                if (response.twoFactor) {
-                    this.platformUtilsService.eventTrack('SSO Logged In To Two-step');
-                    if (this.onSuccessfulLoginTwoFactorNavigate != null) {
-                        this.onSuccessfulLoginTwoFactorNavigate();
-                    } else {
-                        this.router.navigate([this.twoFactorRoute], {
-                            queryParams: {
-                                resetMasterPassword: response.resetMasterPassword,
-                            },
-                        });
-                    }
-                } else if (response.resetMasterPassword) {
-                    this.platformUtilsService.eventTrack('SSO - routing to complete registration');
-                    if (this.onSuccessfulLoginChangePasswordNavigate != null) {
-                        this.onSuccessfulLoginChangePasswordNavigate();
-                    } else {
-                        this.router.navigate([this.changePasswordRoute]);
-                    }
+        try {
+            this.formPromise = this.authService.logInSso(code, codeVerifier, this.redirectUri);
+            const response = await this.formPromise;
+
+            if (response.twoFactor) {
+                this.platformUtilsService.eventTrack('SSO Logged In To Two-step');
+                if (this.onSuccessfulLoginTwoFactorNavigate != null) {
+                    this.onSuccessfulLoginTwoFactorNavigate();
                 } else {
-                    const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
-                    await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
-                    if (this.onSuccessfulLogin != null) {
-                        this.onSuccessfulLogin();
-                    }
-                    this.platformUtilsService.eventTrack('SSO Logged In');
-                    if (this.onSuccessfulLoginNavigate != null) {
-                        this.onSuccessfulLoginNavigate();
-                    } else {
-                        this.router.navigate([this.successRoute]);
-                    }
+                    this.router.navigate([this.twoFactorRoute], {
+                        queryParams: {
+                            resetMasterPassword: response.resetMasterPassword,
+                        },
+                    });
                 }
-            } catch { }
-        }
+            } else if (response.resetMasterPassword) {
+                this.platformUtilsService.eventTrack('SSO - routing to complete registration');
+                if (this.onSuccessfulLoginChangePasswordNavigate != null) {
+                    this.onSuccessfulLoginChangePasswordNavigate();
+                } else {
+                    this.router.navigate([this.changePasswordRoute]);
+                }
+            } else {
+                const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
+                await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
+                if (this.onSuccessfulLogin != null) {
+                    this.onSuccessfulLogin();
+                }
+                this.platformUtilsService.eventTrack('SSO Logged In');
+                if (this.onSuccessfulLoginNavigate != null) {
+                    this.onSuccessfulLoginNavigate();
+                } else {
+                    this.router.navigate([this.successRoute]);
+                }
+            }
+        } catch { }
         this.loggingIn = false;
     }
 }

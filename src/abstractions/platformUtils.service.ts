@@ -19,6 +19,7 @@ export abstract class PlatformUtilsService {
      */
     lockTimeout: () => number;
     launchUri: (uri: string, options?: any) => void;
+    closeCurrentTab: () => void;
     saveFile: (win: Window, blobData: any, blobOptions: any, fileName: string) => void;
     getApplicationVersion: () => string;
     supportsU2f: (win: Window) => boolean;

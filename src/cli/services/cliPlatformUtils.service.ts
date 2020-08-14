@@ -84,6 +84,10 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
         throw new Error('Not implemented.');
     }
 
+    closeCurrentTab(): void {
+        throw new Error('Not implemented.');
+    }
+
     saveFile(win: Window, blobData: any, blobOptions: any, fileName: string): void {
         throw new Error('Not implemented.');
     }
