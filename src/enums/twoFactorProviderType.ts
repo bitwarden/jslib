@@ -6,4 +6,5 @@ export enum TwoFactorProviderType {
     U2f = 4,
     Remember = 5,
     OrganizationDuo = 6,
+    WebAuthn = 7,
 }

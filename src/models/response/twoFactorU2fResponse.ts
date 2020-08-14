@@ -25,17 +25,31 @@ export class KeyResponse extends BaseResponse {
     }
 }
 
-export class ChallengeResponse extends BaseResponse {
-    userId: string;
-    appId: string;
-    challenge: string;
-    version: string;
+export class ChallengeResponse extends BaseResponse implements PublicKeyCredentialCreationOptions {
+    attestation?: AttestationConveyancePreference;
+    authenticatorSelection?: AuthenticatorSelectionCriteria;
+    challenge: BufferSource;
+    excludeCredentials?: PublicKeyCredentialDescriptor[];
+    extensions?: AuthenticationExtensionsClientInputs;
+    pubKeyCredParams: PublicKeyCredentialParameters[];
+    rp: PublicKeyCredentialRpEntity;
+    timeout?: number;
+    user: PublicKeyCredentialUserEntity;
 
     constructor(response: any) {
         super(response);
-        this.userId = this.getResponseProperty('UserId');
-        this.appId = this.getResponseProperty('AppId');
-        this.challenge = this.getResponseProperty('Challenge');
-        this.version = this.getResponseProperty('Version');
+        this.attestation = this.getResponseProperty('attestation');
+        this.authenticatorSelection = this.getResponseProperty('authenticatorSelection');
+        this.challenge = new Buffer(this.getResponseProperty('challenge'), 'base64');
+        this.excludeCredentials = this.getResponseProperty('excludeCredentials');
+        this.extensions = this.getResponseProperty('extensions');
+        this.pubKeyCredParams = this.getResponseProperty('pubKeyCredParams');
+        this.rp = this.getResponseProperty('rp');
+        this.timeout = this.getResponseProperty('timeout');
+        
+        const user = this.getResponseProperty('user');
+        user.id = new Buffer(user.id, 'base64');
+
+        this.user = user;
     }
 }

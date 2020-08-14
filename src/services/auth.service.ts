@@ -57,14 +57,6 @@ export const TwoFactorProviders = {
         sort: 4,
         premium: false,
     },
-    [TwoFactorProviderType.U2f]: {
-        type: TwoFactorProviderType.U2f,
-        name: null as string,
-        description: null as string,
-        priority: 4,
-        sort: 5,
-        premium: true,
-    },
     [TwoFactorProviderType.Email]: {
         type: TwoFactorProviderType.Email,
         name: null as string,
@@ -72,6 +64,14 @@ export const TwoFactorProviders = {
         priority: 0,
         sort: 6,
         premium: false,
+    },
+    [TwoFactorProviderType.WebAuthn]: {
+        type: TwoFactorProviderType.WebAuthn,
+        name: 'WebAuthn',
+        description: null as string,
+        priority: 4,
+        sort: 5,
+        premium: true,
     },
 };
 
@@ -107,8 +107,7 @@ export class AuthService implements AuthServiceAbstraction {
         TwoFactorProviders[TwoFactorProviderType.OrganizationDuo].description =
             this.i18nService.t('duoOrganizationDesc');
 
-        TwoFactorProviders[TwoFactorProviderType.U2f].name = this.i18nService.t('u2fTitle');
-        TwoFactorProviders[TwoFactorProviderType.U2f].description = this.i18nService.t('u2fDesc');
+        TwoFactorProviders[TwoFactorProviderType.WebAuthn].description = this.i18nService.t('u2fDesc');
 
         TwoFactorProviders[TwoFactorProviderType.Yubikey].name = this.i18nService.t('yubiKeyTitle');
         TwoFactorProviders[TwoFactorProviderType.Yubikey].description = this.i18nService.t('yubiKeyDesc');
@@ -177,8 +176,8 @@ export class AuthService implements AuthServiceAbstraction {
             providers.push(TwoFactorProviders[TwoFactorProviderType.Duo]);
         }
 
-        if (this.twoFactorProvidersData.has(TwoFactorProviderType.U2f) && this.platformUtilsService.supportsU2f(win)) {
-            providers.push(TwoFactorProviders[TwoFactorProviderType.U2f]);
+        if (this.twoFactorProvidersData.has(TwoFactorProviderType.WebAuthn) && this.platformUtilsService.supportsU2f(win)) {
+            providers.push(TwoFactorProviders[TwoFactorProviderType.WebAuthn]);
         }
 
         if (this.twoFactorProvidersData.has(TwoFactorProviderType.Email)) {

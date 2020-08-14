@@ -111,6 +111,7 @@ import {
 } from '../models/response/twoFactorU2fResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
+import { Utils } from '../misc/utils';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
@@ -756,13 +757,13 @@ export class ApiService implements ApiServiceAbstraction {
         return new TwoFactorYubiKeyResponse(r);
     }
 
-    async getTwoFactorU2f(request: PasswordVerificationRequest): Promise<TwoFactorU2fResponse> {
-        const r = await this.send('POST', '/two-factor/get-u2f', request, true, true);
+    async getTwoFactorWebAuthn(request: PasswordVerificationRequest): Promise<TwoFactorU2fResponse> {
+        const r = await this.send('POST', '/two-factor/get-webauthn', request, true, true);
         return new TwoFactorU2fResponse(r);
     }
 
-    async getTwoFactorU2fChallenge(request: PasswordVerificationRequest): Promise<ChallengeResponse> {
-        const r = await this.send('POST', '/two-factor/get-u2f-challenge', request, true, true);
+    async getTwoFactorWebAuthnChallenge(request: PasswordVerificationRequest): Promise<ChallengeResponse> {
+        const r = await this.send('POST', '/two-factor/get-webauthn-challenge', request, true, true);
         return new ChallengeResponse(r);
     }
 
@@ -798,8 +799,22 @@ export class ApiService implements ApiServiceAbstraction {
         return new TwoFactorYubiKeyResponse(r);
     }
 
-    async putTwoFactorU2f(request: UpdateTwoFactorU2fRequest): Promise<TwoFactorU2fResponse> {
-        const r = await this.send('PUT', '/two-factor/u2f', request, true, true);
+    async putTwoFactorWebAuthn(request: UpdateTwoFactorU2fRequest): Promise<TwoFactorU2fResponse> {
+        const response = request.deviceResponse.response as AuthenticatorAttestationResponse;
+        const data: any = Object.assign({}, request)
+
+        data.deviceResponse = {
+            id: request.deviceResponse.id,
+            rawId: btoa(request.deviceResponse.id),
+            type: request.deviceResponse.type,
+            extensions: request.deviceResponse.getClientExtensionResults(),
+            response: {
+                AttestationObject: Utils.fromBufferToB64(response.attestationObject),
+                clientDataJson: Utils.fromBufferToB64(response.clientDataJSON),
+            }
+        };
+
+        const r = await this.send('PUT', '/two-factor/webauthn', data, true, true);
         return new TwoFactorU2fResponse(r);
     }
 

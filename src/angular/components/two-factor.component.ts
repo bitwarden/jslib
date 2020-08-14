@@ -72,9 +72,11 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             }
 
             this.u2f = new U2f(this.win, customWebVaultUrl, (token: string) => {
+                debugger;
                 this.token = token;
                 this.submit();
             }, (error: string) => {
+                debugger;
                 this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), error);
             }, (info: string) => {
                 if (info === 'ready') {
@@ -102,31 +104,14 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         this.title = (TwoFactorProviders as any)[this.selectedProviderType].name;
         const providerData = this.authService.twoFactorProvidersData.get(this.selectedProviderType);
         switch (this.selectedProviderType) {
-            case TwoFactorProviderType.U2f:
+            case TwoFactorProviderType.WebAuthn:
                 if (!this.u2fSupported || this.u2f == null) {
                     break;
                 }
 
-                if (providerData.Challenge != null) {
-                    setTimeout(() => {
-                        this.u2f.init(JSON.parse(providerData.Challenge));
-                    }, 500);
-                } else {
-                    // TODO: Deprecated. Remove in future version.
-                    const challenges = JSON.parse(providerData.Challenges);
-                    if (challenges != null && challenges.length > 0) {
-                        this.u2f.init({
-                            appId: challenges[0].appId,
-                            challenge: challenges[0].challenge,
-                            keys: challenges.map((c: any) => {
-                                return {
-                                    version: c.version,
-                                    keyHandle: c.keyHandle,
-                                };
-                            }),
-                        });
-                    }
-                }
+                setTimeout(() => {
+                    this.u2f.init(providerData);
+                }, 500);
                 break;
             case TwoFactorProviderType.Duo:
             case TwoFactorProviderType.OrganizationDuo:
