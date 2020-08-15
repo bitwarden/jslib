@@ -3,11 +3,11 @@ import {
     moveItemInArray,
 } from '@angular/cdk/drag-drop';
 import {
+    Directive,
     EventEmitter,
     Input,
     OnInit,
     Output,
-    Directive,
 } from '@angular/core';
 
 import { CipherType } from '../../enums/cipherType';

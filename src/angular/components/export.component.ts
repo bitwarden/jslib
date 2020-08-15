@@ -1,7 +1,7 @@
 import {
+    Directive,
     EventEmitter,
     Output,
-    Directive,
 } from '@angular/core';
 
 import { CryptoService } from '../../abstractions/crypto.service';

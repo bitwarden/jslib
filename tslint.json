@@ -38,6 +38,7 @@
     "no-empty": [ true, "allow-empty-catch" ],
     "object-literal-sort-keys": false,
     "object-literal-shorthand": [ true, "never" ],
+    "ordered-imports": true,
     "prefer-for-of": false,
     "quotemark": [ true, "single" ],
     "whitespace": [

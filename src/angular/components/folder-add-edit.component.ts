@@ -1,9 +1,9 @@
 import {
+    Directive,
     EventEmitter,
     Input,
     OnInit,
     Output,
-    Directive,
 } from '@angular/core';
 
 import { FolderService } from '../../abstractions/folder.service';

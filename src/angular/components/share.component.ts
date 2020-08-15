@@ -1,9 +1,9 @@
 import {
+    Directive,
     EventEmitter,
     Input,
     OnInit,
     Output,
-    Directive,
 } from '@angular/core';
 
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';

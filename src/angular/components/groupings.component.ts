@@ -1,8 +1,8 @@
 import {
+    Directive,
     EventEmitter,
     Input,
     Output,
-    Directive,
 } from '@angular/core';
 
 import { CipherType } from '../../enums/cipherType';

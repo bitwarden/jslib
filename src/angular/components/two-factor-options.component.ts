@@ -1,8 +1,8 @@
 import {
+    Directive,
     EventEmitter,
     OnInit,
     Output,
-    Directive,
 } from '@angular/core';
 import { Router } from '@angular/router';
 

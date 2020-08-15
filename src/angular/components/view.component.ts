@@ -1,12 +1,12 @@
 import {
     ChangeDetectorRef,
+    Directive,
     EventEmitter,
     Input,
     NgZone,
     OnDestroy,
     OnInit,
     Output,
-    Directive,
 } from '@angular/core';
 
 import { CipherType } from '../../enums/cipherType';

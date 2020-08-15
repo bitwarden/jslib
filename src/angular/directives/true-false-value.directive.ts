@@ -8,8 +8,8 @@ import {
 } from '@angular/core';
 import {
     ControlValueAccessor,
-    NG_VALUE_ACCESSOR,
     NgControl,
+    NG_VALUE_ACCESSOR,
 } from '@angular/forms';
 
 // ref: https://juristr.com/blog/2018/02/ng-true-value-directive/

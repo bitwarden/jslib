@@ -1,7 +1,7 @@
 import {
+    Directive,
     EventEmitter,
     Output,
-    Directive,
 } from '@angular/core';
 
 import { EnvironmentService } from '../../abstractions/environment.service';

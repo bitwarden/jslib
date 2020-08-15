@@ -1,9 +1,9 @@
 import {
+    Directive,
     EventEmitter,
     Input,
     OnInit,
     Output,
-    Directive,
 } from '@angular/core';
 
 import { I18nService } from '../../abstractions/i18n.service';
