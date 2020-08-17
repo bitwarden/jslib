@@ -308,21 +308,24 @@ export class AuthService implements AuthServiceAbstraction {
             if (hashedPassword != null) {
                 await this.cryptoService.setKeyHash(hashedPassword);
             }
-            await this.cryptoService.setEncKey(tokenResponse.key);
 
-            // User doesn't have a key pair yet (old account), let's generate one for them
-            if (tokenResponse.privateKey == null) {
-                try {
-                    const keyPair = await this.cryptoService.makeKeyPair();
-                    await this.apiService.postAccountKeys(new KeysRequest(keyPair[0], keyPair[1].encryptedString));
-                    tokenResponse.privateKey = keyPair[1].encryptedString;
-                } catch (e) {
-                    // tslint:disable-next-line
-                    console.error(e);
+            if (code == null || tokenResponse.key != null) {
+                await this.cryptoService.setEncKey(tokenResponse.key);
+
+                // User doesn't have a key pair yet (old account), let's generate one for them
+                if (tokenResponse.privateKey == null) {
+                    try {
+                        const keyPair = await this.cryptoService.makeKeyPair();
+                        await this.apiService.postAccountKeys(new KeysRequest(keyPair[0], keyPair[1].encryptedString));
+                        tokenResponse.privateKey = keyPair[1].encryptedString;
+                    } catch (e) {
+                        // tslint:disable-next-line
+                        console.error(e);
+                    }
                 }
-            }
 
-            await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
+                await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
+            }
         }
 
         if (this.vaultTimeoutService != null) {
