@@ -1,5 +1,6 @@
 import {
     ChangeDetectorRef,
+    Directive,
     EventEmitter,
     Input,
     NgZone,
@@ -30,6 +31,7 @@ import { BroadcasterService } from '../services/broadcaster.service';
 
 const BroadcasterSubscriptionId = 'ViewComponent';
 
+@Directive()
 export class ViewComponent implements OnDestroy, OnInit {
     @Input() cipherId: string;
     @Output() onEditCipher = new EventEmitter<CipherView>();

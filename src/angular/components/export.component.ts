@@ -1,4 +1,5 @@
 import {
+    Directive,
     EventEmitter,
     Output,
 } from '@angular/core';
@@ -10,6 +11,7 @@ import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { EventType } from '../../enums/eventType';
 
+@Directive()
 export class ExportComponent {
     @Output() onSaved = new EventEmitter();
 

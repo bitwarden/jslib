@@ -1,4 +1,5 @@
 import {
+    Directive,
     EventEmitter,
     Input,
     OnInit,
@@ -16,6 +17,7 @@ import { Cipher } from '../../models/domain/cipher';
 import { AttachmentView } from '../../models/view/attachmentView';
 import { CipherView } from '../../models/view/cipherView';
 
+@Directive()
 export class AttachmentsComponent implements OnInit {
     @Input() cipherId: string;
     @Output() onUploadedAttachment = new EventEmitter();

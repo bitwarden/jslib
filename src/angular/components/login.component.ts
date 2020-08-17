@@ -1,4 +1,5 @@
 import {
+    Directive,
     Input,
     OnInit,
 } from '@angular/core';
@@ -25,6 +26,7 @@ const Keys = {
     rememberEmail: 'rememberEmail',
 };
 
+@Directive()
 export class LoginComponent implements OnInit {
     @Input() email: string = '';
     @Input() rememberEmail = true;

@@ -1,4 +1,5 @@
 import {
+    Directive,
     EventEmitter,
     Input,
     Output,
@@ -18,6 +19,7 @@ import { UserService } from '../../abstractions/user.service';
 
 import { ConstantsService } from '../../services/constants.service';
 
+@Directive()
 export class GroupingsComponent {
     @Input() showFolders = true;
     @Input() showCollections = true;

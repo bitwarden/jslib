@@ -1,4 +1,5 @@
 import {
+    Directive,
     EventEmitter,
     Input,
     OnInit,
@@ -11,6 +12,7 @@ import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 import { FolderView } from '../../models/view/folderView';
 
+@Directive()
 export class FolderAddEditComponent implements OnInit {
     @Input() folderId: string;
     @Output() onSavedFolder = new EventEmitter<FolderView>();

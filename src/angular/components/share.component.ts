@@ -1,4 +1,5 @@
 import {
+    Directive,
     EventEmitter,
     Input,
     OnInit,
@@ -19,6 +20,7 @@ import { CollectionView } from '../../models/view/collectionView';
 
 import { Utils } from '../../misc/utils';
 
+@Directive()
 export class ShareComponent implements OnInit {
     @Input() cipherId: string;
     @Input() organizationId: string;

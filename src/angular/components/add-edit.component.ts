@@ -3,6 +3,7 @@ import {
     moveItemInArray,
 } from '@angular/cdk/drag-drop';
 import {
+    Directive,
     EventEmitter,
     Input,
     OnInit,
@@ -41,6 +42,7 @@ import { SecureNoteView } from '../../models/view/secureNoteView';
 
 import { Utils } from '../../misc/utils';
 
+@Directive()
 export class AddEditComponent implements OnInit {
     @Input() cloneMode: boolean = false;
     @Input() folderId: string = null;

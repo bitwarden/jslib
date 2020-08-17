@@ -1,4 +1,5 @@
 import {
+    Directive,
     EventEmitter,
     Input,
     OnInit,
@@ -11,6 +12,7 @@ import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 import { PasswordGeneratorPolicyOptions } from '../../models/domain/passwordGeneratorPolicyOptions';
 
+@Directive()
 export class PasswordGeneratorComponent implements OnInit {
     @Input() showSelect: boolean = false;
     @Output() onSelected = new EventEmitter<string>();

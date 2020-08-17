@@ -1,4 +1,5 @@
 import {
+    Directive,
     EventEmitter,
     Input,
     Output,
@@ -8,6 +9,7 @@ import { SearchService } from '../../abstractions/search.service';
 
 import { CipherView } from '../../models/view/cipherView';
 
+@Directive()
 export class CiphersComponent {
     @Input() activeCipherId: string = null;
     @Output() onCipherClicked = new EventEmitter<CipherView>();

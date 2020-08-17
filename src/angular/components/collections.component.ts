@@ -1,4 +1,5 @@
 import {
+    Directive,
     EventEmitter,
     Input,
     OnInit,
@@ -15,6 +16,7 @@ import { CollectionView } from '../../models/view/collectionView';
 
 import { Cipher } from '../../models/domain/cipher';
 
+@Directive()
 export class CollectionsComponent implements OnInit {
     @Input() cipherId: string;
     @Input() allowSelectNone = false;

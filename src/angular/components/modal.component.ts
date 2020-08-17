@@ -20,7 +20,7 @@ export class ModalComponent implements OnDestroy {
     @Output() onClosed = new EventEmitter();
     @Output() onShow = new EventEmitter();
     @Output() onShown = new EventEmitter();
-    @ViewChild('container', { read: ViewContainerRef }) container: ViewContainerRef;
+    @ViewChild('container', { read: ViewContainerRef, static: true }) container: ViewContainerRef;
     parentContainer: ViewContainerRef = null;
     fade: boolean = true;
 
