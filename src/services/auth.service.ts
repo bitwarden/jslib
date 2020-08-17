@@ -309,6 +309,7 @@ export class AuthService implements AuthServiceAbstraction {
                 await this.cryptoService.setKeyHash(hashedPassword);
             }
 
+            // Skip this step during SSO new user flow. No key is returned from server.
             if (code == null || tokenResponse.key != null) {
                 await this.cryptoService.setEncKey(tokenResponse.key);
 
