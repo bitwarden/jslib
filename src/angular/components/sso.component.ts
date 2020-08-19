@@ -30,7 +30,7 @@ export class SsoComponent {
 
     protected twoFactorRoute = '2fa';
     protected successRoute = 'lock';
-    protected changePasswordRoute = 'change-password';
+    protected changePasswordRoute = 'set-password';
     protected clientId: string;
     protected redirectUri: string;
     protected state: string;
