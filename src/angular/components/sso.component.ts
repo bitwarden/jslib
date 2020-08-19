@@ -1,4 +1,4 @@
-import {
+ActivatedRoute,
     ActivatedRoute,
     Router,
 } from '@angular/router';
@@ -35,6 +35,7 @@ export class SsoComponent {
     protected redirectUri: string;
     protected state: string;
     protected codeChallenge: string;
+    protected returnUri: string;
 
     constructor(protected authService: AuthService, protected router: Router,
         protected i18nService: I18nService, protected route: ActivatedRoute,
@@ -85,6 +86,10 @@ export class SsoComponent {
         }
         if (state == null) {
             state = await this.passwordGenerationService.generatePassword(passwordOptions);
+            if (this.returnUri) {
+                state += `_returnUri='${this.returnUri}'`;
+            }
+
             await this.storageService.save(ConstantsService.ssoStateKey, state);
         }
 
