@@ -36,6 +36,7 @@ export class SsoComponent {
     protected state: string;
     protected codeChallenge: string;
     protected returnUri: string;
+    protected userIdentifier: string;
 
     constructor(protected authService: AuthService, protected router: Router,
         protected i18nService: I18nService, protected route: ActivatedRoute,
@@ -93,12 +94,15 @@ export class SsoComponent {
             await this.storageService.save(ConstantsService.ssoStateKey, state);
         }
 
-        const authorizeUrl = this.apiService.identityBaseUrl + '/connect/authorize?' +
+        let authorizeUrl = this.apiService.identityBaseUrl + '/connect/authorize?' +
             'client_id=' + this.clientId + '&redirect_uri=' + encodeURIComponent(this.redirectUri) + '&' +
             'response_type=code&scope=api offline_access&' +
             'state=' + state + '&code_challenge=' + codeChallenge + '&' +
             'code_challenge_method=S256&response_mode=query&' +
             'domain_hint=' + encodeURIComponent(this.identifier);
+        if (this.userIdentifier) {
+            authorizeUrl += '&user_identifier=' + this.userIdentifier;
+        }
         this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
     }
 
