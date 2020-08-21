@@ -17,6 +17,7 @@ export class Organization {
     use2fa: boolean;
     useApi: boolean;
     useBusinessPortal: boolean;
+    useSso: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
     seats: number;
@@ -43,6 +44,7 @@ export class Organization {
         this.use2fa = obj.use2fa;
         this.useApi = obj.useApi;
         this.useBusinessPortal = obj.useBusinessPortal;
+        this.useSso = obj.useSso;
         this.selfHost = obj.selfHost;
         this.usersGetPremium = obj.usersGetPremium;
         this.seats = obj.seats;
