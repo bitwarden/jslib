@@ -1,17 +1,11 @@
 import { OnInit } from '@angular/core';
 
-import { Router } from '@angular/router';
-
-import { ApiService } from '../../abstractions/api.service';
-import { CipherService } from '../../abstractions/cipher.service';
 import { CryptoService } from '../../abstractions/crypto.service';
-import { FolderService } from '../../abstractions/folder.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { MessagingService } from '../../abstractions/messaging.service';
 import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { PolicyService } from '../../abstractions/policy.service';
-import { SyncService } from '../../abstractions/sync.service';
 import { UserService } from '../../abstractions/user.service';
 
 import { CipherString } from '../../models/domain/cipherString';
@@ -33,12 +27,10 @@ export class ChangePasswordComponent implements OnInit {
     private masterPasswordStrengthTimeout: any;
     private email: string;
 
-    constructor(protected apiService: ApiService, protected i18nService: I18nService,
-        protected cryptoService: CryptoService, protected messagingService: MessagingService,
-        protected userService: UserService, protected passwordGenerationService: PasswordGenerationService,
-        protected platformUtilsService: PlatformUtilsService, protected folderService: FolderService,
-        protected cipherService: CipherService, protected syncService: SyncService,
-        protected policyService: PolicyService, protected router: Router) { }
+    constructor(protected i18nService: I18nService, protected cryptoService: CryptoService,
+        protected messagingService: MessagingService, protected userService: UserService,
+        protected passwordGenerationService: PasswordGenerationService,
+        protected platformUtilsService: PlatformUtilsService, protected policyService: PolicyService) { }
 
     async ngOnInit() {
         this.email = await this.userService.getEmail();
