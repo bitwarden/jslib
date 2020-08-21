@@ -348,6 +348,10 @@ export class ApiService implements ApiServiceAbstraction {
         return r as string;
     }
 
+    async deleteSsoUser(organizationId: string): Promise<any> {
+        return this.send('DELETE', 'accounts/sso/' + organizationId, null, true, false);
+    }
+
     // Folder APIs
 
     async getFolder(id: string): Promise<FolderResponse> {
@@ -708,12 +712,6 @@ export class ApiService implements ApiServiceAbstraction {
     async putSettingsDomains(request: UpdateDomainsRequest): Promise<DomainsResponse> {
         const r = await this.send('PUT', '/settings/domains', request, true, true);
         return new DomainsResponse(r);
-    }
-
-    // SSO User APIs
-
-    async deleteSsoUser(organizationId: string): Promise<any> {
-        return this.send('DELETE', '/sso-user/' + organizationId, null, true, false);
     }
 
     // Sync APIs
