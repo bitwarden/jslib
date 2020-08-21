@@ -22,6 +22,8 @@ export class Organization {
     seats: number;
     maxCollections: number;
     maxStorageGb?: number;
+    ssoBound: boolean;
+    identifier: string;
 
     constructor(obj?: OrganizationData) {
         if (obj == null) {
@@ -46,6 +48,8 @@ export class Organization {
         this.seats = obj.seats;
         this.maxCollections = obj.maxCollections;
         this.maxStorageGb = obj.maxStorageGb;
+        this.ssoBound = obj.ssoBound;
+        this.identifier = obj.identifier;
     }
 
     get canAccess() {
