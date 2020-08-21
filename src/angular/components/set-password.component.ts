@@ -1,18 +1,12 @@
-import {
-    ActivatedRoute,
-    Router,
-} from '@angular/router';
+import { Router } from '@angular/router';
 
 import { ApiService } from '../../abstractions/api.service';
-import { CipherService } from '../../abstractions/cipher.service';
 import { CryptoService } from '../../abstractions/crypto.service';
-import { FolderService } from '../../abstractions/folder.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { MessagingService } from '../../abstractions/messaging.service';
 import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { PolicyService } from '../../abstractions/policy.service';
-import { SyncService } from '../../abstractions/sync.service';
 import { UserService } from '../../abstractions/user.service';
 
 import { CipherString } from '../../models/domain/cipherString';
@@ -32,14 +26,12 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
     onSuccessfulChangePassword: () => Promise<any>;
     successRoute = 'vault';
 
-    constructor(apiService: ApiService, i18nService: I18nService,
-        cryptoService: CryptoService, messagingService: MessagingService,
+    constructor(i18nService: I18nService, cryptoService: CryptoService, messagingService: MessagingService,
         userService: UserService, passwordGenerationService: PasswordGenerationService,
-        platformUtilsService: PlatformUtilsService, folderService: FolderService,
-        cipherService: CipherService, syncService: SyncService,
-        policyService: PolicyService, router: Router, private route: ActivatedRoute) {
-        super(apiService, i18nService, cryptoService, messagingService, userService, passwordGenerationService,
-            platformUtilsService, folderService, cipherService, syncService, policyService, router);
+        platformUtilsService: PlatformUtilsService, policyService: PolicyService, private router: Router,
+        private apiService: ApiService) {
+        super(i18nService, cryptoService, messagingService, userService, passwordGenerationService,
+            platformUtilsService, policyService);
     }
 
     async setupSubmitActions() {
