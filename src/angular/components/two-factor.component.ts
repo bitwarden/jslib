@@ -2,7 +2,11 @@ import {
     OnDestroy,
     OnInit,
 } from '@angular/core';
-import { Router } from '@angular/router';
+
+import {
+    ActivatedRoute,
+    Router,
+} from '@angular/router';
 
 import { DeviceType } from '../../enums/deviceType';
 import { TwoFactorProviderType } from '../../enums/twoFactorProviderType';
@@ -48,7 +52,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         protected i18nService: I18nService, protected apiService: ApiService,
         protected platformUtilsService: PlatformUtilsService, protected win: Window,
         protected environmentService: EnvironmentService, protected stateService: StateService,
-        protected storageService: StorageService) {
+        protected storageService: StorageService, protected route: ActivatedRoute) {
         this.u2fSupported = this.platformUtilsService.supportsU2f(win);
     }
 
@@ -59,8 +63,18 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             return;
         }
 
+        const queryParamsSub = this.route.queryParams.subscribe((qParams) => {
+            if (qParams.resetMasterPassword != null) {
+                this.resetMasterPassword = qParams.resetMasterPassword;
+            }
+
+            if (queryParamsSub != null) {
+                queryParamsSub.unsubscribe();
+            }
+        });
+
         if (this.authService.authingWithSso()) {
-            this.successRoute = this.resetMasterPassword ? 'reset-master-password' : 'lock';
+            this.successRoute = this.resetMasterPassword ? 'set-password' : 'lock';
         }
 
         if (this.initU2f && this.win != null && this.u2fSupported) {
