@@ -27,7 +27,6 @@ export class ProfileOrganizationResponse extends BaseResponse {
     ssoBound: boolean;
     identifier: string;
 
-
     constructor(response: any) {
         super(response);
         this.id = this.getResponseProperty('Id');
