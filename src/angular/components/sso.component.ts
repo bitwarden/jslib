@@ -36,7 +36,16 @@ export class SsoComponent {
     protected state: string;
     protected codeChallenge: string;
     protected returnUri: string;
-    protected userIdentifier: string;
+    protected linkLoggedInUser: boolean;
+
+    private passwordOptions: any = {
+        type: 'password',
+        length: 64,
+        uppercase: true,
+        lowercase: true,
+        numbers: true,
+        special: false,
+    };
 
     constructor(protected authService: AuthService, protected router: Router,
         protected i18nService: I18nService, protected route: ActivatedRoute,
@@ -68,41 +77,41 @@ export class SsoComponent {
         });
     }
 
-    async submit() {
-        const passwordOptions: any = {
-            type: 'password',
-            length: 64,
-            uppercase: true,
-            lowercase: true,
-            numbers: true,
-            special: false,
-        };
+    async buildAuthorizeUrl(): Promise<string> {
         let codeChallenge = this.codeChallenge;
         let state = this.state;
         if (codeChallenge == null) {
-            const codeVerifier = await this.passwordGenerationService.generatePassword(passwordOptions);
+            const codeVerifier = await this.passwordGenerationService.generatePassword(this.passwordOptions);
             const codeVerifierHash = await this.cryptoFunctionService.hash(codeVerifier, 'sha256');
             codeChallenge = Utils.fromBufferToUrlB64(codeVerifierHash);
             await this.storageService.save(ConstantsService.ssoCodeVerifierKey, codeVerifier);
         }
+
         if (state == null) {
-            state = await this.passwordGenerationService.generatePassword(passwordOptions);
+            state = await this.passwordGenerationService.generatePassword(this.passwordOptions);
             if (this.returnUri) {
                 state += `_returnUri='${this.returnUri}'`;
             }
 
             await this.storageService.save(ConstantsService.ssoStateKey, state);
         }
-
         let authorizeUrl = this.apiService.identityBaseUrl + '/connect/authorize?' +
             'client_id=' + this.clientId + '&redirect_uri=' + encodeURIComponent(this.redirectUri) + '&' +
             'response_type=code&scope=api offline_access&' +
             'state=' + state + '&code_challenge=' + codeChallenge + '&' +
             'code_challenge_method=S256&response_mode=query&' +
             'domain_hint=' + encodeURIComponent(this.identifier);
-        if (this.userIdentifier) {
-            authorizeUrl += '&user_identifier=' + this.userIdentifier;
+
+        if (this.linkLoggedInUser) {
+            const userIdentifier = await this.apiService.getSsoUserIdentifier();
+            authorizeUrl += `&user_identifier=${userIdentifier}`;
         }
+
+        return authorizeUrl;
+    }
+
+    async submit() {
+        const authorizeUrl = await this.buildAuthorizeUrl();
         this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
     }
 

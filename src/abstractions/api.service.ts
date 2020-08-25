@@ -294,6 +294,7 @@ export abstract class ApiService {
     postEventsCollect: (request: EventRequest[]) => Promise<any>;
 
     deleteSsoUser: (organizationId: string) => Promise<any>;
+    getSsoUserIdentifier: () => Promise<string>;
 
     getUserPublicKey: (id: string) => Promise<UserKeyResponse>;
 
