@@ -95,6 +95,7 @@ export class SsoComponent {
 
             await this.storageService.save(ConstantsService.ssoStateKey, state);
         }
+
         let authorizeUrl = this.apiService.identityBaseUrl + '/connect/authorize?' +
             'client_id=' + this.clientId + '&redirect_uri=' + encodeURIComponent(this.redirectUri) + '&' +
             'response_type=code&scope=api offline_access&' +
