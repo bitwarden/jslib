@@ -201,8 +201,8 @@ export class LoginCommand {
             }
 
             if (response.resetMasterPassword) {
-                return Response.error('In order to login with SSO from the CLI, you must first initiate the same' +
-                    ' process through the web vault to set a master password.');
+                return Response.error('In order to log in with SSO from the CLI, you must first log in' +
+                    ' through the web vault to set your master password.');
             }
 
             if (this.success != null) {
