@@ -105,7 +105,7 @@ export class SsoComponent {
 
         if (this.linkLoggedInUser) {
             const userIdentifier = await this.apiService.getSsoUserIdentifier();
-            authorizeUrl += `&user_identifier=${userIdentifier}`;
+            authorizeUrl += `&user_identifier=${encodeURIComponent(userIdentifier)}`;
         }
 
         return authorizeUrl;
