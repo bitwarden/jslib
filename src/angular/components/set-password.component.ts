@@ -21,7 +21,7 @@ import { ChangePasswordComponent as BaseChangePasswordComponent } from './change
 import { KdfType } from '../../enums/kdfType';
 
 export class SetPasswordComponent extends BaseChangePasswordComponent {
-    loadingSync: boolean = true;
+    syncLoading: boolean = true;
     showPassword: boolean = false;
     hint: string = '';
 
@@ -37,8 +37,8 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
     }
 
     async ngOnInit() {
-
         await this.syncService.fullSync(true);
+        this.syncLoading = false;
         super.ngOnInit();
     }
 
