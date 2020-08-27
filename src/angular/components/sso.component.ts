@@ -36,7 +36,6 @@ export class SsoComponent {
     protected state: string;
     protected codeChallenge: string;
 
-
     constructor(protected authService: AuthService, protected router: Router,
         protected i18nService: I18nService, protected route: ActivatedRoute,
         protected storageService: StorageService, protected stateService: StateService,
