@@ -35,17 +35,7 @@ export class SsoComponent {
     protected redirectUri: string;
     protected state: string;
     protected codeChallenge: string;
-    protected returnUri: string;
-    protected linkLoggedInUser: boolean;
 
-    private passwordOptions: any = {
-        type: 'password',
-        length: 64,
-        uppercase: true,
-        lowercase: true,
-        numbers: true,
-        special: false,
-    };
 
     constructor(protected authService: AuthService, protected router: Router,
         protected i18nService: I18nService, protected route: ActivatedRoute,
@@ -77,20 +67,35 @@ export class SsoComponent {
         });
     }
 
-    async buildAuthorizeUrl(): Promise<string> {
+    async submit(returnUri?: string, includeUserIdentifier?: boolean) {
+        const authorizeUrl = await this.buildAuthorizeUrl(returnUri, includeUserIdentifier);
+        this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
+    }
+
+    protected async buildAuthorizeUrl(returnUri?: string, includeUserIdentifier?: boolean): Promise<string> {
         let codeChallenge = this.codeChallenge;
         let state = this.state;
+
+        const passwordOptions: any = {
+            type: 'password',
+            length: 64,
+            uppercase: true,
+            lowercase: true,
+            numbers: true,
+            special: false,
+        };
+
         if (codeChallenge == null) {
-            const codeVerifier = await this.passwordGenerationService.generatePassword(this.passwordOptions);
+            const codeVerifier = await this.passwordGenerationService.generatePassword(passwordOptions);
             const codeVerifierHash = await this.cryptoFunctionService.hash(codeVerifier, 'sha256');
             codeChallenge = Utils.fromBufferToUrlB64(codeVerifierHash);
             await this.storageService.save(ConstantsService.ssoCodeVerifierKey, codeVerifier);
         }
 
         if (state == null) {
-            state = await this.passwordGenerationService.generatePassword(this.passwordOptions);
-            if (this.returnUri) {
-                state += `_returnUri='${this.returnUri}'`;
+            state = await this.passwordGenerationService.generatePassword(passwordOptions);
+            if (returnUri) {
+                state += `_returnUri='${returnUri}'`;
             }
 
             await this.storageService.save(ConstantsService.ssoStateKey, state);
@@ -103,17 +108,12 @@ export class SsoComponent {
             'code_challenge_method=S256&response_mode=query&' +
             'domain_hint=' + encodeURIComponent(this.identifier);
 
-        if (this.linkLoggedInUser) {
+        if (includeUserIdentifier) {
             const userIdentifier = await this.apiService.getSsoUserIdentifier();
             authorizeUrl += `&user_identifier=${encodeURIComponent(userIdentifier)}`;
         }
 
         return authorizeUrl;
-    }
-
-    async submit() {
-        const authorizeUrl = await this.buildAuthorizeUrl();
-        this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
     }
 
     private async logIn(code: string, codeVerifier: string) {
