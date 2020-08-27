@@ -7,6 +7,7 @@ import { MessagingService } from '../../abstractions/messaging.service';
 import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { PolicyService } from '../../abstractions/policy.service';
+import { SyncService } from '../../abstractions/sync.service';
 import { UserService } from '../../abstractions/user.service';
 
 import { CipherString } from '../../models/domain/cipherString';
@@ -20,6 +21,7 @@ import { ChangePasswordComponent as BaseChangePasswordComponent } from './change
 import { KdfType } from '../../enums/kdfType';
 
 export class SetPasswordComponent extends BaseChangePasswordComponent {
+    syncLoading: boolean = true;
     showPassword: boolean = false;
     hint: string = '';
 
@@ -29,9 +31,15 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
     constructor(i18nService: I18nService, cryptoService: CryptoService, messagingService: MessagingService,
         userService: UserService, passwordGenerationService: PasswordGenerationService,
         platformUtilsService: PlatformUtilsService, policyService: PolicyService, private router: Router,
-        private apiService: ApiService) {
+        private apiService: ApiService, private syncService: SyncService) {
         super(i18nService, cryptoService, messagingService, userService, passwordGenerationService,
             platformUtilsService, policyService);
+    }
+
+    async ngOnInit() {
+        await this.syncService.fullSync(true);
+        this.syncLoading = false;
+        super.ngOnInit();
     }
 
     async setupSubmitActions() {

@@ -200,6 +200,11 @@ export class LoginCommand {
                 return Response.error('Login failed.');
             }
 
+            if (response.resetMasterPassword) {
+                return Response.error('In order to log in with SSO from the CLI, you must first log in' +
+                    ' through the web vault to set your master password.');
+            }
+
             if (this.success != null) {
                 const res = await this.success();
                 return Response.success(res);
