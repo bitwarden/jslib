@@ -293,6 +293,9 @@ export abstract class ApiService {
         start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
     postEventsCollect: (request: EventRequest[]) => Promise<any>;
 
+    deleteSsoUser: (organizationId: string) => Promise<any>;
+    getSsoUserIdentifier: () => Promise<string>;
+
     getUserPublicKey: (id: string) => Promise<UserKeyResponse>;
 
     getHibpBreach: (username: string) => Promise<BreachAccountResponse[]>;

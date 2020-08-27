@@ -14,6 +14,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
     use2fa: boolean;
     useApi: boolean;
     useBusinessPortal: boolean;
+    useSso: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
     seats: number;
@@ -23,6 +24,8 @@ export class ProfileOrganizationResponse extends BaseResponse {
     status: OrganizationUserStatusType;
     type: OrganizationUserType;
     enabled: boolean;
+    ssoBound: boolean;
+    identifier: string;
 
     constructor(response: any) {
         super(response);
@@ -36,6 +39,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
         this.use2fa = this.getResponseProperty('Use2fa');
         this.useApi = this.getResponseProperty('UseApi');
         this.useBusinessPortal = this.getResponseProperty('UseBusinessPortal');
+        this.useSso = this.getResponseProperty('UseSso');
         this.selfHost = this.getResponseProperty('SelfHost');
         this.usersGetPremium = this.getResponseProperty('UsersGetPremium');
         this.seats = this.getResponseProperty('Seats');
@@ -45,5 +49,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
         this.status = this.getResponseProperty('Status');
         this.type = this.getResponseProperty('Type');
         this.enabled = this.getResponseProperty('Enabled');
+        this.ssoBound = this.getResponseProperty('SsoBound');
+        this.identifier = this.getResponseProperty('Identifier');
     }
 }

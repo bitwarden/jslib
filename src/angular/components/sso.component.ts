@@ -66,7 +66,15 @@ export class SsoComponent {
         });
     }
 
-    async submit() {
+    async submit(returnUri?: string, includeUserIdentifier?: boolean) {
+        const authorizeUrl = await this.buildAuthorizeUrl(returnUri, includeUserIdentifier);
+        this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
+    }
+
+    protected async buildAuthorizeUrl(returnUri?: string, includeUserIdentifier?: boolean): Promise<string> {
+        let codeChallenge = this.codeChallenge;
+        let state = this.state;
+
         const passwordOptions: any = {
             type: 'password',
             length: 64,
@@ -75,26 +83,36 @@ export class SsoComponent {
             numbers: true,
             special: false,
         };
-        let codeChallenge = this.codeChallenge;
-        let state = this.state;
+
         if (codeChallenge == null) {
             const codeVerifier = await this.passwordGenerationService.generatePassword(passwordOptions);
             const codeVerifierHash = await this.cryptoFunctionService.hash(codeVerifier, 'sha256');
             codeChallenge = Utils.fromBufferToUrlB64(codeVerifierHash);
             await this.storageService.save(ConstantsService.ssoCodeVerifierKey, codeVerifier);
         }
+
         if (state == null) {
             state = await this.passwordGenerationService.generatePassword(passwordOptions);
+            if (returnUri) {
+                state += `_returnUri='${returnUri}'`;
+            }
+
             await this.storageService.save(ConstantsService.ssoStateKey, state);
         }
 
-        const authorizeUrl = this.apiService.identityBaseUrl + '/connect/authorize?' +
+        let authorizeUrl = this.apiService.identityBaseUrl + '/connect/authorize?' +
             'client_id=' + this.clientId + '&redirect_uri=' + encodeURIComponent(this.redirectUri) + '&' +
             'response_type=code&scope=api offline_access&' +
             'state=' + state + '&code_challenge=' + codeChallenge + '&' +
             'code_challenge_method=S256&response_mode=query&' +
             'domain_hint=' + encodeURIComponent(this.identifier);
-        this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
+
+        if (includeUserIdentifier) {
+            const userIdentifier = await this.apiService.getSsoUserIdentifier();
+            authorizeUrl += `&user_identifier=${encodeURIComponent(userIdentifier)}`;
+        }
+
+        return authorizeUrl;
     }
 
     private async logIn(code: string, codeVerifier: string) {
