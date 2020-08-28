@@ -1040,6 +1040,35 @@ export class ApiService implements ApiServiceAbstraction {
         return fetch(request);
     }
 
+    async preValidateSso(identifier: string): Promise<boolean> {
+
+        if (identifier == null || identifier === '') {
+            throw new Error('Organization Identifier was not provided.');
+        }
+        const headers = new Headers({
+            'Accept': 'application/json',
+            'Device-Type': this.deviceType,
+        });
+        if (this.customUserAgent != null) {
+            headers.set('User-Agent', this.customUserAgent);
+        }
+
+        const path = `/account/prevalidate?domainHint=${encodeURIComponent(identifier)}`;
+        const response = await this.fetch(new Request(this.identityBaseUrl + path, {
+            cache: 'no-store',
+            credentials: this.getCredentials(),
+            headers: headers,
+            method: 'GET',
+        }));
+
+        if (response.status === 200) {
+            return true;
+        } else {
+            const error = await this.handleError(response, false);
+            return Promise.reject(error);
+        }
+    }
+
     private async send(method: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string, body: any,
         authed: boolean, hasResponse: boolean): Promise<any> {
         const headers = new Headers({

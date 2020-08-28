@@ -67,8 +67,23 @@ export class SsoComponent {
     }
 
     async submit(returnUri?: string, includeUserIdentifier?: boolean) {
-        const authorizeUrl = await this.buildAuthorizeUrl(returnUri, includeUserIdentifier);
-        this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
+        if (await this.preValidate()) {
+            const authorizeUrl = await this.buildAuthorizeUrl(returnUri, includeUserIdentifier);
+            this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
+        }
+    }
+
+    async preValidate(): Promise<boolean> {
+        if (this.identifier == null || this.identifier === '') {
+            this.platformUtilsService.showToast('error', this.i18nService.t('ssoValidationFailed'),
+                this.i18nService.t('ssoIdentifierRequired'));
+            return false;
+        }
+        return await this.apiService.preValidateSso(this.identifier).catch((errorResponse) => {
+            const message = errorResponse?.response?.message || this.i18nService.t('errorOccurred');
+            this.platformUtilsService.showToast('error', this.i18nService.t('ssoValidationFailed'), message);
+            return false;
+        });
     }
 
     protected async buildAuthorizeUrl(returnUri?: string, includeUserIdentifier?: boolean): Promise<string> {
