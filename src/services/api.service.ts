@@ -7,6 +7,8 @@ import { TokenService } from '../abstractions/token.service';
 
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
+import { Utils } from '../misc/utils';
+
 import { BitPayInvoiceRequest } from '../models/request/bitPayInvoiceRequest';
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
 import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
@@ -111,7 +113,6 @@ import {
 } from '../models/response/twoFactorU2fResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
-import { Utils } from '../misc/utils';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
@@ -818,8 +819,8 @@ export class ApiService implements ApiServiceAbstraction {
         return new TwoFactorU2fResponse(r);
     }
 
-    async deleteTwoFactorU2f(request: UpdateTwoFactorU2fDeleteRequest): Promise<TwoFactorU2fResponse> {
-        const r = await this.send('DELETE', '/two-factor/u2f', request, true, true);
+    async deleteTwoFactorWebAuthn(request: UpdateTwoFactorU2fDeleteRequest): Promise<TwoFactorU2fResponse> {
+        const r = await this.send('DELETE', '/two-factor/webauthn', request, true, true);
         return new TwoFactorU2fResponse(r);
     }
 

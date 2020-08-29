@@ -1,3 +1,4 @@
+import { Utils } from '../../misc/utils';
 import { BaseResponse } from './baseResponse';
 
 export class TwoFactorU2fResponse extends BaseResponse {
@@ -41,12 +42,16 @@ export class ChallengeResponse extends BaseResponse implements PublicKeyCredenti
         this.attestation = this.getResponseProperty('attestation');
         this.authenticatorSelection = this.getResponseProperty('authenticatorSelection');
         this.challenge = new Buffer(this.getResponseProperty('challenge'), 'base64');
-        this.excludeCredentials = this.getResponseProperty('excludeCredentials');
+        this.excludeCredentials = this.getResponseProperty('excludeCredentials').map((c: any) => {
+            const base64 = c.id.replace(/-/g, '+').replace(/_/g, '/');
+            c.id = Utils.fromB64ToArray(base64).buffer;
+            return c;
+        });
         this.extensions = this.getResponseProperty('extensions');
         this.pubKeyCredParams = this.getResponseProperty('pubKeyCredParams');
         this.rp = this.getResponseProperty('rp');
         this.timeout = this.getResponseProperty('timeout');
-        
+
         const user = this.getResponseProperty('user');
         user.id = new Buffer(user.id, 'base64');
 

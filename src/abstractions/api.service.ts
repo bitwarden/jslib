@@ -254,7 +254,7 @@ export abstract class ApiService {
         request: UpdateTwoFactorDuoRequest) => Promise<TwoFactorDuoResponse>;
     putTwoFactorYubiKey: (request: UpdateTwoFactorYubioOtpRequest) => Promise<TwoFactorYubiKeyResponse>;
     putTwoFactorWebAuthn: (request: UpdateTwoFactorU2fRequest) => Promise<TwoFactorU2fResponse>;
-    deleteTwoFactorU2f: (request: UpdateTwoFactorU2fDeleteRequest) => Promise<TwoFactorU2fResponse>;
+    deleteTwoFactorWebAuthn: (request: UpdateTwoFactorU2fDeleteRequest) => Promise<TwoFactorU2fResponse>;
     putTwoFactorDisable: (request: TwoFactorProviderRequest) => Promise<TwoFactorProviderResponse>;
     putTwoFactorOrganizationDisable: (organizationId: string,
         request: TwoFactorProviderRequest) => Promise<TwoFactorProviderResponse>;
