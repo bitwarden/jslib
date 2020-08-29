@@ -1,4 +1,3 @@
-import { TimeoutValueType } from '../enums/timeoutType';
 import { CipherString } from '../models/domain/cipherString';
 
 export abstract class VaultTimeoutService {
@@ -7,7 +6,7 @@ export abstract class VaultTimeoutService {
     checkVaultTimeout: () => Promise<void>;
     lock: (allowSoftLock?: boolean) => Promise<void>;
     logOut: () => Promise<void>;
-    setVaultTimeoutOptions: (vaultTimeout: TimeoutValueType, vaultTimeoutAction: string) => Promise<void>;
+    setVaultTimeoutOptions: (vaultTimeout: number, vaultTimeoutAction: string) => Promise<void>;
     isPinLockSet: () => Promise<[boolean, boolean]>;
     clear: () => Promise<any>;
 }
