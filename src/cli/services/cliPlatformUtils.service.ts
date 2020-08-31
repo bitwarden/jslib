@@ -137,4 +137,11 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     authenticateBiometric(): Promise<boolean> {
         return Promise.resolve(false);
     }
+
+    getDefaultSystemTheme() {
+        return 'light' as 'light' | 'dark';
+    }
+
+    onDefaultSystemThemeChange() {
+    }
 }
