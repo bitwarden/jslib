@@ -21,10 +21,9 @@ import { AuthResult } from '../../models/domain/authResult';
 export class SsoComponent {
     identifier: string;
     loggingIn = false;
-    initiatingSso = false;
 
     formPromise: Promise<AuthResult>;
-    initiateSsoFormPromise: Promise<boolean>;
+    initiateSsoFormPromise: Promise<any>;
     onSuccessfulLogin: () => Promise<any>;
     onSuccessfulLoginNavigate: () => Promise<any>;
     onSuccessfulLoginTwoFactorNavigate: () => Promise<any>;
@@ -69,15 +68,10 @@ export class SsoComponent {
     }
 
     async submit(returnUri?: string, includeUserIdentifier?: boolean) {
-        this.initiatingSso = true;
-        try {
-            this.initiateSsoFormPromise = this.preValidate();
-            if (await this.initiateSsoFormPromise) {
-                const authorizeUrl = await this.buildAuthorizeUrl(returnUri, includeUserIdentifier);
-                this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
-            }
-        } finally {
-            this.initiatingSso = false;
+        this.initiateSsoFormPromise = this.preValidate();
+        if (await this.initiateSsoFormPromise) {
+            const authorizeUrl = await this.buildAuthorizeUrl(returnUri, includeUserIdentifier);
+            this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
         }
     }
 
@@ -87,11 +81,7 @@ export class SsoComponent {
                 this.i18nService.t('ssoIdentifierRequired'));
             return false;
         }
-        return await this.apiService.preValidateSso(this.identifier).catch((errorResponse) => {
-            const message = errorResponse?.response?.message || this.i18nService.t('errorOccurred');
-            this.platformUtilsService.showToast('error', this.i18nService.t('ssoValidationFailed'), message);
-            return false;
-        });
+        return await this.apiService.preValidateSso(this.identifier);
     }
 
     protected async buildAuthorizeUrl(returnUri?: string, includeUserIdentifier?: boolean): Promise<string> {
