@@ -21,8 +21,10 @@ import { AuthResult } from '../../models/domain/authResult';
 export class SsoComponent {
     identifier: string;
     loggingIn = false;
+    initiatingSso = false;
 
     formPromise: Promise<AuthResult>;
+    initiateSsoFormPromise: Promise<boolean>;
     onSuccessfulLogin: () => Promise<any>;
     onSuccessfulLoginNavigate: () => Promise<any>;
     onSuccessfulLoginTwoFactorNavigate: () => Promise<any>;
@@ -67,9 +69,15 @@ export class SsoComponent {
     }
 
     async submit(returnUri?: string, includeUserIdentifier?: boolean) {
-        if (await this.preValidate()) {
-            const authorizeUrl = await this.buildAuthorizeUrl(returnUri, includeUserIdentifier);
-            this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
+        this.initiatingSso = true;
+        try {
+            this.initiateSsoFormPromise = this.preValidate();
+            if (await this.initiateSsoFormPromise) {
+                const authorizeUrl = await this.buildAuthorizeUrl(returnUri, includeUserIdentifier);
+                this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
+            }
+        } finally {
+            this.initiatingSso = false;
         }
     }
 
