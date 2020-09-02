@@ -57,6 +57,14 @@ export const TwoFactorProviders = {
         sort: 4,
         premium: false,
     },
+    [TwoFactorProviderType.U2f]: {
+        type: TwoFactorProviderType.U2f,
+        name: null as string,
+        description: null as string,
+        priority: 4,
+        sort: 5,
+        premium: true,
+    },
     [TwoFactorProviderType.Email]: {
         type: TwoFactorProviderType.Email,
         name: null as string,
@@ -67,7 +75,7 @@ export const TwoFactorProviders = {
     },
     [TwoFactorProviderType.WebAuthn]: {
         type: TwoFactorProviderType.WebAuthn,
-        name: 'WebAuthn',
+        name: null as string,
         description: null as string,
         priority: 4,
         sort: 5,
@@ -102,12 +110,16 @@ export class AuthService implements AuthServiceAbstraction {
 
         TwoFactorProviders[TwoFactorProviderType.Duo].description = this.i18nService.t('duoDesc');
 
+        TwoFactorProviders[TwoFactorProviderType.U2f].name = this.i18nService.t('u2fTitle');
+        TwoFactorProviders[TwoFactorProviderType.U2f].description = this.i18nService.t('u2fDesc');
+
         TwoFactorProviders[TwoFactorProviderType.OrganizationDuo].name =
             'Duo (' + this.i18nService.t('organization') + ')';
         TwoFactorProviders[TwoFactorProviderType.OrganizationDuo].description =
             this.i18nService.t('duoOrganizationDesc');
 
-        TwoFactorProviders[TwoFactorProviderType.WebAuthn].description = this.i18nService.t('u2fDesc');
+        TwoFactorProviders[TwoFactorProviderType.WebAuthn].name = this.i18nService.t('webAuthnTitle');
+        TwoFactorProviders[TwoFactorProviderType.WebAuthn].description = this.i18nService.t('webAuthnDesc');
 
         TwoFactorProviders[TwoFactorProviderType.Yubikey].name = this.i18nService.t('yubiKeyTitle');
         TwoFactorProviders[TwoFactorProviderType.Yubikey].description = this.i18nService.t('yubiKeyDesc');

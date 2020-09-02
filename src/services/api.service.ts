@@ -63,6 +63,7 @@ import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoR
 import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEmailRequest';
 import { UpdateTwoFactorU2fDeleteRequest } from '../models/request/updateTwoFactorU2fDeleteRequest';
 import { UpdateTwoFactorU2fRequest } from '../models/request/updateTwoFactorU2fRequest';
+import { UpdateTwoFactorWebAuthnRequest } from '../models/request/updateTwoFactorWebAuthnRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
 import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
@@ -108,9 +109,10 @@ import { TwoFactorEmailResponse } from '../models/response/twoFactorEmailRespons
 import { TwoFactorProviderResponse } from '../models/response/twoFactorProviderResponse';
 import { TwoFactorRecoverResponse } from '../models/response/twoFactorRescoverResponse';
 import {
-    ChallengeResponse,
+    ChallengeResponse as U2fChallengeResponse,
     TwoFactorU2fResponse,
 } from '../models/response/twoFactorU2fResponse';
+import { ChallengeResponse as WebAuthnChallengeResponse } from '../models/response/twoFactorWebAuthnResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
@@ -758,14 +760,24 @@ export class ApiService implements ApiServiceAbstraction {
         return new TwoFactorYubiKeyResponse(r);
     }
 
+    async getTwoFactorU2f(request: PasswordVerificationRequest): Promise<TwoFactorU2fResponse> {
+        const r = await this.send('POST', '/two-factor/get-u2f', request, true, true);
+        return new TwoFactorU2fResponse(r);
+    }
+
+    async getTwoFactorU2fChallenge(request: PasswordVerificationRequest): Promise<U2fChallengeResponse> {
+        const r = await this.send('POST', '/two-factor/get-u2f-challenge', request, true, true);
+        return new U2fChallengeResponse(r);
+    }
+
     async getTwoFactorWebAuthn(request: PasswordVerificationRequest): Promise<TwoFactorU2fResponse> {
         const r = await this.send('POST', '/two-factor/get-webauthn', request, true, true);
         return new TwoFactorU2fResponse(r);
     }
 
-    async getTwoFactorWebAuthnChallenge(request: PasswordVerificationRequest): Promise<ChallengeResponse> {
+    async getTwoFactorWebAuthnChallenge(request: PasswordVerificationRequest): Promise<WebAuthnChallengeResponse> {
         const r = await this.send('POST', '/two-factor/get-webauthn-challenge', request, true, true);
-        return new ChallengeResponse(r);
+        return new WebAuthnChallengeResponse(r);
     }
 
     async getTwoFactorRecover(request: PasswordVerificationRequest): Promise<TwoFactorRecoverResponse> {
@@ -800,7 +812,17 @@ export class ApiService implements ApiServiceAbstraction {
         return new TwoFactorYubiKeyResponse(r);
     }
 
-    async putTwoFactorWebAuthn(request: UpdateTwoFactorU2fRequest): Promise<TwoFactorU2fResponse> {
+    async putTwoFactorU2f(request: UpdateTwoFactorU2fRequest): Promise<TwoFactorU2fResponse> {
+        const r = await this.send('PUT', '/two-factor/u2f', request, true, true);
+        return new TwoFactorU2fResponse(r);
+    }
+
+    async deleteTwoFactorU2f(request: UpdateTwoFactorU2fDeleteRequest): Promise<TwoFactorU2fResponse> {
+        const r = await this.send('DELETE', '/two-factor/u2f', request, true, true);
+        return new TwoFactorU2fResponse(r);
+    }
+
+    async putTwoFactorWebAuthn(request: UpdateTwoFactorWebAuthnRequest): Promise<TwoFactorU2fResponse> {
         const response = request.deviceResponse.response as AuthenticatorAttestationResponse;
         const data: any = Object.assign({}, request)
 

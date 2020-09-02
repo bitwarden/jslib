@@ -1,4 +1,3 @@
-import { Utils } from '../../misc/utils';
 import { BaseResponse } from './baseResponse';
 
 export class TwoFactorU2fResponse extends BaseResponse {
@@ -26,35 +25,17 @@ export class KeyResponse extends BaseResponse {
     }
 }
 
-export class ChallengeResponse extends BaseResponse implements PublicKeyCredentialCreationOptions {
-    attestation?: AttestationConveyancePreference;
-    authenticatorSelection?: AuthenticatorSelectionCriteria;
-    challenge: BufferSource;
-    excludeCredentials?: PublicKeyCredentialDescriptor[];
-    extensions?: AuthenticationExtensionsClientInputs;
-    pubKeyCredParams: PublicKeyCredentialParameters[];
-    rp: PublicKeyCredentialRpEntity;
-    timeout?: number;
-    user: PublicKeyCredentialUserEntity;
+export class ChallengeResponse extends BaseResponse {
+    userId: string;
+    appId: string;
+    challenge: string;
+    version: string;
 
     constructor(response: any) {
         super(response);
-        this.attestation = this.getResponseProperty('attestation');
-        this.authenticatorSelection = this.getResponseProperty('authenticatorSelection');
-        this.challenge = new Buffer(this.getResponseProperty('challenge'), 'base64');
-        this.excludeCredentials = this.getResponseProperty('excludeCredentials').map((c: any) => {
-            const base64 = c.id.replace(/-/g, '+').replace(/_/g, '/');
-            c.id = Utils.fromB64ToArray(base64).buffer;
-            return c;
-        });
-        this.extensions = this.getResponseProperty('extensions');
-        this.pubKeyCredParams = this.getResponseProperty('pubKeyCredParams');
-        this.rp = this.getResponseProperty('rp');
-        this.timeout = this.getResponseProperty('timeout');
-
-        const user = this.getResponseProperty('user');
-        user.id = new Buffer(user.id, 'base64');
-
-        this.user = user;
+        this.userId = this.getResponseProperty('UserId');
+        this.appId = this.getResponseProperty('AppId');
+        this.challenge = this.getResponseProperty('Challenge');
+        this.version = this.getResponseProperty('Version');
     }
 }
