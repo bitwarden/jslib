@@ -130,7 +130,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return remote.app.getVersion();
     }
 
-    supportsU2f(win: Window): boolean {
+    supportsWebAuthn(win: Window): boolean {
         // Not supported in Electron at this time.
         // ref: https://github.com/electron/electron/issues/3226
         return false;

@@ -1,4 +1,4 @@
-export class U2f {
+export class WebAuthn {
     private iframe: HTMLIFrameElement = null;
     private connectorLink: HTMLAnchorElement;
     private parseFunction = this.parseMessage.bind(this);
@@ -11,12 +11,12 @@ export class U2f {
     }
 
     init(data: any): void {
-        this.connectorLink.href = this.webVaultUrl + '/u2f-connector.html' +
+        this.connectorLink.href = this.webVaultUrl + '/webauthn-connector.html' +
             '?data=' + this.base64Encode(JSON.stringify(data)) +
             '&parent=' + encodeURIComponent(this.win.document.location.href) +
             '&v=1';
 
-        this.iframe = this.win.document.getElementById('u2f_iframe') as HTMLIFrameElement;
+        this.iframe = this.win.document.getElementById('webauthn_iframe') as HTMLIFrameElement;
         this.iframe.src = this.connectorLink.href;
 
         this.win.addEventListener('message', this.parseFunction, false);

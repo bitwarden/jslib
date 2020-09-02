@@ -4,7 +4,6 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { DeviceType } from '../../enums/deviceType';
 import { TwoFactorProviderType } from '../../enums/twoFactorProviderType';
 
 import { TwoFactorEmailRequest } from '../../models/request/twoFactorEmailRequest';
@@ -21,18 +20,18 @@ import { TwoFactorProviders } from '../../services/auth.service';
 import { ConstantsService } from '../../services/constants.service';
 
 import * as DuoWebSDK from 'duo_web_sdk';
-import { U2f } from '../../misc/u2f';
+import { WebAuthn } from '../../misc/webauthn';
 
 export class TwoFactorComponent implements OnInit, OnDestroy {
     token: string = '';
     remember: boolean = false;
-    u2fReady: boolean = false;
-    initU2f: boolean = true;
+    webAuthnReady: boolean = false;
+    initWebAuthn: boolean = true;
     providers = TwoFactorProviders;
     providerType = TwoFactorProviderType;
     selectedProviderType: TwoFactorProviderType = TwoFactorProviderType.Authenticator;
-    u2fSupported: boolean = false;
-    u2f: U2f = null;
+    webAuthnSupported: boolean = false;
+    webAuthn: WebAuthn = null;
     title: string = '';
     twoFactorEmail: string = null;
     formPromise: Promise<any>;
@@ -49,7 +48,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         protected platformUtilsService: PlatformUtilsService, protected win: Window,
         protected environmentService: EnvironmentService, protected stateService: StateService,
         protected storageService: StorageService) {
-        this.u2fSupported = this.platformUtilsService.supportsU2f(win);
+        this.webAuthnSupported = this.platformUtilsService.supportsWebAuthn(win);
     }
 
     async ngOnInit() {
@@ -63,7 +62,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             this.successRoute = this.resetMasterPassword ? 'reset-master-password' : 'lock';
         }
 
-        if (this.initU2f && this.win != null && this.u2fSupported) {
+        if (this.initWebAuthn && this.win != null && this.webAuthnSupported) {
             let customWebVaultUrl: string = null;
             if (this.environmentService.baseUrl != null) {
                 customWebVaultUrl = this.environmentService.baseUrl;
@@ -71,27 +70,25 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 customWebVaultUrl = this.environmentService.webVaultUrl;
             }
 
-            this.u2f = new U2f(this.win, customWebVaultUrl, (token: string) => {
-                debugger;
+            this.webAuthn = new WebAuthn(this.win, customWebVaultUrl, (token: string) => {
                 this.token = token;
                 this.submit();
             }, (error: string) => {
-                debugger;
                 this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), error);
             }, (info: string) => {
                 if (info === 'ready') {
-                    this.u2fReady = true;
+                    this.webAuthnReady = true;
                 }
             });
         }
 
-        this.selectedProviderType = this.authService.getDefaultTwoFactorProvider(this.u2fSupported);
+        this.selectedProviderType = this.authService.getDefaultTwoFactorProvider(this.webAuthnSupported);
         await this.init();
     }
 
     ngOnDestroy(): void {
         this.cleanupU2f();
-        this.u2f = null;
+        this.webAuthn = null;
     }
 
     async init() {
@@ -105,12 +102,12 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         const providerData = this.authService.twoFactorProvidersData.get(this.selectedProviderType);
         switch (this.selectedProviderType) {
             case TwoFactorProviderType.WebAuthn:
-                if (!this.u2fSupported || this.u2f == null) {
+                if (!this.webAuthnSupported || this.webAuthn == null) {
                     break;
                 }
 
                 setTimeout(() => {
-                    this.u2f.init(providerData);
+                    this.webAuthn.init(providerData);
                 }, 500);
                 break;
             case TwoFactorProviderType.Duo:
@@ -148,9 +145,9 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (this.selectedProviderType === TwoFactorProviderType.U2f) {
-            if (this.u2f != null) {
-                this.u2f.stop();
+        if (this.selectedProviderType === TwoFactorProviderType.WebAuthn) {
+            if (this.webAuthn != null) {
+                this.webAuthn.stop();
             } else {
                 return;
             }
@@ -174,8 +171,8 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 this.router.navigate([this.successRoute]);
             }
         } catch {
-            if (this.selectedProviderType === TwoFactorProviderType.U2f && this.u2f != null) {
-                this.u2f.start();
+            if (this.selectedProviderType === TwoFactorProviderType.U2f && this.webAuthn != null) {
+                this.webAuthn.start();
             }
         }
     }
@@ -203,9 +200,9 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     }
 
     private cleanupU2f() {
-        if (this.u2f != null) {
-            this.u2f.stop();
-            this.u2f.cleanup();
+        if (this.webAuthn != null) {
+            this.webAuthn.stop();
+            this.webAuthn.cleanup();
         }
     }
 }

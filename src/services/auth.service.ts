@@ -176,7 +176,7 @@ export class AuthService implements AuthServiceAbstraction {
             providers.push(TwoFactorProviders[TwoFactorProviderType.Duo]);
         }
 
-        if (this.twoFactorProvidersData.has(TwoFactorProviderType.WebAuthn) && this.platformUtilsService.supportsU2f(win)) {
+        if (this.twoFactorProvidersData.has(TwoFactorProviderType.WebAuthn) && this.platformUtilsService.supportsWebAuthn(win)) {
             providers.push(TwoFactorProviders[TwoFactorProviderType.WebAuthn]);
         }
 
