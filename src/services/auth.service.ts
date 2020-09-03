@@ -199,7 +199,7 @@ export class AuthService implements AuthServiceAbstraction {
         return providers;
     }
 
-    getDefaultTwoFactorProvider(u2fSupported: boolean): TwoFactorProviderType {
+    getDefaultTwoFactorProvider(webAuthnSupported: boolean): TwoFactorProviderType {
         if (this.twoFactorProvidersData == null) {
             return null;
         }
@@ -214,7 +214,10 @@ export class AuthService implements AuthServiceAbstraction {
         this.twoFactorProvidersData.forEach((value, type) => {
             const provider = (TwoFactorProviders as any)[type];
             if (provider != null && provider.priority > providerPriority) {
-                if (type === TwoFactorProviderType.U2f && !u2fSupported) {
+                if (type === TwoFactorProviderType.U2f) {
+                    return; // U2f is replaced with WebAuthn
+                }
+                if (type === TwoFactorProviderType.WebAuthn && !webAuthnSupported) {
                     return;
                 }
 

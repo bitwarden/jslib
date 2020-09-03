@@ -89,7 +89,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.cleanupU2f();
+        this.cleanupWebAuthn();
         this.webAuthn = null;
     }
 
@@ -99,7 +99,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.cleanupU2f();
+        this.cleanupWebAuthn();
         this.title = (TwoFactorProviders as any)[this.selectedProviderType].name;
         const providerData = this.authService.twoFactorProvidersData.get(this.selectedProviderType);
         switch (this.selectedProviderType) {
@@ -176,7 +176,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 this.router.navigate([this.successRoute]);
             }
         } catch {
-            if (this.selectedProviderType === TwoFactorProviderType.U2f && this.webAuthn != null) {
+            if (this.selectedProviderType === TwoFactorProviderType.WebAuthn && this.webAuthn != null) {
                 this.webAuthn.start();
             }
         }
@@ -204,7 +204,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         this.emailPromise = null;
     }
 
-    private cleanupU2f() {
+    private cleanupWebAuthn() {
         if (this.webAuthn != null) {
             this.webAuthn.stop();
             this.webAuthn.cleanup();
