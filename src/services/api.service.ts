@@ -352,6 +352,14 @@ export class ApiService implements ApiServiceAbstraction {
         return r as string;
     }
 
+    async deleteSsoUser(organizationId: string): Promise<any> {
+        return this.send('DELETE', '/accounts/sso/' + organizationId, null, true, false);
+    }
+
+    async getSsoUserIdentifier(): Promise<string> {
+        return this.send('GET', '/accounts/sso/user-identifier', null, true, true)
+    }
+
     // Folder APIs
 
     async getFolder(id: string): Promise<FolderResponse> {
@@ -697,13 +705,6 @@ export class ApiService implements ApiServiceAbstraction {
         return new ListResponse(r, PlanResponse);
     }
 
-    // Sync APIs
-
-    async getSync(): Promise<SyncResponse> {
-        const path = this.isDesktopClient || this.isWebClient ? '/sync?excludeDomains=true' : '/sync';
-        const r = await this.send('GET', path, null, true, true);
-        return new SyncResponse(r);
-    }
 
     async postImportDirectory(organizationId: string, request: ImportDirectoryRequest): Promise<any> {
         return this.send('POST', '/organizations/' + organizationId + '/import', request, true, false);
@@ -719,6 +720,14 @@ export class ApiService implements ApiServiceAbstraction {
     async putSettingsDomains(request: UpdateDomainsRequest): Promise<DomainsResponse> {
         const r = await this.send('PUT', '/settings/domains', request, true, true);
         return new DomainsResponse(r);
+    }
+
+    // Sync APIs
+
+    async getSync(): Promise<SyncResponse> {
+        const path = this.isDesktopClient || this.isWebClient ? '/sync?excludeDomains=true' : '/sync';
+        const r = await this.send('GET', path, null, true, true);
+        return new SyncResponse(r);
     }
 
     // Two-factor APIs

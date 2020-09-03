@@ -2,11 +2,14 @@ import {
     OnDestroy,
     OnInit,
 } from '@angular/core';
+
 import { Router } from '@angular/router';
 
 import { TwoFactorProviderType } from '../../enums/twoFactorProviderType';
 
 import { TwoFactorEmailRequest } from '../../models/request/twoFactorEmailRequest';
+
+import { AuthResult } from '../../models/domain';
 
 import { ApiService } from '../../abstractions/api.service';
 import { AuthService } from '../../abstractions/auth.service';
@@ -36,7 +39,6 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     twoFactorEmail: string = null;
     formPromise: Promise<any>;
     emailPromise: Promise<any>;
-    resetMasterPassword: boolean = false;
     onSuccessfulLogin: () => Promise<any>;
     onSuccessfulLoginNavigate: () => Promise<any>;
 
@@ -59,7 +61,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         }
 
         if (this.authService.authingWithSso()) {
-            this.successRoute = this.resetMasterPassword ? 'reset-master-password' : 'lock';
+            this.successRoute = 'lock';
         }
 
         if (this.initWebAuthn && this.win != null && this.webAuthnSupported) {
@@ -158,7 +160,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
 
         try {
             this.formPromise = this.authService.logInTwoFactor(this.selectedProviderType, this.token, this.remember);
-            await this.formPromise;
+            const response: AuthResult = await this.formPromise;
             const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
             await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
             if (this.onSuccessfulLogin != null) {
@@ -168,6 +170,9 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             if (this.onSuccessfulLoginNavigate != null) {
                 this.onSuccessfulLoginNavigate();
             } else {
+                if (response.resetMasterPassword) {
+                    this.successRoute = 'set-password';
+                }
                 this.router.navigate([this.successRoute]);
             }
         } catch {

@@ -72,6 +72,7 @@ import { SplashIdCsvImporter } from '../importers/splashIdCsvImporter';
 import { StickyPasswordXmlImporter } from '../importers/stickyPasswordXmlImporter';
 import { TrueKeyCsvImporter } from '../importers/truekeyCsvImporter';
 import { UpmCsvImporter } from '../importers/upmCsvImporter';
+import { YotiCsvImporter } from '../importers/yotiCsvImporter';
 import { ZohoVaultCsvImporter } from '../importers/zohoVaultCsvImporter';
 
 export class ImportService implements ImportServiceAbstraction {
@@ -131,6 +132,7 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'buttercupcsv', name: 'Buttercup (csv)' },
         { id: 'codebookcsv', name: 'Codebook (csv)' },
         { id: 'encryptrcsv', name: 'Encryptr (csv)' },
+        { id: 'yoticsv', name: 'Yoti (csv)' },
     ];
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -279,6 +281,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new CodebookCsvImporter();
             case 'encryptrcsv':
                 return new EncryptrCsvImporter();
+            case 'yoticsv':
+                return new YotiCsvImporter();
             default:
                 return null;
         }

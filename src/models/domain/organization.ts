@@ -17,11 +17,14 @@ export class Organization {
     use2fa: boolean;
     useApi: boolean;
     useBusinessPortal: boolean;
+    useSso: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
     seats: number;
     maxCollections: number;
     maxStorageGb?: number;
+    ssoBound: boolean;
+    identifier: string;
 
     constructor(obj?: OrganizationData) {
         if (obj == null) {
@@ -41,11 +44,14 @@ export class Organization {
         this.use2fa = obj.use2fa;
         this.useApi = obj.useApi;
         this.useBusinessPortal = obj.useBusinessPortal;
+        this.useSso = obj.useSso;
         this.selfHost = obj.selfHost;
         this.usersGetPremium = obj.usersGetPremium;
         this.seats = obj.seats;
         this.maxCollections = obj.maxCollections;
         this.maxStorageGb = obj.maxStorageGb;
+        this.ssoBound = obj.ssoBound;
+        this.identifier = obj.identifier;
     }
 
     get canAccess() {

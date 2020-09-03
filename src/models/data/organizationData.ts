@@ -17,11 +17,14 @@ export class OrganizationData {
     use2fa: boolean;
     useApi: boolean;
     useBusinessPortal: boolean;
+    useSso: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
     seats: number;
     maxCollections: number;
     maxStorageGb?: number;
+    ssoBound: boolean;
+    identifier: string;
 
     constructor(response: ProfileOrganizationResponse) {
         this.id = response.id;
@@ -37,10 +40,13 @@ export class OrganizationData {
         this.use2fa = response.use2fa;
         this.useApi = response.useApi;
         this.useBusinessPortal = response.useBusinessPortal;
+        this.useSso = response.useSso;
         this.selfHost = response.selfHost;
         this.usersGetPremium = response.usersGetPremium;
         this.seats = response.seats;
         this.maxCollections = response.maxCollections;
         this.maxStorageGb = response.maxStorageGb;
+        this.ssoBound = response.ssoBound;
+        this.identifier = response.identifier;
     }
 }

@@ -1,6 +1,6 @@
 import { CipherView } from '../view';
 
-const CacheTTL = 5000;
+const CacheTTL = 3000;
 
 export class SortedCiphersCache {
     private readonly sortedCiphersByUrl: Map<string, Ciphers> = new Map<string, Ciphers>();

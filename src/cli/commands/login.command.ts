@@ -200,6 +200,11 @@ export class LoginCommand {
                 return Response.error('Login failed.');
             }
 
+            if (response.resetMasterPassword) {
+                return Response.error('In order to log in with SSO from the CLI, you must first log in' +
+                    ' through the web vault to set your master password.');
+            }
+
             if (this.success != null) {
                 const res = await this.success();
                 return Response.success(res);
@@ -237,8 +242,10 @@ export class LoginCommand {
                 }
             });
             let foundPort = false;
-            const webUrl = this.environmentService.webVaultUrl == null ? 'https://vault.bitwarden.com' :
-                this.environmentService.webVaultUrl;
+            let webUrl = this.environmentService.getWebVaultUrl();
+            if (webUrl == null) {
+                webUrl = 'https://vault.bitwarden.com';
+            }
             for (let port = 8065; port <= 8070; port++) {
                 try {
                     this.ssoRedirectUri = 'http://localhost:' + port;
