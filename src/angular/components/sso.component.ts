@@ -77,7 +77,7 @@ export class SsoComponent {
 
         const passwordOptions: any = {
             type: 'password',
-            length: 43,
+            length: 64,
             uppercase: true,
             lowercase: true,
             numbers: true,
