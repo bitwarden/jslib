@@ -23,6 +23,7 @@ export class SsoComponent {
     loggingIn = false;
 
     formPromise: Promise<AuthResult>;
+    initiateSsoFormPromise: Promise<any>;
     onSuccessfulLogin: () => Promise<any>;
     onSuccessfulLoginNavigate: () => Promise<any>;
     onSuccessfulLoginTwoFactorNavigate: () => Promise<any>;
@@ -67,8 +68,20 @@ export class SsoComponent {
     }
 
     async submit(returnUri?: string, includeUserIdentifier?: boolean) {
-        const authorizeUrl = await this.buildAuthorizeUrl(returnUri, includeUserIdentifier);
-        this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
+        this.initiateSsoFormPromise = this.preValidate();
+        if (await this.initiateSsoFormPromise) {
+            const authorizeUrl = await this.buildAuthorizeUrl(returnUri, includeUserIdentifier);
+            this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
+        }
+    }
+
+    async preValidate(): Promise<boolean> {
+        if (this.identifier == null || this.identifier === '') {
+            this.platformUtilsService.showToast('error', this.i18nService.t('ssoValidationFailed'),
+                this.i18nService.t('ssoIdentifierRequired'));
+            return false;
+        }
+        return await this.apiService.preValidateSso(this.identifier);
     }
 
     protected async buildAuthorizeUrl(returnUri?: string, includeUserIdentifier?: boolean): Promise<string> {
