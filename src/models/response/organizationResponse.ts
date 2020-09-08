@@ -38,7 +38,8 @@ export class OrganizationResponse extends BaseResponse {
         this.businessCountry = this.getResponseProperty('BusinessCountry');
         this.businessTaxNumber = this.getResponseProperty('BusinessTaxNumber');
         this.billingEmail = this.getResponseProperty('BillingEmail');
-        this.plan = this.getResponseProperty('Plan');
+        const plan = this.getResponseProperty('Plan');
+        this.plan = plan == null ? null : new PlanResponse(plan);
         this.planType = this.getResponseProperty('PlanType');
         this.seats = this.getResponseProperty('Seats');
         this.maxCollections = this.getResponseProperty('MaxCollections');
