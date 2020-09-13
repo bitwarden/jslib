@@ -108,7 +108,7 @@ import { TwoFactorEmailResponse } from '../models/response/twoFactorEmailRespons
 import { TwoFactorProviderResponse } from '../models/response/twoFactorProviderResponse';
 import { TwoFactorRecoverResponse } from '../models/response/twoFactorRescoverResponse';
 import { TwoFactorWebAuthnResponse } from '../models/response/twoFactorWebAuthnResponse';
-import { ChallengeResponse as WebAuthnChallengeResponse } from '../models/response/twoFactorWebAuthnResponse';
+import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
@@ -770,9 +770,9 @@ export class ApiService implements ApiServiceAbstraction {
         return new TwoFactorWebAuthnResponse(r);
     }
 
-    async getTwoFactorWebAuthnChallenge(request: PasswordVerificationRequest): Promise<WebAuthnChallengeResponse> {
+    async getTwoFactorWebAuthnChallenge(request: PasswordVerificationRequest): Promise<ChallengeResponse> {
         const r = await this.send('POST', '/two-factor/get-webauthn-challenge', request, true, true);
-        return new WebAuthnChallengeResponse(r);
+        return new ChallengeResponse(r);
     }
 
     async getTwoFactorRecover(request: PasswordVerificationRequest): Promise<TwoFactorRecoverResponse> {

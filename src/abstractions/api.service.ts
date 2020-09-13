@@ -100,7 +100,7 @@ import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
 import { TwoFactorEmailResponse } from '../models/response/twoFactorEmailResponse';
 import { TwoFactorProviderResponse } from '../models/response/twoFactorProviderResponse';
 import { TwoFactorRecoverResponse } from '../models/response/twoFactorRescoverResponse';
-import { ChallengeResponse as WebAuthnChallengeResponse, TwoFactorWebAuthnResponse } from '../models/response/twoFactorWebAuthnResponse';
+import { ChallengeResponse, TwoFactorWebAuthnResponse } from '../models/response/twoFactorWebAuthnResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
@@ -241,7 +241,7 @@ export abstract class ApiService {
         request: PasswordVerificationRequest) => Promise<TwoFactorDuoResponse>;
     getTwoFactorYubiKey: (request: PasswordVerificationRequest) => Promise<TwoFactorYubiKeyResponse>;
     getTwoFactorWebAuthn: (request: PasswordVerificationRequest) => Promise<TwoFactorWebAuthnResponse>;
-    getTwoFactorWebAuthnChallenge: (request: PasswordVerificationRequest) => Promise<WebAuthnChallengeResponse>;
+    getTwoFactorWebAuthnChallenge: (request: PasswordVerificationRequest) => Promise<ChallengeResponse>;
     getTwoFactorRecover: (request: PasswordVerificationRequest) => Promise<TwoFactorRecoverResponse>;
     putTwoFactorAuthenticator: (
         request: UpdateTwoFactorAuthenticatorRequest) => Promise<TwoFactorAuthenticatorResponse>;

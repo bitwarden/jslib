@@ -7,7 +7,6 @@ export class WebAuthn {
         private errorCallback: Function, private infoCallback: Function) {
         this.connectorLink = win.document.createElement('a');
         this.webVaultUrl = webVaultUrl != null && webVaultUrl !== '' ? webVaultUrl : 'https://vault.bitwarden.com';
-        this.webVaultUrl = 'https://vault.bitwarden2.com:8080';
     }
 
     init(data: any): void {
