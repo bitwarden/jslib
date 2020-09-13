@@ -17,12 +17,14 @@ export class KeyResponse extends BaseResponse {
     name: string;
     id: number;
     compromised: boolean;
+    migrated: boolean;
 
     constructor(response: any) {
         super(response);
         this.name = this.getResponseProperty('Name');
         this.id = this.getResponseProperty('Id');
         this.compromised = this.getResponseProperty('Compromised');
+        this.migrated = this.getResponseProperty('Migrated');
     }
 }
 
