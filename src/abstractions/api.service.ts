@@ -55,8 +55,7 @@ import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
 import { UpdateTwoFactorAuthenticatorRequest } from '../models/request/updateTwoFactorAuthenticatorRequest';
 import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoRequest';
 import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEmailRequest';
-import { UpdateTwoFactorU2fDeleteRequest } from '../models/request/updateTwoFactorU2fDeleteRequest';
-import { UpdateTwoFactorU2fRequest } from '../models/request/updateTwoFactorU2fRequest';
+import { UpdateTwoFactorWebAuthnDeleteRequest } from '../models/request/updateTwoFactorWebAuthnDeleteRequest';
 import { UpdateTwoFactorWebAuthnRequest } from '../models/request/updateTwoFactorWebAuthnRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
 import { VerifyBankRequest } from '../models/request/verifyBankRequest';
@@ -101,11 +100,7 @@ import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
 import { TwoFactorEmailResponse } from '../models/response/twoFactorEmailResponse';
 import { TwoFactorProviderResponse } from '../models/response/twoFactorProviderResponse';
 import { TwoFactorRecoverResponse } from '../models/response/twoFactorRescoverResponse';
-import {
-    ChallengeResponse as U2fChallengeResponse,
-    TwoFactorU2fResponse,
-} from '../models/response/twoFactorU2fResponse';
-import { ChallengeResponse as WebAuthnChallengeResponse } from '../models/response/twoFactorWebAuthnResponse';
+import { ChallengeResponse as WebAuthnChallengeResponse, TwoFactorWebAuthnResponse } from '../models/response/twoFactorWebAuthnResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
@@ -245,9 +240,7 @@ export abstract class ApiService {
     getTwoFactorOrganizationDuo: (organizationId: string,
         request: PasswordVerificationRequest) => Promise<TwoFactorDuoResponse>;
     getTwoFactorYubiKey: (request: PasswordVerificationRequest) => Promise<TwoFactorYubiKeyResponse>;
-    getTwoFactorU2f: (request: PasswordVerificationRequest) => Promise<TwoFactorU2fResponse>;
-    getTwoFactorU2fChallenge: (request: PasswordVerificationRequest) => Promise<U2fChallengeResponse>;
-    getTwoFactorWebAuthn: (request: PasswordVerificationRequest) => Promise<TwoFactorU2fResponse>;
+    getTwoFactorWebAuthn: (request: PasswordVerificationRequest) => Promise<TwoFactorWebAuthnResponse>;
     getTwoFactorWebAuthnChallenge: (request: PasswordVerificationRequest) => Promise<WebAuthnChallengeResponse>;
     getTwoFactorRecover: (request: PasswordVerificationRequest) => Promise<TwoFactorRecoverResponse>;
     putTwoFactorAuthenticator: (
@@ -257,10 +250,8 @@ export abstract class ApiService {
     putTwoFactorOrganizationDuo: (organizationId: string,
         request: UpdateTwoFactorDuoRequest) => Promise<TwoFactorDuoResponse>;
     putTwoFactorYubiKey: (request: UpdateTwoFactorYubioOtpRequest) => Promise<TwoFactorYubiKeyResponse>;
-    putTwoFactorU2f: (request: UpdateTwoFactorU2fRequest) => Promise<TwoFactorU2fResponse>;
-    deleteTwoFactorU2f: (request: UpdateTwoFactorU2fDeleteRequest) => Promise<TwoFactorU2fResponse>;
-    putTwoFactorWebAuthn: (request: UpdateTwoFactorWebAuthnRequest) => Promise<TwoFactorU2fResponse>;
-    deleteTwoFactorWebAuthn: (request: UpdateTwoFactorU2fDeleteRequest) => Promise<TwoFactorU2fResponse>;
+    putTwoFactorWebAuthn: (request: UpdateTwoFactorWebAuthnRequest) => Promise<TwoFactorWebAuthnResponse>;
+    deleteTwoFactorWebAuthn: (request: UpdateTwoFactorWebAuthnDeleteRequest) => Promise<TwoFactorWebAuthnResponse>;
     putTwoFactorDisable: (request: TwoFactorProviderRequest) => Promise<TwoFactorProviderResponse>;
     putTwoFactorOrganizationDisable: (organizationId: string,
         request: TwoFactorProviderRequest) => Promise<TwoFactorProviderResponse>;

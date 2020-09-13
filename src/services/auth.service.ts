@@ -57,14 +57,6 @@ export const TwoFactorProviders = {
         sort: 4,
         premium: false,
     },
-    [TwoFactorProviderType.U2f]: {
-        type: TwoFactorProviderType.U2f,
-        name: null as string,
-        description: null as string,
-        priority: 4,
-        sort: 5,
-        premium: true,
-    },
     [TwoFactorProviderType.Email]: {
         type: TwoFactorProviderType.Email,
         name: null as string,
@@ -109,9 +101,6 @@ export class AuthService implements AuthServiceAbstraction {
             this.i18nService.t('authenticatorAppDesc');
 
         TwoFactorProviders[TwoFactorProviderType.Duo].description = this.i18nService.t('duoDesc');
-
-        TwoFactorProviders[TwoFactorProviderType.U2f].name = this.i18nService.t('u2fTitle');
-        TwoFactorProviders[TwoFactorProviderType.U2f].description = this.i18nService.t('u2fDesc');
 
         TwoFactorProviders[TwoFactorProviderType.OrganizationDuo].name =
             'Duo (' + this.i18nService.t('organization') + ')';
@@ -214,9 +203,6 @@ export class AuthService implements AuthServiceAbstraction {
         this.twoFactorProvidersData.forEach((value, type) => {
             const provider = (TwoFactorProviders as any)[type];
             if (provider != null && provider.priority > providerPriority) {
-                if (type === TwoFactorProviderType.U2f) {
-                    return; // U2f is replaced with WebAuthn
-                }
                 if (type === TwoFactorProviderType.WebAuthn && !webAuthnSupported) {
                     return;
                 }

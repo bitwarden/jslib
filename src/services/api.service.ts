@@ -61,8 +61,7 @@ import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
 import { UpdateTwoFactorAuthenticatorRequest } from '../models/request/updateTwoFactorAuthenticatorRequest';
 import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoRequest';
 import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEmailRequest';
-import { UpdateTwoFactorU2fDeleteRequest } from '../models/request/updateTwoFactorU2fDeleteRequest';
-import { UpdateTwoFactorU2fRequest } from '../models/request/updateTwoFactorU2fRequest';
+import { UpdateTwoFactorWebAuthnDeleteRequest } from '../models/request/updateTwoFactorWebAuthnDeleteRequest';
 import { UpdateTwoFactorWebAuthnRequest } from '../models/request/updateTwoFactorWebAuthnRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
 import { VerifyBankRequest } from '../models/request/verifyBankRequest';
@@ -108,10 +107,7 @@ import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
 import { TwoFactorEmailResponse } from '../models/response/twoFactorEmailResponse';
 import { TwoFactorProviderResponse } from '../models/response/twoFactorProviderResponse';
 import { TwoFactorRecoverResponse } from '../models/response/twoFactorRescoverResponse';
-import {
-    ChallengeResponse as U2fChallengeResponse,
-    TwoFactorU2fResponse,
-} from '../models/response/twoFactorU2fResponse';
+import { TwoFactorWebAuthnResponse } from '../models/response/twoFactorWebAuthnResponse';
 import { ChallengeResponse as WebAuthnChallengeResponse } from '../models/response/twoFactorWebAuthnResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
@@ -769,19 +765,9 @@ export class ApiService implements ApiServiceAbstraction {
         return new TwoFactorYubiKeyResponse(r);
     }
 
-    async getTwoFactorU2f(request: PasswordVerificationRequest): Promise<TwoFactorU2fResponse> {
-        const r = await this.send('POST', '/two-factor/get-u2f', request, true, true);
-        return new TwoFactorU2fResponse(r);
-    }
-
-    async getTwoFactorU2fChallenge(request: PasswordVerificationRequest): Promise<U2fChallengeResponse> {
-        const r = await this.send('POST', '/two-factor/get-u2f-challenge', request, true, true);
-        return new U2fChallengeResponse(r);
-    }
-
-    async getTwoFactorWebAuthn(request: PasswordVerificationRequest): Promise<TwoFactorU2fResponse> {
+    async getTwoFactorWebAuthn(request: PasswordVerificationRequest): Promise<TwoFactorWebAuthnResponse> {
         const r = await this.send('POST', '/two-factor/get-webauthn', request, true, true);
-        return new TwoFactorU2fResponse(r);
+        return new TwoFactorWebAuthnResponse(r);
     }
 
     async getTwoFactorWebAuthnChallenge(request: PasswordVerificationRequest): Promise<WebAuthnChallengeResponse> {
@@ -821,17 +807,7 @@ export class ApiService implements ApiServiceAbstraction {
         return new TwoFactorYubiKeyResponse(r);
     }
 
-    async putTwoFactorU2f(request: UpdateTwoFactorU2fRequest): Promise<TwoFactorU2fResponse> {
-        const r = await this.send('PUT', '/two-factor/u2f', request, true, true);
-        return new TwoFactorU2fResponse(r);
-    }
-
-    async deleteTwoFactorU2f(request: UpdateTwoFactorU2fDeleteRequest): Promise<TwoFactorU2fResponse> {
-        const r = await this.send('DELETE', '/two-factor/u2f', request, true, true);
-        return new TwoFactorU2fResponse(r);
-    }
-
-    async putTwoFactorWebAuthn(request: UpdateTwoFactorWebAuthnRequest): Promise<TwoFactorU2fResponse> {
+    async putTwoFactorWebAuthn(request: UpdateTwoFactorWebAuthnRequest): Promise<TwoFactorWebAuthnResponse> {
         const response = request.deviceResponse.response as AuthenticatorAttestationResponse;
         const data: any = Object.assign({}, request)
 
@@ -847,12 +823,12 @@ export class ApiService implements ApiServiceAbstraction {
         };
 
         const r = await this.send('PUT', '/two-factor/webauthn', data, true, true);
-        return new TwoFactorU2fResponse(r);
+        return new TwoFactorWebAuthnResponse(r);
     }
 
-    async deleteTwoFactorWebAuthn(request: UpdateTwoFactorU2fDeleteRequest): Promise<TwoFactorU2fResponse> {
+    async deleteTwoFactorWebAuthn(request: UpdateTwoFactorWebAuthnDeleteRequest): Promise<TwoFactorWebAuthnResponse> {
         const r = await this.send('DELETE', '/two-factor/webauthn', request, true, true);
-        return new TwoFactorU2fResponse(r);
+        return new TwoFactorWebAuthnResponse(r);
     }
 
     async putTwoFactorDisable(request: TwoFactorProviderRequest): Promise<TwoFactorProviderResponse> {
