@@ -3,22 +3,17 @@ import * as lunr from 'lunr';
 import { CipherView } from '../models/view/cipherView';
 
 import { CipherService } from '../abstractions/cipher.service';
-import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { SearchService as SearchServiceAbstraction } from '../abstractions/search.service';
 
 import { CipherType } from '../enums/cipherType';
-import { DeviceType } from '../enums/deviceType';
 import { FieldType } from '../enums/fieldType';
 import { UriMatchType } from '../enums/uriMatchType';
 
 export class SearchService implements SearchServiceAbstraction {
     private indexing = false;
     private index: lunr.Index = null;
-    private onlySearchName = false;
 
     constructor(private cipherService: CipherService, platformUtilsService: PlatformUtilsService) {
-        this.onlySearchName = platformUtilsService == null ||
-            platformUtilsService.getDevice() === DeviceType.EdgeExtension;
     }
 
     clearIndex(): void {
@@ -151,9 +146,6 @@ export class SearchService implements SearchServiceAbstraction {
             }
             if (c.name != null && c.name.toLowerCase().indexOf(query) > -1) {
                 return true;
-            }
-            if (this.onlySearchName) {
-                return false;
             }
             if (query.length >= 8 && c.id.startsWith(query)) {
                 return true;
