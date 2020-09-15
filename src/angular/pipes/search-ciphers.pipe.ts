@@ -9,10 +9,6 @@ import { CipherView } from '../../models/view/cipherView';
     name: 'searchCiphers',
 })
 export class SearchCiphersPipe implements PipeTransform {
-
-    constructor() {
-    }
-
     transform(ciphers: CipherView[], searchText: string, deleted: boolean = false): CipherView[] {
         if (ciphers == null || ciphers.length === 0) {
             return [];
