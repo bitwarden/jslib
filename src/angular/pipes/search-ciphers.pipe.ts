@@ -10,7 +10,7 @@ import { CipherView } from '../../models/view/cipherView';
 })
 export class SearchCiphersPipe implements PipeTransform {
 
-    constructor(platformUtilsService: PlatformUtilsService) {
+    constructor() {
     }
 
     transform(ciphers: CipherView[], searchText: string, deleted: boolean = false): CipherView[] {

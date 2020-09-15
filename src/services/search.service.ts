@@ -13,7 +13,7 @@ export class SearchService implements SearchServiceAbstraction {
     private indexing = false;
     private index: lunr.Index = null;
 
-    constructor(private cipherService: CipherService, platformUtilsService: PlatformUtilsService) {
+    constructor(private cipherService: CipherService) {
     }
 
     clearIndex(): void {
