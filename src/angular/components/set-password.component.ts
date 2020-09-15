@@ -44,7 +44,7 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
 
     async setupSubmitActions() {
         this.kdf = KdfType.PBKDF2_SHA256;
-        const useLowerKdf = this.platformUtilsService.isEdge() || this.platformUtilsService.isIE();
+        const useLowerKdf = this.platformUtilsService.isIE();
         this.kdfIterations = useLowerKdf ? 10000 : 100000;
         return true;
     }

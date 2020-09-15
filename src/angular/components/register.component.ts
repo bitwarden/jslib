@@ -105,7 +105,7 @@ export class RegisterComponent {
         this.name = this.name === '' ? null : this.name;
         this.email = this.email.trim().toLowerCase();
         const kdf = KdfType.PBKDF2_SHA256;
-        const useLowerKdf = this.platformUtilsService.isEdge() || this.platformUtilsService.isIE();
+        const useLowerKdf = this.platformUtilsService.isIE();
         const kdfIterations = useLowerKdf ? 10000 : 100000;
         const key = await this.cryptoService.makeKey(this.masterPassword, this.email, kdf, kdfIterations);
         const encKey = await this.cryptoService.makeEncKey(key);
