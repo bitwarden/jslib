@@ -48,7 +48,7 @@ export default class BiometricWindowsMain implements BiometricMain {
 
     getWindowsSecurityCredentialsUiModule(): any {
         try {
-            if (this.windowsSecurityCredentialsUiModule == null) {
+            if (this.windowsSecurityCredentialsUiModule == null && this.getWindowsMajorVersion() >= 10) {
                 this.windowsSecurityCredentialsUiModule = require('@nodert-win10-rs4/windows.security.credentials.ui');
             }
             return this.windowsSecurityCredentialsUiModule;
@@ -109,5 +109,17 @@ export default class BiometricWindowsMain implements BiometricMain {
             }
         } catch { /*Ignore error*/ }
         return [];
+    }
+
+    getWindowsMajorVersion(): number {
+        if (process.platform !== 'win32') {
+            return -1;
+        }
+        try {
+            const version = require('os').release();
+            return Number.parseInt(version.split('.')[0], 10);
+        }
+        catch { }
+        return -1;
     }
 }
