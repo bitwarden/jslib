@@ -48,10 +48,8 @@ export default class BiometricWindowsMain implements BiometricMain {
 
     getWindowsSecurityCredentialsUiModule(): any {
         try {
-            if (this.windowsSecurityCredentialsUiModule == null) {
-                if (this.getWindowsMajorVersion() >= 10) {
-                    this.windowsSecurityCredentialsUiModule = require('@nodert-win10-rs4/windows.security.credentials.ui');
-                }
+            if (this.windowsSecurityCredentialsUiModule == null && this.getWindowsMajorVersion() >= 10) {
+                this.windowsSecurityCredentialsUiModule = require('@nodert-win10-rs4/windows.security.credentials.ui');
             }
             return this.windowsSecurityCredentialsUiModule;
         } catch {
