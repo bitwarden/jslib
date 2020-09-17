@@ -113,13 +113,13 @@ export default class BiometricWindowsMain implements BiometricMain {
 
     getWindowsMajorVersion(): number {
         if (process.platform !== 'win32') {
-            return null;
+            return -1;
         }
         try {
             const version = require('os').release();
             return Number.parseInt(version.split('.')[0], 10);
         }
         catch { }
-        return null;
+        return -1;
     }
 }
