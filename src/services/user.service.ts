@@ -107,6 +107,11 @@ export class UserService implements UserServiceAbstraction {
     }
 
     async canAccessPremium(): Promise<boolean> {
+        const authed = await this.isAuthenticated();
+        if (!authed) {
+            return false;
+        }
+
         const tokenPremium = this.tokenService.getPremium();
         if (tokenPremium) {
             return true;
