@@ -30,6 +30,7 @@ export class I18nService implements I18nServiceAbstraction {
         ['it', 'italiano'],
         ['ja', '日本語'],
         ['ko', '한국어'],
+        ['ml', 'മലയാളം'], 
         ['nb', 'norsk (bokmål)'],
         ['nl', 'Nederlands'],
         ['pl', 'polski'],
