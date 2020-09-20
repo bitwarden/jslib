@@ -328,7 +328,8 @@ export class CipherService implements CipherServiceAbstraction {
         });
     }
 
-    async getAllDecryptedForUrl(url: string, includeOtherTypes?: CipherType[]): Promise<CipherView[]> {
+    async getAllDecryptedForUrl(url: string, includeOtherTypes?: CipherType[],
+        defaultMatch: UriMatchType = null): Promise<CipherView[]> {
         if (url == null && includeOtherTypes == null) {
             return Promise.resolve([]);
         }
@@ -354,9 +355,11 @@ export class CipherService implements CipherServiceAbstraction {
         const matchingDomains = result[0];
         const ciphers = result[1];
 
-        let defaultMatch = await this.storageService.get<UriMatchType>(ConstantsService.defaultUriMatch);
         if (defaultMatch == null) {
-            defaultMatch = UriMatchType.Domain;
+            defaultMatch = await this.storageService.get<UriMatchType>(ConstantsService.defaultUriMatch);
+            if (defaultMatch == null) {
+                defaultMatch = UriMatchType.Domain;
+            }
         }
 
         return ciphers.filter((cipher) => {

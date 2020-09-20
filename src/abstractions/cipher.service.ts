@@ -1,4 +1,5 @@
 import { CipherType } from '../enums/cipherType';
+import { UriMatchType } from '../enums/uriMatchType';
 
 import { CipherData } from '../models/data/cipherData';
 
@@ -21,7 +22,8 @@ export abstract class CipherService {
     getAll: () => Promise<Cipher[]>;
     getAllDecrypted: () => Promise<CipherView[]>;
     getAllDecryptedForGrouping: (groupingId: string, folder?: boolean) => Promise<CipherView[]>;
-    getAllDecryptedForUrl: (url: string, includeOtherTypes?: CipherType[]) => Promise<CipherView[]>;
+    getAllDecryptedForUrl: (url: string, includeOtherTypes?: CipherType[],
+        defaultMatch?: UriMatchType) => Promise<CipherView[]>;
     getAllFromApiForOrganization: (organizationId: string) => Promise<CipherView[]>;
     getLastUsedForUrl: (url: string) => Promise<CipherView>;
     getNextCipherForUrl: (url: string) => Promise<CipherView>;
