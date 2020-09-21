@@ -32,7 +32,7 @@ export class I18nService implements I18nServiceAbstraction {
         ['ja', '日本語'],
         ['ko', '한국어'],
         ['lv', 'Latvietis'],
-        ['ml', 'മലയാളം'], 
+        ['ml', 'മലയാളം'],
         ['nb', 'norsk (bokmål)'],
         ['nl', 'Nederlands'],
         ['pl', 'polski'],
