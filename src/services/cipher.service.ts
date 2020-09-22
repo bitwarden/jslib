@@ -445,15 +445,15 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async getLastUsedForUrl(url: string): Promise<CipherView> {
-        return await this.getCipherForUrl(url, true, false);
+        return this.getCipherForUrl(url, true, false);
     }
 
     async getLastLaunchedForUrl(url: string): Promise<CipherView> {
-        return await this.getCipherForUrl(url, false, true);
+        return this.getCipherForUrl(url, false, true);
     }
 
     async getNextCipherForUrl(url: string): Promise<CipherView> {
-        return await this.getCipherForUrl(url, false, false);
+        return this.getCipherForUrl(url, false, false);
     }
 
     async updateLastUsedDate(id: string): Promise<void> {
@@ -959,7 +959,7 @@ export class CipherService implements CipherServiceAbstraction {
             }
 
             // tslint:disable-next-line
-            (function(theProp, theObj) {
+            (function (theProp, theObj) {
                 const p = Promise.resolve().then(() => {
                     const modelProp = (model as any)[(map[theProp] || theProp)];
                     if (modelProp && modelProp !== '') {
