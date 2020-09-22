@@ -57,7 +57,7 @@ class Ciphers {
     }
 
     getLastLaunched() {
-        let sortedCiphers = this.ciphers.sort((x, y) => y.localData?.lastLaunched?.valueOf() - x.localData?.lastLaunched?.valueOf());
+        const sortedCiphers = this.ciphers.sort((x, y) => y.localData?.lastLaunched?.valueOf() - x.localData?.lastLaunched?.valueOf());
         return sortedCiphers[0];
     }
 
