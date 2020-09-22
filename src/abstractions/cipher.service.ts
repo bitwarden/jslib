@@ -26,8 +26,10 @@ export abstract class CipherService {
         defaultMatch?: UriMatchType) => Promise<CipherView[]>;
     getAllFromApiForOrganization: (organizationId: string) => Promise<CipherView[]>;
     getLastUsedForUrl: (url: string) => Promise<CipherView>;
+    getLastLaunchedForUrl: (url: string) => Promise<CipherView>;
     getNextCipherForUrl: (url: string) => Promise<CipherView>;
     updateLastUsedDate: (id: string) => Promise<void>;
+    updateLastLaunchedDate: (id: string) => Promise<void>;
     saveNeverDomain: (domain: string) => Promise<void>;
     saveWithServer: (cipher: Cipher) => Promise<any>;
     shareWithServer: (cipher: CipherView, organizationId: string, collectionIds: string[]) => Promise<any>;

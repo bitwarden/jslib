@@ -23,6 +23,10 @@ export class SortedCiphersCache {
         return this.isCached(url) ? this.sortedCiphersByUrl.get(url).getLastUsed() : null;
     }
 
+    getLastLaunched(url: string) {
+        return this.isCached(url) ? this.sortedCiphersByUrl.get(url).getLastLaunched() : null;
+    }
+
     getNext(url: string) {
         this.resetTimer(url);
         return this.isCached(url) ? this.sortedCiphersByUrl.get(url).getNext() : null;
@@ -50,6 +54,11 @@ class Ciphers {
     getLastUsed() {
         this.lastUsedIndex = Math.max(this.lastUsedIndex, 0);
         return this.ciphers[this.lastUsedIndex];
+    }
+
+    getLastLaunched() {
+        let sortedCiphers = this.ciphers.sort((x, y) => y.localData?.lastLaunched?.valueOf() - x.localData?.lastLaunched?.valueOf());
+        return sortedCiphers[0];
     }
 
     getNext() {
