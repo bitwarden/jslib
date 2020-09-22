@@ -3,7 +3,10 @@ import {
     OnInit,
 } from '@angular/core';
 
-import { Router } from '@angular/router';
+import {
+    ActivatedRoute,
+    Router,
+} from '@angular/router';
 
 import { DeviceType } from '../../enums/deviceType';
 import { TwoFactorProviderType } from '../../enums/twoFactorProviderType';
@@ -40,6 +43,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     twoFactorEmail: string = null;
     formPromise: Promise<any>;
     emailPromise: Promise<any>;
+    identifier: string = null;
     onSuccessfulLogin: () => Promise<any>;
     onSuccessfulLoginNavigate: () => Promise<any>;
 
@@ -50,7 +54,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         protected i18nService: I18nService, protected apiService: ApiService,
         protected platformUtilsService: PlatformUtilsService, protected win: Window,
         protected environmentService: EnvironmentService, protected stateService: StateService,
-        protected storageService: StorageService) {
+        protected storageService: StorageService, protected route: ActivatedRoute) {
         this.u2fSupported = this.platformUtilsService.supportsU2f(win);
     }
 
@@ -60,6 +64,16 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             this.router.navigate([this.loginRoute]);
             return;
         }
+
+        const queryParamsSub = this.route.queryParams.subscribe(async (qParams) => {
+            if (qParams.identifier != null) {
+                this.identifier = qParams.identifier;
+            }
+
+            if (queryParamsSub != null) {
+                queryParamsSub.unsubscribe();
+            }
+        });
 
         if (this.authService.authingWithSso()) {
             this.successRoute = 'lock';
@@ -191,7 +205,11 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 if (response.resetMasterPassword) {
                     this.successRoute = 'set-password';
                 }
-                this.router.navigate([this.successRoute]);
+                this.router.navigate([this.successRoute], {
+                    queryParams: {
+                        identifier: this.identifier,
+                    },
+                });
             }
         } catch {
             if (this.selectedProviderType === TwoFactorProviderType.U2f && this.u2f != null) {
