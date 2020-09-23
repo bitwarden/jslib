@@ -196,9 +196,13 @@ export class ViewComponent implements OnDestroy, OnInit {
         }
     }
 
-    launch(uri: LoginUriView) {
+    launch(uri: LoginUriView, cipherId?: string) {
         if (!uri.canLaunch) {
             return;
+        }
+
+        if (cipherId) {
+            this.cipherService.updateLastLaunchedDate(cipherId);
         }
 
         this.platformUtilsService.eventTrack('Launched Login URI');
