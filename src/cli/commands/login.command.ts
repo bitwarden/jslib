@@ -13,6 +13,7 @@ import { CryptoFunctionService } from '../../abstractions/cryptoFunction.service
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
+import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 import { Response } from '../models/response';
 
@@ -35,7 +36,8 @@ export class LoginCommand {
     constructor(protected authService: AuthService, protected apiService: ApiService,
         protected i18nService: I18nService, protected environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
-        protected cryptoFunctionService: CryptoFunctionService, clientId: string) {
+        protected cryptoFunctionService: CryptoFunctionService, protected platformUtilsService: PlatformUtilsService,
+        clientId: string) {
         this.clientId = clientId;
     }
 
@@ -249,8 +251,8 @@ export class LoginCommand {
             for (let port = 8065; port <= 8070; port++) {
                 try {
                     this.ssoRedirectUri = 'http://localhost:' + port;
-                    callbackServer.listen(port, async () => {
-                        await open(webUrl + '/#/sso?clientId=' + this.clientId +
+                    callbackServer.listen(port, () => {
+                        this.platformUtilsService.launchUri(webUrl + '/#/sso?clientId=' + this.clientId +
                             '&redirectUri=' + encodeURIComponent(this.ssoRedirectUri) +
                             '&state=' + state + '&codeChallenge=' + codeChallenge);
                     });
