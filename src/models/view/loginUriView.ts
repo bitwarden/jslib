@@ -14,6 +14,9 @@ const CanLaunchWhitelist = [
     'sftp://',
     'irc://',
     'vnc://',
+    // https://docs.microsoft.com/en-us/windows-server/remote/remote-desktop-services/clients/remote-desktop-uri
+    'rdp://', // Legacy RDP URI scheme
+    'ms-rd:', // Preferred RDP URI scheme
     'chrome://',
     'iosapp://',
     'androidapp://',
