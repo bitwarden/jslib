@@ -26,10 +26,12 @@ export class LowdbStorageService implements StorageService {
         }
         try {
             this.db = lowdb(adapter);
+            fs.chmodSync(this.dataFilePath, "600");
         } catch (e) {
             if (e instanceof SyntaxError) {
                 adapter.write({});
                 this.db = lowdb(adapter);
+                fs.chmodSync(this.dataFilePath, "600");
             } else {
                 throw e;
             }
