@@ -17,6 +17,7 @@ export class I18nService implements I18nServiceAbstraction {
         ['el', 'Ελληνικά'],
         ['en', 'English'],
         ['en-GB', 'English (British)'],
+        ['en-IN', 'English (India)'],
         ['eo', 'Esperanto'],
         ['es', 'español'],
         ['et', 'eesti'],
