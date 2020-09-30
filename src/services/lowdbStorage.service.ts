@@ -25,13 +25,11 @@ export class LowdbStorageService implements StorageService {
             adapter = new FileSync(this.dataFilePath);
         }
         try {
-            this.db = lowdb(adapter);
-            fs.chmodSync(this.dataFilePath, "600");
+            this.installDB(adapter);
         } catch (e) {
             if (e instanceof SyntaxError) {
                 adapter.write({});
-                this.db = lowdb(adapter);
-                fs.chmodSync(this.dataFilePath, "600");
+                this.installDB(adapter);
             } else {
                 throw e;
             }
@@ -66,9 +64,21 @@ export class LowdbStorageService implements StorageService {
         return Promise.resolve();
     }
 
-    private readForNoCache() {
+    private readForNoCache(): void {
         if (!this.allowCache) {
             this.db.read();
         }
+    }
+
+    protected setPermission(mode: number): void {
+        if (mode > 777 && mode < 0)
+            throw new SyntaxError(`The setPermission 'mode' must be between 0 and 777. Currently it is ${mode}.`)
+        else if (fs.existsSync(this.dataFilePath))
+            fs.chmodSync(this.dataFilePath, mode);
+    }
+
+    protected installDB(adapter: lowdb.AdapterSync<any>): void {
+        this.db = lowdb(adapter);
+        this.setPermission(600);
     }
 }
