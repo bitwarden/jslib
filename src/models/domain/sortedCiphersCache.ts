@@ -32,6 +32,12 @@ export class SortedCiphersCache {
         return this.isCached(url) ? this.sortedCiphersByUrl.get(url).getNext() : null;
     }
 
+    updateLastUsedIndex(url: string) {
+        if (this.isCached(url)) {
+            this.sortedCiphersByUrl.get(url).updateLastUsedIndex();
+        }
+    }
+
     clear() {
         this.sortedCiphersByUrl.clear();
         this.timeouts.clear();
@@ -57,14 +63,20 @@ class Ciphers {
     }
 
     getLastLaunched() {
-        const usedCiphers = this.ciphers.filter(cipher => cipher.localData?.lastLaunched)
+        const usedCiphers = this.ciphers.filter(cipher => cipher.localData?.lastLaunched);
         const sortedCiphers = usedCiphers.sort((x, y) => y.localData.lastLaunched.valueOf() - x.localData.lastLaunched.valueOf());
         return sortedCiphers[0];
     }
 
+    getNextIndex() {
+        return (this.lastUsedIndex + 1) % this.ciphers.length;
+    }
+
     getNext() {
-        const nextIndex = (this.lastUsedIndex + 1) % this.ciphers.length;
-        this.lastUsedIndex = nextIndex;
-        return this.ciphers[nextIndex];
+        return this.ciphers[this.getNextIndex()];
+    }
+
+    updateLastUsedIndex() {
+        this.lastUsedIndex = this.getNextIndex();
     }
 }
