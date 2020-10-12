@@ -158,7 +158,6 @@ export class LockComponent implements OnInit {
         }
         const success = await this.platformUtilsService.authenticateBiometric();
 
-        this.vaultTimeoutService.biometricLocked = !success;
         if (success) {
             await this.doContinue();
         }
