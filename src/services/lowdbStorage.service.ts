@@ -22,6 +22,10 @@ export class LowdbStorageService implements StorageService {
                 NodeUtils.mkdirpSync(dir, '700');
             }
             this.dataFilePath = path.join(dir, 'data.json');
+            if (!fs.existsSync(this.dataFilePath)) {
+                fs.writeFileSync(this.dataFilePath, '', { mode: 0o600 });
+                fs.chmodSync(this.dataFilePath, 0o600);
+            }
             adapter = new FileSync(this.dataFilePath);
         }
         try {

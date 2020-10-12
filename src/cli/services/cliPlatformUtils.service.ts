@@ -1,7 +1,11 @@
+import * as child_process from 'child_process';
 
 import { DeviceType } from '../../enums/deviceType';
 
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
+
+// tslint:disable-next-line
+const open = require('open');
 
 export class CliPlatformUtilsService implements PlatformUtilsService {
     identityClientId: string;
@@ -81,7 +85,11 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     }
 
     launchUri(uri: string, options?: any): void {
-        throw new Error('Not implemented.');
+        if (process.platform === 'linux') {
+            child_process.spawnSync('xdg-open', [uri]);
+        } else {
+            open(uri);
+        }
     }
 
     saveFile(win: Window, blobData: any, blobOptions: any, fileName: string): void {
