@@ -182,6 +182,6 @@ export class SsoComponent {
         }
 
         const stateSplit = state.split('_identifier=');
-        return stateSplit[1] ? stateSplit[1] : null;
+        return stateSplit.length > 1 ? stateSplit[1] : null;
     }
 }
