@@ -9,4 +9,5 @@ export class SetPasswordRequest {
     keys: KeysRequest;
     kdf: KdfType;
     kdfIterations: number;
+    orgIdentifier: string;
 }
