@@ -353,7 +353,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     async getSsoUserIdentifier(): Promise<string> {
-        return this.send('GET', '/accounts/sso/user-identifier', null, true, true)
+        return this.send('GET', '/accounts/sso/user-identifier', null, true, true);
     }
 
     // Folder APIs
@@ -700,7 +700,6 @@ export class ApiService implements ApiServiceAbstraction {
         const r = await this.send('GET', '/plans/', null, true, true);
         return new ListResponse(r, PlanResponse);
     }
-
 
     async postImportDirectory(organizationId: string, request: ImportDirectoryRequest): Promise<any> {
         return this.send('POST', '/organizations/' + organizationId + '/import', request, true, false);
