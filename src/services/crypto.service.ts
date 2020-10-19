@@ -11,6 +11,7 @@ import { ProfileOrganizationResponse } from '../models/response/profileOrganizat
 import { CryptoService as CryptoServiceAbstraction } from '../abstractions/crypto.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 import { StorageService } from '../abstractions/storage.service';
+import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 
 import { ConstantsService } from './constants.service';
 
@@ -36,14 +37,14 @@ export class CryptoService implements CryptoServiceAbstraction {
     private orgKeys: Map<string, SymmetricCryptoKey>;
 
     constructor(private storageService: StorageService, private secureStorageService: StorageService,
-        private cryptoFunctionService: CryptoFunctionService) { }
+        private cryptoFunctionService: CryptoFunctionService, private platformUtilService: PlatformUtilsService) { }
 
     async setKey(key: SymmetricCryptoKey): Promise<any> {
         this.key = key;
 
         const option = await this.storageService.get<number>(ConstantsService.vaultTimeoutKey);
         const biometric = await this.storageService.get<boolean>(ConstantsService.biometricUnlockKey);
-        if (option != null && !biometric) {
+        if (option != null && !(biometric && this.platformUtilService.identityClientId === 'desktop')) {
             // if we have a lock option set, we do not store the key
             return;
         }
@@ -293,7 +294,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         const key = await this.getKey();
         const option = await this.storageService.get(ConstantsService.vaultTimeoutKey);
         const biometric = await this.storageService.get(ConstantsService.biometricUnlockKey);
-        if (!biometric && (option != null || option === 0)) {
+        if ((!biometric && this.platformUtilService.identityClientId === 'desktop') && (option != null || option === 0)) {
             // if we have a lock option set, clear the key
             await this.clearKey();
             this.key = key;
