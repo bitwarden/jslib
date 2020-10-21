@@ -10,8 +10,8 @@ import { ProfileOrganizationResponse } from '../models/response/profileOrganizat
 
 import { CryptoService as CryptoServiceAbstraction } from '../abstractions/crypto.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
-import { StorageService } from '../abstractions/storage.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
+import { StorageService } from '../abstractions/storage.service';
 
 import { ConstantsService } from './constants.service';
 
