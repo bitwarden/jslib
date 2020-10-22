@@ -1,5 +1,5 @@
 export abstract class BaseResponse {
-    protected response: any;
+    private response: any;
 
     constructor(response: any) {
         this.response = response;
