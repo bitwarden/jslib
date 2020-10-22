@@ -165,6 +165,7 @@ export abstract class ApiService {
     postSend: (request: SendRequest) => Promise<SendResponse>;
     postSendFile: (data: FormData) => Promise<SendResponse>;
     putSend: (id: string, request: SendRequest) => Promise<SendResponse>;
+    putSendRemovePassword: (id: string) => Promise<SendResponse>;
     deleteSend: (id: string) => Promise<any>;
 
     getCipher: (id: string) => Promise<CipherResponse>;

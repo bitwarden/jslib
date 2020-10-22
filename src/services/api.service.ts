@@ -413,6 +413,11 @@ export class ApiService implements ApiServiceAbstraction {
         return new SendResponse(r);
     }
 
+    async putSendRemovePassword(id: string): Promise<SendResponse> {
+        const r = await this.send('PUT', '/sends/' + id + '/remove-password', null, true, true);
+        return new SendResponse(r);
+    }
+
     deleteSend(id: string): Promise<any> {
         return this.send('DELETE', '/sends/' + id, null, true, false);
     }
