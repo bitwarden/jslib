@@ -44,7 +44,7 @@ export class CryptoService implements CryptoServiceAbstraction {
 
         const option = await this.storageService.get<number>(ConstantsService.vaultTimeoutKey);
         const biometric = await this.storageService.get<boolean>(ConstantsService.biometricUnlockKey);
-        if (option != null && !(biometric && this.platformUtilService.identityClientId === 'desktop')) {
+        if (option != null && !(biometric && this.platformUtilService.supportsSecureStorage())) {
             // if we have a lock option set, we do not store the key
             return;
         }
@@ -294,7 +294,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         const key = await this.getKey();
         const option = await this.storageService.get(ConstantsService.vaultTimeoutKey);
         const biometric = await this.storageService.get(ConstantsService.biometricUnlockKey);
-        if ((!biometric && this.platformUtilService.identityClientId === 'desktop') && (option != null || option === 0)) {
+        if ((!biometric && this.platformUtilService.supportsSecureStorage()) && (option != null || option === 0)) {
             // if we have a lock option set, clear the key
             await this.clearKey();
             this.key = key;

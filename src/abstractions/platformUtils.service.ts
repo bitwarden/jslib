@@ -34,4 +34,5 @@ export abstract class PlatformUtilsService {
     readFromClipboard: (options?: any) => Promise<string>;
     supportsBiometric: () => Promise<boolean>;
     authenticateBiometric: () => Promise<boolean>;
+    supportsSecureStorage: () => boolean;
 }
