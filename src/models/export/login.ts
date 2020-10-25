@@ -1,6 +1,7 @@
 import { LoginUri } from './loginUri';
 
 import { LoginView } from '../view/loginView';
+import { autofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
 
 import { CipherString } from '../domain/cipherString';
 import { Login as LoginDomain } from '../domain/login';
@@ -12,6 +13,7 @@ export class Login {
         req.username = 'jdoe';
         req.password = 'myp@ssword123';
         req.totp = 'JBSWY3DPEHPK3PXP';
+        req.autofillOnPageLoad = autofillOnPageLoadOptions.UseGlobalSetting;
         return req;
     }
 
@@ -22,6 +24,7 @@ export class Login {
         view.username = req.username;
         view.password = req.password;
         view.totp = req.totp;
+        view.autofillOnPageLoad = req.autofillOnPageLoad;
         return view;
     }
 
@@ -39,6 +42,7 @@ export class Login {
     username: string;
     password: string;
     totp: string;
+    autofillOnPageLoad: autofillOnPageLoadOptions;
 
     constructor(o?: LoginView | LoginDomain) {
         if (o == null) {
@@ -62,5 +66,6 @@ export class Login {
             this.password = o.password?.encryptedString;
             this.totp = o.totp?.encryptedString;
         }
+        this.autofillOnPageLoad = o.autofillOnPageLoad;
     }
 }

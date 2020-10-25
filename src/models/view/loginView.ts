@@ -3,6 +3,7 @@ import { View } from './view';
 
 import { Utils } from '../../misc/utils';
 import { Login } from '../domain/login';
+import { autofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
 
 export class LoginView implements View {
     username: string = null;
@@ -10,6 +11,7 @@ export class LoginView implements View {
     passwordRevisionDate?: Date = null;
     totp: string = null;
     uris: LoginUriView[] = null;
+    autofillOnPageLoad: autofillOnPageLoadOptions = null;
 
     constructor(l?: Login) {
         if (!l) {
@@ -17,6 +19,7 @@ export class LoginView implements View {
         }
 
         this.passwordRevisionDate = l.passwordRevisionDate;
+        this.autofillOnPageLoad = l.autofillOnPageLoad;
     }
 
     get uri(): string {

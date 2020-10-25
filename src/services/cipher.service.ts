@@ -992,6 +992,7 @@ export class CipherService implements CipherServiceAbstraction {
             case CipherType.Login:
                 cipher.login = new Login();
                 cipher.login.passwordRevisionDate = model.login.passwordRevisionDate;
+                cipher.login.autofillOnPageLoad = model.login.autofillOnPageLoad;
                 await this.encryptObjProperty(model.login, cipher.login, {
                     username: null,
                     password: null,

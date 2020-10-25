@@ -43,6 +43,7 @@ import { LoginView } from '../../models/view/loginView';
 import { SecureNoteView } from '../../models/view/secureNoteView';
 
 import { Utils } from '../../misc/utils';
+import { autofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
 
 @Directive()
 export class AddEditComponent implements OnInit {
@@ -82,6 +83,7 @@ export class AddEditComponent implements OnInit {
     addFieldTypeOptions: any[];
     uriMatchOptions: any[];
     ownershipOptions: any[] = [];
+    autofillOnPageLoadOptions: any[];
     currentDate = new Date();
     allowPersonal = true;
 
@@ -147,6 +149,11 @@ export class AddEditComponent implements OnInit {
             { name: i18nService.t('regEx'), value: UriMatchType.RegularExpression },
             { name: i18nService.t('exact'), value: UriMatchType.Exact },
             { name: i18nService.t('never'), value: UriMatchType.Never },
+        ];
+        this.autofillOnPageLoadOptions = [
+            { name: i18nService.t('autoFillOnPageLoadUseGlobalSettings'), value: autofillOnPageLoadOptions.UseGlobalSetting },
+            { name: i18nService.t('autoFillOnPageLoadAlways'), value: autofillOnPageLoadOptions.Always },
+            { name: i18nService.t('autoFillOnPageLoadNever'), value: autofillOnPageLoadOptions.Never }
         ];
     }
 

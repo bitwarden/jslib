@@ -8,12 +8,15 @@ import { CipherString } from './cipherString';
 import Domain from './domainBase';
 import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
+import { autofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
+
 export class Login extends Domain {
     uris: LoginUri[];
     username: CipherString;
     password: CipherString;
     passwordRevisionDate?: Date;
     totp: CipherString;
+    autofillOnPageLoad: autofillOnPageLoadOptions;
 
     constructor(obj?: LoginData, alreadyEncrypted: boolean = false) {
         super();
@@ -22,6 +25,7 @@ export class Login extends Domain {
         }
 
         this.passwordRevisionDate = obj.passwordRevisionDate != null ? new Date(obj.passwordRevisionDate) : null;
+        this.autofillOnPageLoad = obj.autofillOnPageLoad;
         this.buildDomainModel(this, obj, {
             username: null,
             password: null,
@@ -57,10 +61,11 @@ export class Login extends Domain {
     toLoginData(): LoginData {
         const l = new LoginData();
         l.passwordRevisionDate = this.passwordRevisionDate != null ? this.passwordRevisionDate.toISOString() : null;
+        l.autofillOnPageLoad = this.autofillOnPageLoad;
         this.buildDataModel(this, l, {
             username: null,
             password: null,
-            totp: null,
+            totp: null
         });
 
         if (this.uris != null && this.uris.length > 0) {
