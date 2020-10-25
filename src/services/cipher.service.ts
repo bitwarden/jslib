@@ -50,6 +50,7 @@ import { ConstantsService } from './constants.service';
 
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
+import { autofillOnPageLoadOptions } from '../enums/autofillOnPageLoadOptions';
 
 const Keys = {
     ciphersPrefix: 'ciphers_',
@@ -445,16 +446,16 @@ export class CipherService implements CipherServiceAbstraction {
         }
     }
 
-    async getLastUsedForUrl(url: string): Promise<CipherView> {
-        return this.getCipherForUrl(url, true, false);
+    async getLastUsedForUrl(url: string, autofillOnPageLoad:boolean = false): Promise<CipherView> {
+        return this.getCipherForUrl(url, true, false, autofillOnPageLoad);
     }
 
-    async getLastLaunchedForUrl(url: string): Promise<CipherView> {
-        return this.getCipherForUrl(url, false, true);
+    async getLastLaunchedForUrl(url: string, autofillOnPageLoad:boolean = false): Promise<CipherView> {
+        return this.getCipherForUrl(url, false, true, autofillOnPageLoad);
     }
 
     async getNextCipherForUrl(url: string): Promise<CipherView> {
-        return this.getCipherForUrl(url, false, false);
+        return this.getCipherForUrl(url, false, false, false);
     }
 
     updateLastUsedIndexForUrl(url: string) {
@@ -1054,21 +1055,37 @@ export class CipherService implements CipherServiceAbstraction {
         }
     }
 
-    private async getCipherForUrl(url: string, lastUsed: boolean, lastLaunched: boolean): Promise<CipherView> {
-        if (!this.sortedCiphersCache.isCached(url)) {
-            const ciphers = await this.getAllDecryptedForUrl(url);
+    private async getCipherForUrl(url: string, lastUsed: boolean, lastLaunched: boolean, autofillOnPageLoad: boolean): Promise<CipherView> {
+        
+        const cacheKey = autofillOnPageLoad ? url + '-autofillOnPageLoad' : url;
+
+        if (!this.sortedCiphersCache.isCached(cacheKey)) {
+            let ciphers = await this.getAllDecryptedForUrl(url);
             if (!ciphers) {
                 return null;
             }
-            this.sortedCiphersCache.addCiphers(url, ciphers);
+
+            if (autofillOnPageLoad) {
+                const globalAutofill = await this.storageService.get(ConstantsService.enableAutoFillOnPageLoadKey);
+                const canAutofill = (cipher: CipherView) => {
+                    return cipher.login.autofillOnPageLoad === autofillOnPageLoadOptions.Always || 
+                        (cipher.login.autofillOnPageLoad === autofillOnPageLoadOptions.UseGlobalSetting && globalAutofill)
+                }
+                ciphers = ciphers.filter(canAutofill);
+                if (!ciphers) {
+                    return;
+                }
+            }
+
+            this.sortedCiphersCache.addCiphers(cacheKey, ciphers);
         }
 
         if (lastLaunched) {
-            return this.sortedCiphersCache.getLastLaunched(url);
+            return this.sortedCiphersCache.getLastLaunched(cacheKey);
         } else if (lastUsed) {
-            return this.sortedCiphersCache.getLastUsed(url);
+            return this.sortedCiphersCache.getLastUsed(cacheKey);
         } else {
-            return this.sortedCiphersCache.getNext(url);
+            return this.sortedCiphersCache.getNext(cacheKey);
         }
     }
 }
