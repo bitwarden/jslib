@@ -1072,8 +1072,8 @@ export class CipherService implements CipherServiceAbstraction {
                         (cipher.login.autofillOnPageLoad === autofillOnPageLoadOptions.UseGlobalSetting && globalAutofill)
                 }
                 ciphers = ciphers.filter(canAutofill);
-                if (!ciphers) {
-                    return;
+                if (ciphers.length == 0) {
+                    return null;
                 }
             }
 
