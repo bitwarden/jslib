@@ -7,6 +7,7 @@ import { SendResponse } from '../response/sendResponse';
 
 export class SendData {
     id: string;
+    accessId: string;
     userId: string;
     type: SendType;
     name: string;
@@ -28,6 +29,7 @@ export class SendData {
         }
 
         this.id = response.id;
+        this.accessId = response.accessId;
         this.userId = userId;
         this.type = response.type;
         this.name = response.name;

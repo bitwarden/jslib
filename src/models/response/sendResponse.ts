@@ -7,6 +7,7 @@ import { SendTextApi } from '../api/sendTextApi';
 
 export class SendResponse extends BaseResponse {
     id: string;
+    accessId: string;
     type: SendType;
     name: string;
     notes: string;
@@ -24,6 +25,7 @@ export class SendResponse extends BaseResponse {
     constructor(response: any) {
         super(response);
         this.id = this.getResponseProperty('Id');
+        this.accessId = this.getResponseProperty('AccessId');
         this.type = this.getResponseProperty('Type');
         this.name = this.getResponseProperty('Name');
         this.notes = this.getResponseProperty('Notes');

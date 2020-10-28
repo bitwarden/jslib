@@ -10,6 +10,7 @@ import { View } from './view';
 
 export class SendView implements View {
     id: string = null;
+    accessId: string = null;
     name: string = null;
     notes: string = null;
     key: SymmetricCryptoKey;
@@ -30,6 +31,7 @@ export class SendView implements View {
         }
 
         this.id = s.id;
+        this.accessId = s.accessId;
         this.type = s.type;
         this.maxAccessCount = s.maxAccessCount;
         this.accessCount = s.accessCount;

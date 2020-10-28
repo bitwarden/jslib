@@ -16,6 +16,7 @@ import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
 export class Send extends Domain {
     id: string;
+    accessId: string;
     userId: string;
     type: SendType;
     name: CipherString;
@@ -39,11 +40,12 @@ export class Send extends Domain {
 
         this.buildDomainModel(this, obj, {
             id: null,
+            accessId: null,
             userId: null,
             name: null,
             notes: null,
             key: null,
-        }, alreadyEncrypted, ['id', 'userId']);
+        }, alreadyEncrypted, ['id', 'accessId', 'userId']);
 
         this.type = obj.type;
         this.maxAccessCount = obj.maxAccessCount;
@@ -106,6 +108,7 @@ export class Send extends Domain {
     toSendData(userId: string): SendData {
         const s = new SendData();
         s.id = this.id;
+        s.accessId = this.accessId;
         s.userId = userId;
         s.maxAccessCount = this.maxAccessCount;
         s.accessCount = this.accessCount;
