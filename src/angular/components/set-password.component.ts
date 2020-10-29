@@ -21,6 +21,8 @@ import { SetPasswordRequest } from '../../models/request/setPasswordRequest';
 
 import { ChangePasswordComponent as BaseChangePasswordComponent } from './change-password.component';
 
+import { BroadcasterService } from '../services/broadcaster.service';
+
 import { KdfType } from '../../enums/kdfType';
 
 export class SetPasswordComponent extends BaseChangePasswordComponent {
@@ -35,7 +37,8 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
     constructor(i18nService: I18nService, cryptoService: CryptoService, messagingService: MessagingService,
         userService: UserService, passwordGenerationService: PasswordGenerationService,
         platformUtilsService: PlatformUtilsService, policyService: PolicyService, private router: Router,
-        private apiService: ApiService, private syncService: SyncService, private route: ActivatedRoute) {
+        private apiService: ApiService, private syncService: SyncService, private route: ActivatedRoute,
+        private broadcasterService: BroadcasterService) {
         super(i18nService, cryptoService, messagingService, userService, passwordGenerationService,
             platformUtilsService, policyService);
     }
@@ -54,6 +57,7 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
             }
         });
 
+        this.broadcasterService.subscribe('hideMain', this.onCurrentWindowHide);
         super.ngOnInit();
     }
 
@@ -102,5 +106,12 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
         this.platformUtilsService.eventTrack('Toggled Master Password on Set Password');
         this.showPassword = !this.showPassword;
         document.getElementById(confirmField ? 'masterPasswordRetype' : 'masterPassword').focus();
+    }
+
+    onCurrentWindowHide() {
+        if (this === undefined) {
+            return;
+        }
+        this.showPassword = false;
     }
 }

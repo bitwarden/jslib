@@ -40,6 +40,8 @@ import { LoginUriView } from '../../models/view/loginUriView';
 import { LoginView } from '../../models/view/loginView';
 import { SecureNoteView } from '../../models/view/secureNoteView';
 
+import { BroadcasterService } from '../services/broadcaster.service';
+
 import { Utils } from '../../misc/utils';
 
 @Directive()
@@ -89,7 +91,8 @@ export class AddEditComponent implements OnInit {
         protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected auditService: AuditService, protected stateService: StateService,
         protected userService: UserService, protected collectionService: CollectionService,
-        protected messagingService: MessagingService, protected eventService: EventService) {
+        protected messagingService: MessagingService, protected eventService: EventService,
+        protected broadcasterService: BroadcasterService) {
         this.typeOptions = [
             { name: i18nService.t('typeLogin'), value: CipherType.Login },
             { name: i18nService.t('typeCard'), value: CipherType.Card },
@@ -160,6 +163,7 @@ export class AddEditComponent implements OnInit {
             }
         });
         this.writeableCollections = await this.loadCollections();
+        this.broadcasterService.subscribe('hideMain', this.onCurrentWindowHide);
     }
 
     async load() {
@@ -463,6 +467,19 @@ export class AddEditComponent implements OnInit {
                 this.i18nService.t('passwordExposed', matches.toString()));
         } else {
             this.platformUtilsService.showToast('success', null, this.i18nService.t('passwordSafe'));
+        }
+    }
+
+    onCurrentWindowHide() {
+        if (this === undefined) {
+            return;
+        }
+        this.showPassword = false;
+        this.showCardCode = false;
+        if (this.cipher !== null && this.cipher.hasFields) {
+            this.cipher.fields.forEach(field => {
+                field.showValue = false;
+            });
         }
     }
 

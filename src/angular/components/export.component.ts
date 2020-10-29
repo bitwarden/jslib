@@ -1,6 +1,7 @@
 import {
     Directive,
     EventEmitter,
+    OnInit,
     Output,
 } from '@angular/core';
 
@@ -9,10 +10,13 @@ import { EventService } from '../../abstractions/event.service';
 import { ExportService } from '../../abstractions/export.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
+
+import { BroadcasterService } from '../services/broadcaster.service';
+
 import { EventType } from '../../enums/eventType';
 
 @Directive()
-export class ExportComponent {
+export class ExportComponent implements OnInit {
     @Output() onSaved = new EventEmitter();
 
     formPromise: Promise<string>;
@@ -22,8 +26,13 @@ export class ExportComponent {
 
     constructor(protected cryptoService: CryptoService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected exportService: ExportService,
-        protected eventService: EventService, protected win: Window) { }
+        protected eventService: EventService, protected win: Window,
+        protected broadcasterService: BroadcasterService) { }
 
+    async ngOnInit() {
+        this.broadcasterService.subscribe('hideMain', this.onCurrentWindowHide);
+    }
+    
     async submit() {
         if (this.masterPassword == null || this.masterPassword === '') {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
@@ -52,6 +61,13 @@ export class ExportComponent {
         this.platformUtilsService.eventTrack('Toggled Master Password on Export');
         this.showPassword = !this.showPassword;
         document.getElementById('masterPassword').focus();
+    }
+
+    onCurrentWindowHide() {
+        if (this === undefined) {
+            return;
+        }
+        this.showPassword = false;
     }
 
     protected saved() {

@@ -27,6 +27,7 @@ import { AttachmentView } from '../../models/view/attachmentView';
 import { CipherView } from '../../models/view/cipherView';
 import { FieldView } from '../../models/view/fieldView';
 import { LoginUriView } from '../../models/view/loginUriView';
+
 import { BroadcasterService } from '../services/broadcaster.service';
 
 const BroadcasterSubscriptionId = 'ViewComponent';
@@ -75,6 +76,7 @@ export class ViewComponent implements OnDestroy, OnInit {
                 }
             });
         });
+        this.broadcasterService.subscribe('hideMain', this.onCurrentWindowHide);
     }
 
     ngOnDestroy() {
@@ -317,6 +319,19 @@ export class ViewComponent implements OnDestroy, OnInit {
         this.totpLow = this.totpSec <= 7;
         if (mod === 0) {
             await this.totpUpdateCode();
+        }
+    }
+
+    onCurrentWindowHide() {
+        if (this === undefined) {
+            return;
+        }
+        this.showPassword = false;
+        this.showCardCode = false;
+        if (this.cipher !== null && this.cipher.hasFields) {
+            this.cipher.fields.forEach(field => {
+                field.showValue = false;
+            });
         }
     }
 }

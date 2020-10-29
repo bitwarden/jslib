@@ -17,6 +17,7 @@ import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
 import { StorageService } from '../../abstractions/storage.service';
 
+import { BroadcasterService } from '../../services/broadcaster.service';
 import { ConstantsService } from '../../services/constants.service';
 
 import { Utils } from '../../misc/utils';
@@ -45,7 +46,8 @@ export class LoginComponent implements OnInit {
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
         protected stateService: StateService, protected environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
-        protected cryptoFunctionService: CryptoFunctionService, private storageService: StorageService) { }
+        protected cryptoFunctionService: CryptoFunctionService, protected broadcasterService: BroadcasterService,
+        private storageService: StorageService) { }
 
     async ngOnInit() {
         if (this.email == null || this.email === '') {
@@ -61,6 +63,7 @@ export class LoginComponent implements OnInit {
         if (Utils.isBrowser) {
             document.getElementById(this.email == null || this.email === '' ? 'email' : 'masterPassword').focus();
         }
+        this.broadcasterService.subscribe('hideMain', this.onCurrentWindowHide);
     }
 
     async submit() {
@@ -145,5 +148,12 @@ export class LoginComponent implements OnInit {
         this.platformUtilsService.launchUri(webUrl + '/#/sso?clientId=' + clientId +
             '&redirectUri=' + encodeURIComponent(ssoRedirectUri) +
             '&state=' + state + '&codeChallenge=' + codeChallenge);
+    }
+
+    onCurrentWindowHide() {
+        if (this === undefined) {
+            return;
+        }
+        this.showPassword = false;
     }
 }

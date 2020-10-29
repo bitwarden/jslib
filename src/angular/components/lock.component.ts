@@ -13,6 +13,7 @@ import { UserService } from '../../abstractions/user.service';
 import { VaultTimeoutService } from '../../abstractions/vaultTimeout.service';
 
 import { ConstantsService } from '../../services/constants.service';
+import { BroadcasterService } from '../services/broadcaster.service';
 
 import { CipherString } from '../../models/domain/cipherString';
 import { SymmetricCryptoKey } from '../../models/domain/symmetricCryptoKey';
@@ -44,7 +45,7 @@ export class LockComponent implements OnInit {
         protected userService: UserService, protected cryptoService: CryptoService,
         protected storageService: StorageService, protected vaultTimeoutService: VaultTimeoutService,
         protected environmentService: EnvironmentService, protected stateService: StateService,
-        protected apiService: ApiService) { }
+        protected apiService: ApiService, protected broadcasterService: BroadcasterService) { }
 
     async ngOnInit() {
         this.pinSet = await this.vaultTimeoutService.isPinLockSet();
@@ -58,6 +59,7 @@ export class LockComponent implements OnInit {
             vaultUrl = 'https://bitwarden.com';
         }
         this.webVaultHostname = Utils.getHostname(vaultUrl);
+        this.broadcasterService.subscribe('hideMain', this.onCurrentWindowHide);
     }
 
     async submit() {
@@ -168,6 +170,13 @@ export class LockComponent implements OnInit {
         this.platformUtilsService.eventTrack('Toggled Master Password on Unlock');
         this.showPassword = !this.showPassword;
         document.getElementById(this.pinLock ? 'pin' : 'masterPassword').focus();
+    }
+
+    onCurrentWindowHide() {
+        if (this === undefined) {
+            return;
+        }
+        this.showPassword = false;
     }
 
     private async setKeyAndContinue(key: SymmetricCryptoKey) {

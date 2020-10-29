@@ -1,3 +1,4 @@
+import { OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { KeysRequest } from '../../models/request/keysRequest';
@@ -12,9 +13,11 @@ import { PasswordGenerationService } from '../../abstractions/passwordGeneration
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
 
+import { BroadcasterService } from '../services/broadcaster.service';
+
 import { KdfType } from '../../enums/kdfType';
 
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
     name: string = '';
     email: string = '';
     masterPassword: string = '';
@@ -32,7 +35,12 @@ export class RegisterComponent {
         protected i18nService: I18nService, protected cryptoService: CryptoService,
         protected apiService: ApiService, protected stateService: StateService,
         protected platformUtilsService: PlatformUtilsService,
-        protected passwordGenerationService: PasswordGenerationService) { }
+        protected passwordGenerationService: PasswordGenerationService,
+        protected broadcasterService: BroadcasterService) { }
+
+    async ngOnInit() {
+        this.broadcasterService.subscribe('hideMain', this.onCurrentWindowHide);
+    }
 
     get masterPasswordScoreWidth() {
         return this.masterPasswordScore == null ? 0 : (this.masterPasswordScore + 1) * 20;
@@ -156,5 +164,12 @@ export class RegisterComponent {
             userInput = userInput.concat(this.name.trim().toLowerCase().split(' '));
         }
         return userInput;
+    }
+
+    onCurrentWindowHide() {
+        if (this === undefined) {
+            return;
+        }
+        this.showPassword = false;
     }
 }
