@@ -182,8 +182,8 @@ export class CryptoService implements CryptoServiceAbstraction {
             throw new Error('No public key available.');
         }
         const keyFingerprint = await this.cryptoFunctionService.hash(publicKey, 'sha256');
-        const userFingerprint = await this.hkdfExpand(keyFingerprint, Utils.fromUtf8ToArray(userId), 32);
-        return this.hashPhrase(userFingerprint.buffer);
+        const userFingerprint = await this.cryptoFunctionService.hkdfExpand(keyFingerprint, userId, 32, 'sha256');
+        return this.hashPhrase(userFingerprint);
     }
 
     @sequentialize(() => 'getOrgKeys')
@@ -679,26 +679,11 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     private async stretchKey(key: SymmetricCryptoKey): Promise<SymmetricCryptoKey> {
         const newKey = new Uint8Array(64);
-        newKey.set(await this.hkdfExpand(key.key, Utils.fromUtf8ToArray('enc'), 32));
-        newKey.set(await this.hkdfExpand(key.key, Utils.fromUtf8ToArray('mac'), 32), 32);
+        const encKey = await this.cryptoFunctionService.hkdfExpand(key.key, 'enc', 32, 'sha256');
+        const macKey = await this.cryptoFunctionService.hkdfExpand(key.key, 'mac', 32, 'sha256');
+        newKey.set(new Uint8Array(encKey));
+        newKey.set(new Uint8Array(macKey), 32);
         return new SymmetricCryptoKey(newKey.buffer);
-    }
-
-    // ref: https://tools.ietf.org/html/rfc5869
-    private async hkdfExpand(prk: ArrayBuffer, info: Uint8Array, size: number) {
-        const hashLen = 32; // sha256
-        const okm = new Uint8Array(size);
-        let previousT = new Uint8Array(0);
-        const n = Math.ceil(size / hashLen);
-        for (let i = 0; i < n; i++) {
-            const t = new Uint8Array(previousT.length + info.length + 1);
-            t.set(previousT);
-            t.set(info, previousT.length);
-            t.set([i + 1], t.length - 1);
-            previousT = new Uint8Array(await this.cryptoFunctionService.hmac(t.buffer, prk, 'sha256'));
-            okm.set(previousT, i * hashLen);
-        }
-        return okm;
     }
 
     private async hashPhrase(hash: ArrayBuffer, minimumEntropy: number = 64) {
