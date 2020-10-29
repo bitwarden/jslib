@@ -26,6 +26,7 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         });
     }
 
+    // ref: https://tools.ietf.org/html/rfc5869
     async hkdf(ikm: ArrayBuffer, salt: string | ArrayBuffer, info: string | ArrayBuffer,
         outputByteSize: number, algorithm: 'sha256' | 'sha512'): Promise<ArrayBuffer> {
         const saltBuf = this.toArrayBuffer(salt);
