@@ -356,6 +356,17 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('GET', '/accounts/sso/user-identifier', null, true, true);
     }
 
+
+    async postUserApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+        const r = await this.send('POST', '/accounts/api-key', request, true, true);
+        return new ApiKeyResponse(r);
+    }
+
+    async postUserRotateApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+        const r = await this.send('POST', '/organizations/rotate-api-key', request, true, true);
+        return new ApiKeyResponse(r);
+    }
+
     // Folder APIs
 
     async getFolder(id: string): Promise<FolderResponse> {
