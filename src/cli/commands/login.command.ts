@@ -46,7 +46,39 @@ export class LoginCommand {
 
         let ssoCodeVerifier: string = null;
         let ssoCode: string = null;
-        if (cmd.sso != null && this.canInteract) {
+
+        let clientId: string = null;
+        let clientSecret: string = null;
+
+        if (cmd.apiKey != null) {
+            const storedClientId: string = process.env.BW_CLIENTID;
+            const storedClientSecret: string = process.env.BW_CLIENTSECRET;
+            if (storedClientId == null) {
+                if (this.canInteract) {
+                    const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+                        type: 'input',
+                        name: 'clientId',
+                        message: 'client_id:',
+                    });
+                    clientId = "cli." + answer.clientId;
+                }
+                else {
+                    clientId = null;
+                }
+            } else {
+                clientId = storedClientId;
+            }
+            if (this.canInteract && storedClientSecret == null) {
+                const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+                    type: 'input',
+                    name: 'clientSecret',
+                    message: 'client_secret:',
+                });
+                clientSecret = answer.clientSecret;
+            } else {
+                clientSecret = storedClientSecret;
+            }
+        } else if (cmd.sso != null && this.canInteract) {
             const passwordOptions: any = {
                 type: 'password',
                 length: 64,
@@ -117,7 +149,10 @@ export class LoginCommand {
 
             let response: AuthResult = null;
             if (twoFactorToken != null && twoFactorMethod != null) {
-                if (ssoCode != null && ssoCodeVerifier != null) {
+                if (clientId != null && clientSecret != null) {
+                    response = await this.authService.logInApiKeyComplete(clientId, clientSecret, twoFactorMethod,
+                        twoFactorToken, false);
+                } else if (ssoCode != null && ssoCodeVerifier != null) {
                     response = await this.authService.logInSsoComplete(ssoCode, ssoCodeVerifier, this.ssoRedirectUri,
                         twoFactorMethod, twoFactorToken, false);
                 } else {
@@ -125,7 +160,9 @@ export class LoginCommand {
                         twoFactorToken, false);
                 }
             } else {
-                if (ssoCode != null && ssoCodeVerifier != null) {
+                if (clientId != null && clientSecret != null) {
+                    response = await this.authService.logInApiKey(clientId, clientSecret);
+                } else if (ssoCode != null && ssoCodeVerifier != null) {
                     response = await this.authService.logInSso(ssoCode, ssoCodeVerifier, this.ssoRedirectUri);
 
                 } else {

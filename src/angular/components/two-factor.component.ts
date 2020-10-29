@@ -8,7 +8,6 @@ import {
     Router,
 } from '@angular/router';
 
-import { DeviceType } from '../../enums/deviceType';
 import { TwoFactorProviderType } from '../../enums/twoFactorProviderType';
 
 import { TwoFactorEmailRequest } from '../../models/request/twoFactorEmailRequest';
@@ -59,8 +58,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
-        if ((!this.authService.authingWithSso() && !this.authService.authingWithPassword()) ||
-            this.authService.twoFactorProvidersData == null) {
+        if (!this.authing || this.authService.twoFactorProvidersData == null) {
             this.router.navigate([this.loginRoute]);
             return;
         }
@@ -75,7 +73,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             }
         });
 
-        if (this.authService.authingWithSso()) {
+        if (this.needsLock) {
             this.successRoute = 'lock';
         }
 
@@ -245,5 +243,13 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             this.u2f.stop();
             this.u2f.cleanup();
         }
+    }
+
+    get authing(): boolean {
+        return this.authService.authingWithPassword() || this.authService.authingWithSso() || this.authService.authingWithApiKey()
+    }
+
+    get needsLock(): boolean {
+        return this.authService.authingWithSso() || this.authService.authingWithApiKey();
     }
 }
