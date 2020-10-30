@@ -12,7 +12,6 @@ import { CipherString } from './cipherString';
 import Domain from './domainBase';
 import { SendFile } from './sendFile';
 import { SendText } from './sendText';
-import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
 export class Send extends Domain {
     id: string;
@@ -80,8 +79,8 @@ export class Send extends Domain {
         }
 
         try {
-            const decValue = await cryptoService.decryptToBytes(this.key, null);
-            model.key = new SymmetricCryptoKey(decValue);
+            model.key = await cryptoService.decryptToBytes(this.key, null);
+            model.cryptoKey = await cryptoService.makeSendKey(model.key);
         } catch (e) {
             // TODO: error?
         }
@@ -89,14 +88,14 @@ export class Send extends Domain {
         await this.decryptObj(model, {
             name: null,
             notes: null,
-        }, null, model.key);
+        }, null, model.cryptoKey);
 
         switch (this.type) {
             case SendType.File:
-                model.file = await this.file.decrypt(model.key);
+                model.file = await this.file.decrypt(model.cryptoKey);
                 break;
             case SendType.Text:
-                model.text = await this.text.decrypt(model.key);
+                model.text = await this.text.decrypt(model.cryptoKey);
                 break;
             default:
                 break;

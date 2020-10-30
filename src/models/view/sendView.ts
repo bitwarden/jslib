@@ -13,7 +13,8 @@ export class SendView implements View {
     accessId: string = null;
     name: string = null;
     notes: string = null;
-    key: SymmetricCryptoKey;
+    key: ArrayBuffer;
+    cryptoKey: SymmetricCryptoKey;
     type: SendType = null;
     text = new SendTextView();
     file = new SendFileView();
@@ -43,6 +44,6 @@ export class SendView implements View {
     }
 
     get urlB64Key(): string {
-        return Utils.fromBufferToUrlB64(this.key.key);
+        return Utils.fromBufferToUrlB64(this.key);
     }
 }
