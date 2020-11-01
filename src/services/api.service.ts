@@ -363,7 +363,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     async postUserRotateApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
-        const r = await this.send('POST', '/organizations/rotate-api-key', request, true, true);
+        const r = await this.send('POST', '/accounts/rotate-api-key', request, true, true);
         return new ApiKeyResponse(r);
     }
 
