@@ -2,6 +2,8 @@ import { CipherString } from './cipherString';
 
 import { View } from '../view/view';
 
+import { SymmetricCryptoKey } from './symmetricCryptoKey';
+
 export default class Domain {
     protected buildDomainModel<D extends Domain>(domain: D, dataObj: any, map: any,
         alreadyEncrypted: boolean, notEncList: any[] = []) {
@@ -33,7 +35,8 @@ export default class Domain {
         }
     }
 
-    protected async decryptObj<T extends View>(viewModel: T, map: any, orgId: string): Promise<T> {
+    protected async decryptObj<T extends View>(viewModel: T, map: any, orgId: string,
+        key: SymmetricCryptoKey = null): Promise<T> {
         const promises = [];
         const self: any = this;
 
@@ -47,7 +50,7 @@ export default class Domain {
                 const p = Promise.resolve().then(() => {
                     const mapProp = map[theProp] || theProp;
                     if (self[mapProp]) {
-                        return self[mapProp].decrypt(orgId);
+                        return self[mapProp].decrypt(orgId, key);
                     }
                     return null;
                 }).then((val: any) => {
