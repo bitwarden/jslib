@@ -24,6 +24,8 @@ export class RegisterComponent {
     formPromise: Promise<any>;
     masterPasswordScore: number;
     referenceData: ReferenceEventRequest;
+    showTerms = true;
+    acceptPolicies: boolean = false;
 
     protected successRoute = 'login';
     private masterPasswordStrengthTimeout: any;
@@ -32,7 +34,9 @@ export class RegisterComponent {
         protected i18nService: I18nService, protected cryptoService: CryptoService,
         protected apiService: ApiService, protected stateService: StateService,
         protected platformUtilsService: PlatformUtilsService,
-        protected passwordGenerationService: PasswordGenerationService) { }
+        protected passwordGenerationService: PasswordGenerationService) {
+        this.showTerms = !platformUtilsService.isSelfHost();
+    }
 
     get masterPasswordScoreWidth() {
         return this.masterPasswordScore == null ? 0 : (this.masterPasswordScore + 1) * 20;
@@ -65,6 +69,12 @@ export class RegisterComponent {
     }
 
     async submit() {
+        if (!this.acceptPolicies && this.showTerms) {
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                this.i18nService.t('acceptPoliciesError'));
+            return;
+        }
+
         if (this.email == null || this.email === '') {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('emailRequired'));
