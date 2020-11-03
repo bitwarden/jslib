@@ -112,6 +112,11 @@ export class RegisterComponent {
             }
         }
 
+        if (this.hint === this.masterPassword) {
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), this.i18nService.t('hintEqualsPassword'));
+            return;
+        }
+
         this.name = this.name === '' ? null : this.name;
         this.email = this.email.trim().toLowerCase();
         const kdf = KdfType.PBKDF2_SHA256;
