@@ -114,6 +114,7 @@ export class WindowMain {
             webPreferences: {
                 nodeIntegration: true,
                 webviewTag: true,
+                backgroundThrottling: false,
             },
         });
 
