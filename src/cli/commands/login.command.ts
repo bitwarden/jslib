@@ -9,6 +9,7 @@ import { TwoFactorEmailRequest } from '../../models/request/twoFactorEmailReques
 
 import { ApiService } from '../../abstractions/api.service';
 import { AuthService } from '../../abstractions/auth.service';
+import { CryptoService } from '../../abstractions/crypto.service';
 import { CryptoFunctionService } from '../../abstractions/cryptoFunction.service';
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
@@ -37,7 +38,7 @@ export class LoginCommand {
         protected i18nService: I18nService, protected environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
         protected cryptoFunctionService: CryptoFunctionService, protected platformUtilsService: PlatformUtilsService,
-        clientId: string) {
+        clientId: string, protected cryptoService: CryptoService) {
         this.clientId = clientId;
     }
 
@@ -60,7 +61,7 @@ export class LoginCommand {
                         name: 'clientId',
                         message: 'client_id:',
                     });
-                    clientId = "cli." + answer.clientId;
+                    clientId = 'cli.' + answer.clientId;
                 }
                 else {
                     clientId = null;
@@ -164,7 +165,6 @@ export class LoginCommand {
                     response = await this.authService.logInApiKey(clientId, clientSecret);
                 } else if (ssoCode != null && ssoCodeVerifier != null) {
                     response = await this.authService.logInSso(ssoCode, ssoCodeVerifier, this.ssoRedirectUri);
-
                 } else {
                     response = await this.authService.logIn(email, password);
                 }
@@ -243,6 +243,25 @@ export class LoginCommand {
                 return Response.error('In order to log in with SSO from the CLI, you must first log in' +
                     ' through the web vault to set your master password.');
             }
+
+            // if (clientSecret != null && this.success != null) {
+            //     if (password == null || password === '') {
+            //         if (cmd.passwordfile) {
+            //             password = await NodeUtils.readFirstLine(cmd.passwordfile);
+            //         } else if (cmd.passwordenv && process.env[cmd.passwordenv]) {
+            //             password = process.env[cmd.passwordenv];
+            //         } else if (this.canInteract) {
+            //             const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+            //                 type: 'password',
+            //                 name: 'password',
+            //                 message: 'Master password:',
+            //             });
+            //             password = answer.password;
+            //         }
+            //         await this.validatedParams();
+            //         this.authService.buildKeysFromTokenEmail(password);
+            //     }
+            // }
 
             if (this.success != null) {
                 const res = await this.success();

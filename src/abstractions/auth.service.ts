@@ -32,4 +32,5 @@ export abstract class AuthService {
     authingWithApiKey: () => boolean;
     authingWithSso: () => boolean;
     authingWithPassword: () => boolean;
+    buildKeysFromTokenEmail: (password: string) => void;
 }

@@ -164,6 +164,7 @@ export class AuthService implements AuthServiceAbstraction {
         return await this.logInHelper(null, null, null, null, null, clientId, clientSecret, null,
             twoFactorProvider, twoFactorToken, remember);
     }
+
     logOut(callback: Function) {
         callback();
         this.messagingService.send('loggedOut');
@@ -258,6 +259,14 @@ export class AuthService implements AuthServiceAbstraction {
 
     authingWithPassword(): boolean {
         return this.email != null && this.masterPasswordHash != null;
+    }
+
+    async buildKeysFromTokenEmail(password: string) {
+        const email = this.tokenService.getEmail();
+        const key = await this.makePreloginKey(password, email);
+        const hashedPassword = await this.cryptoService.hashPassword(password, key);
+        await this.cryptoService.setKey(key);
+        await this.cryptoService.setKeyHash(hashedPassword);
     }
 
     private async logInHelper(email: string, hashedPassword: string, code: string, codeVerifier: string,
@@ -364,6 +373,7 @@ export class AuthService implements AuthServiceAbstraction {
         this.messagingService.send('loggedIn');
         return result;
     }
+
     private clearState(): void {
         this.key = null;
         this.email = null;
