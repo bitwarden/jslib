@@ -244,25 +244,6 @@ export class LoginCommand {
                     ' through the web vault to set your master password.');
             }
 
-            // if (clientSecret != null && this.success != null) {
-            //     if (password == null || password === '') {
-            //         if (cmd.passwordfile) {
-            //             password = await NodeUtils.readFirstLine(cmd.passwordfile);
-            //         } else if (cmd.passwordenv && process.env[cmd.passwordenv]) {
-            //             password = process.env[cmd.passwordenv];
-            //         } else if (this.canInteract) {
-            //             const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-            //                 type: 'password',
-            //                 name: 'password',
-            //                 message: 'Master password:',
-            //             });
-            //             password = answer.password;
-            //         }
-            //         await this.validatedParams();
-            //         this.authService.buildKeysFromTokenEmail(password);
-            //     }
-            // }
-
             if (this.success != null) {
                 const res = await this.success();
                 return Response.success(res);
