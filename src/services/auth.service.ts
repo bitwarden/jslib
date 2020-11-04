@@ -261,14 +261,6 @@ export class AuthService implements AuthServiceAbstraction {
         return this.email != null && this.masterPasswordHash != null;
     }
 
-    async buildKeysFromTokenEmail(password: string) {
-        const email = this.tokenService.getEmail();
-        const key = await this.makePreloginKey(password, email);
-        const hashedPassword = await this.cryptoService.hashPassword(password, key);
-        await this.cryptoService.setKey(key);
-        await this.cryptoService.setKeyHash(hashedPassword);
-    }
-
     private async logInHelper(email: string, hashedPassword: string, code: string, codeVerifier: string,
         redirectUrl: string, clientId: string, clientSecret: string, key: SymmetricCryptoKey,
         twoFactorProvider?: TwoFactorProviderType, twoFactorToken?: string, remember?: boolean): Promise<AuthResult> {

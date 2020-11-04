@@ -9,7 +9,6 @@ import { TwoFactorEmailRequest } from '../../models/request/twoFactorEmailReques
 
 import { ApiService } from '../../abstractions/api.service';
 import { AuthService } from '../../abstractions/auth.service';
-import { CryptoService } from '../../abstractions/crypto.service';
 import { CryptoFunctionService } from '../../abstractions/cryptoFunction.service';
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
@@ -38,7 +37,7 @@ export class LoginCommand {
         protected i18nService: I18nService, protected environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
         protected cryptoFunctionService: CryptoFunctionService, protected platformUtilsService: PlatformUtilsService,
-        clientId: string, protected cryptoService: CryptoService) {
+        clientId: string) {
         this.clientId = clientId;
     }
 
