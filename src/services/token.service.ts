@@ -161,38 +161,38 @@ export class TokenService implements TokenServiceAbstraction {
 
     getUserId(): string {
         const decoded = this.decodeToken();
-        if (typeof decoded.sub === 'undefined' && typeof decoded.client_sub === 'undefined') {
+        if (typeof decoded.sub === 'undefined') {
             throw new Error('No user id found');
         }
 
-        return decoded.sub as string ?? decoded.client_sub as string;
+        return decoded.sub as string;
     }
 
     getEmail(): string {
         const decoded = this.decodeToken();
-        if (typeof decoded.email === 'undefined' && typeof decoded.client_email === 'undefined') {
+        if (typeof decoded.email === 'undefined') {
             throw new Error('No email found');
         }
 
-        return decoded.email as string ?? decoded.client_email as string;
+        return decoded.email as string;
     }
 
     getEmailVerified(): boolean {
         const decoded = this.decodeToken();
-        if (typeof decoded.email_verified === 'undefined' && typeof decoded.client_email_verified === 'undefined') {
+        if (typeof decoded.email_verified === 'undefined') {
             throw new Error('No email verification found');
         }
 
-        return decoded.email_verified as boolean || decoded.client_email_verified as boolean;
+        return decoded.email_verified as boolean;
     }
 
     getName(): string {
         const decoded = this.decodeToken();
-        if (typeof decoded.name === 'undefined' && typeof decoded.client_name === 'undefined') {
+        if (typeof decoded.name === 'undefined') {
             return null;
         }
 
-        return decoded.name as string ?? decoded.client_name as string;
+        return decoded.name as string;
     }
 
     getPremium(): boolean {
