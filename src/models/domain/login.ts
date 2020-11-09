@@ -4,11 +4,11 @@ import { LoginData } from '../data/loginData';
 
 import { LoginView } from '../view/loginView';
 
+import { AutofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
+
 import { CipherString } from './cipherString';
 import Domain from './domainBase';
 import { SymmetricCryptoKey } from './symmetricCryptoKey';
-
-import { autofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
 
 export class Login extends Domain {
     uris: LoginUri[];
@@ -16,7 +16,7 @@ export class Login extends Domain {
     password: CipherString;
     passwordRevisionDate?: Date;
     totp: CipherString;
-    autofillOnPageLoad: autofillOnPageLoadOptions;
+    autofillOnPageLoad: AutofillOnPageLoadOptions;
 
     constructor(obj?: LoginData, alreadyEncrypted: boolean = false) {
         super();

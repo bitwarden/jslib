@@ -10,6 +10,7 @@ import {
     Output,
 } from '@angular/core';
 
+import { AutofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
 import { CipherType } from '../../enums/cipherType';
 import { EventType } from '../../enums/eventType';
 import { FieldType } from '../../enums/fieldType';
@@ -43,7 +44,6 @@ import { LoginView } from '../../models/view/loginView';
 import { SecureNoteView } from '../../models/view/secureNoteView';
 
 import { Utils } from '../../misc/utils';
-import { autofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
 
 @Directive()
 export class AddEditComponent implements OnInit {
@@ -151,9 +151,9 @@ export class AddEditComponent implements OnInit {
             { name: i18nService.t('never'), value: UriMatchType.Never },
         ];
         this.autofillOnPageLoadOptions = [
-            { name: i18nService.t('autoFillOnPageLoadUseGlobalSettings'), value: autofillOnPageLoadOptions.UseGlobalSetting },
-            { name: i18nService.t('autoFillOnPageLoadAlways'), value: autofillOnPageLoadOptions.Always },
-            { name: i18nService.t('autoFillOnPageLoadNever'), value: autofillOnPageLoadOptions.Never }
+            { name: i18nService.t('autoFillOnPageLoadUseGlobalSettings'), value: AutofillOnPageLoadOptions.UseGlobalSetting },
+            { name: i18nService.t('autoFillOnPageLoadAlways'), value: AutofillOnPageLoadOptions.Always },
+            { name: i18nService.t('autoFillOnPageLoadNever'), value: AutofillOnPageLoadOptions.Never }
         ];
     }
 

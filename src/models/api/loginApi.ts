@@ -1,7 +1,7 @@
 import { BaseResponse } from '../response/baseResponse';
 
+import { AutofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
 import { LoginUriApi } from './loginUriApi';
-import { autofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
 
 export class LoginApi extends BaseResponse {
     uris: LoginUriApi[];
@@ -9,7 +9,7 @@ export class LoginApi extends BaseResponse {
     password: string;
     passwordRevisionDate: string;
     totp: string;
-    autofillOnPageLoad: autofillOnPageLoadOptions;
+    autofillOnPageLoad: AutofillOnPageLoadOptions;
 
     constructor(data: any = null) {
         super(data);

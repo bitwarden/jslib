@@ -1,3 +1,4 @@
+import { AutofillOnPageLoadOptions } from '../enums/autofillOnPageLoadOptions';
 import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
 import { UriMatchType } from '../enums/uriMatchType';
@@ -50,7 +51,6 @@ import { ConstantsService } from './constants.service';
 
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
-import { autofillOnPageLoadOptions } from '../enums/autofillOnPageLoadOptions';
 
 const Keys = {
     ciphersPrefix: 'ciphers_',
@@ -446,11 +446,11 @@ export class CipherService implements CipherServiceAbstraction {
         }
     }
 
-    async getLastUsedForUrl(url: string, autofillOnPageLoad:boolean = false): Promise<CipherView> {
+    async getLastUsedForUrl(url: string, autofillOnPageLoad: boolean = false): Promise<CipherView> {
         return this.getCipherForUrl(url, true, false, autofillOnPageLoad);
     }
 
-    async getLastLaunchedForUrl(url: string, autofillOnPageLoad:boolean = false): Promise<CipherView> {
+    async getLastLaunchedForUrl(url: string, autofillOnPageLoad: boolean = false): Promise<CipherView> {
         return this.getCipherForUrl(url, false, true, autofillOnPageLoad);
     }
 
@@ -1056,7 +1056,7 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     private async getCipherForUrl(url: string, lastUsed: boolean, lastLaunched: boolean, autofillOnPageLoad: boolean): Promise<CipherView> {
-        
+
         const cacheKey = autofillOnPageLoad ? url + '-autofillOnPageLoad' : url;
 
         if (!this.sortedCiphersCache.isCached(cacheKey)) {
@@ -1067,12 +1067,11 @@ export class CipherService implements CipherServiceAbstraction {
 
             if (autofillOnPageLoad) {
                 const globalAutofill = await this.storageService.get(ConstantsService.enableAutoFillOnPageLoadKey);
-                const canAutofill = (cipher: CipherView) => {
-                    return cipher.login.autofillOnPageLoad === autofillOnPageLoadOptions.Always || 
-                        (cipher.login.autofillOnPageLoad === autofillOnPageLoadOptions.UseGlobalSetting && globalAutofill)
-                }
-                ciphers = ciphers.filter(canAutofill);
-                if (ciphers.length == 0) {
+                ciphers = ciphers.filter((cipher: CipherView) => {
+                    return cipher.login.autofillOnPageLoad === AutofillOnPageLoadOptions.Always ||
+                        (cipher.login.autofillOnPageLoad === AutofillOnPageLoadOptions.UseGlobalSetting && globalAutofill)
+                });
+                if (ciphers.length === 0) {
                     return null;
                 }
             }

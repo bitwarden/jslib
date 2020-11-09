@@ -1,7 +1,7 @@
 import { LoginApi } from '../api/loginApi';
 
+import { AutofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
 import { LoginUriData } from './loginUriData';
-import { autofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
 
 export class LoginData {
     uris: LoginUriData[];
@@ -9,7 +9,7 @@ export class LoginData {
     password: string;
     passwordRevisionDate: string;
     totp: string;
-    autofillOnPageLoad: autofillOnPageLoadOptions;
+    autofillOnPageLoad: AutofillOnPageLoadOptions;
 
     constructor(data?: LoginApi) {
         if (data == null) {
