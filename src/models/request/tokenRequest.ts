@@ -44,7 +44,6 @@ export class TokenRequest {
             obj.scope = 'api';
             obj.grant_type = 'client_credentials';
             obj.client_secret = this.clientSecret;
-            obj.client_id = `cli.${clientId}`;
         } else if (this.masterPasswordHash != null && this.email != null) {
             obj.grant_type = 'password';
             obj.username = this.email;

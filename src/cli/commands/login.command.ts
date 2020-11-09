@@ -60,7 +60,7 @@ export class LoginCommand {
                         name: 'clientId',
                         message: 'client_id:',
                     });
-                    clientId = 'cli.' + answer.clientId;
+                    clientId = answer.clientId;
                 }
                 else {
                     clientId = null;
