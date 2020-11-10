@@ -50,7 +50,7 @@ export class LoginCommand {
         let clientId: string = null;
         let clientSecret: string = null;
 
-        if (cmd.apiKey != null) {
+        if (cmd.apikey != null) {
             const storedClientId: string = process.env.BW_CLIENTID;
             const storedClientSecret: string = process.env.BW_CLIENTSECRET;
             if (storedClientId == null) {
