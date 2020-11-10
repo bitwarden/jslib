@@ -61,8 +61,7 @@ export class LoginCommand {
                         message: 'client_id:',
                     });
                     clientId = answer.clientId;
-                }
-                else {
+                } else {
                     clientId = null;
                 }
             } else {
