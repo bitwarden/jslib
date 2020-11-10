@@ -1057,7 +1057,7 @@ export class CipherService implements CipherServiceAbstraction {
 
     private async getCipherForUrl(url: string, lastUsed: boolean, lastLaunched: boolean, autofillOnPageLoad: boolean): Promise<CipherView> {
 
-        const cacheKey = autofillOnPageLoad ? url + '-autofillOnPageLoad' : url;
+        const cacheKey = autofillOnPageLoad ? 'autofillOnPageLoad-' + url : url;
 
         if (!this.sortedCiphersCache.isCached(cacheKey)) {
             let ciphers = await this.getAllDecryptedForUrl(url);
