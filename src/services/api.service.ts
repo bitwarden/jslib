@@ -179,7 +179,7 @@ export class ApiService implements ApiServiceAbstraction {
             headers.set('User-Agent', this.customUserAgent);
         }
         const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
-            body: this.qsStringify(request.toIdentityToken(this.platformUtilsService.identityClientId)),
+            body: this.qsStringify(request.toIdentityToken(request.clientId ?? this.platformUtilsService.identityClientId)),
             credentials: this.getCredentials(),
             cache: 'no-store',
             headers: headers,
@@ -358,6 +358,16 @@ export class ApiService implements ApiServiceAbstraction {
 
     async getSsoUserIdentifier(): Promise<string> {
         return this.send('GET', '/accounts/sso/user-identifier', null, true, true);
+    }
+
+    async postUserApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+        const r = await this.send('POST', '/accounts/api-key', request, true, true);
+        return new ApiKeyResponse(r);
+    }
+
+    async postUserRotateApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+        const r = await this.send('POST', '/accounts/rotate-api-key', request, true, true);
+        return new ApiKeyResponse(r);
     }
 
     // Folder APIs
