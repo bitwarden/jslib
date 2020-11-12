@@ -5,6 +5,7 @@ import { CryptoService } from '../abstractions/crypto.service';
 import { FolderService } from '../abstractions/folder.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { PolicyService } from '../abstractions/policy.service';
+import { SendService } from '../abstractions/send.service';
 import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
 import { SyncService as SyncServiceAbstraction } from '../abstractions/sync.service';
@@ -15,6 +16,7 @@ import { CollectionData } from '../models/data/collectionData';
 import { FolderData } from '../models/data/folderData';
 import { OrganizationData } from '../models/data/organizationData';
 import { PolicyData } from '../models/data/policyData';
+import { SendData } from '../models/data/sendData';
 
 import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionDetailsResponse } from '../models/response/collectionResponse';
@@ -26,6 +28,7 @@ import {
 } from '../models/response/notificationResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
+import { SendResponse } from '../models/response/sendResponse';
 
 const Keys = {
     lastSyncPrefix: 'lastSync_',
@@ -39,7 +42,7 @@ export class SyncService implements SyncServiceAbstraction {
         private cipherService: CipherService, private cryptoService: CryptoService,
         private collectionService: CollectionService, private storageService: StorageService,
         private messagingService: MessagingService, private policyService: PolicyService,
-        private logoutCallback: (expired: boolean) => Promise<void>) {
+        private sendService: SendService, private logoutCallback: (expired: boolean) => Promise<void>) {
     }
 
     async getLastSync(): Promise<Date> {
@@ -94,6 +97,7 @@ export class SyncService implements SyncServiceAbstraction {
             await this.syncFolders(userId, response.folders);
             await this.syncCollections(response.collections);
             await this.syncCiphers(userId, response.ciphers);
+            await this.syncSends(userId, response.sends);
             await this.syncSettings(userId, response.domains);
             await this.syncPolicies(response.policies);
 
@@ -285,6 +289,14 @@ export class SyncService implements SyncServiceAbstraction {
             ciphers[c.id] = new CipherData(c, userId);
         });
         return await this.cipherService.replace(ciphers);
+    }
+
+    private async syncSends(userId: string, response: SendResponse[]) {
+        const sends: { [id: string]: SendData; } = {};
+        response.forEach((s) => {
+            sends[s.id] = new SendData(s, userId);
+        });
+        return await this.sendService.replace(sends);
     }
 
     private async syncSettings(userId: string, response: DomainsResponse) {
