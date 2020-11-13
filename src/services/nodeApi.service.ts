@@ -1,5 +1,5 @@
 import * as FormData from 'form-data';
-let HttpsProxyAgent = require('https-proxy-agent');
+import * as HttpsProxyAgent from 'https-proxy-agent';
 import * as fe from 'node-fetch';
 
 import { ApiService } from './api.service';
