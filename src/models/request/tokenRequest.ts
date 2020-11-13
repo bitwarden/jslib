@@ -8,12 +8,14 @@ export class TokenRequest {
     code: string;
     codeVerifier: string;
     redirectUri: string;
+    clientId: string;
+    clientSecret: string;
     token: string;
     provider: TwoFactorProviderType;
     remember: boolean;
     device?: DeviceRequest;
 
-    constructor(credentials: string[], codes: string[], provider: TwoFactorProviderType,
+    constructor(credentials: string[], codes: string[], clientIdClientSecret: string[], provider: TwoFactorProviderType,
         token: string, remember: boolean, device?: DeviceRequest) {
         if (credentials != null && credentials.length > 1) {
             this.email = credentials[0];
@@ -22,6 +24,9 @@ export class TokenRequest {
             this.code = codes[0];
             this.codeVerifier = codes[1];
             this.redirectUri = codes[2];
+        } else if (clientIdClientSecret != null && clientIdClientSecret.length > 1) {
+            this.clientId = clientIdClientSecret[0]
+            this.clientSecret = clientIdClientSecret[1]
         }
         this.token = token;
         this.provider = provider;
@@ -35,7 +40,11 @@ export class TokenRequest {
             client_id: clientId,
         };
 
-        if (this.masterPasswordHash != null && this.email != null) {
+        if (this.clientSecret != null) {
+            obj.scope = 'api';
+            obj.grant_type = 'client_credentials';
+            obj.client_secret = this.clientSecret;
+        } else if (this.masterPasswordHash != null && this.email != null) {
             obj.grant_type = 'password';
             obj.username = this.email;
             obj.password = this.masterPasswordHash;

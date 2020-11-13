@@ -7,7 +7,6 @@ import { Cipher } from '../models/domain/cipher';
 import { Field } from '../models/domain/field';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
-import { AttachmentView } from '../models/view/attachmentView';
 import { CipherView } from '../models/view/cipherView';
 import { FieldView } from '../models/view/fieldView';
 
@@ -28,6 +27,7 @@ export abstract class CipherService {
     getLastUsedForUrl: (url: string) => Promise<CipherView>;
     getLastLaunchedForUrl: (url: string) => Promise<CipherView>;
     getNextCipherForUrl: (url: string) => Promise<CipherView>;
+    updateLastUsedIndexForUrl: (url: string) => void;
     updateLastUsedDate: (id: string) => Promise<void>;
     updateLastLaunchedDate: (id: string) => Promise<void>;
     saveNeverDomain: (domain: string) => Promise<void>;

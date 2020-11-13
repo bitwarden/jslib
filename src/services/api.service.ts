@@ -46,6 +46,8 @@ import { PreloginRequest } from '../models/request/preloginRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
+import { SendAccessRequest } from '../models/request/sendAccessRequest';
+import { SendRequest } from '../models/request/sendRequest';
 import { SetPasswordRequest } from '../models/request/setPasswordRequest';
 import { StorageRequest } from '../models/request/storageRequest';
 import { TaxInfoUpdateRequest } from '../models/request/taxInfoUpdateRequest';
@@ -97,6 +99,8 @@ import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
+import { SendAccessResponse } from '../models/response/sendAccessResponse';
+import { SendResponse } from '../models/response/sendResponse';
 import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TaxInfoResponse } from '../models/response/taxInfoResponse';
@@ -175,7 +179,7 @@ export class ApiService implements ApiServiceAbstraction {
             headers.set('User-Agent', this.customUserAgent);
         }
         const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
-            body: this.qsStringify(request.toIdentityToken(this.platformUtilsService.identityClientId)),
+            body: this.qsStringify(request.toIdentityToken(request.clientId ?? this.platformUtilsService.identityClientId)),
             credentials: this.getCredentials(),
             cache: 'no-store',
             headers: headers,
@@ -353,7 +357,17 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     async getSsoUserIdentifier(): Promise<string> {
-        return this.send('GET', '/accounts/sso/user-identifier', null, true, true)
+        return this.send('GET', '/accounts/sso/user-identifier', null, true, true);
+    }
+
+    async postUserApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+        const r = await this.send('POST', '/accounts/api-key', request, true, true);
+        return new ApiKeyResponse(r);
+    }
+
+    async postUserRotateApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+        const r = await this.send('POST', '/accounts/rotate-api-key', request, true, true);
+        return new ApiKeyResponse(r);
     }
 
     // Folder APIs
@@ -375,6 +389,47 @@ export class ApiService implements ApiServiceAbstraction {
 
     deleteFolder(id: string): Promise<any> {
         return this.send('DELETE', '/folders/' + id, null, true, false);
+    }
+
+    // Send APIs
+
+    async getSend(id: string): Promise<SendResponse> {
+        const r = await this.send('GET', '/sends/' + id, null, true, true);
+        return new SendResponse(r);
+    }
+
+    async postSendAccess(id: string, request: SendAccessRequest): Promise<SendAccessResponse> {
+        const r = await this.send('POST', '/sends/access/' + id, request, false, true);
+        return new SendAccessResponse(r);
+    }
+
+    async getSends(): Promise<ListResponse<SendResponse>> {
+        const r = await this.send('GET', '/sends', null, true, true);
+        return new ListResponse(r, SendResponse);
+    }
+
+    async postSend(request: SendRequest): Promise<SendResponse> {
+        const r = await this.send('POST', '/sends', request, true, true);
+        return new SendResponse(r);
+    }
+
+    async postSendFile(data: FormData): Promise<SendResponse> {
+        const r = await this.send('POST', '/sends/file', data, true, true);
+        return new SendResponse(r);
+    }
+
+    async putSend(id: string, request: SendRequest): Promise<SendResponse> {
+        const r = await this.send('PUT', '/sends/' + id, request, true, true);
+        return new SendResponse(r);
+    }
+
+    async putSendRemovePassword(id: string): Promise<SendResponse> {
+        const r = await this.send('PUT', '/sends/' + id + '/remove-password', null, true, true);
+        return new SendResponse(r);
+    }
+
+    deleteSend(id: string): Promise<any> {
+        return this.send('DELETE', '/sends/' + id, null, true, false);
     }
 
     // Cipher APIs
@@ -700,7 +755,6 @@ export class ApiService implements ApiServiceAbstraction {
         const r = await this.send('GET', '/plans/', null, true, true);
         return new ListResponse(r, PlanResponse);
     }
-
 
     async postImportDirectory(organizationId: string, request: ImportDirectoryRequest): Promise<any> {
         return this.send('POST', '/organizations/' + organizationId + '/import', request, true, false);
@@ -1041,7 +1095,6 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     async preValidateSso(identifier: string): Promise<boolean> {
-
         if (identifier == null || identifier === '') {
             throw new Error('Organization Identifier was not provided.');
         }
@@ -1064,7 +1117,7 @@ export class ApiService implements ApiServiceAbstraction {
         if (response.status === 200) {
             return true;
         } else {
-            const error = await this.handleError(response, false);
+            const error = await this.handleError(response, false, true);
             return Promise.reject(error);
         }
     }
@@ -1112,13 +1165,13 @@ export class ApiService implements ApiServiceAbstraction {
             const responseJson = await response.json();
             return responseJson;
         } else if (response.status !== 200) {
-            const error = await this.handleError(response, false);
+            const error = await this.handleError(response, false, authed);
             return Promise.reject(error);
         }
     }
 
-    private async handleError(response: Response, tokenError: boolean): Promise<ErrorResponse> {
-        if ((tokenError && response.status === 400) || response.status === 401 || response.status === 403) {
+    private async handleError(response: Response, tokenError: boolean, authed: boolean): Promise<ErrorResponse> {
+        if (authed && ((tokenError && response.status === 400) || response.status === 401 || response.status === 403)) {
             await this.logoutCallback(true);
             return null;
         }
@@ -1164,7 +1217,7 @@ export class ApiService implements ApiServiceAbstraction {
             await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken);
             return tokenResponse;
         } else {
-            const error = await this.handleError(response, true);
+            const error = await this.handleError(response, true, true);
             return Promise.reject(error);
         }
     }

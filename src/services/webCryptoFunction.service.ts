@@ -49,6 +49,55 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return await this.subtle.deriveBits(pbkdf2Params, impKey, wcLen);
     }
 
+    async hkdf(ikm: ArrayBuffer, salt: string | ArrayBuffer, info: string | ArrayBuffer,
+        outputByteSize: number, algorithm: 'sha256' | 'sha512'): Promise<ArrayBuffer> {
+        const saltBuf = this.toBuf(salt);
+        const infoBuf = this.toBuf(info);
+
+        const hkdfParams: HkdfParams = {
+            name: 'HKDF',
+            salt: saltBuf,
+            info: infoBuf,
+            hash: { name: this.toWebCryptoAlgorithm(algorithm) },
+        };
+
+        const impKey = await this.subtle.importKey('raw', ikm, { name: 'HKDF' } as any,
+            false, ['deriveBits']);
+        return await this.subtle.deriveBits(hkdfParams as any, impKey, outputByteSize * 8);
+    }
+
+    // ref: https://tools.ietf.org/html/rfc5869
+    async hkdfExpand(prk: ArrayBuffer, info: string | ArrayBuffer, outputByteSize: number,
+        algorithm: 'sha256' | 'sha512'): Promise<ArrayBuffer> {
+        const hashLen = algorithm === 'sha256' ? 32 : 64;
+        if (outputByteSize > 255 * hashLen) {
+            throw new Error('outputByteSize is too large.');
+        }
+        const prkArr = new Uint8Array(prk);
+        if (prkArr.length < hashLen) {
+            throw new Error('prk is too small.');
+        }
+        const infoBuf = this.toBuf(info);
+        const infoArr = new Uint8Array(infoBuf);
+        let runningOkmLength = 0;
+        let previousT = new Uint8Array(0);
+        const n = Math.ceil(outputByteSize / hashLen);
+        const okm = new Uint8Array(n * hashLen);
+        for (let i = 0; i < n; i++) {
+            const t = new Uint8Array(previousT.length + infoArr.length + 1);
+            t.set(previousT);
+            t.set(infoArr, previousT.length);
+            t.set([i + 1], t.length - 1);
+            previousT = new Uint8Array(await this.hmac(t.buffer, prk, algorithm));
+            okm.set(previousT, runningOkmLength);
+            runningOkmLength += previousT.length;
+            if (runningOkmLength >= outputByteSize) {
+                break;
+            }
+        }
+        return okm.slice(0, outputByteSize).buffer;
+    }
+
     async hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512' | 'md5'): Promise<ArrayBuffer> {
         if ((this.isIE && algorithm === 'sha1') || algorithm === 'md5') {
             const md = algorithm === 'md5' ? forge.md.md5.create() : forge.md.sha1.create();

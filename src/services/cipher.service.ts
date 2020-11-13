@@ -456,6 +456,10 @@ export class CipherService implements CipherServiceAbstraction {
         return this.getCipherForUrl(url, false, false);
     }
 
+    updateLastUsedIndexForUrl(url: string) {
+        this.sortedCiphersCache.updateLastUsedIndex(url);
+    }
+
     async updateLastUsedDate(id: string): Promise<void> {
         let ciphersLocalData = await this.storageService.get<any>(Keys.localData);
         if (!ciphersLocalData) {
@@ -1055,8 +1059,7 @@ export class CipherService implements CipherServiceAbstraction {
             return this.sortedCiphersCache.getLastLaunched(url);
         } else if (lastUsed) {
             return this.sortedCiphersCache.getLastUsed(url);
-        }
-        else {
+        } else {
             return this.sortedCiphersCache.getNext(url);
         }
     }

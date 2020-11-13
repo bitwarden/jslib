@@ -4,6 +4,8 @@ import { CryptoService } from '../../abstractions/crypto.service';
 
 import { Utils } from '../../misc/utils';
 
+import { SymmetricCryptoKey } from './symmetricCryptoKey';
+
 export class CipherString {
     encryptedString?: string;
     encryptionType?: EncryptionType;
@@ -89,7 +91,7 @@ export class CipherString {
         }
     }
 
-    async decrypt(orgId: string): Promise<string> {
+    async decrypt(orgId: string, key: SymmetricCryptoKey = null): Promise<string> {
         if (this.decryptedValue != null) {
             return this.decryptedValue;
         }
@@ -103,8 +105,10 @@ export class CipherString {
         }
 
         try {
-            const orgKey = await cryptoService.getOrgKey(orgId);
-            this.decryptedValue = await cryptoService.decryptToUtf8(this, orgKey);
+            if (key == null) {
+                key = await cryptoService.getOrgKey(orgId);
+            }
+            this.decryptedValue = await cryptoService.decryptToUtf8(this, key);
         } catch (e) {
             this.decryptedValue = '[error: cannot decrypt]';
         }
