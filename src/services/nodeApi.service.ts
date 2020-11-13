@@ -1,5 +1,5 @@
 import * as FormData from 'form-data';
-import * as HttpsProxyAgent from 'https-proxy-agent';
+import HttpsProxyAgent from 'https-proxy-agent';
 import * as fe from 'node-fetch';
 
 import { ApiService } from './api.service';
