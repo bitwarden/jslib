@@ -1,5 +1,5 @@
 import * as FormData from 'form-data';
-var HttpsProxyAgent = require('https-proxy-agent');
+let HttpsProxyAgent = require('https-proxy-agent');
 import * as fe from 'node-fetch';
 
 import { ApiService } from './api.service';
@@ -22,8 +22,7 @@ export class NodeApiService extends ApiService {
     nativeFetch(request: Request): Promise<Response> {
         const proxy = process.env.http_proxy || process.env.https_proxy;
         if (proxy) {
-            const proxyAgent = new HttpsProxyAgent(proxy);
-            (request as any).agent = proxyAgent;
+            (request as any).agent = new HttpsProxyAgent(proxy);
         }
         return fetch(request);
     }
