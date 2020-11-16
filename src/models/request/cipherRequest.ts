@@ -28,6 +28,7 @@ export class CipherRequest {
     // Deprecated, remove at some point and rename attachments2 to attachments
     attachments: { [id: string]: string; };
     attachments2: { [id: string]: AttachmentRequest; };
+    lastKnownRevisionDate: Date;
 
     constructor(cipher: Cipher) {
         this.type = cipher.type;
@@ -36,6 +37,7 @@ export class CipherRequest {
         this.name = cipher.name ? cipher.name.encryptedString : null;
         this.notes = cipher.notes ? cipher.notes.encryptedString : null;
         this.favorite = cipher.favorite;
+        this.lastKnownRevisionDate = cipher.revisionDate;
 
         switch (this.type) {
             case CipherType.Login:
