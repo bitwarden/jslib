@@ -41,6 +41,7 @@ export class I18nService implements I18nServiceAbstraction {
         ['ro', 'română'],
         ['ru', 'русский'],
         ['sk', 'slovenčina'],
+        ['sr', 'Српски'],
         ['sv', 'svenska'],
         ['th', 'ไทย'],
         ['tr', 'Türkçe'],
