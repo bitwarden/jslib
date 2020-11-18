@@ -1,4 +1,3 @@
-
 import { SendData } from '../models/data/sendData';
 
 import { SendRequest } from '../models/request/sendRequest';
