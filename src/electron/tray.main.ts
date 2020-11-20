@@ -1,4 +1,5 @@
 import {
+    app,
     Menu,
     MenuItem,
     MenuItemConstructorOptions,
@@ -94,10 +95,13 @@ export class TrayMain {
         }
     }
 
-    hideToTray() {
+    async hideToTray() {
         this.showTray();
         if (this.windowMain.win != null) {
             this.windowMain.win.hide();
+        }
+        if (this.isDarwin() && await this.storageService.get<boolean>(ElectronConstants.hideDock)) {
+            this.hideDock();
         }
     }
 
@@ -114,25 +118,44 @@ export class TrayMain {
         if (this.pressedIcon != null) {
             this.tray.setPressedImage(this.pressedIcon);
         }
-        if (this.contextMenu != null && process.platform !== 'darwin') {
+        if (this.contextMenu != null && !this.isDarwin()) {
             this.tray.setContextMenu(this.contextMenu);
         }
     }
 
-    private toggleWindow() {
+    private hideDock() {
+        app.dock.hide();
+    }
+
+    private showDock() {
+        app.dock.show();
+    }
+
+    private isDarwin() {
+        return process.platform === 'darwin';
+    }
+
+    private async toggleWindow() {
         if (this.windowMain.win == null) {
-            if (process.platform === 'darwin') {
+            if (this.isDarwin()) {
                 // On MacOS, closing the window via the red button destroys the BrowserWindow instance.
                 this.windowMain.createWindow().then(() => {
                     this.windowMain.win.show();
+                    this.showDock();
                 });
             }
             return;
         }
         if (this.windowMain.win.isVisible()) {
             this.windowMain.win.hide();
+            if (this.isDarwin() && await this.storageService.get<boolean>(ElectronConstants.hideDock)) {
+                console.log("HIDING");
+            }
         } else {
             this.windowMain.win.show();
+            if (this.isDarwin()) {
+                this.showDock();
+            }
         }
     }
 

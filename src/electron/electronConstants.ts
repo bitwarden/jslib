@@ -6,4 +6,5 @@ export class ElectronConstants {
     static readonly enableAlwaysOnTopKey: string = 'enableAlwaysOnTopKey';
     static readonly minimizeOnCopyToClipboardKey: string = 'minimizeOnCopyToClipboardKey';
     static readonly enableBiometric: string = 'enabledBiometric';
+    static readonly hideDock: string = 'hideDock';
 }
