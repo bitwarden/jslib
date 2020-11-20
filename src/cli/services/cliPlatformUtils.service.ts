@@ -145,4 +145,8 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     authenticateBiometric(): Promise<boolean> {
         return Promise.resolve(false);
     }
+
+    supportsSecureStorage(): boolean {
+        return false;
+    }
 }

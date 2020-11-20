@@ -149,7 +149,7 @@ export class TrayMain {
         if (this.windowMain.win.isVisible()) {
             this.windowMain.win.hide();
             if (this.isDarwin() && await this.storageService.get<boolean>(ElectronConstants.hideDock)) {
-                console.log("HIDING");
+                this.hideDock();
             }
         } else {
             this.windowMain.win.show();
