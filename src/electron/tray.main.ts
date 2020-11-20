@@ -100,7 +100,7 @@ export class TrayMain {
         if (this.windowMain.win != null) {
             this.windowMain.win.hide();
         }
-        if (this.isDarwin() && await this.storageService.get<boolean>(ElectronConstants.hideDock)) {
+        if (this.isDarwin() && !await this.storageService.get<boolean>(ElectronConstants.alwaysShowDock)) {
             this.hideDock();
         }
     }
@@ -148,7 +148,7 @@ export class TrayMain {
         }
         if (this.windowMain.win.isVisible()) {
             this.windowMain.win.hide();
-            if (this.isDarwin() && await this.storageService.get<boolean>(ElectronConstants.hideDock)) {
+            if (this.isDarwin() && !await this.storageService.get<boolean>(ElectronConstants.alwaysShowDock)) {
                 this.hideDock();
             }
         } else {
