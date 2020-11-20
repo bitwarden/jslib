@@ -58,23 +58,21 @@ export class TrayMain {
             this.showTray();
         }
 
-        if (process.platform === 'win32') {
-            this.windowMain.win.on('minimize', async (e: Event) => {
-                if (await this.storageService.get<boolean>(ElectronConstants.enableMinimizeToTrayKey)) {
+        this.windowMain.win.on('minimize', async (e: Event) => {
+            if (await this.storageService.get<boolean>(ElectronConstants.enableMinimizeToTrayKey)) {
+                e.preventDefault();
+                this.hideToTray();
+            }
+        });
+
+        this.windowMain.win.on('close', async (e: Event) => {
+            if (await this.storageService.get<boolean>(ElectronConstants.enableCloseToTrayKey)) {
+                if (!this.windowMain.isQuitting) {
                     e.preventDefault();
                     this.hideToTray();
                 }
-            });
-
-            this.windowMain.win.on('close', async (e: Event) => {
-                if (await this.storageService.get<boolean>(ElectronConstants.enableCloseToTrayKey)) {
-                    if (!this.windowMain.isQuitting) {
-                        e.preventDefault();
-                        this.hideToTray();
-                    }
-                }
-            });
-        }
+            }
+        });
 
         this.windowMain.win.on('show', async (e: Event) => {
             const enableTray = await this.storageService.get<boolean>(ElectronConstants.enableTrayKey);
