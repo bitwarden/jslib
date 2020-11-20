@@ -44,7 +44,7 @@ export class TrayMain {
         },
         { type: 'separator' },
         {
-            label: process.platform === 'darwin' ? this.i18nService.t('close') : this.i18nService.t('exit'),
+            label: this.i18nService.t('exit'),
             click: () => this.closeWindow(),
         }];
 
@@ -52,9 +52,7 @@ export class TrayMain {
             menuItemOptions.splice(1, 0, ...additionalMenuItems);
         }
 
-        if (process.platform !== 'darwin') {
-            this.contextMenu = Menu.buildFromTemplate(menuItemOptions);
-        }
+        this.contextMenu = Menu.buildFromTemplate(menuItemOptions);
         if (await this.storageService.get<boolean>(ElectronConstants.enableTrayKey)) {
             this.showTray();
         }
@@ -111,11 +109,12 @@ export class TrayMain {
         this.tray = new Tray(this.icon);
         this.tray.setToolTip(this.appName);
         this.tray.on('click', () => this.toggleWindow());
+        this.tray.on('right-click', () => this.tray.popUpContextMenu(this.contextMenu));
 
         if (this.pressedIcon != null) {
             this.tray.setPressedImage(this.pressedIcon);
         }
-        if (this.contextMenu != null) {
+        if (this.contextMenu != null && process.platform !== 'darwin') {
             this.tray.setContextMenu(this.contextMenu);
         }
     }
