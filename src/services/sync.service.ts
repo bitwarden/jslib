@@ -76,12 +76,13 @@ export class SyncService implements SyncServiceAbstraction {
         }
 
         const now = new Date();
-        const needsSyncResult = await this.needsSyncing(forceSync);
-        const needsSync = needsSyncResult[0];
-        const skipped = needsSyncResult[1];
-
-        if (skipped) {
-            return this.syncCompleted(false);
+        var needsSync = false;
+        try {
+            needsSync = await this.needsSyncing(forceSync);
+        } catch (e) {
+            if (allowThrowOnError) {
+                throw e;
+            }
         }
 
         if (!needsSync) {
@@ -226,23 +227,19 @@ export class SyncService implements SyncServiceAbstraction {
 
     private async needsSyncing(forceSync: boolean) {
         if (forceSync) {
-            return [true, false];
+            return true;
         }
 
         const lastSync = await this.getLastSync();
         if (lastSync == null || lastSync.getTime() === 0) {
-            return [true, false];
+            return true;
         }
 
-        try {
-            const response = await this.apiService.getAccountRevisionDate();
-            if (new Date(response) <= lastSync) {
-                return [false, false];
-            }
-            return [true, false];
-        } catch (e) {
-            return [false, true];
+        const response = await this.apiService.getAccountRevisionDate();
+        if (new Date(response) <= lastSync) {
+            return false;
         }
+        return true;
     }
 
     private async syncProfile(response: ProfileResponse) {
