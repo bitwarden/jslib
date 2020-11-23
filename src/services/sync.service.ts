@@ -76,7 +76,7 @@ export class SyncService implements SyncServiceAbstraction {
         }
 
         const now = new Date();
-        var needsSync = false;
+        let needsSync = false;
         try {
             needsSync = await this.needsSyncing(forceSync);
         } catch (e) {
