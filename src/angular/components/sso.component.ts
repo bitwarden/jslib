@@ -51,8 +51,8 @@ export class SsoComponent {
                 const state = await this.storageService.get<string>(ConstantsService.ssoStateKey);
                 await this.storageService.remove(ConstantsService.ssoCodeVerifierKey);
                 await this.storageService.remove(ConstantsService.ssoStateKey);
-                if (qParams.code != null && codeVerifier != null && state != null && state === qParams.state) {
-                    await this.logIn(qParams.code, codeVerifier, this.getOrgIdentiferFromState(state));
+                if (qParams.code != null && codeVerifier != null && state != null && this.checkState(state, qParams.state)) {
+                    await this.logIn(qParams.code, codeVerifier, this.getOrgIdentiferFromState(qParams.state));
                 }
             } else if (qParams.clientId != null && qParams.redirectUri != null && qParams.state != null &&
                 qParams.codeChallenge != null) {
@@ -177,11 +177,24 @@ export class SsoComponent {
     }
 
     private getOrgIdentiferFromState(state: string): string {
-        if (!state) {
+        if (state === null || state === undefined) {
             return null;
         }
 
         const stateSplit = state.split('_identifier=');
         return stateSplit.length > 1 ? stateSplit[1] : null;
+    }
+
+    private checkState(state: string, checkState: string): boolean {
+        if (state === null || state === undefined) {
+            return false;
+        }
+        if (checkState === null || checkState === undefined) {
+            return false;
+        }
+
+        const stateSplit = state.split('_identifier=');
+        const checkStateSplit = checkState.split('_identifier=');
+        return stateSplit[0] === checkStateSplit[0];
     }
 }
