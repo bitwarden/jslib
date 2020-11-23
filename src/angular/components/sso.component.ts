@@ -177,7 +177,7 @@ export class SsoComponent {
     }
 
     private getOrgIdentiferFromState(state: string): string {
-        if (!state) {
+        if (state == null || state == undefined) {
             return null;
         }
 
@@ -186,7 +186,10 @@ export class SsoComponent {
     }
 
     private checkState(state: string, checkState: string): boolean {
-        if (!state || !checkState) {
+        if (state == null || state == undefined) {
+            return false;
+        }
+        if (checkState == null || checkState == undefined) {
             return false;
         }
 
