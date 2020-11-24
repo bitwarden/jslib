@@ -16,9 +16,13 @@ import { SecureNoteView } from '../models/view/secureNoteView';
 import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
 import { SecureNoteType } from '../enums/secureNoteType';
+import { ConsoleLogService } from '../cli/services/consoleLog.service';
+import { LogService } from '../abstractions';
 
 export abstract class BaseImporter {
     organization = false;
+
+    protected logService: LogService = new ConsoleLogService(false);
 
     protected newLineRegex = /(?:\r\n|\r|\n)/;
 
@@ -82,7 +86,7 @@ export abstract class BaseImporter {
             result.errors.forEach((e) => {
                 if (e.row != null) {
                     // tslint:disable-next-line
-                    console.warn('Error parsing row ' + e.row + ': ' + e.message);
+                    this.logService.warning('Error parsing row ' + e.row + ': ' + e.message);
                 }
             });
         }

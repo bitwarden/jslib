@@ -3,6 +3,8 @@ import { LogLevelType } from '../../enums/logLevelType';
 import { LogService as LogServiceAbstraction } from '../../abstractions/log.service';
 
 export class ConsoleLogService implements LogServiceAbstraction {
+    private timersMap: Map<string, bigint> = new Map();
+
     constructor(private isDev: boolean, private filter: (level: LogLevelType) => boolean = null) { }
 
     debug(message: string) {
@@ -29,6 +31,12 @@ export class ConsoleLogService implements LogServiceAbstraction {
             return;
         }
 
+        if (process.env.BW_RESPONSE) {
+            // tslint:disable-next-line
+            console.error(message);
+            return;
+        }
+
         switch (level) {
             case LogLevelType.Debug:
                 // tslint:disable-next-line
@@ -49,5 +57,18 @@ export class ConsoleLogService implements LogServiceAbstraction {
             default:
                 break;
         }
+    }
+
+    time(label: string = 'default') {
+        if (!this.timersMap.has(label)) {
+            this.timersMap.set(label, process.hrtime.bigint());
+        }
+    }
+
+    timeEnd(label: string = 'default'): bigint {
+        const elapsed = (process.hrtime.bigint() - this.timersMap.get(label)) / BigInt(1000000);
+        this.timersMap.delete(label);
+        this.write(LogLevelType.Info, `${label}: ${elapsed}ms`);
+        return elapsed;
     }
 }

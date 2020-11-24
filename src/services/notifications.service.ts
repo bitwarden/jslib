@@ -5,7 +5,9 @@ import { NotificationType } from '../enums/notificationType';
 
 import { ApiService } from '../abstractions/api.service';
 import { AppIdService } from '../abstractions/appId.service';
+import { ConsoleLogService } from '../cli/services/consoleLog.service';
 import { EnvironmentService } from '../abstractions/environment.service';
+import { LogService } from '../abstractions'
 import { NotificationsService as NotificationsServiceAbstraction } from '../abstractions/notifications.service';
 import { SyncService } from '../abstractions/sync.service';
 import { UserService } from '../abstractions/user.service';
@@ -27,7 +29,12 @@ export class NotificationsService implements NotificationsServiceAbstraction {
 
     constructor(private userService: UserService, private syncService: SyncService,
         private appIdService: AppIdService, private apiService: ApiService,
-        private vaultTimeoutService: VaultTimeoutService, private logoutCallback: () => Promise<void>) { }
+        private vaultTimeoutService: VaultTimeoutService,
+        private logoutCallback: () => Promise<void>, private logService?: LogService) { 
+        if (!logService) {
+            this.logService = new ConsoleLogService(false);
+        }
+    }
 
     async init(environmentService: EnvironmentService): Promise<void> {
         this.inited = false;
@@ -87,8 +94,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
                 await this.signalrConnection.stop();
             }
         } catch (e) {
-            // tslint:disable-next-line
-            console.error(e.toString());
+            this.logService.error(e.toString())
         }
     }
 
