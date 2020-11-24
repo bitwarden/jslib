@@ -115,6 +115,7 @@ export class WindowMain {
                 nodeIntegration: true,
                 webviewTag: true,
                 backgroundThrottling: false,
+                enableRemoteModule: true
             },
         });
 

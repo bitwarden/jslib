@@ -16,11 +16,12 @@ export function isMacAppStore() {
 
 export function isWindowsStore() {
     const isWindows = process.platform === 'win32';
+    let windowsStore = process.windowsStore;
     if (isWindows && !process.windowsStore &&
         process.resourcesPath.indexOf('8bitSolutionsLLC.bitwardendesktop_') > -1) {
-        process.windowsStore = true;
+        windowsStore = true;
     }
-    return isWindows && process.windowsStore && process.windowsStore === true;
+    return isWindows && process.windowsStore && windowsStore === true;
 }
 
 export function isSnapStore() {
