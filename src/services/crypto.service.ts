@@ -5,19 +5,21 @@ import { KdfType } from '../enums/kdfType';
 
 import { CipherString } from '../models/domain/cipherString';
 import { EncryptedObject } from '../models/domain/encryptedObject';
-import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 import { ProfileOrganizationResponse } from '../models/response/profileOrganizationResponse';
+import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
 import { CryptoService as CryptoServiceAbstraction } from '../abstractions/crypto.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
+import { ConsoleLogService } from '../cli/services/consoleLog.service';
+import { LogService } from '..//abstractions/log.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { StorageService } from '../abstractions/storage.service';
 
 import { ConstantsService } from './constants.service';
 
+import { EEFLongWordList } from '../misc/wordlist';
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
-import { EEFLongWordList } from '../misc/wordlist';
 
 const Keys = {
     key: 'key', // Master Key
@@ -37,7 +39,12 @@ export class CryptoService implements CryptoServiceAbstraction {
     private orgKeys: Map<string, SymmetricCryptoKey>;
 
     constructor(private storageService: StorageService, private secureStorageService: StorageService,
-        private cryptoFunctionService: CryptoFunctionService, private platformUtilService: PlatformUtilsService) { }
+        private cryptoFunctionService: CryptoFunctionService, private platformUtilService: PlatformUtilsService,
+        private logService?: LogService) {
+        if (!logService) {
+            this.logService = new ConsoleLogService(false);
+        }
+    }
 
     async setKey(key: SymmetricCryptoKey): Promise<any> {
         this.key = key;
@@ -546,14 +553,12 @@ export class CryptoService implements CryptoServiceAbstraction {
         const theKey = this.resolveLegacyKey(encType, keyForEnc);
 
         if (theKey.macKey != null && mac == null) {
-            // tslint:disable-next-line
-            console.error('mac required.');
+            this.logService.error('mac required.');
             return null;
         }
 
         if (theKey.encType !== encType) {
-            // tslint:disable-next-line
-            console.error('encType unavailable.');
+            this.logService.error('encType unavailable.');
             return null;
         }
 
@@ -563,8 +568,7 @@ export class CryptoService implements CryptoServiceAbstraction {
                 fastParams.macKey, 'sha256');
             const macsEqual = await this.cryptoFunctionService.compareFast(fastParams.mac, computedMac);
             if (!macsEqual) {
-                // tslint:disable-next-line
-                console.error('mac failed.');
+                this.logService.error('mac failed.');
                 return null;
             }
         }
@@ -596,8 +600,7 @@ export class CryptoService implements CryptoServiceAbstraction {
 
             const macsMatch = await this.cryptoFunctionService.compare(mac, computedMac);
             if (!macsMatch) {
-                // tslint:disable-next-line
-                console.error('mac failed.');
+                this.logService.error('mac failed.');
                 return null;
             }
         }

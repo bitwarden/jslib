@@ -17,11 +17,13 @@ import { AppIdService } from '../abstractions/appId.service';
 import { AuthService as AuthServiceAbstraction } from '../abstractions/auth.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { I18nService } from '../abstractions/i18n.service';
+import { LogService } from '../abstractions/log.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
 import { VaultTimeoutService } from '../abstractions/vaultTimeout.service';
+import { ConsoleLogService } from '../cli/services/consoleLog.service';
 
 export const TwoFactorProviders = {
     [TwoFactorProviderType.Authenticator]: {
@@ -91,7 +93,12 @@ export class AuthService implements AuthServiceAbstraction {
         private userService: UserService, private tokenService: TokenService,
         private appIdService: AppIdService, private i18nService: I18nService,
         private platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
-        private vaultTimeoutService: VaultTimeoutService, private setCryptoKeys = true) { }
+        private vaultTimeoutService: VaultTimeoutService, private logService?: LogService,
+        private setCryptoKeys = true) { 
+        if (!logService) {
+            this.logService = new ConsoleLogService(false);
+        }
+    }
 
     init() {
         TwoFactorProviders[TwoFactorProviderType.Email].name = this.i18nService.t('emailTitle');
@@ -351,7 +358,7 @@ export class AuthService implements AuthServiceAbstraction {
                         tokenResponse.privateKey = keyPair[1].encryptedString;
                     } catch (e) {
                         // tslint:disable-next-line
-                        console.error(e);
+                        this.logService.error(e);
                     }
                 }
 
