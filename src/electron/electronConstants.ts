@@ -8,4 +8,5 @@ export class ElectronConstants {
     static readonly enableBiometric: string = 'enabledBiometric';
     static readonly enableBrowserIntegration: string = 'enableBrowserIntegration';
     static readonly alwaysShowDock: string = 'alwaysShowDock';
+    static readonly openAtLogin: string = 'openAtLogin';
 }
