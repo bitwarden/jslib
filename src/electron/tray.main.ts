@@ -103,6 +103,12 @@ export class TrayMain {
         }
     }
 
+    restoreFromTray() {
+        if (this.windowMain.win == null || !this.windowMain.win.isVisible()) {
+            this.toggleWindow();
+        }
+    }
+
     showTray() {
         if (this.tray != null) {
             return;
