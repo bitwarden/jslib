@@ -13,11 +13,11 @@ import { FolderView } from '../models/view/folderView';
 import { LoginView } from '../models/view/loginView';
 import { SecureNoteView } from '../models/view/secureNoteView';
 
+import { LogService } from '../abstractions';
+import { ConsoleLogService } from '../cli/services/consoleLog.service';
 import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
 import { SecureNoteType } from '../enums/secureNoteType';
-import { ConsoleLogService } from '../cli/services/consoleLog.service';
-import { LogService } from '../abstractions';
 
 export abstract class BaseImporter {
     organization = false;
