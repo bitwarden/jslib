@@ -94,7 +94,7 @@ export class AuthService implements AuthServiceAbstraction {
         private appIdService: AppIdService, private i18nService: I18nService,
         private platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
         private vaultTimeoutService: VaultTimeoutService, private logService?: LogService,
-        private setCryptoKeys = true) { 
+        private setCryptoKeys = true) {
         if (!logService) {
             this.logService = new ConsoleLogService(false);
         }

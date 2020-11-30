@@ -5,21 +5,21 @@ import { KdfType } from '../enums/kdfType';
 
 import { CipherString } from '../models/domain/cipherString';
 import { EncryptedObject } from '../models/domain/encryptedObject';
-import { ProfileOrganizationResponse } from '../models/response/profileOrganizationResponse';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
+import { ProfileOrganizationResponse } from '../models/response/profileOrganizationResponse';
 
+import { LogService } from '..//abstractions/log.service';
 import { CryptoService as CryptoServiceAbstraction } from '../abstractions/crypto.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
-import { ConsoleLogService } from '../cli/services/consoleLog.service';
-import { LogService } from '..//abstractions/log.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { StorageService } from '../abstractions/storage.service';
+import { ConsoleLogService } from '../cli/services/consoleLog.service';
 
 import { ConstantsService } from './constants.service';
 
-import { EEFLongWordList } from '../misc/wordlist';
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
+import { EEFLongWordList } from '../misc/wordlist';
 
 const Keys = {
     key: 'key', // Master Key

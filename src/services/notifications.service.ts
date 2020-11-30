@@ -3,15 +3,15 @@ import * as signalRMsgPack from '@microsoft/signalr-protocol-msgpack';
 
 import { NotificationType } from '../enums/notificationType';
 
+import { LogService } from '../abstractions'
 import { ApiService } from '../abstractions/api.service';
 import { AppIdService } from '../abstractions/appId.service';
-import { ConsoleLogService } from '../cli/services/consoleLog.service';
 import { EnvironmentService } from '../abstractions/environment.service';
-import { LogService } from '../abstractions'
 import { NotificationsService as NotificationsServiceAbstraction } from '../abstractions/notifications.service';
 import { SyncService } from '../abstractions/sync.service';
 import { UserService } from '../abstractions/user.service';
 import { VaultTimeoutService } from '../abstractions/vaultTimeout.service';
+import { ConsoleLogService } from '../cli/services/consoleLog.service';
 
 import {
     NotificationResponse,
@@ -30,7 +30,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
     constructor(private userService: UserService, private syncService: SyncService,
         private appIdService: AppIdService, private apiService: ApiService,
         private vaultTimeoutService: VaultTimeoutService,
-        private logoutCallback: () => Promise<void>, private logService?: LogService) { 
+        private logoutCallback: () => Promise<void>, private logService?: LogService) {
         if (!logService) {
             this.logService = new ConsoleLogService(false);
         }
