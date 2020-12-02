@@ -262,7 +262,7 @@ export class LoginCommand {
                 const code = url.searchParams.get('code');
                 const receivedState = url.searchParams.get('state');
                 res.setHeader('Content-Type', 'text/html');
-                if (code != null && receivedState != null && receivedState === state) {
+                if (code != null && receivedState != null && this.checkState(receivedState, state)) {
                     res.writeHead(200);
                     res.end('<html><head><title>Success | Bitwarden CLI</title></head><body>' +
                         '<h1>Successfully authenticated with the Bitwarden CLI</h1>' +
@@ -299,5 +299,18 @@ export class LoginCommand {
                 reject();
             }
         });
+    }
+
+    private checkState(state: string, checkState: string): boolean {
+        if (state === null || state === undefined) {
+            return false;
+        }
+        if (checkState === null || checkState === undefined) {
+            return false;
+        }
+
+        const stateSplit = state.split('_identifier=');
+        const checkStateSplit = checkState.split('_identifier=');
+        return stateSplit[0] === checkStateSplit[0];
     }
 }

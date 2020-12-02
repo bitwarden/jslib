@@ -27,6 +27,7 @@ export class ConstantsService {
     static readonly ssoStateKey: string = 'ssoState';
     static readonly biometricUnlockKey: string = 'biometric';
     static readonly biometricText: string = 'biometricText';
+    static readonly biometricAwaitingAcceptance: string = 'biometricAwaitingAcceptance';
 
     readonly environmentUrlsKey: string = ConstantsService.environmentUrlsKey;
     readonly disableGaKey: string = ConstantsService.disableGaKey;
@@ -55,4 +56,5 @@ export class ConstantsService {
     readonly ssoStateKey: string = ConstantsService.ssoStateKey;
     readonly biometricUnlockKey: string = ConstantsService.biometricUnlockKey;
     readonly biometricText: string = ConstantsService.biometricText;
+    readonly biometricAwaitingAcceptance: string = ConstantsService.biometricAwaitingAcceptance;
 }

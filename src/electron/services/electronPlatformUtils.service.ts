@@ -219,4 +219,8 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
             resolve(val);
         });
     }
+
+    supportsSecureStorage(): boolean {
+        return true;
+    }
 }
