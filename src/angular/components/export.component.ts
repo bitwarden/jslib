@@ -24,6 +24,10 @@ export class ExportComponent {
         protected platformUtilsService: PlatformUtilsService, protected exportService: ExportService,
         protected eventService: EventService, protected win: Window) { }
 
+    get encryptedFormat() {
+        return this.format === 'encrypted_json';
+    }
+
     async submit() {
         if (this.masterPassword == null || this.masterPassword === '') {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
