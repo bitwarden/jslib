@@ -13,7 +13,7 @@ import { FolderView } from '../models/view/folderView';
 import { LoginView } from '../models/view/loginView';
 import { SecureNoteView } from '../models/view/secureNoteView';
 
-import { LogService } from '../abstractions';
+import { LogService } from '../abstractions/log.service';
 import { ConsoleLogService } from '../cli/services/consoleLog.service';
 import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
