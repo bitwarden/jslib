@@ -29,7 +29,7 @@ export class ExportService implements ExportServiceAbstraction {
 
     async getExport(format: 'csv' | 'json' | 'encrypted_json' = 'csv'): Promise<string> {
         if (format === 'encrypted_json') {
-            return this.getEncryptedExport(format);
+            return this.getEncryptedExport();
         } else {
             return this.getDecryptedExport(format);
         }
@@ -38,7 +38,7 @@ export class ExportService implements ExportServiceAbstraction {
     async getOrganizationExport(organizationId: string,
         format: 'csv' | 'json' | 'encrypted_json' = 'csv'): Promise<string> {
         if (format === 'encrypted_json') {
-            return this.getOrganizationEncryptedExport(organizationId, format);
+            return this.getOrganizationEncryptedExport(organizationId);
         } else {
             return this.getOrganizationDecryptedExport(organizationId, format);
         }
@@ -125,39 +125,35 @@ export class ExportService implements ExportServiceAbstraction {
         }
     }
 
-    private async getEncryptedExport(format: 'encrypted_json'): Promise<string> {
+    private async getEncryptedExport(): Promise<string> {
         const folders = await this.folderService.getAll();
         const ciphers = await this.cipherService.getAll();
 
-        if (format === 'encrypted_json') {
-            const jsonDoc: any = {
-                folders: [],
-                items: [],
-            };
+        const jsonDoc: any = {
+            folders: [],
+            items: [],
+        };
 
-            folders.forEach((f) => {
-                if (f.id == null) {
-                    return;
-                }
-                const folder = new FolderExport();
-                folder.build(f);
-                jsonDoc.folders.push(folder);
-            });
+        folders.forEach((f) => {
+            if (f.id == null) {
+                return;
+            }
+            const folder = new FolderExport();
+            folder.build(f);
+            jsonDoc.folders.push(folder);
+        });
 
-            ciphers.forEach((c) => {
-                if (c.organizationId != null) {
-                    return;
-                }
-                const cipher = new CipherExport();
-                cipher.build(c);
-                cipher.collectionIds = null;
-                jsonDoc.items.push(cipher);
-            });
+        ciphers.forEach((c) => {
+            if (c.organizationId != null) {
+                return;
+            }
+            const cipher = new CipherExport();
+            cipher.build(c);
+            cipher.collectionIds = null;
+            jsonDoc.items.push(cipher);
+        });
 
-            return JSON.stringify(jsonDoc, null, '  ');
-        } else {
-            throw new Error('Unsupported export format.');
-        }
+        return JSON.stringify(jsonDoc, null, '  ');
     }
 
     private async getOrganizationDecryptedExport(organizationId: string, format: 'json' | 'csv'): Promise<string> {
@@ -238,7 +234,7 @@ export class ExportService implements ExportServiceAbstraction {
         }
     }
 
-    private async getOrganizationEncryptedExport(organizationId: string, format: 'encrypted_json'): Promise<string> {
+    private async getOrganizationEncryptedExport(organizationId: string): Promise<string> {
         const collections: Collection[] = [];
         const ciphers: Cipher[] = [];
         const promises = [];
@@ -267,27 +263,23 @@ export class ExportService implements ExportServiceAbstraction {
 
         await Promise.all(promises);
 
-        if (format === 'encrypted_json') {
-            const jsonDoc: any = {
-                collections: [],
-                items: [],
-            };
+        const jsonDoc: any = {
+            collections: [],
+            items: [],
+        };
 
-            collections.forEach((c) => {
-                const collection = new CollectionExport();
-                collection.build(c);
-                jsonDoc.collections.push(collection);
-            });
+        collections.forEach((c) => {
+            const collection = new CollectionExport();
+            collection.build(c);
+            jsonDoc.collections.push(collection);
+        });
 
-            ciphers.forEach((c) => {
-                const cipher = new CipherExport();
-                cipher.build(c);
-                jsonDoc.items.push(cipher);
-            });
-            return JSON.stringify(jsonDoc, null, '  ');
-        } else {
-            throw new Error('Unsupported export format.');
-        }
+        ciphers.forEach((c) => {
+            const cipher = new CipherExport();
+            cipher.build(c);
+            jsonDoc.items.push(cipher);
+        });
+        return JSON.stringify(jsonDoc, null, '  ');
     }
 
     private padNumber(num: number, width: number, padCharacter: string = '0'): string {
