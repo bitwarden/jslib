@@ -136,7 +136,7 @@ export class OnePasswordWinCsvImporter extends BaseImporter implements Importer 
                         altUsername = value[property];
                     }
                     else if (lowerProp === 'created date' || lowerProp === 'modified date') {
-                        let readableDate = new Date(parseInt(value[property]) * 1000).toUTCString();
+                        const readableDate = new Date(parseInt(value[property], 10) * 1000).toUTCString();
                         this.processKvp(cipher, '1Password ' + property, readableDate);
                         continue;
                     }
@@ -159,9 +159,9 @@ export class OnePasswordWinCsvImporter extends BaseImporter implements Importer 
     }
 
     private getProp(obj: any, name: string): any {
-        let lowerObj = Object.entries(obj).reduce((lowerObj: any, entry: [string, any]) => {
-            lowerObj[entry[0].toLowerCase()] = entry[1];
-            return lowerObj;
+        const lowerObj = Object.entries(obj).reduce((agg: any, entry: [string, any]) => {
+            agg[entry[0].toLowerCase()] = entry[1];
+            return agg;
         }, {});
         return lowerObj[name.toLowerCase()];
     }
