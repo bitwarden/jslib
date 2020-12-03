@@ -23,7 +23,7 @@ import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
 import { VaultTimeoutService } from '../abstractions/vaultTimeout.service';
-import { ConsoleLogService } from '../cli/services/consoleLog.service';
+import { ConsoleLogService } from '../services/consoleLog.service';
 
 export const TwoFactorProviders = {
     [TwoFactorProviderType.Authenticator]: {

@@ -13,7 +13,7 @@ import { CryptoService as CryptoServiceAbstraction } from '../abstractions/crypt
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { StorageService } from '../abstractions/storage.service';
-import { ConsoleLogService } from '../cli/services/consoleLog.service';
+import { ConsoleLogService } from '../services/consoleLog.service';
 
 import { ConstantsService } from './constants.service';
 

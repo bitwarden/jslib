@@ -11,7 +11,7 @@ import { NotificationsService as NotificationsServiceAbstraction } from '../abst
 import { SyncService } from '../abstractions/sync.service';
 import { UserService } from '../abstractions/user.service';
 import { VaultTimeoutService } from '../abstractions/vaultTimeout.service';
-import { ConsoleLogService } from '../cli/services/consoleLog.service';
+import { ConsoleLogService } from '../services/consoleLog.service';
 
 import {
     NotificationResponse,
