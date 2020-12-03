@@ -14,10 +14,10 @@ import { LoginView } from '../models/view/loginView';
 import { SecureNoteView } from '../models/view/secureNoteView';
 
 import { LogService } from '../abstractions/log.service';
-import { ConsoleLogService } from '../services/consoleLog.service';
 import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
 import { SecureNoteType } from '../enums/secureNoteType';
+import { ConsoleLogService } from '../services/consoleLog.service';
 
 export abstract class BaseImporter {
     organizationId: string = null;
