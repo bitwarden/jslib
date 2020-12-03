@@ -65,7 +65,11 @@ export class ExportComponent {
     protected getFileName(prefix?: string) {
         let extension = this.format;
         if (this.format === 'encrypted_json') {
-            prefix = 'encrypted_' + prefix;
+            if (prefix == null) {
+                prefix = 'encrypted';
+            } else {
+                prefix = 'encrypted_' + prefix;
+            }
             extension = 'json';
         }
         return this.exportService.getFileName(prefix, extension);
