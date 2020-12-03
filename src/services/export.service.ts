@@ -28,19 +28,19 @@ export class ExportService implements ExportServiceAbstraction {
         private apiService: ApiService) { }
 
     async getExport(format: 'csv' | 'json' | 'encrypted_json' = 'csv'): Promise<string> {
-        if (format === 'csv' || format === 'json') {
-            return this.getDecryptedExport(format);
-        } else {
+        if (format === 'encrypted_json') {
             return this.getEncryptedExport(format);
+        } else {
+            return this.getDecryptedExport(format);
         }
     }
 
     async getOrganizationExport(organizationId: string,
         format: 'csv' | 'json' | 'encrypted_json' = 'csv'): Promise<string> {
-        if (format === 'csv' || format === 'json') {
-            return this.getOrganizationDecryptedExport(organizationId, format);
-        } else {
+        if (format === 'encrypted_json') {
             return this.getOrganizationEncryptedExport(organizationId, format);
+        } else {
+            return this.getOrganizationDecryptedExport(organizationId, format);
         }
     }
 
