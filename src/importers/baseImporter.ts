@@ -71,13 +71,15 @@ export abstract class BaseImporter {
         return doc != null && doc.querySelector('parsererror') == null ? doc : null;
     }
 
-    protected parseCsv(data: string, header: boolean): any[] {
+    protected parseCsvOptions = {
+        encoding: 'UTF-8',
+        skipEmptyLines: false,
+    }
+
+    protected parseCsv(data: string, header: boolean, options: any = {}): any[] {
+        let parseOptions = Object.assign({ header: header }, this.parseCsvOptions, options);
         data = this.splitNewLine(data).join('\n').trim();
-        const result = papa.parse(data, {
-            header: header,
-            encoding: 'UTF-8',
-            skipEmptyLines: false,
-        });
+        const result = papa.parse(data, parseOptions);
         if (result.errors != null && result.errors.length > 0) {
             result.errors.forEach((e) => {
                 if (e.row != null) {

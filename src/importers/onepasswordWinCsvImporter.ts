@@ -4,14 +4,17 @@ import { Importer } from './importer';
 import { ImportResult } from '../models/domain/importResult';
 
 import { CipherType } from '../enums/cipherType';
-import { CardView } from '../models/view';
+import { CardView, IdentityView } from '../models/view';
 
-const IgnoredProperties = ['ainfo', 'autosubmit', 'notesplain', 'ps', 'scope', 'tags', 'title', 'uuid'];
+const IgnoredProperties = ['ainfo', 'autosubmit', 'notesplain', 'ps', 'scope', 'tags', 'title', 'uuid', 'notes'];
 
 export class OnePasswordWinCsvImporter extends BaseImporter implements Importer {
     parse(data: string): ImportResult {
         const result = new ImportResult();
-        const results = this.parseCsv(data, true);
+        const results = this.parseCsv(data, true, {
+            quoteChar: '"',
+            escapeChar: '\\',
+        });
         if (results == null) {
             result.success = false;
             return result;
@@ -100,6 +103,10 @@ export class OnePasswordWinCsvImporter extends BaseImporter implements Importer 
     }
 
     private getProp(obj: any, name: string): any {
-        return obj[name] || obj[name.toUpperCase()];
+        let lowerObj = Object.entries(obj).reduce((lowerObj: any, entry: [string, any]) => {
+            lowerObj[entry[0].toLowerCase()] = entry[1];
+            return lowerObj;
+        }, {});
+        return lowerObj[name.toLowerCase()];
     }
 }
