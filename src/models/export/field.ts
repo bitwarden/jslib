@@ -2,6 +2,8 @@ import { FieldType } from '../../enums/fieldType';
 
 import { FieldView } from '../view/fieldView';
 
+import { Field as FieldDomain } from '../domain/field';
+
 export class Field {
     static template(): Field {
         const req = new Field();
@@ -22,13 +24,18 @@ export class Field {
     value: string;
     type: FieldType;
 
-    constructor(o?: FieldView) {
+    constructor(o?: FieldView | FieldDomain) {
         if (o == null) {
             return;
         }
 
-        this.name = o.name;
-        this.value = o.value;
+        if (o instanceof FieldView) {
+            this.name = o.name;
+            this.value = o.value;
+        } else {
+            this.name = o.name?.encryptedString;
+            this.value = o.value?.encryptedString;
+        }
         this.type = o.type;
     }
 }

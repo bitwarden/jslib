@@ -1,5 +1,7 @@
 import { IdentityView } from '../view/identityView';
 
+import { Identity as IdentityDomain } from '../domain/identity';
+
 export class Identity {
     static template(): Identity {
         const req = new Identity();
@@ -65,28 +67,49 @@ export class Identity {
     passportNumber: string;
     licenseNumber: string;
 
-    constructor(o?: IdentityView) {
+    constructor(o?: IdentityView | IdentityDomain) {
         if (o == null) {
             return;
         }
 
-        this.title = o.title;
-        this.firstName = o.firstName;
-        this.middleName = o.middleName;
-        this.lastName = o.lastName;
-        this.address1 = o.address1;
-        this.address2 = o.address2;
-        this.address3 = o.address3;
-        this.city = o.city;
-        this.state = o.state;
-        this.postalCode = o.postalCode;
-        this.country = o.country;
-        this.company = o.company;
-        this.email = o.email;
-        this.phone = o.phone;
-        this.ssn = o.ssn;
-        this.username = o.username;
-        this.passportNumber = o.passportNumber;
-        this.licenseNumber = o.licenseNumber;
+        if (o instanceof IdentityView) {
+            this.title = o.title;
+            this.firstName = o.firstName;
+            this.middleName = o.middleName;
+            this.lastName = o.lastName;
+            this.address1 = o.address1;
+            this.address2 = o.address2;
+            this.address3 = o.address3;
+            this.city = o.city;
+            this.state = o.state;
+            this.postalCode = o.postalCode;
+            this.country = o.country;
+            this.company = o.company;
+            this.email = o.email;
+            this.phone = o.phone;
+            this.ssn = o.ssn;
+            this.username = o.username;
+            this.passportNumber = o.passportNumber;
+            this.licenseNumber = o.licenseNumber;
+        } else {
+            this.title = o.title?.encryptedString;
+            this.firstName = o.firstName?.encryptedString;
+            this.middleName = o.middleName?.encryptedString;
+            this.lastName = o.lastName?.encryptedString;
+            this.address1 = o.address1?.encryptedString;
+            this.address2 = o.address2?.encryptedString;
+            this.address3 = o.address3?.encryptedString;
+            this.city = o.city?.encryptedString;
+            this.state = o.state?.encryptedString;
+            this.postalCode = o.postalCode?.encryptedString;
+            this.country = o.country?.encryptedString;
+            this.company = o.company?.encryptedString;
+            this.email = o.email?.encryptedString;
+            this.phone = o.phone?.encryptedString;
+            this.ssn = o.ssn?.encryptedString;
+            this.username = o.username?.encryptedString;
+            this.passportNumber = o.passportNumber?.encryptedString;
+            this.licenseNumber = o.licenseNumber?.encryptedString;
+        }
     }
 }

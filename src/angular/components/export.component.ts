@@ -17,7 +17,7 @@ export class ExportComponent {
 
     formPromise: Promise<string>;
     masterPassword: string;
-    format: 'json' | 'csv' = 'json';
+    format: 'json' | 'encrypted_json' | 'csv' = 'json';
     showPassword = false;
 
     constructor(protected cryptoService: CryptoService, protected i18nService: I18nService,
@@ -63,7 +63,12 @@ export class ExportComponent {
     }
 
     protected getFileName(prefix?: string) {
-        return this.exportService.getFileName(prefix, this.format);
+        let extension = this.format;
+        if (this.format === 'encrypted_json') {
+            prefix = 'encrypted_' + prefix;
+            extension = 'json';
+        }
+        return this.exportService.getFileName(prefix, extension);
     }
 
     protected async collectEvent(): Promise<any> {

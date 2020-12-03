@@ -1,5 +1,7 @@
 import { CardView } from '../view/cardView';
 
+import { Card as CardDomain } from '../domain/card';
+
 export class Card {
     static template(): Card {
         const req = new Card();
@@ -29,16 +31,25 @@ export class Card {
     expYear: string;
     code: string;
 
-    constructor(o?: CardView) {
+    constructor(o?: CardView | CardDomain) {
         if (o == null) {
             return;
         }
 
-        this.cardholderName = o.cardholderName;
-        this.brand = o.brand;
-        this.number = o.number;
-        this.expMonth = o.expMonth;
-        this.expYear = o.expYear;
-        this.code = o.code;
+        if (o instanceof CardView) {
+            this.cardholderName = o.cardholderName;
+            this.brand = o.brand;
+            this.number = o.number;
+            this.expMonth = o.expMonth;
+            this.expYear = o.expYear;
+            this.code = o.code;
+        } else {
+            this.cardholderName = o.cardholderName?.encryptedString;
+            this.brand = o.brand?.encryptedString;
+            this.number = o.number?.encryptedString;
+            this.expMonth = o.expMonth?.encryptedString;
+            this.expYear = o.expYear?.encryptedString;
+            this.code = o.code?.encryptedString;
+        }
     }
 }

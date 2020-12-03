@@ -2,6 +2,8 @@ import { UriMatchType } from '../../enums/uriMatchType';
 
 import { LoginUriView } from '../view/loginUriView';
 
+import { LoginUri as LoginUriDomain } from '../domain/loginUri';
+
 export class LoginUri {
     static template(): LoginUri {
         const req = new LoginUri();
@@ -19,12 +21,16 @@ export class LoginUri {
     uri: string;
     match: UriMatchType = null;
 
-    constructor(o?: LoginUriView) {
+    constructor(o?: LoginUriView | LoginUriDomain) {
         if (o == null) {
             return;
         }
 
-        this.uri = o.uri;
+        if (o instanceof LoginUriView) {
+            this.uri = o.uri;
+        } else {
+            this.uri = o.uri?.encryptedString;
+        }
         this.match = o.match;
     }
 }

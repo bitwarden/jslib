@@ -2,6 +2,8 @@ import { CipherType } from '../../enums/cipherType';
 
 import { CipherView } from '../view/cipherView';
 
+import { Cipher as CipherDomain } from '../domain/cipher';
+
 import { Card } from './card';
 import { Field } from './field';
 import { Identity } from './identity';
@@ -70,16 +72,27 @@ export class Cipher {
     identity: Identity;
 
     // Use build method instead of ctor so that we can control order of JSON stringify for pretty print
-    build(o: CipherView) {
+    build(o: CipherView | CipherDomain) {
         this.organizationId = o.organizationId;
         this.folderId = o.folderId;
         this.type = o.type;
-        this.name = o.name;
-        this.notes = o.notes;
+
+        if (o instanceof CipherView) {
+            this.name = o.name;
+            this.notes = o.notes;
+        } else {
+            this.name = o.name?.encryptedString;
+            this.notes = o.notes?.encryptedString;
+        }
+
         this.favorite = o.favorite;
 
         if (o.fields != null) {
-            this.fields = o.fields.map((f) => new Field(f));
+            if (o instanceof CipherView) {
+                this.fields = o.fields.map((f) => new Field(f));
+            } else {
+                this.fields = o.fields.map((f) => new Field(f));
+            }
         }
 
         switch (o.type) {
