@@ -8,9 +8,9 @@ import { EncryptedObject } from '../models/domain/encryptedObject';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 import { ProfileOrganizationResponse } from '../models/response/profileOrganizationResponse';
 
-import { LogService } from '..//abstractions/log.service';
 import { CryptoService as CryptoServiceAbstraction } from '../abstractions/crypto.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
+import { LogService } from '../abstractions/log.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { StorageService } from '../abstractions/storage.service';
 import { ConsoleLogService } from '../services/consoleLog.service';

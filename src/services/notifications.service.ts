@@ -3,10 +3,10 @@ import * as signalRMsgPack from '@microsoft/signalr-protocol-msgpack';
 
 import { NotificationType } from '../enums/notificationType';
 
-import { LogService } from '../abstractions/log.service'
 import { ApiService } from '../abstractions/api.service';
 import { AppIdService } from '../abstractions/appId.service';
 import { EnvironmentService } from '../abstractions/environment.service';
+import { LogService } from '../abstractions/log.service'
 import { NotificationsService as NotificationsServiceAbstraction } from '../abstractions/notifications.service';
 import { SyncService } from '../abstractions/sync.service';
 import { UserService } from '../abstractions/user.service';

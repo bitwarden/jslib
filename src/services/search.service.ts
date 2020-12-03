@@ -6,10 +6,10 @@ import { CipherService } from '../abstractions/cipher.service';
 import { SearchService as SearchServiceAbstraction } from '../abstractions/search.service';
 
 import { LogService } from '../abstractions/log.service';
-import { ConsoleLogService } from '../services/consoleLog.service';
 import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
 import { UriMatchType } from '../enums/uriMatchType';
+import { ConsoleLogService } from '../services/consoleLog.service';
 
 export class SearchService implements SearchServiceAbstraction {
     private indexing = false;
