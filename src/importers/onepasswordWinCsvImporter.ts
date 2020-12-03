@@ -122,7 +122,7 @@ export class OnePasswordWinCsvImporter extends BaseImporter implements Importer 
                         cipher.identity.company = value[property];
                         continue;
                     } else if (this.isNullOrWhitespace(cipher.identity.phone) && lowerProp.includes('default phone')) {
-                        cipher.identity.company = value[property];
+                        cipher.identity.phone = value[property];
                         continue;
                     } else if (this.isNullOrWhitespace(cipher.identity.email) && lowerProp.includes('email')) {
                         cipher.identity.email = value[property];
