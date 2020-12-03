@@ -1,5 +1,7 @@
 import { CollectionView } from '../view/collectionView';
 
+import { Collection as CollectionDomain } from '../domain/collection';
+
 export class Collection {
     static template(): Collection {
         const req = new Collection();
@@ -23,9 +25,13 @@ export class Collection {
     externalId: string;
 
     // Use build method instead of ctor so that we can control order of JSON stringify for pretty print
-    build(o: CollectionView) {
+    build(o: CollectionView | CollectionDomain) {
         this.organizationId = o.organizationId;
-        this.name = o.name;
+        if (o instanceof CollectionView) {
+            this.name = o.name;
+        } else {
+            this.name = o.name?.encryptedString;
+        }
         this.externalId = o.externalId;
     }
 }

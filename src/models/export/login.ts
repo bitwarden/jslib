@@ -2,6 +2,8 @@ import { LoginUri } from './loginUri';
 
 import { LoginView } from '../view/loginView';
 
+import { Login as LoginDomain } from '../domain/login';
+
 export class Login {
     static template(): Login {
         const req = new Login();
@@ -27,17 +29,27 @@ export class Login {
     password: string;
     totp: string;
 
-    constructor(o?: LoginView) {
+    constructor(o?: LoginView | LoginDomain) {
         if (o == null) {
             return;
         }
 
         if (o.uris != null) {
-            this.uris = o.uris.map((u) => new LoginUri(u));
+            if (o instanceof LoginView) {
+                this.uris = o.uris.map((u) => new LoginUri(u));
+            } else {
+                this.uris = o.uris.map((u) => new LoginUri(u));
+            }
         }
 
-        this.username = o.username;
-        this.password = o.password;
-        this.totp = o.totp;
+        if (o instanceof LoginView) {
+            this.username = o.username;
+            this.password = o.password;
+            this.totp = o.totp;
+        } else {
+            this.username = o.username?.encryptedString;
+            this.password = o.password?.encryptedString;
+            this.totp = o.totp?.encryptedString;
+        }
     }
 }
