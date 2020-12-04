@@ -104,6 +104,7 @@ import { SendResponse } from '../models/response/sendResponse';
 import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TaxInfoResponse } from '../models/response/taxInfoResponse';
+import { TaxRateResponse } from '../models/response/taxRateResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
 import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
 import { TwoFactorEmailResponse } from '../models/response/twoFactorEmailResponse';
@@ -758,6 +759,11 @@ export class ApiService implements ApiServiceAbstraction {
 
     async postImportDirectory(organizationId: string, request: ImportDirectoryRequest): Promise<any> {
         return this.send('POST', '/organizations/' + organizationId + '/import', request, true, false);
+    }
+
+    async getTaxRates(): Promise<ListResponse<TaxRateResponse>> {
+        const r = await this.send('GET', '/plans/sales-tax-rates/', null, true, true);
+        return new ListResponse(r, TaxRateResponse);
     }
 
     // Settings APIs
