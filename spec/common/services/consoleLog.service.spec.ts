@@ -1,4 +1,4 @@
-import { ConsoleLogService } from "../../../src/services/consoleLog.service";
+import { ConsoleLogService } from '../../../src/services/consoleLog.service';
 
 const originalConsole = console;
 let caughtMessage: any;
@@ -7,14 +7,17 @@ declare var console: any;
 
 export function interceptConsole(interceptions: any): object {
     console = {
+        // tslint:disable-next-line
         log: function () {
-            interceptions['log'] = arguments;
+            interceptions.log = arguments;
         },
+        // tslint:disable-next-line
         warn: function () {
-            interceptions['warn'] = arguments;
+            interceptions.warn = arguments;
         },
+        // tslint:disable-next-line
         error: function () {
-            interceptions['error'] = arguments;
+            interceptions.error = arguments;
         }
     }
     return interceptions;
@@ -48,9 +51,9 @@ describe('ConsoleLogService', () => {
     it('only writes debug messages in dev mode', () => {
         logService = new ConsoleLogService(false);
 
-        logService.debug("debug message");
-        expect(caughtMessage['log']).toBeUndefined
-    })
+        logService.debug('debug message');
+        expect(caughtMessage.log).toBeUndefined();
+    });
 
 
     it('writes debug/info messages to console.log', () => {
@@ -72,14 +75,14 @@ describe('ConsoleLogService', () => {
     it('times with output to info', async () => {
         logService.time();
         await new Promise(r => setTimeout(r, 250));
-        let duration = logService.timeEnd();
+        const duration = logService.timeEnd();
         expect(duration[0]).toBe(0);
         expect(duration[1]).toBeGreaterThan(0);
         expect(duration[1]).toBeLessThan(500 * 10e6)
 
         expect(caughtMessage).toEqual(jasmine.arrayContaining([]));
-        expect(caughtMessage['log'].length).toBe(1);
-        expect(caughtMessage['log'][0]).toEqual(jasmine.stringMatching(/^default: \d+\.?\d*ms$/));
+        expect(caughtMessage.log.length).toBe(1);
+        expect(caughtMessage.log[0]).toEqual(jasmine.stringMatching(/^default: \d+\.?\d*ms$/));
     })
 
     it('filters time output', async () => {
