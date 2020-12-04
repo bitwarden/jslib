@@ -9,12 +9,12 @@ import { FolderView } from '../models/view/folderView';
 import { CipherType } from '../enums/cipherType';
 
 export class PasswordBossJsonImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const results = JSON.parse(data);
         if (results == null || results.items == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         const foldersMap = new Map<string, string>();
@@ -116,6 +116,6 @@ export class PasswordBossJsonImporter extends BaseImporter implements Importer {
         });
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 }

@@ -2,6 +2,7 @@ import { LoginUri } from './loginUri';
 
 import { LoginView } from '../view/loginView';
 
+import { CipherString } from '../domain/cipherString';
 import { Login as LoginDomain } from '../domain/login';
 
 export class Login {
@@ -22,6 +23,16 @@ export class Login {
         view.password = req.password;
         view.totp = req.totp;
         return view;
+    }
+
+    static toDomain(req: Login, domain = new LoginDomain()) {
+        if (req.uris != null) {
+            domain.uris = req.uris.map((u) => LoginUri.toDomain(u));
+        }
+        domain.username = req.username != null ? new CipherString(req.username) : null;
+        domain.password = req.password != null ? new CipherString(req.password) : null;
+        domain.totp = req.totp != null ? new CipherString(req.totp) : null;
+        return domain;
     }
 
     uris: LoginUri[];

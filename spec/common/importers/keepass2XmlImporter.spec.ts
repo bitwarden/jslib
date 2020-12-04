@@ -192,7 +192,7 @@ line2</Value>
 describe('KeePass2 Xml Importer', () => {
     it('should parse XML data', async () => {
         const importer = new Importer();
-        const result = importer.parse(TestData);
+        const result = await importer.parse(TestData);
         expect(result != null).toBe(true);
     });
 });

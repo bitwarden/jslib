@@ -98,6 +98,7 @@ export class ExportService implements ExportServiceAbstraction {
             return papa.unparse(exportCiphers);
         } else {
             const jsonDoc: any = {
+                encrypted: false,
                 folders: [],
                 items: [],
             };
@@ -130,6 +131,7 @@ export class ExportService implements ExportServiceAbstraction {
         const ciphers = await this.cipherService.getAll();
 
         const jsonDoc: any = {
+            encrypted: true,
             folders: [],
             items: [],
         };
@@ -215,6 +217,7 @@ export class ExportService implements ExportServiceAbstraction {
             return papa.unparse(exportCiphers);
         } else {
             const jsonDoc: any = {
+                encrypted: false,
                 collections: [],
                 items: [],
             };
@@ -264,6 +267,7 @@ export class ExportService implements ExportServiceAbstraction {
         await Promise.all(promises);
 
         const jsonDoc: any = {
+            encrypted: true,
             collections: [],
             items: [],
         };

@@ -10,12 +10,12 @@ import { CardView } from '../models/view/cardView';
 import { SecureNoteView } from '../models/view/secureNoteView';
 
 export class EnpassCsvImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const results = this.parseCsv(data, false);
         if (results == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         let firstRow = true;
@@ -99,7 +99,7 @@ export class EnpassCsvImporter extends BaseImporter implements Importer {
         });
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 
     private containsField(fields: any[], name: string) {

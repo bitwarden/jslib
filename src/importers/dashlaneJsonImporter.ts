@@ -17,12 +17,12 @@ const HandledResults = new Set(['ADDRESS', 'AUTHENTIFIANT', 'BANKSTATEMENT', 'ID
 export class DashlaneJsonImporter extends BaseImporter implements Importer {
     private result: ImportResult;
 
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         this.result = new ImportResult();
         const results = JSON.parse(data);
         if (results == null || results.length === 0) {
             this.result.success = false;
-            return this.result;
+            return Promise.resolve(this.result);
         }
 
         if (results.ADDRESS != null) {
@@ -51,7 +51,7 @@ export class DashlaneJsonImporter extends BaseImporter implements Importer {
         }
 
         this.result.success = true;
-        return this.result;
+        return Promise.resolve(this.result);
     }
 
     private processAuth(results: any[]) {

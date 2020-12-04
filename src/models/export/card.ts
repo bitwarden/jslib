@@ -1,6 +1,7 @@
 import { CardView } from '../view/cardView';
 
 import { Card as CardDomain } from '../domain/card';
+import { CipherString } from '../domain/cipherString';
 
 export class Card {
     static template(): Card {
@@ -22,6 +23,16 @@ export class Card {
         view.expYear = req.expYear;
         view.code = req.code;
         return view;
+    }
+
+    static toDomain(req: Card, domain = new CardDomain()) {
+        domain.cardholderName = req.cardholderName != null ? new CipherString(req.cardholderName) : null;
+        domain.brand = req.brand != null ? new CipherString(req.brand) : null;
+        domain.number = req.number != null ? new CipherString(req.number) : null;
+        domain.expMonth = req.expMonth != null ? new CipherString(req.expMonth) : null;
+        domain.expYear = req.expYear != null ? new CipherString(req.expYear) : null;
+        domain.code = req.code != null ? new CipherString(req.code) : null;
+        return domain;
     }
 
     cardholderName: string;

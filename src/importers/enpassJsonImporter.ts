@@ -11,12 +11,12 @@ import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
 
 export class EnpassJsonImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const results = JSON.parse(data);
         if (results == null || results.items == null || results.items.length === 0) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         const foldersMap = new Map<string, string>();
@@ -59,7 +59,7 @@ export class EnpassJsonImporter extends BaseImporter implements Importer {
         });
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 
     private processLogin(cipher: CipherView, fields: any[]) {

@@ -2,6 +2,7 @@ import { UriMatchType } from '../../enums/uriMatchType';
 
 import { LoginUriView } from '../view/loginUriView';
 
+import { CipherString } from '../domain/cipherString';
 import { LoginUri as LoginUriDomain } from '../domain/loginUri';
 
 export class LoginUri {
@@ -16,6 +17,12 @@ export class LoginUri {
         view.uri = req.uri;
         view.match = req.match;
         return view;
+    }
+
+    static toDomain(req: LoginUri, domain = new LoginUriDomain()) {
+        domain.uri = req.uri != null ? new CipherString(req.uri) : null;
+        domain.match = req.match;
+        return domain;
     }
 
     uri: string;

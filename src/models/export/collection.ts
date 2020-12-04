@@ -1,5 +1,6 @@
 import { CollectionView } from '../view/collectionView';
 
+import { CipherString } from '../domain/cipherString';
 import { Collection as CollectionDomain } from '../domain/collection';
 
 export class Collection {
@@ -18,6 +19,15 @@ export class Collection {
             view.organizationId = req.organizationId;
         }
         return view;
+    }
+
+    static toDomain(req: Collection, domain = new CollectionDomain()) {
+        domain.name = req.name != null ? new CipherString(req.name) : null;
+        domain.externalId = req.externalId;
+        if (domain.organizationId == null) {
+            domain.organizationId = req.organizationId;
+        }
+        return domain;
     }
 
     organizationId: string;

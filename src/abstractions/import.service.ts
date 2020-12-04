@@ -9,5 +9,5 @@ export abstract class ImportService {
     regularImportOptions: ImportOption[];
     getImportOptions: () => ImportOption[];
     import: (importer: Importer, fileContents: string, organizationId?: string) => Promise<Error>;
-    getImporter: (format: string, organization?: boolean) => Importer;
+    getImporter: (format: string, organizationId: string) => Importer;
 }

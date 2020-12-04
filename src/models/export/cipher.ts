@@ -3,6 +3,7 @@ import { CipherType } from '../../enums/cipherType';
 import { CipherView } from '../view/cipherView';
 
 import { Cipher as CipherDomain } from '../domain/cipher';
+import { CipherString } from '../domain/cipherString';
 
 import { Card } from './card';
 import { Field } from './field';
@@ -57,6 +58,38 @@ export class Cipher {
         }
 
         return view;
+    }
+
+    static toDomain(req: Cipher, domain = new CipherDomain()) {
+        domain.type = req.type;
+        domain.folderId = req.folderId;
+        if (domain.organizationId == null) {
+            domain.organizationId = req.organizationId;
+        }
+        domain.name = req.name != null ? new CipherString(req.name) : null;
+        domain.notes = req.notes != null ? new CipherString(req.notes) : null;
+        domain.favorite = req.favorite;
+
+        if (req.fields != null) {
+            domain.fields = req.fields.map((f) => Field.toDomain(f));
+        }
+
+        switch (req.type) {
+            case CipherType.Login:
+                domain.login = Login.toDomain(req.login);
+                break;
+            case CipherType.SecureNote:
+                domain.secureNote = SecureNote.toDomain(req.secureNote);
+                break;
+            case CipherType.Card:
+                domain.card = Card.toDomain(req.card);
+                break;
+            case CipherType.Identity:
+                domain.identity = Identity.toDomain(req.identity);
+                break;
+        }
+
+        return domain;
     }
 
     type: CipherType;
