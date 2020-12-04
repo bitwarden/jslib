@@ -2,14 +2,13 @@ import { OnePasswordWinCsvImporter as Importer } from '../../../src/importers/on
 
 import { CipherType } from '../../../src/enums';
 
-import fs = require('fs');
+import { data as creditCardData } from './testData/onePasswordCsv/creditCard.csv'
+import { data as identityData } from './testData/onePasswordCsv/identity.csv'
 
 describe('1Password CSV Importer', () => {
     it('should parse identity imports', () => {
-        const data = fs.readFileSync('spec/common/importers/testData/onePasswordCsv/identity.csv').toString();
-
         const importer = new Importer();
-        const result = importer.parse(data);
+        const result = importer.parse(identityData);
 
         expect(result).not.toBeNull();
         expect(result.success).toBe(true);
@@ -31,10 +30,8 @@ describe('1Password CSV Importer', () => {
     });
 
     it('should parse credit card imports', () => {
-        const data = fs.readFileSync('spec/common/importers/testData/onePasswordCsv/creditCard.csv').toString();
-
         const importer = new Importer();
-        const result = importer.parse(data);
+        const result = importer.parse(creditCardData);
 
         expect(result).not.toBeNull();
         expect(result.success).toBe(true);
