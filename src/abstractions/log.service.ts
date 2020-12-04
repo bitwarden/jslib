@@ -7,5 +7,5 @@ export abstract class LogService {
     error: (message: string) => void;
     write: (level: LogLevelType, message: string) => void;
     time: (label: string) => void;
-    timeEnd: (label: string) => bigint;
+    timeEnd: (label: string) => [number, number];
 }

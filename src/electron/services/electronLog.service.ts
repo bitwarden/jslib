@@ -5,12 +5,12 @@ import { isDev } from '../utils';
 
 import { LogLevelType } from '../../enums/logLevelType';
 
-import { LogService as LogServiceAbstraction } from '../../abstractions/log.service';
+import { ConsoleLogService as BaseLogService } from '../../services/consoleLog.service';
 
-export class ElectronLogService implements LogServiceAbstraction {
-    private timersMap: Map<string, bigint> = new Map();
+export class ElectronLogService extends BaseLogService {
 
-    constructor(private filter: (level: LogLevelType) => boolean = null, logDir: string = null) {
+    constructor(protected filter: (level: LogLevelType) => boolean = null, logDir: string = null) {
+        super(isDev(), filter);
         if (log.transports == null) {
             return;
         }
@@ -19,26 +19,6 @@ export class ElectronLogService implements LogServiceAbstraction {
         if (logDir != null) {
             log.transports.file.file = path.join(logDir, 'app.log');
         }
-    }
-
-    debug(message: string) {
-        if (!isDev()) {
-            return;
-        }
-
-        this.write(LogLevelType.Debug, message);
-    }
-
-    info(message: string) {
-        this.write(LogLevelType.Info, message);
-    }
-
-    warning(message: string) {
-        this.write(LogLevelType.Warning, message);
-    }
-
-    error(message: string) {
-        this.write(LogLevelType.Error, message);
     }
 
     write(level: LogLevelType, message: string) {
@@ -62,18 +42,5 @@ export class ElectronLogService implements LogServiceAbstraction {
             default:
                 break;
         }
-    }
-
-    time(label: string = 'default') {
-        if (!this.timersMap.has(label)) {
-            this.timersMap.set(label, process.hrtime.bigint());
-        }
-    }
-
-    timeEnd(label: string = 'default'): bigint {
-        const elapsed = (process.hrtime.bigint() - this.timersMap.get(label)) / BigInt(1000000);
-        this.timersMap.delete(label);
-        this.write(LogLevelType.Info, `${label}: ${elapsed}ms`);
-        return elapsed;
     }
 }
