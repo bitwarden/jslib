@@ -6,12 +6,10 @@ import { NotificationType } from '../enums/notificationType';
 import { ApiService } from '../abstractions/api.service';
 import { AppIdService } from '../abstractions/appId.service';
 import { EnvironmentService } from '../abstractions/environment.service';
-import { LogService } from '../abstractions/log.service'
 import { NotificationsService as NotificationsServiceAbstraction } from '../abstractions/notifications.service';
 import { SyncService } from '../abstractions/sync.service';
 import { UserService } from '../abstractions/user.service';
 import { VaultTimeoutService } from '../abstractions/vaultTimeout.service';
-import { ConsoleLogService } from '../services/consoleLog.service';
 
 import {
     NotificationResponse,
@@ -29,12 +27,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
 
     constructor(private userService: UserService, private syncService: SyncService,
         private appIdService: AppIdService, private apiService: ApiService,
-        private vaultTimeoutService: VaultTimeoutService,
-        private logoutCallback: () => Promise<void>, private logService?: LogService) {
-        if (!logService) {
-            this.logService = new ConsoleLogService(false);
-        }
-    }
+        private vaultTimeoutService: VaultTimeoutService, private logoutCallback: () => Promise<void>) { }
 
     async init(environmentService: EnvironmentService): Promise<void> {
         this.inited = false;
@@ -94,7 +87,8 @@ export class NotificationsService implements NotificationsServiceAbstraction {
                 await this.signalrConnection.stop();
             }
         } catch (e) {
-            this.logService.error(e.toString())
+            // tslint:disable-next-line
+            console.error(e.toString());
         }
     }
 
