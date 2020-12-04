@@ -1,31 +1,16 @@
-import log from 'electron-log';
-import * as path from 'path';
+import { LogLevelType } from '../enums/logLevelType';
 
-import { isDev } from '../utils';
+import { LogService as LogServiceAbstraction } from '../abstractions/log.service';
 
-import { LogLevelType } from '../../enums/logLevelType';
-
-import { LogService as LogServiceAbstraction } from '../../abstractions/log.service';
-
-export class ElectronLogService implements LogServiceAbstraction {
+export class ConsoleLogService implements LogServiceAbstraction {
     private timersMap: Map<string, bigint> = new Map();
 
-    constructor(private filter: (level: LogLevelType) => boolean = null, logDir: string = null) {
-        if (log.transports == null) {
-            return;
-        }
-
-        log.transports.file.level = 'info';
-        if (logDir != null) {
-            log.transports.file.file = path.join(logDir, 'app.log');
-        }
-    }
+    constructor(protected isDev: boolean, protected filter: (level: LogLevelType) => boolean = null) { }
 
     debug(message: string) {
-        if (!isDev()) {
+        if (!this.isDev) {
             return;
         }
-
         this.write(LogLevelType.Debug, message);
     }
 
@@ -48,16 +33,20 @@ export class ElectronLogService implements LogServiceAbstraction {
 
         switch (level) {
             case LogLevelType.Debug:
-                log.debug(message);
+                // tslint:disable-next-line
+                console.log(message);
                 break;
             case LogLevelType.Info:
-                log.info(message);
+                // tslint:disable-next-line
+                console.log(message);
                 break;
             case LogLevelType.Warning:
-                log.warn(message);
+                // tslint:disable-next-line
+                console.warn(message);
                 break;
             case LogLevelType.Error:
-                log.error(message);
+                // tslint:disable-next-line
+                console.error(message);
                 break;
             default:
                 break;

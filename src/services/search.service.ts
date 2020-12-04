@@ -5,15 +5,20 @@ import { CipherView } from '../models/view/cipherView';
 import { CipherService } from '../abstractions/cipher.service';
 import { SearchService as SearchServiceAbstraction } from '../abstractions/search.service';
 
+import { LogService } from '../abstractions/log.service';
 import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
 import { UriMatchType } from '../enums/uriMatchType';
+import { ConsoleLogService } from '../services/consoleLog.service';
 
 export class SearchService implements SearchServiceAbstraction {
     private indexing = false;
     private index: lunr.Index = null;
 
-    constructor(private cipherService: CipherService) {
+    constructor(private cipherService: CipherService, private logService?: LogService) {
+        if (!logService) {
+            this.logService = new ConsoleLogService(false);
+        }
     }
 
     clearIndex(): void {
@@ -30,8 +35,8 @@ export class SearchService implements SearchServiceAbstraction {
         if (this.indexing) {
             return;
         }
-        // tslint:disable-next-line
-        console.time('search indexing');
+
+        this.logService.time('search indexing');
         this.indexing = true;
         this.index = null;
         const builder = new lunr.Builder();
@@ -62,8 +67,8 @@ export class SearchService implements SearchServiceAbstraction {
         ciphers.forEach((c) => builder.add(c));
         this.index = builder.build();
         this.indexing = false;
-        // tslint:disable-next-line
-        console.timeEnd('search indexing');
+
+        this.logService.timeEnd('search indexing');
     }
 
     async searchCiphers(query: string,
