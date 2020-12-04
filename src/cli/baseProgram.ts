@@ -18,7 +18,7 @@ export abstract class BaseProgram {
         if (!response.success) {
             if (process.env.BW_QUIET !== 'true') {
                 if (process.env.BW_RESPONSE === 'true') {
-                    this.writeLn(this.getJson(response), true, false);
+                    this.writeLn(this.getJson(response), true, true);
                 } else {
                     this.writeLn(chalk.redBright(response.message), true, true);
                 }

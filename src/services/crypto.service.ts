@@ -10,10 +10,8 @@ import { ProfileOrganizationResponse } from '../models/response/profileOrganizat
 
 import { CryptoService as CryptoServiceAbstraction } from '../abstractions/crypto.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
-import { LogService } from '../abstractions/log.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { StorageService } from '../abstractions/storage.service';
-import { ConsoleLogService } from '../services/consoleLog.service';
 
 import { ConstantsService } from './constants.service';
 
@@ -39,12 +37,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     private orgKeys: Map<string, SymmetricCryptoKey>;
 
     constructor(private storageService: StorageService, private secureStorageService: StorageService,
-        private cryptoFunctionService: CryptoFunctionService, private platformUtilService: PlatformUtilsService,
-        private logService?: LogService) {
-        if (!logService) {
-            this.logService = new ConsoleLogService(false);
-        }
-    }
+        private cryptoFunctionService: CryptoFunctionService, private platformUtilService: PlatformUtilsService) { }
 
     async setKey(key: SymmetricCryptoKey): Promise<any> {
         this.key = key;
@@ -553,12 +546,14 @@ export class CryptoService implements CryptoServiceAbstraction {
         const theKey = this.resolveLegacyKey(encType, keyForEnc);
 
         if (theKey.macKey != null && mac == null) {
-            this.logService.error('mac required.');
+            // tslint:disable-next-line
+            console.error('mac required.');
             return null;
         }
 
         if (theKey.encType !== encType) {
-            this.logService.error('encType unavailable.');
+            // tslint:disable-next-line
+            console.error('encType unavailable.');
             return null;
         }
 
@@ -568,7 +563,8 @@ export class CryptoService implements CryptoServiceAbstraction {
                 fastParams.macKey, 'sha256');
             const macsEqual = await this.cryptoFunctionService.compareFast(fastParams.mac, computedMac);
             if (!macsEqual) {
-                this.logService.error('mac failed.');
+                // tslint:disable-next-line
+                console.error('mac failed.');
                 return null;
             }
         }
@@ -600,7 +596,8 @@ export class CryptoService implements CryptoServiceAbstraction {
 
             const macsMatch = await this.cryptoFunctionService.compare(mac, computedMac);
             if (!macsMatch) {
-                this.logService.error('mac failed.');
+                // tslint:disable-next-line
+                console.error('mac failed.');
                 return null;
             }
         }
