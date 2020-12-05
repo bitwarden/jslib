@@ -9,12 +9,12 @@ import { SecureNoteType } from '../enums/secureNoteType';
 import { SecureNoteView } from '../models/view/secureNoteView';
 
 export class MSecureCsvImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const results = this.parseCsv(data, false);
         if (results == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         results.forEach((value) => {
@@ -57,6 +57,6 @@ export class MSecureCsvImporter extends BaseImporter implements Importer {
         }
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 }

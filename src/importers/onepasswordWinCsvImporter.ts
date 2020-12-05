@@ -9,7 +9,7 @@ import { CardView, IdentityView } from '../models/view';
 const IgnoredProperties = ['ainfo', 'autosubmit', 'notesplain', 'ps', 'scope', 'tags', 'title', 'uuid', 'notes'];
 
 export class OnePasswordWinCsvImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const results = this.parseCsv(data, true, {
             quoteChar: '"',
@@ -17,7 +17,7 @@ export class OnePasswordWinCsvImporter extends BaseImporter implements Importer 
         });
         if (results == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         results.forEach((value) => {
@@ -155,7 +155,7 @@ export class OnePasswordWinCsvImporter extends BaseImporter implements Importer 
         });
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 
     private getProp(obj: any, name: string): any {

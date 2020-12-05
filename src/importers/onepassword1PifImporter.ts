@@ -16,7 +16,7 @@ import { SecureNoteType } from '../enums/secureNoteType';
 export class OnePassword1PifImporter extends BaseImporter implements Importer {
     result = new ImportResult();
 
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         data.split(this.newLineRegex).forEach((line) => {
             if (this.isNullOrWhitespace(line) || line[0] !== '{') {
                 return;
@@ -39,7 +39,7 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
         });
 
         this.result.success = true;
-        return this.result;
+        return Promise.resolve(this.result);
     }
 
     private processWinOpVaultItem(item: any, cipher: CipherView) {

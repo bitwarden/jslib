@@ -1,5 +1,6 @@
 import { FolderView } from '../view/folderView';
 
+import { CipherString } from '../domain/cipherString';
 import { Folder as FolderDomain } from '../domain/folder';
 
 export class Folder {
@@ -12,6 +13,11 @@ export class Folder {
     static toView(req: Folder, view = new FolderView()) {
         view.name = req.name;
         return view;
+    }
+
+    static toDomain(req: Folder, domain = new FolderDomain()) {
+        domain.name = req.name != null ? new CipherString(req.name) : null;
+        return domain;
     }
 
     name: string;

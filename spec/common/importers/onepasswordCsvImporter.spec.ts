@@ -6,9 +6,9 @@ import { data as creditCardData } from './testData/onePasswordCsv/creditCard.csv
 import { data as identityData } from './testData/onePasswordCsv/identity.csv'
 
 describe('1Password CSV Importer', () => {
-    it('should parse identity imports', () => {
+    it('should parse identity imports', async () => {
         const importer = new Importer();
-        const result = importer.parse(identityData);
+        const result = await importer.parse(identityData);
 
         expect(result).not.toBeNull();
         expect(result.success).toBe(true);
@@ -29,9 +29,9 @@ describe('1Password CSV Importer', () => {
         expect(cipher.notes).toContain('address\ncity state zip\nUnited States');
     });
 
-    it('should parse credit card imports', () => {
+    it('should parse credit card imports', async () => {
         const importer = new Importer();
-        const result = importer.parse(creditCardData);
+        const result = await importer.parse(creditCardData);
 
         expect(result).not.toBeNull();
         expect(result.success).toBe(true);

@@ -18,7 +18,7 @@ import { FieldType } from '../enums/fieldType';
 import { SecureNoteType } from '../enums/secureNoteType';
 
 export abstract class BaseImporter {
-    organization = false;
+    organizationId: string = null;
 
     protected newLineRegex = /(?:\r\n|\r|\n)/;
 
@@ -68,6 +68,10 @@ export abstract class BaseImporter {
     protected parseCsvOptions = {
         encoding: 'UTF-8',
         skipEmptyLines: false,
+    }
+
+    protected organization() {
+        return this.organizationId != null;
     }
 
     protected parseXml(data: string): Document {

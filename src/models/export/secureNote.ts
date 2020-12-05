@@ -16,6 +16,11 @@ export class SecureNote {
         return view;
     }
 
+    static toDomain(req: SecureNote, view = new SecureNoteDomain()) {
+        view.type = req.type;
+        return view;
+    }
+
     type: SecureNoteType;
 
     constructor(o?: SecureNoteView | SecureNoteDomain) {
