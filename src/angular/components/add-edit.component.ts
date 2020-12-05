@@ -83,7 +83,7 @@ export class AddEditComponent implements OnInit {
     uriMatchOptions: any[];
     ownershipOptions: any[] = [];
     currentDate = new Date();
-    allowPersonal: boolean = true;
+    allowPersonal = true;
 
     protected writeableCollections: CollectionView[];
     private previousCipherId: string;
