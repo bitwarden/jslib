@@ -2,6 +2,8 @@ import { SecureNoteType } from '../../enums/secureNoteType';
 
 import { SecureNoteView } from '../view/secureNoteView';
 
+import { SecureNote as SecureNoteDomain } from '../domain/secureNote';
+
 export class SecureNote {
     static template(): SecureNote {
         const req = new SecureNote();
@@ -14,9 +16,14 @@ export class SecureNote {
         return view;
     }
 
+    static toDomain(req: SecureNote, view = new SecureNoteDomain()) {
+        view.type = req.type;
+        return view;
+    }
+
     type: SecureNoteType;
 
-    constructor(o?: SecureNoteView) {
+    constructor(o?: SecureNoteView | SecureNoteDomain) {
         if (o == null) {
             return;
         }

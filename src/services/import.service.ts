@@ -165,12 +165,12 @@ export class ImportService implements ImportServiceAbstraction {
         }
     }
 
-    getImporter(format: string, organization = false): Importer {
+    getImporter(format: string, organizationId: string = null): Importer {
         const importer = this.getImporterInstance(format);
         if (importer == null) {
             return null;
         }
-        importer.organization = organization;
+        importer.organizationId = organizationId;
         return importer;
     }
 

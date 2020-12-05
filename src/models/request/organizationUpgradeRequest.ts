@@ -6,4 +6,6 @@ export class OrganizationUpgradeRequest {
     additionalSeats: number;
     additionalStorageGb: number;
     premiumAccessAddon: boolean;
+    billingAddressCountry: string;
+    billingAddressPostalCode: string;
 }

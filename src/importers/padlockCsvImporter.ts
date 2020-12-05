@@ -7,12 +7,12 @@ import { CollectionView } from '../models/view/collectionView';
 import { FolderView } from '../models/view/folderView';
 
 export class PadlockCsvImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const results = this.parseCsv(data, false);
         if (results == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         let headers: string[] = null;
@@ -82,6 +82,6 @@ export class PadlockCsvImporter extends BaseImporter implements Importer {
         });
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 }

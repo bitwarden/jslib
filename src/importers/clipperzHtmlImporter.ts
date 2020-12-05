@@ -4,19 +4,19 @@ import { Importer } from './importer';
 import { ImportResult } from '../models/domain/importResult';
 
 export class ClipperzHtmlImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const doc = this.parseXml(data);
         if (doc == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         const textarea = doc.querySelector('textarea');
         if (textarea == null || this.isNullOrWhitespace(textarea.textContent)) {
             result.errorMessage = 'Missing textarea.';
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         const entries = JSON.parse(textarea.textContent);
@@ -74,6 +74,6 @@ export class ClipperzHtmlImporter extends BaseImporter implements Importer {
         });
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 }

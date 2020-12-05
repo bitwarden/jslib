@@ -434,7 +434,7 @@ const IdentityTestData = JSON.stringify({
 describe('1Password 1Pif Importer', () => {
     it('should parse data', async () => {
         const importer = new Importer();
-        const result = importer.parse(TestData);
+        const result = await importer.parse(TestData);
         expect(result != null).toBe(true);
 
         const cipher = result.ciphers.shift();
@@ -447,7 +447,7 @@ describe('1Password 1Pif Importer', () => {
 
     it('should create concealed field as "hidden" type', async () => {
         const importer = new Importer();
-        const result = importer.parse(TestData);
+        const result = await importer.parse(TestData);
         expect(result != null).toBe(true);
 
         const ciphers = result.ciphers;
@@ -465,7 +465,7 @@ describe('1Password 1Pif Importer', () => {
 
     it('should create identity records', async () => {
         const importer = new Importer();
-        const result = importer.parse(IdentityTestData);
+        const result = await importer.parse(IdentityTestData);
         expect(result != null).toBe(true);
         const cipher = result.ciphers.shift();
         expect(cipher.name).toEqual('Test Identity');
@@ -488,7 +488,7 @@ describe('1Password 1Pif Importer', () => {
 
     it('should create password history', async () => {
         const importer = new Importer();
-        const result = importer.parse(TestData);
+        const result = await importer.parse(TestData);
         const cipher = result.ciphers.shift();
 
         expect(cipher.passwordHistory.length).toEqual(1);
@@ -499,7 +499,7 @@ describe('1Password 1Pif Importer', () => {
 
     it('should create password history from windows opvault 1pif format', async () => {
         const importer = new Importer();
-        const result = importer.parse(WindowsOpVaultTestData);
+        const result = await importer.parse(WindowsOpVaultTestData);
         const cipher = result.ciphers.shift();
 
         expect(cipher.passwordHistory.length).toEqual(5);

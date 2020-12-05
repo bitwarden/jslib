@@ -18,7 +18,7 @@ import { FieldType } from '../enums/fieldType';
 import { SecureNoteType } from '../enums/secureNoteType';
 
 export abstract class BaseImporter {
-    organization = false;
+    organizationId: string = null;
 
     protected newLineRegex = /(?:\r\n|\r|\n)/;
 
@@ -65,19 +65,25 @@ export abstract class BaseImporter {
         'ort', 'adresse',
     ];
 
+    protected parseCsvOptions = {
+        encoding: 'UTF-8',
+        skipEmptyLines: false,
+    }
+
+    protected organization() {
+        return this.organizationId != null;
+    }
+
     protected parseXml(data: string): Document {
         const parser = new DOMParser();
         const doc = parser.parseFromString(data, 'application/xml');
         return doc != null && doc.querySelector('parsererror') == null ? doc : null;
     }
 
-    protected parseCsv(data: string, header: boolean): any[] {
+    protected parseCsv(data: string, header: boolean, options: any = {}): any[] {
+        const parseOptions = Object.assign({ header: header }, this.parseCsvOptions, options);
         data = this.splitNewLine(data).join('\n').trim();
-        const result = papa.parse(data, {
-            header: header,
-            encoding: 'UTF-8',
-            skipEmptyLines: false,
-        });
+        const result = papa.parse(data, parseOptions);
         if (result.errors != null && result.errors.length > 0) {
             result.errors.forEach((e) => {
                 if (e.row != null) {
