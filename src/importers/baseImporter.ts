@@ -68,7 +68,7 @@ export abstract class BaseImporter {
     protected parseCsvOptions = {
         encoding: 'UTF-8',
         skipEmptyLines: false,
-    }
+    };
 
     protected organization() {
         return this.organizationId != null;

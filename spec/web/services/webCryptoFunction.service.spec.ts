@@ -70,7 +70,7 @@ describe('WebCrypto Function Service', () => {
         const prk16Byte = 'criAmKtfzxanbgea5/kelQ==';
         const prk32Byte = 'F5h4KdYQnIVH4rKH0P9CZb1GrR4n16/sJrS0PsQEn0Y=';
         const prk64Byte = 'ssBK0mRG17VHdtsgt8yo4v25CRNpauH+0r2fwY/E9rLyaFBAOMbIeTry+' +
-            'gUJ28p8y+hFh3EI9pcrEWaNvFYonQ=='
+            'gUJ28p8y+hFh3EI9pcrEWaNvFYonQ==';
 
         testHkdfExpand('sha256', prk32Byte, 32, 'BnIqJlfnHm0e/2iB/15cbHyR19ARPIcWRp4oNS22CD8=');
         testHkdfExpand('sha256', prk32Byte, 64, 'BnIqJlfnHm0e/2iB/15cbHyR19ARPIcWRp4oNS22CD9BV+' +
