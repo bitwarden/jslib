@@ -3,4 +3,4 @@ export const data = `"account number(accountNo)","address(address)","address(bra
 city state zip
 United States",,,,,,"",,,,,,,,"12/2/20","",,,"",,"bitwarden",,,,,"1606923754",,,,"12/2/20","8005555555","department",,"email@bitwarden.com",,,,"first name","",,,,,"",,"","mi",,,,,,,"job title","last name",,,,,,,,,"1607020883","",,,,,"It’s you! 🖐 Select Edit to fill in more details, like your address and contact information.",,,"occupation",,,,,,,,,,,,,,,,,,,,,,,,,"","",,,,,,,,,"",,"",,,,,,,"{(
     \\"Starter Kit\\"
-)}",,"Identity Item","Identity",,,,,,,"userNam3",,,"userNam3",,,,,,"",,,"",`
+)}",,"Identity Item","Identity",,,,,,,"userNam3",,,"userNam3",,,,,,"",,,"",`;

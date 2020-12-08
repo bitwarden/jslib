@@ -4,9 +4,9 @@ import { CipherType, FieldType } from '../../../src/enums';
 import { CipherView } from '../../../src/models/view/cipherView';
 import { FieldView } from '../../../src/models/view/fieldView';
 
-import { data as creditCardData } from './testData/onePasswordCsv/creditCard.windows.csv'
-import { data as identityData } from './testData/onePasswordCsv/identity.windows.csv'
-import { data as multiTypeData } from './testData/onePasswordCsv/multipleItems.windows.csv'
+import { data as creditCardData } from './testData/onePasswordCsv/creditCard.windows.csv';
+import { data as identityData } from './testData/onePasswordCsv/identity.windows.csv';
+import { data as multiTypeData } from './testData/onePasswordCsv/multipleItems.windows.csv';
 
 function expectIdentity(cipher: CipherView) {
     expect(cipher.type).toBe(CipherType.Identity);
@@ -46,7 +46,7 @@ describe('1Password windows CSV Importer', () => {
     let importer: Importer;
     beforeEach(() => {
         importer = new Importer();
-    })
+    });
 
     it('should parse identity records', async () => {
         const result = await importer.parse(identityData);
@@ -77,5 +77,5 @@ describe('1Password windows CSV Importer', () => {
 
         expectIdentity(result.ciphers[1]);
         expectCreditCard(result.ciphers[2]);
-    })
+    });
 });

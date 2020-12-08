@@ -15,7 +15,6 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
     protected creditCardPropertyParsers = [this.setCreditCardNumber, this.setCreditCardVerification, this.setCreditCardCardholderName, this.setCreditCardExpiry];
     protected identityPropertyParsers = [this.setIdentityFirstName, this.setIdentityInitial, this.setIdentityLastName, this.setIdentityUserName, this.setIdentityEmail, this.setIdentityPhone, this.setIdentityCompany]
 
-
     parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const results = this.parseCsv(data, true, {

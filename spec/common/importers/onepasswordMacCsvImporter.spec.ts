@@ -3,9 +3,9 @@ import { OnePasswordMacCsvImporter as Importer } from '../../../src/importers/on
 import { CipherType } from '../../../src/enums';
 import { CipherView } from '../../../src/models/view/cipherView';
 
-import { data as creditCardData } from './testData/onePasswordCsv/creditCard.mac.csv'
-import { data as identityData } from './testData/onePasswordCsv/identity.mac.csv'
-import { data as multiTypeData } from './testData/onePasswordCsv/multipleItems.mac.csv'
+import { data as creditCardData } from './testData/onePasswordCsv/creditCard.mac.csv';
+import { data as identityData } from './testData/onePasswordCsv/identity.mac.csv';
+import { data as multiTypeData } from './testData/onePasswordCsv/multipleItems.mac.csv';
 
 function expectIdentity(cipher: CipherView) {
     expect(cipher.type).toBe(CipherType.Identity);
@@ -67,5 +67,5 @@ describe('1Password mac CSV Importer', () => {
         expect(result.ciphers.length).toBe(4);
         expectIdentity(result.ciphers[1]);
         expectCreditCard(result.ciphers[2]);
-    })
+    });
 });

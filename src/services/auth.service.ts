@@ -283,7 +283,7 @@ export class AuthService implements AuthServiceAbstraction {
             codeCodeVerifier = null;
         }
         if (clientId != null && clientSecret != null) {
-            clientIdClientSecret = [clientId, clientSecret]
+            clientIdClientSecret = [clientId, clientSecret];
         } else {
             clientIdClientSecret = null;
         }
