@@ -1,9 +1,9 @@
 import { Importer } from '../importer';
+import { CipherImportContext } from './cipherImportContext';
+import { OnePasswordCsvImporter } from './onepasswordCsvImporter';
 
 import { CipherType } from '../../enums/cipherType';
 import { CardView, CipherView, IdentityView, LoginView } from '../../models/view';
-import { OnePasswordCsvImporter } from './onepasswordCsvImporter';
-import { CipherImportContext } from './cipherImportContext';
 
 export class OnePasswordWinCsvImporter extends OnePasswordCsvImporter implements Importer {
     constructor() {
@@ -40,9 +40,9 @@ export class OnePasswordWinCsvImporter extends OnePasswordCsvImporter implements
 
     setCreditCardExpiry(context: CipherImportContext) {
         if (this.isNullOrWhitespace(context.cipher.card.expiration) && context.lowerProperty.includes('expiry date')) {
-            let expSplit = (context.importRecord[context.property] as string).split('/');
+            const expSplit = (context.importRecord[context.property] as string).split('/');
             context.cipher.card.expMonth = expSplit[0];
-            if (context.cipher.card.expMonth[0] === '0' && context.cipher.card.expMonth.length == 2) {
+            if (context.cipher.card.expMonth[0] === '0' && context.cipher.card.expMonth.length === 2) {
                 context.cipher.card.expMonth = context.cipher.card.expMonth.substr(1, 1);
             }
             context.cipher.card.expYear = expSplit[2].length > 4 ? expSplit[2].substr(0, 4) : expSplit[2];

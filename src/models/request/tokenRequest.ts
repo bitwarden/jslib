@@ -25,8 +25,8 @@ export class TokenRequest {
             this.codeVerifier = codes[1];
             this.redirectUri = codes[2];
         } else if (clientIdClientSecret != null && clientIdClientSecret.length > 1) {
-            this.clientId = clientIdClientSecret[0]
-            this.clientSecret = clientIdClientSecret[1]
+            this.clientId = clientIdClientSecret[0];
+            this.clientSecret = clientIdClientSecret[1];
         }
         this.token = token;
         this.provider = provider;

@@ -246,7 +246,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     }
 
     get authing(): boolean {
-        return this.authService.authingWithPassword() || this.authService.authingWithSso() || this.authService.authingWithApiKey()
+        return this.authService.authingWithPassword() || this.authService.authingWithSso() || this.authService.authingWithApiKey();
     }
 
     get needsLock(): boolean {
