@@ -1,5 +1,5 @@
 import { FieldType } from '../../../src/enums/fieldType';
-import { OnePassword1PifImporter as Importer } from '../../../src/importers/onepassword1PifImporter';
+import { OnePassword1PifImporter as Importer } from '../../../src/importers/onepasswordImporters/onepassword1PifImporter';
 
 import { Utils } from '../../../src/misc/utils';
 
