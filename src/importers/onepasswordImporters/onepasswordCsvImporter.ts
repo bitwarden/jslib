@@ -5,6 +5,7 @@ import { ImportResult } from '../../models/domain/importResult';
 import { CipherView } from '../../models/view';
 import { CipherType } from '../../enums/cipherType';
 import { CipherImportContext } from './cipherImportContext';
+import { FieldType } from '../../enums';
 
 export const IgnoredProperties = ['ainfo', 'autosubmit', 'notesplain', 'ps', 'scope', 'tags', 'title', 'uuid', 'notes'];
 
@@ -156,7 +157,11 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
                 this.processKvp(cipher, '1Password ' + property, readableDate);
                 return null;
             }
-            this.processKvp(cipher, property, value[property]);
+            if (lowerProperty.includes('password') || lowerProperty.includes('key') || lowerProperty.includes('secret')) {
+                this.processKvp(cipher, property, value[property], FieldType.Hidden);
+            } else {
+                this.processKvp(cipher, property, value[property]);
+            }
         }
         return null;
     }
