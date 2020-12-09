@@ -145,6 +145,7 @@ export class SsoComponent {
                     this.router.navigate([this.twoFactorRoute], {
                         queryParams: {
                             identifier: orgIdFromState,
+                            sso: 'true'
                         },
                     });
                 }
