@@ -2,6 +2,7 @@ import { LogLevelType } from '../enums/logLevelType';
 
 import { LogService as LogServiceAbstraction } from '../abstractions/log.service';
 
+// @ts-ignore: import * as ns from "mod" error, need to do it this way
 import hrtime = require('browser-process-hrtime');
 
 export class ConsoleLogService implements LogServiceAbstraction {
