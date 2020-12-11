@@ -23,7 +23,8 @@ export class WindowMain {
 
     constructor(private storageService: StorageService, private hideTitleBar = false,
         private defaultWidth = 950, private defaultHeight = 600,
-        private argvCallback: (argv: string[]) => void = null) { }
+        private argvCallback: (argv: string[]) => void = null,
+        private createWindowCallback: (win: BrowserWindow) => void) { }
 
     init(): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -82,6 +83,9 @@ export class WindowMain {
                     // dock icon is clicked and there are no other windows open.
                     if (this.win === null) {
                         await this.createWindow();
+                    } else {
+                        // Show the window when clicking on Dock icon
+                        this.win.show();
                     }
                 });
 
@@ -169,6 +173,9 @@ export class WindowMain {
             this.windowStateChangeHandler(Keys.mainWindowSize, this.win);
         });
 
+        if (this.createWindowCallback) {
+            this.createWindowCallback(this.win);
+        }
     }
 
     async toggleAlwaysOnTop() {
