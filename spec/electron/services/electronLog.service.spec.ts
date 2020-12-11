@@ -5,5 +5,5 @@ describe('ElectronLogService', () => {
         process.env.ELECTRON_IS_DEV = '1';
         const logService = new ElectronLogService();
         expect(logService).toEqual(jasmine.objectContaining({ isDev: true }) as any);
-    })
+    });
 });

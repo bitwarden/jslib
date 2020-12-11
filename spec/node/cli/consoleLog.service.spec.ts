@@ -7,14 +7,14 @@ let caughtMessage: any = {};
 describe('CLI Console log service', () => {
     let logService: ConsoleLogService;
     beforeEach(() => {
-        caughtMessage = {}
+        caughtMessage = {};
         interceptConsole(caughtMessage);
         logService = new ConsoleLogService(true);
-    })
+    });
 
     afterAll(() => {
         restoreConsole();
-    })
+    });
 
     it('should redirect all console to error if BW_RESPONSE env is true', () => {
         process.env.BW_RESPONSE = 'true';
@@ -37,5 +37,5 @@ describe('CLI Console log service', () => {
             error: jasmine.arrayWithExactContents(['error']),
         });
 
-    })
+    });
 });

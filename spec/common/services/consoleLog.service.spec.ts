@@ -19,7 +19,7 @@ export function interceptConsole(interceptions: any): object {
         error: function () {
             interceptions.error = arguments;
         }
-    }
+    };
     return interceptions;
 }
 
@@ -33,11 +33,11 @@ describe('ConsoleLogService', () => {
         caughtMessage = {};
         interceptConsole(caughtMessage);
         logService = new ConsoleLogService(true);
-    })
+    });
 
     afterAll(() => {
         restoreConsole();
-    })
+    });
 
     it('filters messages below the set threshold', () => {
         logService = new ConsoleLogService(true, (level) => true);
@@ -78,12 +78,12 @@ describe('ConsoleLogService', () => {
         const duration = logService.timeEnd();
         expect(duration[0]).toBe(0);
         expect(duration[1]).toBeGreaterThan(0);
-        expect(duration[1]).toBeLessThan(500 * 10e6)
+        expect(duration[1]).toBeLessThan(500 * 10e6);
 
         expect(caughtMessage).toEqual(jasmine.arrayContaining([]));
         expect(caughtMessage.log.length).toBe(1);
         expect(caughtMessage.log[0]).toEqual(jasmine.stringMatching(/^default: \d+\.?\d*ms$/));
-    })
+    });
 
     it('filters time output', async () => {
         logService = new ConsoleLogService(true, (level) => true);
@@ -91,5 +91,5 @@ describe('ConsoleLogService', () => {
         logService.timeEnd();
 
         expect(caughtMessage).toEqual({});
-    })
-})
+    });
+});
