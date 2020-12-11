@@ -1,5 +1,7 @@
 import * as papa from 'papaparse';
 
+import { LogService } from '../abstractions/log.service';
+
 import { ImportResult } from '../models/domain/importResult';
 
 import { CipherView } from '../models/view/cipherView';
@@ -17,8 +19,12 @@ import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
 import { SecureNoteType } from '../enums/secureNoteType';
 
+import { ConsoleLogService } from '../services/consoleLog.service';
+
 export abstract class BaseImporter {
     organizationId: string = null;
+
+    protected logService: LogService = new ConsoleLogService(false);
 
     protected newLineRegex = /(?:\r\n|\r|\n)/;
 
@@ -88,7 +94,7 @@ export abstract class BaseImporter {
             result.errors.forEach((e) => {
                 if (e.row != null) {
                     // tslint:disable-next-line
-                    console.warn('Error parsing row ' + e.row + ': ' + e.message);
+                    this.logService.warning('Error parsing row ' + e.row + ': ' + e.message);
                 }
             });
         }
