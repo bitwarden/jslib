@@ -13,7 +13,6 @@ import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 import { LogService } from '../abstractions/log.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { StorageService } from '../abstractions/storage.service';
-import { ConsoleLogService } from '../services/consoleLog.service';
 
 import { ConstantsService } from './constants.service';
 
@@ -40,10 +39,7 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     constructor(private storageService: StorageService, private secureStorageService: StorageService,
         private cryptoFunctionService: CryptoFunctionService, private platformUtilService: PlatformUtilsService,
-        private logService?: LogService) {
-        if (!logService) {
-            this.logService = new ConsoleLogService(false);
-        }
+        private logService: LogService) {
     }
 
     async setKey(key: SymmetricCryptoKey): Promise<any> {

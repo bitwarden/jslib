@@ -23,7 +23,6 @@ import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
 import { VaultTimeoutService } from '../abstractions/vaultTimeout.service';
-import { ConsoleLogService } from '../services/consoleLog.service';
 
 export const TwoFactorProviders = {
     [TwoFactorProviderType.Authenticator]: {
@@ -93,11 +92,8 @@ export class AuthService implements AuthServiceAbstraction {
         private userService: UserService, private tokenService: TokenService,
         private appIdService: AppIdService, private i18nService: I18nService,
         private platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
-        private vaultTimeoutService: VaultTimeoutService, private logService?: LogService,
+        private vaultTimeoutService: VaultTimeoutService, private logService: LogService,
         private setCryptoKeys = true) {
-        if (!logService) {
-            this.logService = new ConsoleLogService(false);
-        }
     }
 
     init() {
