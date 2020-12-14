@@ -115,6 +115,7 @@ export class WindowMain {
             titleBarStyle: this.hideTitleBar && process.platform === 'darwin' ? 'hiddenInset' : undefined,
             show: false,
             alwaysOnTop: this.enableAlwaysOnTop,
+            autoHideMenuBar: true,
             webPreferences: {
                 nodeIntegration: true,
                 webviewTag: true,
