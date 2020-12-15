@@ -34,5 +34,7 @@ export abstract class PlatformUtilsService {
     readFromClipboard: (options?: any) => Promise<string>;
     supportsBiometric: () => Promise<boolean>;
     authenticateBiometric: () => Promise<boolean>;
+    getDefaultSystemTheme: () => 'light' | 'dark';
+    onDefaultSystemThemeChange: (callback: ((theme: 'light' | 'dark') => unknown)) => unknown;
     supportsSecureStorage: () => boolean;
 }

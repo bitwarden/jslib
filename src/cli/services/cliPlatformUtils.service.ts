@@ -146,6 +146,13 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
         return Promise.resolve(false);
     }
 
+    getDefaultSystemTheme() {
+        return 'light' as 'light' | 'dark';
+    }
+
+    onDefaultSystemThemeChange() {
+    }
+
     supportsSecureStorage(): boolean {
         return false;
     }
