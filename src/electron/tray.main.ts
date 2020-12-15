@@ -86,7 +86,9 @@ export class TrayMain {
     }
 
     removeTray(showWindow = true) {
-        if (this.tray != null) {
+        // Due to https://github.com/electron/electron/issues/17622
+        // we cannot destroy the tray icon on linux.
+        if (this.tray != null && process.platform !== 'linux') {
             this.tray.destroy();
             this.tray = null;
         }
