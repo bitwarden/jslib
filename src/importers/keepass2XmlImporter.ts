@@ -10,18 +10,18 @@ import { FolderView } from '../models/view/folderView';
 export class KeePass2XmlImporter extends BaseImporter implements Importer {
     result = new ImportResult();
 
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const doc = this.parseXml(data);
         if (doc == null) {
             this.result.success = false;
-            return this.result;
+            return Promise.resolve(this.result);
         }
 
         const rootGroup = doc.querySelector('KeePassFile > Root > Group');
         if (rootGroup == null) {
             this.result.errorMessage = 'Missing `KeePassFile > Root > Group` node.';
             this.result.success = false;
-            return this.result;
+            return Promise.resolve(this.result);
         }
 
         this.traverse(rootGroup, true, '');
@@ -31,7 +31,7 @@ export class KeePass2XmlImporter extends BaseImporter implements Importer {
         }
 
         this.result.success = true;
-        return this.result;
+        return Promise.resolve(this.result);
     }
 
     traverse(node: Element, isRootNode: boolean, groupPrefixName: string) {

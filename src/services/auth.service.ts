@@ -9,7 +9,6 @@ import { KeysRequest } from '../models/request/keysRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
 
-import { ErrorResponse } from '../models/response/errorResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 
@@ -18,6 +17,7 @@ import { AppIdService } from '../abstractions/appId.service';
 import { AuthService as AuthServiceAbstraction } from '../abstractions/auth.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { I18nService } from '../abstractions/i18n.service';
+import { LogService } from '../abstractions/log.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { TokenService } from '../abstractions/token.service';
@@ -81,6 +81,8 @@ export class AuthService implements AuthServiceAbstraction {
     code: string;
     codeVerifier: string;
     ssoRedirectUrl: string;
+    clientId: string;
+    clientSecret: string;
     twoFactorProvidersData: Map<TwoFactorProviderType, { [key: string]: string; }>;
     selectedTwoFactorProviderType: TwoFactorProviderType = null;
 
@@ -90,7 +92,9 @@ export class AuthService implements AuthServiceAbstraction {
         private userService: UserService, private tokenService: TokenService,
         private appIdService: AppIdService, private i18nService: I18nService,
         private platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
-        private vaultTimeoutService: VaultTimeoutService, private setCryptoKeys = true) { }
+        private vaultTimeoutService: VaultTimeoutService, private logService: LogService,
+        private setCryptoKeys = true) {
+    }
 
     init() {
         TwoFactorProviders[TwoFactorProviderType.Email].name = this.i18nService.t('emailTitle');
@@ -118,19 +122,27 @@ export class AuthService implements AuthServiceAbstraction {
         this.selectedTwoFactorProviderType = null;
         const key = await this.makePreloginKey(masterPassword, email);
         const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
-        return await this.logInHelper(email, hashedPassword, null, null, null, key,
-            null, null, null);
+        return await this.logInHelper(email, hashedPassword, null, null, null, null, null,
+            key, null, null, null);
     }
 
     async logInSso(code: string, codeVerifier: string, redirectUrl: string): Promise<AuthResult> {
         this.selectedTwoFactorProviderType = null;
-        return await this.logInHelper(null, null, code, codeVerifier, redirectUrl, null, null, null, null);
+        return await this.logInHelper(null, null, code, codeVerifier, redirectUrl, null, null,
+            null, null, null, null);
+    }
+
+    async logInApiKey(clientId: string, clientSecret: string): Promise<AuthResult> {
+        this.selectedTwoFactorProviderType = null;
+        return await this.logInHelper(null, null, null, null, null, clientId, clientSecret,
+            null, null, null, null);
     }
 
     async logInTwoFactor(twoFactorProvider: TwoFactorProviderType, twoFactorToken: string,
         remember?: boolean): Promise<AuthResult> {
         return await this.logInHelper(this.email, this.masterPasswordHash, this.code, this.codeVerifier,
-            this.ssoRedirectUrl, this.key, twoFactorProvider, twoFactorToken, remember);
+            this.ssoRedirectUrl, this.clientId, this.clientSecret, this.key, twoFactorProvider,
+            twoFactorToken, remember);
     }
 
     async logInComplete(email: string, masterPassword: string, twoFactorProvider: TwoFactorProviderType,
@@ -138,14 +150,21 @@ export class AuthService implements AuthServiceAbstraction {
         this.selectedTwoFactorProviderType = null;
         const key = await this.makePreloginKey(masterPassword, email);
         const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
-        return await this.logInHelper(email, hashedPassword, null, null, null, key, twoFactorProvider, twoFactorToken,
-            remember);
+        return await this.logInHelper(email, hashedPassword, null, null, null, null, null, key,
+            twoFactorProvider, twoFactorToken, remember);
     }
 
     async logInSsoComplete(code: string, codeVerifier: string, redirectUrl: string,
         twoFactorProvider: TwoFactorProviderType, twoFactorToken: string, remember?: boolean): Promise<AuthResult> {
         this.selectedTwoFactorProviderType = null;
         return await this.logInHelper(null, null, code, codeVerifier, redirectUrl, null,
+            null, null, twoFactorProvider, twoFactorToken, remember);
+    }
+
+    async logInApiKeyComplete(clientId: string, clientSecret: string, twoFactorProvider: TwoFactorProviderType,
+        twoFactorToken: string, remember?: boolean): Promise<AuthResult> {
+        this.selectedTwoFactorProviderType = null;
+        return await this.logInHelper(null, null, null, null, null, clientId, clientSecret, null,
             twoFactorProvider, twoFactorToken, remember);
     }
 
@@ -233,6 +252,10 @@ export class AuthService implements AuthServiceAbstraction {
         return this.cryptoService.makeKey(masterPassword, email, kdf, kdfIterations);
     }
 
+    authingWithApiKey(): boolean {
+        return this.clientId != null && this.clientSecret != null;
+    }
+
     authingWithSso(): boolean {
         return this.code != null && this.codeVerifier != null && this.ssoRedirectUrl != null;
     }
@@ -242,14 +265,16 @@ export class AuthService implements AuthServiceAbstraction {
     }
 
     private async logInHelper(email: string, hashedPassword: string, code: string, codeVerifier: string,
-        redirectUrl: string, key: SymmetricCryptoKey, twoFactorProvider?: TwoFactorProviderType,
-        twoFactorToken?: string, remember?: boolean): Promise<AuthResult> {
+        redirectUrl: string, clientId: string, clientSecret: string, key: SymmetricCryptoKey,
+        twoFactorProvider?: TwoFactorProviderType, twoFactorToken?: string, remember?: boolean): Promise<AuthResult> {
         const storedTwoFactorToken = await this.tokenService.getTwoFactorToken(email);
         const appId = await this.appIdService.getAppId();
         const deviceRequest = new DeviceRequest(appId, this.platformUtilsService);
 
         let emailPassword: string[] = [];
         let codeCodeVerifier: string[] = [];
+        let clientIdClientSecret: string[] = [];
+
         if (email != null && hashedPassword != null) {
             emailPassword = [email, hashedPassword];
         } else {
@@ -260,16 +285,22 @@ export class AuthService implements AuthServiceAbstraction {
         } else {
             codeCodeVerifier = null;
         }
+        if (clientId != null && clientSecret != null) {
+            clientIdClientSecret = [clientId, clientSecret];
+        } else {
+            clientIdClientSecret = null;
+        }
 
         let request: TokenRequest;
         if (twoFactorToken != null && twoFactorProvider != null) {
-            request = new TokenRequest(emailPassword, codeCodeVerifier, twoFactorProvider, twoFactorToken, remember,
-                deviceRequest);
+            request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, twoFactorProvider,
+                twoFactorToken, remember, deviceRequest);
         } else if (storedTwoFactorToken != null) {
-            request = new TokenRequest(emailPassword, codeCodeVerifier, TwoFactorProviderType.Remember,
+            request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, TwoFactorProviderType.Remember,
                 storedTwoFactorToken, false, deviceRequest);
         } else {
-            request = new TokenRequest(emailPassword, codeCodeVerifier, null, null, false, deviceRequest);
+            request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, null,
+                null, false, deviceRequest);
         }
 
         const response = await this.apiService.postIdentityToken(request);
@@ -286,6 +317,8 @@ export class AuthService implements AuthServiceAbstraction {
             this.code = code;
             this.codeVerifier = codeVerifier;
             this.ssoRedirectUrl = redirectUrl;
+            this.clientId = clientId;
+            this.clientSecret = clientSecret;
             this.key = this.setCryptoKeys ? key : null;
             this.twoFactorProvidersData = twoFactorResponse.twoFactorProviders2;
             result.twoFactorProviders = twoFactorResponse.twoFactorProviders2;
@@ -321,7 +354,7 @@ export class AuthService implements AuthServiceAbstraction {
                         tokenResponse.privateKey = keyPair[1].encryptedString;
                     } catch (e) {
                         // tslint:disable-next-line
-                        console.error(e);
+                        this.logService.error(e);
                     }
                 }
 
@@ -343,6 +376,8 @@ export class AuthService implements AuthServiceAbstraction {
         this.code = null;
         this.codeVerifier = null;
         this.ssoRedirectUrl = null;
+        this.clientId = null;
+        this.clientSecret = null;
         this.twoFactorProvidersData = null;
         this.selectedTwoFactorProviderType = null;
     }

@@ -13,6 +13,7 @@ import { CryptoFunctionService } from '../../abstractions/cryptoFunction.service
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
+import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 import { Response } from '../models/response';
 
@@ -35,7 +36,8 @@ export class LoginCommand {
     constructor(protected authService: AuthService, protected apiService: ApiService,
         protected i18nService: I18nService, protected environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
-        protected cryptoFunctionService: CryptoFunctionService, clientId: string) {
+        protected cryptoFunctionService: CryptoFunctionService, protected platformUtilsService: PlatformUtilsService,
+        clientId: string) {
         this.clientId = clientId;
     }
 
@@ -44,7 +46,38 @@ export class LoginCommand {
 
         let ssoCodeVerifier: string = null;
         let ssoCode: string = null;
-        if (cmd.sso != null && this.canInteract) {
+
+        let clientId: string = null;
+        let clientSecret: string = null;
+
+        if (cmd.apikey != null) {
+            const storedClientId: string = process.env.BW_CLIENTID;
+            const storedClientSecret: string = process.env.BW_CLIENTSECRET;
+            if (storedClientId == null) {
+                if (this.canInteract) {
+                    const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+                        type: 'input',
+                        name: 'clientId',
+                        message: 'client_id:',
+                    });
+                    clientId = answer.clientId;
+                } else {
+                    clientId = null;
+                }
+            } else {
+                clientId = storedClientId;
+            }
+            if (this.canInteract && storedClientSecret == null) {
+                const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+                    type: 'input',
+                    name: 'clientSecret',
+                    message: 'client_secret:',
+                });
+                clientSecret = answer.clientSecret;
+            } else {
+                clientSecret = storedClientSecret;
+            }
+        } else if (cmd.sso != null && this.canInteract) {
             const passwordOptions: any = {
                 type: 'password',
                 length: 64,
@@ -115,7 +148,10 @@ export class LoginCommand {
 
             let response: AuthResult = null;
             if (twoFactorToken != null && twoFactorMethod != null) {
-                if (ssoCode != null && ssoCodeVerifier != null) {
+                if (clientId != null && clientSecret != null) {
+                    response = await this.authService.logInApiKeyComplete(clientId, clientSecret, twoFactorMethod,
+                        twoFactorToken, false);
+                } else if (ssoCode != null && ssoCodeVerifier != null) {
                     response = await this.authService.logInSsoComplete(ssoCode, ssoCodeVerifier, this.ssoRedirectUri,
                         twoFactorMethod, twoFactorToken, false);
                 } else {
@@ -123,9 +159,10 @@ export class LoginCommand {
                         twoFactorToken, false);
                 }
             } else {
-                if (ssoCode != null && ssoCodeVerifier != null) {
+                if (clientId != null && clientSecret != null) {
+                    response = await this.authService.logInApiKey(clientId, clientSecret);
+                } else if (ssoCode != null && ssoCodeVerifier != null) {
                     response = await this.authService.logInSso(ssoCode, ssoCodeVerifier, this.ssoRedirectUri);
-
                 } else {
                     response = await this.authService.logIn(email, password);
                 }
@@ -225,7 +262,7 @@ export class LoginCommand {
                 const code = url.searchParams.get('code');
                 const receivedState = url.searchParams.get('state');
                 res.setHeader('Content-Type', 'text/html');
-                if (code != null && receivedState != null && receivedState === state) {
+                if (code != null && receivedState != null && this.checkState(receivedState, state)) {
                     res.writeHead(200);
                     res.end('<html><head><title>Success | Bitwarden CLI</title></head><body>' +
                         '<h1>Successfully authenticated with the Bitwarden CLI</h1>' +
@@ -242,13 +279,15 @@ export class LoginCommand {
                 }
             });
             let foundPort = false;
-            const webUrl = this.environmentService.webVaultUrl == null ? 'https://vault.bitwarden.com' :
-                this.environmentService.webVaultUrl;
+            let webUrl = this.environmentService.getWebVaultUrl();
+            if (webUrl == null) {
+                webUrl = 'https://vault.bitwarden.com';
+            }
             for (let port = 8065; port <= 8070; port++) {
                 try {
                     this.ssoRedirectUri = 'http://localhost:' + port;
-                    callbackServer.listen(port, async () => {
-                        await open(webUrl + '/#/sso?clientId=' + this.clientId +
+                    callbackServer.listen(port, () => {
+                        this.platformUtilsService.launchUri(webUrl + '/#/sso?clientId=' + this.clientId +
                             '&redirectUri=' + encodeURIComponent(this.ssoRedirectUri) +
                             '&state=' + state + '&codeChallenge=' + codeChallenge);
                     });
@@ -260,5 +299,18 @@ export class LoginCommand {
                 reject();
             }
         });
+    }
+
+    private checkState(state: string, checkState: string): boolean {
+        if (state === null || state === undefined) {
+            return false;
+        }
+        if (checkState === null || checkState === undefined) {
+            return false;
+        }
+
+        const stateSplit = state.split('_identifier=');
+        const checkStateSplit = checkState.split('_identifier=');
+        return stateSplit[0] === checkStateSplit[0];
     }
 }

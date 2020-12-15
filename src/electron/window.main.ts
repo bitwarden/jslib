@@ -23,7 +23,8 @@ export class WindowMain {
 
     constructor(private storageService: StorageService, private hideTitleBar = false,
         private defaultWidth = 950, private defaultHeight = 600,
-        private argvCallback: (argv: string[]) => void = null) { }
+        private argvCallback: (argv: string[]) => void = null,
+        private createWindowCallback: (win: BrowserWindow) => void) { }
 
     init(): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -72,7 +73,7 @@ export class WindowMain {
                 app.on('window-all-closed', () => {
                     // On OS X it is common for applications and their menu bar
                     // to stay active until the user quits explicitly with Cmd + Q
-                    if (process.platform !== 'darwin' || isMacAppStore()) {
+                    if (process.platform !== 'darwin' || this.isQuitting || isMacAppStore()) {
                         app.quit();
                     }
                 });
@@ -82,6 +83,9 @@ export class WindowMain {
                     // dock icon is clicked and there are no other windows open.
                     if (this.win === null) {
                         await this.createWindow();
+                    } else {
+                        // Show the window when clicking on Dock icon
+                        this.win.show();
                     }
                 });
 
@@ -114,6 +118,7 @@ export class WindowMain {
             webPreferences: {
                 nodeIntegration: true,
                 webviewTag: true,
+                backgroundThrottling: false,
             },
         });
 
@@ -168,6 +173,9 @@ export class WindowMain {
             this.windowStateChangeHandler(Keys.mainWindowSize, this.win);
         });
 
+        if (this.createWindowCallback) {
+            this.createWindowCallback(this.win);
+        }
     }
 
     async toggleAlwaysOnTop() {

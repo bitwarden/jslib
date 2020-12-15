@@ -10,6 +10,8 @@ import { ProfileOrganizationResponse } from '../models/response/profileOrganizat
 
 import { CryptoService as CryptoServiceAbstraction } from '../abstractions/crypto.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
+import { LogService } from '../abstractions/log.service';
+import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { StorageService } from '../abstractions/storage.service';
 
 import { ConstantsService } from './constants.service';
@@ -36,14 +38,16 @@ export class CryptoService implements CryptoServiceAbstraction {
     private orgKeys: Map<string, SymmetricCryptoKey>;
 
     constructor(private storageService: StorageService, private secureStorageService: StorageService,
-        private cryptoFunctionService: CryptoFunctionService) { }
+        private cryptoFunctionService: CryptoFunctionService, private platformUtilService: PlatformUtilsService,
+        private logService: LogService) {
+    }
 
     async setKey(key: SymmetricCryptoKey): Promise<any> {
         this.key = key;
 
         const option = await this.storageService.get<number>(ConstantsService.vaultTimeoutKey);
         const biometric = await this.storageService.get<boolean>(ConstantsService.biometricUnlockKey);
-        if (option != null && !biometric) {
+        if (option != null && !(biometric && this.platformUtilService.supportsSecureStorage())) {
             // if we have a lock option set, we do not store the key
             return;
         }
@@ -182,8 +186,8 @@ export class CryptoService implements CryptoServiceAbstraction {
             throw new Error('No public key available.');
         }
         const keyFingerprint = await this.cryptoFunctionService.hash(publicKey, 'sha256');
-        const userFingerprint = await this.hkdfExpand(keyFingerprint, Utils.fromUtf8ToArray(userId), 32);
-        return this.hashPhrase(userFingerprint.buffer);
+        const userFingerprint = await this.cryptoFunctionService.hkdfExpand(keyFingerprint, userId, 32, 'sha256');
+        return this.hashPhrase(userFingerprint);
     }
 
     @sequentialize(() => 'getOrgKeys')
@@ -293,7 +297,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         const key = await this.getKey();
         const option = await this.storageService.get(ConstantsService.vaultTimeoutKey);
         const biometric = await this.storageService.get(ConstantsService.biometricUnlockKey);
-        if (!biometric && (option != null || option === 0)) {
+        if ((!biometric && this.platformUtilService.supportsSecureStorage()) && (option != null || option === 0)) {
             // if we have a lock option set, clear the key
             await this.clearKey();
             this.key = key;
@@ -351,6 +355,11 @@ export class CryptoService implements CryptoServiceAbstraction {
     async makePinKey(pin: string, salt: string, kdf: KdfType, kdfIterations: number): Promise<SymmetricCryptoKey> {
         const pinKey = await this.makeKey(pin, salt, kdf, kdfIterations);
         return await this.stretchKey(pinKey);
+    }
+
+    async makeSendKey(keyMaterial: ArrayBuffer): Promise<SymmetricCryptoKey> {
+        const sendKey = await this.cryptoFunctionService.hkdf(keyMaterial, 'bitwarden-send', 'send', 64, 'sha256');
+        return new SymmetricCryptoKey(sendKey);
     }
 
     async hashPassword(password: string, key: SymmetricCryptoKey): Promise<string> {
@@ -540,14 +549,12 @@ export class CryptoService implements CryptoServiceAbstraction {
         const theKey = this.resolveLegacyKey(encType, keyForEnc);
 
         if (theKey.macKey != null && mac == null) {
-            // tslint:disable-next-line
-            console.error('mac required.');
+            this.logService.error('mac required.');
             return null;
         }
 
         if (theKey.encType !== encType) {
-            // tslint:disable-next-line
-            console.error('encType unavailable.');
+            this.logService.error('encType unavailable.');
             return null;
         }
 
@@ -557,8 +564,7 @@ export class CryptoService implements CryptoServiceAbstraction {
                 fastParams.macKey, 'sha256');
             const macsEqual = await this.cryptoFunctionService.compareFast(fastParams.mac, computedMac);
             if (!macsEqual) {
-                // tslint:disable-next-line
-                console.error('mac failed.');
+                this.logService.error('mac failed.');
                 return null;
             }
         }
@@ -590,8 +596,7 @@ export class CryptoService implements CryptoServiceAbstraction {
 
             const macsMatch = await this.cryptoFunctionService.compare(mac, computedMac);
             if (!macsMatch) {
-                // tslint:disable-next-line
-                console.error('mac failed.');
+                this.logService.error('mac failed.');
                 return null;
             }
         }
@@ -679,26 +684,11 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     private async stretchKey(key: SymmetricCryptoKey): Promise<SymmetricCryptoKey> {
         const newKey = new Uint8Array(64);
-        newKey.set(await this.hkdfExpand(key.key, Utils.fromUtf8ToArray('enc'), 32));
-        newKey.set(await this.hkdfExpand(key.key, Utils.fromUtf8ToArray('mac'), 32), 32);
+        const encKey = await this.cryptoFunctionService.hkdfExpand(key.key, 'enc', 32, 'sha256');
+        const macKey = await this.cryptoFunctionService.hkdfExpand(key.key, 'mac', 32, 'sha256');
+        newKey.set(new Uint8Array(encKey));
+        newKey.set(new Uint8Array(macKey), 32);
         return new SymmetricCryptoKey(newKey.buffer);
-    }
-
-    // ref: https://tools.ietf.org/html/rfc5869
-    private async hkdfExpand(prk: ArrayBuffer, info: Uint8Array, size: number) {
-        const hashLen = 32; // sha256
-        const okm = new Uint8Array(size);
-        let previousT = new Uint8Array(0);
-        const n = Math.ceil(size / hashLen);
-        for (let i = 0; i < n; i++) {
-            const t = new Uint8Array(previousT.length + info.length + 1);
-            t.set(previousT);
-            t.set(info, previousT.length);
-            t.set([i + 1], t.length - 1);
-            previousT = new Uint8Array(await this.cryptoFunctionService.hmac(t.buffer, prk, 'sha256'));
-            okm.set(previousT, i * hashLen);
-        }
-        return okm;
     }
 
     private async hashPhrase(hash: ArrayBuffer, minimumEntropy: number = 64) {

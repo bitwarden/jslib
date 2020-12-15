@@ -14,6 +14,7 @@ import { CipherType } from '../../enums/cipherType';
 import { EventType } from '../../enums/eventType';
 import { FieldType } from '../../enums/fieldType';
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
+import { PolicyType } from '../../enums/policyType';
 import { SecureNoteType } from '../../enums/secureNoteType';
 import { UriMatchType } from '../../enums/uriMatchType';
 
@@ -25,6 +26,7 @@ import { FolderService } from '../../abstractions/folder.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { MessagingService } from '../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
+import { PolicyService } from '../../abstractions/policy.service';
 import { StateService } from '../../abstractions/state.service';
 import { UserService } from '../../abstractions/user.service';
 
@@ -81,6 +83,7 @@ export class AddEditComponent implements OnInit {
     uriMatchOptions: any[];
     ownershipOptions: any[] = [];
     currentDate = new Date();
+    allowPersonal = true;
 
     protected writeableCollections: CollectionView[];
     private previousCipherId: string;
@@ -89,7 +92,8 @@ export class AddEditComponent implements OnInit {
         protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected auditService: AuditService, protected stateService: StateService,
         protected userService: UserService, protected collectionService: CollectionService,
-        protected messagingService: MessagingService, protected eventService: EventService) {
+        protected messagingService: MessagingService, protected eventService: EventService,
+        protected policyService: PolicyService) {
         this.typeOptions = [
             { name: i18nService.t('typeLogin'), value: CipherType.Login },
             { name: i18nService.t('typeCard'), value: CipherType.Card },
@@ -151,12 +155,26 @@ export class AddEditComponent implements OnInit {
     }
 
     async init() {
+        const policies = await this.policyService.getAll(PolicyType.PersonalOwnership);
         const myEmail = await this.userService.getEmail();
         this.ownershipOptions.push({ name: myEmail, value: null });
         const orgs = await this.userService.getAllOrganizations();
         orgs.sort(Utils.getSortFunction(this.i18nService, 'name')).forEach((o) => {
             if (o.enabled && o.status === OrganizationUserStatusType.Confirmed) {
                 this.ownershipOptions.push({ name: o.name, value: o.id });
+                if (policies != null && o.usePolicies && !o.isAdmin && this.allowPersonal) {
+                    for (const policy of policies) {
+                        if (policy.organizationId === o.id && policy.enabled) {
+                            this.allowPersonal = false;
+                            this.ownershipOptions.splice(0, 1);
+                            // Default to the organization who owns this policy for now (if necessary)
+                            if (this.organizationId == null) {
+                                this.organizationId = o.id;
+                            }
+                            break;
+                        }
+                    }
+                }
             }
         });
         this.writeableCollections = await this.loadCollections();
@@ -233,6 +251,12 @@ export class AddEditComponent implements OnInit {
         if (this.cipher.name == null || this.cipher.name === '') {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('nameRequired'));
+            return false;
+        }
+
+        if ((!this.editMode || this.cloneMode) && !this.allowPersonal && this.cipher.organizationId == null) {
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                this.i18nService.t('personalOwnershipSubmitError'));
             return false;
         }
 

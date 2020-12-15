@@ -7,12 +7,12 @@ import { CipherType } from '../enums/cipherType';
 import { SecureNoteType } from '../enums/secureNoteType';
 
 export class AvastJsonImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const results = JSON.parse(data);
         if (results == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         if (results.logins != null) {
@@ -64,6 +64,6 @@ export class AvastJsonImporter extends BaseImporter implements Importer {
         }
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 }

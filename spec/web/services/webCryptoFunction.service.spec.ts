@@ -53,6 +53,45 @@ describe('WebCrypto Function Service', () => {
         testPbkdf2('sha512', regular512Key, utf8512Key, unicode512Key);
     });
 
+    describe('hkdf', () => {
+        const regular256Key = 'qBUmEYtwTwwGPuw/z6bs/qYXXYNUlocFlyAuuANI8Pw=';
+        const utf8256Key = '6DfJwW1R3txgiZKkIFTvVAb7qVlG7lKcmJGJoxR2GBU=';
+        const unicode256Key = 'gejGI82xthA+nKtKmIh82kjw+ttHr+ODsUoGdu5sf0A=';
+
+        const regular512Key = 'xe5cIG6ZfwGmb1FvsOedM0XKOm21myZkjL/eDeKIqqM=';
+        const utf8512Key = 'XQMVBnxVEhlvjSFDQc77j5GDE9aorvbS0vKnjhRg0LY=';
+        const unicode512Key = '148GImrTbrjaGAe/iWEpclINM8Ehhko+9lB14+52lqc=';
+
+        testHkdf('sha256', regular256Key, utf8256Key, unicode256Key);
+        testHkdf('sha512', regular512Key, utf8512Key, unicode512Key);
+    });
+
+    describe('hkdfExpand', () => {
+        const prk16Byte = 'criAmKtfzxanbgea5/kelQ==';
+        const prk32Byte = 'F5h4KdYQnIVH4rKH0P9CZb1GrR4n16/sJrS0PsQEn0Y=';
+        const prk64Byte = 'ssBK0mRG17VHdtsgt8yo4v25CRNpauH+0r2fwY/E9rLyaFBAOMbIeTry+' +
+            'gUJ28p8y+hFh3EI9pcrEWaNvFYonQ==';
+
+        testHkdfExpand('sha256', prk32Byte, 32, 'BnIqJlfnHm0e/2iB/15cbHyR19ARPIcWRp4oNS22CD8=');
+        testHkdfExpand('sha256', prk32Byte, 64, 'BnIqJlfnHm0e/2iB/15cbHyR19ARPIcWRp4oNS22CD9BV+' +
+            '/queOZenPNkDhmlVyL2WZ3OSU5+7ISNF5NhNfvZA==');
+        testHkdfExpand('sha512', prk64Byte, 32, 'uLWbMWodSBms5uGJ5WTRTesyW+MD7nlpCZvagvIRXlk=');
+        testHkdfExpand('sha512', prk64Byte, 64, 'uLWbMWodSBms5uGJ5WTRTesyW+MD7nlpCZvagvIRXlkY5Pv0sB+' +
+            'MqvaopmkC6sD/j89zDwTV9Ib2fpucUydO8w==');
+
+        it('should fail with prk too small', async () => {
+            const cryptoFunctionService = getWebCryptoFunctionService();
+            const f = cryptoFunctionService.hkdfExpand(Utils.fromB64ToArray(prk16Byte), 'info', 32, 'sha256');
+            await expectAsync(f).toBeRejectedWith(new Error('prk is too small.'));
+        });
+
+        it('should fail with outputByteSize is too large', async () => {
+            const cryptoFunctionService = getWebCryptoFunctionService();
+            const f = cryptoFunctionService.hkdfExpand(Utils.fromB64ToArray(prk32Byte), 'info', 8161, 'sha256');
+            await expectAsync(f).toBeRejectedWith(new Error('outputByteSize is too large.'));
+        });
+    });
+
     describe('hash', () => {
         const regular1Hash = '2a241604fb921fad12bf877282457268e1dccb70';
         const utf81Hash = '85672798dc5831e96d6c48655d3d39365a9c88b6';
@@ -318,6 +357,55 @@ function testPbkdf2(algorithm: 'sha256' | 'sha512', regularKey: string,
     });
 }
 
+function testHkdf(algorithm: 'sha256' | 'sha512', regularKey: string, utf8Key: string, unicodeKey: string) {
+    const ikm = Utils.fromB64ToArray('criAmKtfzxanbgea5/kelQ==');
+
+    const regularSalt = 'salt';
+    const utf8Salt = 'üser_salt';
+    const unicodeSalt = '😀salt🙏';
+
+    const regularInfo = 'info';
+    const utf8Info = 'üser_info';
+    const unicodeInfo = '😀info🙏';
+
+    it('should create valid ' + algorithm + ' key from regular input', async () => {
+        const cryptoFunctionService = getWebCryptoFunctionService();
+        const key = await cryptoFunctionService.hkdf(ikm, regularSalt, regularInfo, 32, algorithm);
+        expect(Utils.fromBufferToB64(key)).toBe(regularKey);
+    });
+
+    it('should create valid ' + algorithm + ' key from utf8 input', async () => {
+        const cryptoFunctionService = getWebCryptoFunctionService();
+        const key = await cryptoFunctionService.hkdf(ikm, utf8Salt, utf8Info, 32, algorithm);
+        expect(Utils.fromBufferToB64(key)).toBe(utf8Key);
+    });
+
+    it('should create valid ' + algorithm + ' key from unicode input', async () => {
+        const cryptoFunctionService = getWebCryptoFunctionService();
+        const key = await cryptoFunctionService.hkdf(ikm, unicodeSalt, unicodeInfo, 32, algorithm);
+        expect(Utils.fromBufferToB64(key)).toBe(unicodeKey);
+    });
+
+    it('should create valid ' + algorithm + ' key from array buffer input', async () => {
+        const cryptoFunctionService = getWebCryptoFunctionService();
+        const key = await cryptoFunctionService.hkdf(ikm, Utils.fromUtf8ToArray(regularSalt).buffer,
+            Utils.fromUtf8ToArray(regularInfo).buffer, 32, algorithm);
+        expect(Utils.fromBufferToB64(key)).toBe(regularKey);
+    });
+}
+
+function testHkdfExpand(algorithm: 'sha256' | 'sha512', b64prk: string, outputByteSize: number,
+    b64ExpectedOkm: string) {
+    const info = 'info';
+
+    it('should create valid ' + algorithm + ' ' + outputByteSize + ' byte okm', async () => {
+        const cryptoFunctionService = getWebCryptoFunctionService();
+        const okm = await cryptoFunctionService.hkdfExpand(Utils.fromB64ToArray(b64prk), info, outputByteSize,
+            algorithm);
+        expect(Utils.fromBufferToB64(okm)).toBe(b64ExpectedOkm);
+    });
+}
+
 function testHash(algorithm: 'sha1' | 'sha256' | 'sha512' | 'md5', regularHash: string,
     utf8Hash: string, unicodeHash: string) {
     const regularValue = 'HashMe!!';
@@ -380,8 +468,8 @@ function testRsaGenerateKeyPair(length: 1024 | 2048 | 4096) {
 
 function getWebCryptoFunctionService() {
     const platformUtilsMock = TypeMoq.Mock.ofType<PlatformUtilsService>(PlatformUtilsServiceMock);
-    platformUtilsMock.setup((x) => x.isEdge()).returns(() => navigator.userAgent.indexOf(' Edge/') !== -1);
-    platformUtilsMock.setup((x) => x.isIE()).returns(() => navigator.userAgent.indexOf(' Edge/') === -1 &&
+    platformUtilsMock.setup((x) => x.isEdge()).returns(() => navigator.userAgent.indexOf(' Edg/') !== -1);
+    platformUtilsMock.setup((x) => x.isIE()).returns(() => navigator.userAgent.indexOf(' Edg/') === -1 &&
         navigator.userAgent.indexOf(' Trident/') !== -1);
     return new WebCryptoFunctionService(window, platformUtilsMock.object);
 }

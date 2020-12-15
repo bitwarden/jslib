@@ -36,4 +36,5 @@ export abstract class PlatformUtilsService {
     authenticateBiometric: () => Promise<boolean>;
     getDefaultSystemTheme: () => 'light' | 'dark';
     onDefaultSystemThemeChange: (callback: ((theme: 'light' | 'dark') => unknown)) => unknown;
+    supportsSecureStorage: () => boolean;
 }

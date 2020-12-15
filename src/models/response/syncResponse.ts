@@ -5,6 +5,7 @@ import { DomainsResponse } from './domainsResponse';
 import { FolderResponse } from './folderResponse';
 import { PolicyResponse } from './policyResponse';
 import { ProfileResponse } from './profileResponse';
+import { SendResponse } from './sendResponse';
 
 export class SyncResponse extends BaseResponse {
     profile?: ProfileResponse;
@@ -13,6 +14,7 @@ export class SyncResponse extends BaseResponse {
     ciphers: CipherResponse[] = [];
     domains?: DomainsResponse;
     policies?: PolicyResponse[] = [];
+    sends: SendResponse[] = [];
 
     constructor(response: any) {
         super(response);
@@ -45,6 +47,11 @@ export class SyncResponse extends BaseResponse {
         const policies = this.getResponseProperty('Policies');
         if (policies != null) {
             this.policies = policies.map((p: any) => new PolicyResponse(p));
+        }
+
+        const sends = this.getResponseProperty('Sends');
+        if (sends != null) {
+            this.sends = sends.map((s: any) => new SendResponse(s));
         }
     }
 }

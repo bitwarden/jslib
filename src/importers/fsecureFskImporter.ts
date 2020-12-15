@@ -8,12 +8,12 @@ import { CardView } from '../models/view/cardView';
 import { CipherType } from '../enums/cipherType';
 
 export class FSecureFskImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const results = JSON.parse(data);
         if (results == null || results.data == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         for (const key in results.data) {
@@ -55,6 +55,6 @@ export class FSecureFskImporter extends BaseImporter implements Importer {
         }
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 }

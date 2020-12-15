@@ -231,4 +231,8 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         //     callback(this.getDefaultSystemTheme());
         // });
     }
+
+    supportsSecureStorage(): boolean {
+        return true;
+    }
 }

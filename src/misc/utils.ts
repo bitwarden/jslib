@@ -43,6 +43,10 @@ export class Utils {
         }
     }
 
+    static fromUrlB64ToArray(str: string): Uint8Array {
+        return Utils.fromB64ToArray(Utils.fromUrlB64ToB64(str));
+    }
+
     static fromHexToArray(str: string): Uint8Array {
         if (Utils.isNode || Utils.isNativeScript) {
             return new Uint8Array(Buffer.from(str, 'hex'));
@@ -90,11 +94,13 @@ export class Utils {
     }
 
     static fromBufferToUrlB64(buffer: ArrayBuffer): string {
-        const output = this.fromBufferToB64(buffer)
-            .replace(/\+/g, '-')
+        return Utils.fromB64toUrlB64(Utils.fromBufferToB64(buffer));
+    }
+
+    static fromB64toUrlB64(b64Str: string) {
+        return b64Str.replace(/\+/g, '-')
             .replace(/\//g, '_')
             .replace(/=/g, '');
-        return output;
     }
 
     static fromBufferToUtf8(buffer: ArrayBuffer): string {
@@ -121,8 +127,8 @@ export class Utils {
         }
     }
 
-    static fromUrlB64ToUtf8(b64Str: string): string {
-        let output = b64Str.replace(/-/g, '+').replace(/_/g, '/');
+    static fromUrlB64ToB64(urlB64Str: string): string {
+        let output = urlB64Str.replace(/-/g, '+').replace(/_/g, '/');
         switch (output.length % 4) {
             case 0:
                 break;
@@ -136,7 +142,11 @@ export class Utils {
                 throw new Error('Illegal base64url string!');
         }
 
-        return Utils.fromB64ToUtf8(output);
+        return output;
+    }
+
+    static fromUrlB64ToUtf8(urlB64Str: string): string {
+        return Utils.fromB64ToUtf8(Utils.fromUrlB64ToB64(urlB64Str));
     }
 
     static fromB64ToUtf8(b64Str: string): string {

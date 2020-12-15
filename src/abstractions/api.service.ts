@@ -42,6 +42,8 @@ import { PreloginRequest } from '../models/request/preloginRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
+import { SendAccessRequest } from '../models/request/sendAccessRequest';
+import { SendRequest } from '../models/request/sendRequest';
 import { SetPasswordRequest } from '../models/request/setPasswordRequest';
 import { StorageRequest } from '../models/request/storageRequest';
 import { TaxInfoUpdateRequest } from '../models/request/taxInfoUpdateRequest';
@@ -92,9 +94,12 @@ import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
+import { SendAccessResponse } from '../models/response/sendAccessResponse';
+import { SendResponse } from '../models/response/sendResponse';
 import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TaxInfoResponse } from '../models/response/taxInfoResponse';
+import { TaxRateResponse } from '../models/response/taxRateResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
 import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
 import { TwoFactorEmailResponse } from '../models/response/twoFactorEmailResponse';
@@ -149,11 +154,22 @@ export abstract class ApiService {
     postAccountRecoverDeleteToken: (request: VerifyDeleteRecoverRequest) => Promise<any>;
     postAccountKdf: (request: KdfRequest) => Promise<any>;
     getEnterprisePortalSignInToken: () => Promise<string>;
+    postUserApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
+    postUserRotateApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
 
     getFolder: (id: string) => Promise<FolderResponse>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
     putFolder: (id: string, request: FolderRequest) => Promise<FolderResponse>;
     deleteFolder: (id: string) => Promise<any>;
+
+    getSend: (id: string) => Promise<SendResponse>;
+    postSendAccess: (id: string, request: SendAccessRequest) => Promise<SendAccessResponse>;
+    getSends: () => Promise<ListResponse<SendResponse>>;
+    postSend: (request: SendRequest) => Promise<SendResponse>;
+    postSendFile: (data: FormData) => Promise<SendResponse>;
+    putSend: (id: string, request: SendRequest) => Promise<SendResponse>;
+    putSendRemovePassword: (id: string) => Promise<SendResponse>;
+    deleteSend: (id: string) => Promise<any>;
 
     getCipher: (id: string) => Promise<CipherResponse>;
     getCipherAdmin: (id: string) => Promise<CipherResponse>;
@@ -284,6 +300,7 @@ export abstract class ApiService {
     postOrganizationReinstate: (id: string) => Promise<any>;
     deleteOrganization: (id: string, request: PasswordVerificationRequest) => Promise<any>;
     getPlans: () => Promise<ListResponse<PlanResponse>>;
+    getTaxRates: () => Promise<ListResponse<TaxRateResponse>>;
 
     getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
     getEventsCipher: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
@@ -306,4 +323,6 @@ export abstract class ApiService {
     getActiveBearerToken: () => Promise<string>;
     fetch: (request: Request) => Promise<Response>;
     nativeFetch: (request: Request) => Promise<Response>;
+
+    preValidateSso: (identifier: string) => Promise<boolean>;
 }

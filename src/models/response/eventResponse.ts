@@ -10,6 +10,7 @@ export class EventResponse extends BaseResponse {
     cipherId: string;
     collectionId: string;
     groupId: string;
+    policyId: string;
     organizationUserId: string;
     actingUserId: string;
     date: string;
@@ -24,6 +25,7 @@ export class EventResponse extends BaseResponse {
         this.cipherId = this.getResponseProperty('CipherId');
         this.collectionId = this.getResponseProperty('CollectionId');
         this.groupId = this.getResponseProperty('GroupId');
+        this.policyId = this.getResponseProperty('PolicyId');
         this.organizationUserId = this.getResponseProperty('OrganizationUserId');
         this.actingUserId = this.getResponseProperty('ActingUserId');
         this.date = this.getResponseProperty('Date');

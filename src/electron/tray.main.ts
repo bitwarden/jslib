@@ -1,4 +1,6 @@
 import {
+    app,
+    BrowserWindow,
     Menu,
     MenuItem,
     MenuItemConstructorOptions,
@@ -44,7 +46,7 @@ export class TrayMain {
         },
         { type: 'separator' },
         {
-            label: process.platform === 'darwin' ? this.i18nService.t('close') : this.i18nService.t('exit'),
+            label: this.i18nService.t('exit'),
             click: () => this.closeWindow(),
         }];
 
@@ -52,32 +54,30 @@ export class TrayMain {
             menuItemOptions.splice(1, 0, ...additionalMenuItems);
         }
 
-        if (process.platform !== 'darwin') {
-            this.contextMenu = Menu.buildFromTemplate(menuItemOptions);
-        }
+        this.contextMenu = Menu.buildFromTemplate(menuItemOptions);
         if (await this.storageService.get<boolean>(ElectronConstants.enableTrayKey)) {
             this.showTray();
         }
+    }
 
-        if (process.platform === 'win32') {
-            this.windowMain.win.on('minimize', async (e: Event) => {
-                if (await this.storageService.get<boolean>(ElectronConstants.enableMinimizeToTrayKey)) {
+    setupWindowListeners(win: BrowserWindow) {
+        win.on('minimize', async (e: Event) => {
+            if (await this.storageService.get<boolean>(ElectronConstants.enableMinimizeToTrayKey)) {
+                e.preventDefault();
+                this.hideToTray();
+            }
+        });
+
+        win.on('close', async (e: Event) => {
+            if (await this.storageService.get<boolean>(ElectronConstants.enableCloseToTrayKey)) {
+                if (!this.windowMain.isQuitting) {
                     e.preventDefault();
                     this.hideToTray();
                 }
-            });
+            }
+        });
 
-            this.windowMain.win.on('close', async (e: Event) => {
-                if (await this.storageService.get<boolean>(ElectronConstants.enableCloseToTrayKey)) {
-                    if (!this.windowMain.isQuitting) {
-                        e.preventDefault();
-                        this.hideToTray();
-                    }
-                }
-            });
-        }
-
-        this.windowMain.win.on('show', async (e: Event) => {
+        win.on('show', async (e: Event) => {
             const enableTray = await this.storageService.get<boolean>(ElectronConstants.enableTrayKey);
             if (!enableTray) {
                 setTimeout(() =>  this.removeTray(false), 100);
@@ -86,7 +86,9 @@ export class TrayMain {
     }
 
     removeTray(showWindow = true) {
-        if (this.tray != null) {
+        // Due to https://github.com/electron/electron/issues/17622
+        // we cannot destroy the tray icon on linux.
+        if (this.tray != null && process.platform !== 'linux') {
             this.tray.destroy();
             this.tray = null;
         }
@@ -96,10 +98,19 @@ export class TrayMain {
         }
     }
 
-    hideToTray() {
+    async hideToTray() {
         this.showTray();
         if (this.windowMain.win != null) {
             this.windowMain.win.hide();
+        }
+        if (this.isDarwin() && !await this.storageService.get<boolean>(ElectronConstants.alwaysShowDock)) {
+            this.hideDock();
+        }
+    }
+
+    restoreFromTray() {
+        if (this.windowMain.win == null || !this.windowMain.win.isVisible()) {
+            this.toggleWindow();
         }
     }
 
@@ -111,29 +122,49 @@ export class TrayMain {
         this.tray = new Tray(this.icon);
         this.tray.setToolTip(this.appName);
         this.tray.on('click', () => this.toggleWindow());
+        this.tray.on('right-click', () => this.tray.popUpContextMenu(this.contextMenu));
 
         if (this.pressedIcon != null) {
             this.tray.setPressedImage(this.pressedIcon);
         }
-        if (this.contextMenu != null) {
+        if (this.contextMenu != null && !this.isDarwin()) {
             this.tray.setContextMenu(this.contextMenu);
         }
     }
 
-    private toggleWindow() {
+    private hideDock() {
+        app.dock.hide();
+    }
+
+    private showDock() {
+        app.dock.show();
+    }
+
+    private isDarwin() {
+        return process.platform === 'darwin';
+    }
+
+    private async toggleWindow() {
         if (this.windowMain.win == null) {
-            if (process.platform === 'darwin') {
+            if (this.isDarwin()) {
                 // On MacOS, closing the window via the red button destroys the BrowserWindow instance.
                 this.windowMain.createWindow().then(() => {
                     this.windowMain.win.show();
+                    this.showDock();
                 });
             }
             return;
         }
         if (this.windowMain.win.isVisible()) {
             this.windowMain.win.hide();
+            if (this.isDarwin() && !await this.storageService.get<boolean>(ElectronConstants.alwaysShowDock)) {
+                this.hideDock();
+            }
         } else {
             this.windowMain.win.show();
+            if (this.isDarwin()) {
+                this.showDock();
+            }
         }
     }
 

@@ -1,4 +1,7 @@
-import { Router } from '@angular/router';
+import {
+    ActivatedRoute,
+    Router
+} from '@angular/router';
 
 import { ApiService } from '../../abstractions/api.service';
 import { CryptoService } from '../../abstractions/crypto.service';
@@ -24,6 +27,7 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
     syncLoading: boolean = true;
     showPassword: boolean = false;
     hint: string = '';
+    identifier: string = null;
 
     onSuccessfulChangePassword: () => Promise<any>;
     successRoute = 'vault';
@@ -31,7 +35,7 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
     constructor(i18nService: I18nService, cryptoService: CryptoService, messagingService: MessagingService,
         userService: UserService, passwordGenerationService: PasswordGenerationService,
         platformUtilsService: PlatformUtilsService, policyService: PolicyService, private router: Router,
-        private apiService: ApiService, private syncService: SyncService) {
+        private apiService: ApiService, private syncService: SyncService, private route: ActivatedRoute) {
         super(i18nService, cryptoService, messagingService, userService, passwordGenerationService,
             platformUtilsService, policyService);
     }
@@ -39,12 +43,23 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
     async ngOnInit() {
         await this.syncService.fullSync(true);
         this.syncLoading = false;
+
+        const queryParamsSub = this.route.queryParams.subscribe(async (qParams) => {
+            if (qParams.identifier != null) {
+                this.identifier = qParams.identifier;
+            }
+
+            if (queryParamsSub != null) {
+                queryParamsSub.unsubscribe();
+            }
+        });
+
         super.ngOnInit();
     }
 
     async setupSubmitActions() {
         this.kdf = KdfType.PBKDF2_SHA256;
-        const useLowerKdf = this.platformUtilsService.isEdge() || this.platformUtilsService.isIE();
+        const useLowerKdf = this.platformUtilsService.isIE();
         this.kdfIterations = useLowerKdf ? 10000 : 100000;
         return true;
     }
@@ -57,6 +72,7 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
         request.masterPasswordHint = this.hint;
         request.kdf = this.kdf;
         request.kdfIterations = this.kdfIterations;
+        request.orgIdentifier = this.identifier;
 
         const keys = await this.cryptoService.makeKeyPair(encKey[0]);
         request.keys = new KeysRequest(keys[0], keys[1].encryptedString);
