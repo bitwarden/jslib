@@ -39,6 +39,7 @@ export enum EventType {
     OrganizationUser_Updated = 1502,
     OrganizationUser_Removed = 1503,
     OrganizationUser_UpdatedGroups = 1504,
+    OrganizationUser_UnlinkedSso = 1505,
 
     Organization_Updated = 1600,
     Organization_PurgedVault = 1601,
