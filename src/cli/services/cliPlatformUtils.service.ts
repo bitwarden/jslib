@@ -151,6 +151,7 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     }
 
     onDefaultSystemThemeChange() {
+        /* noop */
     }
 
     supportsSecureStorage(): boolean {
