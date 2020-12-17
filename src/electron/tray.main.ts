@@ -130,6 +130,12 @@ export class TrayMain {
         }
     }
 
+    updateContextMenu() {
+        if (this.contextMenu != null && this.isLinux()) {
+            this.tray.setContextMenu(this.contextMenu);
+        }
+    }
+
     private hideDock() {
         app.dock.hide();
     }
@@ -140,6 +146,10 @@ export class TrayMain {
 
     private isDarwin() {
         return process.platform === 'darwin';
+    }
+
+    private isLinux() {
+        return process.platform === 'linux';
     }
 
     private async toggleWindow() {
