@@ -15,6 +15,7 @@ export abstract class CollectionService {
     getAll: () => Promise<Collection[]>;
     getAllDecrypted: () => Promise<CollectionView[]>;
     getAllNested: (collections?: CollectionView[]) => Promise<TreeNode<CollectionView>[]>;
+    getManyByCipherId: (cipherId: string) => Promise<Collection[]>;
     getNested: (id: string) => Promise<TreeNode<CollectionView>>;
     upsert: (collection: CollectionData | CollectionData[]) => Promise<any>;
     replace: (collections: { [id: string]: CollectionData; }) => Promise<any>;

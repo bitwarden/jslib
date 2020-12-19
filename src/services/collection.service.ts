@@ -5,6 +5,7 @@ import { TreeNode } from '../models/domain/treeNode';
 
 import { CollectionView } from '../models/view/collectionView';
 
+import { CipherService } from '../abstractions';
 import { CollectionService as CollectionServiceAbstraction } from '../abstractions/collection.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { I18nService } from '../abstractions/i18n.service';
@@ -23,7 +24,7 @@ export class CollectionService implements CollectionServiceAbstraction {
     decryptedCollectionCache: CollectionView[];
 
     constructor(private cryptoService: CryptoService, private userService: UserService,
-        private storageService: StorageService, private i18nService: I18nService) {
+        private storageService: StorageService, private cipherService: CipherService, private i18nService: I18nService) {
     }
 
     clearCache(): void {
@@ -96,6 +97,19 @@ export class CollectionService implements CollectionServiceAbstraction {
         const collections = await this.getAll();
         this.decryptedCollectionCache = await this.decryptMany(collections);
         return this.decryptedCollectionCache;
+    }
+
+    async getManyByCipherId(cipherId: string): Promise<Collection[]> {
+        const cipher = await this.cipherService.get(cipherId)
+        const collections: Collection[] = [];
+        if (cipher.collectionIds?.length > 0) {
+            for (const collectionId of cipher.collectionIds) {
+                const collection = await this.get(collectionId);
+                collections.push(collection);
+            }
+        }
+
+        return collections;
     }
 
     async getAllNested(collections: CollectionView[] = null): Promise<TreeNode<CollectionView>[]> {
