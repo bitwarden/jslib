@@ -13,6 +13,7 @@ import { FolderView } from '../models/view/folderView';
 
 import { Cipher } from '../models/domain/cipher';
 import { Collection } from '../models/domain/collection';
+import { Folder } from '../models/domain/folder';
 
 import { CipherData } from '../models/data/cipherData';
 import { CollectionData } from '../models/data/collectionData';
@@ -26,7 +27,34 @@ export class ExportService implements ExportServiceAbstraction {
     constructor(private folderService: FolderService, private cipherService: CipherService,
         private apiService: ApiService) { }
 
-    async getExport(format: 'csv' | 'json' = 'csv'): Promise<string> {
+    async getExport(format: 'csv' | 'json' | 'encrypted_json' = 'csv'): Promise<string> {
+        if (format === 'encrypted_json') {
+            return this.getEncryptedExport();
+        } else {
+            return this.getDecryptedExport(format);
+        }
+    }
+
+    async getOrganizationExport(organizationId: string,
+        format: 'csv' | 'json' | 'encrypted_json' = 'csv'): Promise<string> {
+        if (format === 'encrypted_json') {
+            return this.getOrganizationEncryptedExport(organizationId);
+        } else {
+            return this.getOrganizationDecryptedExport(organizationId, format);
+        }
+    }
+
+    getFileName(prefix: string = null, extension: string = 'csv'): string {
+        const now = new Date();
+        const dateString =
+            now.getFullYear() + '' + this.padNumber(now.getMonth() + 1, 2) + '' + this.padNumber(now.getDate(), 2) +
+            this.padNumber(now.getHours(), 2) + '' + this.padNumber(now.getMinutes(), 2) +
+            this.padNumber(now.getSeconds(), 2);
+
+        return 'bitwarden' + (prefix ? ('_' + prefix) : '') + '_export_' + dateString + '.' + extension;
+    }
+
+    private async getDecryptedExport(format: 'json' | 'csv'): Promise<string> {
         let decFolders: FolderView[] = [];
         let decCiphers: CipherView[] = [];
         const promises = [];
@@ -70,6 +98,7 @@ export class ExportService implements ExportServiceAbstraction {
             return papa.unparse(exportCiphers);
         } else {
             const jsonDoc: any = {
+                encrypted: false,
                 folders: [],
                 items: [],
             };
@@ -97,7 +126,39 @@ export class ExportService implements ExportServiceAbstraction {
         }
     }
 
-    async getOrganizationExport(organizationId: string, format: 'csv' | 'json' = 'csv'): Promise<string> {
+    private async getEncryptedExport(): Promise<string> {
+        const folders = await this.folderService.getAll();
+        const ciphers = await this.cipherService.getAll();
+
+        const jsonDoc: any = {
+            encrypted: true,
+            folders: [],
+            items: [],
+        };
+
+        folders.forEach((f) => {
+            if (f.id == null) {
+                return;
+            }
+            const folder = new FolderExport();
+            folder.build(f);
+            jsonDoc.folders.push(folder);
+        });
+
+        ciphers.forEach((c) => {
+            if (c.organizationId != null) {
+                return;
+            }
+            const cipher = new CipherExport();
+            cipher.build(c);
+            cipher.collectionIds = null;
+            jsonDoc.items.push(cipher);
+        });
+
+        return JSON.stringify(jsonDoc, null, '  ');
+    }
+
+    private async getOrganizationDecryptedExport(organizationId: string, format: 'json' | 'csv'): Promise<string> {
         const decCollections: CollectionView[] = [];
         const decCiphers: CipherView[] = [];
         const promises = [];
@@ -156,6 +217,7 @@ export class ExportService implements ExportServiceAbstraction {
             return papa.unparse(exportCiphers);
         } else {
             const jsonDoc: any = {
+                encrypted: false,
                 collections: [],
                 items: [],
             };
@@ -175,14 +237,53 @@ export class ExportService implements ExportServiceAbstraction {
         }
     }
 
-    getFileName(prefix: string = null, extension: string = 'csv'): string {
-        const now = new Date();
-        const dateString =
-            now.getFullYear() + '' + this.padNumber(now.getMonth() + 1, 2) + '' + this.padNumber(now.getDate(), 2) +
-            this.padNumber(now.getHours(), 2) + '' + this.padNumber(now.getMinutes(), 2) +
-            this.padNumber(now.getSeconds(), 2);
+    private async getOrganizationEncryptedExport(organizationId: string): Promise<string> {
+        const collections: Collection[] = [];
+        const ciphers: Cipher[] = [];
+        const promises = [];
 
-        return 'bitwarden' + (prefix ? ('_' + prefix) : '') + '_export_' + dateString + '.' + extension;
+        promises.push(this.apiService.getCollections(organizationId).then((c) => {
+            const collectionPromises: any = [];
+            if (c != null && c.data != null && c.data.length > 0) {
+                c.data.forEach((r) => {
+                    const collection = new Collection(new CollectionData(r as CollectionDetailsResponse));
+                    collections.push(collection);
+                });
+            }
+            return Promise.all(collectionPromises);
+        }));
+
+        promises.push(this.apiService.getCiphersOrganization(organizationId).then((c) => {
+            const cipherPromises: any = [];
+            if (c != null && c.data != null && c.data.length > 0) {
+                c.data.forEach((r) => {
+                    const cipher = new Cipher(new CipherData(r));
+                    ciphers.push(cipher);
+                });
+            }
+            return Promise.all(cipherPromises);
+        }));
+
+        await Promise.all(promises);
+
+        const jsonDoc: any = {
+            encrypted: true,
+            collections: [],
+            items: [],
+        };
+
+        collections.forEach((c) => {
+            const collection = new CollectionExport();
+            collection.build(c);
+            jsonDoc.collections.push(collection);
+        });
+
+        ciphers.forEach((c) => {
+            const cipher = new CipherExport();
+            cipher.build(c);
+            jsonDoc.items.push(cipher);
+        });
+        return JSON.stringify(jsonDoc, null, '  ');
     }
 
     private padNumber(num: number, width: number, padCharacter: string = '0'): string {

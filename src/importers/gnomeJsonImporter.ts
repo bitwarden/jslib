@@ -4,12 +4,12 @@ import { Importer } from './importer';
 import { ImportResult } from '../models/domain/importResult';
 
 export class GnomeJsonImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const results = JSON.parse(data);
         if (results == null || Object.keys(results).length === 0) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         for (const keyRing in results) {
@@ -55,6 +55,6 @@ export class GnomeJsonImporter extends BaseImporter implements Importer {
         }
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 }

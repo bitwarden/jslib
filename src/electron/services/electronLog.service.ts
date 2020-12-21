@@ -5,10 +5,12 @@ import { isDev } from '../utils';
 
 import { LogLevelType } from '../../enums/logLevelType';
 
-import { LogService as LogServiceAbstraction } from '../../abstractions/log.service';
+import { ConsoleLogService as BaseLogService } from '../../services/consoleLog.service';
 
-export class ElectronLogService implements LogServiceAbstraction {
-    constructor(private filter: (level: LogLevelType) => boolean = null, logDir: string = null) {
+export class ElectronLogService extends BaseLogService {
+
+    constructor(protected filter: (level: LogLevelType) => boolean = null, logDir: string = null) {
+        super(isDev(), filter);
         if (log.transports == null) {
             return;
         }
@@ -17,26 +19,6 @@ export class ElectronLogService implements LogServiceAbstraction {
         if (logDir != null) {
             log.transports.file.file = path.join(logDir, 'app.log');
         }
-    }
-
-    debug(message: string) {
-        if (!isDev()) {
-            return;
-        }
-
-        this.write(LogLevelType.Debug, message);
-    }
-
-    info(message: string) {
-        this.write(LogLevelType.Info, message);
-    }
-
-    warning(message: string) {
-        this.write(LogLevelType.Warning, message);
-    }
-
-    error(message: string) {
-        this.write(LogLevelType.Error, message);
     }
 
     write(level: LogLevelType, message: string) {

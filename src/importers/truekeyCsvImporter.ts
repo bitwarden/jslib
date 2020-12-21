@@ -14,12 +14,12 @@ const PropertiesToIgnore = ['kind', 'autologin', 'favorite', 'hexcolor', 'protec
 ];
 
 export class TrueKeyCsvImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const results = this.parseCsv(data, true);
         if (results == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         results.forEach((value) => {
@@ -69,6 +69,6 @@ export class TrueKeyCsvImporter extends BaseImporter implements Importer {
         });
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 }

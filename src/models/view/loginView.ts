@@ -1,6 +1,7 @@
 import { LoginUriView } from './loginUriView';
 import { View } from './view';
 
+import { Utils } from '../../misc/utils';
 import { Login } from '../domain/login';
 
 export class LoginView implements View {
@@ -32,6 +33,10 @@ export class LoginView implements View {
 
     get canLaunch(): boolean {
         return this.hasUris && this.uris.some((u) => u.canLaunch);
+    }
+
+    get hasTotp(): boolean {
+        return !Utils.isNullOrWhitespace(this.totp);
     }
 
     get launchUri(): string {

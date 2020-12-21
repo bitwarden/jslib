@@ -4,12 +4,12 @@ import { Importer } from './importer';
 import { ImportResult } from '../models/domain/importResult';
 
 export class StickyPasswordXmlImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const doc = this.parseXml(data);
         if (doc == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         const loginNodes = doc.querySelectorAll('root > Database > Logins > Login');
@@ -62,7 +62,7 @@ export class StickyPasswordXmlImporter extends BaseImporter implements Importer 
         }
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 
     buildGroupText(doc: Document, groupId: string, groupText: string): string {
