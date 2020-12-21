@@ -7,7 +7,7 @@ export class ElectronConstants {
     static readonly minimizeOnCopyToClipboardKey: string = 'minimizeOnCopyToClipboardKey';
     static readonly enableBiometric: string = 'enabledBiometric';
     static readonly enableBrowserIntegration: string = 'enableBrowserIntegration';
-    static readonly enableBrowserIntegrationFingerprint: string = 'enableBrowserIntegrationFingerprint'
+    static readonly enableBrowserIntegrationFingerprint: string = 'enableBrowserIntegrationFingerprint';
     static readonly alwaysShowDock: string = 'alwaysShowDock';
     static readonly openAtLogin: string = 'openAtLogin';
 }
