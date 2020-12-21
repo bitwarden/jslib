@@ -105,7 +105,6 @@ export class CipherString {
         }
 
         try {
-            const orgKey = await cryptoService.getOrgKey(orgId);
             if (key == null) {
                 key = await cryptoService.getOrgKey(orgId);
             }

@@ -50,7 +50,7 @@ export class Attachment extends Domain {
 
             try {
                 const orgKey = await cryptoService.getOrgKey(orgId);
-                const decValue = await cryptoService.decryptToBytes(this.key, orgKey ? orgKey : encKey);
+                const decValue = await cryptoService.decryptToBytes(this.key, orgKey ?? encKey);
                 view.key = new SymmetricCryptoKey(decValue);
             } catch (e) {
                 // TODO: error?
