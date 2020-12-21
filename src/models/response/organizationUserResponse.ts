@@ -1,14 +1,25 @@
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
 
+import { PermissionsInterface } from '../interfaces/permissions';
+
 import { BaseResponse } from './baseResponse';
 import { SelectionReadOnlyResponse } from './selectionReadOnlyResponse';
 
-export class OrganizationUserResponse extends BaseResponse {
+export class OrganizationUserResponse extends BaseResponse implements PermissionsInterface {
     id: string;
     userId: string;
     type: OrganizationUserType;
     status: OrganizationUserStatusType;
+    accessBusinessPortal: boolean;
+    accessEventLogs: boolean;
+    accessImportExport: boolean;
+    accessReports: boolean;
+    manageAllCollections: boolean;
+    manageAssignedCollections: boolean;
+    manageGroups: boolean;
+    managePolicies: boolean;
+    manageUsers: boolean;
     accessAll: boolean;
 
     constructor(response: any) {
@@ -17,6 +28,15 @@ export class OrganizationUserResponse extends BaseResponse {
         this.userId = this.getResponseProperty('UserId');
         this.type = this.getResponseProperty('Type');
         this.status = this.getResponseProperty('Status');
+        this.accessBusinessPortal = this.getResponseProperty('AccessBusinessPortal');
+        this.accessEventLogs = this.getResponseProperty('AccessEventLogs');
+        this.accessImportExport = this.getResponseProperty('AccessImportExport');
+        this.accessReports = this.getResponseProperty('AccessReports');
+        this.manageAllCollections = this.getResponseProperty('ManageAllCollections');
+        this.manageAssignedCollections = this.getResponseProperty('ManageAssignedCollections');
+        this.manageGroups = this.getResponseProperty('ManageGroups');
+        this.managePolicies = this.getResponseProperty('ManagePolicies');
+        this.manageUsers = this.getResponseProperty('ManageUsers');
         this.accessAll = this.getResponseProperty('AccessAll');
     }
 }

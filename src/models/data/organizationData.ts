@@ -1,9 +1,11 @@
+import { PermissionsInterface } from '../interfaces/permissions';
+
 import { ProfileOrganizationResponse } from '../response/profileOrganizationResponse';
 
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
 
-export class OrganizationData {
+export class OrganizationData implements PermissionsInterface {
     id: string;
     name: string;
     status: OrganizationUserStatusType;
@@ -25,6 +27,16 @@ export class OrganizationData {
     maxStorageGb?: number;
     ssoBound: boolean;
     identifier: string;
+    accessBusinessPortal: boolean;
+    accessEventLogs: boolean;
+    accessImportExport: boolean;
+    accessReports: boolean;
+    manageAllCollections: boolean;
+    manageAssignedCollections: boolean;
+    manageCiphers: boolean;
+    manageGroups: boolean;
+    managePolicies: boolean;
+    manageUsers: boolean;
 
     constructor(response: ProfileOrganizationResponse) {
         this.id = response.id;
@@ -48,5 +60,15 @@ export class OrganizationData {
         this.maxStorageGb = response.maxStorageGb;
         this.ssoBound = response.ssoBound;
         this.identifier = response.identifier;
+        this.accessBusinessPortal = response.accessBusinessPortal;
+        this.accessEventLogs = response.accessEventLogs;
+        this.accessImportExport = response.accessImportExport;
+        this.accessReports = response.accessReports;
+        this.manageAllCollections = response.manageAllCollections;
+        this.manageAssignedCollections = response.manageAssignedCollections;
+        this.manageCiphers = response.manageCiphers;
+        this.manageGroups = response.manageGroups;
+        this.managePolicies = response.managePolicies;
+        this.manageUsers = response.manageUsers;
     }
 }

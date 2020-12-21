@@ -1,9 +1,12 @@
 import { OrganizationData } from '../data/organizationData';
 
+import { PermissionsInterface } from '../interfaces/permissions';
+
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
 
-export class Organization {
+
+export class Organization implements PermissionsInterface {
     id: string;
     name: string;
     status: OrganizationUserStatusType;
@@ -25,6 +28,15 @@ export class Organization {
     maxStorageGb?: number;
     ssoBound: boolean;
     identifier: string;
+    accessBusinessPortal: boolean;
+    accessEventLogs: boolean;
+    accessImportExport: boolean;
+    accessReports: boolean;
+    manageAllCollections: boolean;
+    manageAssignedCollections: boolean;
+    manageGroups: boolean;
+    managePolicies: boolean;
+    manageUsers: boolean;
 
     constructor(obj?: OrganizationData) {
         if (obj == null) {
@@ -52,6 +64,15 @@ export class Organization {
         this.maxStorageGb = obj.maxStorageGb;
         this.ssoBound = obj.ssoBound;
         this.identifier = obj.identifier;
+        this.accessBusinessPortal = obj.accessBusinessPortal;
+        this.accessEventLogs = obj.accessEventLogs;
+        this.accessImportExport = obj.accessImportExport;
+        this.accessReports = obj.accessReports;
+        this.manageAllCollections = obj.manageAllCollections;
+        this.manageAssignedCollections = obj.manageAssignedCollections;
+        this.manageGroups = obj.manageGroups;
+        this.managePolicies = obj.managePolicies;
+        this.manageUsers = obj.manageUsers;
     }
 
     get canAccess() {
@@ -72,5 +93,41 @@ export class Organization {
 
     get isOwner() {
         return this.type === OrganizationUserType.Owner;
+    }
+
+    get canAccessBusinessPortal() {
+        return this.isAdmin || this.accessBusinessPortal;
+    }
+
+    get canAccessEventLogs() {
+        return this.isAdmin || this.accessEventLogs;
+    }
+
+    get canAccessImportExport() {
+        return this.isAdmin || this.accessImportExport;
+    }
+
+    get canAccessReports() {
+        return this.isAdmin || this.accessReports;
+    }
+
+    get canManageAllCollections() {
+        return this.isAdmin || this.manageAllCollections;
+    }
+
+    get canManageAssignedCollections() {
+        return this.isManager || this.manageAssignedCollections;
+    }
+
+    get canManageGroups() {
+        return this.isAdmin || this.manageGroups;
+    }
+
+    get canManagePolicies() {
+        return this.isAdmin || this.managePolicies;
+    }
+
+    get canManageUsers() {
+        return this.isAdmin || this.manageUsers;
     }
 }

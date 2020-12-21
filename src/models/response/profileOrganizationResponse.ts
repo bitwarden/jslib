@@ -1,9 +1,11 @@
 import { BaseResponse } from './baseResponse';
 
+import { PermissionsInterface } from '../interfaces/permissions';
+
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
 
-export class ProfileOrganizationResponse extends BaseResponse {
+export class ProfileOrganizationResponse extends BaseResponse implements PermissionsInterface {
     id: string;
     name: string;
     usePolicies: boolean;
@@ -26,6 +28,16 @@ export class ProfileOrganizationResponse extends BaseResponse {
     enabled: boolean;
     ssoBound: boolean;
     identifier: string;
+    accessBusinessPortal: boolean;
+    accessEventLogs: boolean;
+    accessImportExport: boolean;
+    accessReports: boolean;
+    manageAllCollections: boolean;
+    manageAssignedCollections: boolean;
+    manageCiphers: boolean;
+    manageGroups: boolean;
+    managePolicies: boolean;
+    manageUsers: boolean;
 
     constructor(response: any) {
         super(response);
@@ -51,5 +63,15 @@ export class ProfileOrganizationResponse extends BaseResponse {
         this.enabled = this.getResponseProperty('Enabled');
         this.ssoBound = this.getResponseProperty('SsoBound');
         this.identifier = this.getResponseProperty('Identifier');
+        this.accessBusinessPortal = this.getResponseProperty('AccessBusinessPortal');
+        this.accessEventLogs = this.getResponseProperty('AccessEventLogs');
+        this.accessImportExport = this.getResponseProperty('AccessImportExport');
+        this.accessReports = this.getResponseProperty('AccessReports');
+        this.manageAllCollections = this.getResponseProperty('ManageAllCollections');
+        this.manageAssignedCollections = this.getResponseProperty('ManageAssignedCollections');
+        this.manageCiphers = this.getResponseProperty('ManageCiphers');
+        this.manageGroups = this.getResponseProperty('ManageGroups');
+        this.managePolicies = this.getResponseProperty('ManagePolicies');
+        this.manageUsers = this.getResponseProperty('ManageUsers');
     }
 }
