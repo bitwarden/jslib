@@ -1,16 +1,20 @@
-import { I18nService, StorageService } from '../abstractions';
-
 import { ipcMain } from 'electron';
-import { BiometricMain } from '../abstractions/biometric.main';
-import { ConstantsService } from '../services';
+import forceFocus from 'forcefocus';
+
 import { ElectronConstants } from './electronConstants';
+import { WindowMain } from './window.main';
+
+import { BiometricMain } from '../abstractions/biometric.main';
+import { I18nService } from '../abstractions/i18n.service';
+import { StorageService } from '../abstractions/storage.service';
+import { ConstantsService } from '../services/constants.service';
 
 export default class BiometricWindowsMain implements BiometricMain {
     isError: boolean = false;
 
     private windowsSecurityCredentialsUiModule: any;
 
-    constructor(private storageService: StorageService, private i18nservice: I18nService) { }
+    constructor(private storageService: StorageService, private i18nservice: I18nService, private windowMain: WindowMain) { }
 
     async init() {
         this.windowsSecurityCredentialsUiModule = this.getWindowsSecurityCredentialsUiModule();
@@ -89,6 +93,8 @@ export default class BiometricWindowsMain implements BiometricMain {
                         }
                         return resolve(result);
                     });
+
+                    forceFocus.focusWindow(this.windowMain.win);
                 } catch (error) {
                     this.isError = true;
                     return reject(error);
