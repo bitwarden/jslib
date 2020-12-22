@@ -6,6 +6,7 @@ import { LoginUriView } from '../view/loginUriView';
 
 import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
 export class LoginUri extends Domain {
     uri: CipherString;
@@ -23,10 +24,10 @@ export class LoginUri extends Domain {
         }, alreadyEncrypted, []);
     }
 
-    decrypt(orgId: string): Promise<LoginUriView> {
+    decrypt(orgId: string, encKey?: SymmetricCryptoKey): Promise<LoginUriView> {
         return this.decryptObj(new LoginUriView(this), {
             uri: null,
-        }, orgId);
+        }, orgId, encKey);
     }
 
     toLoginUriData(): LoginUriData {

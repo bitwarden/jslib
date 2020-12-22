@@ -2,6 +2,7 @@ import { IdentityData } from '../data/identityData';
 
 import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
 import { IdentityView } from '../view/identityView';
 
@@ -53,7 +54,7 @@ export class Identity extends Domain {
         }, alreadyEncrypted, []);
     }
 
-    decrypt(orgId: string): Promise<IdentityView> {
+    decrypt(orgId: string, encKey?: SymmetricCryptoKey): Promise<IdentityView> {
         return this.decryptObj(new IdentityView(this), {
             title: null,
             firstName: null,
@@ -73,7 +74,7 @@ export class Identity extends Domain {
             username: null,
             passportNumber: null,
             licenseNumber: null,
-        }, orgId);
+        }, orgId, encKey);
     }
 
     toIdentityData(): IdentityData {

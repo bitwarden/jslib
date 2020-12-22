@@ -6,6 +6,7 @@ import { CipherString } from './cipherString';
 import Domain from './domainBase';
 
 import { FieldView } from '../view/fieldView';
+import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
 export class Field extends Domain {
     name: CipherString;
@@ -25,11 +26,11 @@ export class Field extends Domain {
         }, alreadyEncrypted, []);
     }
 
-    decrypt(orgId: string): Promise<FieldView> {
+    decrypt(orgId: string, encKey?: SymmetricCryptoKey): Promise<FieldView> {
         return this.decryptObj(new FieldView(this), {
             name: null,
             value: null,
-        }, orgId);
+        }, orgId, encKey);
     }
 
     toFieldData(): FieldData {

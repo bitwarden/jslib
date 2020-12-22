@@ -4,6 +4,7 @@ import { CipherString } from './cipherString';
 import Domain from './domainBase';
 
 import { PasswordHistoryView } from '../view/passwordHistoryView';
+import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
 export class Password extends Domain {
     password: CipherString;
@@ -21,10 +22,10 @@ export class Password extends Domain {
         this.lastUsedDate = new Date(obj.lastUsedDate);
     }
 
-    decrypt(orgId: string): Promise<PasswordHistoryView> {
+    decrypt(orgId: string, encKey?: SymmetricCryptoKey): Promise<PasswordHistoryView> {
          return this.decryptObj(new PasswordHistoryView(this), {
             password: null,
-        }, orgId);
+        }, orgId, encKey);
     }
 
     toPasswordHistoryData(): PasswordHistoryData {

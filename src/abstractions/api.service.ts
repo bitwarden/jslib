@@ -15,6 +15,11 @@ import { CollectionRequest } from '../models/request/collectionRequest';
 import { DeleteRecoverRequest } from '../models/request/deleteRecoverRequest';
 import { EmailRequest } from '../models/request/emailRequest';
 import { EmailTokenRequest } from '../models/request/emailTokenRequest';
+import { EmergencyAccessAcceptRequest } from '../models/request/emergencyAccessAcceptRequest';
+import { EmergencyAccessConfirmRequest } from '../models/request/emergencyAccessConfirmRequest';
+import { EmergencyAccessInviteRequest } from '../models/request/emergencyAccessInviteRequest';
+import { EmergencyAccessPasswordRequest } from '../models/request/emergencyAccessPasswordRequest';
+import { EmergencyAccessUpdateRequest } from '../models/request/emergencyAccessUpdateRequest';
 import { EventRequest } from '../models/request/eventRequest';
 import { FolderRequest } from '../models/request/folderRequest';
 import { GroupRequest } from '../models/request/groupRequest';
@@ -73,6 +78,12 @@ import {
     CollectionResponse,
 } from '../models/response/collectionResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
+import {
+    EmergencyAccessGranteeDetailsResponse,
+    EmergencyAccessGrantorDetailsResponse,
+    EmergencyAccessTakeoverResponse,
+    EmergencyAccessViewResponse
+} from '../models/response/emergencyAccessResponse';
 import { EventResponse } from '../models/response/eventResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import {
@@ -277,6 +288,22 @@ export abstract class ApiService {
     postTwoFactorRecover: (request: TwoFactorRecoveryRequest) => Promise<any>;
     postTwoFactorEmailSetup: (request: TwoFactorEmailRequest) => Promise<any>;
     postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
+
+    getEmergencyAccessTrusted: () => Promise<ListResponse<EmergencyAccessGranteeDetailsResponse>>;
+    getEmergencyAccessGranted: () => Promise<ListResponse<EmergencyAccessGrantorDetailsResponse>>;
+    getEmergencyAccess: (id: string) => Promise<EmergencyAccessGranteeDetailsResponse>;
+    putEmergencyAccess: (id: string, request: EmergencyAccessUpdateRequest) => Promise<any>;
+    deleteEmergencyAccess: (id: string) => Promise<any>;
+    postEmergencyAccessInvite: (request: EmergencyAccessInviteRequest) => Promise<any>;
+    postEmergencyAccessReinvite: (id: string) => Promise<any>;
+    postEmergencyAccessAccept: (id: string, request: EmergencyAccessAcceptRequest) => Promise<any>;
+    postEmergencyAccessConfirm: (id: string, request: EmergencyAccessConfirmRequest) => Promise<any>;
+    postEmergencyAccessInitiate: (id: string) => Promise<any>;
+    postEmergencyAccessApprove: (id: string) => Promise<any>;
+    postEmergencyAccessReject: (id: string) => Promise<any>;
+    postEmergencyAccessTakeover: (id: string) => Promise<EmergencyAccessTakeoverResponse>;
+    postEmergencyAccessPassword: (id: string, request: EmergencyAccessPasswordRequest) => Promise<any>;
+    postEmergencyAccessView: (id: string) => Promise<EmergencyAccessViewResponse>;
 
     getOrganization: (id: string) => Promise<OrganizationResponse>;
     getOrganizationBilling: (id: string) => Promise<BillingResponse>;

@@ -19,6 +19,11 @@ import { CollectionRequest } from '../models/request/collectionRequest';
 import { DeleteRecoverRequest } from '../models/request/deleteRecoverRequest';
 import { EmailRequest } from '../models/request/emailRequest';
 import { EmailTokenRequest } from '../models/request/emailTokenRequest';
+import { EmergencyAccessAcceptRequest } from '../models/request/emergencyAccessAcceptRequest';
+import { EmergencyAccessConfirmRequest } from '../models/request/emergencyAccessConfirmRequest';
+import { EmergencyAccessInviteRequest } from '../models/request/emergencyAccessInviteRequest';
+import { EmergencyAccessPasswordRequest } from '../models/request/emergencyAccessPasswordRequest';
+import { EmergencyAccessUpdateRequest } from '../models/request/emergencyAccessUpdateRequest';
 import { EventRequest } from '../models/request/eventRequest';
 import { FolderRequest } from '../models/request/folderRequest';
 import { GroupRequest } from '../models/request/groupRequest';
@@ -77,6 +82,12 @@ import {
     CollectionResponse,
 } from '../models/response/collectionResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
+import {
+    EmergencyAccessGranteeDetailsResponse,
+    EmergencyAccessGrantorDetailsResponse,
+    EmergencyAccessTakeoverResponse,
+    EmergencyAccessViewResponse
+} from '../models/response/emergencyAccessResponse';
 import { ErrorResponse } from '../models/response/errorResponse';
 import { EventResponse } from '../models/response/eventResponse';
 import { FolderResponse } from '../models/response/folderResponse';
@@ -899,6 +910,73 @@ export class ApiService implements ApiServiceAbstraction {
 
     postTwoFactorEmail(request: TwoFactorEmailRequest): Promise<any> {
         return this.send('POST', '/two-factor/send-email-login', request, false, false);
+    }
+
+    // Emergency Access APIs
+
+    async getEmergencyAccessTrusted(): Promise<ListResponse<EmergencyAccessGranteeDetailsResponse>> {
+        const r = await this.send('GET', '/emergency-access/trusted', null, true, true);
+        return new ListResponse(r, EmergencyAccessGranteeDetailsResponse);
+    }
+
+    async getEmergencyAccessGranted(): Promise<ListResponse<EmergencyAccessGrantorDetailsResponse>> {
+        const r = await this.send('GET', '/emergency-access/granted', null, true, true);
+        return new ListResponse(r, EmergencyAccessGrantorDetailsResponse);
+    }
+
+    async getEmergencyAccess(id: string): Promise<EmergencyAccessGranteeDetailsResponse> {
+        const r = await this.send('GET', '/emergency-access/' + id, null, true, true);
+        return new EmergencyAccessGranteeDetailsResponse(r);
+    }
+
+    putEmergencyAccess(id: string, request: EmergencyAccessUpdateRequest): Promise<any> {
+        return this.send('PUT', '/emergency-access/' + id, request, true, false);
+    }
+
+    deleteEmergencyAccess(id: string): Promise<any> {
+        return this.send('DELETE', '/emergency-access/' + id, null, true, false);
+    }
+
+    postEmergencyAccessInvite(request: EmergencyAccessInviteRequest): Promise<any> {
+        return this.send('POST', '/emergency-access/invite', request, true, false);
+    }
+
+    postEmergencyAccessReinvite(id: string): Promise<any> {
+        return this.send('POST', '/emergency-access/' + id + '/reinvite', null, true, false);
+    }
+
+    postEmergencyAccessAccept(id: string, request: EmergencyAccessAcceptRequest): Promise<any> {
+        return this.send('POST', '/emergency-access/' + id + '/accept', request, true, false);
+    }
+
+    postEmergencyAccessConfirm(id: string, request: EmergencyAccessConfirmRequest): Promise<any> {
+        return this.send('POST', '/emergency-access/' + id + '/confirm', request, true, false);
+    }
+
+    postEmergencyAccessInitiate(id: string): Promise<any> {
+        return this.send('POST', '/emergency-access/' + id + '/initiate', null, true, false);
+    }
+
+    postEmergencyAccessApprove(id: string): Promise<any> {
+        return this.send('POST', '/emergency-access/' + id + '/approve', null, true, false);
+    }
+
+    postEmergencyAccessReject(id: string): Promise<any> {
+        return this.send('POST', '/emergency-access/' + id + '/reject', null, true, false);
+    }
+
+    async postEmergencyAccessTakeover(id: string): Promise<EmergencyAccessTakeoverResponse> {
+        const r = await this.send('POST', '/emergency-access/' + id + '/takeover', null, true, true);
+        return new EmergencyAccessTakeoverResponse(r);
+    }
+
+    async postEmergencyAccessPassword(id: string, request: EmergencyAccessPasswordRequest): Promise<any> {
+        const r = await this.send('POST', '/emergency-access/' + id + '/password', request, true, true);
+    }
+
+    async postEmergencyAccessView(id: string): Promise<EmergencyAccessViewResponse> {
+        const r = await this.send('POST', '/emergency-access/' + id + '/view', null, true, true);
+        return new EmergencyAccessViewResponse(r);
     }
 
     // Organization APIs
