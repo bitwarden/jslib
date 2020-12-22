@@ -35,6 +35,15 @@ export class ExportComponent {
             return;
         }
 
+        const acceptedWarning = await this.platformUtilsService.showDialog(
+            this.i18nService.t(this.encryptedFormat ? 'encExportWarningDesc' : 'exportWarningDesc'),
+            this.i18nService.t('confirmVaultExport'), this.i18nService.t('exportVault'),
+            this.i18nService.t('cancel'), 'warning');
+
+        if (!acceptedWarning) {
+            return;
+        }
+
         const keyHash = await this.cryptoService.hashPassword(this.masterPassword, null);
         const storedKeyHash = await this.cryptoService.getKeyHash();
         if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
