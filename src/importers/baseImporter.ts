@@ -76,7 +76,7 @@ export abstract class BaseImporter {
         skipEmptyLines: false,
     };
 
-    protected organization() {
+    protected get organization() {
         return this.organizationId != null;
     }
 
