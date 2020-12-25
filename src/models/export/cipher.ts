@@ -112,7 +112,7 @@ export class Cipher {
 
         if (o instanceof CipherView) {
             this.name = o.name;
-            this.notes = o.notes;
+            this.notes = o.notes.replace("\n","\\n");
         } else {
             this.name = o.name?.encryptedString;
             this.notes = o.notes?.encryptedString;
