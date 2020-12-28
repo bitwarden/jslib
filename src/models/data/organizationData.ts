@@ -1,11 +1,10 @@
-import { PermissionsInterface } from '../interfaces/permissions';
-
 import { ProfileOrganizationResponse } from '../response/profileOrganizationResponse';
 
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
+import { PermissionsApi } from '../api/permissionsApi';
 
-export class OrganizationData implements PermissionsInterface {
+export class OrganizationData {
     id: string;
     name: string;
     status: OrganizationUserStatusType;
@@ -27,16 +26,7 @@ export class OrganizationData implements PermissionsInterface {
     maxStorageGb?: number;
     ssoBound: boolean;
     identifier: string;
-    accessBusinessPortal: boolean;
-    accessEventLogs: boolean;
-    accessImportExport: boolean;
-    accessReports: boolean;
-    manageAllCollections: boolean;
-    manageAssignedCollections: boolean;
-    manageCiphers: boolean;
-    manageGroups: boolean;
-    managePolicies: boolean;
-    manageUsers: boolean;
+    permissions: PermissionsApi;
 
     constructor(response: ProfileOrganizationResponse) {
         this.id = response.id;
@@ -60,15 +50,6 @@ export class OrganizationData implements PermissionsInterface {
         this.maxStorageGb = response.maxStorageGb;
         this.ssoBound = response.ssoBound;
         this.identifier = response.identifier;
-        this.accessBusinessPortal = response.accessBusinessPortal;
-        this.accessEventLogs = response.accessEventLogs;
-        this.accessImportExport = response.accessImportExport;
-        this.accessReports = response.accessReports;
-        this.manageAllCollections = response.manageAllCollections;
-        this.manageAssignedCollections = response.manageAssignedCollections;
-        this.manageCiphers = response.manageCiphers;
-        this.manageGroups = response.manageGroups;
-        this.managePolicies = response.managePolicies;
-        this.manageUsers = response.manageUsers;
+        this.permissions = response.permissions;
     }
 }

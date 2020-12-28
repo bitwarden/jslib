@@ -1,12 +1,11 @@
 import { OrganizationData } from '../data/organizationData';
 
-import { PermissionsInterface } from '../interfaces/permissions';
-
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
+import { PermissionsApi } from '../api/permissionsApi';
 
 
-export class Organization implements PermissionsInterface {
+export class Organization {
     id: string;
     name: string;
     status: OrganizationUserStatusType;
@@ -28,15 +27,7 @@ export class Organization implements PermissionsInterface {
     maxStorageGb?: number;
     ssoBound: boolean;
     identifier: string;
-    accessBusinessPortal: boolean;
-    accessEventLogs: boolean;
-    accessImportExport: boolean;
-    accessReports: boolean;
-    manageAllCollections: boolean;
-    manageAssignedCollections: boolean;
-    manageGroups: boolean;
-    managePolicies: boolean;
-    manageUsers: boolean;
+    permissions: PermissionsApi;
 
     constructor(obj?: OrganizationData) {
         if (obj == null) {
@@ -64,15 +55,7 @@ export class Organization implements PermissionsInterface {
         this.maxStorageGb = obj.maxStorageGb;
         this.ssoBound = obj.ssoBound;
         this.identifier = obj.identifier;
-        this.accessBusinessPortal = obj.accessBusinessPortal;
-        this.accessEventLogs = obj.accessEventLogs;
-        this.accessImportExport = obj.accessImportExport;
-        this.accessReports = obj.accessReports;
-        this.manageAllCollections = obj.manageAllCollections;
-        this.manageAssignedCollections = obj.manageAssignedCollections;
-        this.manageGroups = obj.manageGroups;
-        this.managePolicies = obj.managePolicies;
-        this.manageUsers = obj.manageUsers;
+        this.permissions = obj.permissions;
     }
 
     get canAccess() {
@@ -96,38 +79,42 @@ export class Organization implements PermissionsInterface {
     }
 
     get canAccessBusinessPortal() {
-        return this.isAdmin || this.accessBusinessPortal;
+        return this.isAdmin || this.permissions.accessBusinessPortal;
     }
 
     get canAccessEventLogs() {
-        return this.isAdmin || this.accessEventLogs;
+        return this.isAdmin || this.permissions.accessEventLogs;
     }
 
     get canAccessImportExport() {
-        return this.isAdmin || this.accessImportExport;
+        return this.isAdmin || this.permissions.accessImportExport;
     }
 
     get canAccessReports() {
-        return this.isAdmin || this.accessReports;
+        return this.isAdmin || this.permissions.accessReports;
     }
 
     get canManageAllCollections() {
-        return this.isAdmin || this.manageAllCollections;
+        return this.isAdmin || this.permissions.manageAllCollections;
     }
 
     get canManageAssignedCollections() {
-        return this.isManager || this.manageAssignedCollections;
+        return this.isManager || this.permissions.manageAssignedCollections;
     }
 
     get canManageGroups() {
-        return this.isAdmin || this.manageGroups;
+        return this.isAdmin || this.permissions.manageGroups;
+    }
+
+    get canManageSso() {
+        return this.isAdmin || this.permissions.manageSso;
     }
 
     get canManagePolicies() {
-        return this.isAdmin || this.managePolicies;
+        return this.isAdmin || this.permissions.managePolicies;
     }
 
     get canManageUsers() {
-        return this.isAdmin || this.manageUsers;
+        return this.isAdmin || this.permissions.manageUsers;
     }
 }

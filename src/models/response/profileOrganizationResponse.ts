@@ -1,11 +1,10 @@
 import { BaseResponse } from './baseResponse';
 
-import { PermissionsInterface } from '../interfaces/permissions';
-
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
+import { PermissionsApi } from '../api/permissionsApi';
 
-export class ProfileOrganizationResponse extends BaseResponse implements PermissionsInterface {
+export class ProfileOrganizationResponse extends BaseResponse {
     id: string;
     name: string;
     usePolicies: boolean;
@@ -28,16 +27,7 @@ export class ProfileOrganizationResponse extends BaseResponse implements Permiss
     enabled: boolean;
     ssoBound: boolean;
     identifier: string;
-    accessBusinessPortal: boolean;
-    accessEventLogs: boolean;
-    accessImportExport: boolean;
-    accessReports: boolean;
-    manageAllCollections: boolean;
-    manageAssignedCollections: boolean;
-    manageCiphers: boolean;
-    manageGroups: boolean;
-    managePolicies: boolean;
-    manageUsers: boolean;
+    permissions: PermissionsApi;
 
     constructor(response: any) {
         super(response);
@@ -63,15 +53,6 @@ export class ProfileOrganizationResponse extends BaseResponse implements Permiss
         this.enabled = this.getResponseProperty('Enabled');
         this.ssoBound = this.getResponseProperty('SsoBound');
         this.identifier = this.getResponseProperty('Identifier');
-        this.accessBusinessPortal = this.getResponseProperty('AccessBusinessPortal');
-        this.accessEventLogs = this.getResponseProperty('AccessEventLogs');
-        this.accessImportExport = this.getResponseProperty('AccessImportExport');
-        this.accessReports = this.getResponseProperty('AccessReports');
-        this.manageAllCollections = this.getResponseProperty('ManageAllCollections');
-        this.manageAssignedCollections = this.getResponseProperty('ManageAssignedCollections');
-        this.manageCiphers = this.getResponseProperty('ManageCiphers');
-        this.manageGroups = this.getResponseProperty('ManageGroups');
-        this.managePolicies = this.getResponseProperty('ManagePolicies');
-        this.manageUsers = this.getResponseProperty('ManageUsers');
+        this.permissions = new PermissionsApi(this.getResponseProperty('permissions'));
     }
 }
