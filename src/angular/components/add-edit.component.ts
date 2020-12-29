@@ -209,6 +209,10 @@ export class AddEditComponent implements OnInit {
                 // Adjust Cipher Name if Cloning
                 if (this.cloneMode) {
                     this.cipher.name += ' - ' + this.i18nService.t('clone');
+                    // If not allowing personal ownership, update cipher's org Id to prompt downstream changes
+                    if (this.cipher.organizationId == null && !this.allowPersonal) {
+                        this.cipher.organizationId = this.organizationId;
+                    }
                 }
             } else {
                 this.cipher = new CipherView();
