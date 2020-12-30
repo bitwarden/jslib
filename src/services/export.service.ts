@@ -64,7 +64,7 @@ export class ExportService implements ExportServiceAbstraction {
         }));
 
         promises.push(this.cipherService.getAllDecrypted().then((ciphers) => {
-            decCiphers = ciphers;
+            decCiphers = ciphers.filter(f => f.deletedDate == null);
         }));
 
         await Promise.all(promises);
@@ -127,8 +127,19 @@ export class ExportService implements ExportServiceAbstraction {
     }
 
     private async getEncryptedExport(): Promise<string> {
-        const folders = await this.folderService.getAll();
-        const ciphers = await this.cipherService.getAll();
+        let folders: Folder[] = [];
+        let ciphers: Cipher[] = [];
+        const promises = [];
+
+        promises.push(this.folderService.getAll().then((f) => {
+            folders = f;
+        }));
+
+        promises.push(this.cipherService.getAll().then((c) => {
+            ciphers = c.filter((f) => f.deletedDate == null);
+        }));
+
+        await Promise.all(promises);
 
         const jsonDoc: any = {
             encrypted: true,
@@ -179,7 +190,7 @@ export class ExportService implements ExportServiceAbstraction {
         promises.push(this.apiService.getCiphersOrganization(organizationId).then((ciphers) => {
             const cipherPromises: any = [];
             if (ciphers != null && ciphers.data != null && ciphers.data.length > 0) {
-                ciphers.data.forEach((c) => {
+                ciphers.data.filter((c) => c.deletedDate === null).forEach((c) => {
                     const cipher = new Cipher(new CipherData(c));
                     cipherPromises.push(cipher.decrypt().then((decCipher) => {
                         decCiphers.push(decCipher);
@@ -256,8 +267,8 @@ export class ExportService implements ExportServiceAbstraction {
         promises.push(this.apiService.getCiphersOrganization(organizationId).then((c) => {
             const cipherPromises: any = [];
             if (c != null && c.data != null && c.data.length > 0) {
-                c.data.forEach((r) => {
-                    const cipher = new Cipher(new CipherData(r));
+                c.data.filter((item) => item.deletedDate === null).forEach((item) => {
+                    const cipher = new Cipher(new CipherData(item));
                     ciphers.push(cipher);
                 });
             }
