@@ -9,6 +9,7 @@ module.exports = (config) => {
 
         // list of files / patterns to load in the browser
         files: [
+            'spec/utils.ts',
             'spec/common/**/*.ts',
             'spec/web/**/*.ts',
             'src/abstractions/**/*.ts',
