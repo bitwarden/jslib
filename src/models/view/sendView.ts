@@ -46,4 +46,22 @@ export class SendView implements View {
     get urlB64Key(): string {
         return Utils.fromBufferToUrlB64(this.key);
     }
+
+    get maxAccessCountReached(): boolean {
+        if (this.maxAccessCount == null) {
+            return false;
+        }
+        return this.accessCount >= this.maxAccessCount;
+    }
+
+    get expired(): boolean {
+        if (this.expirationDate == null) {
+            return false;
+        }
+        return this.expirationDate <= new Date();
+    }
+
+    get pendingDelete(): boolean {
+        return this.deletionDate <= new Date();
+    }
 }
