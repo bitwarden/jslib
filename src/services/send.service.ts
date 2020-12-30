@@ -152,7 +152,6 @@ export class SendService implements SendServiceAbstraction {
         const userId = await this.userService.getUserId();
         const data = new SendData(response, userId);
         await this.upsert(data);
-
     }
 
     async upsert(send: SendData | SendData[]): Promise<any> {
@@ -213,6 +212,13 @@ export class SendService implements SendServiceAbstraction {
     async deleteWithServer(id: string): Promise<any> {
         await this.apiService.deleteSend(id);
         await this.delete(id);
+    }
+
+    async removePasswordWithServer(id: string): Promise<any> {
+        const response = await this.apiService.putSendRemovePassword(id);
+        const userId = await this.userService.getUserId();
+        const data = new SendData(response, userId);
+        await this.upsert(data);
     }
 
     private parseFile(send: Send, file: File, key: SymmetricCryptoKey): Promise<ArrayBuffer> {

@@ -19,4 +19,5 @@ export abstract class SendService {
     clear: (userId: string) => Promise<any>;
     delete: (id: string | string[]) => Promise<any>;
     deleteWithServer: (id: string) => Promise<any>;
+    removePasswordWithServer: (id: string) => Promise<any>;
 }
