@@ -267,8 +267,8 @@ export class ExportService implements ExportServiceAbstraction {
         promises.push(this.apiService.getCiphersOrganization(organizationId).then((c) => {
             const cipherPromises: any = [];
             if (c != null && c.data != null && c.data.length > 0) {
-                c.data.filter((c) => c.deletedDate === null).forEach((c) => {
-                    const cipher = new Cipher(new CipherData(c));
+                c.data.filter((item) => item.deletedDate === null).forEach((item) => {
+                    const cipher = new Cipher(new CipherData(item));
                     ciphers.push(cipher);
                 });
             }
