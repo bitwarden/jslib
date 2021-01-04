@@ -53,7 +53,7 @@ export abstract class CipherService {
     softDelete: (id: string | string[]) => Promise<any>;
     softDeleteWithServer: (id: string) => Promise<any>;
     softDeleteManyWithServer: (ids: string[]) => Promise<any>;
-    restore: (id: string | string[]) => Promise<any>;
+    restore: (cipher: { id: string, revisionDate: string; } | { id: string, revisionDate: string; }[]) => Promise<any>;
     restoreWithServer: (id: string) => Promise<any>;
     restoreManyWithServer: (ids: string[]) => Promise<any>;
 }

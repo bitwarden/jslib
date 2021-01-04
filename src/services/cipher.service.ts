@@ -876,7 +876,7 @@ export class CipherService implements CipherServiceAbstraction {
         await this.softDelete(ids);
     }
 
-    async restore(id: string | string[]): Promise<any> {
+    async restore(cipher: { id: string, revisionDate: string; } | { id: string, revisionDate: string; }[]) {
         const userId = await this.userService.getUserId();
         const ciphers = await this.storageService.get<{ [id: string]: CipherData; }>(
             Keys.ciphersPrefix + userId);
@@ -884,17 +884,19 @@ export class CipherService implements CipherServiceAbstraction {
             return;
         }
 
-        const clearDeletedDate = (cipherId: string) => {
-            if (ciphers[cipherId] == null) {
+        const clearDeletedDate = (c: { id: string, revisionDate: string; }) => {
+            if (ciphers[c.id] == null) {
                 return;
             }
-            ciphers[cipherId].deletedDate = null;
+            ciphers[c.id].deletedDate = null;
+            ciphers[c.id].revisionDate = c.revisionDate;
         };
 
-        if (typeof id === 'string') {
-            clearDeletedDate(id);
+
+        if (cipher.constructor.name === 'Array') {
+            (cipher as { id: string, revisionDate: string; }[]).forEach(clearDeletedDate);
         } else {
-            (id as string[]).forEach(clearDeletedDate);
+            clearDeletedDate(cipher as { id: string, revisionDate: string; });
         }
 
         await this.storageService.save(Keys.ciphersPrefix + userId, ciphers);
@@ -903,12 +905,18 @@ export class CipherService implements CipherServiceAbstraction {
 
     async restoreWithServer(id: string): Promise<any> {
         await this.apiService.putRestoreCipher(id);
-        await this.restore(id);
+        const response = await this.apiService.getCipher(id);
+        await this.restore({ id: id, revisionDate: response.revisionDate });
     }
 
     async restoreManyWithServer(ids: string[]): Promise<any> {
         await this.apiService.putRestoreManyCiphers(new CipherBulkRestoreRequest(ids));
-        await this.restore(ids);
+        const restores: { id: string, revisionDate: string; }[] = [];
+        for (const id of ids) {
+            const response = await this.apiService.getCipher(id);
+            restores.push({ id: id, revisionDate: response.revisionDate });
+        }
+        await this.restore(restores);
     }
 
     // Helpers
