@@ -904,17 +904,15 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async restoreWithServer(id: string): Promise<any> {
-        await this.apiService.putRestoreCipher(id);
-        const response = await this.apiService.getCipher(id);
+        const response = await this.apiService.putRestoreCipher(id);
         await this.restore({ id: id, revisionDate: response.revisionDate });
     }
 
     async restoreManyWithServer(ids: string[]): Promise<any> {
-        await this.apiService.putRestoreManyCiphers(new CipherBulkRestoreRequest(ids));
+        const response = await this.apiService.putRestoreManyCiphers(new CipherBulkRestoreRequest(ids));
         const restores: { id: string, revisionDate: string; }[] = [];
-        for (const id of ids) {
-            const response = await this.apiService.getCipher(id);
-            restores.push({ id: id, revisionDate: response.revisionDate });
+        for (const cipher of response.data) {
+            restores.push({ id: cipher.id, revisionDate: cipher.revisionDate });
         }
         await this.restore(restores);
     }

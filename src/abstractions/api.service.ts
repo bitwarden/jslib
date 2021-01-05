@@ -206,9 +206,9 @@ export abstract class ApiService {
     putDeleteCipherAdmin: (id: string) => Promise<any>;
     putDeleteManyCiphers: (request: CipherBulkDeleteRequest) => Promise<any>;
     putDeleteManyCiphersAdmin: (request: CipherBulkDeleteRequest) => Promise<any>;
-    putRestoreCipher: (id: string) => Promise<any>;
-    putRestoreCipherAdmin: (id: string) => Promise<any>;
-    putRestoreManyCiphers: (request: CipherBulkRestoreRequest) => Promise<any>;
+    putRestoreCipher: (id: string) => Promise<CipherResponse>;
+    putRestoreCipherAdmin: (id: string) => Promise<CipherResponse>;
+    putRestoreManyCiphers: (request: CipherBulkRestoreRequest) => Promise<ListResponse<CipherResponse>>;
 
     postCipherAttachment: (id: string, data: FormData) => Promise<CipherResponse>;
     postCipherAttachmentAdmin: (id: string, data: FormData) => Promise<CipherResponse>;
