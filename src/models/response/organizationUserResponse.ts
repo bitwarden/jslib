@@ -1,8 +1,10 @@
-import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
-import { OrganizationUserType } from '../../enums/organizationUserType';
-
 import { BaseResponse } from './baseResponse';
 import { SelectionReadOnlyResponse } from './selectionReadOnlyResponse';
+
+import { PermissionsApi } from '../api/permissionsApi';
+
+import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
+import { OrganizationUserType } from '../../enums/organizationUserType';
 
 export class OrganizationUserResponse extends BaseResponse {
     id: string;
@@ -10,6 +12,7 @@ export class OrganizationUserResponse extends BaseResponse {
     type: OrganizationUserType;
     status: OrganizationUserStatusType;
     accessAll: boolean;
+    permissions: PermissionsApi;
 
     constructor(response: any) {
         super(response);
@@ -17,6 +20,7 @@ export class OrganizationUserResponse extends BaseResponse {
         this.userId = this.getResponseProperty('UserId');
         this.type = this.getResponseProperty('Type');
         this.status = this.getResponseProperty('Status');
+        this.permissions = new PermissionsApi(this.getResponseProperty('Permissions'));
         this.accessAll = this.getResponseProperty('AccessAll');
     }
 }
