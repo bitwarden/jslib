@@ -19,7 +19,7 @@ export class SystemService implements SystemServiceAbstraction {
     }
 
     startProcessReload(): void {
-        if (this.vaultTimeoutService.pinProtectedKey != null || this.vaultTimeoutService.biometricLocked || this.reloadInterval != null) {
+        if (this.vaultTimeoutService.pinProtectedKey != null || this.reloadInterval != null) {
             return;
         }
         this.cancelProcessReload();
@@ -31,7 +31,9 @@ export class SystemService implements SystemServiceAbstraction {
                 // Don't refresh if they are still active in the window
                 doRefresh = diffSeconds >= 5000;
             }
-            if (doRefresh) {
+            const biometricLockedFingerprintValidated =
+                await this.storageService.get<boolean>(ConstantsService.biometricFingerprintValidated) && this.vaultTimeoutService.biometricLocked;
+            if (doRefresh && !biometricLockedFingerprintValidated) {
                 clearInterval(this.reloadInterval);
                 this.reloadInterval = null;
                 this.messagingService.send('reloadProcess');
