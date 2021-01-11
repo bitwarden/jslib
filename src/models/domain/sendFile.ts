@@ -34,16 +34,4 @@ export class SendFile extends Domain {
         }, null, key);
         return view;
     }
-
-    toSendFileData(): SendFileData {
-        const f = new SendFileData();
-        f.size = this.size;
-        this.buildDataModel(this, f, {
-            id: null,
-            url: null,
-            sizeName: null,
-            fileName: null,
-        }, ['id', 'url', 'sizeName']);
-        return f;
-    }
 }

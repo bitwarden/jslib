@@ -27,13 +27,4 @@ export class SendText extends Domain {
             text: null,
         }, null, key);
     }
-
-    toSendTextData(): SendTextData {
-        const t = new SendTextData();
-        this.buildDataModel(this, t, {
-            text: null,
-            hidden: null,
-        }, ['hidden']);
-        return t;
-    }
 }
