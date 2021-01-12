@@ -22,7 +22,7 @@ export class NodeApiService extends ApiService {
     nativeFetch(request: Request): Promise<Response> {
         const proxy = process.env.http_proxy || process.env.https_proxy;
         if (proxy) {
-            (request as any).agent = new HttpsProxyAgent(proxy);
+            (request as any).agent = new (HttpsProxyAgent as any)(proxy);
         }
         return fetch(request);
     }
