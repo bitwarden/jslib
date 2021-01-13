@@ -110,7 +110,7 @@ export class WindowMain {
             minHeight: 500,
             x: this.windowStates[Keys.mainWindowSize].x,
             y: this.windowStates[Keys.mainWindowSize].y,
-            title: app.getName(),
+            title: app.name,
             icon: process.platform === 'linux' ? path.join(__dirname, '/images/icon.png') : undefined,
             titleBarStyle: this.hideTitleBar && process.platform === 'darwin' ? 'hiddenInset' : undefined,
             show: false,
@@ -119,6 +119,7 @@ export class WindowMain {
                 nodeIntegration: true,
                 webviewTag: true,
                 backgroundThrottling: false,
+                enableRemoteModule: true, // TODO: This needs to be removed prior to Electron 14.
             },
         });
 
