@@ -13,10 +13,12 @@ import { I18nService } from '../abstractions/i18n.service';
 import { StorageService } from '../abstractions/storage.service';
 
 import { ElectronConstants } from './electronConstants';
+import { TrayWindowMain } from './traywindow.main';
 import { WindowMain } from './window.main';
 
 export class TrayMain {
     contextMenu: Menu;
+    trayWindowMain: TrayWindowMain;
 
     private appName: string;
     private tray: Tray;
@@ -35,6 +37,8 @@ export class TrayMain {
         } else {
             this.icon = path.join(__dirname, '/images/icon.png');
         }
+
+        this.trayWindowMain = new TrayWindowMain();
     }
 
     async init(appName: string, additionalMenuItems: MenuItemConstructorOptions[] = null) {
@@ -121,7 +125,14 @@ export class TrayMain {
 
         this.tray = new Tray(this.icon);
         this.tray.setToolTip(this.appName);
-        this.tray.on('click', () => this.toggleWindow());
+        this.tray.on('click', async () => {
+            if (await this.storageService.get<boolean>(ElectronConstants.enableTrayWindowKey)) {
+                this.trayWindowMain.toggleWindow(this.tray);
+            } else {
+                this.toggleWindow();
+            }
+        });
+
         this.tray.on('right-click', () => this.tray.popUpContextMenu(this.contextMenu));
 
         if (this.pressedIcon != null) {
