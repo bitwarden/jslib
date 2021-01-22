@@ -25,6 +25,7 @@ import { FolderResponse } from '../models/response/folderResponse';
 import {
     SyncCipherNotification,
     SyncFolderNotification,
+    SyncSendNotification,
 } from '../models/response/notificationResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
@@ -208,6 +209,37 @@ export class SyncService implements SyncServiceAbstraction {
             await this.cipherService.delete(notification.id);
             this.messagingService.send('syncedDeletedCipher', { cipherId: notification.id });
             return this.syncCompleted(true);
+        }
+        return this.syncCompleted(false);
+    }
+
+    async syncUpsertSend(notification: SyncSendNotification, isEdit: boolean): Promise<boolean> {
+        this.syncStarted();
+        if (await this.userService.isAuthenticated()) {
+            try {
+                const localSend = await this.sendService.get(notification.id);
+                if ((!isEdit && localSend == null) ||
+                    (isEdit && localSend != null && localSend.revisionDate < notification.revisionDate)) {
+                    const remoteSend = await this.apiService.getSend(notification.id);
+                    if (remoteSend != null) {
+                        const userId = await this.userService.getUserId();
+                        await this.sendService.upsert(new SendData(remoteSend, userId));
+                        this.messagingService.send('syncedUpsertedSend', { sendId: notification.id });
+                        return this.syncCompleted(true);
+                    }
+                }
+            } catch { }
+        }
+        return this.syncCompleted(false);
+    }
+
+    async syncDeleteSend(notification: SyncSendNotification): Promise<boolean> {
+        this.syncStarted();
+        if (await this.userService.isAuthenticated()) {
+            await this.sendService.delete(notification.id);
+            this.messagingService.send('syncedDeletedSend', { sendId: notification.id });
+            this.syncCompleted(true);
+            return true;
         }
         return this.syncCompleted(false);
     }
