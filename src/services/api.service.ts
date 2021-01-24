@@ -127,6 +127,7 @@ import {
 } from '../models/response/twoFactorU2fResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
+import { Utils } from '../misc/utils';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
@@ -410,8 +411,8 @@ export class ApiService implements ApiServiceAbstraction {
         return new SendResponse(r);
     }
 
-    async postSendAccess(id: string, request: SendAccessRequest): Promise<SendAccessResponse> {
-        const r = await this.send('POST', '/sends/access/' + id, request, false, true);
+    async postSendAccess(id: string, request: SendAccessRequest, apiUrl?: string): Promise<SendAccessResponse> {
+        const r = await this.send('POST', '/sends/access/' + id, request, false, true, apiUrl);
         return new SendAccessResponse(r);
     }
 
@@ -1210,7 +1211,8 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     private async send(method: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string, body: any,
-        authed: boolean, hasResponse: boolean): Promise<any> {
+        authed: boolean, hasResponse: boolean, apiUrl?: string): Promise<any> {
+        apiUrl = Utils.isNullOrWhitespace(apiUrl) ? this.apiBaseUrl : apiUrl;
         const headers = new Headers({
             'Device-Type': this.deviceType,
         });
@@ -1246,7 +1248,7 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         requestInit.headers = headers;
-        const response = await this.fetch(new Request(this.apiBaseUrl + path, requestInit));
+        const response = await this.fetch(new Request(apiUrl + path, requestInit));
 
         if (hasResponse && response.status === 200) {
             const responseJson = await response.json();
