@@ -21,7 +21,7 @@ export function isWindowsStore() {
         process.resourcesPath.indexOf('8bitSolutionsLLC.bitwardendesktop_') > -1) {
         windowsStore = true;
     }
-    return isWindows && windowsStore && windowsStore === true;
+    return isWindows && windowsStore === true;
 }
 
 export function isSnapStore() {
