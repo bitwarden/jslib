@@ -103,38 +103,4 @@ export class Send extends Domain {
 
         return model;
     }
-
-    toSendData(userId: string): SendData {
-        const s = new SendData();
-        s.id = this.id;
-        s.accessId = this.accessId;
-        s.userId = userId;
-        s.maxAccessCount = this.maxAccessCount;
-        s.accessCount = this.accessCount;
-        s.disabled = this.disabled;
-        s.password = this.password;
-        s.revisionDate = this.revisionDate != null ? this.revisionDate.toISOString() : null;
-        s.deletionDate = this.deletionDate != null ? this.deletionDate.toISOString() : null;
-        s.expirationDate = this.expirationDate != null ? this.expirationDate.toISOString() : null;
-        s.type = this.type;
-
-        this.buildDataModel(this, s, {
-            name: null,
-            notes: null,
-            key: null,
-        });
-
-        switch (s.type) {
-            case SendType.File:
-                s.text = this.text.toSendTextData();
-                break;
-            case SendType.Text:
-                s.file = this.file.toSendFileData();
-                break;
-            default:
-                break;
-        }
-
-        return s;
-    }
 }

@@ -77,7 +77,7 @@
     "@microsoft/signalr-protocol-msgpack": "3.1.0",
     "@nodert-win10-rs4/windows.security.credentials.ui": "^0.4.4",
     "big-integer": "1.6.36",
-    "browser-process-hrtime": "1.0.0",
+    "browser-hrtime": "^1.1.8",
     "chalk": "2.4.1",
     "commander": "2.18.0",
     "core-js": "2.6.2",

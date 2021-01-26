@@ -32,6 +32,10 @@ export class NotificationResponse extends BaseResponse {
             case NotificationType.LogOut:
                 this.payload = new UserNotification(payload);
                 break;
+            case NotificationType.SyncSendCreate:
+            case NotificationType.SyncSendUpdate:
+            case NotificationType.SyncSendDelete:
+                this.payload = new SyncSendNotification(payload);
             default:
                 break;
         }
@@ -76,5 +80,18 @@ export class UserNotification extends BaseResponse {
         super(response);
         this.userId = this.getResponseProperty('UserId');
         this.date = new Date(this.getResponseProperty('Date'));
+    }
+}
+
+export class SyncSendNotification extends BaseResponse {
+    id: string;
+    userId: string;
+    revisionDate: Date;
+
+    constructor(response: any) {
+        super(response);
+        this.id = this.getResponseProperty('Id');
+        this.userId = this.getResponseProperty('UserId');
+        this.revisionDate = new Date(this.getResponseProperty('RevisionDate'));
     }
 }

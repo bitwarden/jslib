@@ -162,7 +162,7 @@ export class AddEditComponent implements OnInit {
         orgs.sort(Utils.getSortFunction(this.i18nService, 'name')).forEach((o) => {
             if (o.enabled && o.status === OrganizationUserStatusType.Confirmed) {
                 this.ownershipOptions.push({ name: o.name, value: o.id });
-                if (policies != null && o.usePolicies && !o.isAdmin && this.allowPersonal) {
+                if (policies != null && o.usePolicies && !o.canManagePolicies && this.allowPersonal) {
                     for (const policy of policies) {
                         if (policy.organizationId === o.id && policy.enabled) {
                             this.allowPersonal = false;
