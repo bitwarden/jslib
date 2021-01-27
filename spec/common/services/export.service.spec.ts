@@ -17,8 +17,6 @@ import { LoginView } from '../../../src/models/view/loginView';
 
 import { BuildTestObject, GetUniqueString } from '../../utils';
 
-import { inspect } from 'util';
-
 const UserCipherViews = [
     generateCipherView(false),
     generateCipherView(false),
