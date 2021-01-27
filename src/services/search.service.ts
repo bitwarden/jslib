@@ -9,6 +9,7 @@ import { SearchService as SearchServiceAbstraction } from '../abstractions/searc
 import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
 import { UriMatchType } from '../enums/uriMatchType';
+import { SendView } from '../models/view/sendView';
 
 export class SearchService implements SearchServiceAbstraction {
     private indexing = false;
@@ -158,6 +159,28 @@ export class SearchService implements SearchServiceAbstraction {
                 return true;
             }
             return false;
+        });
+    }
+
+    searchSends(sends: SendView[], query: string) {
+        query = query.trim().toLocaleLowerCase();
+
+        return sends.filter(s => {
+            if (s.name != null && s.name.toLowerCase().indexOf(query) > -1) {
+                return true;
+            }
+            if (query.length >= 8 && (s.id.startsWith(query) || (s.file?.id != null && s.file.id.startsWith(query)))) {
+                return true;
+            }
+            if (s.notes != null && s.notes.toLowerCase().indexOf(query) > -1) {
+                return true;
+            }
+            if (s.text?.text != null && s.text.text.toLowerCase().indexOf(query) > -1) {
+                return true;
+            }
+            if (s.file?.fileName != null && s.file.fileName.toLowerCase().indexOf(query) > -1) {
+                return true;
+            }
         });
     }
 

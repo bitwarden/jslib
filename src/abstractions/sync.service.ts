@@ -1,6 +1,7 @@
 import {
     SyncCipherNotification,
     SyncFolderNotification,
+    SyncSendNotification,
 } from '../models/response/notificationResponse';
 
 export abstract class SyncService {
@@ -13,4 +14,6 @@ export abstract class SyncService {
     syncDeleteFolder: (notification: SyncFolderNotification) => Promise<boolean>;
     syncUpsertCipher: (notification: SyncCipherNotification, isEdit: boolean) => Promise<boolean>;
     syncDeleteCipher: (notification: SyncFolderNotification) => Promise<boolean>;
+    syncUpsertSend: (notification: SyncSendNotification, isEdit: boolean) => Promise<boolean>;
+    syncDeleteSend: (notification: SyncSendNotification) => Promise<boolean>;
 }
