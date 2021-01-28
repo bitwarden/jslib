@@ -169,7 +169,7 @@ export class SearchService implements SearchServiceAbstraction {
             if (s.name != null && s.name.toLowerCase().indexOf(query) > -1) {
                 return true;
             }
-            if (query.length >= 8 && (s.id.startsWith(query) || (s.file?.id != null && s.file.id.startsWith(query)))) {
+            if (query.length >= 8 && (s.id.startsWith(query) || s.accessId.toLocaleLowerCase().startsWith(query) || (s.file?.id != null && s.file.id.startsWith(query)))) {
                 return true;
             }
             if (s.notes != null && s.notes.toLowerCase().indexOf(query) > -1) {
