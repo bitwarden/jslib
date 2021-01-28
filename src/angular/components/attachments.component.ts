@@ -31,6 +31,7 @@ export class AttachmentsComponent implements OnInit {
     formPromise: Promise<any>;
     deletePromises: { [id: string]: Promise<any>; } = {};
     reuploadPromises: { [id: string]: Promise<any>; } = {};
+    viewOnly: boolean = false;
 
     constructor(protected cipherService: CipherService, protected i18nService: I18nService,
         protected cryptoService: CryptoService, protected userService: UserService,
