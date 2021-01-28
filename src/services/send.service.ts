@@ -22,6 +22,7 @@ import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
 import { Utils } from '../misc/utils';
+import { CipherString } from '../models/domain';
 
 const Keys = {
     sendsPrefix: 'sends_',
@@ -38,7 +39,7 @@ export class SendService implements SendServiceAbstraction {
         this.decryptedSendCache = null;
     }
 
-    async encrypt(model: SendView, file: File, password: string,
+    async encrypt(model: SendView, file: File | ArrayBuffer, password: string,
         key?: SymmetricCryptoKey): Promise<[Send, ArrayBuffer]> {
         let fileData: ArrayBuffer = null;
         const send = new Send();
@@ -64,7 +65,13 @@ export class SendService implements SendServiceAbstraction {
         } else if (send.type === SendType.File) {
             send.file = new SendFile();
             if (file != null) {
-                fileData = await this.parseFile(send, file, model.cryptoKey);
+                if (file instanceof ArrayBuffer) {
+                    const [name, data] = await this.encryptFileData(model.file.fileName, file, model.cryptoKey);
+                    send.file.fileName = name;
+                    fileData = data;
+                } else {
+                    fileData = await this.parseFile(send, file, model.cryptoKey);
+                }
             }
         }
 
@@ -119,7 +126,7 @@ export class SendService implements SendServiceAbstraction {
         return this.decryptedSendCache;
     }
 
-    async saveWithServer(sendData: [Send, ArrayBuffer]): Promise<any> {
+    async saveWithServer(sendData: [Send, ArrayBuffer | string]): Promise<any> {
         const request = new SendRequest(sendData[0]);
         let response: SendResponse;
         if (sendData[0].id == null) {
@@ -227,9 +234,9 @@ export class SendService implements SendServiceAbstraction {
             reader.readAsArrayBuffer(file);
             reader.onload = async (evt) => {
                 try {
-                    send.file.fileName = await this.cryptoService.encrypt(file.name, key);
-                    const fileData = await this.cryptoService.encryptToBytes(evt.target.result as ArrayBuffer, key);
-                    resolve(fileData);
+                    const [name, data] = await this.encryptFileData(file.name, evt.target.result as ArrayBuffer, key);
+                    send.file.fileName = name;
+                    resolve(data);
                 } catch (e) {
                     reject(e);
                 }
@@ -238,5 +245,12 @@ export class SendService implements SendServiceAbstraction {
                 reject('Error reading file.');
             };
         });
+    }
+
+    private async encryptFileData(fileName: string, data: ArrayBuffer,
+        key: SymmetricCryptoKey): Promise<[CipherString, ArrayBuffer]> {
+        const encFileName = await this.cryptoService.encrypt(fileName, key);
+        const encFileData = await this.cryptoService.encryptToBytes(data, key);
+        return [encFileName, encFileData];
     }
 }
