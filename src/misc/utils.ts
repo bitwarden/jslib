@@ -273,6 +273,14 @@ export class Utils {
         return str == null || typeof str !== 'string' || str.trim() === '';
     }
 
+    static nameOf<T>(name: string & keyof T) {
+        return name;
+    }
+
+    static assign<T>(target: T, source: Partial<T>): T {
+        return Object.assign(target, source);
+    }
+
     private static validIpAddress(ipString: string): boolean {
         // tslint:disable-next-line
         const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
