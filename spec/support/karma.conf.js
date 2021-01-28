@@ -57,7 +57,12 @@ module.exports = (config) => {
             tsconfig: './tsconfig.json',
             bundlerOptions: {
                 entrypoints: /\.spec\.ts$/,
-                sourceMap: true
+                sourceMap: true,
+                resolve: {
+                    alias: {
+                        "util": "node_modules/util/util.js"
+                    }
+                }
             }
         },
 
