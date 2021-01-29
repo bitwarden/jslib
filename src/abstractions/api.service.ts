@@ -174,7 +174,7 @@ export abstract class ApiService {
     deleteFolder: (id: string) => Promise<any>;
 
     getSend: (id: string) => Promise<SendResponse>;
-    postSendAccess: (id: string, request: SendAccessRequest) => Promise<SendAccessResponse>;
+    postSendAccess: (id: string, request: SendAccessRequest, apiUrl?: string) => Promise<SendAccessResponse>;
     getSends: () => Promise<ListResponse<SendResponse>>;
     postSend: (request: SendRequest) => Promise<SendResponse>;
     postSendFile: (data: FormData) => Promise<SendResponse>;

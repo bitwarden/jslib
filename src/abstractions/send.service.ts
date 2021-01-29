@@ -9,7 +9,7 @@ export abstract class SendService {
     decryptedSendCache: SendView[];
 
     clearCache: () => void;
-    encrypt: (model: SendView, file: File, password: string, key?: SymmetricCryptoKey) => Promise<[Send, ArrayBuffer]>;
+    encrypt: (model: SendView, file: File | ArrayBuffer, password: string, key?: SymmetricCryptoKey) => Promise<[Send, ArrayBuffer]>;
     get: (id: string) => Promise<Send>;
     getAll: () => Promise<Send[]>;
     getAllDecrypted: () => Promise<SendView[]>;

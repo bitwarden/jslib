@@ -41,7 +41,7 @@ export class LoginCommand {
         this.clientId = clientId;
     }
 
-    async run(email: string, password: string, cmd: program.Command) {
+    async run(email: string, password: string, options: program.OptionValues) {
         this.canInteract = process.env.BW_NOINTERACTION !== 'true';
 
         let ssoCodeVerifier: string = null;
@@ -50,7 +50,7 @@ export class LoginCommand {
         let clientId: string = null;
         let clientSecret: string = null;
 
-        if (cmd.apikey != null) {
+        if (options.apikey != null) {
             const storedClientId: string = process.env.BW_CLIENTID;
             const storedClientSecret: string = process.env.BW_CLIENTSECRET;
             if (storedClientId == null) {
@@ -77,7 +77,7 @@ export class LoginCommand {
             } else {
                 clientSecret = storedClientSecret;
             }
-        } else if (cmd.sso != null && this.canInteract) {
+        } else if (options.sso != null && this.canInteract) {
             const passwordOptions: any = {
                 type: 'password',
                 length: 64,
@@ -112,10 +112,10 @@ export class LoginCommand {
             }
 
             if (password == null || password === '') {
-                if (cmd.passwordfile) {
-                    password = await NodeUtils.readFirstLine(cmd.passwordfile);
-                } else if (cmd.passwordenv && process.env[cmd.passwordenv]) {
-                    password = process.env[cmd.passwordenv];
+                if (options.passwordfile) {
+                    password = await NodeUtils.readFirstLine(options.passwordfile);
+                } else if (options.passwordenv && process.env[options.passwordenv]) {
+                    password = process.env[options.passwordenv];
                 } else if (this.canInteract) {
                     const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                         type: 'password',
@@ -131,11 +131,11 @@ export class LoginCommand {
             }
         }
 
-        let twoFactorToken: string = cmd.code;
+        let twoFactorToken: string = options.code;
         let twoFactorMethod: TwoFactorProviderType = null;
         try {
-            if (cmd.method != null) {
-                twoFactorMethod = parseInt(cmd.method, null);
+            if (options.method != null) {
+                twoFactorMethod = parseInt(options.method, null);
             }
         } catch (e) {
             return Response.error('Invalid two-step login method.');
@@ -185,18 +185,18 @@ export class LoginCommand {
                         if (twoFactorProviders.length === 1) {
                             selectedProvider = twoFactorProviders[0];
                         } else if (this.canInteract) {
-                            const options = twoFactorProviders.map((p) => p.name);
-                            options.push(new inquirer.Separator());
-                            options.push('Cancel');
+                            const twoFactorOptions = twoFactorProviders.map((p) => p.name);
+                            twoFactorOptions.push(new inquirer.Separator());
+                            twoFactorOptions.push('Cancel');
                             const answer: inquirer.Answers =
                                 await inquirer.createPromptModule({ output: process.stderr })({
                                     type: 'list',
                                     name: 'method',
                                     message: 'Two-step login method:',
-                                    choices: options,
+                                    choices: twoFactorOptions,
                                 });
-                            const i = options.indexOf(answer.method);
-                            if (i === (options.length - 1)) {
+                            const i = twoFactorOptions.indexOf(answer.method);
+                            if (i === (twoFactorOptions.length - 1)) {
                                 return Response.error('Login failed.');
                             }
                             selectedProvider = twoFactorProviders[i];
