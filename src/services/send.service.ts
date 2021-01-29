@@ -126,7 +126,7 @@ export class SendService implements SendServiceAbstraction {
         return this.decryptedSendCache;
     }
 
-    async saveWithServer(sendData: [Send, ArrayBuffer | string]): Promise<any> {
+    async saveWithServer(sendData: [Send, ArrayBuffer]): Promise<any> {
         const request = new SendRequest(sendData[0]);
         let response: SendResponse;
         if (sendData[0].id == null) {
