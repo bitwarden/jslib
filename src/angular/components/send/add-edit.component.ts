@@ -3,8 +3,8 @@ import { DatePipe } from '@angular/common';
 import {
     EventEmitter,
     Input,
-    Output,
     OnInit,
+    Output,
 } from '@angular/core';
 
 import { SendType } from '../../../enums/sendType';
