@@ -102,13 +102,14 @@ export class SendComponent implements OnInit {
         }
         if (timeout == null) {
             this.filteredSends = this.sends.filter((s) => this.filter == null || this.filter(s));
-        } else {
-            this.searchPending = true;
-            this.searchTimeout = setTimeout(async () => {
-                this.filteredSends = this.sends.filter((s) => this.filter == null || this.filter(s));
-            }, timeout);
+            this.applyTextSearch();
+            return;
         }
-
+        this.searchPending = true;
+        this.searchTimeout = setTimeout(async () => {
+            this.filteredSends = this.sends.filter((s) => this.filter == null || this.filter(s));
+            this.applyTextSearch();
+        }, timeout);
         this.searchPending = false;
     }
 
@@ -177,7 +178,6 @@ export class SendComponent implements OnInit {
     }
 
     searchTextChanged() {
-        this.applyFilter((s) => this.searchService.searchSends(this.sends, this.searchText).includes(s));
         this.search(200);
     }
 
@@ -196,5 +196,11 @@ export class SendComponent implements OnInit {
     clearSelections() {
         this.selectedAll = false;
         this.selectedType = null;
+    }
+
+    private applyTextSearch() {
+        if (this.searchText != null) {
+           this.filteredSends = this.searchService.searchSends(this.filteredSends, this.searchText);
+        }
     }
 }
