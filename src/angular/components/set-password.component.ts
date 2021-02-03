@@ -44,7 +44,7 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
         await this.syncService.fullSync(true);
         this.syncLoading = false;
 
-        const queryParamsSub = this.route.queryParams.subscribe(async (qParams) => {
+        const queryParamsSub = this.route.queryParams.subscribe(async qParams => {
             if (qParams.identifier != null) {
                 this.identifier = qParams.identifier;
             }

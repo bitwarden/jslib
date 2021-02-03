@@ -13,7 +13,7 @@ export class StickyPasswordXmlImporter extends BaseImporter implements Importer 
         }
 
         const loginNodes = doc.querySelectorAll('root > Database > Logins > Login');
-        Array.from(loginNodes).forEach((loginNode) => {
+        Array.from(loginNodes).forEach(loginNode => {
             const accountId = loginNode.getAttribute('ID');
             if (this.isNullOrWhitespace(accountId)) {
                 return;

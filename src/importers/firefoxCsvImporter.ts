@@ -12,7 +12,7 @@ export class FirefoxCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             const cipher = this.initLoginCipher();
             const url = this.getValueOrDefault(value.url, this.getValueOrDefault(value.hostname));
             cipher.name = this.getValueOrDefault(this.nameFromUrl(url), '--');

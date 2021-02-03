@@ -118,9 +118,9 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
             defaultPath: fileName,
             showsTagField: false,
-        }).then((ret) => {
+        }).then(ret => {
             if (ret.filePath != null) {
-                fs.writeFile(ret.filePath, Buffer.from(blobData), (err) => {
+                fs.writeFile(ret.filePath, Buffer.from(blobData), err => {
                     // error check?
                 });
             }
@@ -213,7 +213,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     }
 
     authenticateBiometric(): Promise<boolean> {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const val = ipcRenderer.sendSync('biometric', {
                 action: 'authenticate',
             });

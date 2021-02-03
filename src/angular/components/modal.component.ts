@@ -56,7 +56,7 @@ export class ModalComponent implements OnDestroy {
 
         const modals = Array.from(document.querySelectorAll('.modal, .modal *[data-dismiss="modal"]'));
         for (const closeElement of modals) {
-            closeElement.addEventListener('click', (event) => {
+            closeElement.addEventListener('click', event => {
                 this.close();
             });
         }

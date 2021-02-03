@@ -63,7 +63,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const queryParamsSub = this.route.queryParams.subscribe(async (qParams) => {
+        const queryParamsSub = this.route.queryParams.subscribe(async qParams => {
             if (qParams.identifier != null) {
                 this.identifier = qParams.identifier;
             }

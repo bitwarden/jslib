@@ -17,7 +17,7 @@ export class Login {
 
     static toView(req: Login, view = new LoginView()) {
         if (req.uris != null) {
-            view.uris = req.uris.map((u) => LoginUri.toView(u));
+            view.uris = req.uris.map(u => LoginUri.toView(u));
         }
         view.username = req.username;
         view.password = req.password;
@@ -27,7 +27,7 @@ export class Login {
 
     static toDomain(req: Login, domain = new LoginDomain()) {
         if (req.uris != null) {
-            domain.uris = req.uris.map((u) => LoginUri.toDomain(u));
+            domain.uris = req.uris.map(u => LoginUri.toDomain(u));
         }
         domain.username = req.username != null ? new CipherString(req.username) : null;
         domain.password = req.password != null ? new CipherString(req.password) : null;
@@ -47,9 +47,9 @@ export class Login {
 
         if (o.uris != null) {
             if (o instanceof LoginView) {
-                this.uris = o.uris.map((u) => new LoginUri(u));
+                this.uris = o.uris.map(u => new LoginUri(u));
             } else {
-                this.uris = o.uris.map((u) => new LoginUri(u));
+                this.uris = o.uris.map(u => new LoginUri(u));
             }
         }
 

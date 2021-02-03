@@ -52,8 +52,8 @@ export class CollectionService implements CollectionServiceAbstraction {
         }
         const decCollections: CollectionView[] = [];
         const promises: Promise<any>[] = [];
-        collections.forEach((collection) => {
-            promises.push(collection.decrypt().then((c) => decCollections.push(c)));
+        collections.forEach(collection => {
+            promises.push(collection.decrypt().then(c => decCollections.push(c)));
         });
         await Promise.all(promises);
         return decCollections.sort(Utils.getSortFunction(this.i18nService, 'name'));
@@ -103,7 +103,7 @@ export class CollectionService implements CollectionServiceAbstraction {
             collections = await this.getAllDecrypted();
         }
         const nodes: TreeNode<CollectionView>[] = [];
-        collections.forEach((c) => {
+        collections.forEach(c => {
             const collectionCopy = new CollectionView();
             collectionCopy.id = c.id;
             collectionCopy.organizationId = c.organizationId;
@@ -130,7 +130,7 @@ export class CollectionService implements CollectionServiceAbstraction {
             const c = collection as CollectionData;
             collections[c.id] = c;
         } else {
-            (collection as CollectionData[]).forEach((c) => {
+            (collection as CollectionData[]).forEach(c => {
                 collections[c.id] = c;
             });
         }
@@ -162,7 +162,7 @@ export class CollectionService implements CollectionServiceAbstraction {
             const i = id as string;
             delete collections[id];
         } else {
-            (id as string[]).forEach((i) => {
+            (id as string[]).forEach(i => {
                 delete collections[i];
             });
         }

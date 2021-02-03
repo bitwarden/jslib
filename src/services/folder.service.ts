@@ -83,8 +83,8 @@ export class FolderService implements FolderServiceAbstraction {
         const decFolders: FolderView[] = [];
         const promises: Promise<any>[] = [];
         const folders = await this.getAll();
-        folders.forEach((folder) => {
-            promises.push(folder.decrypt().then((f) => decFolders.push(f)));
+        folders.forEach(folder => {
+            promises.push(folder.decrypt().then(f => decFolders.push(f)));
         });
 
         await Promise.all(promises);
@@ -101,7 +101,7 @@ export class FolderService implements FolderServiceAbstraction {
     async getAllNested(): Promise<TreeNode<FolderView>[]> {
         const folders = await this.getAllDecrypted();
         const nodes: TreeNode<FolderView>[] = [];
-        folders.forEach((f) => {
+        folders.forEach(f => {
             const folderCopy = new FolderView();
             folderCopy.id = f.id;
             folderCopy.revisionDate = f.revisionDate;
@@ -144,7 +144,7 @@ export class FolderService implements FolderServiceAbstraction {
             const f = folder as FolderData;
             folders[f.id] = f;
         } else {
-            (folder as FolderData[]).forEach((f) => {
+            (folder as FolderData[]).forEach(f => {
                 folders[f.id] = f;
             });
         }
@@ -178,7 +178,7 @@ export class FolderService implements FolderServiceAbstraction {
             }
             delete folders[id];
         } else {
-            (id as string[]).forEach((i) => {
+            (id as string[]).forEach(i => {
                 delete folders[i];
             });
         }

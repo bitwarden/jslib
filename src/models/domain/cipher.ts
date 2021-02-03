@@ -85,19 +85,19 @@ export class Cipher extends Domain {
         }
 
         if (obj.attachments != null) {
-            this.attachments = obj.attachments.map((a) => new Attachment(a, alreadyEncrypted));
+            this.attachments = obj.attachments.map(a => new Attachment(a, alreadyEncrypted));
         } else {
             this.attachments = null;
         }
 
         if (obj.fields != null) {
-            this.fields = obj.fields.map((f) => new Field(f, alreadyEncrypted));
+            this.fields = obj.fields.map(f => new Field(f, alreadyEncrypted));
         } else {
             this.fields = null;
         }
 
         if (obj.passwordHistory != null) {
-            this.passwordHistory = obj.passwordHistory.map((ph) => new Password(ph, alreadyEncrypted));
+            this.passwordHistory = obj.passwordHistory.map(ph => new Password(ph, alreadyEncrypted));
         } else {
             this.passwordHistory = null;
         }
@@ -135,7 +135,7 @@ export class Cipher extends Domain {
             await this.attachments.reduce((promise, attachment) => {
                 return promise.then(() => {
                     return attachment.decrypt(orgId, encKey);
-                }).then((decAttachment) => {
+                }).then(decAttachment => {
                     attachments.push(decAttachment);
                 });
             }, Promise.resolve());
@@ -147,7 +147,7 @@ export class Cipher extends Domain {
             await this.fields.reduce((promise, field) => {
                 return promise.then(() => {
                     return field.decrypt(orgId, encKey);
-                }).then((decField) => {
+                }).then(decField => {
                     fields.push(decField);
                 });
             }, Promise.resolve());
@@ -159,7 +159,7 @@ export class Cipher extends Domain {
             await this.passwordHistory.reduce((promise, ph) => {
                 return promise.then(() => {
                     return ph.decrypt(orgId, encKey);
-                }).then((decPh) => {
+                }).then(decPh => {
                     passwordHistory.push(decPh);
                 });
             }, Promise.resolve());
@@ -207,13 +207,13 @@ export class Cipher extends Domain {
         }
 
         if (this.fields != null) {
-            c.fields = this.fields.map((f) => f.toFieldData());
+            c.fields = this.fields.map(f => f.toFieldData());
         }
         if (this.attachments != null) {
-            c.attachments = this.attachments.map((a) => a.toAttachmentData());
+            c.attachments = this.attachments.map(a => a.toAttachmentData());
         }
         if (this.passwordHistory != null) {
-            c.passwordHistory = this.passwordHistory.map((ph) => ph.toPasswordHistoryData());
+            c.passwordHistory = this.passwordHistory.map(ph => ph.toPasswordHistoryData());
         }
         return c;
     }

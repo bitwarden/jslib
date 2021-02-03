@@ -12,7 +12,7 @@ export class ChromeCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             const cipher = this.initLoginCipher();
             cipher.name = this.getValueOrDefault(value.name, '--');
             cipher.login.username = this.getValueOrDefault(value.username);

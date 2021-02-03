@@ -18,7 +18,7 @@ export class BoxRowDirective implements OnInit {
 
     ngOnInit(): void {
         this.formEls = Array.from(this.el.querySelectorAll('input:not([type="hidden"]), select, textarea'));
-        this.formEls.forEach((formEl) => {
+        this.formEls.forEach(formEl => {
             formEl.addEventListener('focus', (event: Event) => {
                 this.el.classList.add('active');
             }, false);

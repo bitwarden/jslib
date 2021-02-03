@@ -39,7 +39,7 @@ export class EventService implements EventServiceAbstraction {
         if (organizations == null) {
             return;
         }
-        const orgIds = new Set<string>(organizations.filter((o) => o.useEvents).map((o) => o.id));
+        const orgIds = new Set<string>(organizations.filter(o => o.useEvents).map(o => o.id));
         if (orgIds.size === 0) {
             return;
         }
@@ -73,7 +73,7 @@ export class EventService implements EventServiceAbstraction {
         if (eventCollection == null || eventCollection.length === 0) {
             return;
         }
-        const request = eventCollection.map((e) => {
+        const request = eventCollection.map(e => {
             const req = new EventRequest();
             req.type = e.type;
             req.cipherId = e.cipherId;

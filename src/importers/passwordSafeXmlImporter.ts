@@ -21,7 +21,7 @@ export class PasswordSafeXmlImporter extends BaseImporter implements Importer {
 
         const notesDelimiter = passwordSafe.getAttribute('delimiter');
         const entries = doc.querySelectorAll('passwordsafe > entry');
-        Array.from(entries).forEach((entry) => {
+        Array.from(entries).forEach(entry => {
             const group = this.querySelectorDirectChild(entry, 'group');
             const groupText = group != null && !this.isNullOrWhitespace(group.textContent) ?
                 group.textContent.split('.').join('/') : null;

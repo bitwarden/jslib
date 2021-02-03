@@ -71,7 +71,7 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
             if (!this.organization && c.folderId != null && groupingsMap.has(c.folderId)) {
                 this.result.folderRelationships.push([this.result.ciphers.length, groupingsMap.get(c.folderId)]);
             } else if (this.organization && c.collectionIds != null) {
-                c.collectionIds.forEach((cId) => {
+                c.collectionIds.forEach(cId => {
                     if (groupingsMap.has(cId)) {
                         this.result.collectionRelationships.push([this.result.ciphers.length, groupingsMap.get(cId)]);
                     }
@@ -123,7 +123,7 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
             if (!this.organization && c.folderId != null && groupingsMap.has(c.folderId)) {
                 this.result.folderRelationships.push([this.result.ciphers.length, groupingsMap.get(c.folderId)]);
             } else if (this.organization && c.collectionIds != null) {
-                c.collectionIds.forEach((cId) => {
+                c.collectionIds.forEach(cId => {
                     if (groupingsMap.has(cId)) {
                         this.result.collectionRelationships.push([this.result.ciphers.length, groupingsMap.get(cId)]);
                     }

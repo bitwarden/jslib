@@ -50,7 +50,7 @@ export class CipherRequest {
                 this.login.totp = cipher.login.totp ? cipher.login.totp.encryptedString : null;
 
                 if (cipher.login.uris != null) {
-                    this.login.uris = cipher.login.uris.map((u) => {
+                    this.login.uris = cipher.login.uris.map(u => {
                         const uri = new LoginUriApi();
                         uri.uri = u.uri != null ? u.uri.encryptedString : null;
                         uri.match = u.match != null ? u.match : null;
@@ -110,7 +110,7 @@ export class CipherRequest {
         }
 
         if (cipher.fields != null) {
-            this.fields = cipher.fields.map((f) => {
+            this.fields = cipher.fields.map(f => {
                 const field = new FieldApi();
                 field.type = f.type;
                 field.name = f.name ? f.name.encryptedString : null;
@@ -121,7 +121,7 @@ export class CipherRequest {
 
         if (cipher.passwordHistory != null) {
             this.passwordHistory = [];
-            cipher.passwordHistory.forEach((ph) => {
+            cipher.passwordHistory.forEach(ph => {
                 this.passwordHistory.push({
                     lastUsedDate: ph.lastUsedDate,
                     password: ph.password ? ph.password.encryptedString : null,
@@ -132,7 +132,7 @@ export class CipherRequest {
         if (cipher.attachments != null) {
             this.attachments = {};
             this.attachments2 = {};
-            cipher.attachments.forEach((attachment) => {
+            cipher.attachments.forEach(attachment => {
                 const fileName = attachment.fileName ? attachment.fileName.encryptedString : null;
                 this.attachments[attachment.id] = fileName;
                 const attachmentRequest = new AttachmentRequest();

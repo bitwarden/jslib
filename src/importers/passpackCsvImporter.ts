@@ -14,7 +14,7 @@ export class PasspackCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             const tagsJson = !this.isNullOrWhitespace(value.Tags) ? JSON.parse(value.Tags) : null;
             const tags: string[] = tagsJson != null && tagsJson.tags != null && tagsJson.tags.length > 0 ?
                 tagsJson.tags.map((tagJson: string) => {
@@ -26,7 +26,7 @@ export class PasspackCsvImporter extends BaseImporter implements Importer {
                 }).filter((t: string) => !this.isNullOrWhitespace(t)) : null;
 
             if (this.organization && tags != null && tags.length > 0) {
-                tags.forEach((tag) => {
+                tags.forEach(tag => {
                     let addCollection = true;
                     let collectionIndex = result.collections.length;
 

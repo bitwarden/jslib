@@ -11,7 +11,7 @@ export class BroadcasterService implements BroadcasterServiceAbstraction {
             return;
         }
 
-        this.subscribers.forEach((value) => {
+        this.subscribers.forEach(value => {
             value(message);
         });
     }

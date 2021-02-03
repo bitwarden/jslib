@@ -91,7 +91,7 @@ export abstract class BaseImporter {
         data = this.splitNewLine(data).join('\n').trim();
         const result = papa.parse(data, parseOptions);
         if (result.errors != null && result.errors.length > 0) {
-            result.errors.forEach((e) => {
+            result.errors.forEach(e => {
                 if (e.row != null) {
                     // tslint:disable-next-line
                     this.logService.warning('Error parsing row ' + e.row + ': ' + e.message);
@@ -129,7 +129,7 @@ export abstract class BaseImporter {
 
         if (uri.length > 0) {
             const returnArr: LoginUriView[] = [];
-            uri.forEach((u) => {
+            uri.forEach(u => {
                 const loginUri = new LoginUriView();
                 loginUri.uri = this.fixUri(u);
                 if (this.isNullOrWhitespace(loginUri.uri)) {
@@ -265,8 +265,8 @@ export abstract class BaseImporter {
     }
 
     protected moveFoldersToCollections(result: ImportResult) {
-        result.folderRelationships.forEach((r) => result.collectionRelationships.push(r));
-        result.collections = result.folders.map((f) => {
+        result.folderRelationships.forEach(r => result.collectionRelationships.push(r));
+        result.collections = result.folders.map(f => {
             const collection = new CollectionView();
             collection.name = f.name;
             return collection;
@@ -281,7 +281,7 @@ export abstract class BaseImporter {
     }
 
     protected querySelectorAllDirectChild(parentEl: Element, query: string) {
-        return Array.from(parentEl.querySelectorAll(query)).filter((el) => el.parentNode === parentEl);
+        return Array.from(parentEl.querySelectorAll(query)).filter(el => el.parentNode === parentEl);
     }
 
     protected initLoginCipher() {

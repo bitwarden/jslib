@@ -80,7 +80,7 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     setOrgKeys(orgs: ProfileOrganizationResponse[]): Promise<{}> {
         const orgKeys: any = {};
-        orgs.forEach((org) => {
+        orgs.forEach(org => {
             orgKeys[org.id] = org.key;
         });
 

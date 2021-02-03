@@ -19,11 +19,11 @@ export class NodeUtils {
             const readStream = fs.createReadStream(fileName, {encoding: 'utf8'});
             const readInterface = readline.createInterface(readStream);
             readInterface
-                .on('line', (line) => {
+                .on('line', line => {
                     readStream.close();
                     resolve(line);
                 })
-                .on('error', (err) => reject(err));
+                .on('error', err => reject(err));
         });
     }
 

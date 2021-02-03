@@ -13,7 +13,7 @@ export class RoboFormCsvImporter extends BaseImporter implements Importer {
         }
 
         let i = 1;
-        results.forEach((value) => {
+        results.forEach(value => {
             const folder = !this.isNullOrWhitespace(value.Folder) && value.Folder.startsWith('/') ?
                 value.Folder.replace('/', '') : value.Folder;
             const folderName = !this.isNullOrWhitespace(folder) ? folder : null;

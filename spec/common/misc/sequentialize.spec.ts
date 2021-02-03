@@ -84,12 +84,12 @@ describe('sequentialize decorator', () => {
         const allRes: number[] = [];
 
         await Promise.all([
-            foo.bar(1).then((res) => allRes.push(res)),
-            foo.bar(1).then((res) => allRes.push(res)),
-            foo.bar(2).then((res) => allRes.push(res)),
-            foo.bar(2).then((res) => allRes.push(res)),
-            foo.bar(3).then((res) => allRes.push(res)),
-            foo.bar(3).then((res) => allRes.push(res)),
+            foo.bar(1).then(res => allRes.push(res)),
+            foo.bar(1).then(res => allRes.push(res)),
+            foo.bar(2).then(res => allRes.push(res)),
+            foo.bar(2).then(res => allRes.push(res)),
+            foo.bar(3).then(res => allRes.push(res)),
+            foo.bar(3).then(res => allRes.push(res)),
         ]);
         expect(foo.calls).toBe(3);
         expect(allRes.length).toBe(6);
@@ -102,12 +102,12 @@ describe('sequentialize decorator', () => {
         const allRes: number[] = [];
 
         await Promise.all([
-            foo.baz(1).then((res) => allRes.push(res)),
-            foo.baz(1).then((res) => allRes.push(res)),
-            foo.baz(2).then((res) => allRes.push(res)),
-            foo.baz(2).then((res) => allRes.push(res)),
-            foo.baz(3).then((res) => allRes.push(res)),
-            foo.baz(3).then((res) => allRes.push(res)),
+            foo.baz(1).then(res => allRes.push(res)),
+            foo.baz(1).then(res => allRes.push(res)),
+            foo.baz(2).then(res => allRes.push(res)),
+            foo.baz(2).then(res => allRes.push(res)),
+            foo.baz(3).then(res => allRes.push(res)),
+            foo.baz(3).then(res => allRes.push(res)),
         ]);
         expect(foo.calls).toBe(3);
         expect(allRes.length).toBe(6);
@@ -119,20 +119,20 @@ describe('sequentialize decorator', () => {
 class Foo {
     calls = 0;
 
-    @sequentialize((args) => 'bar' + args[0])
+    @sequentialize(args => 'bar' + args[0])
     bar(a: number): Promise<number> {
         this.calls++;
-        return new Promise((res) => {
+        return new Promise(res => {
             setTimeout(() => {
                 res(a * 2);
             }, Math.random() * 100);
         });
     }
 
-    @sequentialize((args) => 'baz' + args[0])
+    @sequentialize(args => 'baz' + args[0])
     baz(a: number): Promise<number> {
         this.calls++;
-        return new Promise((res) => {
+        return new Promise(res => {
             setTimeout(() => {
                 res(a * 3);
             }, Math.random() * 100);

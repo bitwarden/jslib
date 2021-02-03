@@ -27,7 +27,7 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
             return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             if (this.isNullOrWhitespace(this.getProp(value, 'title'))) {
                 return;
             }

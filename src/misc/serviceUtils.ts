@@ -27,7 +27,7 @@ export class ServiceUtils {
             return;
         }
 
-        if (nodeTree.filter((n) => n.node.name === partName).length === 0) {
+        if (nodeTree.filter(n => n.node.name === partName).length === 0) {
             if (end) {
                 nodeTree.push(new TreeNode(obj, partName, parent));
                 return;

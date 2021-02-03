@@ -43,7 +43,7 @@ export class KasperskyTxtImporter extends BaseImporter implements Importer {
         const applications = this.parseDataCategory(applicationsData);
         const websites = this.parseDataCategory(websitesData);
 
-        notes.forEach((n) => {
+        notes.forEach(n => {
             const cipher = this.initLoginCipher();
             cipher.name = this.getValueOrDefault(n.get('Name'));
             cipher.notes = this.getValueOrDefault(n.get('Text'));
@@ -51,7 +51,7 @@ export class KasperskyTxtImporter extends BaseImporter implements Importer {
             result.ciphers.push(cipher);
         });
 
-        websites.concat(applications).forEach((w) => {
+        websites.concat(applications).forEach(w => {
             const cipher = this.initLoginCipher();
             const nameKey = w.has('Website name') ? 'Website name' : 'Application';
             cipher.name = this.getValueOrDefault(w.get(nameKey), '');
@@ -80,14 +80,14 @@ export class KasperskyTxtImporter extends BaseImporter implements Importer {
             return [];
         }
         const items: Map<string, string>[] = [];
-        data.split(Delimiter).forEach((p) => {
+        data.split(Delimiter).forEach(p => {
             if (p.indexOf('\n') === -1) {
                 return;
             }
             const item = new Map<string, string>();
             let itemComment: string;
             let itemCommentKey: string;
-            p.split('\n').forEach((l) => {
+            p.split('\n').forEach(l => {
                 if (itemComment != null) {
                     itemComment += ('\n' + l);
                     return;

@@ -233,7 +233,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
         const dataObj: any = {};
 
         let processingNotes = false;
-        extraParts.forEach((extraPart) => {
+        extraParts.forEach(extraPart => {
             let key: string = null;
             let val: string = null;
             if (!processingNotes) {
