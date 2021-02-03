@@ -59,7 +59,6 @@ export class SendComponent implements OnInit {
         });
 
         await this.load();
-
     }
 
     ngOnDestroy() {
@@ -109,8 +108,8 @@ export class SendComponent implements OnInit {
         this.searchTimeout = setTimeout(async () => {
             this.filteredSends = this.sends.filter((s) => this.filter == null || this.filter(s));
             this.applyTextSearch();
+            this.searchPending = false;
         }, timeout);
-        this.searchPending = false;
     }
 
     async removePassword(s: SendView): Promise<boolean> {
