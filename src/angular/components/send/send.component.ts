@@ -10,6 +10,7 @@ import { SendView } from '../../../models/view/sendView';
 import { EnvironmentService } from '../../../abstractions/environment.service';
 import { I18nService } from '../../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../../abstractions/platformUtils.service';
+import { SearchService } from '../../../abstractions/search.service';
 import { SendService } from '../../../abstractions/send.service';
 
 import { BroadcasterService } from '../../../angular/services/broadcaster.service';
@@ -41,7 +42,8 @@ export class SendComponent implements OnInit {
 
     constructor(protected sendService: SendService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected environmentService: EnvironmentService,
-        protected broadcasterService: BroadcasterService, protected ngZone: NgZone) { }
+        protected broadcasterService: BroadcasterService, protected ngZone: NgZone,
+        protected searchService: SearchService) { }
 
     async ngOnInit() {
         this.broadcasterService.subscribe(BroadcasterSubscriptionId, (message: any) => {
@@ -99,11 +101,13 @@ export class SendComponent implements OnInit {
         }
         if (timeout == null) {
             this.filteredSends = this.sends.filter((s) => this.filter == null || this.filter(s));
+            this.applyTextSearch();
             return;
         }
         this.searchPending = true;
         this.searchTimeout = setTimeout(async () => {
             this.filteredSends = this.sends.filter((s) => this.filter == null || this.filter(s));
+            this.applyTextSearch();
             this.searchPending = false;
         }, timeout);
     }
@@ -191,5 +195,11 @@ export class SendComponent implements OnInit {
     clearSelections() {
         this.selectedAll = false;
         this.selectedType = null;
+    }
+
+    private applyTextSearch() {
+        if (this.searchText != null) {
+           this.filteredSends = this.searchService.searchSends(this.filteredSends, this.searchText);
+        }
     }
 }
