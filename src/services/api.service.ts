@@ -1318,7 +1318,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     private getCredentials(): RequestCredentials {
-        if (this.device !== DeviceType.SafariExtension && (!this.isWebClient || this.usingBaseUrl)) {
+        if (!this.isWebClient || this.usingBaseUrl) {
             return 'include';
         }
         return undefined;
