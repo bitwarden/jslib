@@ -10,7 +10,7 @@ import { SendView } from '../../../models/view/sendView';
 import { EnvironmentService } from '../../../abstractions/environment.service';
 import { I18nService } from '../../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../../abstractions/platformUtils.service';
-import { SearchService } from '../../../abstractions';
+import { SearchService } from '../../../abstractions/search.service';
 import { SendService } from '../../../abstractions/send.service';
 
 import { BroadcasterService } from '../../../angular/services/broadcaster.service';
@@ -42,7 +42,7 @@ export class SendComponent implements OnInit {
 
     constructor(protected sendService: SendService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected environmentService: EnvironmentService,
-        protected broadcasterService: BroadcasterService, protected ngZone: NgZone, 
+        protected broadcasterService: BroadcasterService, protected ngZone: NgZone,
         protected searchService: SearchService) { }
 
     async ngOnInit() {
