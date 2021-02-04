@@ -133,6 +133,12 @@ export class AddEditComponent implements OnInit {
     }
 
     async submit(): Promise<boolean> {
+        if (this.disableSend) {
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                this.i18nService.t('sendDisabledWarning'));
+            return false;
+        }
+
         if (this.send.name == null || this.send.name === '') {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('nameRequired'));
