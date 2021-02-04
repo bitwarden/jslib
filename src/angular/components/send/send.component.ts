@@ -100,13 +100,13 @@ export class SendComponent implements OnInit {
             clearTimeout(this.searchTimeout);
         }
         if (timeout == null) {
-            this.filteredSends = this.sends.filter((s) => this.filter == null || this.filter(s));
+            this.filteredSends = this.sends.filter(s => this.filter == null || this.filter(s));
             this.applyTextSearch();
             return;
         }
         this.searchPending = true;
         this.searchTimeout = setTimeout(async () => {
-            this.filteredSends = this.sends.filter((s) => this.filter == null || this.filter(s));
+            this.filteredSends = this.sends.filter(s => this.filter == null || this.filter(s));
             this.applyTextSearch();
             this.searchPending = false;
         }, timeout);
@@ -189,7 +189,7 @@ export class SendComponent implements OnInit {
     selectType(type: SendType) {
         this.clearSelections();
         this.selectedType = type;
-        this.applyFilter((s) => s.type === type);
+        this.applyFilter(s => s.type === type);
     }
 
     clearSelections() {

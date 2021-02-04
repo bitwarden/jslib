@@ -89,7 +89,7 @@ export class UpdaterMain {
             this.reset();
         });
 
-        autoUpdater.on('update-downloaded', async (info) => {
+        autoUpdater.on('update-downloaded', async info => {
             if (this.onUpdateDownloaded != null) {
                 this.onUpdateDownloaded();
             }
@@ -114,7 +114,7 @@ export class UpdaterMain {
             }
         });
 
-        autoUpdater.on('error', (error) => {
+        autoUpdater.on('error', error => {
             if (this.doingUpdateCheckWithFeedback) {
                 dialog.showErrorBox(this.i18nService.t('updateError'),
                     error == null ? this.i18nService.t('unknown') : (error.stack || error).toString());

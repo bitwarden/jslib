@@ -13,7 +13,7 @@ export class SplashIdCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             if (value.length < 3) {
                 return;
             }

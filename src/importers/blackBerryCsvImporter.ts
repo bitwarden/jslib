@@ -12,7 +12,7 @@ export class BlackBerryCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             if (value.grouping === 'list') {
                 return;
             }

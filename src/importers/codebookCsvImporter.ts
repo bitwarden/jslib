@@ -12,7 +12,7 @@ export class CodebookCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             this.processFolder(result, this.getValueOrDefault(value.Category));
 
             const cipher = this.initLoginCipher();

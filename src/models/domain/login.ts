@@ -30,7 +30,7 @@ export class Login extends Domain {
 
         if (obj.uris) {
             this.uris = [];
-            obj.uris.forEach((u) => {
+            obj.uris.forEach(u => {
                 this.uris.push(new LoginUri(u, alreadyEncrypted));
             });
         }
@@ -65,7 +65,7 @@ export class Login extends Domain {
 
         if (this.uris != null && this.uris.length > 0) {
             l.uris = [];
-            this.uris.forEach((u) => {
+            this.uris.forEach(u => {
                 l.uris.push(u.toLoginUriData());
             });
         }

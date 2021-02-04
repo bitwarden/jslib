@@ -12,7 +12,7 @@ export class MeldiumCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             const cipher = this.initLoginCipher();
             cipher.name = this.getValueOrDefault(value.DisplayName, '--');
             cipher.notes = this.getValueOrDefault(value.Notes);

@@ -175,7 +175,7 @@ export class LoginCommand {
 
                     if (twoFactorMethod != null) {
                         try {
-                            selectedProvider = twoFactorProviders.filter((p) => p.type === twoFactorMethod)[0];
+                            selectedProvider = twoFactorProviders.filter(p => p.type === twoFactorMethod)[0];
                         } catch (e) {
                             return Response.error('Invalid two-step login method.');
                         }
@@ -185,7 +185,7 @@ export class LoginCommand {
                         if (twoFactorProviders.length === 1) {
                             selectedProvider = twoFactorProviders[0];
                         } else if (this.canInteract) {
-                            const twoFactorOptions = twoFactorProviders.map((p) => p.name);
+                            const twoFactorOptions = twoFactorProviders.map(p => p.name);
                             twoFactorOptions.push(new inquirer.Separator());
                             twoFactorOptions.push('Cancel');
                             const answer: inquirer.Answers =

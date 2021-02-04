@@ -16,7 +16,7 @@ export class RememBearCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             if (value.trash === 'true') {
                 return;
             }

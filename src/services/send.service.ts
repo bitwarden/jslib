@@ -115,8 +115,8 @@ export class SendService implements SendServiceAbstraction {
         const decSends: SendView[] = [];
         const promises: Promise<any>[] = [];
         const sends = await this.getAll();
-        sends.forEach((send) => {
-            promises.push(send.decrypt().then((f) => decSends.push(f)));
+        sends.forEach(send => {
+            promises.push(send.decrypt().then(f => decSends.push(f)));
         });
 
         await Promise.all(promises);
@@ -173,7 +173,7 @@ export class SendService implements SendServiceAbstraction {
             const s = send as SendData;
             sends[s.id] = s;
         } else {
-            (send as SendData[]).forEach((s) => {
+            (send as SendData[]).forEach(s => {
                 sends[s.id] = s;
             });
         }
@@ -207,7 +207,7 @@ export class SendService implements SendServiceAbstraction {
             }
             delete sends[id];
         } else {
-            (id as string[]).forEach((i) => {
+            (id as string[]).forEach(i => {
                 delete sends[i];
             });
         }
@@ -232,7 +232,7 @@ export class SendService implements SendServiceAbstraction {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsArrayBuffer(file);
-            reader.onload = async (evt) => {
+            reader.onload = async evt => {
                 try {
                     const [name, data] = await this.encryptFileData(file.name, evt.target.result as ArrayBuffer, key);
                     send.file.fileName = name;
@@ -241,7 +241,7 @@ export class SendService implements SendServiceAbstraction {
                     reject(e);
                 }
             };
-            reader.onerror = (evt) => {
+            reader.onerror = evt => {
                 reject('Error reading file.');
             };
         });

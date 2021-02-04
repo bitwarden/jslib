@@ -24,7 +24,7 @@ export class Response {
     static multipleResults(ids: string[]): Response {
         let msg = 'More than one result was found. Try getting a specific object by `id` instead. ' +
             'The following objects were found:';
-        ids.forEach((id) => {
+        ids.forEach(id => {
             msg += '\n' + id;
         });
         return Response.error(msg, ids);

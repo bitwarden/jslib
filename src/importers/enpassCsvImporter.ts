@@ -19,7 +19,7 @@ export class EnpassCsvImporter extends BaseImporter implements Importer {
         }
 
         let firstRow = true;
-        results.forEach((value) => {
+        results.forEach(value => {
             if (value.length < 2 || (firstRow && (value[0] === 'Title' || value[0] === 'title'))) {
                 firstRow = false;
                 return;
@@ -106,7 +106,7 @@ export class EnpassCsvImporter extends BaseImporter implements Importer {
         if (fields == null || name == null) {
             return false;
         }
-        return fields.filter((f) => !this.isNullOrWhitespace(f) &&
+        return fields.filter(f => !this.isNullOrWhitespace(f) &&
             f.toLowerCase() === name.toLowerCase()).length > 0;
     }
 }

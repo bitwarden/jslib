@@ -12,7 +12,7 @@ export class SaferPassCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             const cipher = this.initLoginCipher();
             cipher.name = this.getValueOrDefault(this.nameFromUrl(value.url), '--');
             cipher.notes = this.getValueOrDefault(value.notes);

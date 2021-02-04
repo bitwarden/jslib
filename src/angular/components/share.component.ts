@@ -43,10 +43,10 @@ export class ShareComponent implements OnInit {
 
     async load() {
         const allCollections = await this.collectionService.getAllDecrypted();
-        this.writeableCollections = allCollections.map((c) => c).filter((c) => !c.readOnly);
+        this.writeableCollections = allCollections.map(c => c).filter(c => !c.readOnly);
         const orgs = await this.userService.getAllOrganizations();
         this.organizations = orgs.sort(Utils.getSortFunction(this.i18nService, 'name'))
-            .filter((o) => o.enabled && o.status === OrganizationUserStatusType.Confirmed);
+            .filter(o => o.enabled && o.status === OrganizationUserStatusType.Confirmed);
 
         const cipherDomain = await this.cipherService.get(this.cipherId);
         this.cipher = await cipherDomain.decrypt();
@@ -57,18 +57,18 @@ export class ShareComponent implements OnInit {
     }
 
     filterCollections() {
-        this.writeableCollections.forEach((c) => (c as any).checked = false);
+        this.writeableCollections.forEach(c => (c as any).checked = false);
         if (this.organizationId == null || this.writeableCollections.length === 0) {
             this.collections = [];
         } else {
-            this.collections = this.writeableCollections.filter((c) => c.organizationId === this.organizationId);
+            this.collections = this.writeableCollections.filter(c => c.organizationId === this.organizationId);
         }
     }
 
     async submit(): Promise<boolean> {
         const selectedCollectionIds = this.collections
-            .filter((c) => !!(c as any).checked)
-            .map((c) => c.id);
+            .filter(c => !!(c as any).checked)
+            .map(c => c.id);
         if (selectedCollectionIds.length === 0) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('selectOneCollection'));

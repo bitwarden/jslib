@@ -16,7 +16,7 @@ export class EncryptrCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             const cipher = this.initLoginCipher();
             cipher.name = this.getValueOrDefault(value.Label, '--');
             cipher.notes = this.getValueOrDefault(value.Notes);

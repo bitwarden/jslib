@@ -12,7 +12,7 @@ export class PassKeepCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             this.processFolder(result, this.getValue('category', value));
             const cipher = this.initLoginCipher();
             cipher.notes = this.getValue('description', value);

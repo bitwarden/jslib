@@ -16,7 +16,7 @@ export class PadlockCsvImporter extends BaseImporter implements Importer {
         }
 
         let headers: string[] = null;
-        results.forEach((value) => {
+        results.forEach(value => {
             if (headers == null) {
                 headers = value.map((v: string) => v);
                 return;
@@ -29,7 +29,7 @@ export class PadlockCsvImporter extends BaseImporter implements Importer {
             if (!this.isNullOrWhitespace(value[1])) {
                 if (this.organization) {
                     const tags = (value[1] as string).split(',');
-                    tags.forEach((tag) => {
+                    tags.forEach(tag => {
                         tag = tag.trim();
                         let addCollection = true;
                         let collectionIndex = result.collections.length;

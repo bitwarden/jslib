@@ -306,7 +306,7 @@ export class ImportService implements ImportServiceAbstraction {
                 }
             }
             if (importResult.folderRelationships != null) {
-                importResult.folderRelationships.forEach((r) =>
+                importResult.folderRelationships.forEach(r =>
                     request.folderRelationships.push(new KvpRequest(r[0], r[1])));
             }
             return await this.apiService.postImportCiphers(request);
@@ -325,7 +325,7 @@ export class ImportService implements ImportServiceAbstraction {
                 }
             }
             if (importResult.collectionRelationships != null) {
-                importResult.collectionRelationships.forEach((r) =>
+                importResult.collectionRelationships.forEach(r =>
                     request.collectionRelationships.push(new KvpRequest(r[0], r[1])));
             }
             return await this.apiService.postImportOrganizationCiphers(organizationId, request);

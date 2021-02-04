@@ -27,7 +27,7 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
 
         const foldersMap = new Map<string, number>();
 
-        Array.from(doc.querySelectorAll('database > label')).forEach((labelEl) => {
+        Array.from(doc.querySelectorAll('database > label')).forEach(labelEl => {
             const name = labelEl.getAttribute('name');
             const id = labelEl.getAttribute('id');
             if (!this.isNullOrWhitespace(name) && !this.isNullOrWhitespace(id)) {
@@ -38,7 +38,7 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
             }
         });
 
-        Array.from(doc.querySelectorAll('database > card')).forEach((cardEl) => {
+        Array.from(doc.querySelectorAll('database > card')).forEach(cardEl => {
             if (cardEl.getAttribute('template') === 'true') {
                 return;
             }
@@ -60,7 +60,7 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
                 cipher.secureNote = new SecureNoteView();
                 cipher.secureNote.type = SecureNoteType.Generic;
             } else {
-                Array.from(this.querySelectorAllDirectChild(cardEl, 'field')).forEach((fieldEl) => {
+                Array.from(this.querySelectorAllDirectChild(cardEl, 'field')).forEach(fieldEl => {
                     const text = fieldEl.textContent;
                     if (this.isNullOrWhitespace(text)) {
                         return;
@@ -83,7 +83,7 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
                 });
             }
 
-            Array.from(this.querySelectorAllDirectChild(cardEl, 'notes')).forEach((notesEl) => {
+            Array.from(this.querySelectorAllDirectChild(cardEl, 'notes')).forEach(notesEl => {
                 cipher.notes += (notesEl.textContent + '\n');
             });
 

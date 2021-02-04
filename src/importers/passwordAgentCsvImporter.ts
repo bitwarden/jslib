@@ -13,7 +13,7 @@ export class PasswordAgentCsvImporter extends BaseImporter implements Importer {
         }
 
         let newVersion = true;
-        results.forEach((value) => {
+        results.forEach(value => {
             if (value.length !== 5 && value.length < 9) {
                 return;
             }

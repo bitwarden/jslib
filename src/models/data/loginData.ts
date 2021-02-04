@@ -20,7 +20,7 @@ export class LoginData {
         this.totp = data.totp;
 
         if (data.uris) {
-            this.uris = data.uris.map((u) => new LoginUriData(u));
+            this.uris = data.uris.map(u => new LoginUriData(u));
         }
     }
 }

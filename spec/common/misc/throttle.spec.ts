@@ -72,7 +72,7 @@ class Foo {
     bar(a: number) {
         this.calls++;
         this.inflight++;
-        return new Promise((res) => {
+        return new Promise(res => {
             setTimeout(() => {
                 expect(this.inflight).toBe(1);
                 this.inflight--;
@@ -85,7 +85,7 @@ class Foo {
     baz(a: number) {
         this.calls++;
         this.inflight++;
-        return new Promise((res) => {
+        return new Promise(res => {
             setTimeout(() => {
                 expect(this.inflight).toBeLessThanOrEqual(5);
                 this.inflight--;
@@ -94,12 +94,12 @@ class Foo {
         });
     }
 
-    @sequentialize((args) => 'qux' + args[0])
+    @sequentialize(args => 'qux' + args[0])
     @throttle(1, () => 'qux')
     qux(a: number) {
         this.calls++;
         this.inflight++;
-        return new Promise((res) => {
+        return new Promise(res => {
             setTimeout(() => {
                 expect(this.inflight).toBe(1);
                 this.inflight--;

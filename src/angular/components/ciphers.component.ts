@@ -82,7 +82,7 @@ export class CiphersComponent {
         if (this.searchTimeout != null) {
             clearTimeout(this.searchTimeout);
         }
-        const deletedFilter: (cipher: CipherView) => boolean = (c) => c.isDeleted === this.deleted;
+        const deletedFilter: (cipher: CipherView) => boolean = c => c.isDeleted === this.deleted;
         if (timeout == null) {
             this.ciphers = await this.searchService.searchCiphers(this.searchText, [this.filter, deletedFilter], null);
             await this.resetPaging();

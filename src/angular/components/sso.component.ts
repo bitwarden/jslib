@@ -45,7 +45,7 @@ export class SsoComponent {
         protected passwordGenerationService: PasswordGenerationService) { }
 
     async ngOnInit() {
-        const queryParamsSub = this.route.queryParams.subscribe(async (qParams) => {
+        const queryParamsSub = this.route.queryParams.subscribe(async qParams => {
             if (qParams.code != null && qParams.state != null) {
                 const codeVerifier = await this.storageService.get<string>(ConstantsService.ssoCodeVerifierKey);
                 const state = await this.storageService.get<string>(ConstantsService.ssoStateKey);

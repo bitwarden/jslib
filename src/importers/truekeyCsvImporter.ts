@@ -22,7 +22,7 @@ export class TrueKeyCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             const cipher = this.initLoginCipher();
             cipher.favorite = this.getValueOrDefault(value.favorite, '').toLowerCase() === 'true';
             cipher.name = this.getValueOrDefault(value.name, '--');

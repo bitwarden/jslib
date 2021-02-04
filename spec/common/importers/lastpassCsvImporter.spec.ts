@@ -160,7 +160,7 @@ Notes:",nomonth,,0`,
 ];
 
 describe('Lastpass CSV Importer', () => {
-    CipherData.forEach((data) => {
+    CipherData.forEach(data => {
         it(data.title, async () => {
             const importer = new Importer();
             const result = await importer.parse(data.csv);

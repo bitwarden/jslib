@@ -23,10 +23,10 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             if (this.organization && !this.isNullOrWhitespace(value.collections)) {
                 const collections = (value.collections as string).split(',');
-                collections.forEach((col) => {
+                collections.forEach(col => {
                     let addCollection = true;
                     let collectionIndex = result.collections.length;
 

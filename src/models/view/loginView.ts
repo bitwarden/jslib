@@ -32,7 +32,7 @@ export class LoginView implements View {
     }
 
     get canLaunch(): boolean {
-        return this.hasUris && this.uris.some((u) => u.canLaunch);
+        return this.hasUris && this.uris.some(u => u.canLaunch);
     }
 
     get hasTotp(): boolean {
@@ -41,7 +41,7 @@ export class LoginView implements View {
 
     get launchUri(): string {
         if (this.hasUris) {
-            const uri = this.uris.find((u) => u.canLaunch);
+            const uri = this.uris.find(u => u.canLaunch);
             if (uri != null) {
                 return uri.launchUri;
             }

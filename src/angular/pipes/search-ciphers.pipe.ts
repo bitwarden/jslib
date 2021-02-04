@@ -15,13 +15,13 @@ export class SearchCiphersPipe implements PipeTransform {
         }
 
         if (searchText == null || searchText.length < 2) {
-            return ciphers.filter((c) => {
+            return ciphers.filter(c => {
                 return deleted !== c.isDeleted;
             });
         }
 
         searchText = searchText.trim().toLowerCase();
-        return ciphers.filter((c) => {
+        return ciphers.filter(c => {
             if (deleted !== c.isDeleted) {
                 return false;
             }

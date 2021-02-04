@@ -13,7 +13,7 @@ export class ZohoVaultCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             if (this.isNullOrWhitespace(value['Password Name']) && this.isNullOrWhitespace(value['Secret Name'])) {
                 return;
             }
@@ -45,7 +45,7 @@ export class ZohoVaultCsvImporter extends BaseImporter implements Importer {
             return;
         }
         const dataLines = this.splitNewLine(data);
-        dataLines.forEach((line) => {
+        dataLines.forEach(line => {
             const delimPosition = line.indexOf(':');
             if (delimPosition < 0) {
                 return;

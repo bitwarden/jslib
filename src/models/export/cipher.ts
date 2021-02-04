@@ -39,7 +39,7 @@ export class Cipher {
         view.favorite = req.favorite;
 
         if (req.fields != null) {
-            view.fields = req.fields.map((f) => Field.toView(f));
+            view.fields = req.fields.map(f => Field.toView(f));
         }
 
         switch (req.type) {
@@ -71,7 +71,7 @@ export class Cipher {
         domain.favorite = req.favorite;
 
         if (req.fields != null) {
-            domain.fields = req.fields.map((f) => Field.toDomain(f));
+            domain.fields = req.fields.map(f => Field.toDomain(f));
         }
 
         switch (req.type) {
@@ -122,9 +122,9 @@ export class Cipher {
 
         if (o.fields != null) {
             if (o instanceof CipherView) {
-                this.fields = o.fields.map((f) => new Field(f));
+                this.fields = o.fields.map(f => new Field(f));
             } else {
-                this.fields = o.fields.map((f) => new Field(f));
+                this.fields = o.fields.map(f => new Field(f));
             }
         }
 

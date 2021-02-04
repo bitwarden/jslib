@@ -40,7 +40,7 @@ describe('ConsoleLogService', () => {
     });
 
     it('filters messages below the set threshold', () => {
-        logService = new ConsoleLogService(true, (level) => true);
+        logService = new ConsoleLogService(true, level => true);
         logService.debug('debug');
         logService.info('info');
         logService.warning('warning');
@@ -86,7 +86,7 @@ describe('ConsoleLogService', () => {
     });
 
     it('filters time output', async () => {
-        logService = new ConsoleLogService(true, (level) => true);
+        logService = new ConsoleLogService(true, level => true);
         logService.time();
         logService.timeEnd();
 

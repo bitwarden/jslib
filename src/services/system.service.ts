@@ -59,7 +59,7 @@ export class SystemService implements SystemServiceAbstraction {
         if (Utils.isNullOrWhitespace(clipboardValue)) {
             return;
         }
-        this.storageService.get<number>(ConstantsService.clearClipboardKey).then((clearSeconds) => {
+        this.storageService.get<number>(ConstantsService.clearClipboardKey).then(clearSeconds => {
             if (clearSeconds == null) {
                 return;
             }

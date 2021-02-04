@@ -16,7 +16,7 @@ export class ButtercupCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             this.processFolder(result, this.getValueOrDefault(value['!group_name']));
 
             const cipher = this.initLoginCipher();

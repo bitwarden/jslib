@@ -17,7 +17,7 @@ export class SearchPipe implements PipeTransform {
         }
 
         searchText = searchText.trim().toLowerCase();
-        return items.filter((i) => {
+        return items.filter(i => {
             if (prop1 != null && i[prop1] != null && i[prop1].toString().toLowerCase().indexOf(searchText) > -1) {
                 return true;
             }
