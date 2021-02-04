@@ -5,4 +5,5 @@ export enum PolicyType {
     SingleOrg = 3, // Allows users to only be apart of one organization
     RequireSso = 4, // Requires users to authenticate with SSO
     PersonalOwnership = 5, // Disables personal vault ownership for adding/cloning items
+    DisableSend = 6, // Disables the ability to create and edit Bitwarden Sends
 }
