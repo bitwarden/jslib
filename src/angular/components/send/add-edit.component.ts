@@ -8,6 +8,8 @@ import {
 } from '@angular/core';
 
 import { SendType } from '../../../enums/sendType';
+import { PolicyType } from '../../../enums/policyType';
+import { OrganizationUserStatusType } from '../../../enums/organizationUserStatusType';
 
 import { EnvironmentService } from '../../../abstractions/environment.service';
 import { I18nService } from '../../../abstractions/i18n.service';
@@ -15,6 +17,7 @@ import { MessagingService } from '../../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../../abstractions/platformUtils.service';
 import { SendService } from '../../../abstractions/send.service';
 import { UserService } from '../../../abstractions/user.service';
+import { PolicyService } from '../../../abstractions/policy.service';
 
 import { SendFileView } from '../../../models/view/sendFileView';
 import { SendTextView } from '../../../models/view/sendTextView';
@@ -30,6 +33,7 @@ export class AddEditComponent implements OnInit {
     @Output() onDeletedSend = new EventEmitter<SendView>();
     @Output() onCancelled = new EventEmitter<SendView>();
 
+    disableSend = false;
     editMode: boolean = false;
     send: SendView;
     link: string;
@@ -52,7 +56,7 @@ export class AddEditComponent implements OnInit {
     constructor(protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected environmentService: EnvironmentService, protected datePipe: DatePipe,
         protected sendService: SendService, protected userService: UserService,
-        protected messagingService: MessagingService) {
+        protected messagingService: MessagingService, protected policyService: PolicyService) {
         this.typeOptions = [
             { name: i18nService.t('sendTypeFile'), value: SendType.File },
             { name: i18nService.t('sendTypeText'), value: SendType.Text },
@@ -83,6 +87,16 @@ export class AddEditComponent implements OnInit {
         } else {
             this.title = this.i18nService.t('createSend');
         }
+
+        const policies = await this.policyService.getAll(PolicyType.DisableSend);
+        const organizations = await this.userService.getAllOrganizations();
+        this.disableSend = organizations.some(o => {
+            return o.enabled &&
+                o.status == OrganizationUserStatusType.Confirmed &&
+                o.usePolicies &&
+                !o.canManagePolicies &&
+                policies.some(p => p.organizationId == o.id && p.enabled);
+        });
 
         this.canAccessPremium = await this.userService.canAccessPremium();
         if (!this.canAccessPremium) {

@@ -4,6 +4,8 @@ import {
 } from '@angular/core';
 
 import { SendType } from '../../../enums/sendType';
+import { PolicyType } from '../../../enums/policyType';
+import { OrganizationUserStatusType } from '../../../enums/organizationUserStatusType';
 
 import { SendView } from '../../../models/view/sendView';
 
@@ -12,6 +14,8 @@ import { I18nService } from '../../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../../abstractions/platformUtils.service';
 import { SearchService } from '../../../abstractions/search.service';
 import { SendService } from '../../../abstractions/send.service';
+import { PolicyService } from '../../../abstractions/policy.service';
+import { UserService } from '../../../abstractions/user.service';
 
 import { BroadcasterService } from '../../../angular/services/broadcaster.service';
 
@@ -19,6 +23,7 @@ const BroadcasterSubscriptionId = 'SendComponent';
 
 export class SendComponent implements OnInit {
 
+    disableSend = false;
     sendType = SendType;
     loaded = false;
     loading = true;
@@ -43,9 +48,20 @@ export class SendComponent implements OnInit {
     constructor(protected sendService: SendService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected environmentService: EnvironmentService,
         protected broadcasterService: BroadcasterService, protected ngZone: NgZone,
-        protected searchService: SearchService) { }
+        protected searchService: SearchService, protected policyService: PolicyService,
+        protected userService: UserService) { }
 
     async ngOnInit() {
+        const policies = await this.policyService.getAll(PolicyType.DisableSend);
+        const organizations = await this.userService.getAllOrganizations();
+        this.disableSend = organizations.some(o => {
+            return o.enabled &&
+                o.status == OrganizationUserStatusType.Confirmed &&
+                o.usePolicies &&
+                !o.canManagePolicies &&
+                policies.some(p => p.organizationId == o.id && p.enabled);
+        });
+
         this.broadcasterService.subscribe(BroadcasterSubscriptionId, (message: any) => {
             this.ngZone.run(async () => {
                 switch (message.command) {
@@ -199,7 +215,7 @@ export class SendComponent implements OnInit {
 
     private applyTextSearch() {
         if (this.searchText != null) {
-           this.filteredSends = this.searchService.searchSends(this.filteredSends, this.searchText);
+            this.filteredSends = this.searchService.searchSends(this.filteredSends, this.searchText);
         }
     }
 }
