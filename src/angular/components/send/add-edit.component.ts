@@ -42,6 +42,7 @@ export class AddEditComponent implements OnInit {
     expirationDate: string;
     hasPassword: boolean;
     password: string;
+    showPassword = false;
     formPromise: Promise<any>;
     deletePromise: Promise<any>;
     sendType = SendType;
@@ -247,5 +248,10 @@ export class AddEditComponent implements OnInit {
 
     protected dateToString(d: Date) {
         return d == null ? null : this.datePipe.transform(d, 'yyyy-MM-ddTHH:mm');
+    }
+
+    protected togglePasswordVisible() {
+        this.showPassword = !this.showPassword;
+        document.getElementById('password').focus();
     }
 }
