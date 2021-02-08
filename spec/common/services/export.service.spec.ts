@@ -20,13 +20,13 @@ import { BuildTestObject, GetUniqueString } from '../../utils';
 const UserCipherViews = [
     generateCipherView(false),
     generateCipherView(false),
-    generateCipherView(true)
+    generateCipherView(true),
 ];
 
 const UserCipherDomains = [
     generateCipherDomain(false),
     generateCipherDomain(false),
-    generateCipherDomain(true)
+    generateCipherDomain(true),
 ];
 
 function generateCipherView(deleted: boolean) {
