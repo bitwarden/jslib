@@ -33,10 +33,10 @@ export class AddEditComponent implements OnInit {
     @Output() onDeletedSend = new EventEmitter<SendView>();
     @Output() onCancelled = new EventEmitter<SendView>();
 
+    copyLink = false;
     disableSend = false;
     editMode: boolean = false;
     send: SendView;
-    link: string;
     title: string;
     deletionDate: string;
     expirationDate: string;
@@ -53,6 +53,8 @@ export class AddEditComponent implements OnInit {
     expirationDateSelect: number = null;
     canAccessPremium = true;
     premiumRequiredAlertShown = false;
+
+    private webVaultUrl: string;
 
     constructor(protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected environmentService: EnvironmentService, protected datePipe: DatePipe,
@@ -74,6 +76,18 @@ export class AddEditComponent implements OnInit {
         this.expirationDateOptions = [
             { name: i18nService.t('never'), value: null },
         ].concat([...this.deletionDateOptions]);
+
+        this.webVaultUrl = this.environmentService.getWebVaultUrl();
+        if (this.webVaultUrl == null) {
+            this.webVaultUrl = 'https://vault.bitwarden.com';
+        }
+    }
+
+    get link(): string {
+        if (this.send.id != null && this.send.accessId != null) {
+            return this.webVaultUrl + '/#/send/' + this.send.accessId + '/' + this.send.urlB64Key;
+        }
+        return null;
     }
 
     async ngOnInit() {
@@ -123,14 +137,6 @@ export class AddEditComponent implements OnInit {
         // Parse dates
         this.deletionDate = this.dateToString(this.send.deletionDate);
         this.expirationDate = this.dateToString(this.send.expirationDate);
-
-        if (this.editMode) {
-            let webVaultUrl = this.environmentService.getWebVaultUrl();
-            if (webVaultUrl == null) {
-                webVaultUrl = 'https://vault.bitwarden.com';
-            }
-            this.link = webVaultUrl + '/#/send/' + this.send.accessId + '/' + this.send.urlB64Key;
-        }
     }
 
     async submit(): Promise<boolean> {
@@ -182,10 +188,18 @@ export class AddEditComponent implements OnInit {
         try {
             this.formPromise = this.sendService.saveWithServer(encSend);
             await this.formPromise;
-            this.send.id = encSend[0].id;
+            if (this.send.id == null) {
+                this.send.id = encSend[0].id;
+            }
+            if (this.send.accessId == null) {
+                this.send.accessId = encSend[0].accessId;
+            }
             this.platformUtilsService.showToast('success', null,
                 this.i18nService.t(this.editMode ? 'editedSend' : 'createdSend'));
             this.onSavedSend.emit(this.send);
+            if (this.copyLink) {
+                this.copyLinkToClipboard(this.link);
+            }
             return true;
         } catch { }
 
@@ -194,6 +208,12 @@ export class AddEditComponent implements OnInit {
 
     clearExpiration() {
         this.expirationDate = null;
+    }
+
+    copyLinkToClipboard(link: string) {
+        if (link != null) {
+            this.platformUtilsService.copyToClipboard(link);
+        }
     }
 
     async delete(): Promise<void> {
