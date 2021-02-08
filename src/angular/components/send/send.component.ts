@@ -169,12 +169,12 @@ export class SendComponent implements OnInit {
             this.actionPromise = this.sendService.deleteWithServer(s.id);
             await this.actionPromise;
 
-            if (this.onSuccessfulDelete() != null) {
+            if (this.onSuccessfulDelete != null) {
                 this.onSuccessfulDelete();
             } else {
                 // Default actions
                 this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedSend'));
-                await this.load();
+                await this.refresh();
             }
         } catch { }
         this.actionPromise = null;
