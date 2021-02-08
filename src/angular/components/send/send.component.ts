@@ -38,7 +38,7 @@ export class SendComponent implements OnInit {
     searchPlaceholder: string;
     filter: (cipher: SendView) => boolean;
     searchPending = false;
-    hasSearched = false;
+    hasSearched = false; // search() function called - returns true if text qualifies for search
 
     actionPromise: any;
     onSuccessfulRemovePassword: () => Promise<any>;
