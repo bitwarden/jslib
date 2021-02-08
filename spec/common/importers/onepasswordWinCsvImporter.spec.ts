@@ -18,15 +18,15 @@ function expectIdentity(cipher: CipherView) {
         username: 'userNam3',
         company: 'bitwarden',
         phone: '8005555555',
-        email: 'email@bitwarden.com'
+        email: 'email@bitwarden.com',
     }));
 
     expect(cipher.fields).toEqual(jasmine.arrayContaining([
         Object.assign(new FieldView(), {
             type: FieldType.Text,
             name: 'address',
-            value: 'address city state zip us'
-        })
+            value: 'address city state zip us',
+        }),
     ]));
 }
 

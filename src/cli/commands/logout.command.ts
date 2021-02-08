@@ -10,7 +10,7 @@ export class LogoutCommand {
     constructor(private authService: AuthService, private i18nService: I18nService,
         private logoutCallback: () => Promise<void>) { }
 
-    async run(cmd: program.Command) {
+    async run() {
         await this.logoutCallback();
         this.authService.logOut(() => { /* Do nothing */ });
         const res = new MessageResponse('You have logged out.', null);

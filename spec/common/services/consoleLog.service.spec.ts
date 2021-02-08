@@ -18,7 +18,7 @@ export function interceptConsole(interceptions: any): object {
         // tslint:disable-next-line
         error: function () {
             interceptions.error = arguments;
-        }
+        },
     };
     return interceptions;
 }

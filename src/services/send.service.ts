@@ -152,6 +152,7 @@ export class SendService implements SendServiceAbstraction {
                 response = await this.apiService.postSendFile(fd);
             }
             sendData[0].id = response.id;
+            sendData[0].accessId = response.accessId;
         } else {
             response = await this.apiService.putSend(sendData[0].id, request);
         }

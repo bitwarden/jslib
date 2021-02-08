@@ -179,7 +179,7 @@ export class SendComponent implements OnInit {
             } else {
                 // Default actions
                 this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedSend'));
-                await this.load();
+                await this.refresh();
             }
         } catch { }
         this.actionPromise = null;

@@ -17,7 +17,7 @@ function expectIdentity(cipher: CipherView) {
         username: 'userNam3',
         company: 'bitwarden',
         phone: '8005555555',
-        email: 'email@bitwarden.com'
+        email: 'email@bitwarden.com',
     }));
 
     expect(cipher.notes).toContain('address\ncity state zip\nUnited States');
