@@ -114,6 +114,7 @@ export class WindowMain {
             icon: process.platform === 'linux' ? path.join(__dirname, '/images/icon.png') : undefined,
             titleBarStyle: this.hideTitleBar && process.platform === 'darwin' ? 'hiddenInset' : undefined,
             show: false,
+            backgroundColor: '#fff',
             alwaysOnTop: this.enableAlwaysOnTop,
             webPreferences: {
                 nodeIntegration: true,
