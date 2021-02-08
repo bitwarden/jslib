@@ -85,7 +85,7 @@ export class SendComponent implements OnInit {
         this.loading = true;
         const sends = await this.sendService.getAllDecrypted();
         this.sends = sends;
-        if (this.onSuccessfulLoad() != null) {
+        if (this.onSuccessfulLoad != null) {
             await this.onSuccessfulLoad();
         }
         this.selectAll();
@@ -147,7 +147,7 @@ export class SendComponent implements OnInit {
         try {
             this.actionPromise = this.sendService.removePasswordWithServer(s.id);
             await this.actionPromise;
-            if (this.onSuccessfulRemovePassword() != null) {
+            if (this.onSuccessfulRemovePassword != null) {
                 this.onSuccessfulRemovePassword();
             } else {
                 // Default actions
@@ -174,7 +174,7 @@ export class SendComponent implements OnInit {
             this.actionPromise = this.sendService.deleteWithServer(s.id);
             await this.actionPromise;
 
-            if (this.onSuccessfulDelete() != null) {
+            if (this.onSuccessfulDelete != null) {
                 this.onSuccessfulDelete();
             } else {
                 // Default actions
