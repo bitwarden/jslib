@@ -38,10 +38,12 @@ export class SendComponent implements OnInit {
     searchPlaceholder: string;
     filter: (cipher: SendView) => boolean;
     searchPending = false;
+    hasSearched = false; // search() function called - returns true if text qualifies for search
 
     actionPromise: any;
     onSuccessfulRemovePassword: () => Promise<any>;
     onSuccessfulDelete: () => Promise<any>;
+    onSuccessfulLoad: () => Promise<any>;
 
     private searchTimeout: any;
 
@@ -73,8 +75,6 @@ export class SendComponent implements OnInit {
                 }
             });
         });
-
-        await this.load();
     }
 
     ngOnDestroy() {
@@ -85,6 +85,9 @@ export class SendComponent implements OnInit {
         this.loading = true;
         const sends = await this.sendService.getAllDecrypted();
         this.sends = sends;
+        if (this.onSuccessfulLoad != null) {
+            await this.onSuccessfulLoad();
+        }
         this.selectAll();
         this.loading = false;
         this.loaded = true;
@@ -116,12 +119,14 @@ export class SendComponent implements OnInit {
             clearTimeout(this.searchTimeout);
         }
         if (timeout == null) {
+            this.hasSearched = this.searchService.isSearchable(this.searchText);
             this.filteredSends = this.sends.filter(s => this.filter == null || this.filter(s));
             this.applyTextSearch();
             return;
         }
         this.searchPending = true;
         this.searchTimeout = setTimeout(async () => {
+            this.hasSearched = this.searchService.isSearchable(this.searchText);
             this.filteredSends = this.sends.filter(s => this.filter == null || this.filter(s));
             this.applyTextSearch();
             this.searchPending = false;
@@ -142,7 +147,7 @@ export class SendComponent implements OnInit {
         try {
             this.actionPromise = this.sendService.removePasswordWithServer(s.id);
             await this.actionPromise;
-            if (this.onSuccessfulRemovePassword() != null) {
+            if (this.onSuccessfulRemovePassword != null) {
                 this.onSuccessfulRemovePassword();
             } else {
                 // Default actions
