@@ -32,9 +32,9 @@ describe('CLI Console log service', () => {
         logService.error('error');
 
         expect(caughtMessage).toEqual({
-            log: jasmine.arrayWithExactContents(['info']),
-            warn: jasmine.arrayWithExactContents(['warning']),
-            error: jasmine.arrayWithExactContents(['error']),
+            log: jasmine.arrayWithExactContents(['info', []]),
+            warn: jasmine.arrayWithExactContents(['warning', []]),
+            error: jasmine.arrayWithExactContents(['error', []]),
         });
 
     });

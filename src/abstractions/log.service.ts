@@ -4,7 +4,7 @@ import { ConsoleLogService } from '../services/consoleLog.service';
 export abstract class LogService {
 
     private static get instance() {
-        if (this._instance) {
+        if (this._instance == null) {
             this._instance = new ConsoleLogService(false);
         }
         return this._instance;
