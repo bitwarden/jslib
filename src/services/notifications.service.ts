@@ -30,7 +30,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
     constructor(private userService: UserService, private syncService: SyncService,
         private appIdService: AppIdService, private apiService: ApiService,
         private vaultTimeoutService: VaultTimeoutService,
-        private logoutCallback: () => Promise<void>, private logService: LogService) {
+        private logoutCallback: () => Promise<void>) {
     }
 
     async init(environmentService: EnvironmentService): Promise<void> {
@@ -91,7 +91,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
                 await this.signalrConnection.stop();
             }
         } catch (e) {
-            this.logService.error(e.toString());
+            LogService.error(e.toString());
         }
     }
 
@@ -191,7 +191,9 @@ export class NotificationsService implements NotificationsServiceAbstraction {
             if (sync) {
                 await this.syncService.fullSync(false);
             }
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
 
         if (!this.connected) {
             this.reconnectTimer = setTimeout(() => this.reconnect(sync), this.random(120000, 300000));

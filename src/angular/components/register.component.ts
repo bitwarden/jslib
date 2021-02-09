@@ -8,6 +8,7 @@ import { ApiService } from '../../abstractions/api.service';
 import { AuthService } from '../../abstractions/auth.service';
 import { CryptoService } from '../../abstractions/crypto.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { LogService } from '../../abstractions/log.service';
 import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
@@ -141,7 +142,9 @@ export class RegisterComponent {
             this.platformUtilsService.eventTrack('Registered');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('newAccountCreated'));
             this.router.navigate([this.successRoute], { queryParams: { email: this.email } });
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
     }
 
     togglePassword(confirmField: boolean) {

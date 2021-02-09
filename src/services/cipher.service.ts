@@ -41,6 +41,7 @@ import { ApiService } from '../abstractions/api.service';
 import { CipherService as CipherServiceAbstraction } from '../abstractions/cipher.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { I18nService } from '../abstractions/i18n.service';
+import { LogService } from '../abstractions/log.service';
 import { SearchService } from '../abstractions/search.service';
 import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
@@ -414,7 +415,9 @@ export class CipherService implements CipherServiceAbstraction {
                                 if (regex.test(url)) {
                                     return true;
                                 }
-                            } catch { }
+                            } catch (e) {
+                                LogService.error(e);
+                            }
                             break;
                         case UriMatchType.Never:
                         default:

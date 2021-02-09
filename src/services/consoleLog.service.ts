@@ -9,26 +9,26 @@ export class ConsoleLogService implements LogServiceAbstraction {
 
     constructor(protected isDev: boolean, protected filter: (level: LogLevelType) => boolean = null) { }
 
-    debug(message: string) {
+    debug(message?: any, ...optionalParams: any[]) {
         if (!this.isDev) {
             return;
         }
         this.write(LogLevelType.Debug, message);
     }
 
-    info(message: string) {
+    info(message?: any, ...optionalParams: any[]) {
         this.write(LogLevelType.Info, message);
     }
 
-    warning(message: string) {
+    warning(message?: any, ...optionalParams: any[]) {
         this.write(LogLevelType.Warning, message);
     }
 
-    error(message: string) {
+    error(message?: any, ...optionalParams: any[]) {
         this.write(LogLevelType.Error, message);
     }
 
-    write(level: LogLevelType, message: string) {
+    write(level: LogLevelType, message?: any, ...optionalParams: any[]) {
         if (this.filter != null && this.filter(level)) {
             return;
         }
@@ -36,19 +36,19 @@ export class ConsoleLogService implements LogServiceAbstraction {
         switch (level) {
             case LogLevelType.Debug:
                 // tslint:disable-next-line
-                console.log(message);
+                console.log(message, optionalParams);
                 break;
             case LogLevelType.Info:
                 // tslint:disable-next-line
-                console.log(message);
+                console.log(message, optionalParams);
                 break;
             case LogLevelType.Warning:
                 // tslint:disable-next-line
-                console.warn(message);
+                console.warn(message, optionalParams);
                 break;
             case LogLevelType.Error:
                 // tslint:disable-next-line
-                console.error(message);
+                console.error(message, optionalParams);
                 break;
             default:
                 break;

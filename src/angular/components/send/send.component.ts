@@ -11,6 +11,7 @@ import { SendView } from '../../../models/view/sendView';
 
 import { EnvironmentService } from '../../../abstractions/environment.service';
 import { I18nService } from '../../../abstractions/i18n.service';
+import { LogService } from '../../../abstractions/log.service';
 import { PlatformUtilsService } from '../../../abstractions/platformUtils.service';
 import { PolicyService } from '../../../abstractions/policy.service';
 import { SearchService } from '../../../abstractions/search.service';
@@ -154,7 +155,9 @@ export class SendComponent implements OnInit {
                 this.platformUtilsService.showToast('success', null, this.i18nService.t('removedPassword'));
                 await this.load();
             }
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
         this.actionPromise = null;
     }
 
@@ -181,7 +184,9 @@ export class SendComponent implements OnInit {
                 this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedSend'));
                 await this.refresh();
             }
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
         this.actionPromise = null;
         return true;
     }

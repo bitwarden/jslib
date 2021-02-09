@@ -9,6 +9,7 @@ import {
 import { CipherService } from '../../abstractions/cipher.service';
 import { CollectionService } from '../../abstractions/collection.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { LogService } from '../../abstractions/log.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 import { CipherView } from '../../models/view/cipherView';
@@ -66,7 +67,9 @@ export class CollectionsComponent implements OnInit {
             this.onSavedCollections.emit();
             this.platformUtilsService.eventTrack('Edited Cipher Collections');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('editedItem'));
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
     }
 
     protected loadCipher() {

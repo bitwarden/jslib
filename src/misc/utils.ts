@@ -1,5 +1,7 @@
 import * as tldjs from 'tldjs';
 
+import { LogService } from '../abstractions/log.service';
+
 import { I18nService } from '../abstractions/i18n.service';
 
 // tslint:disable-next-line
@@ -176,7 +178,8 @@ export class Utils {
         const url = Utils.getUrl(uriString);
         try {
             return url != null && url.hostname !== '' ? url.hostname : null;
-        } catch {
+        } catch (e) {
+            LogService.error(e);
             return null;
         }
     }
@@ -185,7 +188,8 @@ export class Utils {
         const url = Utils.getUrl(uriString);
         try {
             return url != null && url.host !== '' ? url.host : null;
-        } catch {
+        } catch (e) {
+            LogService.error(e);
             return null;
         }
     }
@@ -219,7 +223,9 @@ export class Utils {
 
                 const urlDomain = tldjs != null && tldjs.getDomain != null ? tldjs.getDomain(url.hostname) : null;
                 return urlDomain != null ? urlDomain : url.hostname;
-            } catch (e) { }
+            } catch (e) {
+                LogService.error(e);
+            }
         }
 
         try {
@@ -228,7 +234,8 @@ export class Utils {
             if (domain != null) {
                 return domain;
             }
-        } catch {
+        } catch (e) {
+            LogService.error(e);
             return null;
         }
 
@@ -339,7 +346,9 @@ export class Utils {
                 anchor.href = uriString;
                 return anchor as any;
             }
-        } catch (e) { }
+        } catch (e) {
+            LogService.error(e);
+        }
 
         return null;
     }

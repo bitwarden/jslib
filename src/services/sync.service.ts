@@ -3,6 +3,7 @@ import { CipherService } from '../abstractions/cipher.service';
 import { CollectionService } from '../abstractions/collection.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { FolderService } from '../abstractions/folder.service';
+import { LogService } from '../abstractions/log.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { PolicyService } from '../abstractions/policy.service';
 import { SendService } from '../abstractions/send.service';
@@ -129,7 +130,9 @@ export class SyncService implements SyncServiceAbstraction {
                         return this.syncCompleted(true);
                     }
                 }
-            } catch { }
+            } catch (e) {
+                LogService.error(e);
+            }
         }
         return this.syncCompleted(false);
     }
@@ -198,6 +201,7 @@ export class SyncService implements SyncServiceAbstraction {
                     this.messagingService.send('syncedDeletedCipher', { cipherId: notification.id });
                     return this.syncCompleted(true);
                 }
+                LogService.error(e);
             }
         }
         return this.syncCompleted(false);
@@ -228,7 +232,9 @@ export class SyncService implements SyncServiceAbstraction {
                         return this.syncCompleted(true);
                     }
                 }
-            } catch { }
+            } catch (e) {
+                LogService.error(e);
+            }
         }
         return this.syncCompleted(false);
     }

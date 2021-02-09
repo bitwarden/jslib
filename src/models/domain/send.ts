@@ -1,4 +1,5 @@
 import { CryptoService } from '../../abstractions/crypto.service';
+import { LogService } from '../../abstractions/log.service';
 
 import { SendType } from '../../enums/sendType';
 
@@ -82,6 +83,7 @@ export class Send extends Domain {
             model.key = await cryptoService.decryptToBytes(this.key, null);
             model.cryptoKey = await cryptoService.makeSendKey(model.key);
         } catch (e) {
+            LogService.error(e);
             // TODO: error?
         }
 

@@ -2,6 +2,7 @@ import { DeviceType } from '../enums/deviceType';
 import { PolicyType } from '../enums/policyType';
 
 import { ApiService as ApiServiceAbstraction } from '../abstractions/api.service';
+import { LogService } from '../abstractions/log.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { TokenService } from '../abstractions/token.service';
 
@@ -221,6 +222,7 @@ export class ApiService implements ApiServiceAbstraction {
         try {
             await this.doRefreshToken();
         } catch (e) {
+            LogService.error(e);
             return Promise.reject(null);
         }
     }

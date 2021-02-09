@@ -7,6 +7,7 @@ import { EventRequest } from '../models/request/eventRequest';
 import { ApiService } from '../abstractions/api.service';
 import { CipherService } from '../abstractions/cipher.service';
 import { EventService as EventServiceAbstraction } from '../abstractions/event.service';
+import { LogService } from '../abstractions/log.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
@@ -83,7 +84,9 @@ export class EventService implements EventServiceAbstraction {
         try {
             await this.apiService.postEventsCollect(request);
             this.clearEvents();
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
     }
 
     async clearEvents(): Promise<any> {

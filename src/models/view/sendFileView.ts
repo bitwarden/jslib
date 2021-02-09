@@ -1,5 +1,7 @@
 import { View } from './view';
 
+import { LogService } from '../../abstractions/log.service';
+
 import { SendFile } from '../domain/sendFile';
 
 export class SendFileView implements View {
@@ -25,7 +27,9 @@ export class SendFileView implements View {
             if (this.size != null) {
                 return parseInt(this.size, null);
             }
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
         return 0;
     }
 }

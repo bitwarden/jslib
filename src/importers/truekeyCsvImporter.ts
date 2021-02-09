@@ -1,6 +1,8 @@
 import { BaseImporter } from './baseImporter';
 import { Importer } from './importer';
 
+import { LogService } from '../abstractions/log.service';
+
 import { ImportResult } from '../models/domain/importResult';
 
 import { CardView } from '../models/view/cardView';
@@ -47,7 +49,9 @@ export class TrueKeyCsvImporter extends BaseImporter implements Importer {
                         const expDate = new Date(value.expiryDate);
                         cipher.card.expYear = expDate.getFullYear().toString();
                         cipher.card.expMonth = (expDate.getMonth() + 1).toString();
-                    } catch { }
+                    } catch (e) {
+                        LogService.error(e);
+                    }
                 }
             } else if (value.kind !== 'login') {
                 cipher.type = CipherType.SecureNote;

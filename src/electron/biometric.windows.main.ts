@@ -6,7 +6,9 @@ import { WindowMain } from './window.main';
 
 import { BiometricMain } from '../abstractions/biometric.main';
 import { I18nService } from '../abstractions/i18n.service';
+import { LogService } from '../abstractions/log.service';
 import { StorageService } from '../abstractions/storage.service';
+
 import { ConstantsService } from '../services/constants.service';
 
 export default class BiometricWindowsMain implements BiometricMain {
@@ -21,7 +23,8 @@ export default class BiometricWindowsMain implements BiometricMain {
         let supportsBiometric = false;
         try {
             supportsBiometric = await this.supportsBiometric();
-        } catch {
+        } catch (e) {
+            LogService.error(e);
             // store error state so we can let the user know on the settings page
             this.isError = true;
         }
@@ -56,7 +59,8 @@ export default class BiometricWindowsMain implements BiometricMain {
                 this.windowsSecurityCredentialsUiModule = require('@nodert-win10-rs4/windows.security.credentials.ui');
             }
             return this.windowsSecurityCredentialsUiModule;
-        } catch {
+        } catch (e) {
+            LogService.error(e);
             this.isError = true;
         }
         return null;
@@ -73,7 +77,8 @@ export default class BiometricWindowsMain implements BiometricMain {
                         }
                         return resolve(result);
                     });
-                } catch {
+                } catch (e) {
+                    LogService.error(e);
                     this.isError = true;
                     return resolve(null);
                 }
@@ -113,7 +118,10 @@ export default class BiometricWindowsMain implements BiometricMain {
                     module.UserConsentVerifierAvailability.deviceBusy,
                 ];
             }
-        } catch { /*Ignore error*/ }
+        } catch (e) {
+            LogService.error(e);
+            /*Ignore error*/
+        }
         return [];
     }
 
@@ -125,7 +133,9 @@ export default class BiometricWindowsMain implements BiometricMain {
             const version = require('os').release();
             return Number.parseInt(version.split('.')[0], 10);
         }
-        catch { }
+        catch (e) {
+            LogService.error(e);
+        }
         return -1;
     }
 }

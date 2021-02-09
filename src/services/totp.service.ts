@@ -1,6 +1,7 @@
 import { ConstantsService } from './constants.service';
 
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
+import { LogService } from '../abstractions/log.service';
 import { StorageService } from '../abstractions/storage.service';
 import { TotpService as TotpServiceAbstraction } from '../abstractions/totp.service';
 
@@ -32,7 +33,9 @@ export class TotpService implements TotpServiceAbstraction {
                     } else if (digitParams > 0) {
                         digits = digitParams;
                     }
-                } catch { }
+                } catch (e) {
+                    LogService.error(e);
+                }
             }
             if (params.has('period') && params.get('period') != null) {
                 try {
@@ -40,7 +43,9 @@ export class TotpService implements TotpServiceAbstraction {
                     if (periodParam > 0) {
                         period = periodParam;
                     }
-                } catch { }
+                } catch (e) {
+                    LogService.error(e);
+                }
             }
             if (params.has('secret') && params.get('secret') != null) {
                 keyB32 = params.get('secret');
@@ -99,7 +104,9 @@ export class TotpService implements TotpServiceAbstraction {
             if (params.has('period') && params.get('period') != null) {
                 try {
                     period = parseInt(params.get('period').trim(), null);
-                } catch { }
+                } catch (e) {
+                    LogService.error(e);
+                }
             }
         }
         return period;

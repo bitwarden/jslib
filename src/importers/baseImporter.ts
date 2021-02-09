@@ -19,13 +19,8 @@ import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
 import { SecureNoteType } from '../enums/secureNoteType';
 
-import { ConsoleLogService } from '../services/consoleLog.service';
-
 export abstract class BaseImporter {
     organizationId: string = null;
-
-    protected logService: LogService = new ConsoleLogService(false);
-
     protected newLineRegex = /(?:\r\n|\r|\n)/;
 
     protected passwordFieldNames = [
@@ -94,7 +89,7 @@ export abstract class BaseImporter {
             result.errors.forEach(e => {
                 if (e.row != null) {
                     // tslint:disable-next-line
-                    this.logService.warning('Error parsing row ' + e.row + ': ' + e.message);
+                    LogService.warning('Error parsing row ' + e.row + ': ' + e.message);
                 }
             });
         }

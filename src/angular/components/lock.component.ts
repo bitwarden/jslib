@@ -5,6 +5,7 @@ import { ApiService } from '../../abstractions/api.service';
 import { CryptoService } from '../../abstractions/crypto.service';
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { LogService } from '../../abstractions/log.service';
 import { MessagingService } from '../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
@@ -93,7 +94,8 @@ export class LockComponent implements OnInit {
                     failed = false;
                     await this.setKeyAndContinue(key);
                 }
-            } catch {
+            } catch (e) {
+                LogService.error(e);
                 failed = true;
             }
 
@@ -124,7 +126,9 @@ export class LockComponent implements OnInit {
                         await this.formPromise;
                         passwordValid = true;
                         await this.cryptoService.setKeyHash(keyHash);
-                    } catch { }
+                    } catch (e) {
+                        LogService.error(e);
+                    }
                 }
             }
 

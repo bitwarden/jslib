@@ -9,6 +9,7 @@ import { CipherType } from '../../enums/cipherType';
 import { CipherView } from '../../models/view/cipherView';
 
 import { EnvironmentService } from '../../abstractions/environment.service';
+import { LogService } from '../../abstractions/log.service';
 import { StateService } from '../../abstractions/state.service';
 
 import { ConstantsService } from '../../services/constants.service';
@@ -99,7 +100,9 @@ export class IconComponent implements OnChanges {
                 try {
                     this.image = this.iconsUrl + '/' + Utils.getHostname(hostnameUri) + '/icon.png';
                     this.fallbackImage = 'images/fa-globe.png';
-                } catch (e) { }
+                } catch (e) {
+                    LogService.error(e);
+                }
             }
         } else {
             this.image = null;

@@ -7,6 +7,7 @@ import Domain from './domainBase';
 import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
 import { CryptoService } from '../../abstractions/crypto.service';
+import { LogService } from '../../abstractions/log.service';
 
 import { Utils } from '../../misc/utils';
 
@@ -53,6 +54,7 @@ export class Attachment extends Domain {
                 const decValue = await cryptoService.decryptToBytes(this.key, orgKey ?? encKey);
                 view.key = new SymmetricCryptoKey(decValue);
             } catch (e) {
+                LogService.error(e);
                 // TODO: error?
             }
         }

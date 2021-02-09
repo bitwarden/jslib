@@ -11,6 +11,7 @@ import { OrganizationUserStatusType } from '../../enums/organizationUserStatusTy
 import { CipherService } from '../../abstractions/cipher.service';
 import { CollectionService } from '../../abstractions/collection.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { LogService } from '../../abstractions/log.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { UserService } from '../../abstractions/user.service';
 
@@ -87,7 +88,9 @@ export class ShareComponent implements OnInit {
                 });
             await this.formPromise;
             return true;
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
         return false;
     }
 

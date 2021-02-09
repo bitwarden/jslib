@@ -24,6 +24,7 @@ import { CollectionService } from '../../abstractions/collection.service';
 import { EventService } from '../../abstractions/event.service';
 import { FolderService } from '../../abstractions/folder.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { LogService } from '../../abstractions/log.service';
 import { MessagingService } from '../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { PolicyService } from '../../abstractions/policy.service';
@@ -292,7 +293,9 @@ export class AddEditComponent implements OnInit {
             this.onSavedCipher.emit(this.cipher);
             this.messagingService.send(this.editMode && !this.cloneMode ? 'editedCipher' : 'addedCipher');
             return true;
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
 
         return false;
     }
@@ -374,7 +377,9 @@ export class AddEditComponent implements OnInit {
                 this.i18nService.t(this.cipher.isDeleted ? 'permanentlyDeletedItem' : 'deletedItem'));
             this.onDeletedCipher.emit(this.cipher);
             this.messagingService.send(this.cipher.isDeleted ? 'permanentlyDeletedCipher' : 'deletedCipher');
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
 
         return true;
     }
@@ -398,7 +403,9 @@ export class AddEditComponent implements OnInit {
             this.platformUtilsService.showToast('success', null, this.i18nService.t('restoredItem'));
             this.onRestoredCipher.emit(this.cipher);
             this.messagingService.send('restoredCipher');
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
 
         return true;
     }

@@ -6,6 +6,8 @@ import {
     setPassword,
 } from 'keytar';
 
+import { LogService } from '../abstractions/log.service';
+
 export class KeytarStorageListener {
     constructor(private serviceName: string) { }
 
@@ -24,7 +26,8 @@ export class KeytarStorageListener {
                 }
 
                 event.returnValue = val;
-            } catch {
+            } catch (e) {
+                LogService.error(e);
                 event.returnValue = null;
             }
         });

@@ -12,6 +12,7 @@ import { AuthService } from '../../abstractions/auth.service';
 import { CryptoFunctionService } from '../../abstractions/cryptoFunction.service';
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { LogService } from '../../abstractions/log.service';
 import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
@@ -92,7 +93,8 @@ export class LoginCommand {
             const codeChallenge = Utils.fromBufferToUrlB64(codeVerifierHash);
             try {
                 ssoCode = await this.getSsoCode(codeChallenge, state);
-            } catch {
+            } catch (e) {
+                LogService.error(e);
                 return Response.badRequest('Something went wrong. Try again.');
             }
         } else {
@@ -293,7 +295,9 @@ export class LoginCommand {
                     });
                     foundPort = true;
                     break;
-                } catch { }
+                } catch (e) {
+                    LogService.error(e);
+                }
             }
             if (!foundPort) {
                 reject();

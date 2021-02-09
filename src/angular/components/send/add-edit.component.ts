@@ -13,6 +13,7 @@ import { SendType } from '../../../enums/sendType';
 
 import { EnvironmentService } from '../../../abstractions/environment.service';
 import { I18nService } from '../../../abstractions/i18n.service';
+import { LogService } from '../../../abstractions/log.service';
 import { MessagingService } from '../../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../../abstractions/platformUtils.service';
 import { PolicyService } from '../../../abstractions/policy.service';
@@ -201,7 +202,9 @@ export class AddEditComponent implements OnInit {
                 this.copyLinkToClipboard(this.link);
             }
             return true;
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
 
         return false;
     }
@@ -234,7 +237,9 @@ export class AddEditComponent implements OnInit {
             this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedSend'));
             await this.load();
             this.onDeletedSend.emit(this.send);
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
     }
 
     typeChanged() {
@@ -254,12 +259,14 @@ export class AddEditComponent implements OnInit {
         // Parse dates
         try {
             sendData[0].deletionDate = this.deletionDate == null ? null : new Date(this.deletionDate);
-        } catch {
+        } catch (e) {
+            LogService.error(e);
             sendData[0].deletionDate = null;
         }
         try {
             sendData[0].expirationDate = this.expirationDate == null ? null : new Date(this.expirationDate);
-        } catch {
+        } catch (e) {
+            LogService.error(e);
             sendData[0].expirationDate = null;
         }
 
