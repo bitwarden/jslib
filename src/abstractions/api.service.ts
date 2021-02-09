@@ -292,6 +292,7 @@ export abstract class ApiService {
     getEmergencyAccessTrusted: () => Promise<ListResponse<EmergencyAccessGranteeDetailsResponse>>;
     getEmergencyAccessGranted: () => Promise<ListResponse<EmergencyAccessGrantorDetailsResponse>>;
     getEmergencyAccess: (id: string) => Promise<EmergencyAccessGranteeDetailsResponse>;
+    getEmergencyGrantorPolicies: (id: string) => Promise<ListResponse<PolicyResponse>>;
     putEmergencyAccess: (id: string, request: EmergencyAccessUpdateRequest) => Promise<any>;
     deleteEmergencyAccess: (id: string) => Promise<any>;
     postEmergencyAccessInvite: (request: EmergencyAccessInviteRequest) => Promise<any>;

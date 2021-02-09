@@ -933,6 +933,11 @@ export class ApiService implements ApiServiceAbstraction {
         return new EmergencyAccessGranteeDetailsResponse(r);
     }
 
+    async getEmergencyGrantorPolicies(id: string): Promise<ListResponse<PolicyResponse>> {
+        const r = await this.send('GET', '/emergency-access/' + id + '/policies', null, true, true);
+        return new ListResponse(r, PolicyResponse);
+    }
+
     putEmergencyAccess(id: string, request: EmergencyAccessUpdateRequest): Promise<any> {
         return this.send('PUT', '/emergency-access/' + id, request, true, false);
     }
