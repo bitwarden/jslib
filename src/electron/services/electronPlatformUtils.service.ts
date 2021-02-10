@@ -120,7 +120,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
             showsTagField: false,
         }).then(ret => {
             if (ret.filePath != null) {
-                fs.writeFile(ret.filePath, Buffer.from(blobData), err => {
+                fs.writeFile(ret.filePath, Buffer.from(blobData), { mode: 0o600 }, err => {
                     // error check?
                 });
             }
