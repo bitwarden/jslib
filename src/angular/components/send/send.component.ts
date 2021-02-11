@@ -17,10 +17,6 @@ import { SearchService } from '../../../abstractions/search.service';
 import { SendService } from '../../../abstractions/send.service';
 import { UserService } from '../../../abstractions/user.service';
 
-import { BroadcasterService } from '../../../angular/services/broadcaster.service';
-
-const BroadcasterSubscriptionId = 'SendComponent';
-
 export class SendComponent implements OnInit {
 
     disableSend = false;
@@ -49,9 +45,8 @@ export class SendComponent implements OnInit {
 
     constructor(protected sendService: SendService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected environmentService: EnvironmentService,
-        protected broadcasterService: BroadcasterService, protected ngZone: NgZone,
-        protected searchService: SearchService, protected policyService: PolicyService,
-        protected userService: UserService) { }
+        protected ngZone: NgZone, protected searchService: SearchService,
+        protected policyService: PolicyService, protected userService: UserService) { }
 
     async ngOnInit() {
         const policies = await this.policyService.getAll(PolicyType.DisableSend);
@@ -63,22 +58,6 @@ export class SendComponent implements OnInit {
                 !o.canManagePolicies &&
                 policies.some(p => p.organizationId === o.id && p.enabled);
         });
-
-        this.broadcasterService.subscribe(BroadcasterSubscriptionId, (message: any) => {
-            this.ngZone.run(async () => {
-                switch (message.command) {
-                    case 'syncCompleted':
-                        if (message.successfully) {
-                            await this.load();
-                        }
-                        break;
-                }
-            });
-        });
-    }
-
-    ngOnDestroy() {
-        this.broadcasterService.unsubscribe(BroadcasterSubscriptionId);
     }
 
     async load(filter: (send: SendView) => boolean = null) {
@@ -87,8 +66,10 @@ export class SendComponent implements OnInit {
         this.sends = sends;
         if (this.onSuccessfulLoad != null) {
             await this.onSuccessfulLoad();
+        } else {
+            // Default action
+            this.selectAll();
         }
-        this.selectAll();
         this.loading = false;
         this.loaded = true;
     }
