@@ -28,7 +28,7 @@ export class LowdbStorageService implements StorageService {
                 this.logService.info(`Created dir "${this.dir}".`);
             }
             this.dataFilePath = path.join(this.dir, 'data.json');
-            this.lockDbFile(() => {
+            await this.lockDbFile(() => {
                 if (!fs.existsSync(this.dataFilePath)) {
                     this.logService.warning(`Could not find data file, "${this.dataFilePath}"; creating it instead.`);
                     fs.writeFileSync(this.dataFilePath, '', { mode: 0o600 });
