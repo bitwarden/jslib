@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as lowdb from 'lowdb';
 import * as FileSync from 'lowdb/adapters/FileSync';
 import * as path from 'path';
-import * as lock from 'proper-lockfile';
 
 import { LogService } from '../abstractions/log.service';
 import { StorageService } from '../abstractions/storage.service';
@@ -11,23 +10,24 @@ import { NodeUtils } from '../misc/nodeUtils';
 import { Utils } from '../misc/utils';
 
 export class LowdbStorageService implements StorageService {
+    protected dataFilePath: string;
     private db: lowdb.LowdbSync<any>;
     private defaults: any;
-    private dataFilePath: string;
 
-    constructor(private logService: LogService, defaults?: any, dir?: string, private allowCache = false,
-        private requireLock = false) {
+    constructor(protected logService: LogService, defaults?: any, private dir?: string, private allowCache = false) {
         this.defaults = defaults;
+    }
 
+    async init() {
         this.logService.info('Initializing lowdb storage service.');
         let adapter: lowdb.AdapterSync<any>;
-        if (Utils.isNode && dir != null) {
-            if (!fs.existsSync(dir)) {
-                this.logService.warning(`Could not find dir, "${dir}"; creating it instead.`);
-                NodeUtils.mkdirpSync(dir, '700');
-                this.logService.info(`Created dir "${dir}".`);
+        if (Utils.isNode && this.dir != null) {
+            if (!fs.existsSync(this.dir)) {
+                this.logService.warning(`Could not find dir, "${this.dir}"; creating it instead.`);
+                NodeUtils.mkdirpSync(this.dir, '700');
+                this.logService.info(`Created dir "${this.dir}".`);
             }
-            this.dataFilePath = path.join(dir, 'data.json');
+            this.dataFilePath = path.join(this.dir, 'data.json');
             this.lockDbFile(() => {
                 if (!fs.existsSync(this.dataFilePath)) {
                     this.logService.warning(`Could not find data file, "${this.dataFilePath}"; creating it instead.`);
@@ -54,9 +54,7 @@ export class LowdbStorageService implements StorageService {
                 throw e;
             }
         }
-    }
 
-    init() {
         if (this.defaults != null) {
             this.lockDbFile(() => {
                 this.logService.info('Writing defaults.');
@@ -73,9 +71,9 @@ export class LowdbStorageService implements StorageService {
             const val = this.db.get(key).value();
             this.logService.debug(`Successfully read ${key} from db`);
             if (val == null) {
-                return Promise.resolve(null);
+                return null;
             }
-            return Promise.resolve(val as T);
+            return val as T;
         });
     }
 
@@ -84,7 +82,7 @@ export class LowdbStorageService implements StorageService {
             this.readForNoCache();
             this.db.set(key, obj).write();
             this.logService.debug(`Successfully wrote ${key} to db`);
-            return Promise.resolve();
+            return;
         });
     }
 
@@ -93,29 +91,18 @@ export class LowdbStorageService implements StorageService {
             this.readForNoCache();
             this.db.unset(key).write();
             this.logService.debug(`Successfully removed ${key} from db`);
-            return Promise.resolve();
+            return;
         });
+    }
+
+    protected async lockDbFile<T>(action: () => T): Promise<T> {
+        // Lock methods implemented in clients
+        return Promise.resolve(action());
     }
 
     private readForNoCache() {
         if (!this.allowCache) {
             this.db.read();
-        }
-    }
-
-    private lockDbFile<T>(action: () => T): T {
-        if (this.requireLock && !Utils.isNullOrWhitespace(this.dataFilePath)) {
-            this.logService.debug('acquiring db file lock');
-            let release: () => void;
-            try {
-                release = lock.lockSync(this.dataFilePath, { retries: 3 });
-                return action();
-            } finally {
-                release();
-                this.logService.debug('db file lock released');
-            }
-        } else {
-            return action();
         }
     }
 }
