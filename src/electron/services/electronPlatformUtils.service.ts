@@ -3,7 +3,6 @@ import {
     ipcRenderer,
     remote,
     shell,
-    // nativeTheme,
 } from 'electron';
 import * as fs from 'fs';
 
@@ -222,14 +221,13 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     }
 
     getDefaultSystemTheme() {
-        return 'light' as 'light' | 'dark';
-        // return nativeTheme.shouldUseDarkColors ? 'dark' : 'light';
+        return remote.nativeTheme.shouldUseDarkColors ? 'dark' : 'light';
     }
 
     onDefaultSystemThemeChange(callback: ((theme: 'light' | 'dark') => unknown)) {
-        // nativeTheme.on('updated', () => {
-        //     callback(this.getDefaultSystemTheme());
-        // });
+        remote.nativeTheme.on('updated', () => {
+            callback(this.getDefaultSystemTheme());
+        });
     }
 
     supportsSecureStorage(): boolean {
