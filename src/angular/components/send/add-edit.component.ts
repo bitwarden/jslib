@@ -35,9 +35,7 @@ export class AddEditComponent implements OnInit {
 
     copyLink = false;
     disableSend = false;
-    editMode: boolean = false;
     send: SendView;
-    title: string;
     deletionDate: string;
     expirationDate: string;
     hasPassword: boolean;
@@ -94,15 +92,19 @@ export class AddEditComponent implements OnInit {
         await this.load();
     }
 
-    async load() {
-        this.editMode = this.sendId != null;
-        if (this.editMode) {
-            this.editMode = true;
-            this.title = this.i18nService.t('editSend');
-        } else {
-            this.title = this.i18nService.t('createSend');
-        }
+    get editMode(): boolean {
+        return this.sendId != null;
+    }
 
+    get title(): string {
+        return this.i18nService.t(
+            this.editMode ?
+                'editSend' :
+                'createSend'
+        );
+    }
+
+    async load() {
         const policies = await this.policyService.getAll(PolicyType.DisableSend);
         const organizations = await this.userService.getAllOrganizations();
         this.disableSend = organizations.some(o => {
