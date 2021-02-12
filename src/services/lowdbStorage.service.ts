@@ -108,7 +108,7 @@ export class LowdbStorageService implements StorageService {
             this.logService.debug('acquiring db file lock');
             let release: () => void;
             try {
-                release = lock.lockSync(this.dataFilePath);
+                release = lock.lockSync(this.dataFilePath, { retries: 3 });
                 return action();
             } finally {
                 release();
