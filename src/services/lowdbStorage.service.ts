@@ -28,17 +28,17 @@ export class LowdbStorageService implements StorageService {
                 this.logService.info(`Created dir "${this.dir}".`);
             }
             this.dataFilePath = path.join(this.dir, 'data.json');
+            if (!fs.existsSync(this.dataFilePath)) {
+                this.logService.warning(`Could not find data file, "${this.dataFilePath}"; creating it instead.`);
+                fs.writeFileSync(this.dataFilePath, '', { mode: 0o600 });
+                fs.chmodSync(this.dataFilePath, 0o600);
+                this.logService.info(`Created data file "${this.dataFilePath}" with chmod 600.`);
+            } else {
+                this.logService.info(`db file "${this.dataFilePath} already exists"; using existing db`);
+            }
             await this.lockDbFile(() => {
-                if (!fs.existsSync(this.dataFilePath)) {
-                    this.logService.warning(`Could not find data file, "${this.dataFilePath}"; creating it instead.`);
-                    fs.writeFileSync(this.dataFilePath, '', { mode: 0o600 });
-                    fs.chmodSync(this.dataFilePath, 0o600);
-                    this.logService.info(`Created data file "${this.dataFilePath}" with chmod 600.`);
-                } else {
-                    this.logService.info(`db file "${this.dataFilePath} already exists"; using existing db`);
-                }
+                adapter = new FileSync(this.dataFilePath);
             });
-            adapter = new FileSync(this.dataFilePath);
         }
         try {
             this.logService.info('Attempting to create lowdb storage adapter.');
