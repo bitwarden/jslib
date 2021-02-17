@@ -4,6 +4,7 @@ import { PasswordHintRequest } from '../../models/request/passwordHintRequest';
 
 import { ApiService } from '../../abstractions/api.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { LogService } from '../../abstractions/log.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 export class HintComponent {
@@ -38,6 +39,8 @@ export class HintComponent {
             } else if (this.router != null) {
                 this.router.navigate([this.successRoute]);
             }
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
     }
 }

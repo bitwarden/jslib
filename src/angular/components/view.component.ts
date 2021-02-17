@@ -18,6 +18,7 @@ import { CipherService } from '../../abstractions/cipher.service';
 import { CryptoService } from '../../abstractions/crypto.service';
 import { EventService } from '../../abstractions/event.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { LogService } from '../../abstractions/log.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { TokenService } from '../../abstractions/token.service';
 import { TotpService } from '../../abstractions/totp.service';
@@ -133,7 +134,9 @@ export class ViewComponent implements OnDestroy, OnInit {
             this.platformUtilsService.showToast('success', null,
                 this.i18nService.t(this.cipher.isDeleted ? 'permanentlyDeletedItem' : 'deletedItem'));
             this.onDeletedCipher.emit(this.cipher);
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
 
         return true;
     }
@@ -155,7 +158,9 @@ export class ViewComponent implements OnDestroy, OnInit {
             this.platformUtilsService.eventTrack('Restored Cipher');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('restoredItem'));
             this.onRestoredCipher.emit(this.cipher);
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
 
         return true;
     }

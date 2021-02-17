@@ -1,6 +1,8 @@
 import { BaseImporter } from './baseImporter';
 import { Importer } from './importer';
 
+import { LogService } from '../abstractions/log.service';
+
 import { CipherType } from '../enums/cipherType';
 
 import { ImportResult } from '../models/domain/importResult';
@@ -43,7 +45,9 @@ export class RememBearCsvImporter extends BaseImporter implements Importer {
                             cipher.card.expMonth = expMonthNumber.toString();
                         }
                     }
-                } catch { }
+                } catch (e) {
+                    LogService.error(e);
+                }
                 try {
                     const expYear = this.getValueOrDefault(value.expiryYear);
                     if (expYear != null) {
@@ -52,7 +56,9 @@ export class RememBearCsvImporter extends BaseImporter implements Importer {
                             cipher.card.expYear = expYearNumber.toString();
                         }
                     }
-                } catch { }
+                } catch (e) {
+                    LogService.error(e);
+                }
 
                 const pin = this.getValueOrDefault(value.pin);
                 if (pin != null) {

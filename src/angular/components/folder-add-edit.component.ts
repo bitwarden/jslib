@@ -8,6 +8,7 @@ import {
 
 import { FolderService } from '../../abstractions/folder.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { LogService } from '../../abstractions/log.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 import { FolderView } from '../../models/view/folderView';
@@ -47,7 +48,9 @@ export class FolderAddEditComponent implements OnInit {
                 this.i18nService.t(this.editMode ? 'editedFolder' : 'addedFolder'));
             this.onSavedFolder.emit(this.folder);
             return true;
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
 
         return false;
     }
@@ -66,7 +69,9 @@ export class FolderAddEditComponent implements OnInit {
             this.platformUtilsService.eventTrack('Deleted Folder');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedFolder'));
             this.onDeletedFolder.emit(this.folder);
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
 
         return true;
     }

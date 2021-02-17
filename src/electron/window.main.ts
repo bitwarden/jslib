@@ -6,6 +6,7 @@ import * as url from 'url';
 
 import { isDev, isMacAppStore, isSnapStore } from './utils';
 
+import { LogService } from '../abstractions/log.service';
 import { StorageService } from '../abstractions/storage.service';
 
 const WindowEventHandlingDelay = 100;
@@ -219,7 +220,9 @@ export class WindowMain {
             }
 
             await this.storageService.save(configKey, this.windowStates[configKey]);
-        } catch (e) { }
+        } catch (e) {
+            LogService.error(e);
+        }
     }
 
     private async getWindowState(configKey: string, defaultWidth: number, defaultHeight: number) {

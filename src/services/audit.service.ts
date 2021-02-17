@@ -1,6 +1,7 @@
 import { ApiService } from '../abstractions/api.service';
 import { AuditService as AuditServiceAbstraction } from '../abstractions/audit.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
+import { LogService } from '../abstractions/log.service';
 
 import { throttle } from '../misc/throttle';
 import { Utils } from '../misc/utils';
@@ -33,6 +34,7 @@ export class AuditService implements AuditServiceAbstraction {
         try {
             return await this.apiService.getHibpBreach(username);
         } catch (e) {
+            LogService.error(e);
             const error = e as ErrorResponse;
             if (error.statusCode === 404) {
                 return [];

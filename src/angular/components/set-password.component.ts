@@ -6,6 +6,7 @@ import {
 import { ApiService } from '../../abstractions/api.service';
 import { CryptoService } from '../../abstractions/crypto.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { LogService } from '../../abstractions/log.service';
 import { MessagingService } from '../../abstractions/messaging.service';
 import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
@@ -93,7 +94,8 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
             } else {
                 this.router.navigate([this.successRoute]);
             }
-        } catch {
+        } catch (e) {
+            LogService.error(e);
             this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
         }
     }

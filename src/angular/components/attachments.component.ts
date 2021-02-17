@@ -9,6 +9,7 @@ import {
 import { CipherService } from '../../abstractions/cipher.service';
 import { CryptoService } from '../../abstractions/crypto.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { LogService } from '../../abstractions/log.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { UserService } from '../../abstractions/user.service';
 
@@ -68,7 +69,9 @@ export class AttachmentsComponent implements OnInit {
             this.platformUtilsService.eventTrack('Added Attachment');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('attachmentSaved'));
             this.onUploadedAttachment.emit();
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
 
         // reset file input
         // ref: https://stackoverflow.com/a/20552042
@@ -98,7 +101,9 @@ export class AttachmentsComponent implements OnInit {
             if (i > -1) {
                 this.cipher.attachments.splice(i, 1);
             }
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
 
         this.deletePromises[attachment.id] = null;
         this.onDeletedAttachment.emit();
@@ -210,7 +215,9 @@ export class AttachmentsComponent implements OnInit {
                 a.downloading = false;
             });
             await this.reuploadPromises[attachment.id];
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
     }
 
     protected loadCipher() {

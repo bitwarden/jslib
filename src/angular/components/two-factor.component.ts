@@ -18,6 +18,7 @@ import { ApiService } from '../../abstractions/api.service';
 import { AuthService } from '../../abstractions/auth.service';
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { LogService } from '../../abstractions/log.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
 import { StorageService } from '../../abstractions/storage.service';
@@ -209,7 +210,8 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                     },
                 });
             }
-        } catch {
+        } catch (e) {
+            LogService.error(e);
             if (this.selectedProviderType === TwoFactorProviderType.U2f && this.u2f != null) {
                 this.u2f.start();
             }
@@ -233,7 +235,9 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 this.platformUtilsService.showToast('success', null,
                     this.i18nService.t('verificationCodeEmailSent', this.twoFactorEmail));
             }
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
 
         this.emailPromise = null;
     }

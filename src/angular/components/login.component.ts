@@ -12,6 +12,7 @@ import { AuthService } from '../../abstractions/auth.service';
 import { CryptoFunctionService } from '../../abstractions/cryptoFunction.service';
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { LogService } from '../../abstractions/log.service';
 import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StateService } from '../../abstractions/state.service';
@@ -109,7 +110,9 @@ export class LoginComponent implements OnInit {
                     this.router.navigate([this.successRoute]);
                 }
             }
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
     }
 
     togglePassword() {

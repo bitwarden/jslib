@@ -1,4 +1,5 @@
 import { I18nService as I18nServiceAbstraction } from '../abstractions/i18n.service';
+import { LogService } from '../abstractions/log.service';
 
 export class I18nService implements I18nServiceAbstraction {
     locale: string;
@@ -73,7 +74,8 @@ export class I18nService implements I18nServiceAbstraction {
 
         try {
             this.collator = new Intl.Collator(this.locale, { numeric: true, sensitivity: 'base' });
-        } catch {
+        } catch (e) {
+            LogService.error(e);
             this.collator = null;
         }
 

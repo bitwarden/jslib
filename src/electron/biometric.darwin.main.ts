@@ -1,8 +1,11 @@
-import { I18nService, StorageService } from '../abstractions';
-
 import { ipcMain, systemPreferences } from 'electron';
+
 import { BiometricMain } from '../abstractions/biometric.main';
-import { ConstantsService } from '../services';
+import { I18nService } from '../abstractions/i18n.service';
+import { LogService } from '../abstractions/log.service';
+import { StorageService } from '../abstractions/storage.service';
+
+import { ConstantsService } from '../services/constants.service';
 import { ElectronConstants } from './electronConstants';
 
 export default class BiometricDarwinMain implements BiometricMain {
@@ -27,7 +30,8 @@ export default class BiometricDarwinMain implements BiometricMain {
         try {
             await systemPreferences.promptTouchID(this.i18nservice.t('touchIdConsentMessage'));
             return true;
-        } catch {
+        } catch (e) {
+            LogService.error(e);
             return false;
         }
     }

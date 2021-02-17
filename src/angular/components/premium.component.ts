@@ -2,6 +2,7 @@ import { OnInit } from '@angular/core';
 
 import { ApiService } from '../../abstractions/api.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { LogService } from '../../abstractions/log.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { TokenService } from '../../abstractions/token.service';
 
@@ -23,7 +24,9 @@ export class PremiumComponent implements OnInit {
             await this.refreshPromise;
             this.platformUtilsService.showToast('success', null, this.i18nService.t('refreshComplete'));
             this.isPremium = this.tokenService.getPremium();
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
     }
 
     async purchase() {

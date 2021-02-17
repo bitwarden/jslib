@@ -15,7 +15,7 @@ export class SearchService implements SearchServiceAbstraction {
     private indexing = false;
     private index: lunr.Index = null;
 
-    constructor(private cipherService: CipherService, private logService: LogService) {
+    constructor(private cipherService: CipherService) {
     }
 
     clearIndex(): void {
@@ -33,7 +33,7 @@ export class SearchService implements SearchServiceAbstraction {
             return;
         }
 
-        this.logService.time('search indexing');
+        LogService.time('search indexing');
         this.indexing = true;
         this.index = null;
         const builder = new lunr.Builder();
@@ -65,7 +65,7 @@ export class SearchService implements SearchServiceAbstraction {
         this.index = builder.build();
         this.indexing = false;
 
-        this.logService.timeEnd('search indexing');
+        LogService.timeEnd('search indexing');
     }
 
     async searchCiphers(query: string,
@@ -115,7 +115,9 @@ export class SearchService implements SearchServiceAbstraction {
         if (isQueryString) {
             try {
                 searchResults = index.search(query.substr(1).trim());
-            } catch { }
+            } catch (e) {
+                LogService.error(e);
+            }
         } else {
             // tslint:disable-next-line
             const soWild = lunr.Query.wildcard.LEADING | lunr.Query.wildcard.TRAILING;

@@ -92,7 +92,7 @@ export class AuthService implements AuthServiceAbstraction {
         private userService: UserService, private tokenService: TokenService,
         private appIdService: AppIdService, private i18nService: I18nService,
         private platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
-        private vaultTimeoutService: VaultTimeoutService, private logService: LogService,
+        private vaultTimeoutService: VaultTimeoutService,
         private setCryptoKeys = true) {
     }
 
@@ -248,6 +248,7 @@ export class AuthService implements AuthServiceAbstraction {
             if (e == null || e.statusCode !== 404) {
                 throw e;
             }
+            LogService.error(e);
         }
         return this.cryptoService.makeKey(masterPassword, email, kdf, kdfIterations);
     }
@@ -353,8 +354,7 @@ export class AuthService implements AuthServiceAbstraction {
                         await this.apiService.postAccountKeys(new KeysRequest(keyPair[0], keyPair[1].encryptedString));
                         tokenResponse.privateKey = keyPair[1].encryptedString;
                     } catch (e) {
-                        // tslint:disable-next-line
-                        this.logService.error(e);
+                        LogService.error(e);
                     }
                 }
 

@@ -1,5 +1,7 @@
 import { View } from './view';
 
+import { LogService } from '../../abstractions/log.service';
+
 import { Attachment } from '../domain/attachment';
 import { SymmetricCryptoKey } from '../domain/symmetricCryptoKey';
 
@@ -27,7 +29,9 @@ export class AttachmentView implements View {
             if (this.size != null) {
                 return parseInt(this.size, null);
             }
-        } catch { }
+        } catch (e) {
+            LogService.error(e);
+        }
         return 0;
     }
 }

@@ -38,8 +38,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     private orgKeys: Map<string, SymmetricCryptoKey>;
 
     constructor(private storageService: StorageService, private secureStorageService: StorageService,
-        private cryptoFunctionService: CryptoFunctionService, private platformUtilService: PlatformUtilsService,
-        private logService: LogService) {
+        private cryptoFunctionService: CryptoFunctionService, private platformUtilService: PlatformUtilsService) {
     }
 
     async setKey(key: SymmetricCryptoKey): Promise<any> {
@@ -448,7 +447,9 @@ export class CryptoService implements CryptoServiceAbstraction {
             try {
                 encType = parseInt(headerPieces[0], null);
                 encPieces = headerPieces[1].split('|');
-            } catch (e) { }
+            } catch (e) {
+                LogService.error(e);
+            }
         }
 
         switch (encType) {
@@ -603,12 +604,12 @@ export class CryptoService implements CryptoServiceAbstraction {
         const theKey = this.resolveLegacyKey(encType, keyForEnc);
 
         if (theKey.macKey != null && mac == null) {
-            this.logService.error('mac required.');
+            LogService.error('mac required.');
             return null;
         }
 
         if (theKey.encType !== encType) {
-            this.logService.error('encType unavailable.');
+            LogService.error('encType unavailable.');
             return null;
         }
 
@@ -618,7 +619,7 @@ export class CryptoService implements CryptoServiceAbstraction {
                 fastParams.macKey, 'sha256');
             const macsEqual = await this.cryptoFunctionService.compareFast(fastParams.mac, computedMac);
             if (!macsEqual) {
-                this.logService.error('mac failed.');
+                LogService.error('mac failed.');
                 return null;
             }
         }
@@ -650,7 +651,7 @@ export class CryptoService implements CryptoServiceAbstraction {
 
             const macsMatch = await this.cryptoFunctionService.compare(mac, computedMac);
             if (!macsMatch) {
-                this.logService.error('mac failed.');
+                LogService.error('mac failed.');
                 return null;
             }
         }

@@ -1,6 +1,7 @@
 import { EncryptionType } from '../../enums/encryptionType';
 
 import { CryptoService } from '../../abstractions/crypto.service';
+import { LogService } from '../../abstractions/log.service';
 
 import { Utils } from '../../misc/utils';
 
@@ -51,6 +52,7 @@ export class CipherString {
                 this.encryptionType = parseInt(headerPieces[0], null);
                 encPieces = headerPieces[1].split('|');
             } catch (e) {
+                LogService.error(e);
                 return;
             }
         } else {
@@ -110,6 +112,7 @@ export class CipherString {
             }
             this.decryptedValue = await cryptoService.decryptToUtf8(this, key);
         } catch (e) {
+            LogService.error(e);
             this.decryptedValue = '[error: cannot decrypt]';
         }
         return this.decryptedValue;

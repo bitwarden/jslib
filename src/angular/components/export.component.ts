@@ -8,6 +8,7 @@ import { CryptoService } from '../../abstractions/crypto.service';
 import { EventService } from '../../abstractions/event.service';
 import { ExportService } from '../../abstractions/export.service';
 import { I18nService } from '../../abstractions/i18n.service';
+import { LogService } from '../../abstractions/log.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { EventType } from '../../enums/eventType';
 
@@ -54,7 +55,9 @@ export class ExportComponent {
                 this.downloadFile(data);
                 this.saved();
                 await this.collectEvent();
-            } catch { }
+            } catch (e) {
+                LogService.error(e);
+            }
         } else {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('invalidMasterPassword'));
