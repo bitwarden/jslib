@@ -22,7 +22,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private cryptoService: CryptoService,
-        private platformUtilsService: PlatformUtilsService, private storageService: StorageService,
+        protected platformUtilsService: PlatformUtilsService, private storageService: StorageService,
         private messagingService: MessagingService, private searchService: SearchService,
         private userService: UserService, private tokenService: TokenService,
         private lockedCallback: () => Promise<void> = null, private loggedOutCallback: () => Promise<void> = null) {
@@ -35,9 +35,13 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
 
         this.inited = true;
         if (checkOnInterval) {
-            this.checkVaultTimeout();
-            setInterval(() => this.checkVaultTimeout(), 10 * 1000); // check every 10 seconds
+            this.startCheck();
         }
+    }
+
+    startCheck() {
+        this.checkVaultTimeout();
+        setInterval(() => this.checkVaultTimeout(), 10 * 1000); // check every 10 seconds
     }
 
     // Keys aren't stored for a device that is locked or logged out.
