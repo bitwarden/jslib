@@ -51,6 +51,7 @@ export class AddEditComponent implements OnInit {
     expirationDateSelect: number = null;
     canAccessPremium = true;
     premiumRequiredAlertShown = false;
+    showOptions = false;
 
     private webVaultUrl: string;
 
@@ -244,6 +245,10 @@ export class AddEditComponent implements OnInit {
             this.premiumRequiredAlertShown = true;
             this.messagingService.send('premiumRequired');
         }
+    }
+
+    toggleOptions() {
+        this.showOptions = !this.showOptions;
     }
 
     protected async loadSend(): Promise<Send> {
