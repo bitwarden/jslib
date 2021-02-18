@@ -42,9 +42,9 @@ export class CollectionsComponent implements OnInit {
         this.cipher = await this.cipherDomain.decrypt();
         this.collections = await this.loadCollections();
 
-        this.collections.forEach((c) => (c as any).checked = false);
+        this.collections.forEach(c => (c as any).checked = false);
         if (this.collectionIds != null) {
-            this.collections.forEach((c) => {
+            this.collections.forEach(c => {
                 (c as any).checked = this.collectionIds != null && this.collectionIds.indexOf(c.id) > -1;
             });
         }
@@ -52,8 +52,8 @@ export class CollectionsComponent implements OnInit {
 
     async submit() {
         const selectedCollectionIds = this.collections
-            .filter((c) => !!(c as any).checked)
-            .map((c) => c.id);
+            .filter(c => !!(c as any).checked)
+            .map(c => c.id);
         if (!this.allowSelectNone && selectedCollectionIds.length === 0) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('selectOneCollection'));
@@ -79,7 +79,7 @@ export class CollectionsComponent implements OnInit {
 
     protected async loadCollections() {
         const allCollections = await this.collectionService.getAllDecrypted();
-        return allCollections.filter((c) => !c.readOnly && c.organizationId === this.cipher.organizationId);
+        return allCollections.filter(c => !c.readOnly && c.organizationId === this.cipher.organizationId);
     }
 
     protected saveCollections() {

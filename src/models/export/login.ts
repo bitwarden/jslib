@@ -2,6 +2,9 @@ import { LoginUri } from './loginUri';
 
 import { LoginView } from '../view/loginView';
 
+import { CipherString } from '../domain/cipherString';
+import { Login as LoginDomain } from '../domain/login';
+
 export class Login {
     static template(): Login {
         const req = new Login();
@@ -14,7 +17,7 @@ export class Login {
 
     static toView(req: Login, view = new LoginView()) {
         if (req.uris != null) {
-            view.uris = req.uris.map((u) => LoginUri.toView(u));
+            view.uris = req.uris.map(u => LoginUri.toView(u));
         }
         view.username = req.username;
         view.password = req.password;
@@ -22,22 +25,42 @@ export class Login {
         return view;
     }
 
+    static toDomain(req: Login, domain = new LoginDomain()) {
+        if (req.uris != null) {
+            domain.uris = req.uris.map(u => LoginUri.toDomain(u));
+        }
+        domain.username = req.username != null ? new CipherString(req.username) : null;
+        domain.password = req.password != null ? new CipherString(req.password) : null;
+        domain.totp = req.totp != null ? new CipherString(req.totp) : null;
+        return domain;
+    }
+
     uris: LoginUri[];
     username: string;
     password: string;
     totp: string;
 
-    constructor(o?: LoginView) {
+    constructor(o?: LoginView | LoginDomain) {
         if (o == null) {
             return;
         }
 
         if (o.uris != null) {
-            this.uris = o.uris.map((u) => new LoginUri(u));
+            if (o instanceof LoginView) {
+                this.uris = o.uris.map(u => new LoginUri(u));
+            } else {
+                this.uris = o.uris.map(u => new LoginUri(u));
+            }
         }
 
-        this.username = o.username;
-        this.password = o.password;
-        this.totp = o.totp;
+        if (o instanceof LoginView) {
+            this.username = o.username;
+            this.password = o.password;
+            this.totp = o.totp;
+        } else {
+            this.username = o.username?.encryptedString;
+            this.password = o.password?.encryptedString;
+            this.totp = o.totp?.encryptedString;
+        }
     }
 }

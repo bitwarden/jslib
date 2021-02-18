@@ -6,6 +6,7 @@ import { LoginView } from '../view/loginView';
 
 import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
 export class Login extends Domain {
     uris: LoginUri[];
@@ -29,23 +30,23 @@ export class Login extends Domain {
 
         if (obj.uris) {
             this.uris = [];
-            obj.uris.forEach((u) => {
+            obj.uris.forEach(u => {
                 this.uris.push(new LoginUri(u, alreadyEncrypted));
             });
         }
     }
 
-    async decrypt(orgId: string): Promise<LoginView> {
+    async decrypt(orgId: string, encKey?: SymmetricCryptoKey): Promise<LoginView> {
         const view = await this.decryptObj(new LoginView(this), {
             username: null,
             password: null,
             totp: null,
-        }, orgId);
+        }, orgId, encKey);
 
         if (this.uris != null) {
             view.uris = [];
             for (let i = 0; i < this.uris.length; i++) {
-                const uri = await this.uris[i].decrypt(orgId);
+                const uri = await this.uris[i].decrypt(orgId, encKey);
                 view.uris.push(uri);
             }
         }
@@ -64,7 +65,7 @@ export class Login extends Domain {
 
         if (this.uris != null && this.uris.length > 0) {
             l.uris = [];
-            this.uris.forEach((u) => {
+            this.uris.forEach(u => {
                 l.uris.push(u.toLoginUriData());
             });
         }

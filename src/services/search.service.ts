@@ -3,22 +3,19 @@ import * as lunr from 'lunr';
 import { CipherView } from '../models/view/cipherView';
 
 import { CipherService } from '../abstractions/cipher.service';
-import { PlatformUtilsService } from '../abstractions/platformUtils.service';
+import { LogService } from '../abstractions/log.service';
 import { SearchService as SearchServiceAbstraction } from '../abstractions/search.service';
 
 import { CipherType } from '../enums/cipherType';
-import { DeviceType } from '../enums/deviceType';
 import { FieldType } from '../enums/fieldType';
 import { UriMatchType } from '../enums/uriMatchType';
+import { SendView } from '../models/view/sendView';
 
 export class SearchService implements SearchServiceAbstraction {
     private indexing = false;
     private index: lunr.Index = null;
-    private onlySearchName = false;
 
-    constructor(private cipherService: CipherService, platformUtilsService: PlatformUtilsService) {
-        this.onlySearchName = platformUtilsService == null ||
-            platformUtilsService.getDevice() === DeviceType.EdgeExtension;
+    constructor(private cipherService: CipherService, private logService: LogService) {
     }
 
     clearIndex(): void {
@@ -35,8 +32,8 @@ export class SearchService implements SearchServiceAbstraction {
         if (this.indexing) {
             return;
         }
-        // tslint:disable-next-line
-        console.time('search indexing');
+
+        this.logService.time('search indexing');
         this.indexing = true;
         this.index = null;
         const builder = new lunr.Builder();
@@ -64,11 +61,11 @@ export class SearchService implements SearchServiceAbstraction {
             { extractor: (c: CipherView) => this.attachmentExtractor(c, true) });
         builder.field('organizationid', { extractor: (c: CipherView) => c.organizationId });
         const ciphers = await this.cipherService.getAllDecrypted();
-        ciphers.forEach((c) => builder.add(c));
+        ciphers.forEach(c => builder.add(c));
         this.index = builder.build();
         this.indexing = false;
-        // tslint:disable-next-line
-        console.timeEnd('search indexing');
+
+        this.logService.timeEnd('search indexing');
     }
 
     async searchCiphers(query: string,
@@ -88,7 +85,7 @@ export class SearchService implements SearchServiceAbstraction {
         }
 
         if (filter != null && Array.isArray(filter) && filter.length > 0) {
-            ciphers = ciphers.filter((c) => filter.every((f) => f == null || f(c)));
+            ciphers = ciphers.filter(c => filter.every(f => f == null || f(c)));
         } else if (filter != null) {
             ciphers = ciphers.filter(filter as (cipher: CipherView) => boolean);
         }
@@ -98,9 +95,9 @@ export class SearchService implements SearchServiceAbstraction {
         }
 
         if (this.indexing) {
-            await new Promise((r) => setTimeout(r, 250));
+            await new Promise(r => setTimeout(r, 250));
             if (this.indexing) {
-                await new Promise((r) => setTimeout(r, 500));
+                await new Promise(r => setTimeout(r, 500));
             }
         }
 
@@ -111,7 +108,7 @@ export class SearchService implements SearchServiceAbstraction {
         }
 
         const ciphersMap = new Map<string, CipherView>();
-        ciphers.forEach((c) => ciphersMap.set(c.id, c));
+        ciphers.forEach(c => ciphersMap.set(c.id, c));
 
         let searchResults: lunr.Index.Result[] = null;
         const isQueryString = query != null && query.length > 1 && query.indexOf('>') === 0;
@@ -122,8 +119,8 @@ export class SearchService implements SearchServiceAbstraction {
         } else {
             // tslint:disable-next-line
             const soWild = lunr.Query.wildcard.LEADING | lunr.Query.wildcard.TRAILING;
-            searchResults = index.query((q) => {
-                lunr.tokenizer(query).forEach((token) => {
+            searchResults = index.query(q => {
+                lunr.tokenizer(query).forEach(token => {
                     const t = token.toString();
                     q.term(t, { fields: ['name'], wildcard: soWild });
                     q.term(t, { fields: ['subtitle'], wildcard: soWild });
@@ -134,7 +131,7 @@ export class SearchService implements SearchServiceAbstraction {
         }
 
         if (searchResults != null) {
-            searchResults.forEach((r) => {
+            searchResults.forEach(r => {
                 if (ciphersMap.has(r.ref)) {
                     results.push(ciphersMap.get(r.ref));
                 }
@@ -145,15 +142,12 @@ export class SearchService implements SearchServiceAbstraction {
 
     searchCiphersBasic(ciphers: CipherView[], query: string, deleted: boolean = false) {
         query = query.trim().toLowerCase();
-        return ciphers.filter((c) => {
+        return ciphers.filter(c => {
             if (deleted !== c.isDeleted) {
                 return false;
             }
             if (c.name != null && c.name.toLowerCase().indexOf(query) > -1) {
                 return true;
-            }
-            if (this.onlySearchName) {
-                return false;
             }
             if (query.length >= 8 && c.id.startsWith(query)) {
                 return true;
@@ -168,6 +162,28 @@ export class SearchService implements SearchServiceAbstraction {
         });
     }
 
+    searchSends(sends: SendView[], query: string) {
+        query = query.trim().toLocaleLowerCase();
+
+        return sends.filter(s => {
+            if (s.name != null && s.name.toLowerCase().indexOf(query) > -1) {
+                return true;
+            }
+            if (query.length >= 8 && (s.id.startsWith(query) || s.accessId.toLocaleLowerCase().startsWith(query) || (s.file?.id != null && s.file.id.startsWith(query)))) {
+                return true;
+            }
+            if (s.notes != null && s.notes.toLowerCase().indexOf(query) > -1) {
+                return true;
+            }
+            if (s.text?.text != null && s.text.text.toLowerCase().indexOf(query) > -1) {
+                return true;
+            }
+            if (s.file?.fileName != null && s.file.fileName.toLowerCase().indexOf(query) > -1) {
+                return true;
+            }
+        });
+    }
+
     getIndexForSearch(): lunr.Index {
         return this.index;
     }
@@ -177,7 +193,7 @@ export class SearchService implements SearchServiceAbstraction {
             return null;
         }
         let fields: string[] = [];
-        c.fields.forEach((f) => {
+        c.fields.forEach(f => {
             if (f.name != null) {
                 fields.push(f.name);
             }
@@ -185,7 +201,7 @@ export class SearchService implements SearchServiceAbstraction {
                 fields.push(f.value);
             }
         });
-        fields = fields.filter((f) => f.trim() !== '');
+        fields = fields.filter(f => f.trim() !== '');
         if (fields.length === 0) {
             return null;
         }
@@ -197,7 +213,7 @@ export class SearchService implements SearchServiceAbstraction {
             return null;
         }
         let attachments: string[] = [];
-        c.attachments.forEach((a) => {
+        c.attachments.forEach(a => {
             if (a != null && a.fileName != null) {
                 if (joined && a.fileName.indexOf('.') > -1) {
                     attachments.push(a.fileName.substr(0, a.fileName.lastIndexOf('.')));
@@ -206,7 +222,7 @@ export class SearchService implements SearchServiceAbstraction {
                 }
             }
         });
-        attachments = attachments.filter((f) => f.trim() !== '');
+        attachments = attachments.filter(f => f.trim() !== '');
         if (attachments.length === 0) {
             return null;
         }
@@ -218,7 +234,7 @@ export class SearchService implements SearchServiceAbstraction {
             return null;
         }
         const uris: string[] = [];
-        c.login.uris.forEach((u) => {
+        c.login.uris.forEach(u => {
             if (u.uri == null || u.uri === '') {
                 return;
             }

@@ -4,16 +4,16 @@ import { Importer } from './importer';
 import { ImportResult } from '../models/domain/importResult';
 
 export class PasswordAgentCsvImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const results = this.parseCsv(data, false);
         if (results == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         let newVersion = true;
-        results.forEach((value) => {
+        results.forEach(value => {
             if (value.length !== 5 && value.length < 9) {
                 return;
             }
@@ -47,6 +47,6 @@ export class PasswordAgentCsvImporter extends BaseImporter implements Importer {
         }
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 }

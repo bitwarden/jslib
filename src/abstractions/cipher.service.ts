@@ -1,4 +1,5 @@
 import { CipherType } from '../enums/cipherType';
+import { UriMatchType } from '../enums/uriMatchType';
 
 import { CipherData } from '../models/data/cipherData';
 
@@ -6,7 +7,6 @@ import { Cipher } from '../models/domain/cipher';
 import { Field } from '../models/domain/field';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
-import { AttachmentView } from '../models/view/attachmentView';
 import { CipherView } from '../models/view/cipherView';
 import { FieldView } from '../models/view/fieldView';
 
@@ -21,11 +21,15 @@ export abstract class CipherService {
     getAll: () => Promise<Cipher[]>;
     getAllDecrypted: () => Promise<CipherView[]>;
     getAllDecryptedForGrouping: (groupingId: string, folder?: boolean) => Promise<CipherView[]>;
-    getAllDecryptedForUrl: (url: string, includeOtherTypes?: CipherType[]) => Promise<CipherView[]>;
+    getAllDecryptedForUrl: (url: string, includeOtherTypes?: CipherType[],
+        defaultMatch?: UriMatchType) => Promise<CipherView[]>;
     getAllFromApiForOrganization: (organizationId: string) => Promise<CipherView[]>;
     getLastUsedForUrl: (url: string) => Promise<CipherView>;
+    getLastLaunchedForUrl: (url: string) => Promise<CipherView>;
     getNextCipherForUrl: (url: string) => Promise<CipherView>;
+    updateLastUsedIndexForUrl: (url: string) => void;
     updateLastUsedDate: (id: string) => Promise<void>;
+    updateLastLaunchedDate: (id: string) => Promise<void>;
     saveNeverDomain: (domain: string) => Promise<void>;
     saveWithServer: (cipher: Cipher) => Promise<any>;
     shareWithServer: (cipher: CipherView, organizationId: string, collectionIds: string[]) => Promise<any>;
@@ -49,7 +53,7 @@ export abstract class CipherService {
     softDelete: (id: string | string[]) => Promise<any>;
     softDeleteWithServer: (id: string) => Promise<any>;
     softDeleteManyWithServer: (ids: string[]) => Promise<any>;
-    restore: (id: string | string[]) => Promise<any>;
+    restore: (cipher: { id: string, revisionDate: string; } | { id: string, revisionDate: string; }[]) => Promise<any>;
     restoreWithServer: (id: string) => Promise<any>;
     restoreManyWithServer: (ids: string[]) => Promise<any>;
 }

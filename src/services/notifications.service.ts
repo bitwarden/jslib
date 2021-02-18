@@ -6,6 +6,7 @@ import { NotificationType } from '../enums/notificationType';
 import { ApiService } from '../abstractions/api.service';
 import { AppIdService } from '../abstractions/appId.service';
 import { EnvironmentService } from '../abstractions/environment.service';
+import { LogService } from '../abstractions/log.service';
 import { NotificationsService as NotificationsServiceAbstraction } from '../abstractions/notifications.service';
 import { SyncService } from '../abstractions/sync.service';
 import { UserService } from '../abstractions/user.service';
@@ -15,6 +16,7 @@ import {
     NotificationResponse,
     SyncCipherNotification,
     SyncFolderNotification,
+    SyncSendNotification,
 } from '../models/response/notificationResponse';
 
 export class NotificationsService implements NotificationsServiceAbstraction {
@@ -27,7 +29,9 @@ export class NotificationsService implements NotificationsServiceAbstraction {
 
     constructor(private userService: UserService, private syncService: SyncService,
         private appIdService: AppIdService, private apiService: ApiService,
-        private vaultTimeoutService: VaultTimeoutService, private logoutCallback: () => Promise<void>) { }
+        private vaultTimeoutService: VaultTimeoutService,
+        private logoutCallback: () => Promise<void>, private logService: LogService) {
+    }
 
     async init(environmentService: EnvironmentService): Promise<void> {
         this.inited = false;
@@ -87,8 +91,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
                 await this.signalrConnection.stop();
             }
         } catch (e) {
-            // tslint:disable-next-line
-            console.error(e.toString());
+            this.logService.error(e.toString());
         }
     }
 
@@ -157,6 +160,13 @@ export class NotificationsService implements NotificationsServiceAbstraction {
                     this.logoutCallback();
                 }
                 break;
+            case NotificationType.SyncSendCreate:
+            case NotificationType.SyncSendUpdate:
+                await this.syncService.syncUpsertSend(notification.payload as SyncSendNotification,
+                    notification.type === NotificationType.SyncSendUpdate);
+                break;
+            case NotificationType.SyncSendDelete:
+                await this.syncService.syncDeleteSend(notification.payload as SyncSendNotification);
             default:
                 break;
         }

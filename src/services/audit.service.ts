@@ -22,7 +22,7 @@ export class AuditService implements AuditServiceAbstraction {
 
         const response = await this.apiService.nativeFetch(new Request(PwnedPasswordsApi + hashStart));
         const leakedHashes = await response.text();
-        const match = leakedHashes.split(/\r?\n/).find((v) => {
+        const match = leakedHashes.split(/\r?\n/).find(v => {
             return v.split(':')[0] === hashEnding;
         });
 

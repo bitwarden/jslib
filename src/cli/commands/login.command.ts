@@ -13,6 +13,7 @@ import { CryptoFunctionService } from '../../abstractions/cryptoFunction.service
 import { EnvironmentService } from '../../abstractions/environment.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
+import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 import { Response } from '../models/response';
 
@@ -35,16 +36,48 @@ export class LoginCommand {
     constructor(protected authService: AuthService, protected apiService: ApiService,
         protected i18nService: I18nService, protected environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
-        protected cryptoFunctionService: CryptoFunctionService, clientId: string) {
+        protected cryptoFunctionService: CryptoFunctionService, protected platformUtilsService: PlatformUtilsService,
+        clientId: string) {
         this.clientId = clientId;
     }
 
-    async run(email: string, password: string, cmd: program.Command) {
+    async run(email: string, password: string, options: program.OptionValues) {
         this.canInteract = process.env.BW_NOINTERACTION !== 'true';
 
         let ssoCodeVerifier: string = null;
         let ssoCode: string = null;
-        if (cmd.sso != null && this.canInteract) {
+
+        let clientId: string = null;
+        let clientSecret: string = null;
+
+        if (options.apikey != null) {
+            const storedClientId: string = process.env.BW_CLIENTID;
+            const storedClientSecret: string = process.env.BW_CLIENTSECRET;
+            if (storedClientId == null) {
+                if (this.canInteract) {
+                    const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+                        type: 'input',
+                        name: 'clientId',
+                        message: 'client_id:',
+                    });
+                    clientId = answer.clientId;
+                } else {
+                    clientId = null;
+                }
+            } else {
+                clientId = storedClientId;
+            }
+            if (this.canInteract && storedClientSecret == null) {
+                const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+                    type: 'input',
+                    name: 'clientSecret',
+                    message: 'client_secret:',
+                });
+                clientSecret = answer.clientSecret;
+            } else {
+                clientSecret = storedClientSecret;
+            }
+        } else if (options.sso != null && this.canInteract) {
             const passwordOptions: any = {
                 type: 'password',
                 length: 64,
@@ -79,10 +112,10 @@ export class LoginCommand {
             }
 
             if (password == null || password === '') {
-                if (cmd.passwordfile) {
-                    password = await NodeUtils.readFirstLine(cmd.passwordfile);
-                } else if (cmd.passwordenv && process.env[cmd.passwordenv]) {
-                    password = process.env[cmd.passwordenv];
+                if (options.passwordfile) {
+                    password = await NodeUtils.readFirstLine(options.passwordfile);
+                } else if (options.passwordenv && process.env[options.passwordenv]) {
+                    password = process.env[options.passwordenv];
                 } else if (this.canInteract) {
                     const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                         type: 'password',
@@ -98,11 +131,11 @@ export class LoginCommand {
             }
         }
 
-        let twoFactorToken: string = cmd.code;
+        let twoFactorToken: string = options.code;
         let twoFactorMethod: TwoFactorProviderType = null;
         try {
-            if (cmd.method != null) {
-                twoFactorMethod = parseInt(cmd.method, null);
+            if (options.method != null) {
+                twoFactorMethod = parseInt(options.method, null);
             }
         } catch (e) {
             return Response.error('Invalid two-step login method.');
@@ -115,7 +148,10 @@ export class LoginCommand {
 
             let response: AuthResult = null;
             if (twoFactorToken != null && twoFactorMethod != null) {
-                if (ssoCode != null && ssoCodeVerifier != null) {
+                if (clientId != null && clientSecret != null) {
+                    response = await this.authService.logInApiKeyComplete(clientId, clientSecret, twoFactorMethod,
+                        twoFactorToken, false);
+                } else if (ssoCode != null && ssoCodeVerifier != null) {
                     response = await this.authService.logInSsoComplete(ssoCode, ssoCodeVerifier, this.ssoRedirectUri,
                         twoFactorMethod, twoFactorToken, false);
                 } else {
@@ -123,9 +159,10 @@ export class LoginCommand {
                         twoFactorToken, false);
                 }
             } else {
-                if (ssoCode != null && ssoCodeVerifier != null) {
+                if (clientId != null && clientSecret != null) {
+                    response = await this.authService.logInApiKey(clientId, clientSecret);
+                } else if (ssoCode != null && ssoCodeVerifier != null) {
                     response = await this.authService.logInSso(ssoCode, ssoCodeVerifier, this.ssoRedirectUri);
-
                 } else {
                     response = await this.authService.logIn(email, password);
                 }
@@ -138,7 +175,7 @@ export class LoginCommand {
 
                     if (twoFactorMethod != null) {
                         try {
-                            selectedProvider = twoFactorProviders.filter((p) => p.type === twoFactorMethod)[0];
+                            selectedProvider = twoFactorProviders.filter(p => p.type === twoFactorMethod)[0];
                         } catch (e) {
                             return Response.error('Invalid two-step login method.');
                         }
@@ -148,18 +185,18 @@ export class LoginCommand {
                         if (twoFactorProviders.length === 1) {
                             selectedProvider = twoFactorProviders[0];
                         } else if (this.canInteract) {
-                            const options = twoFactorProviders.map((p) => p.name);
-                            options.push(new inquirer.Separator());
-                            options.push('Cancel');
+                            const twoFactorOptions = twoFactorProviders.map(p => p.name);
+                            twoFactorOptions.push(new inquirer.Separator());
+                            twoFactorOptions.push('Cancel');
                             const answer: inquirer.Answers =
                                 await inquirer.createPromptModule({ output: process.stderr })({
                                     type: 'list',
                                     name: 'method',
                                     message: 'Two-step login method:',
-                                    choices: options,
+                                    choices: twoFactorOptions,
                                 });
-                            const i = options.indexOf(answer.method);
-                            if (i === (options.length - 1)) {
+                            const i = twoFactorOptions.indexOf(answer.method);
+                            if (i === (twoFactorOptions.length - 1)) {
                                 return Response.error('Login failed.');
                             }
                             selectedProvider = twoFactorProviders[i];
@@ -225,7 +262,7 @@ export class LoginCommand {
                 const code = url.searchParams.get('code');
                 const receivedState = url.searchParams.get('state');
                 res.setHeader('Content-Type', 'text/html');
-                if (code != null && receivedState != null && receivedState === state) {
+                if (code != null && receivedState != null && this.checkState(receivedState, state)) {
                     res.writeHead(200);
                     res.end('<html><head><title>Success | Bitwarden CLI</title></head><body>' +
                         '<h1>Successfully authenticated with the Bitwarden CLI</h1>' +
@@ -249,8 +286,8 @@ export class LoginCommand {
             for (let port = 8065; port <= 8070; port++) {
                 try {
                     this.ssoRedirectUri = 'http://localhost:' + port;
-                    callbackServer.listen(port, async () => {
-                        await open(webUrl + '/#/sso?clientId=' + this.clientId +
+                    callbackServer.listen(port, () => {
+                        this.platformUtilsService.launchUri(webUrl + '/#/sso?clientId=' + this.clientId +
                             '&redirectUri=' + encodeURIComponent(this.ssoRedirectUri) +
                             '&state=' + state + '&codeChallenge=' + codeChallenge);
                     });
@@ -262,5 +299,18 @@ export class LoginCommand {
                 reject();
             }
         });
+    }
+
+    private checkState(state: string, checkState: string): boolean {
+        if (state === null || state === undefined) {
+            return false;
+        }
+        if (checkState === null || checkState === undefined) {
+            return false;
+        }
+
+        const stateSplit = state.split('_identifier=');
+        const checkStateSplit = checkState.split('_identifier=');
+        return stateSplit[0] === checkStateSplit[0];
     }
 }

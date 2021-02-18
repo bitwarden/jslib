@@ -2,6 +2,9 @@ import { FieldType } from '../../enums/fieldType';
 
 import { FieldView } from '../view/fieldView';
 
+import { CipherString } from '../domain/cipherString';
+import { Field as FieldDomain } from '../domain/field';
+
 export class Field {
     static template(): Field {
         const req = new Field();
@@ -18,17 +21,29 @@ export class Field {
         return view;
     }
 
+    static toDomain(req: Field, domain = new FieldDomain()) {
+        domain.type = req.type;
+        domain.value = req.value != null ? new CipherString(req.value) : null;
+        domain.name = req.name != null ? new CipherString(req.name) : null;
+        return domain;
+    }
+
     name: string;
     value: string;
     type: FieldType;
 
-    constructor(o?: FieldView) {
+    constructor(o?: FieldView | FieldDomain) {
         if (o == null) {
             return;
         }
 
-        this.name = o.name;
-        this.value = o.value;
+        if (o instanceof FieldView) {
+            this.name = o.name;
+            this.value = o.value;
+        } else {
+            this.name = o.name?.encryptedString;
+            this.value = o.value?.encryptedString;
+        }
         this.type = o.type;
     }
 }

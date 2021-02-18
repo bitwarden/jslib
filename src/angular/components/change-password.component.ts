@@ -21,11 +21,11 @@ export class ChangePasswordComponent implements OnInit {
     masterPasswordScore: number;
     enforcedPolicyOptions: MasterPasswordPolicyOptions;
 
+    protected email: string;
     protected kdf: KdfType;
     protected kdfIterations: number;
 
     private masterPasswordStrengthTimeout: any;
-    private email: string;
 
     constructor(protected i18nService: I18nService, protected cryptoService: CryptoService,
         protected messagingService: MessagingService, protected userService: UserService,
@@ -58,42 +58,8 @@ export class ChangePasswordComponent implements OnInit {
     }
 
     async submit() {
-        if (this.masterPassword == null || this.masterPassword === '') {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('masterPassRequired'));
+        if (!await this.strongPassword()) {
             return;
-        }
-        if (this.masterPassword.length < 8) {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('masterPassLength'));
-            return;
-        }
-        if (this.masterPassword !== this.masterPasswordRetype) {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('masterPassDoesntMatch'));
-            return;
-        }
-
-        const strengthResult = this.passwordGenerationService.passwordStrength(this.masterPassword,
-            this.getPasswordStrengthUserInput());
-
-        if (this.enforcedPolicyOptions != null &&
-            !this.policyService.evaluateMasterPassword(
-                strengthResult.score,
-                this.masterPassword,
-                this.enforcedPolicyOptions)) {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('masterPasswordPolicyRequirementsNotMet'));
-            return;
-        }
-
-        if (strengthResult != null && strengthResult.score < 3) {
-            const result = await this.platformUtilsService.showDialog(this.i18nService.t('weakMasterPasswordDesc'),
-                this.i18nService.t('weakMasterPassword'), this.i18nService.t('yes'), this.i18nService.t('no'),
-                'warning');
-            if (!result) {
-                return;
-            }
         }
 
         if (!await this.setupSubmitActions()) {
@@ -131,6 +97,48 @@ export class ChangePasswordComponent implements OnInit {
     async performSubmitActions(masterPasswordHash: string, key: SymmetricCryptoKey,
         encKey: [SymmetricCryptoKey, CipherString]) {
         // Override in sub-class
+    }
+
+    async strongPassword(): Promise<boolean> {
+        if (this.masterPassword == null || this.masterPassword === '') {
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                this.i18nService.t('masterPassRequired'));
+            return false;
+        }
+        if (this.masterPassword.length < 8) {
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                this.i18nService.t('masterPassLength'));
+            return false;
+        }
+        if (this.masterPassword !== this.masterPasswordRetype) {
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                this.i18nService.t('masterPassDoesntMatch'));
+            return false;
+        }
+
+        const strengthResult = this.passwordGenerationService.passwordStrength(this.masterPassword,
+            this.getPasswordStrengthUserInput());
+
+        if (this.enforcedPolicyOptions != null &&
+            !this.policyService.evaluateMasterPassword(
+                strengthResult.score,
+                this.masterPassword,
+                this.enforcedPolicyOptions)) {
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                this.i18nService.t('masterPasswordPolicyRequirementsNotMet'));
+            return false;
+        }
+
+        if (strengthResult != null && strengthResult.score < 3) {
+            const result = await this.platformUtilsService.showDialog(this.i18nService.t('weakMasterPasswordDesc'),
+                this.i18nService.t('weakMasterPassword'), this.i18nService.t('yes'), this.i18nService.t('no'),
+                'warning');
+            if (!result) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     updatePasswordStrength() {

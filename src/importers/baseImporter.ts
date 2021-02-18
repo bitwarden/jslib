@@ -1,5 +1,7 @@
 import * as papa from 'papaparse';
 
+import { LogService } from '../abstractions/log.service';
+
 import { ImportResult } from '../models/domain/importResult';
 
 import { CipherView } from '../models/view/cipherView';
@@ -17,8 +19,12 @@ import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
 import { SecureNoteType } from '../enums/secureNoteType';
 
+import { ConsoleLogService } from '../services/consoleLog.service';
+
 export abstract class BaseImporter {
-    organization = false;
+    organizationId: string = null;
+
+    protected logService: LogService = new ConsoleLogService(false);
 
     protected newLineRegex = /(?:\r\n|\r|\n)/;
 
@@ -65,24 +71,30 @@ export abstract class BaseImporter {
         'ort', 'adresse',
     ];
 
+    protected parseCsvOptions = {
+        encoding: 'UTF-8',
+        skipEmptyLines: false,
+    };
+
+    protected get organization() {
+        return this.organizationId != null;
+    }
+
     protected parseXml(data: string): Document {
         const parser = new DOMParser();
         const doc = parser.parseFromString(data, 'application/xml');
         return doc != null && doc.querySelector('parsererror') == null ? doc : null;
     }
 
-    protected parseCsv(data: string, header: boolean): any[] {
+    protected parseCsv(data: string, header: boolean, options: any = {}): any[] {
+        const parseOptions = Object.assign({ header: header }, this.parseCsvOptions, options);
         data = this.splitNewLine(data).join('\n').trim();
-        const result = papa.parse(data, {
-            header: header,
-            encoding: 'UTF-8',
-            skipEmptyLines: false,
-        });
+        const result = papa.parse(data, parseOptions);
         if (result.errors != null && result.errors.length > 0) {
-            result.errors.forEach((e) => {
+            result.errors.forEach(e => {
                 if (e.row != null) {
                     // tslint:disable-next-line
-                    console.warn('Error parsing row ' + e.row + ': ' + e.message);
+                    this.logService.warning('Error parsing row ' + e.row + ': ' + e.message);
                 }
             });
         }
@@ -117,7 +129,7 @@ export abstract class BaseImporter {
 
         if (uri.length > 0) {
             const returnArr: LoginUriView[] = [];
-            uri.forEach((u) => {
+            uri.forEach(u => {
                 const loginUri = new LoginUriView();
                 loginUri.uri = this.fixUri(u);
                 if (this.isNullOrWhitespace(loginUri.uri)) {
@@ -253,8 +265,8 @@ export abstract class BaseImporter {
     }
 
     protected moveFoldersToCollections(result: ImportResult) {
-        result.folderRelationships.forEach((r) => result.collectionRelationships.push(r));
-        result.collections = result.folders.map((f) => {
+        result.folderRelationships.forEach(r => result.collectionRelationships.push(r));
+        result.collections = result.folders.map(f => {
             const collection = new CollectionView();
             collection.name = f.name;
             return collection;
@@ -269,7 +281,7 @@ export abstract class BaseImporter {
     }
 
     protected querySelectorAllDirectChild(parentEl: Element, query: string) {
-        return Array.from(parentEl.querySelectorAll(query)).filter((el) => el.parentNode === parentEl);
+        return Array.from(parentEl.querySelectorAll(query)).filter(el => el.parentNode === parentEl);
     }
 
     protected initLoginCipher() {

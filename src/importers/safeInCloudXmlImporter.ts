@@ -10,24 +10,24 @@ import { CipherType } from '../enums/cipherType';
 import { SecureNoteType } from '../enums/secureNoteType';
 
 export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const doc = this.parseXml(data);
         if (doc == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         const db = doc.querySelector('database');
         if (db == null) {
             result.errorMessage = 'Missing `database` node.';
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         const foldersMap = new Map<string, number>();
 
-        Array.from(doc.querySelectorAll('database > label')).forEach((labelEl) => {
+        Array.from(doc.querySelectorAll('database > label')).forEach(labelEl => {
             const name = labelEl.getAttribute('name');
             const id = labelEl.getAttribute('id');
             if (!this.isNullOrWhitespace(name) && !this.isNullOrWhitespace(id)) {
@@ -38,7 +38,7 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
             }
         });
 
-        Array.from(doc.querySelectorAll('database > card')).forEach((cardEl) => {
+        Array.from(doc.querySelectorAll('database > card')).forEach(cardEl => {
             if (cardEl.getAttribute('template') === 'true') {
                 return;
             }
@@ -60,7 +60,7 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
                 cipher.secureNote = new SecureNoteView();
                 cipher.secureNote.type = SecureNoteType.Generic;
             } else {
-                Array.from(this.querySelectorAllDirectChild(cardEl, 'field')).forEach((fieldEl) => {
+                Array.from(this.querySelectorAllDirectChild(cardEl, 'field')).forEach(fieldEl => {
                     const text = fieldEl.textContent;
                     if (this.isNullOrWhitespace(text)) {
                         return;
@@ -83,7 +83,7 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
                 });
             }
 
-            Array.from(this.querySelectorAllDirectChild(cardEl, 'notes')).forEach((notesEl) => {
+            Array.from(this.querySelectorAllDirectChild(cardEl, 'notes')).forEach(notesEl => {
                 cipher.notes += (notesEl.textContent + '\n');
             });
 
@@ -96,6 +96,6 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
         }
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 }

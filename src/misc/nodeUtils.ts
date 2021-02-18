@@ -19,11 +19,16 @@ export class NodeUtils {
             const readStream = fs.createReadStream(fileName, {encoding: 'utf8'});
             const readInterface = readline.createInterface(readStream);
             readInterface
-                .on('line', (line) => {
+                .on('line', line => {
                     readStream.close();
                     resolve(line);
                 })
-                .on('error', (err) => reject(err));
+                .on('error', err => reject(err));
         });
+    }
+
+    // https://stackoverflow.com/a/31394257
+    static bufferToArrayBuffer(buf: Buffer): ArrayBuffer {
+        return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
     }
 }

@@ -2,6 +2,9 @@ import { CipherType } from '../../enums/cipherType';
 
 import { CipherView } from '../view/cipherView';
 
+import { Cipher as CipherDomain } from '../domain/cipher';
+import { CipherString } from '../domain/cipherString';
+
 import { Card } from './card';
 import { Field } from './field';
 import { Identity } from './identity';
@@ -36,7 +39,7 @@ export class Cipher {
         view.favorite = req.favorite;
 
         if (req.fields != null) {
-            view.fields = req.fields.map((f) => Field.toView(f));
+            view.fields = req.fields.map(f => Field.toView(f));
         }
 
         switch (req.type) {
@@ -57,6 +60,38 @@ export class Cipher {
         return view;
     }
 
+    static toDomain(req: Cipher, domain = new CipherDomain()) {
+        domain.type = req.type;
+        domain.folderId = req.folderId;
+        if (domain.organizationId == null) {
+            domain.organizationId = req.organizationId;
+        }
+        domain.name = req.name != null ? new CipherString(req.name) : null;
+        domain.notes = req.notes != null ? new CipherString(req.notes) : null;
+        domain.favorite = req.favorite;
+
+        if (req.fields != null) {
+            domain.fields = req.fields.map(f => Field.toDomain(f));
+        }
+
+        switch (req.type) {
+            case CipherType.Login:
+                domain.login = Login.toDomain(req.login);
+                break;
+            case CipherType.SecureNote:
+                domain.secureNote = SecureNote.toDomain(req.secureNote);
+                break;
+            case CipherType.Card:
+                domain.card = Card.toDomain(req.card);
+                break;
+            case CipherType.Identity:
+                domain.identity = Identity.toDomain(req.identity);
+                break;
+        }
+
+        return domain;
+    }
+
     type: CipherType;
     folderId: string;
     organizationId: string;
@@ -70,16 +105,27 @@ export class Cipher {
     identity: Identity;
 
     // Use build method instead of ctor so that we can control order of JSON stringify for pretty print
-    build(o: CipherView) {
+    build(o: CipherView | CipherDomain) {
         this.organizationId = o.organizationId;
         this.folderId = o.folderId;
         this.type = o.type;
-        this.name = o.name;
-        this.notes = o.notes;
+
+        if (o instanceof CipherView) {
+            this.name = o.name;
+            this.notes = o.notes;
+        } else {
+            this.name = o.name?.encryptedString;
+            this.notes = o.notes?.encryptedString;
+        }
+
         this.favorite = o.favorite;
 
         if (o.fields != null) {
-            this.fields = o.fields.map((f) => new Field(f));
+            if (o instanceof CipherView) {
+                this.fields = o.fields.map(f => new Field(f));
+            } else {
+                this.fields = o.fields.map(f => new Field(f));
+            }
         }
 
         switch (o.type) {

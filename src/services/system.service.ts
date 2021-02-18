@@ -31,7 +31,9 @@ export class SystemService implements SystemServiceAbstraction {
                 // Don't refresh if they are still active in the window
                 doRefresh = diffSeconds >= 5000;
             }
-            if (doRefresh) {
+            const biometricLockedFingerprintValidated =
+                await this.storageService.get<boolean>(ConstantsService.biometricFingerprintValidated) && this.vaultTimeoutService.biometricLocked;
+            if (doRefresh && !biometricLockedFingerprintValidated) {
                 clearInterval(this.reloadInterval);
                 this.reloadInterval = null;
                 this.messagingService.send('reloadProcess');
@@ -57,7 +59,7 @@ export class SystemService implements SystemServiceAbstraction {
         if (Utils.isNullOrWhitespace(clipboardValue)) {
             return;
         }
-        this.storageService.get<number>(ConstantsService.clearClipboardKey).then((clearSeconds) => {
+        this.storageService.get<number>(ConstantsService.clearClipboardKey).then(clearSeconds => {
             if (clearSeconds == null) {
                 return;
             }

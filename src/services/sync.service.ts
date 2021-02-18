@@ -5,6 +5,7 @@ import { CryptoService } from '../abstractions/crypto.service';
 import { FolderService } from '../abstractions/folder.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { PolicyService } from '../abstractions/policy.service';
+import { SendService } from '../abstractions/send.service';
 import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
 import { SyncService as SyncServiceAbstraction } from '../abstractions/sync.service';
@@ -15,6 +16,7 @@ import { CollectionData } from '../models/data/collectionData';
 import { FolderData } from '../models/data/folderData';
 import { OrganizationData } from '../models/data/organizationData';
 import { PolicyData } from '../models/data/policyData';
+import { SendData } from '../models/data/sendData';
 
 import { CipherResponse } from '../models/response/cipherResponse';
 import { CollectionDetailsResponse } from '../models/response/collectionResponse';
@@ -23,9 +25,11 @@ import { FolderResponse } from '../models/response/folderResponse';
 import {
     SyncCipherNotification,
     SyncFolderNotification,
+    SyncSendNotification,
 } from '../models/response/notificationResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
+import { SendResponse } from '../models/response/sendResponse';
 
 const Keys = {
     lastSyncPrefix: 'lastSync_',
@@ -39,7 +43,7 @@ export class SyncService implements SyncServiceAbstraction {
         private cipherService: CipherService, private cryptoService: CryptoService,
         private collectionService: CollectionService, private storageService: StorageService,
         private messagingService: MessagingService, private policyService: PolicyService,
-        private logoutCallback: (expired: boolean) => Promise<void>) {
+        private sendService: SendService, private logoutCallback: (expired: boolean) => Promise<void>) {
     }
 
     async getLastSync(): Promise<Date> {
@@ -73,12 +77,13 @@ export class SyncService implements SyncServiceAbstraction {
         }
 
         const now = new Date();
-        const needsSyncResult = await this.needsSyncing(forceSync);
-        const needsSync = needsSyncResult[0];
-        const skipped = needsSyncResult[1];
-
-        if (skipped) {
-            return this.syncCompleted(false);
+        let needsSync = false;
+        try {
+            needsSync = await this.needsSyncing(forceSync);
+        } catch (e) {
+            if (allowThrowOnError) {
+                throw e;
+            }
         }
 
         if (!needsSync) {
@@ -94,6 +99,7 @@ export class SyncService implements SyncServiceAbstraction {
             await this.syncFolders(userId, response.folders);
             await this.syncCollections(response.collections);
             await this.syncCiphers(userId, response.ciphers);
+            await this.syncSends(userId, response.sends);
             await this.syncSettings(userId, response.domains);
             await this.syncPolicies(response.policies);
 
@@ -207,6 +213,37 @@ export class SyncService implements SyncServiceAbstraction {
         return this.syncCompleted(false);
     }
 
+    async syncUpsertSend(notification: SyncSendNotification, isEdit: boolean): Promise<boolean> {
+        this.syncStarted();
+        if (await this.userService.isAuthenticated()) {
+            try {
+                const localSend = await this.sendService.get(notification.id);
+                if ((!isEdit && localSend == null) ||
+                    (isEdit && localSend != null && localSend.revisionDate < notification.revisionDate)) {
+                    const remoteSend = await this.apiService.getSend(notification.id);
+                    if (remoteSend != null) {
+                        const userId = await this.userService.getUserId();
+                        await this.sendService.upsert(new SendData(remoteSend, userId));
+                        this.messagingService.send('syncedUpsertedSend', { sendId: notification.id });
+                        return this.syncCompleted(true);
+                    }
+                }
+            } catch { }
+        }
+        return this.syncCompleted(false);
+    }
+
+    async syncDeleteSend(notification: SyncSendNotification): Promise<boolean> {
+        this.syncStarted();
+        if (await this.userService.isAuthenticated()) {
+            await this.sendService.delete(notification.id);
+            this.messagingService.send('syncedDeletedSend', { sendId: notification.id });
+            this.syncCompleted(true);
+            return true;
+        }
+        return this.syncCompleted(false);
+    }
+
     // Helpers
 
     private syncStarted() {
@@ -222,23 +259,19 @@ export class SyncService implements SyncServiceAbstraction {
 
     private async needsSyncing(forceSync: boolean) {
         if (forceSync) {
-            return [true, false];
+            return true;
         }
 
         const lastSync = await this.getLastSync();
         if (lastSync == null || lastSync.getTime() === 0) {
-            return [true, false];
+            return true;
         }
 
-        try {
-            const response = await this.apiService.getAccountRevisionDate();
-            if (new Date(response) <= lastSync) {
-                return [false, false];
-            }
-            return [true, false];
-        } catch (e) {
-            return [false, true];
+        const response = await this.apiService.getAccountRevisionDate();
+        if (new Date(response) <= lastSync) {
+            return false;
         }
+        return true;
     }
 
     private async syncProfile(response: ProfileResponse) {
@@ -257,7 +290,7 @@ export class SyncService implements SyncServiceAbstraction {
         await this.userService.setSecurityStamp(response.securityStamp);
 
         const organizations: { [id: string]: OrganizationData; } = {};
-        response.organizations.forEach((o) => {
+        response.organizations.forEach(o => {
             organizations[o.id] = new OrganizationData(o);
         });
         return await this.userService.replaceOrganizations(organizations);
@@ -265,7 +298,7 @@ export class SyncService implements SyncServiceAbstraction {
 
     private async syncFolders(userId: string, response: FolderResponse[]) {
         const folders: { [id: string]: FolderData; } = {};
-        response.forEach((f) => {
+        response.forEach(f => {
             folders[f.id] = new FolderData(f, userId);
         });
         return await this.folderService.replace(folders);
@@ -273,7 +306,7 @@ export class SyncService implements SyncServiceAbstraction {
 
     private async syncCollections(response: CollectionDetailsResponse[]) {
         const collections: { [id: string]: CollectionData; } = {};
-        response.forEach((c) => {
+        response.forEach(c => {
             collections[c.id] = new CollectionData(c);
         });
         return await this.collectionService.replace(collections);
@@ -281,10 +314,18 @@ export class SyncService implements SyncServiceAbstraction {
 
     private async syncCiphers(userId: string, response: CipherResponse[]) {
         const ciphers: { [id: string]: CipherData; } = {};
-        response.forEach((c) => {
+        response.forEach(c => {
             ciphers[c.id] = new CipherData(c, userId);
         });
         return await this.cipherService.replace(ciphers);
+    }
+
+    private async syncSends(userId: string, response: SendResponse[]) {
+        const sends: { [id: string]: SendData; } = {};
+        response.forEach(s => {
+            sends[s.id] = new SendData(s, userId);
+        });
+        return await this.sendService.replace(sends);
     }
 
     private async syncSettings(userId: string, response: DomainsResponse) {
@@ -294,7 +335,7 @@ export class SyncService implements SyncServiceAbstraction {
         }
 
         if (response != null && response.globalEquivalentDomains != null) {
-            response.globalEquivalentDomains.forEach((global) => {
+            response.globalEquivalentDomains.forEach(global => {
                 if (global.domains.length > 0) {
                     eqDomains.push(global.domains);
                 }
@@ -307,7 +348,7 @@ export class SyncService implements SyncServiceAbstraction {
     private async syncPolicies(response: PolicyResponse[]) {
         const policies: { [id: string]: PolicyData; } = {};
         if (response != null) {
-            response.forEach((p) => {
+            response.forEach(p => {
                 policies[p.id] = new PolicyData(p);
             });
         }

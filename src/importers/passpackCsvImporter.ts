@@ -6,15 +6,15 @@ import { ImportResult } from '../models/domain/importResult';
 import { CollectionView } from '../models/view/collectionView';
 
 export class PasspackCsvImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const results = this.parseCsv(data, true);
         if (results == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             const tagsJson = !this.isNullOrWhitespace(value.Tags) ? JSON.parse(value.Tags) : null;
             const tags: string[] = tagsJson != null && tagsJson.tags != null && tagsJson.tags.length > 0 ?
                 tagsJson.tags.map((tagJson: string) => {
@@ -26,7 +26,7 @@ export class PasspackCsvImporter extends BaseImporter implements Importer {
                 }).filter((t: string) => !this.isNullOrWhitespace(t)) : null;
 
             if (this.organization && tags != null && tags.length > 0) {
-                tags.forEach((tag) => {
+                tags.forEach(tag => {
                     let addCollection = true;
                     let collectionIndex = result.collections.length;
 
@@ -88,6 +88,6 @@ export class PasspackCsvImporter extends BaseImporter implements Importer {
         });
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 }

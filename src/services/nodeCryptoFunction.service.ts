@@ -26,6 +26,46 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         });
     }
 
+    // ref: https://tools.ietf.org/html/rfc5869
+    async hkdf(ikm: ArrayBuffer, salt: string | ArrayBuffer, info: string | ArrayBuffer,
+        outputByteSize: number, algorithm: 'sha256' | 'sha512'): Promise<ArrayBuffer> {
+        const saltBuf = this.toArrayBuffer(salt);
+        const prk = await this.hmac(ikm, saltBuf, algorithm);
+        return this.hkdfExpand(prk, info, outputByteSize, algorithm);
+    }
+
+    // ref: https://tools.ietf.org/html/rfc5869
+    async hkdfExpand(prk: ArrayBuffer, info: string | ArrayBuffer, outputByteSize: number,
+        algorithm: 'sha256' | 'sha512'): Promise<ArrayBuffer> {
+        const hashLen = algorithm === 'sha256' ? 32 : 64;
+        if (outputByteSize > 255 * hashLen) {
+            throw new Error('outputByteSize is too large.');
+        }
+        const prkArr = new Uint8Array(prk);
+        if (prkArr.length < hashLen) {
+            throw new Error('prk is too small.');
+        }
+        const infoBuf = this.toArrayBuffer(info);
+        const infoArr = new Uint8Array(infoBuf);
+        let runningOkmLength = 0;
+        let previousT = new Uint8Array(0);
+        const n = Math.ceil(outputByteSize / hashLen);
+        const okm = new Uint8Array(n * hashLen);
+        for (let i = 0; i < n; i++) {
+            const t = new Uint8Array(previousT.length + infoArr.length + 1);
+            t.set(previousT);
+            t.set(infoArr, previousT.length);
+            t.set([i + 1], t.length - 1);
+            previousT = new Uint8Array(await this.hmac(t.buffer, prk, algorithm));
+            okm.set(previousT, runningOkmLength);
+            runningOkmLength += previousT.length;
+            if (runningOkmLength >= outputByteSize) {
+                break;
+            }
+        }
+        return okm.slice(0, outputByteSize).buffer;
+    }
+
     hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512' | 'md5'): Promise<ArrayBuffer> {
         const nodeValue = this.toNodeValue(value);
         const hash = crypto.createHash(algorithm);
@@ -196,8 +236,14 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         return Buffer.from(new Uint8Array(value) as any);
     }
 
-    private toArrayBuffer(buf: Buffer): ArrayBuffer {
-        return new Uint8Array(buf).buffer;
+    private toArrayBuffer(value: Buffer | string | ArrayBuffer): ArrayBuffer {
+        let buf: ArrayBuffer;
+        if (typeof (value) === 'string') {
+            buf = Utils.fromUtf8ToArray(value).buffer;
+        } else {
+            buf = new Uint8Array(value).buffer;
+        }
+        return buf;
     }
 
     private toPemPrivateKey(key: ArrayBuffer): string {

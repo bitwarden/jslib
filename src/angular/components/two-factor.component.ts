@@ -3,7 +3,10 @@ import {
     OnInit,
 } from '@angular/core';
 
-import { Router } from '@angular/router';
+import {
+    ActivatedRoute,
+    Router,
+} from '@angular/router';
 
 import { TwoFactorProviderType } from '../../enums/twoFactorProviderType';
 
@@ -39,6 +42,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     twoFactorEmail: string = null;
     formPromise: Promise<any>;
     emailPromise: Promise<any>;
+    identifier: string = null;
     onSuccessfulLogin: () => Promise<any>;
     onSuccessfulLoginNavigate: () => Promise<any>;
 
@@ -49,18 +53,27 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         protected i18nService: I18nService, protected apiService: ApiService,
         protected platformUtilsService: PlatformUtilsService, protected win: Window,
         protected environmentService: EnvironmentService, protected stateService: StateService,
-        protected storageService: StorageService) {
+        protected storageService: StorageService, protected route: ActivatedRoute) {
         this.webAuthnSupported = this.platformUtilsService.supportsWebAuthn(win);
     }
 
     async ngOnInit() {
-        if ((!this.authService.authingWithSso() && !this.authService.authingWithPassword()) ||
-            this.authService.twoFactorProvidersData == null) {
+        if (!this.authing || this.authService.twoFactorProvidersData == null) {
             this.router.navigate([this.loginRoute]);
             return;
         }
 
-        if (this.authService.authingWithSso()) {
+        const queryParamsSub = this.route.queryParams.subscribe(async qParams => {
+            if (qParams.identifier != null) {
+                this.identifier = qParams.identifier;
+            }
+
+            if (queryParamsSub != null) {
+                queryParamsSub.unsubscribe();
+            }
+        });
+
+        if (this.needsLock) {
             this.successRoute = 'lock';
         }
 
@@ -167,13 +180,17 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 this.onSuccessfulLogin();
             }
             this.platformUtilsService.eventTrack('Logged In From Two-step');
+            if (response.resetMasterPassword) {
+                this.successRoute = 'set-password';
+            }
             if (this.onSuccessfulLoginNavigate != null) {
                 this.onSuccessfulLoginNavigate();
             } else {
-                if (response.resetMasterPassword) {
-                    this.successRoute = 'set-password';
-                }
-                this.router.navigate([this.successRoute]);
+                this.router.navigate([this.successRoute], {
+                    queryParams: {
+                        identifier: this.identifier,
+                    },
+                });
             }
         } catch {
             if (this.selectedProviderType === TwoFactorProviderType.WebAuthn && this.webAuthn != null) {
@@ -209,5 +226,13 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             this.webAuthn.stop();
             this.webAuthn.cleanup();
         }
+    }
+
+    get authing(): boolean {
+        return this.authService.authingWithPassword() || this.authService.authingWithSso() || this.authService.authingWithApiKey();
+    }
+
+    get needsLock(): boolean {
+        return this.authService.authingWithSso() || this.authService.authingWithApiKey();
     }
 }

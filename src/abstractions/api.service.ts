@@ -15,6 +15,11 @@ import { CollectionRequest } from '../models/request/collectionRequest';
 import { DeleteRecoverRequest } from '../models/request/deleteRecoverRequest';
 import { EmailRequest } from '../models/request/emailRequest';
 import { EmailTokenRequest } from '../models/request/emailTokenRequest';
+import { EmergencyAccessAcceptRequest } from '../models/request/emergencyAccessAcceptRequest';
+import { EmergencyAccessConfirmRequest } from '../models/request/emergencyAccessConfirmRequest';
+import { EmergencyAccessInviteRequest } from '../models/request/emergencyAccessInviteRequest';
+import { EmergencyAccessPasswordRequest } from '../models/request/emergencyAccessPasswordRequest';
+import { EmergencyAccessUpdateRequest } from '../models/request/emergencyAccessUpdateRequest';
 import { EventRequest } from '../models/request/eventRequest';
 import { FolderRequest } from '../models/request/folderRequest';
 import { GroupRequest } from '../models/request/groupRequest';
@@ -42,6 +47,8 @@ import { PreloginRequest } from '../models/request/preloginRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
+import { SendAccessRequest } from '../models/request/sendAccessRequest';
+import { SendRequest } from '../models/request/sendRequest';
 import { SetPasswordRequest } from '../models/request/setPasswordRequest';
 import { StorageRequest } from '../models/request/storageRequest';
 import { TaxInfoUpdateRequest } from '../models/request/taxInfoUpdateRequest';
@@ -71,6 +78,12 @@ import {
     CollectionResponse,
 } from '../models/response/collectionResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
+import {
+    EmergencyAccessGranteeDetailsResponse,
+    EmergencyAccessGrantorDetailsResponse,
+    EmergencyAccessTakeoverResponse,
+    EmergencyAccessViewResponse
+} from '../models/response/emergencyAccessResponse';
 import { EventResponse } from '../models/response/eventResponse';
 import { FolderResponse } from '../models/response/folderResponse';
 import {
@@ -92,9 +105,12 @@ import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
+import { SendAccessResponse } from '../models/response/sendAccessResponse';
+import { SendResponse } from '../models/response/sendResponse';
 import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TaxInfoResponse } from '../models/response/taxInfoResponse';
+import { TaxRateResponse } from '../models/response/taxRateResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
 import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
 import { TwoFactorEmailResponse } from '../models/response/twoFactorEmailResponse';
@@ -146,11 +162,22 @@ export abstract class ApiService {
     postAccountRecoverDeleteToken: (request: VerifyDeleteRecoverRequest) => Promise<any>;
     postAccountKdf: (request: KdfRequest) => Promise<any>;
     getEnterprisePortalSignInToken: () => Promise<string>;
+    postUserApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
+    postUserRotateApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
 
     getFolder: (id: string) => Promise<FolderResponse>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
     putFolder: (id: string, request: FolderRequest) => Promise<FolderResponse>;
     deleteFolder: (id: string) => Promise<any>;
+
+    getSend: (id: string) => Promise<SendResponse>;
+    postSendAccess: (id: string, request: SendAccessRequest, apiUrl?: string) => Promise<SendAccessResponse>;
+    getSends: () => Promise<ListResponse<SendResponse>>;
+    postSend: (request: SendRequest) => Promise<SendResponse>;
+    postSendFile: (data: FormData) => Promise<SendResponse>;
+    putSend: (id: string, request: SendRequest) => Promise<SendResponse>;
+    putSendRemovePassword: (id: string) => Promise<SendResponse>;
+    deleteSend: (id: string) => Promise<any>;
 
     getCipher: (id: string) => Promise<CipherResponse>;
     getCipherAdmin: (id: string) => Promise<CipherResponse>;
@@ -176,9 +203,9 @@ export abstract class ApiService {
     putDeleteCipherAdmin: (id: string) => Promise<any>;
     putDeleteManyCiphers: (request: CipherBulkDeleteRequest) => Promise<any>;
     putDeleteManyCiphersAdmin: (request: CipherBulkDeleteRequest) => Promise<any>;
-    putRestoreCipher: (id: string) => Promise<any>;
-    putRestoreCipherAdmin: (id: string) => Promise<any>;
-    putRestoreManyCiphers: (request: CipherBulkRestoreRequest) => Promise<any>;
+    putRestoreCipher: (id: string) => Promise<CipherResponse>;
+    putRestoreCipherAdmin: (id: string) => Promise<CipherResponse>;
+    putRestoreManyCiphers: (request: CipherBulkRestoreRequest) => Promise<ListResponse<CipherResponse>>;
 
     postCipherAttachment: (id: string, data: FormData) => Promise<CipherResponse>;
     postCipherAttachmentAdmin: (id: string, data: FormData) => Promise<CipherResponse>;
@@ -259,6 +286,23 @@ export abstract class ApiService {
     postTwoFactorEmailSetup: (request: TwoFactorEmailRequest) => Promise<any>;
     postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
 
+    getEmergencyAccessTrusted: () => Promise<ListResponse<EmergencyAccessGranteeDetailsResponse>>;
+    getEmergencyAccessGranted: () => Promise<ListResponse<EmergencyAccessGrantorDetailsResponse>>;
+    getEmergencyAccess: (id: string) => Promise<EmergencyAccessGranteeDetailsResponse>;
+    getEmergencyGrantorPolicies: (id: string) => Promise<ListResponse<PolicyResponse>>;
+    putEmergencyAccess: (id: string, request: EmergencyAccessUpdateRequest) => Promise<any>;
+    deleteEmergencyAccess: (id: string) => Promise<any>;
+    postEmergencyAccessInvite: (request: EmergencyAccessInviteRequest) => Promise<any>;
+    postEmergencyAccessReinvite: (id: string) => Promise<any>;
+    postEmergencyAccessAccept: (id: string, request: EmergencyAccessAcceptRequest) => Promise<any>;
+    postEmergencyAccessConfirm: (id: string, request: EmergencyAccessConfirmRequest) => Promise<any>;
+    postEmergencyAccessInitiate: (id: string) => Promise<any>;
+    postEmergencyAccessApprove: (id: string) => Promise<any>;
+    postEmergencyAccessReject: (id: string) => Promise<any>;
+    postEmergencyAccessTakeover: (id: string) => Promise<EmergencyAccessTakeoverResponse>;
+    postEmergencyAccessPassword: (id: string, request: EmergencyAccessPasswordRequest) => Promise<any>;
+    postEmergencyAccessView: (id: string) => Promise<EmergencyAccessViewResponse>;
+
     getOrganization: (id: string) => Promise<OrganizationResponse>;
     getOrganizationBilling: (id: string) => Promise<BillingResponse>;
     getOrganizationSubscription: (id: string) => Promise<OrganizationSubscriptionResponse>;
@@ -281,6 +325,7 @@ export abstract class ApiService {
     postOrganizationReinstate: (id: string) => Promise<any>;
     deleteOrganization: (id: string, request: PasswordVerificationRequest) => Promise<any>;
     getPlans: () => Promise<ListResponse<PlanResponse>>;
+    getTaxRates: () => Promise<ListResponse<TaxRateResponse>>;
 
     getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
     getEventsCipher: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
@@ -303,4 +348,6 @@ export abstract class ApiService {
     getActiveBearerToken: () => Promise<string>;
     fetch: (request: Request) => Promise<Response>;
     nativeFetch: (request: Request) => Promise<Response>;
+
+    preValidateSso: (identifier: string) => Promise<boolean>;
 }

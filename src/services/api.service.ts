@@ -7,8 +7,6 @@ import { TokenService } from '../abstractions/token.service';
 
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
-import { Utils } from '../misc/utils';
-
 import { BitPayInvoiceRequest } from '../models/request/bitPayInvoiceRequest';
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
 import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
@@ -21,6 +19,11 @@ import { CollectionRequest } from '../models/request/collectionRequest';
 import { DeleteRecoverRequest } from '../models/request/deleteRecoverRequest';
 import { EmailRequest } from '../models/request/emailRequest';
 import { EmailTokenRequest } from '../models/request/emailTokenRequest';
+import { EmergencyAccessAcceptRequest } from '../models/request/emergencyAccessAcceptRequest';
+import { EmergencyAccessConfirmRequest } from '../models/request/emergencyAccessConfirmRequest';
+import { EmergencyAccessInviteRequest } from '../models/request/emergencyAccessInviteRequest';
+import { EmergencyAccessPasswordRequest } from '../models/request/emergencyAccessPasswordRequest';
+import { EmergencyAccessUpdateRequest } from '../models/request/emergencyAccessUpdateRequest';
 import { EventRequest } from '../models/request/eventRequest';
 import { FolderRequest } from '../models/request/folderRequest';
 import { GroupRequest } from '../models/request/groupRequest';
@@ -48,6 +51,8 @@ import { PreloginRequest } from '../models/request/preloginRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
+import { SendAccessRequest } from '../models/request/sendAccessRequest';
+import { SendRequest } from '../models/request/sendRequest';
 import { SetPasswordRequest } from '../models/request/setPasswordRequest';
 import { StorageRequest } from '../models/request/storageRequest';
 import { TaxInfoUpdateRequest } from '../models/request/taxInfoUpdateRequest';
@@ -68,6 +73,7 @@ import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
+import { Utils } from '../misc/utils';
 import { ApiKeyResponse } from '../models/response/apiKeyResponse';
 import { BillingResponse } from '../models/response/billingResponse';
 import { BreachAccountResponse } from '../models/response/breachAccountResponse';
@@ -77,6 +83,12 @@ import {
     CollectionResponse,
 } from '../models/response/collectionResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
+import {
+    EmergencyAccessGranteeDetailsResponse,
+    EmergencyAccessGrantorDetailsResponse,
+    EmergencyAccessTakeoverResponse,
+    EmergencyAccessViewResponse
+} from '../models/response/emergencyAccessResponse';
 import { ErrorResponse } from '../models/response/errorResponse';
 import { EventResponse } from '../models/response/eventResponse';
 import { FolderResponse } from '../models/response/folderResponse';
@@ -99,9 +111,12 @@ import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
+import { SendAccessResponse } from '../models/response/sendAccessResponse';
+import { SendResponse } from '../models/response/sendResponse';
 import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TaxInfoResponse } from '../models/response/taxInfoResponse';
+import { TaxRateResponse } from '../models/response/taxRateResponse';
 import { TwoFactorAuthenticatorResponse } from '../models/response/twoFactorAuthenticatorResponse';
 import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
 import { TwoFactorEmailResponse } from '../models/response/twoFactorEmailResponse';
@@ -175,7 +190,7 @@ export class ApiService implements ApiServiceAbstraction {
             headers.set('User-Agent', this.customUserAgent);
         }
         const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
-            body: this.qsStringify(request.toIdentityToken(this.platformUtilsService.identityClientId)),
+            body: this.qsStringify(request.toIdentityToken(request.clientId ?? this.platformUtilsService.identityClientId)),
             credentials: this.getCredentials(),
             cache: 'no-store',
             headers: headers,
@@ -353,7 +368,17 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     async getSsoUserIdentifier(): Promise<string> {
-        return this.send('GET', '/accounts/sso/user-identifier', null, true, true)
+        return this.send('GET', '/accounts/sso/user-identifier', null, true, true);
+    }
+
+    async postUserApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+        const r = await this.send('POST', '/accounts/api-key', request, true, true);
+        return new ApiKeyResponse(r);
+    }
+
+    async postUserRotateApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+        const r = await this.send('POST', '/accounts/rotate-api-key', request, true, true);
+        return new ApiKeyResponse(r);
     }
 
     // Folder APIs
@@ -375,6 +400,47 @@ export class ApiService implements ApiServiceAbstraction {
 
     deleteFolder(id: string): Promise<any> {
         return this.send('DELETE', '/folders/' + id, null, true, false);
+    }
+
+    // Send APIs
+
+    async getSend(id: string): Promise<SendResponse> {
+        const r = await this.send('GET', '/sends/' + id, null, true, true);
+        return new SendResponse(r);
+    }
+
+    async postSendAccess(id: string, request: SendAccessRequest, apiUrl?: string): Promise<SendAccessResponse> {
+        const r = await this.send('POST', '/sends/access/' + id, request, false, true, apiUrl);
+        return new SendAccessResponse(r);
+    }
+
+    async getSends(): Promise<ListResponse<SendResponse>> {
+        const r = await this.send('GET', '/sends', null, true, true);
+        return new ListResponse(r, SendResponse);
+    }
+
+    async postSend(request: SendRequest): Promise<SendResponse> {
+        const r = await this.send('POST', '/sends', request, true, true);
+        return new SendResponse(r);
+    }
+
+    async postSendFile(data: FormData): Promise<SendResponse> {
+        const r = await this.send('POST', '/sends/file', data, true, true);
+        return new SendResponse(r);
+    }
+
+    async putSend(id: string, request: SendRequest): Promise<SendResponse> {
+        const r = await this.send('PUT', '/sends/' + id, request, true, true);
+        return new SendResponse(r);
+    }
+
+    async putSendRemovePassword(id: string): Promise<SendResponse> {
+        const r = await this.send('PUT', '/sends/' + id + '/remove-password', null, true, true);
+        return new SendResponse(r);
+    }
+
+    deleteSend(id: string): Promise<any> {
+        return this.send('DELETE', '/sends/' + id, null, true, false);
     }
 
     // Cipher APIs
@@ -489,16 +555,19 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('PUT', '/ciphers/delete-admin', request, true, false);
     }
 
-    putRestoreCipher(id: string): Promise<any> {
-        return this.send('PUT', '/ciphers/' + id + '/restore', null, true, false);
+    async putRestoreCipher(id: string): Promise<CipherResponse> {
+        const r = await this.send('PUT', '/ciphers/' + id + '/restore', null, true, true);
+        return new CipherResponse(r);
     }
 
-    putRestoreCipherAdmin(id: string): Promise<any> {
-        return this.send('PUT', '/ciphers/' + id + '/restore-admin', null, true, false);
+    async putRestoreCipherAdmin(id: string): Promise<CipherResponse> {
+        const r = await this.send('PUT', '/ciphers/' + id + '/restore-admin', null, true, true);
+        return new CipherResponse(r);
     }
 
-    putRestoreManyCiphers(request: CipherBulkDeleteRequest): Promise<any> {
-        return this.send('PUT', '/ciphers/restore', request, true, false);
+    async putRestoreManyCiphers(request: CipherBulkDeleteRequest): Promise<ListResponse<CipherResponse>> {
+        const r = await this.send('PUT', '/ciphers/restore', request, true, true);
+        return new ListResponse<CipherResponse>(r, CipherResponse);
     }
 
     // Attachments APIs
@@ -701,9 +770,13 @@ export class ApiService implements ApiServiceAbstraction {
         return new ListResponse(r, PlanResponse);
     }
 
-
     async postImportDirectory(organizationId: string, request: ImportDirectoryRequest): Promise<any> {
         return this.send('POST', '/organizations/' + organizationId + '/import', request, true, false);
+    }
+
+    async getTaxRates(): Promise<ListResponse<TaxRateResponse>> {
+        const r = await this.send('GET', '/plans/sales-tax-rates/', null, true, true);
+        return new ListResponse(r, TaxRateResponse);
     }
 
     // Settings APIs
@@ -853,6 +926,78 @@ export class ApiService implements ApiServiceAbstraction {
 
     postTwoFactorEmail(request: TwoFactorEmailRequest): Promise<any> {
         return this.send('POST', '/two-factor/send-email-login', request, false, false);
+    }
+
+    // Emergency Access APIs
+
+    async getEmergencyAccessTrusted(): Promise<ListResponse<EmergencyAccessGranteeDetailsResponse>> {
+        const r = await this.send('GET', '/emergency-access/trusted', null, true, true);
+        return new ListResponse(r, EmergencyAccessGranteeDetailsResponse);
+    }
+
+    async getEmergencyAccessGranted(): Promise<ListResponse<EmergencyAccessGrantorDetailsResponse>> {
+        const r = await this.send('GET', '/emergency-access/granted', null, true, true);
+        return new ListResponse(r, EmergencyAccessGrantorDetailsResponse);
+    }
+
+    async getEmergencyAccess(id: string): Promise<EmergencyAccessGranteeDetailsResponse> {
+        const r = await this.send('GET', '/emergency-access/' + id, null, true, true);
+        return new EmergencyAccessGranteeDetailsResponse(r);
+    }
+
+    async getEmergencyGrantorPolicies(id: string): Promise<ListResponse<PolicyResponse>> {
+        const r = await this.send('GET', '/emergency-access/' + id + '/policies', null, true, true);
+        return new ListResponse(r, PolicyResponse);
+    }
+
+    putEmergencyAccess(id: string, request: EmergencyAccessUpdateRequest): Promise<any> {
+        return this.send('PUT', '/emergency-access/' + id, request, true, false);
+    }
+
+    deleteEmergencyAccess(id: string): Promise<any> {
+        return this.send('DELETE', '/emergency-access/' + id, null, true, false);
+    }
+
+    postEmergencyAccessInvite(request: EmergencyAccessInviteRequest): Promise<any> {
+        return this.send('POST', '/emergency-access/invite', request, true, false);
+    }
+
+    postEmergencyAccessReinvite(id: string): Promise<any> {
+        return this.send('POST', '/emergency-access/' + id + '/reinvite', null, true, false);
+    }
+
+    postEmergencyAccessAccept(id: string, request: EmergencyAccessAcceptRequest): Promise<any> {
+        return this.send('POST', '/emergency-access/' + id + '/accept', request, true, false);
+    }
+
+    postEmergencyAccessConfirm(id: string, request: EmergencyAccessConfirmRequest): Promise<any> {
+        return this.send('POST', '/emergency-access/' + id + '/confirm', request, true, false);
+    }
+
+    postEmergencyAccessInitiate(id: string): Promise<any> {
+        return this.send('POST', '/emergency-access/' + id + '/initiate', null, true, false);
+    }
+
+    postEmergencyAccessApprove(id: string): Promise<any> {
+        return this.send('POST', '/emergency-access/' + id + '/approve', null, true, false);
+    }
+
+    postEmergencyAccessReject(id: string): Promise<any> {
+        return this.send('POST', '/emergency-access/' + id + '/reject', null, true, false);
+    }
+
+    async postEmergencyAccessTakeover(id: string): Promise<EmergencyAccessTakeoverResponse> {
+        const r = await this.send('POST', '/emergency-access/' + id + '/takeover', null, true, true);
+        return new EmergencyAccessTakeoverResponse(r);
+    }
+
+    async postEmergencyAccessPassword(id: string, request: EmergencyAccessPasswordRequest): Promise<any> {
+        const r = await this.send('POST', '/emergency-access/' + id + '/password', request, true, true);
+    }
+
+    async postEmergencyAccessView(id: string): Promise<EmergencyAccessViewResponse> {
+        const r = await this.send('POST', '/emergency-access/' + id + '/view', null, true, true);
+        return new EmergencyAccessViewResponse(r);
     }
 
     // Organization APIs
@@ -1054,8 +1199,37 @@ export class ApiService implements ApiServiceAbstraction {
         return fetch(request);
     }
 
+    async preValidateSso(identifier: string): Promise<boolean> {
+        if (identifier == null || identifier === '') {
+            throw new Error('Organization Identifier was not provided.');
+        }
+        const headers = new Headers({
+            'Accept': 'application/json',
+            'Device-Type': this.deviceType,
+        });
+        if (this.customUserAgent != null) {
+            headers.set('User-Agent', this.customUserAgent);
+        }
+
+        const path = `/account/prevalidate?domainHint=${encodeURIComponent(identifier)}`;
+        const response = await this.fetch(new Request(this.identityBaseUrl + path, {
+            cache: 'no-store',
+            credentials: this.getCredentials(),
+            headers: headers,
+            method: 'GET',
+        }));
+
+        if (response.status === 200) {
+            return true;
+        } else {
+            const error = await this.handleError(response, false, true);
+            return Promise.reject(error);
+        }
+    }
+
     private async send(method: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string, body: any,
-        authed: boolean, hasResponse: boolean): Promise<any> {
+        authed: boolean, hasResponse: boolean, apiUrl?: string): Promise<any> {
+        apiUrl = Utils.isNullOrWhitespace(apiUrl) ? this.apiBaseUrl : apiUrl;
         const headers = new Headers({
             'Device-Type': this.deviceType,
         });
@@ -1091,19 +1265,19 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         requestInit.headers = headers;
-        const response = await this.fetch(new Request(this.apiBaseUrl + path, requestInit));
+        const response = await this.fetch(new Request(apiUrl + path, requestInit));
 
         if (hasResponse && response.status === 200) {
             const responseJson = await response.json();
             return responseJson;
         } else if (response.status !== 200) {
-            const error = await this.handleError(response, false);
+            const error = await this.handleError(response, false, authed);
             return Promise.reject(error);
         }
     }
 
-    private async handleError(response: Response, tokenError: boolean): Promise<ErrorResponse> {
-        if ((tokenError && response.status === 400) || response.status === 401 || response.status === 403) {
+    private async handleError(response: Response, tokenError: boolean, authed: boolean): Promise<ErrorResponse> {
+        if (authed && ((tokenError && response.status === 400) || response.status === 401 || response.status === 403)) {
             await this.logoutCallback(true);
             return null;
         }
@@ -1149,19 +1323,19 @@ export class ApiService implements ApiServiceAbstraction {
             await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken);
             return tokenResponse;
         } else {
-            const error = await this.handleError(response, true);
+            const error = await this.handleError(response, true, true);
             return Promise.reject(error);
         }
     }
 
     private qsStringify(params: any): string {
-        return Object.keys(params).map((key) => {
+        return Object.keys(params).map(key => {
             return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
         }).join('&');
     }
 
     private getCredentials(): RequestCredentials {
-        if (this.device !== DeviceType.SafariExtension && (!this.isWebClient || this.usingBaseUrl)) {
+        if (!this.isWebClient || this.usingBaseUrl) {
             return 'include';
         }
         return undefined;

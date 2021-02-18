@@ -4,24 +4,24 @@ import { Importer } from './importer';
 import { ImportResult } from '../models/domain/importResult';
 
 export class PasswordSafeXmlImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const doc = this.parseXml(data);
         if (doc == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         const passwordSafe = doc.querySelector('passwordsafe');
         if (passwordSafe == null) {
             result.errorMessage = 'Missing `passwordsafe` node.';
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         const notesDelimiter = passwordSafe.getAttribute('delimiter');
         const entries = doc.querySelectorAll('passwordsafe > entry');
-        Array.from(entries).forEach((entry) => {
+        Array.from(entries).forEach(entry => {
             const group = this.querySelectorDirectChild(entry, 'group');
             const groupText = group != null && !this.isNullOrWhitespace(group.textContent) ?
                 group.textContent.split('.').join('/') : null;
@@ -57,6 +57,6 @@ export class PasswordSafeXmlImporter extends BaseImporter implements Importer {
         }
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 }

@@ -10,6 +10,8 @@ import { ProfileOrganizationResponse } from '../models/response/profileOrganizat
 
 import { CryptoService as CryptoServiceAbstraction } from '../abstractions/crypto.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
+import { LogService } from '../abstractions/log.service';
+import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { StorageService } from '../abstractions/storage.service';
 
 import { ConstantsService } from './constants.service';
@@ -36,14 +38,16 @@ export class CryptoService implements CryptoServiceAbstraction {
     private orgKeys: Map<string, SymmetricCryptoKey>;
 
     constructor(private storageService: StorageService, private secureStorageService: StorageService,
-        private cryptoFunctionService: CryptoFunctionService) { }
+        private cryptoFunctionService: CryptoFunctionService, private platformUtilService: PlatformUtilsService,
+        private logService: LogService) {
+    }
 
     async setKey(key: SymmetricCryptoKey): Promise<any> {
         this.key = key;
 
         const option = await this.storageService.get<number>(ConstantsService.vaultTimeoutKey);
         const biometric = await this.storageService.get<boolean>(ConstantsService.biometricUnlockKey);
-        if (option != null && !biometric) {
+        if (option != null && !(biometric && this.platformUtilService.supportsSecureStorage())) {
             // if we have a lock option set, we do not store the key
             return;
         }
@@ -76,7 +80,7 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     setOrgKeys(orgs: ProfileOrganizationResponse[]): Promise<{}> {
         const orgKeys: any = {};
-        orgs.forEach((org) => {
+        orgs.forEach(org => {
             orgKeys[org.id] = org.key;
         });
 
@@ -182,8 +186,8 @@ export class CryptoService implements CryptoServiceAbstraction {
             throw new Error('No public key available.');
         }
         const keyFingerprint = await this.cryptoFunctionService.hash(publicKey, 'sha256');
-        const userFingerprint = await this.hkdfExpand(keyFingerprint, Utils.fromUtf8ToArray(userId), 32);
-        return this.hashPhrase(userFingerprint.buffer);
+        const userFingerprint = await this.cryptoFunctionService.hkdfExpand(keyFingerprint, userId, 32, 'sha256');
+        return this.hashPhrase(userFingerprint);
     }
 
     @sequentialize(() => 'getOrgKeys')
@@ -293,7 +297,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         const key = await this.getKey();
         const option = await this.storageService.get(ConstantsService.vaultTimeoutKey);
         const biometric = await this.storageService.get(ConstantsService.biometricUnlockKey);
-        if (!biometric && (option != null || option === 0)) {
+        if ((!biometric && this.platformUtilService.supportsSecureStorage()) && (option != null || option === 0)) {
             // if we have a lock option set, clear the key
             await this.clearKey();
             this.key = key;
@@ -353,6 +357,11 @@ export class CryptoService implements CryptoServiceAbstraction {
         return await this.stretchKey(pinKey);
     }
 
+    async makeSendKey(keyMaterial: ArrayBuffer): Promise<SymmetricCryptoKey> {
+        const sendKey = await this.cryptoFunctionService.hkdf(keyMaterial, 'bitwarden-send', 'send', 64, 'sha256');
+        return new SymmetricCryptoKey(sendKey);
+    }
+
     async hashPassword(password: string, key: SymmetricCryptoKey): Promise<string> {
         if (key == null) {
             key = await this.getKey();
@@ -371,8 +380,10 @@ export class CryptoService implements CryptoServiceAbstraction {
         return this.buildEncKey(theKey, encKey);
     }
 
-    async remakeEncKey(key: SymmetricCryptoKey): Promise<[SymmetricCryptoKey, CipherString]> {
-        const encKey = await this.getEncKey();
+    async remakeEncKey(key: SymmetricCryptoKey, encKey?: SymmetricCryptoKey): Promise<[SymmetricCryptoKey, CipherString]> {
+        if (encKey == null) {
+            encKey = await this.getEncKey();
+        }
         return this.buildEncKey(key, encKey.key);
     }
 
@@ -423,6 +434,58 @@ export class CryptoService implements CryptoServiceAbstraction {
 
         const encBytes = await this.cryptoFunctionService.rsaEncrypt(data, publicKey, 'sha1');
         return new CipherString(EncryptionType.Rsa2048_OaepSha1_B64, Utils.fromBufferToB64(encBytes));
+    }
+
+    async rsaDecrypt(encValue: string): Promise<ArrayBuffer> {
+        const headerPieces = encValue.split('.');
+        let encType: EncryptionType = null;
+        let encPieces: string[];
+
+        if (headerPieces.length === 1) {
+            encType = EncryptionType.Rsa2048_OaepSha256_B64;
+            encPieces = [headerPieces[0]];
+        } else if (headerPieces.length === 2) {
+            try {
+                encType = parseInt(headerPieces[0], null);
+                encPieces = headerPieces[1].split('|');
+            } catch (e) { }
+        }
+
+        switch (encType) {
+            case EncryptionType.Rsa2048_OaepSha256_B64:
+            case EncryptionType.Rsa2048_OaepSha1_B64:
+            // HmacSha256 types are deprecated
+            case EncryptionType.Rsa2048_OaepSha256_HmacSha256_B64:
+            case EncryptionType.Rsa2048_OaepSha1_HmacSha256_B64:
+                break;
+            default:
+                throw new Error('encType unavailable.');
+        }
+
+        if (encPieces == null || encPieces.length <= 0) {
+            throw new Error('encPieces unavailable.');
+        }
+
+        const data = Utils.fromB64ToArray(encPieces[0]).buffer;
+        const privateKey = await this.getPrivateKey();
+        if (privateKey == null) {
+            throw new Error('No private key.');
+        }
+
+        let alg: 'sha1' | 'sha256' = 'sha1';
+        switch (encType) {
+            case EncryptionType.Rsa2048_OaepSha256_B64:
+            case EncryptionType.Rsa2048_OaepSha256_HmacSha256_B64:
+                alg = 'sha256';
+                break;
+            case EncryptionType.Rsa2048_OaepSha1_B64:
+            case EncryptionType.Rsa2048_OaepSha1_HmacSha256_B64:
+                break;
+            default:
+                throw new Error('encType unavailable.');
+        }
+
+        return this.cryptoFunctionService.rsaDecrypt(data, privateKey, alg);
     }
 
     async decryptToBytes(cipherString: CipherString, key?: SymmetricCryptoKey): Promise<ArrayBuffer> {
@@ -540,14 +603,12 @@ export class CryptoService implements CryptoServiceAbstraction {
         const theKey = this.resolveLegacyKey(encType, keyForEnc);
 
         if (theKey.macKey != null && mac == null) {
-            // tslint:disable-next-line
-            console.error('mac required.');
+            this.logService.error('mac required.');
             return null;
         }
 
         if (theKey.encType !== encType) {
-            // tslint:disable-next-line
-            console.error('encType unavailable.');
+            this.logService.error('encType unavailable.');
             return null;
         }
 
@@ -557,8 +618,7 @@ export class CryptoService implements CryptoServiceAbstraction {
                 fastParams.macKey, 'sha256');
             const macsEqual = await this.cryptoFunctionService.compareFast(fastParams.mac, computedMac);
             if (!macsEqual) {
-                // tslint:disable-next-line
-                console.error('mac failed.');
+                this.logService.error('mac failed.');
                 return null;
             }
         }
@@ -590,65 +650,12 @@ export class CryptoService implements CryptoServiceAbstraction {
 
             const macsMatch = await this.cryptoFunctionService.compare(mac, computedMac);
             if (!macsMatch) {
-                // tslint:disable-next-line
-                console.error('mac failed.');
+                this.logService.error('mac failed.');
                 return null;
             }
         }
 
         return await this.cryptoFunctionService.aesDecrypt(data, iv, theKey.encKey);
-    }
-
-    private async rsaDecrypt(encValue: string): Promise<ArrayBuffer> {
-        const headerPieces = encValue.split('.');
-        let encType: EncryptionType = null;
-        let encPieces: string[];
-
-        if (headerPieces.length === 1) {
-            encType = EncryptionType.Rsa2048_OaepSha256_B64;
-            encPieces = [headerPieces[0]];
-        } else if (headerPieces.length === 2) {
-            try {
-                encType = parseInt(headerPieces[0], null);
-                encPieces = headerPieces[1].split('|');
-            } catch (e) { }
-        }
-
-        switch (encType) {
-            case EncryptionType.Rsa2048_OaepSha256_B64:
-            case EncryptionType.Rsa2048_OaepSha1_B64:
-            // HmacSha256 types are deprecated
-            case EncryptionType.Rsa2048_OaepSha256_HmacSha256_B64:
-            case EncryptionType.Rsa2048_OaepSha1_HmacSha256_B64:
-                break;
-            default:
-                throw new Error('encType unavailable.');
-        }
-
-        if (encPieces == null || encPieces.length <= 0) {
-            throw new Error('encPieces unavailable.');
-        }
-
-        const data = Utils.fromB64ToArray(encPieces[0]).buffer;
-        const privateKey = await this.getPrivateKey();
-        if (privateKey == null) {
-            throw new Error('No private key.');
-        }
-
-        let alg: 'sha1' | 'sha256' = 'sha1';
-        switch (encType) {
-            case EncryptionType.Rsa2048_OaepSha256_B64:
-            case EncryptionType.Rsa2048_OaepSha256_HmacSha256_B64:
-                alg = 'sha256';
-                break;
-            case EncryptionType.Rsa2048_OaepSha1_B64:
-            case EncryptionType.Rsa2048_OaepSha1_HmacSha256_B64:
-                break;
-            default:
-                throw new Error('encType unavailable.');
-        }
-
-        return this.cryptoFunctionService.rsaDecrypt(data, privateKey, alg);
     }
 
     private async getKeyForEncryption(key?: SymmetricCryptoKey): Promise<SymmetricCryptoKey> {
@@ -679,26 +686,11 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     private async stretchKey(key: SymmetricCryptoKey): Promise<SymmetricCryptoKey> {
         const newKey = new Uint8Array(64);
-        newKey.set(await this.hkdfExpand(key.key, Utils.fromUtf8ToArray('enc'), 32));
-        newKey.set(await this.hkdfExpand(key.key, Utils.fromUtf8ToArray('mac'), 32), 32);
+        const encKey = await this.cryptoFunctionService.hkdfExpand(key.key, 'enc', 32, 'sha256');
+        const macKey = await this.cryptoFunctionService.hkdfExpand(key.key, 'mac', 32, 'sha256');
+        newKey.set(new Uint8Array(encKey));
+        newKey.set(new Uint8Array(macKey), 32);
         return new SymmetricCryptoKey(newKey.buffer);
-    }
-
-    // ref: https://tools.ietf.org/html/rfc5869
-    private async hkdfExpand(prk: ArrayBuffer, info: Uint8Array, size: number) {
-        const hashLen = 32; // sha256
-        const okm = new Uint8Array(size);
-        let previousT = new Uint8Array(0);
-        const n = Math.ceil(size / hashLen);
-        for (let i = 0; i < n; i++) {
-            const t = new Uint8Array(previousT.length + info.length + 1);
-            t.set(previousT);
-            t.set(info, previousT.length);
-            t.set([i + 1], t.length - 1);
-            previousT = new Uint8Array(await this.cryptoFunctionService.hmac(t.buffer, prk, 'sha256'));
-            okm.set(previousT, i * hashLen);
-        }
-        return okm;
     }
 
     private async hashPhrase(hash: ArrayBuffer, minimumEntropy: number = 64) {

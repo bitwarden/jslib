@@ -5,15 +5,15 @@ import { ImportResult } from '../models/domain/importResult';
 import { CipherView } from '../models/view/cipherView';
 
 export class SplashIdCsvImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const results = this.parseCsv(data, false);
         if (results == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             if (value.length < 3) {
                 return;
             }
@@ -42,7 +42,7 @@ export class SplashIdCsvImporter extends BaseImporter implements Importer {
         }
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 
     private parseFieldsToNotes(cipher: CipherView, startIndex: number, value: any) {

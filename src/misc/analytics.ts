@@ -109,7 +109,7 @@ export class Analytics {
         }
         const pathParts = pagePath.split('/');
         const newPathParts: string[] = [];
-        pathParts.forEach((p) => {
+        pathParts.forEach(p => {
             if (p.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
                 newPathParts.push('__guid__');
             } else {

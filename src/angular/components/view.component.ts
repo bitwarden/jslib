@@ -36,6 +36,7 @@ export class ViewComponent implements OnDestroy, OnInit {
     @Input() cipherId: string;
     @Output() onEditCipher = new EventEmitter<CipherView>();
     @Output() onCloneCipher = new EventEmitter<CipherView>();
+    @Output() onShareCipher = new EventEmitter<CipherView>();
     @Output() onDeletedCipher = new EventEmitter<CipherView>();
     @Output() onRestoredCipher = new EventEmitter<CipherView>();
 
@@ -112,6 +113,10 @@ export class ViewComponent implements OnDestroy, OnInit {
 
     clone() {
         this.onCloneCipher.emit(this.cipher);
+    }
+
+    share() {
+        this.onShareCipher.emit(this.cipher);
     }
 
     async delete(): Promise<boolean> {
@@ -196,9 +201,13 @@ export class ViewComponent implements OnDestroy, OnInit {
         }
     }
 
-    launch(uri: LoginUriView) {
+    launch(uri: LoginUriView, cipherId?: string) {
         if (!uri.canLaunch) {
             return;
+        }
+
+        if (cipherId) {
+            this.cipherService.updateLastLaunchedDate(cipherId);
         }
 
         this.platformUtilsService.eventTrack('Launched Login URI');

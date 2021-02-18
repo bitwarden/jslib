@@ -160,10 +160,10 @@ Notes:",nomonth,,0`,
 ];
 
 describe('Lastpass CSV Importer', () => {
-    CipherData.forEach((data) => {
+    CipherData.forEach(data => {
         it(data.title, async () => {
             const importer = new Importer();
-            const result = importer.parse(data.csv);
+            const result = await importer.parse(data.csv);
             expect(result != null).toBe(true);
             expect(result.ciphers.length).toBeGreaterThan(0);
 

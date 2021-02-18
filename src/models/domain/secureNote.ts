@@ -5,6 +5,7 @@ import { SecureNoteData } from '../data/secureNoteData';
 import Domain from './domainBase';
 
 import { SecureNoteView } from '../view/secureNoteView';
+import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
 export class SecureNote extends Domain {
     type: SecureNoteType;
@@ -18,7 +19,7 @@ export class SecureNote extends Domain {
         this.type = obj.type;
     }
 
-    decrypt(orgId: string): Promise<SecureNoteView> {
+    decrypt(orgId: string, encKey?: SymmetricCryptoKey): Promise<SecureNoteView> {
         return Promise.resolve(new SecureNoteView(this));
     }
 

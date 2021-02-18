@@ -10,18 +10,18 @@ import { FolderView } from '../models/view/folderView';
 export class KeePass2XmlImporter extends BaseImporter implements Importer {
     result = new ImportResult();
 
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const doc = this.parseXml(data);
         if (doc == null) {
             this.result.success = false;
-            return this.result;
+            return Promise.resolve(this.result);
         }
 
         const rootGroup = doc.querySelector('KeePassFile > Root > Group');
         if (rootGroup == null) {
             this.result.errorMessage = 'Missing `KeePassFile > Root > Group` node.';
             this.result.success = false;
-            return this.result;
+            return Promise.resolve(this.result);
         }
 
         this.traverse(rootGroup, true, '');
@@ -31,7 +31,7 @@ export class KeePass2XmlImporter extends BaseImporter implements Importer {
         }
 
         this.result.success = true;
-        return this.result;
+        return Promise.resolve(this.result);
     }
 
     traverse(node: Element, isRootNode: boolean, groupPrefixName: string) {
@@ -49,11 +49,11 @@ export class KeePass2XmlImporter extends BaseImporter implements Importer {
             this.result.folders.push(folder);
         }
 
-        this.querySelectorAllDirectChild(node, 'Entry').forEach((entry) => {
+        this.querySelectorAllDirectChild(node, 'Entry').forEach(entry => {
             const cipherIndex = this.result.ciphers.length;
 
             const cipher = this.initLoginCipher();
-            this.querySelectorAllDirectChild(entry, 'String').forEach((entryString) => {
+            this.querySelectorAllDirectChild(entry, 'String').forEach(entryString => {
                 const valueEl = this.querySelectorDirectChild(entryString, 'Value');
                 const value = valueEl != null ? valueEl.textContent : null;
                 if (this.isNullOrWhitespace(value)) {
@@ -93,7 +93,7 @@ export class KeePass2XmlImporter extends BaseImporter implements Importer {
             }
         });
 
-        this.querySelectorAllDirectChild(node, 'Group').forEach((group) => {
+        this.querySelectorAllDirectChild(node, 'Group').forEach(group => {
             this.traverse(group, false, groupName);
         });
     }

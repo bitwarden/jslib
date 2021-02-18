@@ -37,7 +37,7 @@ export class PolicyService implements PolicyServiceAbstraction {
             this.policyCache = response;
         }
         if (type != null) {
-            return this.policyCache.filter((p) => p.type === type);
+            return this.policyCache.filter(p => p.type === type);
         } else {
             return this.policyCache;
         }
@@ -60,14 +60,14 @@ export class PolicyService implements PolicyServiceAbstraction {
         if (policies == null) {
             policies = await this.getAll(PolicyType.MasterPassword);
         } else {
-            policies = policies.filter((p) => p.type === PolicyType.MasterPassword);
+            policies = policies.filter(p => p.type === PolicyType.MasterPassword);
         }
 
         if (policies == null || policies.length === 0) {
             return enforcedOptions;
         }
 
-        policies.forEach((currentPolicy) => {
+        policies.forEach(currentPolicy => {
             if (!currentPolicy.enabled || currentPolicy.data == null) {
                 return;
             }

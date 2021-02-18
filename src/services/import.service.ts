@@ -52,8 +52,9 @@ import { LogMeOnceCsvImporter } from '../importers/logMeOnceCsvImporter';
 import { MeldiumCsvImporter } from '../importers/meldiumCsvImporter';
 import { MSecureCsvImporter } from '../importers/msecureCsvImporter';
 import { MykiCsvImporter } from '../importers/mykiCsvImporter';
-import { OnePassword1PifImporter } from '../importers/onepassword1PifImporter';
-import { OnePasswordWinCsvImporter } from '../importers/onepasswordWinCsvImporter';
+import { OnePassword1PifImporter } from '../importers/onepasswordImporters/onepassword1PifImporter';
+import { OnePasswordMacCsvImporter } from '../importers/onepasswordImporters/onepasswordMacCsvImporter';
+import { OnePasswordWinCsvImporter } from '../importers/onepasswordImporters/onepasswordWinCsvImporter';
 import { PadlockCsvImporter } from '../importers/padlockCsvImporter';
 import { PassKeepCsvImporter } from '../importers/passkeepCsvImporter';
 import { PassmanJsonImporter } from '../importers/passmanJsonImporter';
@@ -90,6 +91,7 @@ export class ImportService implements ImportServiceAbstraction {
     regularImportOptions: ImportOption[] = [
         { id: 'keepassxcsv', name: 'KeePassX (csv)' },
         { id: '1passwordwincsv', name: '1Password 6 and 7 Windows (csv)' },
+        { id: '1passwordmaccsv', name: '1Password 6 and 7 Mac (csv)' },
         { id: 'roboformcsv', name: 'RoboForm (csv)' },
         { id: 'keepercsv', name: 'Keeper (csv)' },
         { id: 'enpasscsv', name: 'Enpass (csv)' },
@@ -165,12 +167,12 @@ export class ImportService implements ImportServiceAbstraction {
         }
     }
 
-    getImporter(format: string, organization = false): Importer {
+    getImporter(format: string, organizationId: string = null): Importer {
         const importer = this.getImporterInstance(format);
         if (importer == null) {
             return null;
         }
-        importer.organization = organization;
+        importer.organizationId = organizationId;
         return importer;
     }
 
@@ -215,6 +217,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new OnePassword1PifImporter();
             case '1passwordwincsv':
                 return new OnePasswordWinCsvImporter();
+            case '1passwordmaccsv':
+                return new OnePasswordMacCsvImporter();
             case 'keepercsv':
                 return new KeeperCsvImporter();
             case 'passworddragonxml':
@@ -302,7 +306,7 @@ export class ImportService implements ImportServiceAbstraction {
                 }
             }
             if (importResult.folderRelationships != null) {
-                importResult.folderRelationships.forEach((r) =>
+                importResult.folderRelationships.forEach(r =>
                     request.folderRelationships.push(new KvpRequest(r[0], r[1])));
             }
             return await this.apiService.postImportCiphers(request);
@@ -321,7 +325,7 @@ export class ImportService implements ImportServiceAbstraction {
                 }
             }
             if (importResult.collectionRelationships != null) {
-                importResult.collectionRelationships.forEach((r) =>
+                importResult.collectionRelationships.forEach(r =>
                     request.collectionRelationships.push(new KvpRequest(r[0], r[1])));
             }
             return await this.apiService.postImportOrganizationCiphers(organizationId, request);

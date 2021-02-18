@@ -8,15 +8,15 @@ import { ImportResult } from '../models/domain/importResult';
 import { CardView } from '../models/view/cardView';
 
 export class RememBearCsvImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const results = this.parseCsv(data, true);
         if (results == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
-        results.forEach((value) => {
+        results.forEach(value => {
             if (value.trash === 'true') {
                 return;
             }
@@ -68,6 +68,6 @@ export class RememBearCsvImporter extends BaseImporter implements Importer {
         });
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 }

@@ -72,13 +72,13 @@ export class CipherData {
         }
 
         if (response.fields != null) {
-            this.fields = response.fields.map((f) => new FieldData(f));
+            this.fields = response.fields.map(f => new FieldData(f));
         }
         if (response.attachments != null) {
-            this.attachments = response.attachments.map((a) => new AttachmentData(a));
+            this.attachments = response.attachments.map(a => new AttachmentData(a));
         }
         if (response.passwordHistory != null) {
-            this.passwordHistory = response.passwordHistory.map((ph) => new PasswordHistoryData(ph));
+            this.passwordHistory = response.passwordHistory.map(ph => new PasswordHistoryData(ph));
         }
     }
 }

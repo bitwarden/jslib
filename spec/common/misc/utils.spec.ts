@@ -49,13 +49,6 @@ describe('Utils Service', () => {
             expect(Utils.getHostname('https://bitwarden.com')).toBe('bitwarden.com');
             expect(Utils.getHostname('http://bitwarden.com')).toBe('bitwarden.com');
             expect(Utils.getHostname('http://vault.bitwarden.com')).toBe('vault.bitwarden.com');
-
-            if (Utils.isNode || window.navigator.userAgent.indexOf(' Edge/') === -1) {
-                // Note: Broken in Edge browser. See
-                // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/8004284/
-                expect(Utils.getHostname('https://user:password@bitwarden.com:8080/password/sites?and&query#hash'))
-                    .toBe('bitwarden.com');
-            }
         });
 
         it('should support localhost and IP', () => {

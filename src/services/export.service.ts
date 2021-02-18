@@ -13,6 +13,7 @@ import { FolderView } from '../models/view/folderView';
 
 import { Cipher } from '../models/domain/cipher';
 import { Collection } from '../models/domain/collection';
+import { Folder } from '../models/domain/folder';
 
 import { CipherData } from '../models/data/cipherData';
 import { CollectionData } from '../models/data/collectionData';
@@ -26,31 +27,58 @@ export class ExportService implements ExportServiceAbstraction {
     constructor(private folderService: FolderService, private cipherService: CipherService,
         private apiService: ApiService) { }
 
-    async getExport(format: 'csv' | 'json' = 'csv'): Promise<string> {
+    async getExport(format: 'csv' | 'json' | 'encrypted_json' = 'csv'): Promise<string> {
+        if (format === 'encrypted_json') {
+            return this.getEncryptedExport();
+        } else {
+            return this.getDecryptedExport(format);
+        }
+    }
+
+    async getOrganizationExport(organizationId: string,
+        format: 'csv' | 'json' | 'encrypted_json' = 'csv'): Promise<string> {
+        if (format === 'encrypted_json') {
+            return this.getOrganizationEncryptedExport(organizationId);
+        } else {
+            return this.getOrganizationDecryptedExport(organizationId, format);
+        }
+    }
+
+    getFileName(prefix: string = null, extension: string = 'csv'): string {
+        const now = new Date();
+        const dateString =
+            now.getFullYear() + '' + this.padNumber(now.getMonth() + 1, 2) + '' + this.padNumber(now.getDate(), 2) +
+            this.padNumber(now.getHours(), 2) + '' + this.padNumber(now.getMinutes(), 2) +
+            this.padNumber(now.getSeconds(), 2);
+
+        return 'bitwarden' + (prefix ? ('_' + prefix) : '') + '_export_' + dateString + '.' + extension;
+    }
+
+    private async getDecryptedExport(format: 'json' | 'csv'): Promise<string> {
         let decFolders: FolderView[] = [];
         let decCiphers: CipherView[] = [];
         const promises = [];
 
-        promises.push(this.folderService.getAllDecrypted().then((folders) => {
+        promises.push(this.folderService.getAllDecrypted().then(folders => {
             decFolders = folders;
         }));
 
-        promises.push(this.cipherService.getAllDecrypted().then((ciphers) => {
-            decCiphers = ciphers;
+        promises.push(this.cipherService.getAllDecrypted().then(ciphers => {
+            decCiphers = ciphers.filter(f => f.deletedDate == null);
         }));
 
         await Promise.all(promises);
 
         if (format === 'csv') {
             const foldersMap = new Map<string, FolderView>();
-            decFolders.forEach((f) => {
+            decFolders.forEach(f => {
                 if (f.id != null) {
                     foldersMap.set(f.id, f);
                 }
             });
 
             const exportCiphers: any[] = [];
-            decCiphers.forEach((c) => {
+            decCiphers.forEach(c => {
                 // only export logins and secure notes
                 if (c.type !== CipherType.Login && c.type !== CipherType.SecureNote) {
                     return;
@@ -70,11 +98,12 @@ export class ExportService implements ExportServiceAbstraction {
             return papa.unparse(exportCiphers);
         } else {
             const jsonDoc: any = {
+                encrypted: false,
                 folders: [],
                 items: [],
             };
 
-            decFolders.forEach((f) => {
+            decFolders.forEach(f => {
                 if (f.id == null) {
                     return;
                 }
@@ -83,7 +112,7 @@ export class ExportService implements ExportServiceAbstraction {
                 jsonDoc.folders.push(folder);
             });
 
-            decCiphers.forEach((c) => {
+            decCiphers.forEach(c => {
                 if (c.organizationId != null) {
                     return;
                 }
@@ -97,17 +126,60 @@ export class ExportService implements ExportServiceAbstraction {
         }
     }
 
-    async getOrganizationExport(organizationId: string, format: 'csv' | 'json' = 'csv'): Promise<string> {
+    private async getEncryptedExport(): Promise<string> {
+        let folders: Folder[] = [];
+        let ciphers: Cipher[] = [];
+        const promises = [];
+
+        promises.push(this.folderService.getAll().then(f => {
+            folders = f;
+        }));
+
+        promises.push(this.cipherService.getAll().then(c => {
+            ciphers = c.filter(f => f.deletedDate == null);
+        }));
+
+        await Promise.all(promises);
+
+        const jsonDoc: any = {
+            encrypted: true,
+            folders: [],
+            items: [],
+        };
+
+        folders.forEach(f => {
+            if (f.id == null) {
+                return;
+            }
+            const folder = new FolderExport();
+            folder.build(f);
+            jsonDoc.folders.push(folder);
+        });
+
+        ciphers.forEach(c => {
+            if (c.organizationId != null) {
+                return;
+            }
+            const cipher = new CipherExport();
+            cipher.build(c);
+            cipher.collectionIds = null;
+            jsonDoc.items.push(cipher);
+        });
+
+        return JSON.stringify(jsonDoc, null, '  ');
+    }
+
+    private async getOrganizationDecryptedExport(organizationId: string, format: 'json' | 'csv'): Promise<string> {
         const decCollections: CollectionView[] = [];
         const decCiphers: CipherView[] = [];
         const promises = [];
 
-        promises.push(this.apiService.getCollections(organizationId).then((collections) => {
+        promises.push(this.apiService.getCollections(organizationId).then(collections => {
             const collectionPromises: any = [];
             if (collections != null && collections.data != null && collections.data.length > 0) {
-                collections.data.forEach((c) => {
+                collections.data.forEach(c => {
                     const collection = new Collection(new CollectionData(c as CollectionDetailsResponse));
-                    collectionPromises.push(collection.decrypt().then((decCol) => {
+                    collectionPromises.push(collection.decrypt().then(decCol => {
                         decCollections.push(decCol);
                     }));
                 });
@@ -115,12 +187,12 @@ export class ExportService implements ExportServiceAbstraction {
             return Promise.all(collectionPromises);
         }));
 
-        promises.push(this.apiService.getCiphersOrganization(organizationId).then((ciphers) => {
+        promises.push(this.apiService.getCiphersOrganization(organizationId).then(ciphers => {
             const cipherPromises: any = [];
             if (ciphers != null && ciphers.data != null && ciphers.data.length > 0) {
-                ciphers.data.forEach((c) => {
+                ciphers.data.filter(c => c.deletedDate === null).forEach(c => {
                     const cipher = new Cipher(new CipherData(c));
-                    cipherPromises.push(cipher.decrypt().then((decCipher) => {
+                    cipherPromises.push(cipher.decrypt().then(decCipher => {
                         decCiphers.push(decCipher);
                     }));
                 });
@@ -132,12 +204,12 @@ export class ExportService implements ExportServiceAbstraction {
 
         if (format === 'csv') {
             const collectionsMap = new Map<string, CollectionView>();
-            decCollections.forEach((c) => {
+            decCollections.forEach(c => {
                 collectionsMap.set(c.id, c);
             });
 
             const exportCiphers: any[] = [];
-            decCiphers.forEach((c) => {
+            decCiphers.forEach(c => {
                 // only export logins and secure notes
                 if (c.type !== CipherType.Login && c.type !== CipherType.SecureNote) {
                     return;
@@ -146,8 +218,8 @@ export class ExportService implements ExportServiceAbstraction {
                 const cipher: any = {};
                 cipher.collections = [];
                 if (c.collectionIds != null) {
-                    cipher.collections = c.collectionIds.filter((id) => collectionsMap.has(id))
-                        .map((id) => collectionsMap.get(id).name);
+                    cipher.collections = c.collectionIds.filter(id => collectionsMap.has(id))
+                        .map(id => collectionsMap.get(id).name);
                 }
                 this.buildCommonCipher(cipher, c);
                 exportCiphers.push(cipher);
@@ -156,17 +228,18 @@ export class ExportService implements ExportServiceAbstraction {
             return papa.unparse(exportCiphers);
         } else {
             const jsonDoc: any = {
+                encrypted: false,
                 collections: [],
                 items: [],
             };
 
-            decCollections.forEach((c) => {
+            decCollections.forEach(c => {
                 const collection = new CollectionExport();
                 collection.build(c);
                 jsonDoc.collections.push(collection);
             });
 
-            decCiphers.forEach((c) => {
+            decCiphers.forEach(c => {
                 const cipher = new CipherExport();
                 cipher.build(c);
                 jsonDoc.items.push(cipher);
@@ -175,14 +248,53 @@ export class ExportService implements ExportServiceAbstraction {
         }
     }
 
-    getFileName(prefix: string = null, extension: string = 'csv'): string {
-        const now = new Date();
-        const dateString =
-            now.getFullYear() + '' + this.padNumber(now.getMonth() + 1, 2) + '' + this.padNumber(now.getDate(), 2) +
-            this.padNumber(now.getHours(), 2) + '' + this.padNumber(now.getMinutes(), 2) +
-            this.padNumber(now.getSeconds(), 2);
+    private async getOrganizationEncryptedExport(organizationId: string): Promise<string> {
+        const collections: Collection[] = [];
+        const ciphers: Cipher[] = [];
+        const promises = [];
 
-        return 'bitwarden' + (prefix ? ('_' + prefix) : '') + '_export_' + dateString + '.' + extension;
+        promises.push(this.apiService.getCollections(organizationId).then(c => {
+            const collectionPromises: any = [];
+            if (c != null && c.data != null && c.data.length > 0) {
+                c.data.forEach(r => {
+                    const collection = new Collection(new CollectionData(r as CollectionDetailsResponse));
+                    collections.push(collection);
+                });
+            }
+            return Promise.all(collectionPromises);
+        }));
+
+        promises.push(this.apiService.getCiphersOrganization(organizationId).then(c => {
+            const cipherPromises: any = [];
+            if (c != null && c.data != null && c.data.length > 0) {
+                c.data.filter(item => item.deletedDate === null).forEach(item => {
+                    const cipher = new Cipher(new CipherData(item));
+                    ciphers.push(cipher);
+                });
+            }
+            return Promise.all(cipherPromises);
+        }));
+
+        await Promise.all(promises);
+
+        const jsonDoc: any = {
+            encrypted: true,
+            collections: [],
+            items: [],
+        };
+
+        collections.forEach(c => {
+            const collection = new CollectionExport();
+            collection.build(c);
+            jsonDoc.collections.push(collection);
+        });
+
+        ciphers.forEach(c => {
+            const cipher = new CipherExport();
+            cipher.build(c);
+            jsonDoc.items.push(cipher);
+        });
+        return JSON.stringify(jsonDoc, null, '  ');
     }
 
     private padNumber(num: number, width: number, padCharacter: string = '0'): string {
@@ -223,7 +335,7 @@ export class ExportService implements ExportServiceAbstraction {
 
                 if (c.login.uris) {
                     cipher.login_uri = [];
-                    c.login.uris.forEach((u) => {
+                    c.login.uris.forEach(u => {
                         cipher.login_uri.push(u.uri);
                     });
                 }

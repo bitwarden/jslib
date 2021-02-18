@@ -14,6 +14,7 @@ import { CipherType } from '../../enums/cipherType';
 import { EventType } from '../../enums/eventType';
 import { FieldType } from '../../enums/fieldType';
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
+import { PolicyType } from '../../enums/policyType';
 import { SecureNoteType } from '../../enums/secureNoteType';
 import { UriMatchType } from '../../enums/uriMatchType';
 
@@ -25,6 +26,7 @@ import { FolderService } from '../../abstractions/folder.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { MessagingService } from '../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
+import { PolicyService } from '../../abstractions/policy.service';
 import { StateService } from '../../abstractions/state.service';
 import { UserService } from '../../abstractions/user.service';
 
@@ -81,6 +83,7 @@ export class AddEditComponent implements OnInit {
     uriMatchOptions: any[];
     ownershipOptions: any[] = [];
     currentDate = new Date();
+    allowPersonal = true;
 
     protected writeableCollections: CollectionView[];
     private previousCipherId: string;
@@ -89,7 +92,8 @@ export class AddEditComponent implements OnInit {
         protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected auditService: AuditService, protected stateService: StateService,
         protected userService: UserService, protected collectionService: CollectionService,
-        protected messagingService: MessagingService, protected eventService: EventService) {
+        protected messagingService: MessagingService, protected eventService: EventService,
+        protected policyService: PolicyService) {
         this.typeOptions = [
             { name: i18nService.t('typeLogin'), value: CipherType.Login },
             { name: i18nService.t('typeCard'), value: CipherType.Card },
@@ -151,12 +155,26 @@ export class AddEditComponent implements OnInit {
     }
 
     async init() {
+        const policies = await this.policyService.getAll(PolicyType.PersonalOwnership);
         const myEmail = await this.userService.getEmail();
         this.ownershipOptions.push({ name: myEmail, value: null });
         const orgs = await this.userService.getAllOrganizations();
-        orgs.sort(Utils.getSortFunction(this.i18nService, 'name')).forEach((o) => {
+        orgs.sort(Utils.getSortFunction(this.i18nService, 'name')).forEach(o => {
             if (o.enabled && o.status === OrganizationUserStatusType.Confirmed) {
                 this.ownershipOptions.push({ name: o.name, value: o.id });
+                if (policies != null && o.usePolicies && !o.canManagePolicies && this.allowPersonal) {
+                    for (const policy of policies) {
+                        if (policy.organizationId === o.id && policy.enabled) {
+                            this.allowPersonal = false;
+                            this.ownershipOptions.splice(0, 1);
+                            // Default to the organization who owns this policy for now (if necessary)
+                            if (this.organizationId == null) {
+                                this.organizationId = o.id;
+                            }
+                            break;
+                        }
+                    }
+                }
             }
         });
         this.writeableCollections = await this.loadCollections();
@@ -191,6 +209,10 @@ export class AddEditComponent implements OnInit {
                 // Adjust Cipher Name if Cloning
                 if (this.cloneMode) {
                     this.cipher.name += ' - ' + this.i18nService.t('clone');
+                    // If not allowing personal ownership, update cipher's org Id to prompt downstream changes
+                    if (this.cipher.organizationId == null && !this.allowPersonal) {
+                        this.cipher.organizationId = this.organizationId;
+                    }
                 }
             } else {
                 this.cipher = new CipherView();
@@ -209,7 +231,7 @@ export class AddEditComponent implements OnInit {
         if (this.cipher != null && (!this.editMode || addEditCipherInfo != null || this.cloneMode)) {
             await this.organizationChanged();
             if (this.collectionIds != null && this.collectionIds.length > 0 && this.collections.length > 0) {
-                this.collections.forEach((c) => {
+                this.collections.forEach(c => {
                     if (this.collectionIds.indexOf(c.id) > -1) {
                         (c as any).checked = true;
                     }
@@ -236,6 +258,12 @@ export class AddEditComponent implements OnInit {
             return false;
         }
 
+        if ((!this.editMode || this.cloneMode) && !this.allowPersonal && this.cipher.organizationId == null) {
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                this.i18nService.t('personalOwnershipSubmitError'));
+            return false;
+        }
+
         if ((!this.editMode || this.cloneMode) && this.cipher.type === CipherType.Login &&
             this.cipher.login.uris != null && this.cipher.login.uris.length === 1 &&
             (this.cipher.login.uris[0].uri == null || this.cipher.login.uris[0].uri === '')) {
@@ -245,7 +273,7 @@ export class AddEditComponent implements OnInit {
         // Allows saving of selected collections during "Add" and "Clone" flows
         if ((!this.editMode || this.cloneMode) && this.cipher.organizationId != null) {
             this.cipher.collectionIds = this.collections == null ? [] :
-                this.collections.filter((c) => (c as any).checked).map((c) => c.id);
+                this.collections.filter(c => (c as any).checked).map(c => c.id);
         }
 
         // Clear current Cipher Id to trigger "Add" cipher flow
@@ -431,10 +459,10 @@ export class AddEditComponent implements OnInit {
 
     async organizationChanged() {
         if (this.writeableCollections != null) {
-            this.writeableCollections.forEach((c) => (c as any).checked = false);
+            this.writeableCollections.forEach(c => (c as any).checked = false);
         }
         if (this.cipher.organizationId != null) {
-            this.collections = this.writeableCollections.filter((c) => c.organizationId === this.cipher.organizationId);
+            this.collections = this.writeableCollections.filter(c => c.organizationId === this.cipher.organizationId);
             const org = await this.userService.getOrganization(this.cipher.organizationId);
             if (org != null) {
                 this.cipher.organizationUseTotp = org.useTotp;
@@ -468,7 +496,7 @@ export class AddEditComponent implements OnInit {
 
     protected async loadCollections() {
         const allCollections = await this.collectionService.getAllDecrypted();
-        return allCollections.filter((c) => !c.readOnly);
+        return allCollections.filter(c => !c.readOnly);
     }
 
     protected loadCipher() {

@@ -35,12 +35,14 @@ export abstract class CryptoService {
     makeShareKey: () => Promise<[CipherString, SymmetricCryptoKey]>;
     makeKeyPair: (key?: SymmetricCryptoKey) => Promise<[string, CipherString]>;
     makePinKey: (pin: string, salt: string, kdf: KdfType, kdfIterations: number) => Promise<SymmetricCryptoKey>;
+    makeSendKey: (keyMaterial: ArrayBuffer) => Promise<SymmetricCryptoKey>;
     hashPassword: (password: string, key: SymmetricCryptoKey) => Promise<string>;
     makeEncKey: (key: SymmetricCryptoKey) => Promise<[SymmetricCryptoKey, CipherString]>;
-    remakeEncKey: (key: SymmetricCryptoKey) => Promise<[SymmetricCryptoKey, CipherString]>;
+    remakeEncKey: (key: SymmetricCryptoKey, encKey?: SymmetricCryptoKey) => Promise<[SymmetricCryptoKey, CipherString]>;
     encrypt: (plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey) => Promise<CipherString>;
     encryptToBytes: (plainValue: ArrayBuffer, key?: SymmetricCryptoKey) => Promise<ArrayBuffer>;
     rsaEncrypt: (data: ArrayBuffer, publicKey?: ArrayBuffer) => Promise<CipherString>;
+    rsaDecrypt: (encValue: string) => Promise<ArrayBuffer>;
     decryptToBytes: (cipherString: CipherString, key?: SymmetricCryptoKey) => Promise<ArrayBuffer>;
     decryptToUtf8: (cipherString: CipherString, key?: SymmetricCryptoKey) => Promise<string>;
     decryptFromBytes: (encBuf: ArrayBuffer, key: SymmetricCryptoKey) => Promise<ArrayBuffer>;

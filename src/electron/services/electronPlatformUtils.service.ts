@@ -117,9 +117,9 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
             defaultPath: fileName,
             showsTagField: false,
-        }).then((ret) => {
+        }).then(ret => {
             if (ret.filePath != null) {
-                fs.writeFile(ret.filePath, Buffer.from(blobData), (err) => {
+                fs.writeFile(ret.filePath, Buffer.from(blobData), { mode: 0o600 }, err => {
                     // error check?
                 });
             }
@@ -212,11 +212,25 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     }
 
     authenticateBiometric(): Promise<boolean> {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const val = ipcRenderer.sendSync('biometric', {
                 action: 'authenticate',
             });
             resolve(val);
         });
+    }
+
+    getDefaultSystemTheme() {
+        return remote.nativeTheme.shouldUseDarkColors ? 'dark' : 'light';
+    }
+
+    onDefaultSystemThemeChange(callback: ((theme: 'light' | 'dark') => unknown)) {
+        remote.nativeTheme.on('updated', () => {
+            callback(this.getDefaultSystemTheme());
+        });
+    }
+
+    supportsSecureStorage(): boolean {
+        return true;
     }
 }

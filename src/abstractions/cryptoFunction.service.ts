@@ -4,6 +4,10 @@ import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 export abstract class CryptoFunctionService {
     pbkdf2: (password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
         iterations: number) => Promise<ArrayBuffer>;
+    hkdf: (ikm: ArrayBuffer, salt: string | ArrayBuffer, info: string | ArrayBuffer,
+        outputByteSize: number, algorithm: 'sha256' | 'sha512') => Promise<ArrayBuffer>;
+    hkdfExpand: (prk: ArrayBuffer, info: string | ArrayBuffer, outputByteSize: number,
+        algorithm: 'sha256' | 'sha512') => Promise<ArrayBuffer>;
     hash: (value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512' | 'md5') => Promise<ArrayBuffer>;
     hmac: (value: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512') => Promise<ArrayBuffer>;
     compare: (a: ArrayBuffer, b: ArrayBuffer) => Promise<boolean>;

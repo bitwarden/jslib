@@ -192,7 +192,7 @@ export class AttachmentsComponent implements OnInit {
                     // 3. Delete old
                     this.deletePromises[attachment.id] = this.deleteCipherAttachment(attachment.id);
                     await this.deletePromises[attachment.id];
-                    const foundAttachment = this.cipher.attachments.filter((a2) => a2.id === attachment.id);
+                    const foundAttachment = this.cipher.attachments.filter(a2 => a2.id === attachment.id);
                     if (foundAttachment.length > 0) {
                         const i = this.cipher.attachments.indexOf(foundAttachment[0]);
                         if (i > -1) {

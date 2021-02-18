@@ -9,6 +9,7 @@ module.exports = (config) => {
 
         // list of files / patterns to load in the browser
         files: [
+            'spec/utils.ts',
             'spec/common/**/*.ts',
             'spec/web/**/*.ts',
             'src/abstractions/**/*.ts',
@@ -56,7 +57,12 @@ module.exports = (config) => {
             tsconfig: './tsconfig.json',
             bundlerOptions: {
                 entrypoints: /\.spec\.ts$/,
-                sourceMap: true
+                sourceMap: true,
+                resolve: {
+                    alias: {
+                        "util": "node_modules/util/util.js"
+                    }
+                }
             }
         },
 

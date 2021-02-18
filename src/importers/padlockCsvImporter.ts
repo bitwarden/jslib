@@ -7,16 +7,16 @@ import { CollectionView } from '../models/view/collectionView';
 import { FolderView } from '../models/view/folderView';
 
 export class PadlockCsvImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const results = this.parseCsv(data, false);
         if (results == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         let headers: string[] = null;
-        results.forEach((value) => {
+        results.forEach(value => {
             if (headers == null) {
                 headers = value.map((v: string) => v);
                 return;
@@ -29,7 +29,7 @@ export class PadlockCsvImporter extends BaseImporter implements Importer {
             if (!this.isNullOrWhitespace(value[1])) {
                 if (this.organization) {
                     const tags = (value[1] as string).split(',');
-                    tags.forEach((tag) => {
+                    tags.forEach(tag => {
                         tag = tag.trim();
                         let addCollection = true;
                         let collectionIndex = result.collections.length;
@@ -82,6 +82,6 @@ export class PadlockCsvImporter extends BaseImporter implements Importer {
         });
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 }

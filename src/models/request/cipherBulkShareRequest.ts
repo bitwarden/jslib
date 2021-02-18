@@ -9,7 +9,7 @@ export class CipherBulkShareRequest {
     constructor(ciphers: Cipher[], collectionIds: string[]) {
         if (ciphers != null) {
             this.ciphers = [];
-            ciphers.forEach((c) => {
+            ciphers.forEach(c => {
                 this.ciphers.push(new CipherWithIdRequest(c));
             });
         }

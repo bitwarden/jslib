@@ -79,7 +79,7 @@ export class GroupingsComponent {
         }
         const collections = await this.collectionService.getAllDecrypted();
         if (organizationId != null) {
-            this.collections = collections.filter((c) => c.organizationId === organizationId);
+            this.collections = collections.filter(c => c.organizationId === organizationId);
         } else {
             this.collections = collections;
         }

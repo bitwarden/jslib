@@ -17,17 +17,30 @@ export class ExportComponent {
 
     formPromise: Promise<string>;
     masterPassword: string;
-    format: 'json' | 'csv' = 'json';
+    format: 'json' | 'encrypted_json' | 'csv' = 'json';
     showPassword = false;
 
     constructor(protected cryptoService: CryptoService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected exportService: ExportService,
         protected eventService: EventService, protected win: Window) { }
 
+    get encryptedFormat() {
+        return this.format === 'encrypted_json';
+    }
+
     async submit() {
         if (this.masterPassword == null || this.masterPassword === '') {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('invalidMasterPassword'));
+            return;
+        }
+
+        const acceptedWarning = await this.platformUtilsService.showDialog(
+            this.i18nService.t(this.encryptedFormat ? 'encExportWarningDesc' : 'exportWarningDesc'),
+            this.i18nService.t('confirmVaultExport'), this.i18nService.t('exportVault'),
+            this.i18nService.t('cancel'), 'warning');
+
+        if (!acceptedWarning) {
             return;
         }
 
@@ -63,7 +76,16 @@ export class ExportComponent {
     }
 
     protected getFileName(prefix?: string) {
-        return this.exportService.getFileName(prefix, this.format);
+        let extension = this.format;
+        if (this.format === 'encrypted_json') {
+            if (prefix == null) {
+                prefix = 'encrypted';
+            } else {
+                prefix = 'encrypted_' + prefix;
+            }
+            extension = 'json';
+        }
+        return this.exportService.getFileName(prefix, extension);
     }
 
     protected async collectEvent(): Promise<any> {

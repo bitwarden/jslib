@@ -10,16 +10,16 @@ import { CardView } from '../models/view/cardView';
 import { SecureNoteView } from '../models/view/secureNoteView';
 
 export class EnpassCsvImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const results = this.parseCsv(data, false);
         if (results == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         let firstRow = true;
-        results.forEach((value) => {
+        results.forEach(value => {
             if (value.length < 2 || (firstRow && (value[0] === 'Title' || value[0] === 'title'))) {
                 firstRow = false;
                 return;
@@ -99,14 +99,14 @@ export class EnpassCsvImporter extends BaseImporter implements Importer {
         });
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 
     private containsField(fields: any[], name: string) {
         if (fields == null || name == null) {
             return false;
         }
-        return fields.filter((f) => !this.isNullOrWhitespace(f) &&
+        return fields.filter(f => !this.isNullOrWhitespace(f) &&
             f.toLowerCase() === name.toLowerCase()).length > 0;
     }
 }

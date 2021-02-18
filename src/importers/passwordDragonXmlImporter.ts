@@ -4,16 +4,16 @@ import { Importer } from './importer';
 import { ImportResult } from '../models/domain/importResult';
 
 export class PasswordDragonXmlImporter extends BaseImporter implements Importer {
-    parse(data: string): ImportResult {
+    parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
         const doc = this.parseXml(data);
         if (doc == null) {
             result.success = false;
-            return result;
+            return Promise.resolve(result);
         }
 
         const records = doc.querySelectorAll('PasswordManager > record');
-        Array.from(records).forEach((record) => {
+        Array.from(records).forEach(record => {
             const category = this.querySelectorDirectChild(record, 'Category');
             const categoryText = category != null && !this.isNullOrWhitespace(category.textContent) &&
                 category.textContent !== 'Unfiled' ? category.textContent : null;
@@ -36,7 +36,7 @@ export class PasswordDragonXmlImporter extends BaseImporter implements Importer 
                 attributes.push('Attribute-' + i);
             }
 
-            this.querySelectorAllDirectChild(record, attributes.join(',')).forEach((attr) => {
+            this.querySelectorAllDirectChild(record, attributes.join(',')).forEach(attr => {
                 if (this.isNullOrWhitespace(attr.textContent) || attr.textContent === 'null') {
                     return;
                 }
@@ -52,6 +52,6 @@ export class PasswordDragonXmlImporter extends BaseImporter implements Importer 
         }
 
         result.success = true;
-        return result;
+        return Promise.resolve(result);
     }
 }

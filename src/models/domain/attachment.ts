@@ -34,10 +34,10 @@ export class Attachment extends Domain {
         }, alreadyEncrypted, ['id', 'url', 'sizeName']);
     }
 
-    async decrypt(orgId: string): Promise<AttachmentView> {
+    async decrypt(orgId: string, encKey?: SymmetricCryptoKey): Promise<AttachmentView> {
         const view = await this.decryptObj(new AttachmentView(this), {
             fileName: null,
-        }, orgId);
+        }, orgId, encKey);
 
         if (this.key != null) {
             let cryptoService: CryptoService;
@@ -50,7 +50,7 @@ export class Attachment extends Domain {
 
             try {
                 const orgKey = await cryptoService.getOrgKey(orgId);
-                const decValue = await cryptoService.decryptToBytes(this.key, orgKey);
+                const decValue = await cryptoService.decryptToBytes(this.key, orgKey ?? encKey);
                 view.key = new SymmetricCryptoKey(decValue);
             } catch (e) {
                 // TODO: error?

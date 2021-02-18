@@ -1,23 +1,23 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from '../baseImporter';
+import { Importer } from '../importer';
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from '../../models/domain/importResult';
 
-import { CardView } from '../models/view/cardView';
-import { CipherView } from '../models/view/cipherView';
-import { IdentityView } from '../models/view/identityView';
-import { PasswordHistoryView } from '../models/view/passwordHistoryView';
-import { SecureNoteView } from '../models/view/secureNoteView';
+import { CardView } from '../../models/view/cardView';
+import { CipherView } from '../../models/view/cipherView';
+import { IdentityView } from '../../models/view/identityView';
+import { PasswordHistoryView } from '../../models/view/passwordHistoryView';
+import { SecureNoteView } from '../../models/view/secureNoteView';
 
-import { CipherType } from '../enums/cipherType';
-import { FieldType } from '../enums/fieldType';
-import { SecureNoteType } from '../enums/secureNoteType';
+import { CipherType } from '../../enums/cipherType';
+import { FieldType } from '../../enums/fieldType';
+import { SecureNoteType } from '../../enums/secureNoteType';
 
 export class OnePassword1PifImporter extends BaseImporter implements Importer {
     result = new ImportResult();
 
-    parse(data: string): ImportResult {
-        data.split(this.newLineRegex).forEach((line) => {
+    parse(data: string): Promise<ImportResult> {
+        data.split(this.newLineRegex).forEach(line => {
             if (this.isNullOrWhitespace(line) || line[0] !== '{') {
                 return;
             }
@@ -39,7 +39,7 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
         });
 
         this.result.success = true;
-        return this.result;
+        return Promise.resolve(this.result);
     }
 
     private processWinOpVaultItem(item: any, cipher: CipherView) {
@@ -237,7 +237,7 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
 
             const fieldName = this.isNullOrWhitespace(field[nameKey]) ? 'no_name' : field[nameKey];
             if (fieldName === 'password' && cipher.passwordHistory != null &&
-                cipher.passwordHistory.some((h) => h.password === fieldValue)) {
+                cipher.passwordHistory.some(h => h.password === fieldValue)) {
                 return;
             }
 

@@ -50,7 +50,7 @@ export class LockComponent implements OnInit {
         this.pinSet = await this.vaultTimeoutService.isPinLockSet();
         this.pinLock = (this.pinSet[0] && this.vaultTimeoutService.pinProtectedKey != null) || this.pinSet[1];
         this.supportsBiometric = await this.platformUtilsService.supportsBiometric();
-        this.biometricLock = await this.vaultTimeoutService.isBiometricLockSet();
+        this.biometricLock = await this.vaultTimeoutService.isBiometricLockSet() && (await this.cryptoService.hasKey() || !this.platformUtilsService.supportsSecureStorage());
         this.biometricText = await this.storageService.get(ConstantsService.biometricText);
         this.email = await this.userService.getEmail();
         let vaultUrl = this.environmentService.getWebVaultUrl();
@@ -158,7 +158,6 @@ export class LockComponent implements OnInit {
         }
         const success = await this.platformUtilsService.authenticateBiometric();
 
-        this.vaultTimeoutService.biometricLocked = !success;
         if (success) {
             await this.doContinue();
         }

@@ -23,6 +23,7 @@ export class SsoComponent {
     loggingIn = false;
 
     formPromise: Promise<AuthResult>;
+    initiateSsoFormPromise: Promise<any>;
     onSuccessfulLogin: () => Promise<any>;
     onSuccessfulLoginNavigate: () => Promise<any>;
     onSuccessfulLoginTwoFactorNavigate: () => Promise<any>;
@@ -44,14 +45,14 @@ export class SsoComponent {
         protected passwordGenerationService: PasswordGenerationService) { }
 
     async ngOnInit() {
-        const queryParamsSub = this.route.queryParams.subscribe(async (qParams) => {
+        const queryParamsSub = this.route.queryParams.subscribe(async qParams => {
             if (qParams.code != null && qParams.state != null) {
                 const codeVerifier = await this.storageService.get<string>(ConstantsService.ssoCodeVerifierKey);
                 const state = await this.storageService.get<string>(ConstantsService.ssoStateKey);
                 await this.storageService.remove(ConstantsService.ssoCodeVerifierKey);
                 await this.storageService.remove(ConstantsService.ssoStateKey);
-                if (qParams.code != null && codeVerifier != null && state != null && state === qParams.state) {
-                    await this.logIn(qParams.code, codeVerifier);
+                if (qParams.code != null && codeVerifier != null && state != null && this.checkState(state, qParams.state)) {
+                    await this.logIn(qParams.code, codeVerifier, this.getOrgIdentiferFromState(qParams.state));
                 }
             } else if (qParams.clientId != null && qParams.redirectUri != null && qParams.state != null &&
                 qParams.codeChallenge != null) {
@@ -67,8 +68,20 @@ export class SsoComponent {
     }
 
     async submit(returnUri?: string, includeUserIdentifier?: boolean) {
-        const authorizeUrl = await this.buildAuthorizeUrl(returnUri, includeUserIdentifier);
-        this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
+        this.initiateSsoFormPromise = this.preValidate();
+        if (await this.initiateSsoFormPromise) {
+            const authorizeUrl = await this.buildAuthorizeUrl(returnUri, includeUserIdentifier);
+            this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
+        }
+    }
+
+    async preValidate(): Promise<boolean> {
+        if (this.identifier == null || this.identifier === '') {
+            this.platformUtilsService.showToast('error', this.i18nService.t('ssoValidationFailed'),
+                this.i18nService.t('ssoIdentifierRequired'));
+            return false;
+        }
+        return await this.apiService.preValidateSso(this.identifier);
     }
 
     protected async buildAuthorizeUrl(returnUri?: string, includeUserIdentifier?: boolean): Promise<string> {
@@ -96,9 +109,13 @@ export class SsoComponent {
             if (returnUri) {
                 state += `_returnUri='${returnUri}'`;
             }
-
-            await this.storageService.save(ConstantsService.ssoStateKey, state);
         }
+
+        // Add Organization Identifier to state
+        state += `_identifier=${this.identifier}`;
+
+        // Save state (regardless of new or existing)
+        await this.storageService.save(ConstantsService.ssoStateKey, state);
 
         let authorizeUrl = this.apiService.identityBaseUrl + '/connect/authorize?' +
             'client_id=' + this.clientId + '&redirect_uri=' + encodeURIComponent(this.redirectUri) + '&' +
@@ -115,7 +132,7 @@ export class SsoComponent {
         return authorizeUrl;
     }
 
-    private async logIn(code: string, codeVerifier: string) {
+    private async logIn(code: string, codeVerifier: string, orgIdFromState: string) {
         this.loggingIn = true;
         try {
             this.formPromise = this.authService.logInSso(code, codeVerifier, this.redirectUri);
@@ -127,7 +144,8 @@ export class SsoComponent {
                 } else {
                     this.router.navigate([this.twoFactorRoute], {
                         queryParams: {
-                            resetMasterPassword: response.resetMasterPassword,
+                            identifier: orgIdFromState,
+                            sso: 'true',
                         },
                     });
                 }
@@ -136,7 +154,11 @@ export class SsoComponent {
                 if (this.onSuccessfulLoginChangePasswordNavigate != null) {
                     this.onSuccessfulLoginChangePasswordNavigate();
                 } else {
-                    this.router.navigate([this.changePasswordRoute]);
+                    this.router.navigate([this.changePasswordRoute], {
+                        queryParams: {
+                            identifier: orgIdFromState,
+                        },
+                    });
                 }
             } else {
                 const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
@@ -153,5 +175,27 @@ export class SsoComponent {
             }
         } catch { }
         this.loggingIn = false;
+    }
+
+    private getOrgIdentiferFromState(state: string): string {
+        if (state === null || state === undefined) {
+            return null;
+        }
+
+        const stateSplit = state.split('_identifier=');
+        return stateSplit.length > 1 ? stateSplit[1] : null;
+    }
+
+    private checkState(state: string, checkState: string): boolean {
+        if (state === null || state === undefined) {
+            return false;
+        }
+        if (checkState === null || checkState === undefined) {
+            return false;
+        }
+
+        const stateSplit = state.split('_identifier=');
+        const checkStateSplit = checkState.split('_identifier=');
+        return stateSplit[0] === checkStateSplit[0];
     }
 }
