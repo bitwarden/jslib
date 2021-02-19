@@ -239,6 +239,8 @@ export class AddEditComponent implements OnInit {
             this.onDeletedSend.emit(this.send);
             return true;
         } catch { }
+
+        return false;
     }
 
     typeChanged() {
