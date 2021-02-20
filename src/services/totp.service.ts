@@ -109,6 +109,10 @@ export class TotpService implements TotpServiceAbstraction {
         return !(await this.storageService.get<boolean>(ConstantsService.disableAutoTotpCopyKey));
     }
 
+    async isAutoCopyOnAutoFillEnabled(): Promise<boolean> {
+        return await this.storageService.get<boolean>(ConstantsService.enableAutoTotpCopyOnAutoFill);
+    }
+
     // Helpers
 
     private leftPad(s: string, l: number, p: string): string {
