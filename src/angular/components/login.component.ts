@@ -99,6 +99,8 @@ export class LoginComponent implements OnInit {
             } else {
                 const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
                 await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
+                const disableBadgeCounter = await this.storageService.get<boolean>(ConstantsService.disableBadgeCounterKey);
+                await this.stateService.save(ConstantsService.disableBadgeCounterKey, !!disableBadgeCounter);
                 if (this.onSuccessfulLogin != null) {
                     this.onSuccessfulLogin();
                 }
