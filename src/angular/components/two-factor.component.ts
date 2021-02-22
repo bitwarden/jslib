@@ -37,6 +37,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     providerType = TwoFactorProviderType;
     selectedProviderType: TwoFactorProviderType = TwoFactorProviderType.Authenticator;
     webAuthnSupported: boolean = false;
+    webAuthnFallback: boolean = false;
     webAuthn: WebAuthn = null;
     title: string = '';
     twoFactorEmail: string = null;
@@ -58,6 +59,15 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
+        if (this.route.snapshot.paramMap.has('webAuthnResponse')) {
+            // WebAuthn fallback response
+            this.selectedProviderType = TwoFactorProviderType.WebAuthn;
+            this.token = this.route.snapshot.paramMap.get('webAuthnResponse');
+            this.webAuthnFallback = true;
+            await this.submit();
+            return;
+        }
+
         if (!this.authing || this.authService.twoFactorProvidersData == null) {
             this.router.navigate([this.loginRoute]);
             return;
@@ -85,7 +95,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 customWebVaultUrl = this.environmentService.webVaultUrl;
             }
 
-            this.webAuthn = new WebAuthn(this.win, customWebVaultUrl, (token: string) => {
+            this.webAuthn = new WebAuthn(this.win, customWebVaultUrl, this.platformUtilsService, (token: string) => {
                 this.token = token;
                 this.submit();
             }, (error: string) => {
@@ -160,7 +170,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (this.selectedProviderType === TwoFactorProviderType.WebAuthn) {
+        if (this.selectedProviderType === TwoFactorProviderType.WebAuthn && !this.webAuthnFallback) {
             if (this.webAuthn != null) {
                 this.webAuthn.stop();
             } else {

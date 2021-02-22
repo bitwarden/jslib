@@ -1,24 +1,35 @@
+import { PlatformUtilsService } from "../abstractions";
+
 export class WebAuthn {
     private iframe: HTMLIFrameElement = null;
     private connectorLink: HTMLAnchorElement;
     private parseFunction = this.parseMessage.bind(this);
 
-    constructor(private win: Window, private webVaultUrl: string, private successCallback: Function,
-        private errorCallback: Function, private infoCallback: Function) {
+    constructor(private win: Window, private webVaultUrl: string, private platformUtilsService: PlatformUtilsService,
+        private successCallback: Function, private errorCallback: Function, private infoCallback: Function) {
         this.connectorLink = win.document.createElement('a');
         this.webVaultUrl = webVaultUrl != null && webVaultUrl !== '' ? webVaultUrl : 'https://vault.bitwarden.com';
     }
 
     init(data: any): void {
-        this.connectorLink.href = this.webVaultUrl + '/webauthn-connector.html' +
+
+        if (this.platformUtilsService.isFirefox()) {
+            // TOOD: Store things
+            const url = this.webVaultUrl + '/webauthn-connector-fallback.html' +
             '?data=' + this.base64Encode(JSON.stringify(data)) +
             '&parent=' + encodeURIComponent(this.win.document.location.href) +
             '&v=1';
-
-        this.iframe = this.win.document.getElementById('webauthn_iframe') as HTMLIFrameElement;
-        this.iframe.src = this.connectorLink.href;
-
-        this.win.addEventListener('message', this.parseFunction, false);
+            this.platformUtilsService.launchUri(url);
+        } else {
+            this.connectorLink.href = this.webVaultUrl + '/webauthn-connector.html' +
+            '?data=' + this.base64Encode(JSON.stringify(data)) +
+            '&parent=' + encodeURIComponent(this.win.document.location.href) +
+            '&v=1';
+            this.iframe = this.win.document.getElementById('webauthn_iframe') as HTMLIFrameElement;
+            this.iframe.src = this.connectorLink.href;
+    
+            this.win.addEventListener('message', this.parseFunction, false);
+        }
     }
 
     stop() {
