@@ -373,7 +373,7 @@ export class ImportService implements ImportServiceAbstraction {
                 errorMessage += '\n\n';
             }
 
-            if (itemType != 'Folder' && itemType != 'Collection') {
+            if (itemType !== 'Folder' && itemType !== 'Collection') {
                 errorMessage += '[' + i + '] ';
             }
 
