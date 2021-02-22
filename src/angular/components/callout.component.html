@@ -1,4 +1,4 @@
-<div class="callout callout-{{calloutStyle}}" role="alert">
+<div class="callout callout-{{calloutStyle}}" [ngClass]="{'clickable': clickable}" role="alert">
     <h3 class="callout-heading" *ngIf="title">
         <i class="fa {{icon}}" *ngIf="icon" aria-hidden="true"></i>
         {{title}}
