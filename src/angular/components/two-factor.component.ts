@@ -64,7 +64,6 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             this.selectedProviderType = TwoFactorProviderType.WebAuthn;
             this.token = this.route.snapshot.paramMap.get('webAuthnResponse');
             this.webAuthnFallback = true;
-            await this.submit();
             return;
         }
 
