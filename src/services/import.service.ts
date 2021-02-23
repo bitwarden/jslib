@@ -345,6 +345,10 @@ export class ImportService implements ImportServiceAbstraction {
     }
 
     private handleServerError(errorResponse: ErrorResponse, importResult: ImportResult): Error {
+        if (errorResponse.validationErrors == null) {
+            return new Error(errorResponse.message);
+        }
+
         let errorMessage = '';
 
         Object.entries(errorResponse.validationErrors).forEach(([key, value], index) => {
