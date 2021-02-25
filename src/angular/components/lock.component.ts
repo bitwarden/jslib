@@ -171,20 +171,18 @@ export class LockComponent implements OnInit {
 
     private async setKeyAndContinue(key: SymmetricCryptoKey) {
         await this.cryptoService.setKey(key);
-        await this.doContinue();
+        this.doContinue();
     }
 
     private async doContinue() {
         this.vaultTimeoutService.biometricLocked = false;
         const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
         await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
-        const disableBadgeIcon = await this.storageService.get<boolean>(ConstantsService.disableBadgeCounterKey);
-        await this.stateService.save(ConstantsService.disableBadgeCounterKey, !!disableBadgeIcon);
         this.messagingService.send('unlocked');
         if (this.onSuccessfulSubmit != null) {
             this.onSuccessfulSubmit();
         } else if (this.router != null) {
-            await this.router.navigate([this.successRoute]);
+            this.router.navigate([this.successRoute]);
         }
     }
 }

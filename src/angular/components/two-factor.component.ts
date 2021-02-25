@@ -193,8 +193,6 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             const response: AuthResult = await this.formPromise;
             const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
             await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
-            const disableBadge = await this.storageService.get<boolean>(ConstantsService.disableBadgeCounterKey);
-            await this.stateService.save(ConstantsService.disableBadgeCounterKey, !!disableBadge);
             if (this.onSuccessfulLogin != null) {
                 this.onSuccessfulLogin();
             }

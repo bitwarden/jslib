@@ -51,7 +51,6 @@ export class AddEditComponent implements OnInit {
     expirationDateSelect: number = null;
     canAccessPremium = true;
     premiumRequiredAlertShown = false;
-    showOptions = false;
 
     private webVaultUrl: string;
 
@@ -219,16 +218,16 @@ export class AddEditComponent implements OnInit {
         }
     }
 
-    async delete(): Promise<boolean> {
+    async delete(): Promise<void> {
         if (this.deletePromise != null) {
-            return false;
+            return;
         }
         const confirmed = await this.platformUtilsService.showDialog(
             this.i18nService.t('deleteSendConfirmation'),
             this.i18nService.t('deleteSend'),
             this.i18nService.t('yes'), this.i18nService.t('no'), 'warning');
         if (!confirmed) {
-            return false;
+            return;
         }
 
         try {
@@ -237,10 +236,7 @@ export class AddEditComponent implements OnInit {
             this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedSend'));
             await this.load();
             this.onDeletedSend.emit(this.send);
-            return true;
         } catch { }
-
-        return false;
     }
 
     typeChanged() {
@@ -248,10 +244,6 @@ export class AddEditComponent implements OnInit {
             this.premiumRequiredAlertShown = true;
             this.messagingService.send('premiumRequired');
         }
-    }
-
-    toggleOptions() {
-        this.showOptions = !this.showOptions;
     }
 
     protected async loadSend(): Promise<Send> {
