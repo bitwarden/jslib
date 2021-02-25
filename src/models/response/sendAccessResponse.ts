@@ -11,6 +11,8 @@ export class SendAccessResponse extends BaseResponse {
     name: string;
     file: SendFileApi;
     text: SendTextApi;
+    expirationDate: Date;
+    creatorIdentifier: string;
 
     constructor(response: any) {
         super(response);
@@ -27,5 +29,8 @@ export class SendAccessResponse extends BaseResponse {
         if (file != null) {
             this.file = new SendFileApi(file);
         }
+
+        this.expirationDate = this.getResponseProperty('ExpirationDate');
+        this.creatorIdentifier = this.getResponseProperty('CreatorIdentifier');
     }
 }
