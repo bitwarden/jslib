@@ -16,6 +16,8 @@ export class SendAccess extends Domain {
     name: CipherString;
     file: SendFile;
     text: SendText;
+    expirationDate: Date;
+    creatorIdentifier: string;
 
     constructor(obj?: SendAccessResponse, alreadyEncrypted: boolean = false) {
         super();
@@ -26,7 +28,9 @@ export class SendAccess extends Domain {
         this.buildDomainModel(this, obj, {
             id: null,
             name: null,
-        }, alreadyEncrypted, ['id']);
+            expirationDate: null,
+            creatorIdentifier: null,
+        }, alreadyEncrypted, ['id', 'expirationDate', 'creatorIdentifier']);
 
         this.type = obj.type;
 
