@@ -378,7 +378,7 @@ export class ImportService implements ImportServiceAbstraction {
             }
 
             if (itemType !== 'Folder' && itemType !== 'Collection') {
-                errorMessage += '[' + i + '] ';
+                errorMessage += '[' + (i + 1) + '] ';
             }
 
             errorMessage += '[' + itemType + '] "' + item.name + '": ' + value;
