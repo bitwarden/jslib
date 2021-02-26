@@ -8,7 +8,6 @@ import { SendFileView } from '../view/sendFileView';
 
 export class SendFile extends Domain {
     id: string;
-    url: string;
     size: string;
     sizeName: string;
     fileName: CipherString;
@@ -22,7 +21,6 @@ export class SendFile extends Domain {
         this.size = obj.size;
         this.buildDomainModel(this, obj, {
             id: null,
-            url: null,
             sizeName: null,
             fileName: null,
         }, alreadyEncrypted, ['id', 'url', 'sizeName']);

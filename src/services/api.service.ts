@@ -112,6 +112,8 @@ import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
 import { SendAccessResponse } from '../models/response/sendAccessResponse';
+import { SendFileDownloadDataResponse } from '../models/response/sendFileDownloadDataResponse';
+import { SendFileUploadDataResponse } from '../models/response/sendFileUploadDataResponse';
 import { SendResponse } from '../models/response/sendResponse';
 import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
@@ -128,6 +130,7 @@ import {
 } from '../models/response/twoFactorU2fResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
+import { SendAccessView } from '../models/view/sendAccessView';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
@@ -416,6 +419,12 @@ export class ApiService implements ApiServiceAbstraction {
         return new SendAccessResponse(r);
     }
 
+    async getSendFileDownloadData(send: SendAccessView): Promise<SendFileDownloadDataResponse> {
+        const r = await this.send('GET', '/sends/' + send.id + '/access/file/' + send.file.id, null, false, true);
+        return new SendFileDownloadDataResponse(r);
+    }
+
+
     async getSends(): Promise<ListResponse<SendResponse>> {
         const r = await this.send('GET', '/sends', null, true, true);
         return new ListResponse(r, SendResponse);
@@ -426,9 +435,13 @@ export class ApiService implements ApiServiceAbstraction {
         return new SendResponse(r);
     }
 
-    async postSendFile(data: FormData): Promise<SendResponse> {
-        const r = await this.send('POST', '/sends/file', data, true, true);
-        return new SendResponse(r);
+    async postFileTypeSend(request: SendRequest): Promise<SendFileUploadDataResponse> {
+        const r = await this.send('POST', '/sends/file', request, true, true);
+        return new SendFileUploadDataResponse(r);
+    }
+
+    postSendFile(sendId: string, fileId: string, data: FormData): Promise<any> {
+        return this.send('POST', '/sends/' + sendId + '/file/' + fileId, data, true, false);
     }
 
     async putSend(id: string, request: SendRequest): Promise<SendResponse> {

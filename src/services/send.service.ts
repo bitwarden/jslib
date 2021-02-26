@@ -1,3 +1,5 @@
+import { BlockBlobClient } from '@azure/storage-blob';
+
 import { SendData } from '../models/data/sendData';
 
 import { SendRequest } from '../models/request/sendRequest';
@@ -9,6 +11,7 @@ import { SendFile } from '../models/domain/sendFile';
 import { SendText } from '../models/domain/sendText';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
+import { FileUploadType } from '../enums/FileUploadType';
 import { SendType } from '../enums/sendType';
 
 import { SendView } from '../models/view/sendView';
@@ -68,6 +71,7 @@ export class SendService implements SendServiceAbstraction {
                 if (file instanceof ArrayBuffer) {
                     const [name, data] = await this.encryptFileData(model.file.fileName, file, model.cryptoKey);
                     send.file.fileName = name;
+                    send.file.size = data.byteLength.toString(10);
                     fileData = data;
                 } else {
                     fileData = await this.parseFile(send, file, model.cryptoKey);
@@ -127,29 +131,25 @@ export class SendService implements SendServiceAbstraction {
     }
 
     async saveWithServer(sendData: [Send, ArrayBuffer]): Promise<any> {
-        const request = new SendRequest(sendData[0]);
+        const request = new SendRequest(sendData[0], sendData[1]?.byteLength);
         let response: SendResponse;
         if (sendData[0].id == null) {
             if (sendData[0].type === SendType.Text) {
                 response = await this.apiService.postSend(request);
             } else {
-                const fd = new FormData();
-                try {
-                    const blob = new Blob([sendData[1]], { type: 'application/octet-stream' });
-                    fd.append('model', JSON.stringify(request));
-                    fd.append('data', blob, sendData[0].file.fileName.encryptedString);
-                } catch (e) {
-                    if (Utils.isNode && !Utils.isBrowser) {
-                        fd.append('model', JSON.stringify(request));
-                        fd.append('data', Buffer.from(sendData[1]) as any, {
-                            filepath: sendData[0].file.fileName.encryptedString,
-                            contentType: 'application/octet-stream',
-                        } as any);
-                    } else {
-                        throw e;
-                    }
+                const uploadDataResponse = await this.apiService.postFileTypeSend(request);
+                response = uploadDataResponse.sendResponse;
+
+                switch (uploadDataResponse.fileUploadType) {
+                    case FileUploadType.Direct:
+                        await this.directUploadFileToServer(uploadDataResponse.sendResponse, sendData[0].file.fileName, sendData[1]);
+                        break;
+                    case FileUploadType.Azure:
+                        await this.azureUploadFileToServer(uploadDataResponse.url, sendData[1]);
+                        break;
+                    default:
+                        throw new Error('Unknown file upload type');
                 }
-                response = await this.apiService.postSendFile(fd);
             }
             sendData[0].id = response.id;
             sendData[0].accessId = response.accessId;
@@ -253,5 +253,27 @@ export class SendService implements SendServiceAbstraction {
         const encFileName = await this.cryptoService.encrypt(fileName, key);
         const encFileData = await this.cryptoService.encryptToBytes(data, key);
         return [encFileName, encFileData];
+    }
+
+    private async directUploadFileToServer(sendResponse: SendResponse, fileName: CipherString, data: ArrayBuffer) {
+        const fd = new FormData();
+        try {
+            const blob = new Blob([data], { type: 'application/octet-stream' });
+            fd.append('data', blob, fileName.encryptedString);
+        } catch (e) {
+            if (Utils.isNode && !Utils.isBrowser) {
+                fd.append('data', Buffer.from(data) as any, {
+                    filepath: fileName.encryptedString,
+                    contentType: 'application/octet-stream',
+                } as any);
+            } else {
+                throw e;
+            }
+        }
+        await this.apiService.postSendFile(sendResponse.id, sendResponse.file.id, fd);
+    }
+
+    private async azureUploadFileToServer(url: string, data: ArrayBuffer) {
+        const r = await new BlockBlobClient(url).uploadData(data);
     }
 }
