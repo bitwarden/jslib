@@ -11,7 +11,7 @@ import { SendFile } from '../models/domain/sendFile';
 import { SendText } from '../models/domain/sendText';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
-import { FileUploadType } from '../enums/FileUploadType';
+import { FileUploadType } from '../enums/fileUploadType';
 import { SendType } from '../enums/sendType';
 
 import { SendView } from '../models/view/sendView';
