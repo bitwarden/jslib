@@ -274,6 +274,6 @@ export class SendService implements SendServiceAbstraction {
     }
 
     private async azureUploadFileToServer(url: string, data: ArrayBuffer) {
-        const r = await new BlockBlobClient(url).uploadData(data);
+        await new BlockBlobClient(url).uploadData(data);
     }
 }
