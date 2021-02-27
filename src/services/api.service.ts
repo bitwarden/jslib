@@ -62,6 +62,7 @@ import { TwoFactorProviderRequest } from '../models/request/twoFactorProviderReq
 import { TwoFactorRecoveryRequest } from '../models/request/twoFactorRecoveryRequest';
 import { UpdateDomainsRequest } from '../models/request/updateDomainsRequest';
 import { UpdateKeyRequest } from '../models/request/updateKeyRequest';
+import { UpdateDefaultUsernamesRequest } from '../models/request/updateDefaultUsernamesRequest';
 import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
 import { UpdateTwoFactorAuthenticatorRequest } from '../models/request/updateTwoFactorAuthenticatorRequest';
 import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoRequest';
@@ -72,7 +73,6 @@ import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFacto
 import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
-import { UpdateLoginsRequest } from '../models/request/updateLoginsRequest';
 
 import { Utils } from '../misc/utils';
 import { ApiKeyResponse } from '../models/response/apiKeyResponse';
@@ -100,6 +100,7 @@ import {
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
+import { DefaultUsernamesResponse } from '../models/response/DefaultUsernamesResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import { OrganizationSubscriptionResponse } from '../models/response/organizationSubscriptionResponse';
 import {
@@ -129,7 +130,6 @@ import {
 } from '../models/response/twoFactorU2fResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
-import { LoginsResponse } from '../models/response/loginsResponse';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
@@ -795,14 +795,14 @@ export class ApiService implements ApiServiceAbstraction {
         return new DomainsResponse(r);
     }
 
-    async getSettingsLogins(): Promise<LoginsResponse> {
+    async getSettingsDefaultUsernames(): Promise<DefaultUsernamesResponse> {
         const r = await this.send('GET', '/settings/logins', null, true, true);
-        return new LoginsResponse(r);
+        return new DefaultUsernamesResponse(r);
     }
 
-    async putSettingsLogins(request: UpdateLoginsRequest): Promise<LoginsResponse> {
+    async putSettingsDefaultUsernames(request: UpdateDefaultUsernamesRequest): Promise<DefaultUsernamesResponse> {
         const r = await this.send('PUT', '/settings/logins', request, true, true);
-        return new LoginsResponse(r);
+        return new DefaultUsernamesResponse(r);
     }
 
     // Sync APIs

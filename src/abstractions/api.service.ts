@@ -56,6 +56,7 @@ import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
 import { TwoFactorProviderRequest } from '../models/request/twoFactorProviderRequest';
 import { TwoFactorRecoveryRequest } from '../models/request/twoFactorRecoveryRequest';
+import { UpdateDefaultUsernamesRequest } from '../models/request/updateDefaultUsernamesRequest';
 import { UpdateDomainsRequest } from '../models/request/updateDomainsRequest';
 import { UpdateKeyRequest } from '../models/request/updateKeyRequest';
 import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
@@ -68,7 +69,6 @@ import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFacto
 import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
-import { UpdateLoginsRequest } from '../models/request/updateLoginsRequest';
 
 import { ApiKeyResponse } from '../models/response/apiKeyResponse';
 import { BillingResponse } from '../models/response/billingResponse';
@@ -78,6 +78,7 @@ import {
     CollectionGroupDetailsResponse,
     CollectionResponse,
 } from '../models/response/collectionResponse';
+import { DefaultUsernamesResponse } from '../models/response/defaultUsernamesResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import {
     EmergencyAccessGranteeDetailsResponse,
@@ -123,7 +124,6 @@ import {
 } from '../models/response/twoFactorU2fResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
-import { LoginsResponse } from '../models/response/loginsResponse';
 
 export abstract class ApiService {
     urlsSet: boolean;
@@ -263,8 +263,8 @@ export abstract class ApiService {
 
     getSettingsDomains: () => Promise<DomainsResponse>;
     putSettingsDomains: (request: UpdateDomainsRequest) => Promise<DomainsResponse>;
-    getSettingsLogins: () => Promise<LoginsResponse>;
-    putSettingsLogins: (request: UpdateLoginsRequest) => Promise<LoginsResponse>;
+    getSettingsDefaultUsernames: () => Promise<DefaultUsernamesResponse>;
+    putSettingsDefaultUsernames: (request: UpdateDefaultUsernamesRequest) => Promise<DefaultUsernamesResponse>;
 
     getTwoFactorProviders: () => Promise<ListResponse<TwoFactorProviderResponse>>;
     getTwoFactorOrganizationProviders: (organizationId: string) => Promise<ListResponse<TwoFactorProviderResponse>>;
