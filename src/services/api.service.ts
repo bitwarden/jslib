@@ -796,12 +796,12 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     async getSettingsDefaultUsernames(): Promise<DefaultUsernamesResponse> {
-        const r = await this.send('GET', '/settings/logins', null, true, true);
+        const r = await this.send('GET', '/settings/usernames', null, true, true);
         return new DefaultUsernamesResponse(r);
     }
 
     async putSettingsDefaultUsernames(request: UpdateDefaultUsernamesRequest): Promise<DefaultUsernamesResponse> {
-        const r = await this.send('PUT', '/settings/logins', request, true, true);
+        const r = await this.send('PUT', '/settings/usernames', request, true, true);
         return new DefaultUsernamesResponse(r);
     }
 
