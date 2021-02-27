@@ -68,6 +68,7 @@ import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFacto
 import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
+import { UpdateLoginsRequest } from '../models/request/updateLoginsRequest';
 
 import { ApiKeyResponse } from '../models/response/apiKeyResponse';
 import { BillingResponse } from '../models/response/billingResponse';
@@ -122,6 +123,7 @@ import {
 } from '../models/response/twoFactorU2fResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
+import { LoginsResponse } from '../models/response/loginsResponse';
 
 export abstract class ApiService {
     urlsSet: boolean;
@@ -261,6 +263,8 @@ export abstract class ApiService {
 
     getSettingsDomains: () => Promise<DomainsResponse>;
     putSettingsDomains: (request: UpdateDomainsRequest) => Promise<DomainsResponse>;
+    getSettingsLogins: () => Promise<LoginsResponse>;
+    putSettingsLogins: (request: UpdateLoginsRequest) => Promise<LoginsResponse>;
 
     getTwoFactorProviders: () => Promise<ListResponse<TwoFactorProviderResponse>>;
     getTwoFactorOrganizationProviders: (organizationId: string) => Promise<ListResponse<TwoFactorProviderResponse>>;

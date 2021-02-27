@@ -72,6 +72,7 @@ import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFacto
 import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
+import { UpdateLoginsRequest } from '../models/request/updateLoginsRequest';
 
 import { Utils } from '../misc/utils';
 import { ApiKeyResponse } from '../models/response/apiKeyResponse';
@@ -128,6 +129,7 @@ import {
 } from '../models/response/twoFactorU2fResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
+import { LoginsResponse } from '../models/response/loginsResponse';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
@@ -791,6 +793,16 @@ export class ApiService implements ApiServiceAbstraction {
     async putSettingsDomains(request: UpdateDomainsRequest): Promise<DomainsResponse> {
         const r = await this.send('PUT', '/settings/domains', request, true, true);
         return new DomainsResponse(r);
+    }
+
+    async getSettingsLogins(): Promise<LoginsResponse> {
+        const r = await this.send('GET', '/settings/logins', null, true, true);
+        return new LoginsResponse(r);
+    }
+
+    async putSettingsLogins(request: UpdateLoginsRequest): Promise<LoginsResponse> {
+        const r = await this.send('PUT', '/settings/logins', request, true, true);
+        return new LoginsResponse(r);
     }
 
     // Sync APIs
