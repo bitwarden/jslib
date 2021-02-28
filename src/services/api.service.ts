@@ -60,9 +60,9 @@ import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
 import { TwoFactorProviderRequest } from '../models/request/twoFactorProviderRequest';
 import { TwoFactorRecoveryRequest } from '../models/request/twoFactorRecoveryRequest';
+import { UpdateDefaultUsernamesRequest } from '../models/request/updateDefaultUsernamesRequest';
 import { UpdateDomainsRequest } from '../models/request/updateDomainsRequest';
 import { UpdateKeyRequest } from '../models/request/updateKeyRequest';
-import { UpdateDefaultUsernamesRequest } from '../models/request/updateDefaultUsernamesRequest';
 import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
 import { UpdateTwoFactorAuthenticatorRequest } from '../models/request/updateTwoFactorAuthenticatorRequest';
 import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoRequest';
@@ -83,6 +83,7 @@ import {
     CollectionGroupDetailsResponse,
     CollectionResponse,
 } from '../models/response/collectionResponse';
+import { DefaultUsernamesResponse } from '../models/response/DefaultUsernamesResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import {
     EmergencyAccessGranteeDetailsResponse,
@@ -100,7 +101,6 @@ import {
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
-import { DefaultUsernamesResponse } from '../models/response/DefaultUsernamesResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import { OrganizationSubscriptionResponse } from '../models/response/organizationSubscriptionResponse';
 import {
