@@ -2,7 +2,6 @@ import { SendFileApi } from '../api/sendFileApi';
 
 export class SendFileData {
     id: string;
-    url: string;
     fileName: string;
     key: string;
     size: string;
@@ -14,7 +13,6 @@ export class SendFileData {
         }
 
         this.id = data.id;
-        this.url = data.url;
         this.fileName = data.fileName;
         this.key = data.key;
         this.size = data.size;
