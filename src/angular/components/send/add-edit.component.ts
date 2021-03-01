@@ -187,6 +187,10 @@ export class AddEditComponent implements OnInit {
             }
         }
 
+        if (this.password != null && this.password.trim() === '') {
+            this.password = null;
+        }
+
         const encSend = await this.encryptSend(file);
         try {
             this.formPromise = this.sendService.saveWithServer(encSend);
