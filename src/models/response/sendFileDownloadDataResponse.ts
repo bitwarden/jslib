@@ -9,4 +9,4 @@ export class SendFileDownloadDataResponse extends BaseResponse {
         this.id = this.getResponseProperty('Id');
         this.url = this.getResponseProperty('Url');
     }
-} 
+}
