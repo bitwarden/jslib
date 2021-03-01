@@ -112,7 +112,7 @@ import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
 import { SendAccessResponse } from '../models/response/sendAccessResponse';
-import { SendFileDownloadDataResponse } from '../models/response/sendFileDownloadDataResponse'; 
+import { SendFileDownloadDataResponse } from '../models/response/sendFileDownloadDataResponse';
 import { SendResponse } from '../models/response/sendResponse';
 import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
@@ -130,7 +130,7 @@ import {
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
-import { SendAccessView } from '../models/view/sendAccessView'; 
+import { SendAccessView } from '../models/view/sendAccessView';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;

@@ -106,7 +106,7 @@ import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
 import { SendAccessResponse } from '../models/response/sendAccessResponse';
-import { SendFileDownloadDataResponse } from '../models/response/sendFileDownloadDataResponse'; 
+import { SendFileDownloadDataResponse } from '../models/response/sendFileDownloadDataResponse';
 import { SendResponse } from '../models/response/sendResponse';
 import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
@@ -184,7 +184,7 @@ export abstract class ApiService {
     putSend: (id: string, request: SendRequest) => Promise<SendResponse>;
     putSendRemovePassword: (id: string) => Promise<SendResponse>;
     deleteSend: (id: string) => Promise<any>;
-    getSendFileDownloadData: (send: SendAccessView, request: SendAccessRequest) => Promise<SendFileDownloadDataResponse>; 
+    getSendFileDownloadData: (send: SendAccessView, request: SendAccessRequest) => Promise<SendFileDownloadDataResponse>;
 
     getCipher: (id: string) => Promise<CipherResponse>;
     getCipherAdmin: (id: string) => Promise<CipherResponse>;
