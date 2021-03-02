@@ -37,7 +37,6 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     providerType = TwoFactorProviderType;
     selectedProviderType: TwoFactorProviderType = TwoFactorProviderType.Authenticator;
     webAuthnSupported: boolean = false;
-    webAuthnFallback: boolean = false;
     webAuthn: WebAuthn = null;
     title: string = '';
     twoFactorEmail: string = null;
@@ -59,14 +58,6 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
-        if (this.route.snapshot.paramMap.has('webAuthnResponse')) {
-            // WebAuthn fallback response
-            this.selectedProviderType = TwoFactorProviderType.WebAuthn;
-            this.token = this.route.snapshot.paramMap.get('webAuthnResponse');
-            this.webAuthnFallback = true;
-            return;
-        }
-
         if (!this.authing || this.authService.twoFactorProvidersData == null) {
             this.router.navigate([this.loginRoute]);
             return;
@@ -94,16 +85,18 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 customWebVaultUrl = this.environmentService.webVaultUrl;
             }
 
-            this.webAuthn = new WebAuthn(this.win, customWebVaultUrl, this.platformUtilsService, (token: string) => {
-                this.token = token;
-                this.submit();
-            }, (error: string) => {
-                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), error);
-            }, (info: string) => {
-                if (info === 'ready') {
-                    this.webAuthnReady = true;
+            this.webAuthn = new WebAuthn(this.win, customWebVaultUrl, this.platformUtilsService, this.i18nService.translationLocale,
+                (token: string) => {
+                    this.token = token;
+                    this.submit();
+                }, (error: string) => {
+                    this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), error);
+                }, (info: string) => {
+                    if (info === 'ready') {
+                        this.webAuthnReady = true;
+                    }
                 }
-            });
+            );
         }
 
         this.selectedProviderType = this.authService.getDefaultTwoFactorProvider(this.webAuthnSupported);
@@ -169,7 +162,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (this.selectedProviderType === TwoFactorProviderType.WebAuthn && !this.webAuthnFallback) {
+        if (this.selectedProviderType === TwoFactorProviderType.WebAuthn) {
             if (this.webAuthn != null) {
                 this.webAuthn.stop();
             } else {
@@ -181,30 +174,34 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         }
 
         try {
-            this.formPromise = this.authService.logInTwoFactor(this.selectedProviderType, this.token, this.remember);
-            const response: AuthResult = await this.formPromise;
-            const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
-            await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
-            if (this.onSuccessfulLogin != null) {
-                this.onSuccessfulLogin();
-            }
-            this.platformUtilsService.eventTrack('Logged In From Two-step');
-            if (response.resetMasterPassword) {
-                this.successRoute = 'set-password';
-            }
-            if (this.onSuccessfulLoginNavigate != null) {
-                this.onSuccessfulLoginNavigate();
-            } else {
-                this.router.navigate([this.successRoute], {
-                    queryParams: {
-                        identifier: this.identifier,
-                    },
-                });
-            }
+            await this.doSubmit();
         } catch {
             if (this.selectedProviderType === TwoFactorProviderType.WebAuthn && this.webAuthn != null) {
                 this.webAuthn.start();
             }
+        }
+    }
+
+    async doSubmit() {
+        this.formPromise = this.authService.logInTwoFactor(this.selectedProviderType, this.token, this.remember);
+        const response: AuthResult = await this.formPromise;
+        const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
+        await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
+        if (this.onSuccessfulLogin != null) {
+            this.onSuccessfulLogin();
+        }
+        this.platformUtilsService.eventTrack('Logged In From Two-step');
+        if (response.resetMasterPassword) {
+            this.successRoute = 'set-password';
+        }
+        if (this.onSuccessfulLoginNavigate != null) {
+            this.onSuccessfulLoginNavigate();
+        } else {
+            this.router.navigate([this.successRoute], {
+                queryParams: {
+                    identifier: this.identifier,
+                },
+            });
         }
     }
 

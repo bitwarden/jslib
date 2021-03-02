@@ -6,7 +6,8 @@ export class WebAuthn {
     private parseFunction = this.parseMessage.bind(this);
 
     constructor(private win: Window, private webVaultUrl: string, private platformUtilsService: PlatformUtilsService,
-        private successCallback: Function, private errorCallback: Function, private infoCallback: Function) {
+        private locale: string, private successCallback: Function, private errorCallback: Function,
+        private infoCallback: Function) {
         this.connectorLink = win.document.createElement('a');
         this.webVaultUrl = webVaultUrl != null && webVaultUrl !== '' ? webVaultUrl : 'https://vault.bitwarden.com';
     }
@@ -15,9 +16,10 @@ export class WebAuthn {
 
         if (this.platformUtilsService.isFirefox()) {
             // TOOD: Store things
-            const url = this.webVaultUrl + '/webauthn-connector-fallback.html' +
+            const url = this.webVaultUrl + '/webauthn-fallback-connector.html' +
             '?data=' + this.base64Encode(JSON.stringify(data)) +
             '&parent=' + encodeURIComponent(this.win.document.location.href) +
+            '&locale=' + this.locale +
             '&v=1';
             this.platformUtilsService.launchUri(url);
         } else {
