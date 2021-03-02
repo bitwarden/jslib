@@ -882,7 +882,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async putTwoFactorWebAuthn(request: UpdateTwoFactorWebAuthnRequest): Promise<TwoFactorWebAuthnResponse> {
         const response = request.deviceResponse.response as AuthenticatorAttestationResponse;
-        const data: any = Object.assign({}, request)
+        const data: any = Object.assign({}, request);
 
         data.deviceResponse = {
             id: request.deviceResponse.id,
@@ -892,7 +892,7 @@ export class ApiService implements ApiServiceAbstraction {
             response: {
                 AttestationObject: Utils.fromBufferToB64(response.attestationObject),
                 clientDataJson: Utils.fromBufferToB64(response.clientDataJSON),
-            }
+            },
         };
 
         const r = await this.send('PUT', '/two-factor/webauthn', data, true, true);

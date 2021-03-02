@@ -41,10 +41,9 @@ export class ChallengeResponse extends BaseResponse implements PublicKeyCredenti
         super(response);
         this.attestation = this.getResponseProperty('attestation');
         this.authenticatorSelection = this.getResponseProperty('authenticatorSelection');
-        this.challenge = new Buffer(this.getResponseProperty('challenge'), 'base64');
+        this.challenge = Utils.fromB64ToArray(this.getResponseProperty('challenge'));
         this.excludeCredentials = this.getResponseProperty('excludeCredentials').map((c: any) => {
-            const base64 = c.id.replace(/-/g, '+').replace(/_/g, '/');
-            c.id = Utils.fromB64ToArray(base64).buffer;
+            c.id = Utils.fromUrlB64ToArray(c.id).buffer;
             return c;
         });
         this.extensions = this.getResponseProperty('extensions');
@@ -53,7 +52,7 @@ export class ChallengeResponse extends BaseResponse implements PublicKeyCredenti
         this.timeout = this.getResponseProperty('timeout');
 
         const user = this.getResponseProperty('user');
-        user.id = new Buffer(user.id, 'base64');
+        user.id = Utils.fromB64ToArray(user.id);
 
         this.user = user;
     }

@@ -1,4 +1,4 @@
-import { PlatformUtilsService } from "../abstractions";
+import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 
 export class WebAuthn {
     private iframe: HTMLIFrameElement = null;
@@ -13,20 +13,18 @@ export class WebAuthn {
     }
 
     init(data: any): void {
+        const params = new URLSearchParams({
+            data: this.base64Encode(JSON.stringify(data)),
+            parent: encodeURIComponent(this.win.document.location.href),
+            v: '1'
+        });
 
         if (this.platformUtilsService.isFirefox()) {
-            // TOOD: Store things
-            const url = this.webVaultUrl + '/webauthn-fallback-connector.html' +
-            '?data=' + this.base64Encode(JSON.stringify(data)) +
-            '&parent=' + encodeURIComponent(this.win.document.location.href) +
-            '&locale=' + this.locale +
-            '&v=1';
-            this.platformUtilsService.launchUri(url);
+            // Firefox fallback which opens the webauthn page in a new tab
+            params.append('locale', this.locale);
+            this.platformUtilsService.launchUri(`${this.webVaultUrl}/webauthn-fallback-connector.html?${params}`);
         } else {
-            this.connectorLink.href = this.webVaultUrl + '/webauthn-connector.html' +
-            '?data=' + this.base64Encode(JSON.stringify(data)) +
-            '&parent=' + encodeURIComponent(this.win.document.location.href) +
-            '&v=1';
+            this.connectorLink.href = `${this.webVaultUrl}/webauthn-connector.html?${params}`;
             this.iframe = this.win.document.getElementById('webauthn_iframe') as HTMLIFrameElement;
             this.iframe.src = this.connectorLink.href;
     
