@@ -4,7 +4,6 @@ import { SendFile } from '../domain/sendFile';
 
 export class SendFileView implements View {
     id: string = null;
-    url: string = null;
     size: string = null;
     sizeName: string = null;
     fileName: string = null;
@@ -15,7 +14,6 @@ export class SendFileView implements View {
         }
 
         this.id = f.id;
-        this.url = f.url;
         this.size = f.size;
         this.sizeName = f.sizeName;
     }
