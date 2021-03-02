@@ -173,7 +173,7 @@ export class AddEditComponent implements OnInit {
     }
 
     async submit(): Promise<boolean> {
-        if (!this.isDateTimeLocalSupported && (this.editMode || this.expirationDateSelect === 0)) {
+        if (!this.isDateTimeLocalSupported) {
             this.deletionDate = this.deletionDateTimeFallback;
             if ((this.editMode && this.expirationDateFallback != null) || this.expirationDateSelect === 0) {
                 this.expirationDate = this.expirationDateTimeFallback;
