@@ -39,7 +39,7 @@ export class AddEditComponent implements OnInit {
     deletionDate: string;
     deletionDateFallback: string;
     deletionTimeFallback: string;
-    expirationDate: string;
+    expirationDate: string = null;
     expirationDateFallback: string;
     expirationTimeFallback: string;
     hasPassword: boolean;
@@ -156,11 +156,16 @@ export class AddEditComponent implements OnInit {
         // Parse dates
         if (!this.isDateTimeLocalSupported) {
             const deletionDateParts = this.dateToSplitString(this.send.deletionDate);
-            this.deletionDateFallback = deletionDateParts[0];
-            this.deletionTimeFallback = deletionDateParts[1];
+            if (deletionDateParts !== undefined && deletionDateParts.length > 0) {
+                this.deletionDateFallback = deletionDateParts[0];
+                this.deletionTimeFallback = deletionDateParts[1];
+            }
+
             const expirationDateParts = this.dateToSplitString(this.send.expirationDate);
-            this.expirationDateFallback = expirationDateParts[0];
-            this.expirationTimeFallback = expirationDateParts[1];
+            if (expirationDateParts !== undefined && expirationDateParts.length > 0) {
+                this.expirationDateFallback = expirationDateParts[0];
+                this.expirationTimeFallback = expirationDateParts[1];
+            }
         } else {
             this.deletionDate = this.dateToString(this.send.deletionDate);
             this.expirationDate = this.dateToString(this.send.expirationDate);
@@ -168,12 +173,11 @@ export class AddEditComponent implements OnInit {
     }
 
     async submit(): Promise<boolean> {
-        if (!this.isDateTimeLocalSupported && this.expirationDateTimeFallback !== null) {
-            this.expirationDate = this.expirationDateTimeFallback;
-        }
-
-        if (!this.isDateTimeLocalSupported && this.deletionDateTimeFallback !== null) {
+        if (!this.isDateTimeLocalSupported) {
             this.deletionDate = this.deletionDateTimeFallback;
+            if ((this.editMode && this.expirationDateFallback != null) || this.expirationDateSelect === 0) {
+                this.expirationDate = this.expirationDateTimeFallback;
+            }
         }
 
         if (this.disableSend) {
