@@ -12,6 +12,8 @@ export class SendAccessView implements View {
     type: SendType = null;
     text = new SendTextView();
     file = new SendFileView();
+    expirationDate: Date = null;
+    creatorIdentifier: string = null;
 
     constructor(s?: SendAccess) {
         if (!s) {
@@ -20,5 +22,7 @@ export class SendAccessView implements View {
 
         this.id = s.id;
         this.type = s.type;
+        this.expirationDate = s.expirationDate;
+        this.creatorIdentifier = s.creatorIdentifier;
     }
 }

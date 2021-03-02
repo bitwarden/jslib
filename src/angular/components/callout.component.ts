@@ -14,6 +14,7 @@ export class CalloutComponent implements OnInit {
     @Input() type = 'info';
     @Input() icon: string;
     @Input() title: string;
+    @Input() clickable: boolean;
 
     calloutStyle: string;
 

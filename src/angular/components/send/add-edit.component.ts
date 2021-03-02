@@ -37,7 +37,11 @@ export class AddEditComponent implements OnInit {
     disableSend = false;
     send: SendView;
     deletionDate: string;
+    deletionDateFallback: string;
+    deletionTimeFallback: string;
     expirationDate: string;
+    expirationDateFallback: string;
+    expirationTimeFallback: string;
     hasPassword: boolean;
     password: string;
     showPassword = false;
@@ -51,6 +55,7 @@ export class AddEditComponent implements OnInit {
     expirationDateSelect: number = null;
     canAccessPremium = true;
     premiumRequiredAlertShown = false;
+    showOptions = false;
 
     private webVaultUrl: string;
 
@@ -88,6 +93,10 @@ export class AddEditComponent implements OnInit {
         return null;
     }
 
+    get isDateTimeLocalSupported(): boolean {
+        return !(this.platformUtilsService.isFirefox() || this.platformUtilsService.isSafari());
+    }
+
     async ngOnInit() {
         await this.load();
     }
@@ -102,6 +111,14 @@ export class AddEditComponent implements OnInit {
                 'editSend' :
                 'createSend'
         );
+    }
+
+    get expirationDateTimeFallback() {
+        return `${this.expirationDateFallback}T${this.expirationTimeFallback}`;
+    }
+
+    get deletionDateTimeFallback() {
+        return `${this.deletionDateFallback}T${this.deletionTimeFallback}`;
     }
 
     async load() {
@@ -137,11 +154,28 @@ export class AddEditComponent implements OnInit {
         this.hasPassword = this.send.password != null && this.send.password.trim() !== '';
 
         // Parse dates
-        this.deletionDate = this.dateToString(this.send.deletionDate);
-        this.expirationDate = this.dateToString(this.send.expirationDate);
+        if (!this.isDateTimeLocalSupported) {
+            const deletionDateParts = this.dateToSplitString(this.send.deletionDate);
+            this.deletionDateFallback = deletionDateParts[0];
+            this.deletionTimeFallback = deletionDateParts[1];
+            const expirationDateParts = this.dateToSplitString(this.send.expirationDate);
+            this.expirationDateFallback = expirationDateParts[0];
+            this.expirationTimeFallback = expirationDateParts[1];
+        } else {
+            this.deletionDate = this.dateToString(this.send.deletionDate);
+            this.expirationDate = this.dateToString(this.send.expirationDate);
+        }
     }
 
     async submit(): Promise<boolean> {
+        if (!this.isDateTimeLocalSupported && this.expirationDateTimeFallback !== null) {
+            this.expirationDate = this.expirationDateTimeFallback;
+        }
+
+        if (!this.isDateTimeLocalSupported && this.deletionDateTimeFallback !== null) {
+            this.deletionDate = this.deletionDateTimeFallback;
+        }
+
         if (this.disableSend) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('sendDisabledWarning'));
@@ -186,6 +220,10 @@ export class AddEditComponent implements OnInit {
             }
         }
 
+        if (this.password != null && this.password.trim() === '') {
+            this.password = null;
+        }
+
         const encSend = await this.encryptSend(file);
         try {
             this.formPromise = this.sendService.saveWithServer(encSend);
@@ -218,16 +256,16 @@ export class AddEditComponent implements OnInit {
         }
     }
 
-    async delete(): Promise<void> {
+    async delete(): Promise<boolean> {
         if (this.deletePromise != null) {
-            return;
+            return false;
         }
         const confirmed = await this.platformUtilsService.showDialog(
             this.i18nService.t('deleteSendConfirmation'),
             this.i18nService.t('deleteSend'),
             this.i18nService.t('yes'), this.i18nService.t('no'), 'warning');
         if (!confirmed) {
-            return;
+            return false;
         }
 
         try {
@@ -236,7 +274,10 @@ export class AddEditComponent implements OnInit {
             this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedSend'));
             await this.load();
             this.onDeletedSend.emit(this.send);
+            return true;
         } catch { }
+
+        return false;
     }
 
     typeChanged() {
@@ -244,6 +285,10 @@ export class AddEditComponent implements OnInit {
             this.premiumRequiredAlertShown = true;
             this.messagingService.send('premiumRequired');
         }
+    }
+
+    toggleOptions() {
+        this.showOptions = !this.showOptions;
     }
 
     protected async loadSend(): Promise<Send> {
@@ -270,6 +315,14 @@ export class AddEditComponent implements OnInit {
 
     protected dateToString(d: Date) {
         return d == null ? null : this.datePipe.transform(d, 'yyyy-MM-ddTHH:mm');
+    }
+
+    protected dateToSplitString(d: Date) {
+        if (d != null) {
+            const date = this.datePipe.transform(d, 'yyyy-MM-dd');
+            const time = this.datePipe.transform(d, 'HH:mm');
+            return [date, time];
+        }
     }
 
     protected togglePasswordVisible() {

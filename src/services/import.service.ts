@@ -7,6 +7,7 @@ import {
     ImportOption,
     ImportService as ImportServiceAbstraction,
 } from '../abstractions/import.service';
+import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 
 import { ImportResult } from '../models/domain/importResult';
 
@@ -21,6 +22,7 @@ import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
 import { KvpRequest } from '../models/request/kvpRequest';
 
+import { ErrorResponse } from '../models/response/errorResponse';
 import { CipherView } from '../models/view/cipherView';
 
 import { AscendoCsvImporter } from '../importers/ascendoCsvImporter';
@@ -139,7 +141,7 @@ export class ImportService implements ImportServiceAbstraction {
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private apiService: ApiService, private i18nService: I18nService,
-        private collectionService: CollectionService) { }
+        private collectionService: CollectionService, private platformUtilsService: PlatformUtilsService) { }
 
     getImportOptions(): ImportOption[] {
         return this.featuredImportOptions.concat(this.regularImportOptions);
@@ -160,7 +162,12 @@ export class ImportService implements ImportServiceAbstraction {
                     return new Error(this.i18nService.t('importFormatError'));
                 }
             }
-            await this.postImport(importResult, organizationId);
+            try {
+                await this.postImport(importResult, organizationId);
+            } catch (error) {
+                const errorResponse = new ErrorResponse(error, 400);
+                return this.handleServerError(errorResponse, importResult);
+            }
             return null;
         } else {
             return new Error(this.i18nService.t('importFormatError'));
@@ -335,5 +342,48 @@ export class ImportService implements ImportServiceAbstraction {
     private badData(c: CipherView) {
         return (c.name == null || c.name === '--') &&
             (c.type === CipherType.Login && c.login != null && Utils.isNullOrWhitespace(c.login.password));
+    }
+
+    private handleServerError(errorResponse: ErrorResponse, importResult: ImportResult): Error {
+        if (errorResponse.validationErrors == null) {
+            return new Error(errorResponse.message);
+        }
+
+        let errorMessage = '';
+
+        Object.entries(errorResponse.validationErrors).forEach(([key, value], index) => {
+            let item;
+            let itemType;
+            const i = Number(key.match(/[0-9]+/)[0]);
+
+            switch (key.match(/^\w+/)[0]) {
+                case 'Ciphers':
+                    item = importResult.ciphers[i];
+                    itemType = CipherType[item.type];
+                    break;
+                case 'Folders':
+                    item = importResult.folders[i];
+                    itemType = 'Folder';
+                    break;
+                case 'Collections':
+                    item = importResult.collections[i];
+                    itemType = 'Collection';
+                    break;
+                default:
+                    return;
+            }
+
+            if (index > 0) {
+                errorMessage += '\n\n';
+            }
+
+            if (itemType !== 'Folder' && itemType !== 'Collection') {
+                errorMessage += '[' + (i + 1) + '] ';
+            }
+
+            errorMessage += '[' + itemType + '] "' + item.name + '": ' + value;
+        });
+
+        return new Error(errorMessage);
     }
 }

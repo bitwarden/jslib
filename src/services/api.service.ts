@@ -112,6 +112,7 @@ import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
 import { SendAccessResponse } from '../models/response/sendAccessResponse';
+import { SendFileDownloadDataResponse } from '../models/response/sendFileDownloadDataResponse';
 import { SendResponse } from '../models/response/sendResponse';
 import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
@@ -126,6 +127,8 @@ import { TwoFactorWebAuthnResponse } from '../models/response/twoFactorWebAuthnR
 import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
+
+import { SendAccessView } from '../models/view/sendAccessView';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
@@ -412,6 +415,12 @@ export class ApiService implements ApiServiceAbstraction {
     async postSendAccess(id: string, request: SendAccessRequest, apiUrl?: string): Promise<SendAccessResponse> {
         const r = await this.send('POST', '/sends/access/' + id, request, false, true, apiUrl);
         return new SendAccessResponse(r);
+    }
+
+
+    async getSendFileDownloadData(send: SendAccessView, request: SendAccessRequest): Promise<SendFileDownloadDataResponse> {
+        const r = await this.send('POST', '/sends/' + send.id + '/access/file/' + send.file.id, request, false, true);
+        return new SendFileDownloadDataResponse(r);
     }
 
     async getSends(): Promise<ListResponse<SendResponse>> {

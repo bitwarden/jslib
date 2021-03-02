@@ -2,7 +2,6 @@ import { BaseResponse } from '../response/baseResponse';
 
 export class SendFileApi extends BaseResponse {
     id: string;
-    url: string;
     fileName: string;
     key: string;
     size: string;
@@ -14,7 +13,6 @@ export class SendFileApi extends BaseResponse {
             return;
         }
         this.id = this.getResponseProperty('Id');
-        this.url = this.getResponseProperty('Url');
         this.fileName = this.getResponseProperty('FileName');
         this.key = this.getResponseProperty('Key');
         this.size = this.getResponseProperty('Size');

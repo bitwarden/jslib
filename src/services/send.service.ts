@@ -127,7 +127,7 @@ export class SendService implements SendServiceAbstraction {
     }
 
     async saveWithServer(sendData: [Send, ArrayBuffer]): Promise<any> {
-        const request = new SendRequest(sendData[0]);
+        const request = new SendRequest(sendData[0], sendData[1]?.byteLength);
         let response: SendResponse;
         if (sendData[0].id == null) {
             if (sendData[0].type === SendType.Text) {
