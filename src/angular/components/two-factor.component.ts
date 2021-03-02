@@ -32,7 +32,6 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     token: string = '';
     remember: boolean = false;
     webAuthnReady: boolean = false;
-    initWebAuthn: boolean = true;
     providers = TwoFactorProviders;
     providerType = TwoFactorProviderType;
     selectedProviderType: TwoFactorProviderType = TwoFactorProviderType.Authenticator;
@@ -77,7 +76,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             this.successRoute = 'lock';
         }
 
-        if (this.initWebAuthn && this.win != null && this.webAuthnSupported) {
+        if (this.win != null && this.webAuthnSupported) {
             let customWebVaultUrl: string = null;
             if (this.environmentService.baseUrl != null) {
                 customWebVaultUrl = this.environmentService.baseUrl;

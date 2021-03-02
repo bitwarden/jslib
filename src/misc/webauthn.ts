@@ -16,7 +16,7 @@ export class WebAuthn {
         const params = new URLSearchParams({
             data: this.base64Encode(JSON.stringify(data)),
             parent: encodeURIComponent(this.win.document.location.href),
-            v: '1'
+            v: '1',
         });
 
         if (this.platformUtilsService.isFirefox()) {
@@ -27,7 +27,7 @@ export class WebAuthn {
             this.connectorLink.href = `${this.webVaultUrl}/webauthn-connector.html?${params}`;
             this.iframe = this.win.document.getElementById('webauthn_iframe') as HTMLIFrameElement;
             this.iframe.src = this.connectorLink.href;
-    
+
             this.win.addEventListener('message', this.parseFunction, false);
         }
     }
