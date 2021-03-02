@@ -47,6 +47,13 @@ export class LowdbStorageService implements StorageService {
         } catch (e) {
             if (e instanceof SyntaxError) {
                 this.logService.warning(`Error creating lowdb storage adapter, "${e.message}"; emptying data file.`);
+                if (fs.existsSync(this.dataFilePath)) {
+                    let backupPath = this.dataFilePath + '.bak';
+                    this.logService.warning(`Writing backup of data file to ${backupPath}`);
+                    await fs.copyFile(this.dataFilePath, backupPath, err => {
+                        this.logService.warning(`Error while creating data file backup, "${e.message}". No backup may have been created.`);
+                    });
+                }
                 adapter.write({});
                 this.db = lowdb(adapter);
             } else {
