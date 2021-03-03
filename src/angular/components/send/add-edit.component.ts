@@ -297,12 +297,12 @@ export class AddEditComponent implements OnInit {
             }
             if (this.nullOrWhiteSpaceCount([this.expirationDateFallback, this.expirationTimeFallback]) === 1) {
                 this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                    this.i18nService.t('dateAndTimeRequired'));
+                    this.i18nService.t('expirationDateAndTimeRequired'));
                 return;
             }
             if (this.editMode || this.expirationDateSelect === 0) {
                 this.expirationDate = this.expirationDateTimeFallback;
-            } 
+            }
         }
 
         if (this.disableSend) {
