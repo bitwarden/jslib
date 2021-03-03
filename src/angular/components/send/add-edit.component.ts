@@ -259,6 +259,8 @@ export class AddEditComponent implements OnInit {
 
     clearExpiration() {
         this.expirationDate = null;
+        this.expirationDateFallback = null;
+        this.expirationTimeFallback = null;
     }
 
     copyLinkToClipboard(link: string) {
