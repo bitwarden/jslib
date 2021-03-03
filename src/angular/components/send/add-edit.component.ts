@@ -114,7 +114,9 @@ export class AddEditComponent implements OnInit {
     }
 
     get expirationDateTimeFallback() {
-        return `${this.expirationDateFallback}T${this.expirationTimeFallback}`;
+        return this.nullOrWhiteSpaceCount([this.expirationDateFallback, this.expirationTimeFallback]) > 0 ?
+            null :
+            `${this.expirationDateFallback}T${this.expirationTimeFallback}`;
     }
 
     get deletionDateTimeFallback() {
@@ -175,9 +177,14 @@ export class AddEditComponent implements OnInit {
     async submit(): Promise<boolean> {
         if (!this.isDateTimeLocalSupported) {
             this.deletionDate = this.deletionDateTimeFallback;
-            if ((this.editMode && this.expirationDateFallback != null) || this.expirationDateSelect === 0) {
-                this.expirationDate = this.expirationDateTimeFallback;
+            if (this.nullOrWhiteSpaceCount([this.expirationDateFallback, this.expirationTimeFallback]) === 1) {
+                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                    this.i18nService.t('dateAndTimeRequired'));
+                return;
             }
+            if (this.editMode || this.expirationDateSelect === 0) {
+                this.expirationDate = this.expirationDateTimeFallback;
+            } 
         }
 
         if (this.disableSend) {
@@ -332,5 +339,9 @@ export class AddEditComponent implements OnInit {
     protected togglePasswordVisible() {
         this.showPassword = !this.showPassword;
         document.getElementById('password').focus();
+    }
+
+    protected nullOrWhiteSpaceCount(strarray: string[]): number {
+        return strarray.filter(str => str == null || str.trim() === '').length;
     }
 }
