@@ -19,7 +19,7 @@ export class WebAuthn {
             v: '1',
         });
 
-        if (this.platformUtilsService.isFirefox()) {
+        if (this.platformUtilsService.isFirefox() && this.platformUtilsService.identityClientId === 'browser') {
             // Firefox fallback which opens the webauthn page in a new tab
             params.append('locale', this.locale);
             this.platformUtilsService.launchUri(`${this.webVaultUrl}/webauthn-fallback-connector.html?${params}`);
