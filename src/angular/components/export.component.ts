@@ -29,28 +29,13 @@ export class ExportComponent {
     }
 
     async submit() {
-        let acceptedWarning;
-
         if (this.masterPassword == null || this.masterPassword === '') {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('invalidMasterPassword'));
             return;
         }
 
-        if (this.encryptedFormat) {
-            acceptedWarning = await this.platformUtilsService.showDialog(
-                '<p>' + this.i18nService.t('encExportKeyWarningDesc') +
-                '<p>' + this.i18nService.t('encExportAccountWarningDesc'),
-                this.i18nService.t('confirmVaultExport'), this.i18nService.t('exportVault'),
-                this.i18nService.t('cancel'), 'warning',
-                true);
-        } else {
-            acceptedWarning = await this.platformUtilsService.showDialog(
-                this.i18nService.t('exportWarningDesc'),
-                this.i18nService.t('confirmVaultExport'), this.i18nService.t('exportVault'),
-                this.i18nService.t('cancel'), 'warning');
-        }
-
+        const acceptedWarning = await this.warningDialog();
         if (!acceptedWarning) {
             return;
         }
@@ -69,6 +54,22 @@ export class ExportComponent {
         } else {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('invalidMasterPassword'));
+        }
+    }
+
+    async warningDialog() {
+        if (this.encryptedFormat) {
+            return await this.platformUtilsService.showDialog(
+                '<p>' + this.i18nService.t('encExportKeyWarningDesc') +
+                '<p>' + this.i18nService.t('encExportAccountWarningDesc'),
+                this.i18nService.t('confirmVaultExport'), this.i18nService.t('exportVault'),
+                this.i18nService.t('cancel'), 'warning',
+                true);
+        } else {
+            return await this.platformUtilsService.showDialog(
+                this.i18nService.t('exportWarningDesc'),
+                this.i18nService.t('confirmVaultExport'), this.i18nService.t('exportVault'),
+                this.i18nService.t('cancel'), 'warning');
         }
     }
 
