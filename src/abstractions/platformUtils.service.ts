@@ -25,8 +25,8 @@ export abstract class PlatformUtilsService {
     supportsDuo: () => boolean;
     showToast: (type: 'error' | 'success' | 'warning' | 'info', title: string, text: string | string[],
         options?: any) => void;
-    showDialog: (text: string, title?: string, confirmText?: string, cancelText?: string,
-        type?: string) => Promise<boolean>;
+    showDialog: (body: string, title?: string, confirmText?: string, cancelText?: string,
+        type?: string, bodyIsHtml?: boolean) => Promise<boolean>;
     eventTrack: (action: string, label?: string, options?: any) => void;
     isDev: () => boolean;
     isSelfHost: () => boolean;
