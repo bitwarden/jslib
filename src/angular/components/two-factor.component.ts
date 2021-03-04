@@ -77,14 +77,11 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         }
 
         if (this.win != null && this.webAuthnSupported) {
-            let customWebVaultUrl: string = null;
-            if (this.environmentService.baseUrl != null) {
-                customWebVaultUrl = this.environmentService.baseUrl;
-            } else if (this.environmentService.webVaultUrl != null) {
-                customWebVaultUrl = this.environmentService.webVaultUrl;
+            let webVaultUrl = this.environmentService.getWebVaultUrl();
+            if (webVaultUrl == null) {
+                webVaultUrl = 'https://vault.bitwarden.com';
             }
-
-            this.webAuthn = new WebAuthn(this.win, customWebVaultUrl, this.platformUtilsService, this.i18nService.translationLocale,
+            this.webAuthn = new WebAuthn(this.win, webVaultUrl, this.platformUtilsService, this.i18nService.translationLocale,
                 (token: string) => {
                     this.token = token;
                     this.submit();

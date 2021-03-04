@@ -9,7 +9,6 @@ export class WebAuthn {
         private locale: string, private successCallback: Function, private errorCallback: Function,
         private infoCallback: Function) {
         this.connectorLink = win.document.createElement('a');
-        this.webVaultUrl = webVaultUrl != null && webVaultUrl !== '' ? webVaultUrl : 'https://vault.bitwarden.com';
     }
 
     init(data: any): void {
@@ -26,6 +25,7 @@ export class WebAuthn {
         } else {
             this.connectorLink.href = `${this.webVaultUrl}/webauthn-connector.html?${params}`;
             this.iframe = this.win.document.getElementById('webauthn_iframe') as HTMLIFrameElement;
+            this.iframe.allow = 'publickey-credentials-get ' + new URL(this.webVaultUrl).origin;
             this.iframe.src = this.connectorLink.href;
 
             this.win.addEventListener('message', this.parseFunction, false);
