@@ -131,8 +131,6 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     }
 
     supportsWebAuthn(win: Window): boolean {
-        // Not supported in Electron at this time.
-        // ref: https://github.com/electron/electron/issues/3226
         return true;
     }
 
