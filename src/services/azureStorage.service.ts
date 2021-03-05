@@ -1,13 +1,15 @@
-import { ApiService, LogService } from '../abstractions';
+import { AzureStorageService as AzureStorageServiceAbstraction } from '../abstractions/azureStorage.service';
+import { LogService } from '../abstractions/log.service';
+
 import { Utils } from '../misc/utils';
 
 const MAX_SINGLE_BLOB_UPLOAD_SIZE = 256 * 1024 * 1024; // 256 MiB
 const MAX_BLOCKS_PER_BLOB = 50000;
 
-export class AzureStorageService {
+export class AzureStorageService implements AzureStorageServiceAbstraction {
     constructor(private logService: LogService) { }
 
-    async azureUploadFileToServer(url: string, data: ArrayBuffer, renewalCallback: () => Promise<string>) {
+    async uploadFileToServer(url: string, data: ArrayBuffer, renewalCallback: () => Promise<string>) {
         if (data.byteLength <= MAX_SINGLE_BLOB_UPLOAD_SIZE) {
             return await this.azureUploadBlob(url, data);
         } else {
@@ -188,5 +190,4 @@ class Version {
     compare(compareTo: Required<Version> | string) {
         return Version.compare(this, compareTo);
     }
-
 }
