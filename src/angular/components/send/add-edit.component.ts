@@ -210,11 +210,6 @@ export class AddEditComponent implements OnInit {
             }
 
             file = files[0];
-            if (file.size > 104857600) { // 100 MB
-                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                    this.i18nService.t('maxFileSize'));
-                return;
-            }
         }
 
         if (!this.editMode) {
