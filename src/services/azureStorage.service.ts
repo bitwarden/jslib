@@ -1,7 +1,7 @@
 import { ApiService, LogService } from '../abstractions';
 import { Utils } from '../misc/utils';
 
-const MAX_SINGLE_BLOB_UPLOAD_SIZE = 1 * 1024 * 1024; // 246 MiB
+const MAX_SINGLE_BLOB_UPLOAD_SIZE = 256 * 1024 * 1024; // 256 MiB
 const MAX_BLOCKS_PER_BLOB = 50000;
 
 export class AzureStorageService {
