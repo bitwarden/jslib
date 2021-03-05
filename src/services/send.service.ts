@@ -150,7 +150,7 @@ export class SendService implements SendServiceAbstraction {
                                 const renewalResponse = await this.apiService.renewFileUploadUrl(response.id, response.file.id);
                                 return renewalResponse.url;
                             };
-                            await this.azureStorageService.azureUploadFileToServer(uploadDataResponse.url, sendData[1],
+                            await this.azureStorageService.uploadFileToServer(uploadDataResponse.url, sendData[1],
                                 renewalCallback);
                             break;
                         default:
