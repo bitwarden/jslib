@@ -15,6 +15,7 @@ import { SendType } from '../enums/sendType';
 import { SendView } from '../models/view/sendView';
 
 import { ApiService } from '../abstractions/api.service';
+import { AzureStorageService } from '../abstractions/azureStorage.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 import { I18nService } from '../abstractions/i18n.service';
@@ -24,8 +25,6 @@ import { UserService } from '../abstractions/user.service';
 
 import { Utils } from '../misc/utils';
 import { CipherString } from '../models/domain';
-
-import { AzureStorageService } from './azureStorage.service';
 
 const Keys = {
     sendsPrefix: 'sends_',
