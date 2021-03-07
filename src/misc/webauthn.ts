@@ -1,3 +1,4 @@
+import { I18nService } from '../abstractions/i18n.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 
 export class WebAuthn {
@@ -6,7 +7,7 @@ export class WebAuthn {
     private parseFunction = this.parseMessage.bind(this);
 
     constructor(private win: Window, private webVaultUrl: string, private webAuthnNewTab: boolean,
-        private platformUtilsService: PlatformUtilsService, private locale: string,
+        private platformUtilsService: PlatformUtilsService, private i18nService: I18nService,
         private successCallback: Function, private errorCallback: Function, private infoCallback: Function) {
         this.connectorLink = win.document.createElement('a');
     }
@@ -15,12 +16,13 @@ export class WebAuthn {
         const params = new URLSearchParams({
             data: this.base64Encode(JSON.stringify(data)),
             parent: encodeURIComponent(this.win.document.location.href),
+            btnText: encodeURIComponent(this.i18nService.t('webAuthnAuthenticate')),
             v: '1',
         });
 
         if (this.webAuthnNewTab) {
             // Firefox fallback which opens the webauthn page in a new tab
-            params.append('locale', this.locale);
+            params.append('locale', this.i18nService.translationLocale);
             this.platformUtilsService.launchUri(`${this.webVaultUrl}/webauthn-fallback-connector.html?${params}`);
         } else {
             this.connectorLink.href = `${this.webVaultUrl}/webauthn-connector.html?${params}`;
