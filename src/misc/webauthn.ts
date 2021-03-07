@@ -5,9 +5,9 @@ export class WebAuthn {
     private connectorLink: HTMLAnchorElement;
     private parseFunction = this.parseMessage.bind(this);
 
-    constructor(private win: Window, private webVaultUrl: string, private platformUtilsService: PlatformUtilsService,
-        private locale: string, private successCallback: Function, private errorCallback: Function,
-        private infoCallback: Function) {
+    constructor(private win: Window, private webVaultUrl: string, private webAuthnNewTab: boolean,
+        private platformUtilsService: PlatformUtilsService, private locale: string,
+        private successCallback: Function, private errorCallback: Function, private infoCallback: Function) {
         this.connectorLink = win.document.createElement('a');
     }
 
@@ -18,7 +18,7 @@ export class WebAuthn {
             v: '1',
         });
 
-        if (this.platformUtilsService.isFirefox() && this.platformUtilsService.identityClientId === 'browser') {
+        if (this.webAuthnNewTab) {
             // Firefox fallback which opens the webauthn page in a new tab
             params.append('locale', this.locale);
             this.platformUtilsService.launchUri(`${this.webVaultUrl}/webauthn-fallback-connector.html?${params}`);
