@@ -11,8 +11,6 @@ import { OrganizationUserStatusType } from '../../../enums/organizationUserStatu
 import { PolicyType } from '../../../enums/policyType';
 import { SendType } from '../../../enums/sendType';
 
-import { ConsoleLogService } from '../../../services/consoleLog.service';
-
 import { EnvironmentService } from '../../../abstractions/environment.service';
 import { I18nService } from '../../../abstractions/i18n.service';
 import { MessagingService } from '../../../abstractions/messaging.service';
@@ -79,8 +77,7 @@ export class AddEditComponent implements OnInit {
     constructor(protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected environmentService: EnvironmentService, protected datePipe: DatePipe,
         protected sendService: SendService, protected userService: UserService,
-        protected messagingService: MessagingService, protected policyService: PolicyService,
-        protected consoleLogService: ConsoleLogService) {
+        protected messagingService: MessagingService, protected policyService: PolicyService) {
         this.typeOptions = [
             { name: i18nService.t('sendTypeFile'), value: SendType.File },
             { name: i18nService.t('sendTypeText'), value: SendType.Text },
