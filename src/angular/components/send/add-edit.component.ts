@@ -71,6 +71,8 @@ export class AddEditComponent implements OnInit {
 
     safariDeletionTime: string;
     safariExpirationTime: string;
+    safariDeletionTimeOptions: TimeOption[];
+    safariExpirationTimeOptions: TimeOption[];
 
     private webVaultUrl: string;
 
@@ -114,83 +116,6 @@ export class AddEditComponent implements OnInit {
 
     get isDateTimeLocalSupported(): boolean {
         return !(this.platformUtilsService.isFirefox() || this.platformUtilsService.isSafari());
-    }
-
-    safariTimeOptions(field: DateField): TimeOption[] {
-        // init individual arrays for major sort groups
-        const noon: TimeOption[] = [];
-        const midnight: TimeOption[] = [];
-        const ams: TimeOption[] = [];
-        const pms: TimeOption[] = [];
-
-        // determine minute skip (5 min, 10 min, 15 min, etc.)
-        const minuteIncrementer = 15;
-
-        // loop through each hour on a 12 hour system
-        for (let h = 1; h <= 12; h++) {
-            // loop through each minute in the hour using the skip to incriment
-            for (let m = 0; m < 60; m += minuteIncrementer) {
-                // init the final strings that will be added to the lists
-                let hour = h.toString();
-                let minutes = m.toString();
-
-                // add prepending 0s to single digit hours/minutes
-                if (h < 10) {
-                    hour = '0' + hour;
-                }
-                if (m < 10) {
-                    minutes = '0' + minutes;
-                }
-
-                // build time strings and push to relevant sort groups
-                if (h === 12) {
-                    const midnightOption: TimeOption = {
-                        standard: `${hour}:${minutes} AM`,
-                        military: `00:${minutes}`,
-                    };
-                    midnight.push(midnightOption);
-
-                    const noonOption: TimeOption = {
-                        standard: `${hour}:${minutes} PM`,
-                        military: `${hour}:${minutes}`,
-                    };
-                    noon.push(noonOption);
-                } else {
-                    const amOption: TimeOption = {
-                        standard: `${hour}:${minutes} AM`,
-                        military: `${hour}:${minutes}`,
-                    };
-                    ams.push(amOption);
-
-                    const pmOption: TimeOption = {
-                        standard: `${hour}:${minutes} PM`,
-                        military: `${h + 12}:${minutes}`,
-                    };
-                    pms.push(pmOption);
-                }
-            }
-        }
-
-        // bring all the arrays together in the right order
-        const validTimes = [...midnight, ...ams, ...noon, ...pms];
-
-        // determine if an unsupported value already exists on the send & add that to the top of the option list
-        // example: if the Send was created with a different client
-        if (field === DateField.ExpriationDate && this.expirationDateTimeFallback != null) {
-            const previousValue: TimeOption = {
-                standard: this.datePipe.transform(this.expirationDateTimeFallback, 'HH:mm a'),
-                military: this.datePipe.transform(this.expirationDateTimeFallback, 'HH:mm'),
-            };
-            return [previousValue, {standard: null, military: null}, ...validTimes];
-        } else if (field === DateField.DeletionDate && this.deletionDateTimeFallback != null) {
-            const previousValue: TimeOption = {
-                standard: this.datePipe.transform(this.deletionDateTimeFallback, 'HH:mm a'),
-                military: this.datePipe.transform(this.deletionDateTimeFallback, 'HH:mm'),
-            };
-            return [previousValue, ...validTimes];
-        } else {
-            return  [{standard: null, military: null}, ...validTimes];
-        }
     }
 
     async ngOnInit() {
@@ -275,6 +200,11 @@ export class AddEditComponent implements OnInit {
         } else {
             this.deletionDate = this.dateToString(this.send.deletionDate);
             this.expirationDate = this.dateToString(this.send.expirationDate);
+        }
+
+        if (this.isSafari) {
+            this.safariDeletionTimeOptions = this.safariTimeOptions(DateField.DeletionDate);
+            this.safariExpirationTimeOptions = this.safariTimeOptions(DateField.ExpriationDate);
         }
     }
 
@@ -481,5 +411,82 @@ export class AddEditComponent implements OnInit {
 
     protected nullOrWhiteSpaceCount(strarray: string[]): number {
         return strarray.filter(str => str == null || str.trim() === '').length;
+    }
+
+    protected safariTimeOptions(field: DateField): TimeOption[] {
+        // init individual arrays for major sort groups
+        const noon: TimeOption[] = [];
+        const midnight: TimeOption[] = [];
+        const ams: TimeOption[] = [];
+        const pms: TimeOption[] = [];
+
+        // determine minute skip (5 min, 10 min, 15 min, etc.)
+        const minuteIncrementer = 15;
+
+        // loop through each hour on a 12 hour system
+        for (let h = 1; h <= 12; h++) {
+            // loop through each minute in the hour using the skip to incriment
+            for (let m = 0; m < 60; m += minuteIncrementer) {
+                // init the final strings that will be added to the lists
+                let hour = h.toString();
+                let minutes = m.toString();
+
+                // add prepending 0s to single digit hours/minutes
+                if (h < 10) {
+                    hour = '0' + hour;
+                }
+                if (m < 10) {
+                    minutes = '0' + minutes;
+                }
+
+                // build time strings and push to relevant sort groups
+                if (h === 12) {
+                    const midnightOption: TimeOption = {
+                        standard: `${hour}:${minutes} AM`,
+                        military: `00:${minutes}`,
+                    };
+                    midnight.push(midnightOption);
+
+                    const noonOption: TimeOption = {
+                        standard: `${hour}:${minutes} PM`,
+                        military: `${hour}:${minutes}`,
+                    };
+                    noon.push(noonOption);
+                } else {
+                    const amOption: TimeOption = {
+                        standard: `${hour}:${minutes} AM`,
+                        military: `${hour}:${minutes}`,
+                    };
+                    ams.push(amOption);
+
+                    const pmOption: TimeOption = {
+                        standard: `${hour}:${minutes} PM`,
+                        military: `${h + 12}:${minutes}`,
+                    };
+                    pms.push(pmOption);
+                }
+            }
+        }
+
+        // bring all the arrays together in the right order
+        const validTimes = [...midnight, ...ams, ...noon, ...pms];
+
+        // determine if an unsupported value already exists on the send & add that to the top of the option list
+        // example: if the Send was created with a different client
+        if (field === DateField.ExpriationDate && this.expirationDateTimeFallback != null) {
+            const previousValue: TimeOption = {
+                standard: this.datePipe.transform(this.expirationDateTimeFallback, 'hh:mm a'),
+                military: this.datePipe.transform(this.expirationDateTimeFallback, 'HH:mm'),
+            };
+            return [previousValue, {standard: null, military: null}, ...validTimes];
+        } else if (field === DateField.DeletionDate && this.deletionDateTimeFallback != null) {
+            const previousValue: TimeOption = {
+                standard: this.datePipe.transform(this.deletionDateTimeFallback, 'hh:mm a'),
+                military: this.datePipe.transform(this.deletionDateTimeFallback, 'HH:mm'),
+            };
+            return [previousValue, ...validTimes];
+        } else {
+            return  [{standard: null, military: null}, ...validTimes];
+        }
     }
 }
