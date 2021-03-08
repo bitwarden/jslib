@@ -25,6 +25,18 @@ import { SendView } from '../../../models/view/sendView';
 
 import { Send } from '../../../models/domain/send';
 
+// TimeOption is used for the dropdown implementation of custom times
+// Standard = displayed time; Military = stored time
+interface TimeOption {
+    standard: string;
+    military: string;
+}
+
+enum DateField {
+    DeletionDate = 'deletion',
+    ExpriationDate = 'expiration',
+}
+
 export class AddEditComponent implements OnInit {
     @Input() sendId: string;
     @Input() type: SendType;
@@ -56,6 +68,9 @@ export class AddEditComponent implements OnInit {
     canAccessPremium = true;
     premiumRequiredAlertShown = false;
     showOptions = false;
+
+    safariDeletionTime: string;
+    safariExpirationTime: string;
 
     private webVaultUrl: string;
 
@@ -93,8 +108,89 @@ export class AddEditComponent implements OnInit {
         return null;
     }
 
+    get isSafari() {
+        return this.platformUtilsService.isSafari();
+    }
+
     get isDateTimeLocalSupported(): boolean {
         return !(this.platformUtilsService.isFirefox() || this.platformUtilsService.isSafari());
+    }
+
+    safariTimeOptions(field: DateField): TimeOption[] {
+        // init individual arrays for major sort groups
+        const noon: TimeOption[] = [];
+        const midnight: TimeOption[] = [];
+        const ams: TimeOption[] = [];
+        const pms: TimeOption[] = [];
+
+        // determine minute skip (5 min, 10 min, 15 min, etc.)
+        const minuteIncrementer = 15;
+
+        // loop through each hour on a 12 hour system
+        for (let h = 1; h <= 12; h++) {
+            // loop through each minute in the hour using the skip to incriment
+            for (let m = 0; m < 60; m += minuteIncrementer) {
+                // init the final strings that will be added to the lists
+                let hour = h.toString();
+                let minutes = m.toString();
+
+                // add prepending 0s to single digit hours/minutes
+                if (h < 10) {
+                    hour = '0' + hour;
+                }
+                if (m < 10) {
+                    minutes = '0' + minutes;
+                }
+
+                // build time strings and push to relevant sort groups
+                if (h === 12) {
+                    const midnightOption: TimeOption = {
+                        standard: `${hour}:${minutes} AM`,
+                        military: `00:${minutes}`,
+                    };
+                    midnight.push(midnightOption);
+
+                    const noonOption: TimeOption = {
+                        standard: `${hour}:${minutes} PM`,
+                        military: `${hour}:${minutes}`,
+                    };
+                    noon.push(noonOption);
+                } else {
+                    const amOption: TimeOption = {
+                        standard: `${hour}:${minutes} AM`,
+                        military: `${hour}:${minutes}`,
+                    };
+                    ams.push(amOption);
+
+                    const pmOption: TimeOption = {
+                        standard: `${hour}:${minutes} PM`,
+                        military: `${h + 12}:${minutes}`,
+                    };
+                    pms.push(pmOption);
+                }
+            }
+        }
+
+        // bring all the arrays together in the right order
+        const validTimes = [...midnight, ...ams, ...noon, ...pms];
+
+        // determine if an unsupported value already exists on the send & add that to the top of the option list
+        // example: if the Send was created with a different client
+        if (field === DateField.ExpriationDate && this.expirationDateTimeFallback != null) {
+            const previousValue: TimeOption = {
+                standard: this.datePipe.transform(this.expirationDateTimeFallback, 'HH:mm a'),
+                military: this.datePipe.transform(this.expirationDateTimeFallback, 'HH:mm'),
+            };
+            return [previousValue, {standard: null, military: null}, ...validTimes];
+        } else if (field === DateField.DeletionDate && this.deletionDateTimeFallback != null) {
+            const previousValue: TimeOption = {
+                standard: this.datePipe.transform(this.deletionDateTimeFallback, 'HH:mm a'),
+                military: this.datePipe.transform(this.deletionDateTimeFallback, 'HH:mm'),
+            };
+            return [previousValue, ...validTimes];
+        } else {
+            return  [{standard: null, military: null}, ...validTimes];
+        }
     }
 
     async ngOnInit() {
@@ -116,11 +212,13 @@ export class AddEditComponent implements OnInit {
     get expirationDateTimeFallback() {
         return this.nullOrWhiteSpaceCount([this.expirationDateFallback, this.expirationTimeFallback]) > 0 ?
             null :
-            `${this.expirationDateFallback}T${this.expirationTimeFallback}`;
+            `${this.formatDateFallbacks(this.expirationDateFallback)}T${this.expirationTimeFallback}`;
     }
 
     get deletionDateTimeFallback() {
-        return `${this.deletionDateFallback}T${this.deletionTimeFallback}`;
+        return this.nullOrWhiteSpaceCount([this.deletionDateFallback, this.deletionTimeFallback]) > 0 ?
+            null :
+            `${this.formatDateFallbacks(this.deletionDateFallback)}T${this.deletionTimeFallback}`;
     }
 
     async load() {
@@ -161,12 +259,18 @@ export class AddEditComponent implements OnInit {
             if (deletionDateParts !== undefined && deletionDateParts.length > 0) {
                 this.deletionDateFallback = deletionDateParts[0];
                 this.deletionTimeFallback = deletionDateParts[1];
+                if (this.isSafari) {
+                    this.safariDeletionTime = this.deletionTimeFallback;
+                }
             }
 
             const expirationDateParts = this.dateToSplitString(this.send.expirationDate);
             if (expirationDateParts !== undefined && expirationDateParts.length > 0) {
                 this.expirationDateFallback = expirationDateParts[0];
                 this.expirationTimeFallback = expirationDateParts[1];
+                if (this.isSafari) {
+                    this.safariExpirationTime = this.expirationTimeFallback;
+                }
             }
         } else {
             this.deletionDate = this.dateToString(this.send.deletionDate);
@@ -176,7 +280,21 @@ export class AddEditComponent implements OnInit {
 
     async submit(): Promise<boolean> {
         if (!this.isDateTimeLocalSupported) {
+            if (this.isSafari) {
+                this.expirationTimeFallback = this.safariExpirationTime ?? this.expirationTimeFallback;
+                this.deletionTimeFallback = this.safariDeletionTime ?? this.deletionTimeFallback;
+            }
             this.deletionDate = this.deletionDateTimeFallback;
+            if (this.expirationDateTimeFallback != null && isNaN(Date.parse(this.expirationDateTimeFallback))) {
+                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                    this.i18nService.t('expirationDateIsInvalid'));
+                return;
+            }
+            if (isNaN(Date.parse(this.deletionDateTimeFallback))) {
+                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                    this.i18nService.t('deletionDateIsInvalid'));
+                return;
+            }
             if (this.nullOrWhiteSpaceCount([this.expirationDateFallback, this.expirationTimeFallback]) === 1) {
                 this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                     this.i18nService.t('expirationDateAndTimeRequired'));
@@ -261,6 +379,7 @@ export class AddEditComponent implements OnInit {
         this.expirationDate = null;
         this.expirationDateFallback = null;
         this.expirationTimeFallback = null;
+        this.safariExpirationTime = null;
     }
 
     copyLinkToClipboard(link: string) {
@@ -330,9 +449,26 @@ export class AddEditComponent implements OnInit {
         return d == null ? null : this.datePipe.transform(d, 'yyyy-MM-ddTHH:mm');
     }
 
+    protected formatDateFallbacks(dateString: string) {
+        try {
+            // The Firefox date picker doesn't supply a time, safari's polyfill does.
+            // Unknown if Safari's native date picker will or not when it releases.
+            if (!this.isSafari) {
+                dateString += ' 00:00';
+            }
+            return this.datePipe.transform(new Date(dateString), 'yyyy-MM-dd');
+        } catch {
+            // this should never happen
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                this.i18nService.t('dateParsingError'));
+        }
+    }
+
     protected dateToSplitString(d: Date) {
         if (d != null) {
-            const date = this.datePipe.transform(d, 'yyyy-MM-dd');
+            const date = !this.isSafari ?
+                this.datePipe.transform(d, 'yyyy-MM-dd') :
+                this.datePipe.transform(d, 'MM/dd/yyyy');
             const time = this.datePipe.transform(d, 'HH:mm');
             return [date, time];
         }
