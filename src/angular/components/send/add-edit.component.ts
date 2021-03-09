@@ -353,6 +353,12 @@ export class AddEditComponent implements OnInit {
         this.showOptions = !this.showOptions;
     }
 
+    expirationDateFallbackChanged() {
+        this.isSafari ?
+            this.safariExpirationTime = this.safariExpirationTime ?? '00:00' :
+            this.expirationTimeFallback = this.expirationTimeFallback ?? this.datePipe.transform(new Date(), 'HH:mm');
+    }
+
     protected async loadSend(): Promise<Send> {
         return this.sendService.get(this.sendId);
     }
@@ -473,13 +479,13 @@ export class AddEditComponent implements OnInit {
 
         // determine if an unsupported value already exists on the send & add that to the top of the option list
         // example: if the Send was created with a different client
-        if (field === DateField.ExpriationDate && this.expirationDateTimeFallback != null) {
+        if (field === DateField.ExpriationDate && this.expirationDateTimeFallback != null && this.editMode) {
             const previousValue: TimeOption = {
                 standard: this.datePipe.transform(this.expirationDateTimeFallback, 'hh:mm a'),
                 military: this.datePipe.transform(this.expirationDateTimeFallback, 'HH:mm'),
             };
             return [previousValue, {standard: null, military: null}, ...validTimes];
-        } else if (field === DateField.DeletionDate && this.deletionDateTimeFallback != null) {
+        } else if (field === DateField.DeletionDate && this.deletionDateTimeFallback != null && this.editMode) {
             const previousValue: TimeOption = {
                 standard: this.datePipe.transform(this.deletionDateTimeFallback, 'hh:mm a'),
                 military: this.datePipe.transform(this.deletionDateTimeFallback, 'HH:mm'),
