@@ -74,7 +74,7 @@ export class AddEditComponent implements OnInit {
     safariDeletionTimeOptions: TimeOption[];
     safariExpirationTimeOptions: TimeOption[];
 
-    private webVaultUrl: string;
+    private sendLinkBaseUrl: string;
 
     constructor(protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected environmentService: EnvironmentService, protected datePipe: DatePipe,
@@ -97,15 +97,17 @@ export class AddEditComponent implements OnInit {
             { name: i18nService.t('never'), value: null },
         ].concat([...this.deletionDateOptions]);
 
-        this.webVaultUrl = this.environmentService.getWebVaultUrl();
-        if (this.webVaultUrl == null) {
-            this.webVaultUrl = 'https://vault.bitwarden.com';
+        const webVaultUrl = this.environmentService.getWebVaultUrl();
+        if (webVaultUrl == null) {
+            this.sendLinkBaseUrl = 'https://send.bitwarden.com/#';
+        } else {
+            this.sendLinkBaseUrl = webVaultUrl + '/#/send/';
         }
     }
 
     get link(): string {
         if (this.send.id != null && this.send.accessId != null) {
-            return this.webVaultUrl + '/#/send/' + this.send.accessId + '/' + this.send.urlB64Key;
+            return this.sendLinkBaseUrl + this.send.accessId + '/' + this.send.urlB64Key;
         }
         return null;
     }
@@ -484,7 +486,7 @@ export class AddEditComponent implements OnInit {
                 standard: this.datePipe.transform(this.expirationDateTimeFallback, 'hh:mm a'),
                 military: this.datePipe.transform(this.expirationDateTimeFallback, 'HH:mm'),
             };
-            return [previousValue, {standard: null, military: null}, ...validTimes];
+            return [previousValue, { standard: null, military: null }, ...validTimes];
         } else if (field === DateField.DeletionDate && this.deletionDateTimeFallback != null && this.editMode) {
             const previousValue: TimeOption = {
                 standard: this.datePipe.transform(this.deletionDateTimeFallback, 'hh:mm a'),
@@ -492,7 +494,7 @@ export class AddEditComponent implements OnInit {
             };
             return [previousValue, ...validTimes];
         } else {
-            return  [{standard: null, military: null}, ...validTimes];
+            return [{ standard: null, military: null }, ...validTimes];
         }
     }
 }
