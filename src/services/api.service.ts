@@ -51,6 +51,7 @@ import { PreloginRequest } from '../models/request/preloginRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
+import { AttachmentRequest } from '../models/request/attachmentRequest';
 import { SendAccessRequest } from '../models/request/sendAccessRequest';
 import { SendRequest } from '../models/request/sendRequest';
 import { SetPasswordRequest } from '../models/request/setPasswordRequest';
@@ -75,6 +76,7 @@ import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
 import { Utils } from '../misc/utils';
 import { ApiKeyResponse } from '../models/response/apiKeyResponse';
+import { AttachmentResponse } from '../models/response/attachmentResponse';
 import { BillingResponse } from '../models/response/billingResponse';
 import { BreachAccountResponse } from '../models/response/breachAccountResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
@@ -128,15 +130,17 @@ import { TwoFactorWebAuthnResponse } from '../models/response/twoFactorWebAuthnR
 import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
+import { AttachmentUploadDataResponse } from '../models/response/attachmentUploadDataResponse';
 
 import { SendAccessView } from '../models/view/sendAccessView';
+import { cipher } from 'node-forge';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
     apiBaseUrl: string;
     identityBaseUrl: string;
     eventsBaseUrl: string;
-
+    
     private device: DeviceType;
     private deviceType: string;
     private isWebClient = false;
@@ -600,6 +604,19 @@ export class ApiService implements ApiServiceAbstraction {
 
     // Attachments APIs
 
+    async getAttachmentData(cipherId: string, attachmentId: string, emergencyAccessId?: string): Promise<AttachmentResponse> {
+        const path = (emergencyAccessId != null ?
+            '/emergency-access/' + emergencyAccessId + '/' :
+            '/ciphers/') + cipherId + '/attachment/' + attachmentId;
+        const r = await this.send('GET', path, null, true, true);
+        return new AttachmentResponse(r);
+    }
+
+    async postCipherAttachmentV2(id: string, request: AttachmentRequest): Promise<AttachmentUploadDataResponse> {
+        const r = await this.send('POST', '/ciphers/' + id + '/attachment/v2', request, true, true);
+        return new AttachmentUploadDataResponse(r);
+    }
+
     async postCipherAttachment(id: string, data: FormData): Promise<CipherResponse> {
         const r = await this.send('POST', '/ciphers/' + id + '/attachment', data, true, true);
         return new CipherResponse(r);
@@ -622,6 +639,15 @@ export class ApiService implements ApiServiceAbstraction {
         organizationId: string): Promise<any> {
         return this.send('POST', '/ciphers/' + id + '/attachment/' +
             attachmentId + '/share?organizationId=' + organizationId, data, true, false);
+    }
+
+    async renewAttachmentUploadUrl(id: string, attachmentId: string): Promise<AttachmentUploadDataResponse> {
+        const r = await this.send('GET', '/ciphers/' + id + '/attachment/' + attachmentId, null, true, true);
+        return new AttachmentUploadDataResponse(r);
+    }
+
+    postAttachmentFile(id: string, attachmentId: string, data: FormData): Promise<any> {
+        return this.send('POST', '/ciphers/' + id + '/attachment/' + attachmentId + '/renew', data, true, false);
     }
 
     // Collections APIs
