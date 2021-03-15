@@ -65,7 +65,7 @@ export class Login extends Domain {
         this.buildDataModel(this, l, {
             username: null,
             password: null,
-            totp: null
+            totp: null,
         });
 
         if (this.uris != null && this.uris.length > 0) {
