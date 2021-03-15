@@ -9,6 +9,9 @@ import { SecureNoteView } from '../models/view/secureNoteView';
 import { CipherType } from '../enums/cipherType';
 import { SecureNoteType } from '../enums/secureNoteType';
 
+import { FieldType } from '../enums';
+import { CipherView, FieldView } from '../models/view';
+
 export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
         const result = new ImportResult();
@@ -73,15 +76,17 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
                     const fieldType = this.getValueOrDefault(fieldEl.getAttribute('type'), '').toLowerCase();
                     if (fieldType === 'login') {
                         cipher.login.username = text;
-                    } else if (fieldType === 'password') {
-                        cipher.login.password = text;
+                    } else if (fieldType === 'password' || fieldType === 'secret') {
+                        // safeInCloud allows for more than one password. we just insert them here and find the one used as password later
+                        this.processKvp(cipher, name, text, FieldType.Hidden);
                     } else if (fieldType === 'one_time_password') {
                         cipher.login.totp = text;
                     } else if (fieldType === 'notes') {
                         cipher.notes += (text + '\n');
                     } else if (fieldType === 'weblogin' || fieldType === 'website') {
                         cipher.login.uris = this.makeUriArray(text);
-                    } else {
+                    }
+                    else {
                         this.processKvp(cipher, name, text);
                     }
                 });
@@ -91,6 +96,7 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
                 cipher.notes += (notesEl.textContent + '\n');
             });
 
+            this.setPassword(cipher);
             this.cleanupCipher(cipher);
             result.ciphers.push(cipher);
         });
@@ -101,5 +107,29 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
 
         result.success = true;
         return Promise.resolve(result);
+    }
+
+    // Choose a password from all passwords. Take one that has password in its name, or the first one if there is no such entry
+    // if its name is password, we can safely remove it form the fields. otherwise, it would maybe be best to keep it as a hidden field
+    setPassword(cipher: CipherView) {
+        const candidates = cipher.fields.filter(field => field.type === FieldType.Hidden);
+        if (!candidates.length) {
+            return;
+        }
+
+        let choice: FieldView;
+        for (const field of candidates) {
+            if (this.passwordFieldNames.includes(field.name.toLowerCase())) {
+                choice = field;
+                cipher.fields = cipher.fields.filter(f => f !== choice);
+                break;
+            }
+        }
+
+        if (!choice) {
+            choice = candidates[0];
+        }
+
+        cipher.login.password = choice.value;
     }
 }
