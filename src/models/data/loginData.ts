@@ -1,7 +1,8 @@
 import { LoginApi } from '../api/loginApi';
 
-import { AutofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
 import { LoginUriData } from './loginUriData';
+
+import { AutofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
 
 export class LoginData {
     uris: LoginUriData[];

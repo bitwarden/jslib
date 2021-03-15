@@ -16,6 +16,7 @@ export class LoginView implements View {
 
     constructor(l?: Login) {
         if (!l) {
+            this.autofillOnPageLoad = AutofillOnPageLoadOptions.UseGlobalSetting;
             return;
         }
 

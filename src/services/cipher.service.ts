@@ -1069,7 +1069,7 @@ export class CipherService implements CipherServiceAbstraction {
                 const globalAutofill = await this.storageService.get(ConstantsService.enableAutoFillOnPageLoadKey);
                 ciphers = ciphers.filter((cipher: CipherView) => {
                     return cipher.login.autofillOnPageLoad === AutofillOnPageLoadOptions.Always ||
-                        (cipher.login.autofillOnPageLoad === AutofillOnPageLoadOptions.UseGlobalSetting && globalAutofill)
+                        (cipher.login.autofillOnPageLoad === AutofillOnPageLoadOptions.UseGlobalSetting && globalAutofill);
                 });
                 if (ciphers.length === 0) {
                     return null;

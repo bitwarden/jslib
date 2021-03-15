@@ -25,7 +25,7 @@ export class Login extends Domain {
         }
 
         this.passwordRevisionDate = obj.passwordRevisionDate != null ? new Date(obj.passwordRevisionDate) : null;
-        this.autofillOnPageLoad = obj.autofillOnPageLoad;
+        this.autofillOnPageLoad = obj.autofillOnPageLoad ?? AutofillOnPageLoadOptions.UseGlobalSetting;
         this.buildDomainModel(this, obj, {
             username: null,
             password: null,

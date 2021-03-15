@@ -153,7 +153,7 @@ export class AddEditComponent implements OnInit {
         this.autofillOnPageLoadOptions = [
             { name: i18nService.t('autoFillOnPageLoadUseGlobalSettings'), value: AutofillOnPageLoadOptions.UseGlobalSetting },
             { name: i18nService.t('autoFillOnPageLoadAlways'), value: AutofillOnPageLoadOptions.Always },
-            { name: i18nService.t('autoFillOnPageLoadNever'), value: AutofillOnPageLoadOptions.Never }
+            { name: i18nService.t('autoFillOnPageLoadNever'), value: AutofillOnPageLoadOptions.Never },
         ];
     }
 

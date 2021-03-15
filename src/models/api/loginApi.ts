@@ -1,7 +1,8 @@
 import { BaseResponse } from '../response/baseResponse';
 
-import { AutofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
 import { LoginUriApi } from './loginUriApi';
+
+import { AutofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
 
 export class LoginApi extends BaseResponse {
     uris: LoginUriApi[];
