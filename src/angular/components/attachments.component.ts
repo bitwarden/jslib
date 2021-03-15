@@ -6,6 +6,7 @@ import {
     Output,
 } from '@angular/core';
 
+import { ApiService } from '../../abstractions/api.service';
 import { CipherService } from '../../abstractions/cipher.service';
 import { CryptoService } from '../../abstractions/crypto.service';
 import { I18nService } from '../../abstractions/i18n.service';
@@ -31,10 +32,12 @@ export class AttachmentsComponent implements OnInit {
     formPromise: Promise<any>;
     deletePromises: { [id: string]: Promise<any>; } = {};
     reuploadPromises: { [id: string]: Promise<any>; } = {};
+    emergencyAccessId?: string = null;
 
     constructor(protected cipherService: CipherService, protected i18nService: I18nService,
         protected cryptoService: CryptoService, protected userService: UserService,
-        protected platformUtilsService: PlatformUtilsService, protected win: Window) { }
+        protected platformUtilsService: PlatformUtilsService, protected apiService: ApiService,
+        protected win: Window) { }
 
     async ngOnInit() {
         await this.init();
@@ -52,12 +55,6 @@ export class AttachmentsComponent implements OnInit {
         if (files == null || files.length === 0) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('selectFile'));
-            return;
-        }
-
-        if (files[0].size > 104857600) { // 100 MB
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('maxFileSize'));
             return;
         }
 
@@ -116,8 +113,11 @@ export class AttachmentsComponent implements OnInit {
             return;
         }
 
+        const attachmentDownloadResponse = await this.apiService.getAttachmentData(this.cipher.id, attachment.id,
+            this.emergencyAccessId);
+
         a.downloading = true;
-        const response = await fetch(new Request(attachment.url, { cache: 'no-store' }));
+        const response = await fetch(new Request(attachmentDownloadResponse.url, { cache: 'no-store' }));
         if (response.status !== 200) {
             this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
             a.downloading = false;
