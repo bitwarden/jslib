@@ -100,7 +100,7 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
         return this.packageJson.version;
     }
 
-    supportsU2f(win: Window) {
+    supportsWebAuthn(win: Window) {
         return false;
     }
 
