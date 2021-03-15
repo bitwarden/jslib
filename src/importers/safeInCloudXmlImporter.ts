@@ -39,7 +39,7 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
         });
 
         Array.from(doc.querySelectorAll('database > card')).forEach(cardEl => {
-            if (cardEl.getAttribute('template') === 'true') {
+            if (cardEl.getAttribute('template') === 'true' || cardEl.getAttribute('deleted') === 'true') {
                 return;
             }
 
