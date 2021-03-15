@@ -50,6 +50,9 @@ import { ConstantsService } from './constants.service';
 
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
+import { AttachmentRequest } from '../models/request/attachmentRequest';
+import { FileUploadType } from '../enums/fileUploadType';
+import { AzureStorageService } from '../abstractions/azureStorage.service';
 
 const Keys = {
     ciphersPrefix: 'ciphers_',
@@ -70,6 +73,7 @@ export class CipherService implements CipherServiceAbstraction {
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private settingsService: SettingsService, private apiService: ApiService,
         private storageService: StorageService, private i18nService: I18nService,
+        private azureStorageService: AzureStorageService,
         private searchService: () => SearchService) {
     }
 
@@ -618,32 +622,38 @@ export class CipherService implements CipherServiceAbstraction {
         const dataEncKey = await this.cryptoService.makeEncKey(key);
         const encData = await this.cryptoService.encryptToBytes(data, dataEncKey[0]);
 
-        const fd = new FormData();
-        try {
-            const blob = new Blob([encData], { type: 'application/octet-stream' });
-            fd.append('key', dataEncKey[1].encryptedString);
-            fd.append('data', blob, encFileName.encryptedString);
-        } catch (e) {
-            if (Utils.isNode && !Utils.isBrowser) {
-                fd.append('key', dataEncKey[1].encryptedString);
-                fd.append('data', Buffer.from(encData) as any, {
-                    filepath: encFileName.encryptedString,
-                    contentType: 'application/octet-stream',
-                } as any);
-            } else {
-                throw e;
-            }
-        }
+        const request: AttachmentRequest = {
+            key: dataEncKey[1].encryptedString,
+            fileName: encFileName.encryptedString,
+            fileSize: encData.byteLength,
+            adminRequest: admin,
+        };
+        const uploadDataResponse = await this.apiService.postCipherAttachmentV2(cipher.id, request);
+        const response = admin ? uploadDataResponse.cipherMiniResponse : uploadDataResponse.cipherResponse;
 
-        let response: CipherResponse;
         try {
-            if (admin) {
-                response = await this.apiService.postCipherAttachmentAdmin(cipher.id, fd);
-            } else {
-                response = await this.apiService.postCipherAttachment(cipher.id, fd);
+            switch (uploadDataResponse.fileUploadType) {
+                case FileUploadType.Direct:
+                    this.directUploadFileToServer(response.id, uploadDataResponse.attachmentId, encFileName, encData);
+                    break;
+                case FileUploadType.Azure:
+                    const renewalCallback = async () => {
+                        const renewalResponse = await this.apiService.renewAttachmentUploadUrl(response.id,
+                            uploadDataResponse.attachmentId);
+                        return renewalResponse.url;
+                    };
+                    this.azureStorageService.uploadFileToServer(uploadDataResponse.url, encData, renewalCallback);
+                    break;
+                default:
+                    throw new Error('Unknown file upload type.');
             }
         } catch (e) {
-            throw new Error((e as ErrorResponse).getSingleMessage());
+            if (admin) {
+                this.apiService.deleteCipherAttachmentAdmin(cipher.id, uploadDataResponse.attachmentId);
+            } else {
+                this.apiService.deleteCipherAttachment(cipher.id, uploadDataResponse.attachmentId);
+            }
+            throw e;
         }
 
         const userId = await this.userService.getUserId();
@@ -1068,6 +1078,29 @@ export class CipherService implements CipherServiceAbstraction {
             return this.sortedCiphersCache.getLastUsed(url);
         } else {
             return this.sortedCiphersCache.getNext(url);
+        }
+    }
+
+    private async directUploadFileToServer(cipherId: string, attachmentId: string, encFileName: CipherString, encData: ArrayBuffer) {
+        const fd = new FormData();
+        try {
+            const blob = new Blob([encData], { type: 'application/octet-stream' });
+            fd.append('data', blob, encFileName.encryptedString);
+        } catch (e) {
+            if (Utils.isNode && !Utils.isBrowser) {
+                fd.append('data', Buffer.from(encData) as any, {
+                    filepath: encFileName.encryptedString,
+                    contentType: 'application/octet-stream',
+                } as any);
+            } else {
+                throw e;
+            }
+        }
+
+        try {
+            await this.apiService.postAttachmentFile(cipherId, attachmentId, fd)
+        } catch (e) {
+            throw new Error((e as ErrorResponse).getSingleMessage());
         }
     }
 }
