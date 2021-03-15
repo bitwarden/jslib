@@ -54,6 +54,10 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
             const cipher = this.initLoginCipher();
             cipher.name = this.getValueOrDefault(cardEl.getAttribute('title'), '--');
 
+            if (cardEl.getAttribute('star') === 'true') {
+                cipher.favorite = true;
+            }
+
             const cardType = cardEl.getAttribute('type');
             if (cardType === 'note') {
                 cipher.type = CipherType.SecureNote;
