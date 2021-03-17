@@ -59,4 +59,4 @@ export const data = `
         <label_id>3</label_id>
     </card>
 </database>
-`
+`;
