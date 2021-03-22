@@ -46,6 +46,7 @@ export class SendService implements SendServiceAbstraction {
         send.id = model.id;
         send.type = model.type;
         send.disabled = model.disabled;
+        send.hideEmail = model.hideEmail;
         send.maxAccessCount = model.maxAccessCount;
         if (model.key == null) {
             model.key = await this.cryptoFunctionService.randomBytes(16);

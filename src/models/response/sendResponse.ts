@@ -21,6 +21,7 @@ export class SendResponse extends BaseResponse {
     deletionDate: string;
     password: string;
     disable: boolean;
+    hideEmail: boolean;
 
     constructor(response: any) {
         super(response);
@@ -37,6 +38,7 @@ export class SendResponse extends BaseResponse {
         this.deletionDate = this.getResponseProperty('DeletionDate');
         this.password = this.getResponseProperty('Password');
         this.disable = this.getResponseProperty('Disabled') || false;
+        this.hideEmail = this.getResponseProperty('HideEmail') || false;
 
         const text = this.getResponseProperty('Text');
         if (text != null) {

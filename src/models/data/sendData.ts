@@ -22,6 +22,7 @@ export class SendData {
     deletionDate: string;
     password: string;
     disabled: boolean;
+    hideEmail: boolean;
 
     constructor(response?: SendResponse, userId?: string) {
         if (response == null) {
@@ -42,6 +43,7 @@ export class SendData {
         this.deletionDate = response.deletionDate;
         this.password = response.password;
         this.disabled = response.disable;
+        this.hideEmail = response.hideEmail;
 
         switch (this.type) {
             case SendType.Text:
