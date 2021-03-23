@@ -164,11 +164,6 @@ export class AddEditComponent implements OnInit {
             )
         );
 
-        this.disableSend = disableSendPolicies.some(p =>
-            (p.data?.disableSend ?? DisableSendType.DisableAll) === DisableSendType.DisableAll);
-        this.disableAnonymousSend = disableSendPolicies.some(p =>
-            p.data?.disableSend === DisableSendType.DisableAnonymous);
-
         this.canAccessPremium = await this.userService.canAccessPremium();
         if (!this.canAccessPremium) {
             this.type = SendType.Text;
@@ -187,6 +182,12 @@ export class AddEditComponent implements OnInit {
                 this.send.deletionDate.setDate(this.send.deletionDate.getDate() + 7);
             }
         }
+
+        this.disableAnonymousSend = disableSendPolicies.some(p =>
+            p.data?.disableSend === DisableSendType.DisableAnonymous);
+        this.disableSend = (this.disableAnonymousSend && this.editMode && this.send.hideEmail) ||
+            disableSendPolicies.some(p =>
+                (p.data?.disableSend ?? DisableSendType.DisableAll) === DisableSendType.DisableAll);
 
         this.hasPassword = this.send.password != null && this.send.password.trim() !== '';
 
