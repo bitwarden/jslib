@@ -19,11 +19,11 @@ import { PolicyService } from '../../../abstractions/policy.service';
 import { SendService } from '../../../abstractions/send.service';
 import { UserService } from '../../../abstractions/user.service';
 
+import { Send } from '../../../models/domain/send';
 import { SendFileView } from '../../../models/view/sendFileView';
 import { SendTextView } from '../../../models/view/sendTextView';
 import { SendView } from '../../../models/view/sendView';
 
-import { Send } from '../../../models/domain/send';
 import { DisableSendType } from '../../../enums/disableSendType';
 
 // TimeOption is used for the dropdown implementation of custom times
