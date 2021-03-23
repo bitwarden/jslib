@@ -1,4 +1,4 @@
-export enum DisableSendPolicyType {
+export enum DisableSendType {
     DisableAll = 0,
     DisableAnonymous = 1,
 }

@@ -24,6 +24,7 @@ import { SendTextView } from '../../../models/view/sendTextView';
 import { SendView } from '../../../models/view/sendView';
 
 import { Send } from '../../../models/domain/send';
+import { DisableSendType } from '../../../enums/disableSendType';
 
 // TimeOption is used for the dropdown implementation of custom times
 // Standard = displayed time; Military = stored time
@@ -47,6 +48,7 @@ export class AddEditComponent implements OnInit {
 
     copyLink = false;
     disableSend = false;
+    disableAnonymousSend = false;
     send: SendView;
     deletionDate: string;
     deletionDateFallback: string;
@@ -68,6 +70,7 @@ export class AddEditComponent implements OnInit {
     canAccessPremium = true;
     premiumRequiredAlertShown = false;
     showOptions = false;
+
 
     safariDeletionTime: string;
     safariExpirationTime: string;
@@ -151,13 +154,20 @@ export class AddEditComponent implements OnInit {
     async load() {
         const policies = await this.policyService.getAll(PolicyType.DisableSend);
         const organizations = await this.userService.getAllOrganizations();
-        this.disableSend = organizations.some(o => {
-            return o.enabled &&
-                o.status === OrganizationUserStatusType.Confirmed &&
-                o.usePolicies &&
-                !o.canManagePolicies &&
-                policies.some(p => p.organizationId === o.id && p.enabled);
-        });
+        const disableSendPolicies = policies.filter(p =>
+            p.enabled && organizations.some(o =>
+                o.enabled &&
+                    o.status === OrganizationUserStatusType.Confirmed &&
+                    o.usePolicies &&
+                    !o.canManagePolicies &&
+                    o.id === p.organizationId
+            )
+        );
+
+        this.disableSend = disableSendPolicies.some(p =>
+            (p.data?.disableSend ?? DisableSendType.DisableAll) === DisableSendType.DisableAll);
+        this.disableAnonymousSend = disableSendPolicies.some(p =>
+            p.data?.disableSend === DisableSendType.DisableAnonymous);
 
         this.canAccessPremium = await this.userService.canAccessPremium();
         if (!this.canAccessPremium) {

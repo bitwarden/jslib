@@ -16,6 +16,7 @@ import { PolicyService } from '../../../abstractions/policy.service';
 import { SearchService } from '../../../abstractions/search.service';
 import { SendService } from '../../../abstractions/send.service';
 import { UserService } from '../../../abstractions/user.service';
+import { DisableSendType } from '../../../enums/disableSendType';
 
 export class SendComponent implements OnInit {
 
@@ -56,7 +57,8 @@ export class SendComponent implements OnInit {
                 o.status === OrganizationUserStatusType.Confirmed &&
                 o.usePolicies &&
                 !o.canManagePolicies &&
-                policies.some(p => p.organizationId === o.id && p.enabled);
+                policies.some(p => p.organizationId === o.id && p.enabled && 
+                    (p.data?.disableSend ?? DisableSendType.DisableAll) === DisableSendType.DisableAll);
         });
     }
 
