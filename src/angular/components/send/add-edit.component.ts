@@ -19,10 +19,11 @@ import { PolicyService } from '../../../abstractions/policy.service';
 import { SendService } from '../../../abstractions/send.service';
 import { UserService } from '../../../abstractions/user.service';
 
-import { Send } from '../../../models/domain/send';
 import { SendFileView } from '../../../models/view/sendFileView';
 import { SendTextView } from '../../../models/view/sendTextView';
 import { SendView } from '../../../models/view/sendView';
+
+import { Send } from '../../../models/domain/send';
 
 // TimeOption is used for the dropdown implementation of custom times
 // Standard = displayed time; Military = stored time
@@ -47,7 +48,6 @@ export class AddEditComponent implements OnInit {
     copyLink = false;
     disableSend = false;
     disableHideEmail = false;
-    disableThisSend = false;
     send: SendView;
     deletionDate: string;
     deletionDateFallback: string;
@@ -69,7 +69,6 @@ export class AddEditComponent implements OnInit {
     canAccessPremium = true;
     premiumRequiredAlertShown = false;
     showOptions = false;
-
 
     safariDeletionTime: string;
     safariExpirationTime: string;
@@ -168,7 +167,7 @@ export class AddEditComponent implements OnInit {
                 o.usePolicies &&
                 !o.canManagePolicies &&
                 sendOptionsPolicies.some(p => p.organizationId === o.id && p.enabled && p.data.disableHideEmail);
-        })
+        });
 
         this.canAccessPremium = await this.userService.canAccessPremium();
         if (!this.canAccessPremium) {
@@ -190,8 +189,6 @@ export class AddEditComponent implements OnInit {
         }
 
         this.hasPassword = this.send.password != null && this.send.password.trim() !== '';
-        this.disableThisSend = this.disableThisSend ||
-            (this.disableHideEmail && this.editMode && this.send.hideEmail);
 
         // Parse dates
         if (!this.isDateTimeLocalSupported) {
