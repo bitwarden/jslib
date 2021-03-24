@@ -3,7 +3,6 @@ import {
     OnInit,
 } from '@angular/core';
 
-import { DisableSendType } from '../../../enums/disableSendType';
 import { OrganizationUserStatusType } from '../../../enums/organizationUserStatusType';
 import { PolicyType } from '../../../enums/policyType';
 import { SendType } from '../../../enums/sendType';
@@ -57,8 +56,7 @@ export class SendComponent implements OnInit {
                 o.status === OrganizationUserStatusType.Confirmed &&
                 o.usePolicies &&
                 !o.canManagePolicies &&
-                policies.some(p => p.organizationId === o.id && p.enabled &&
-                    (p.data?.disableSend ?? DisableSendType.DisableAll) === DisableSendType.DisableAll);
+                policies.some(p => p.organizationId === o.id && p.enabled);
         });
     }
 

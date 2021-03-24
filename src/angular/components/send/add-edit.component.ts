@@ -24,8 +24,6 @@ import { SendFileView } from '../../../models/view/sendFileView';
 import { SendTextView } from '../../../models/view/sendTextView';
 import { SendView } from '../../../models/view/sendView';
 
-import { DisableSendType } from '../../../enums/disableSendType';
-
 // TimeOption is used for the dropdown implementation of custom times
 // Standard = displayed time; Military = stored time
 interface TimeOption {
@@ -47,8 +45,9 @@ export class AddEditComponent implements OnInit {
     @Output() onCancelled = new EventEmitter<SendView>();
 
     copyLink = false;
-    disableSend = false;
-    disableAnonymousSend = false;
+    disableSendPolicy = false;
+    disableHideEmailPolicy = false;
+    disableThisSend = false;
     send: SendView;
     deletionDate: string;
     deletionDateFallback: string;
@@ -152,17 +151,24 @@ export class AddEditComponent implements OnInit {
     }
 
     async load() {
-        const policies = await this.policyService.getAll(PolicyType.DisableSend);
+        const disableSendPolicies = await this.policyService.getAll(PolicyType.DisableSend);
         const organizations = await this.userService.getAllOrganizations();
-        const disableSendPolicies = policies.filter(p =>
-            p.enabled && organizations.some(o =>
-                o.enabled &&
-                    o.status === OrganizationUserStatusType.Confirmed &&
-                    o.usePolicies &&
-                    !o.canManagePolicies &&
-                    o.id === p.organizationId
-            )
-        );
+        this.disableSendPolicy = organizations.some(o => {
+            return o.enabled &&
+                o.status === OrganizationUserStatusType.Confirmed &&
+                o.usePolicies &&
+                !o.canManagePolicies &&
+                disableSendPolicies.some(p => p.organizationId === o.id && p.enabled);
+        });
+
+        const sendOptionsPolicies = await this.policyService.getAll(PolicyType.SendOptions);
+        this.disableHideEmailPolicy = await organizations.some(o => {
+            return o.enabled &&
+                o.status === OrganizationUserStatusType.Confirmed &&
+                o.usePolicies &&
+                !o.canManagePolicies &&
+                sendOptionsPolicies.some(p => p.organizationId === o.id && p.enabled && p.data.disableHideEmail);
+        })
 
         this.canAccessPremium = await this.userService.canAccessPremium();
         if (!this.canAccessPremium) {
@@ -183,13 +189,9 @@ export class AddEditComponent implements OnInit {
             }
         }
 
-        this.disableAnonymousSend = disableSendPolicies.some(p =>
-            p.data?.disableSend === DisableSendType.DisableAnonymous);
-        this.disableSend = (this.disableAnonymousSend && this.editMode && this.send.hideEmail) ||
-            disableSendPolicies.some(p =>
-                (p.data?.disableSend ?? DisableSendType.DisableAll) === DisableSendType.DisableAll);
-
         this.hasPassword = this.send.password != null && this.send.password.trim() !== '';
+        this.disableThisSend = this.disableThisSend ||
+            (this.disableHideEmailPolicy && this.editMode && this.send.hideEmail);
 
         // Parse dates
         if (!this.isDateTimeLocalSupported) {
@@ -248,7 +250,7 @@ export class AddEditComponent implements OnInit {
             }
         }
 
-        if (this.disableSend) {
+        if (this.disableSendPolicy) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('sendDisabledWarning'));
             return false;
