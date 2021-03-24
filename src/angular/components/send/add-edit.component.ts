@@ -45,8 +45,8 @@ export class AddEditComponent implements OnInit {
     @Output() onCancelled = new EventEmitter<SendView>();
 
     copyLink = false;
-    disableSendPolicy = false;
-    disableHideEmailPolicy = false;
+    disableSend = false;
+    disableHideEmail = false;
     disableThisSend = false;
     send: SendView;
     deletionDate: string;
@@ -153,7 +153,7 @@ export class AddEditComponent implements OnInit {
     async load() {
         const disableSendPolicies = await this.policyService.getAll(PolicyType.DisableSend);
         const organizations = await this.userService.getAllOrganizations();
-        this.disableSendPolicy = organizations.some(o => {
+        this.disableSend = organizations.some(o => {
             return o.enabled &&
                 o.status === OrganizationUserStatusType.Confirmed &&
                 o.usePolicies &&
@@ -162,7 +162,7 @@ export class AddEditComponent implements OnInit {
         });
 
         const sendOptionsPolicies = await this.policyService.getAll(PolicyType.SendOptions);
-        this.disableHideEmailPolicy = await organizations.some(o => {
+        this.disableHideEmail = await organizations.some(o => {
             return o.enabled &&
                 o.status === OrganizationUserStatusType.Confirmed &&
                 o.usePolicies &&
@@ -191,7 +191,7 @@ export class AddEditComponent implements OnInit {
 
         this.hasPassword = this.send.password != null && this.send.password.trim() !== '';
         this.disableThisSend = this.disableThisSend ||
-            (this.disableHideEmailPolicy && this.editMode && this.send.hideEmail);
+            (this.disableHideEmail && this.editMode && this.send.hideEmail);
 
         // Parse dates
         if (!this.isDateTimeLocalSupported) {
@@ -250,7 +250,7 @@ export class AddEditComponent implements OnInit {
             }
         }
 
-        if (this.disableSendPolicy) {
+        if (this.disableSend) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('sendDisabledWarning'));
             return false;
