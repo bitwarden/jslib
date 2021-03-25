@@ -633,7 +633,7 @@ export class CipherService implements CipherServiceAbstraction {
             response = admin ? uploadDataResponse.cipherMiniResponse : uploadDataResponse.cipherResponse;
             this.fileUploadService.uploadCipherAttachment(admin, uploadDataResponse, filename, data);
         } catch (e) {
-            if (e instanceof ErrorResponse && (e as ErrorResponse).statusCode === 404 || (e as ErrorResponse).statusCode == 405) {
+            if (e instanceof ErrorResponse && (e as ErrorResponse).statusCode === 404 || (e as ErrorResponse).statusCode === 405) {
                 response = await this.legacyServerAttachmentFileUpload(admin, cipher.id, encFileName, encData, dataEncKey[1]);
             } else if (e instanceof ErrorResponse) {
                 throw new Error((e as ErrorResponse).getSingleMessage());

@@ -136,7 +136,7 @@ export class AttachmentsComponent implements OnInit {
         }
 
         a.downloading = true;
-        let response = await fetch(new Request(url, { cache: 'no-store' }));
+        const response = await fetch(new Request(url, { cache: 'no-store' }));
         if (response.status !== 200) {
             this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
             a.downloading = false;
