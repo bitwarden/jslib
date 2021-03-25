@@ -4,6 +4,7 @@ import { ApiService } from '../../abstractions/api.service';
 import { I18nService } from '../../abstractions/i18n.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { TokenService } from '../../abstractions/token.service';
+import { UserService } from '../../abstractions/user.service';
 
 export class PremiumComponent implements OnInit {
     isPremium: boolean = false;
@@ -11,10 +12,10 @@ export class PremiumComponent implements OnInit {
     refreshPromise: Promise<any>;
 
     constructor(protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
-        protected tokenService: TokenService, protected apiService: ApiService) { }
+        protected apiService: ApiService, protected userService: UserService) { }
 
     async ngOnInit() {
-        this.isPremium = this.tokenService.getPremium();
+        this.isPremium = await this.userService.canAccessPremium();
     }
 
     async refresh() {
@@ -22,7 +23,7 @@ export class PremiumComponent implements OnInit {
             this.refreshPromise = this.apiService.refreshIdentityToken();
             await this.refreshPromise;
             this.platformUtilsService.showToast('success', null, this.i18nService.t('refreshComplete'));
-            this.isPremium = this.tokenService.getPremium();
+            this.isPremium = await this.userService.canAccessPremium();
         } catch { }
     }
 
