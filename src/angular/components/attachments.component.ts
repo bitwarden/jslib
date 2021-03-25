@@ -128,6 +128,10 @@ export class AttachmentsComponent implements OnInit {
         } catch (e) {
             if (e instanceof ErrorResponse && (e as ErrorResponse).statusCode === 404) {
                 url = attachment.url;
+            } else if (e instanceof ErrorResponse) {
+                throw new Error((e as ErrorResponse).getSingleMessage());
+            } else {
+                throw e;
             }
         }
 
