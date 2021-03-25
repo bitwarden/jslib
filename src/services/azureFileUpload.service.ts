@@ -34,7 +34,7 @@ export class AzureFileUploadService {
         const blobResponse = await fetch(request);
 
         if (blobResponse.status !== 201) {
-            throw new Error(`Failed to create Azure blob: ${blobResponse.status}`)
+            throw new Error(`Failed to create Azure blob: ${blobResponse.status}`);
         }
     }
     private async azureUploadBlocks(url: string, data: ArrayBuffer, renewalCallback: () => Promise<string>) {

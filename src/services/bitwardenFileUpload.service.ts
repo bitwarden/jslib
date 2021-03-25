@@ -2,28 +2,26 @@ import { ApiService } from '../abstractions/api.service';
 
 import { Utils } from '../misc/utils';
 
-import { CipherString } from '../models/domain';
-import { SendResponse } from '../models/response/sendResponse';
-
 export class BitwardenFileUploadService
 {
     constructor(private apiService: ApiService) { }
 
-    async upload(sendResponse: SendResponse, fileName: CipherString, data: ArrayBuffer) {
+    async upload(encryptedFileName: string, encryptedFileData: ArrayBuffer, apiCall: (fd: FormData) => Promise<any>) {
         const fd = new FormData();
         try {
-            const blob = new Blob([data], { type: 'application/octet-stream' });
-            fd.append('data', blob, fileName.encryptedString);
+            const blob = new Blob([encryptedFileData], { type: 'application/octet-stream' });
+            fd.append('data', blob, encryptedFileName);
         } catch (e) {
             if (Utils.isNode && !Utils.isBrowser) {
-                fd.append('data', Buffer.from(data) as any, {
-                    filepath: fileName.encryptedString,
+                fd.append('data', Buffer.from(encryptedFileData) as any, {
+                    filepath: encryptedFileName,
                     contentType: 'application/octet-stream',
                 } as any);
             } else {
                 throw e;
             }
         }
-        await this.apiService.postSendFile(sendResponse.id, sendResponse.file.id, fd);
+
+        await apiCall(fd);
     }
 }
