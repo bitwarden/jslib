@@ -7,6 +7,7 @@ import { TokenService } from '../abstractions/token.service';
 
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
+import { AttachmentRequest } from '../models/request/attachmentRequest';
 import { BitPayInvoiceRequest } from '../models/request/bitPayInvoiceRequest';
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
 import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
@@ -51,7 +52,6 @@ import { PreloginRequest } from '../models/request/preloginRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
-import { AttachmentRequest } from '../models/request/attachmentRequest';
 import { SendAccessRequest } from '../models/request/sendAccessRequest';
 import { SendRequest } from '../models/request/sendRequest';
 import { SetPasswordRequest } from '../models/request/setPasswordRequest';
@@ -77,6 +77,7 @@ import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 import { Utils } from '../misc/utils';
 import { ApiKeyResponse } from '../models/response/apiKeyResponse';
 import { AttachmentResponse } from '../models/response/attachmentResponse';
+import { AttachmentUploadDataResponse } from '../models/response/attachmentUploadDataResponse';
 import { BillingResponse } from '../models/response/billingResponse';
 import { BreachAccountResponse } from '../models/response/breachAccountResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
@@ -130,17 +131,15 @@ import { TwoFactorWebAuthnResponse } from '../models/response/twoFactorWebAuthnR
 import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
-import { AttachmentUploadDataResponse } from '../models/response/attachmentUploadDataResponse';
 
 import { SendAccessView } from '../models/view/sendAccessView';
-import { cipher } from 'node-forge';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
     apiBaseUrl: string;
     identityBaseUrl: string;
     eventsBaseUrl: string;
-    
+
     private device: DeviceType;
     private deviceType: string;
     private isWebClient = false;
@@ -612,17 +611,25 @@ export class ApiService implements ApiServiceAbstraction {
         return new AttachmentResponse(r);
     }
 
-    async postCipherAttachmentV2(id: string, request: AttachmentRequest): Promise<AttachmentUploadDataResponse> {
+    async postCipherAttachment(id: string, request: AttachmentRequest): Promise<AttachmentUploadDataResponse> {
         const r = await this.send('POST', '/ciphers/' + id + '/attachment/v2', request, true, true);
         return new AttachmentUploadDataResponse(r);
     }
 
-    async postCipherAttachment(id: string, data: FormData): Promise<CipherResponse> {
+    /**
+     * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
+     * This method still exists for backward compatibility with old server versions.
+     */
+    async postCipherAttachmentLegacy(id: string, data: FormData): Promise<CipherResponse> {
         const r = await this.send('POST', '/ciphers/' + id + '/attachment', data, true, true);
         return new CipherResponse(r);
     }
 
-    async postCipherAttachmentAdmin(id: string, data: FormData): Promise<CipherResponse> {
+    /**
+     * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
+     * This method still exists for backward compatibility with old server versions.
+     */
+    async postCipherAttachmentAdminLegacy(id: string, data: FormData): Promise<CipherResponse> {
         const r = await this.send('POST', '/ciphers/' + id + '/attachment-admin', data, true, true);
         return new CipherResponse(r);
     }
