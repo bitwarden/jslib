@@ -25,6 +25,7 @@ import { UserService } from '../abstractions/user.service';
 
 import { Utils } from '../misc/utils';
 import { CipherString } from '../models/domain';
+import { ErrorResponse } from '../models/response';
 
 const Keys = {
     sendsPrefix: 'sends_',
@@ -142,7 +143,11 @@ export class SendService implements SendServiceAbstraction {
 
                     this.fileUploadService.uploadSendFile(uploadDataResponse, sendData[0].file.fileName, sendData[1]);
                 } catch (e) {
-                    response = await this.legacyServerSendFileUpload(sendData, request);
+                    if (e instanceof ErrorResponse && (e as ErrorResponse).statusCode === 404) {
+                        response = await this.legacyServerSendFileUpload(sendData, request);
+                    } else {
+                        throw e;
+                    }
                 }
             }
             sendData[0].id = response.id;
