@@ -47,6 +47,7 @@ export class AddEditComponent implements OnInit {
 
     copyLink = false;
     disableSend = false;
+    disableHideEmail = false;
     send: SendView;
     deletionDate: string;
     deletionDateFallback: string;
@@ -149,14 +150,23 @@ export class AddEditComponent implements OnInit {
     }
 
     async load() {
-        const policies = await this.policyService.getAll(PolicyType.DisableSend);
+        const disableSendPolicies = await this.policyService.getAll(PolicyType.DisableSend);
         const organizations = await this.userService.getAllOrganizations();
         this.disableSend = organizations.some(o => {
             return o.enabled &&
                 o.status === OrganizationUserStatusType.Confirmed &&
                 o.usePolicies &&
                 !o.canManagePolicies &&
-                policies.some(p => p.organizationId === o.id && p.enabled);
+                disableSendPolicies.some(p => p.organizationId === o.id && p.enabled);
+        });
+
+        const sendOptionsPolicies = await this.policyService.getAll(PolicyType.SendOptions);
+        this.disableHideEmail = await organizations.some(o => {
+            return o.enabled &&
+                o.status === OrganizationUserStatusType.Confirmed &&
+                o.usePolicies &&
+                !o.canManagePolicies &&
+                sendOptionsPolicies.some(p => p.organizationId === o.id && p.enabled && p.data.disableHideEmail);
         });
 
         this.canAccessPremium = await this.userService.canAccessPremium();
