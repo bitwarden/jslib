@@ -136,10 +136,14 @@ export class SendService implements SendServiceAbstraction {
             if (sendData[0].type === SendType.Text) {
                 response = await this.apiService.postSend(request);
             } else {
-                const uploadDataResponse = await this.apiService.postFileTypeSend(request);
-                response = uploadDataResponse.sendResponse;
+                try {
+                    const uploadDataResponse = await this.apiService.postFileTypeSend(request);
+                    response = uploadDataResponse.sendResponse;
 
-                this.fileUploadService.uploadSendFile(uploadDataResponse, sendData[0].file.fileName, sendData[1]);
+                    this.fileUploadService.uploadSendFile(uploadDataResponse, sendData[0].file.fileName, sendData[1]);
+                } catch (e) {
+                    response = await this.legacyServerSendFileUpload(sendData, request);
+                }
             }
             sendData[0].id = response.id;
             sendData[0].accessId = response.accessId;
@@ -150,6 +154,31 @@ export class SendService implements SendServiceAbstraction {
         const userId = await this.userService.getUserId();
         const data = new SendData(response, userId);
         await this.upsert(data);
+    }
+
+    /**
+     * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
+     * This method still exists for backward compatibility with old server versions.
+     */
+    async legacyServerSendFileUpload(sendData: [Send, ArrayBuffer], request: SendRequest): Promise<SendResponse>
+    {
+        const fd = new FormData();
+        try {
+            const blob = new Blob([sendData[1]], { type: 'application/octet-stream' });
+            fd.append('model', JSON.stringify(request));
+            fd.append('data', blob, sendData[0].file.fileName.encryptedString);
+        } catch (e) {
+            if (Utils.isNode && !Utils.isBrowser) {
+                fd.append('model', JSON.stringify(request));
+                fd.append('data', Buffer.from(sendData[1]) as any, {
+                    filepath: sendData[0].file.fileName.encryptedString,
+                    contentType: 'application/octet-stream',
+                } as any);
+            } else {
+                throw e;
+            }
+        }
+        return await this.apiService.postSendFileLegacy(fd);
     }
 
     async upsert(send: SendData | SendData[]): Promise<any> {

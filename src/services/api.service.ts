@@ -450,6 +450,15 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/sends/' + sendId + '/file/' + fileId, data, true, false);
     }
 
+    /**
+     * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
+     * This method still exists for backward compatibility with old server versions.
+     */
+    async postSendFileLegacy(data: FormData): Promise<SendResponse> {
+        const r = await this.send('POST', '/sends/file', data, true, true);
+        return new SendResponse(r);
+    }
+
     async putSend(id: string, request: SendRequest): Promise<SendResponse> {
         const r = await this.send('PUT', '/sends/' + id, request, true, true);
         return new SendResponse(r);
