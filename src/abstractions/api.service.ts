@@ -107,6 +107,7 @@ import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
 import { SendAccessResponse } from '../models/response/sendAccessResponse';
 import { SendFileDownloadDataResponse } from '../models/response/sendFileDownloadDataResponse';
+import { SendFileUploadDataResponse } from '../models/response/sendFileUploadDataResponse';
 import { SendResponse } from '../models/response/sendResponse';
 import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
@@ -177,11 +178,18 @@ export abstract class ApiService {
     postSendAccess: (id: string, request: SendAccessRequest, apiUrl?: string) => Promise<SendAccessResponse>;
     getSends: () => Promise<ListResponse<SendResponse>>;
     postSend: (request: SendRequest) => Promise<SendResponse>;
-    postSendFile: (data: FormData) => Promise<SendResponse>;
+    postFileTypeSend: (request: SendRequest) => Promise<SendFileUploadDataResponse>;
+    postSendFile: (sendId: string, fileId: string, data: FormData) => Promise<any>;
+    /**
+     * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
+     * This method still exists for backward compatibility with old server versions.
+     */
+    postSendFileLegacy: (data: FormData) => Promise<SendResponse>;
     putSend: (id: string, request: SendRequest) => Promise<SendResponse>;
     putSendRemovePassword: (id: string) => Promise<SendResponse>;
     deleteSend: (id: string) => Promise<any>;
     getSendFileDownloadData: (send: SendAccessView, request: SendAccessRequest) => Promise<SendFileDownloadDataResponse>;
+    renewFileUploadUrl: (sendId: string, fileId: string) => Promise<SendFileUploadDataResponse>;
 
     getCipher: (id: string) => Promise<CipherResponse>;
     getCipherAdmin: (id: string) => Promise<CipherResponse>;

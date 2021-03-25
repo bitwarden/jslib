@@ -113,6 +113,7 @@ import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
 import { SendAccessResponse } from '../models/response/sendAccessResponse';
 import { SendFileDownloadDataResponse } from '../models/response/sendFileDownloadDataResponse';
+import { SendFileUploadDataResponse } from '../models/response/sendFileUploadDataResponse';
 import { SendResponse } from '../models/response/sendResponse';
 import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
@@ -433,7 +434,25 @@ export class ApiService implements ApiServiceAbstraction {
         return new SendResponse(r);
     }
 
-    async postSendFile(data: FormData): Promise<SendResponse> {
+    async postFileTypeSend(request: SendRequest): Promise<SendFileUploadDataResponse> {
+        const r = await this.send('POST', '/sends/file/v2', request, true, true);
+        return new SendFileUploadDataResponse(r);
+    }
+
+    async renewFileUploadUrl(sendId: string, fileId: string): Promise<SendFileUploadDataResponse> {
+        const r = await this.send('GET', '/sends/' + sendId + '/file/' + fileId, null, true, true);
+        return new SendFileUploadDataResponse(r);
+    }
+
+    postSendFile(sendId: string, fileId: string, data: FormData): Promise<any> {
+        return this.send('POST', '/sends/' + sendId + '/file/' + fileId, data, true, false);
+    }
+
+    /**
+     * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
+     * This method still exists for backward compatibility with old server versions.
+     */
+    async postSendFileLegacy(data: FormData): Promise<SendResponse> {
         const r = await this.send('POST', '/sends/file', data, true, true);
         return new SendResponse(r);
     }
