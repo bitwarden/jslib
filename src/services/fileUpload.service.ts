@@ -12,7 +12,7 @@ import { BitwardenFileUploadService } from './bitwardenFileUpload.service';
 
 export class FileUploadService implements FileUploadServiceAbstraction {
     private azureFileUploadService: AzureFileUploadService;
-    private bitwardenFileUploadService: BitwardenFileUploadService
+    private bitwardenFileUploadService: BitwardenFileUploadService;
 
     constructor(private logService: LogService, private apiService: ApiService) {
         this.azureFileUploadService = new AzureFileUploadService(logService);
