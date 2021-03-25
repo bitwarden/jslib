@@ -14,6 +14,7 @@ import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { UserService } from '../../abstractions/user.service';
 
 import { Cipher } from '../../models/domain/cipher';
+import { ErrorResponse } from '../../models/response';
 
 import { AttachmentView } from '../../models/view/attachmentView';
 import { CipherView } from '../../models/view/cipherView';
@@ -55,6 +56,12 @@ export class AttachmentsComponent implements OnInit {
         if (files == null || files.length === 0) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('selectFile'));
+            return;
+        }
+
+        if (files[0].size > 524288000) { // 500 MB
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                this.i18nService.t('maxFileSize'));
             return;
         }
 
@@ -113,11 +120,19 @@ export class AttachmentsComponent implements OnInit {
             return;
         }
 
-        const attachmentDownloadResponse = await this.apiService.getAttachmentData(this.cipher.id, attachment.id,
-            this.emergencyAccessId);
+        let url: string;
+        try {
+            const attachmentDownloadResponse = await this.apiService.getAttachmentData(this.cipher.id, attachment.id,
+                this.emergencyAccessId);
+            url = attachmentDownloadResponse.url;
+        } catch (e) {
+            if (e instanceof ErrorResponse && (e as ErrorResponse).statusCode === 404) {
+                url = attachment.url;
+            }
+        }
 
         a.downloading = true;
-        const response = await fetch(new Request(attachmentDownloadResponse.url, { cache: 'no-store' }));
+        let response = await fetch(new Request(url, { cache: 'no-store' }));
         if (response.status !== 200) {
             this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
             a.downloading = false;
