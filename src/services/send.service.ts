@@ -15,9 +15,9 @@ import { SendType } from '../enums/sendType';
 import { SendView } from '../models/view/sendView';
 
 import { ApiService } from '../abstractions/api.service';
-import { AzureStorageService } from '../abstractions/azureStorage.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
+import { FileUploadService } from '../abstractions/fileUpload.service';
 import { I18nService } from '../abstractions/i18n.service';
 import { SendService as SendServiceAbstraction } from '../abstractions/send.service';
 import { StorageService } from '../abstractions/storage.service';
@@ -34,7 +34,7 @@ export class SendService implements SendServiceAbstraction {
     decryptedSendCache: SendView[];
 
     constructor(private cryptoService: CryptoService, private userService: UserService,
-        private apiService: ApiService, private azureStorageService: AzureStorageService,
+        private apiService: ApiService, private fileUploadService: FileUploadService,
         private storageService: StorageService, private i18nService: I18nService,
         private cryptoFunctionService: CryptoFunctionService) { }
 
@@ -139,26 +139,7 @@ export class SendService implements SendServiceAbstraction {
                 const uploadDataResponse = await this.apiService.postFileTypeSend(request);
                 response = uploadDataResponse.sendResponse;
 
-                try {
-                    switch (uploadDataResponse.fileUploadType) {
-                        case FileUploadType.Direct:
-                            await this.directUploadFileToServer(uploadDataResponse.sendResponse, sendData[0].file.fileName, sendData[1]);
-                            break;
-                        case FileUploadType.Azure:
-                            const renewalCallback = async () => {
-                                const renewalResponse = await this.apiService.renewFileUploadUrl(response.id, response.file.id);
-                                return renewalResponse.url;
-                            };
-                            await this.azureStorageService.uploadFileToServer(uploadDataResponse.url, sendData[1],
-                                renewalCallback);
-                            break;
-                        default:
-                            throw new Error('Unknown file upload type');
-                    }
-                } catch (e) {
-                    this.apiService.deleteSend(response.id);
-                    throw e;
-                }
+                this.fileUploadService.uploadSendFile(uploadDataResponse, sendData[0].file.fileName, sendData[1]);
             }
             sendData[0].id = response.id;
             sendData[0].accessId = response.accessId;
@@ -263,23 +244,4 @@ export class SendService implements SendServiceAbstraction {
         const encFileData = await this.cryptoService.encryptToBytes(data, key);
         return [encFileName, encFileData];
     }
-
-    private async directUploadFileToServer(sendResponse: SendResponse, fileName: CipherString, data: ArrayBuffer) {
-        const fd = new FormData();
-        try {
-            const blob = new Blob([data], { type: 'application/octet-stream' });
-            fd.append('data', blob, fileName.encryptedString);
-        } catch (e) {
-            if (Utils.isNode && !Utils.isBrowser) {
-                fd.append('data', Buffer.from(data) as any, {
-                    filepath: fileName.encryptedString,
-                    contentType: 'application/octet-stream',
-                } as any);
-            } else {
-                throw e;
-            }
-        }
-        await this.apiService.postSendFile(sendResponse.id, sendResponse.file.id, fd);
-    }
-
 }
