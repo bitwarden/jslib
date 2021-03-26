@@ -7,6 +7,7 @@ import { TokenService } from '../abstractions/token.service';
 
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
+import { AttachmentRequest } from '../models/request/attachmentRequest';
 import { BitPayInvoiceRequest } from '../models/request/bitPayInvoiceRequest';
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
 import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
@@ -75,6 +76,8 @@ import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
 import { Utils } from '../misc/utils';
 import { ApiKeyResponse } from '../models/response/apiKeyResponse';
+import { AttachmentResponse } from '../models/response/attachmentResponse';
+import { AttachmentUploadDataResponse } from '../models/response/attachmentUploadDataResponse';
 import { BillingResponse } from '../models/response/billingResponse';
 import { BreachAccountResponse } from '../models/response/breachAccountResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
@@ -600,12 +603,33 @@ export class ApiService implements ApiServiceAbstraction {
 
     // Attachments APIs
 
-    async postCipherAttachment(id: string, data: FormData): Promise<CipherResponse> {
+    async getAttachmentData(cipherId: string, attachmentId: string, emergencyAccessId?: string): Promise<AttachmentResponse> {
+        const path = (emergencyAccessId != null ?
+            '/emergency-access/' + emergencyAccessId + '/' :
+            '/ciphers/') + cipherId + '/attachment/' + attachmentId;
+        const r = await this.send('GET', path, null, true, true);
+        return new AttachmentResponse(r);
+    }
+
+    async postCipherAttachment(id: string, request: AttachmentRequest): Promise<AttachmentUploadDataResponse> {
+        const r = await this.send('POST', '/ciphers/' + id + '/attachment/v2', request, true, true);
+        return new AttachmentUploadDataResponse(r);
+    }
+
+    /**
+     * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
+     * This method still exists for backward compatibility with old server versions.
+     */
+    async postCipherAttachmentLegacy(id: string, data: FormData): Promise<CipherResponse> {
         const r = await this.send('POST', '/ciphers/' + id + '/attachment', data, true, true);
         return new CipherResponse(r);
     }
 
-    async postCipherAttachmentAdmin(id: string, data: FormData): Promise<CipherResponse> {
+    /**
+     * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
+     * This method still exists for backward compatibility with old server versions.
+     */
+    async postCipherAttachmentAdminLegacy(id: string, data: FormData): Promise<CipherResponse> {
         const r = await this.send('POST', '/ciphers/' + id + '/attachment-admin', data, true, true);
         return new CipherResponse(r);
     }
@@ -622,6 +646,15 @@ export class ApiService implements ApiServiceAbstraction {
         organizationId: string): Promise<any> {
         return this.send('POST', '/ciphers/' + id + '/attachment/' +
             attachmentId + '/share?organizationId=' + organizationId, data, true, false);
+    }
+
+    async renewAttachmentUploadUrl(id: string, attachmentId: string): Promise<AttachmentUploadDataResponse> {
+        const r = await this.send('GET', '/ciphers/' + id + '/attachment/' + attachmentId, null, true, true);
+        return new AttachmentUploadDataResponse(r);
+    }
+
+    postAttachmentFile(id: string, attachmentId: string, data: FormData): Promise<any> {
+        return this.send('POST', '/ciphers/' + id + '/attachment/' + attachmentId + '/renew', data, true, false);
     }
 
     // Collections APIs

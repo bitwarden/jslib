@@ -1,6 +1,7 @@
 import { PolicyType } from '../enums/policyType';
 
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
+import { AttachmentRequest } from '../models/request/attachmentRequest';
 
 import { BitPayInvoiceRequest } from '../models/request/bitPayInvoiceRequest';
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
@@ -70,6 +71,8 @@ import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecove
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
 import { ApiKeyResponse } from '../models/response/apiKeyResponse';
+import { AttachmentResponse } from '../models/response/attachmentResponse';
+import { AttachmentUploadDataResponse } from '../models/response/attachmentUploadDataResponse';
 import { BillingResponse } from '../models/response/billingResponse';
 import { BreachAccountResponse } from '../models/response/breachAccountResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
@@ -193,6 +196,7 @@ export abstract class ApiService {
 
     getCipher: (id: string) => Promise<CipherResponse>;
     getCipherAdmin: (id: string) => Promise<CipherResponse>;
+    getAttachmentData: (cipherId: string, attachmentId: string, emergencyAccessId?: string) => Promise<AttachmentResponse>;
     getCiphersOrganization: (organizationId: string) => Promise<ListResponse<CipherResponse>>;
     postCipher: (request: CipherRequest) => Promise<CipherResponse>;
     postCipherCreate: (request: CipherCreateRequest) => Promise<CipherResponse>;
@@ -219,12 +223,23 @@ export abstract class ApiService {
     putRestoreCipherAdmin: (id: string) => Promise<CipherResponse>;
     putRestoreManyCiphers: (request: CipherBulkRestoreRequest) => Promise<ListResponse<CipherResponse>>;
 
-    postCipherAttachment: (id: string, data: FormData) => Promise<CipherResponse>;
-    postCipherAttachmentAdmin: (id: string, data: FormData) => Promise<CipherResponse>;
+    /**
+     * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
+     * This method still exists for backward compatibility with old server versions.
+     */
+    postCipherAttachmentLegacy: (id: string, data: FormData) => Promise<CipherResponse>;
+    /**
+     * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
+     * This method still exists for backward compatibility with old server versions.
+     */
+    postCipherAttachmentAdminLegacy: (id: string, data: FormData) => Promise<CipherResponse>;
+    postCipherAttachment: (id: string, request: AttachmentRequest) => Promise<AttachmentUploadDataResponse>;
     deleteCipherAttachment: (id: string, attachmentId: string) => Promise<any>;
     deleteCipherAttachmentAdmin: (id: string, attachmentId: string) => Promise<any>;
     postShareCipherAttachment: (id: string, attachmentId: string, data: FormData,
         organizationId: string) => Promise<any>;
+    renewAttachmentUploadUrl: (id: string, attachmentId: string) => Promise<AttachmentUploadDataResponse>;
+    postAttachmentFile: (id: string, attachmentId: string, data: FormData) => Promise<any>;
 
     getCollectionDetails: (organizationId: string, id: string) => Promise<CollectionGroupDetailsResponse>;
     getUserCollections: () => Promise<ListResponse<CollectionResponse>>;
