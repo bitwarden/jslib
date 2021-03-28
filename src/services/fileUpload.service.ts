@@ -40,7 +40,7 @@ export class FileUploadService implements FileUploadServiceAbstraction {
                     throw new Error('Unknown file upload type');
             }
         } catch (e) {
-            this.apiService.deleteSend(uploadData.sendResponse.id);
+            await this.apiService.deleteSend(uploadData.sendResponse.id);
             throw e;
         }
     }
@@ -59,16 +59,16 @@ export class FileUploadService implements FileUploadServiceAbstraction {
                             uploadData.attachmentId);
                         return renewalResponse.url;
                     };
-                    this.azureFileUploadService.upload(uploadData.url, encryptedFileData, renewalCallback);
+                    await this.azureFileUploadService.upload(uploadData.url, encryptedFileData, renewalCallback);
                     break;
                 default:
                     throw new Error('Unknown file upload type.');
             }
         } catch (e) {
             if (admin) {
-                this.apiService.deleteCipherAttachmentAdmin(response.id, uploadData.attachmentId);
+                await this.apiService.deleteCipherAttachmentAdmin(response.id, uploadData.attachmentId);
             } else {
-                this.apiService.deleteCipherAttachment(response.id, uploadData.attachmentId);
+                await this.apiService.deleteCipherAttachment(response.id, uploadData.attachmentId);
             }
             throw e;
         }
