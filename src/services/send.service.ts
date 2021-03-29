@@ -142,7 +142,7 @@ export class SendService implements SendServiceAbstraction {
                     const uploadDataResponse = await this.apiService.postFileTypeSend(request);
                     response = uploadDataResponse.sendResponse;
 
-                    this.fileUploadService.uploadSendFile(uploadDataResponse, sendData[0].file.fileName, sendData[1]);
+                    await this.fileUploadService.uploadSendFile(uploadDataResponse, sendData[0].file.fileName, sendData[1]);
                 } catch (e) {
                     if (e instanceof ErrorResponse && (e as ErrorResponse).statusCode === 404) {
                         response = await this.legacyServerSendFileUpload(sendData, request);
