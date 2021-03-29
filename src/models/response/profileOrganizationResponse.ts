@@ -28,6 +28,8 @@ export class ProfileOrganizationResponse extends BaseResponse {
     ssoBound: boolean;
     identifier: string;
     permissions: PermissionsApi;
+    resetPasswordKey: string;
+    userId: string;
 
     constructor(response: any) {
         super(response);
@@ -54,5 +56,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
         this.ssoBound = this.getResponseProperty('SsoBound');
         this.identifier = this.getResponseProperty('Identifier');
         this.permissions = new PermissionsApi(this.getResponseProperty('permissions'));
+        this.resetPasswordKey = this.getResponseProperty('ResetPasswordKey');
+        this.userId = this.getResponseProperty('UserId');
     }
 }
