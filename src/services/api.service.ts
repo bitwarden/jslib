@@ -654,7 +654,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     postAttachmentFile(id: string, attachmentId: string, data: FormData): Promise<any> {
-        return this.send('POST', '/ciphers/' + id + '/attachment/' + attachmentId + '/renew', data, true, false);
+        return this.send('POST', '/ciphers/' + id + '/attachment/' + attachmentId, data, true, false);
     }
 
     // Collections APIs
