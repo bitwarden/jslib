@@ -37,6 +37,7 @@ import { OrganizationUpgradeRequest } from '../models/request/organizationUpgrad
 import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
 import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
 import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
+import { OrganizationUserResetPasswordEnrollmentRequest } from '../models/request/organizationUserResetPasswordEnrollmentRequest';
 import { OrganizationUserUpdateGroupsRequest } from '../models/request/organizationUserUpdateGroupsRequest';
 import { OrganizationUserUpdateRequest } from '../models/request/organizationUserUpdateRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
@@ -278,6 +279,8 @@ export abstract class ApiService {
     putOrganizationUser: (organizationId: string, id: string, request: OrganizationUserUpdateRequest) => Promise<any>;
     putOrganizationUserGroups: (organizationId: string, id: string,
         request: OrganizationUserUpdateGroupsRequest) => Promise<any>;
+    putOrganizationUserResetPasswordEnrollment: (organizationId: string, userId: string,
+        request: OrganizationUserResetPasswordEnrollmentRequest) => Promise<any>;
     deleteOrganizationUser: (organizationId: string, id: string) => Promise<any>;
 
     getSync: () => Promise<SyncResponse>;

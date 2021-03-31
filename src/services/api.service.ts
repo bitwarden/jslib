@@ -41,6 +41,7 @@ import { OrganizationUpgradeRequest } from '../models/request/organizationUpgrad
 import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
 import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
 import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
+import { OrganizationUserResetPasswordEnrollmentRequest } from '../models/request/organizationUserResetPasswordEnrollmentRequest';
 import { OrganizationUserUpdateGroupsRequest } from '../models/request/organizationUserUpdateGroupsRequest';
 import { OrganizationUserUpdateRequest } from '../models/request/organizationUserUpdateRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
@@ -820,6 +821,12 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('PUT', '/organizations/' + organizationId + '/users/' + id + '/groups', request, true, false);
     }
 
+    putOrganizationUserResetPasswordEnrollment(organizationId: string, userId: string,
+        request: OrganizationUserResetPasswordEnrollmentRequest): Promise<any> {
+        return this.send('PUT', '/organizations/' + organizationId + '/users/' + userId + '/reset-password-enrollment',
+            request, true, false);
+    }
+
     deleteOrganizationUser(organizationId: string, id: string): Promise<any> {
         return this.send('DELETE', '/organizations/' + organizationId + '/users/' + id, null, true, false);
     }
@@ -1347,7 +1354,7 @@ export class ApiService implements ApiServiceAbstraction {
         if (this.isJsonResponse(response)) {
             responseJson = await response.json();
         } else if (this.isTextResponse(response)) {
-            responseJson = {Message: await response.text()};
+            responseJson = { Message: await response.text() };
         }
 
         return new ErrorResponse(responseJson, response.status, tokenError);
