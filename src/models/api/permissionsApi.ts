@@ -12,6 +12,7 @@ export class PermissionsApi extends BaseResponse {
     manageSso: boolean;
     managePolicies: boolean;
     manageUsers: boolean;
+    manageResetPassword: boolean;
 
     constructor(data: any = null) {
         super(data);
@@ -29,5 +30,6 @@ export class PermissionsApi extends BaseResponse {
         this.manageSso = this.getResponseProperty('ManageSso');
         this.managePolicies = this.getResponseProperty('ManagePolicies');
         this.manageUsers = this.getResponseProperty('ManageUsers');
+        this.manageResetPassword = this.getResponseProperty('ManageResetPassword');
     }
 }
