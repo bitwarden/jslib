@@ -28,7 +28,7 @@ export class SearchService implements SearchServiceAbstraction {
         return !notSearchable;
     }
 
-    async indexCiphers(): Promise<void> {
+    async indexCiphers(ciphers?: CipherView[]): Promise<void> {
         if (this.indexing) {
             return;
         }
@@ -60,7 +60,7 @@ export class SearchService implements SearchServiceAbstraction {
         builder.field('attachments_joined',
             { extractor: (c: CipherView) => this.attachmentExtractor(c, true) });
         builder.field('organizationid', { extractor: (c: CipherView) => c.organizationId });
-        const ciphers = await this.cipherService.getAllDecrypted();
+        ciphers = ciphers || await this.cipherService.getAllDecrypted();
         ciphers.forEach(c => builder.add(c));
         this.index = builder.build();
         this.indexing = false;
