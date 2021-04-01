@@ -1,4 +1,4 @@
-[![Github Workflow build on master]https://github.com/bitwarden/jslib/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/bitwarden/jslib/actions/workflows/build.yml?query=branch:master)
+[![Github Workflow build on master](https://github.com/bitwarden/jslib/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/bitwarden/jslib/actions/workflows/build.yml?query=branch:master)
 
 # Bitwarden JavaScript Library
 
