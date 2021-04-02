@@ -36,7 +36,7 @@ export class Cipher {
             view.organizationId = req.organizationId;
         }
         if (view.collectionIds || req.collectionIds) {
-            var set = new Set((view.collectionIds ?? []).concat(req.collectionIds ?? []));
+            const set = new Set((view.collectionIds ?? []).concat(req.collectionIds ?? []));
             view.collectionIds = [...set];
         }
         view.name = req.name;
