@@ -4,7 +4,7 @@ import { SendView } from '../models/view/sendView';
 export abstract class SearchService {
     clearIndex: () => void;
     isSearchable: (query: string) => boolean;
-    indexCiphers: () => Promise<void>;
+    indexCiphers: (ciphersToIndex?: CipherView[]) => Promise<void>;
     searchCiphers: (query: string,
         filter?: ((cipher: CipherView) => boolean) | (((cipher: CipherView) => boolean)[]),
         ciphers?: CipherView[]) => Promise<CipherView[]>;
