@@ -11,7 +11,8 @@ export class SendFileUploadDataResponse extends BaseResponse {
     constructor(response: any) {
         super(response);
         this.fileUploadType = this.getResponseProperty('FileUploadType');
-        this.sendResponse = this.getResponseProperty('SendResponse');
+        const sendResponse = this.getResponseProperty('SendResponse');
+        this.sendResponse = sendResponse == null ? null : new SendResponse(sendResponse);
         this.url = this.getResponseProperty('Url');
     }
 }
