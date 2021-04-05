@@ -37,7 +37,7 @@ export class Cipher {
         }
         if (view.collectionIds || req.collectionIds) {
             const set = new Set((view.collectionIds ?? []).concat(req.collectionIds ?? []));
-            view.collectionIds = [...set];
+            view.collectionIds = Array.from(set.values());
         }
         view.name = req.name;
         view.notes = req.notes;
