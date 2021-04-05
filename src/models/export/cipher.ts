@@ -15,6 +15,7 @@ export class Cipher {
     static template(): Cipher {
         const req = new Cipher();
         req.organizationId = null;
+        req.collectionIds = null;
         req.folderId = null;
         req.type = CipherType.Login;
         req.name = 'Item name';
@@ -33,6 +34,10 @@ export class Cipher {
         view.folderId = req.folderId;
         if (view.organizationId == null) {
             view.organizationId = req.organizationId;
+        }
+        if (view.collectionIds || req.collectionIds) {
+            const set = new Set((view.collectionIds ?? []).concat(req.collectionIds ?? []));
+            view.collectionIds = [...set];
         }
         view.name = req.name;
         view.notes = req.notes;
@@ -95,6 +100,7 @@ export class Cipher {
     type: CipherType;
     folderId: string;
     organizationId: string;
+    collectionIds: string[];
     name: string;
     notes: string;
     favorite: boolean;
