@@ -295,26 +295,26 @@ export class CipherService implements CipherServiceAbstraction {
     // so close, but this is stuffed - need to figure out how to wait on the web worker being done.
     // maybe have components subscribe to an event emitted by the cipherService, or similar
     // just don't even bother with setTimeouts, it's silly.
-    
+
     @sequentialize(() => 'getAllDecrypted')
     async getAllDecrypted(): Promise<CipherView[]> {
 
-        // const decCiphers: CipherView[] = [];
-        // const hasKey = await this.cryptoService.hasKey();
-        // if (!hasKey) {
-        //     throw new Error('No key.');
-        // }
+        const decCiphers: CipherView[] = [];
+        const hasKey = await this.cryptoService.hasKey();
+        if (!hasKey) {
+            throw new Error('No key.');
+        }
 
-        // const promises: any[] = [];
-        // const ciphers = await this.getAll();
-        // ciphers.forEach(cipher => {
-        //     promises.push(cipher.decrypt().then(c => decCiphers.push(c)));
-        // });
+        const promises: any[] = [];
+        const ciphers = await this.getAll();
+        ciphers.forEach(cipher => {
+            promises.push(cipher.decrypt().then(c => decCiphers.push(c)));
+        });
 
-        // await Promise.all(promises);
-        // decCiphers.sort(this.getLocaleSortingFunction());
-        // this.decryptedCipherCache = decCiphers;
-        // return this.decryptedCipherCache;
+        await Promise.all(promises);
+        decCiphers.sort(this.getLocaleSortingFunction());
+        this.decryptedCipherCache = decCiphers;
+        return this.decryptedCipherCache;
     }
 
     @sequentialize(() => 'getAllDecryptedWorker')
@@ -337,36 +337,42 @@ export class CipherService implements CipherServiceAbstraction {
 
         const key = await this.cryptoService.getEncKey();   //this was a lucky guess/dodge - TODO fix this properly
 
-        // spin up and pass ciphers to worker
-        const worker = new Worker();
-        worker.postMessage({
-            ciphers: cipherData,
-            key: key
-        });
-        worker.addEventListener("message", (event) => {
-            // repeat of original method after decrypted ciphers are received from worker
-
-            // needs to be done in a better, more reproducible way. hacky atm just for logins.
-            const decCiphers: CipherView[] = event.data.ciphers.map((c: any) =>
-            {
-                const view = new CipherView();
-                Object.keys(view).forEach(k => {
-                    if (k = "login") {
-                        const loginView = new LoginView();
-                        Object.keys(loginView).forEach(l => (loginView as any)[l] = c[k][l]);
-                        (view as any)[k] = loginView;                        
-                    } else {
-                        (view as any)[k] = c[k]
-                    }
-                })
-                return view;
+        return new Promise((resolve, reject) => {
+            // spin up and pass ciphers to worker
+            const worker = new Worker();
+            worker.postMessage({
+                ciphers: cipherData,
+                key: key
             });
-            decCiphers.sort(this.getLocaleSortingFunction());
-            this.decryptedCipherCache = decCiphers;
-            console.log(decCiphers);
+            worker.addEventListener("message", (event) => {
+                if (event.data.ciphers == null) {
+                    console.log(event.data);
+                    return;
+                }
+                console.log(event.data);
 
-            this.decryptionComplete = true;
-        });
+                // needs to be done in a better, more reproducible way. hacky atm just for logins.
+                const decCiphers: CipherView[] = event.data.ciphers.map((cipher: any) => {
+                    const view = new CipherView();
+                    Object.keys(view).forEach(k => {
+                        if (k == "login") {
+                            const loginView = new LoginView();
+                            Object.keys(loginView).forEach(l => (loginView as any)[l] = cipher[k][l]);
+                            (view as any)[k] = loginView;
+                        } else {
+                            (view as any)[k] = cipher[k]
+                        }
+                    })
+                    return view;
+                });
+                decCiphers.sort(this.getLocaleSortingFunction());
+                this.decryptedCipherCache = decCiphers;
+                console.log(decCiphers);
+
+                this.decryptionComplete = true;
+                resolve(this.decryptedCipherCache);
+            });
+        })
     }
 
     async getAllDecryptedForGrouping(groupingId: string, folder: boolean = true): Promise<CipherView[]> {

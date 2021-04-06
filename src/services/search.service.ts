@@ -38,7 +38,7 @@ export class SearchService implements SearchServiceAbstraction {
         this.index = null;
         const builder = new lunr.Builder();
         builder.ref('id');
-        builder.field('shortid', { boost: 100, extractor: (c: CipherView) => c.id.substr(0, 8) });
+        builder.field('shortid', { boost: 100, extractor: (c: CipherView) => c.id?.substr(0, 8) });
         builder.field('name', { boost: 10 });
         builder.field('subtitle', {
             boost: 5,
@@ -60,7 +60,7 @@ export class SearchService implements SearchServiceAbstraction {
         builder.field('attachments_joined',
             { extractor: (c: CipherView) => this.attachmentExtractor(c, true) });
         builder.field('organizationid', { extractor: (c: CipherView) => c.organizationId });
-        const ciphers = await this.cipherService.getAllDecrypted();
+        const ciphers = await this.cipherService.getAllDecryptedWorker();
         ciphers.forEach(c => builder.add(c));
         this.index = builder.build();
         this.indexing = false;
@@ -81,7 +81,7 @@ export class SearchService implements SearchServiceAbstraction {
         }
 
         if (ciphers == null) {
-            ciphers = await this.cipherService.getAllDecrypted();
+            ciphers = await this.cipherService.getAllDecryptedWorker();
         }
 
         if (filter != null && Array.isArray(filter) && filter.length > 0) {

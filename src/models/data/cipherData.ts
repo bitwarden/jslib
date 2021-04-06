@@ -11,6 +11,16 @@ import { SecureNoteData } from './secureNoteData';
 import { CipherResponse } from '../response/cipherResponse';
 
 export class CipherData {
+    static serialize(cipherData: CipherData) {
+        return JSON.stringify(cipherData);
+    }
+
+    static deserialize(json: string, userId?: string, collectionIds?: string[]) {
+        const parsed = JSON.parse(json);
+        const cipherData = new CipherData(parsed as CipherResponse, userId, collectionIds);
+        return cipherData;
+    }
+
     id: string;
     organizationId: string;
     folderId: string;

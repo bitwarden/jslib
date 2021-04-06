@@ -77,8 +77,6 @@ class WorkerLogService {
     }
 }
 
-
-// Respond to message from parent thread
 ctx.addEventListener("message", async (event) => {
     ctx.postMessage("Starting work");
 
@@ -87,7 +85,6 @@ ctx.addEventListener("message", async (event) => {
     decryptAll();
 
     async function decryptAll() {
-
         const promises: any[] = [];
         const decCiphers: CipherView[] = [];
         const cipherData: CipherData[] = event.data.ciphers.map((c: CipherResponse) => new CipherData(c));

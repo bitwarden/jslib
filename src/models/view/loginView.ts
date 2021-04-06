@@ -5,6 +5,22 @@ import { Utils } from '../../misc/utils';
 import { Login } from '../domain/login';
 
 export class LoginView implements View {
+    static deserialize(parsed: any) {
+        const loginView = new LoginView();
+
+        loginView.username = parsed.username;
+        loginView.password = parsed.password;
+        loginView.passwordRevisionDate = parsed.passwordRevisionDate;
+        loginView.totp = parsed.totp;
+
+        if (parsed?.uris?.length != null) {
+            loginView.uris = [];
+            parsed.uris.forEach((uri: any) => loginView.uris.push(LoginUriView.deserialize(uri)));
+        }
+
+        return loginView;
+    }
+
     username: string = null;
     password: string = null;
     passwordRevisionDate?: Date = null;

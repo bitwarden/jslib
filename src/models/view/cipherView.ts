@@ -12,6 +12,39 @@ import { SecureNoteView } from './secureNoteView';
 import { View } from './view';
 
 export class CipherView implements View {
+    static serialize(v: CipherView) {
+        return JSON.stringify(v);
+    }
+
+    static deserialize(json: string) {
+        const parsed = JSON.parse(json);
+        const cipherView = new CipherView(parsed);
+
+        cipherView.name = parsed.name;
+        cipherView.notes = parsed.notes;
+        // TODO: attachments, fields, passwordHistory
+
+        // TODO: other types
+        switch (cipherView.type) {
+            case CipherType.Login:
+                cipherView.login = LoginView.deserialize(parsed.login);
+                break;
+            case CipherType.SecureNote:
+                // cipherView.secureNote = SecureNoteView.deserialize(parsed.secureNote);
+                break;
+            case CipherType.Card:
+                // cipherView.card = CardView.deserialize(parsed.card);
+                break;
+            case CipherType.Identity:
+                // cipherView.identity = IdentityView.deserialize(parsed.identity);
+                break;
+            default:
+                break;
+        }
+
+        return cipherView;
+    }
+
     id: string = null;
     organizationId: string = null;
     folderId: string = null;

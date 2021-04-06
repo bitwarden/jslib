@@ -23,6 +23,18 @@ const CanLaunchWhitelist = [
 ];
 
 export class LoginUriView implements View {
+    static deserialize(parsed: any) {
+        const loginUriView = new LoginUriView();
+
+        loginUriView._uri = parsed._uri;
+        loginUriView._domain = parsed._domain;
+        loginUriView._hostname = parsed._hostname;
+        loginUriView._host = parsed._host;
+        loginUriView._canLaunch = parsed._canLaunch;
+
+        return loginUriView;
+    }
+    
     match: UriMatchType = null;
 
     // tslint:disable
