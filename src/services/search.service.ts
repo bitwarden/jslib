@@ -10,12 +10,17 @@ import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
 import { UriMatchType } from '../enums/uriMatchType';
 import { SendView } from '../models/view/sendView';
+import { I18nService } from '../abstractions';
 
 export class SearchService implements SearchServiceAbstraction {
     private indexing = false;
     private index: lunr.Index = null;
+    private searchMinEdge = 2;
 
-    constructor(private cipherService: CipherService, private logService: LogService) {
+    constructor(private cipherService: CipherService, private logService: LogService, private i18nService: I18nService) {
+        if (['zh-CN', 'zh-TW'].indexOf(i18nService.locale) !== -1) {
+            this.searchMinEdge = 1;
+        }
     }
 
     clearIndex(): void {
@@ -23,8 +28,8 @@ export class SearchService implements SearchServiceAbstraction {
     }
 
     isSearchable(query: string): boolean {
-        const notSearchable = query == null || (this.index == null && query.length < 2) ||
-            (this.index != null && query.length < 2 && query.indexOf('>') !== 0);
+        const notSearchable = query == null || (this.index == null && query.length < this.searchMinEdge) ||
+            (this.index != null && query.length < this.searchMinEdge && query.indexOf('>') !== 0);
         return !notSearchable;
     }
 
