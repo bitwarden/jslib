@@ -6,20 +6,21 @@ import { CipherService } from '../abstractions/cipher.service';
 import { LogService } from '../abstractions/log.service';
 import { SearchService as SearchServiceAbstraction } from '../abstractions/search.service';
 
+import { I18nService } from '../abstractions';
 import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
 import { UriMatchType } from '../enums/uriMatchType';
 import { SendView } from '../models/view/sendView';
-import { I18nService } from '../abstractions';
 
 export class SearchService implements SearchServiceAbstraction {
     private indexing = false;
     private index: lunr.Index = null;
-    private searchMinEdge = 2;
+    private searchableMinLength = 2;
 
-    constructor(private cipherService: CipherService, private logService: LogService, private i18nService: I18nService) {
+    constructor(private cipherService: CipherService, private logService: LogService,
+        private i18nService: I18nService) {
         if (['zh-CN', 'zh-TW'].indexOf(i18nService.locale) !== -1) {
-            this.searchMinEdge = 1;
+            this.searchableMinLength = 1;
         }
     }
 
@@ -28,8 +29,8 @@ export class SearchService implements SearchServiceAbstraction {
     }
 
     isSearchable(query: string): boolean {
-        const notSearchable = query == null || (this.index == null && query.length < this.searchMinEdge) ||
-            (this.index != null && query.length < this.searchMinEdge && query.indexOf('>') !== 0);
+        const notSearchable = query == null || (this.index == null && query.length < this.searchableMinLength) ||
+            (this.index != null && query.length < this.searchableMinLength && query.indexOf('>') !== 0);
         return !notSearchable;
     }
 
