@@ -74,7 +74,7 @@
     "@angular/platform-browser-dynamic": "9.1.12",
     "@angular/router": "9.1.12",
     "@microsoft/signalr": "3.1.0",
-    "@microsoft/signalr-protocol-msgpack": "3.1.0",
+    "@microsoft/signalr-protocol-msgpack": "3.1.13",
     "@nodert-win10-rs4/windows.security.credentials.ui": "^0.4.4",
     "big-integer": "1.6.36",
     "browser-hrtime": "^1.1.8",
