@@ -3,11 +3,10 @@ import { Utils } from '../misc/utils';
 import { CipherData } from '../models/data';
 import { CipherString, SymmetricCryptoKey } from '../models/domain';
 import { Cipher } from '../models/domain/cipher';
-import { CipherResponse } from '../models/response';
 import { CipherView } from '../models/view/cipherView';
 import { NodeCryptoFunctionService } from '../services/nodeCryptoFunction.service';
 
-const ctx: Worker = self as any;
+const worker: Worker = self as any;
 
 class WorkerCryptoService {
     cryptoFunctionService = new NodeCryptoFunctionService();
@@ -73,12 +72,13 @@ class WorkerContainerService {
 
 class WorkerLogService {
     error(message: string) {
-        ctx.postMessage(message);
+        worker.postMessage(message);
     }
 }
 
-ctx.addEventListener('message', async event => {
-    ctx.postMessage('Starting work');
+worker.addEventListener('message', async event => {
+    worker.postMessage('decryptAllWorker started');
+    const startTime = performance.now();
 
     Utils.global.bitwardenContainerService = new WorkerContainerService(event.data.key);
 
@@ -93,5 +93,7 @@ ctx.addEventListener('message', async event => {
 
     const response = decCiphers.map(c => CipherView.serialize(c));
 
-    ctx.postMessage({ ciphers: response });
+    const endTime = performance.now();
+    worker.postMessage('decryptAllWorker finished in ' + (endTime - startTime));
+    worker.postMessage({ ciphers: response });
 });

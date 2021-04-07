@@ -45,6 +45,7 @@ import { SearchService } from '../abstractions/search.service';
 import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
+import { ConsoleLogService } from './consoleLog.service';
 
 import { ConstantsService } from './constants.service';
 
@@ -66,14 +67,13 @@ const DomainMatchBlacklist = new Map<string, Set<string>>([
 export class CipherService implements CipherServiceAbstraction {
     // tslint:disable-next-line
     _decryptedCipherCache: CipherView[];
-    decryptionComplete: boolean = false;
 
     private sortedCiphersCache: SortedCiphersCache = new SortedCiphersCache(this.sortCiphersByLastUsed);
 
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private settingsService: SettingsService, private apiService: ApiService,
         private storageService: StorageService, private i18nService: I18nService,
-        private searchService: () => SearchService) {
+        private searchService: () => SearchService, private logService: ConsoleLogService) {
     }
 
     get decryptedCipherCache() {
@@ -318,9 +318,6 @@ export class CipherService implements CipherServiceAbstraction {
 
     @sequentialize(() => 'getAllDecryptedWorker')
     async getAllDecryptedWorker(): Promise<CipherView[]> {
-        this.decryptionComplete = false;
-
-        // repeat of original method
         if (this.decryptedCipherCache != null) {
             return this.decryptedCipherCache;
         }
@@ -345,18 +342,15 @@ export class CipherService implements CipherServiceAbstraction {
             });
             worker.addEventListener('message', event => {
                 if (event.data.ciphers == null) {
-                    console.log(event.data);
+                    this.logService.info(event.data);
                     return;
                 }
-                console.log(event.data);
 
                 const decCiphers: CipherView[] = event.data.ciphers.map((v: any) => CipherView.deserialize(v));
 
                 decCiphers.sort(this.getLocaleSortingFunction());
                 this.decryptedCipherCache = decCiphers;
-                console.log(decCiphers);
 
-                this.decryptionComplete = true;
                 resolve(this.decryptedCipherCache);
             });
         });
