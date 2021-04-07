@@ -30,7 +30,7 @@ export class ElectronMainMessagingService implements MessagingService {
             });
         });
 
-        ipcMain.handle('menu-popup', (event, options: {menu: RendererMenuItem[]}) => {
+        ipcMain.handle('openContextMenu', (event, options: {menu: RendererMenuItem[]}) => {
             return new Promise(resolve => {
                 const menu = new Menu();
                 options.menu.forEach((m, index) => {

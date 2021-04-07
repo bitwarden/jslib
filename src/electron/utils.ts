@@ -6,7 +6,7 @@ export function invokeMenu(menu: RendererMenuItem[]) {
     const menuWithoutClick = menu.map(m => {
         return { label: m.label, type: m.type };
     });
-    ipcRenderer.invoke('menu-popup', { menu: menuWithoutClick }).then((i: number) => {
+    ipcRenderer.invoke('openContextMenu', { menu: menuWithoutClick }).then((i: number) => {
         if (i !== -1) {
             menu[i].click();
         }
