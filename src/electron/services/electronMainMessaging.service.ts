@@ -1,7 +1,7 @@
 import { app, dialog, ipcMain, Menu, MenuItem, nativeTheme } from 'electron';
 import { promises as fs } from 'fs';
 import { MessagingService } from '../../abstractions/messaging.service';
-import { RendererMenu, RendererMenuItem } from '../utils';
+import { RendererMenuItem } from '../utils';
 
 import { WindowMain } from '../window.main';
 
@@ -31,7 +31,7 @@ export class ElectronMainMessagingService implements MessagingService {
         });
 
         ipcMain.handle('menu-popup', (event, options: {menu: RendererMenuItem[]}) => {
-            return new Promise((resolve) => {
+            return new Promise(resolve => {
                 const menu = new Menu();
                 options.menu.forEach((m, index) => {
                     menu.append(new MenuItem({
@@ -39,7 +39,7 @@ export class ElectronMainMessagingService implements MessagingService {
                         type: m.type,
                         click: () => {
                             resolve(index);
-                        }
+                        },
                     }));
                 });
                 menu.popup({ window: windowMain.win, callback: () => {

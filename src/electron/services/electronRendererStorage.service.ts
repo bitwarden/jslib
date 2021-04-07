@@ -3,12 +3,10 @@ import { ipcRenderer } from 'electron';
 import { StorageService } from '../../abstractions/storage.service';
 
 export class ElectronRendererStorageService implements StorageService {
-    constructor() {}
-
     get<T>(key: string): Promise<T> {
         return ipcRenderer.invoke('storageService', {
             action: 'get',
-            key: key
+            key: key,
         });
     }
 
