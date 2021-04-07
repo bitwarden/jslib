@@ -69,8 +69,7 @@ export class AddEditComponent implements OnInit {
     expirationDateSelect: number = null;
     canAccessPremium = true;
     emailVerified = true;
-    premiumRequiredAlertShown = false;
-    emailVerificationRequiredAlertShown = false;
+    alertShown = false;
     showOptions = false;
 
     safariDeletionTime: string;
@@ -360,14 +359,13 @@ export class AddEditComponent implements OnInit {
     }
 
     typeChanged() {
-        if (this.send.type === SendType.File)
+        if (this.send.type === SendType.File && !this.alertShown)
         {
-            if (!this.canAccessPremium && !this.premiumRequiredAlertShown) {
-                this.premiumRequiredAlertShown = true;
+            if (!this.canAccessPremium) {
+                this.alertShown = true;
                 this.messagingService.send('premiumRequired');
-            } else if (!this.emailVerified && !this.emailVerificationRequiredAlertShown &&
-                !this.premiumRequiredAlertShown) {
-                this.emailVerificationRequiredAlertShown = true;
+            } else if (!this.emailVerified) {
+                this.alertShown = true;
                 this.messagingService.send('emailVerificationRequired');
             }
         }
