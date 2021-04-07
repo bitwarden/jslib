@@ -59,7 +59,7 @@ class WorkerCryptoService {
 }
 
 class WorkerContainerService {
-    key: any
+    key: any;
     workerCryptoService: WorkerCryptoService;
 
     constructor(key: any) {
@@ -77,25 +77,21 @@ class WorkerLogService {
     }
 }
 
-ctx.addEventListener("message", async (event) => {
-    ctx.postMessage("Starting work");
+ctx.addEventListener('message', async event => {
+    ctx.postMessage('Starting work');
 
     Utils.global.bitwardenContainerService = new WorkerContainerService(event.data.key);
 
-    decryptAll();
+    const ciphers: Cipher[] = event.data.ciphers.map((c: any) => new Cipher(CipherData.deserialize(c)));
 
-    async function decryptAll() {
-        const promises: any[] = [];
-        const decCiphers: CipherView[] = [];
-        const cipherData: CipherData[] = event.data.ciphers.map((c: CipherResponse) => new CipherData(c));
-        const ciphers: Cipher[] = cipherData.map(c => new Cipher(c));
+    const promises: any[] = [];
+    const decCiphers: CipherView[] = [];
+    ciphers.forEach(cipher => {
+        promises.push(cipher.decrypt().then(c => decCiphers.push(c)));
+    });
+    await Promise.all(promises);
 
-        ciphers.forEach(cipher => {
-            promises.push(cipher.decrypt().then(c => decCiphers.push(c)));
-        });
+    const response = decCiphers.map(c => CipherView.serialize(c));
 
-        await Promise.all(promises);
-
-        ctx.postMessage({ ciphers: decCiphers })
-    }
+    ctx.postMessage({ ciphers: response });
 });

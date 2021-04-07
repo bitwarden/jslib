@@ -51,8 +51,7 @@ import { ConstantsService } from './constants.service';
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
 
-import Worker from "worker-loader!../workers/decryptAll.worker";
-import { LoginView } from '../models/view';
+import Worker from 'worker-loader!../workers/decryptAll.worker';
 
 const Keys = {
     ciphersPrefix: 'ciphers_',
@@ -333,38 +332,26 @@ export class CipherService implements CipherServiceAbstraction {
 
         const userId = await this.userService.getUserId();
         const ciphers = await this.getAll();
-        const cipherData = ciphers.map(c => c.toCipherData(userId));
+        const cipherData = ciphers.map(c => CipherData.serialize(c.toCipherData(userId)));
 
-        const key = await this.cryptoService.getEncKey();   //this was a lucky guess/dodge - TODO fix this properly
+        const key = await this.cryptoService.getEncKey();   // this was a lucky guess/dodge - TODO fix this properly
 
         return new Promise((resolve, reject) => {
             // spin up and pass ciphers to worker
             const worker = new Worker();
             worker.postMessage({
                 ciphers: cipherData,
-                key: key
+                key: key,
             });
-            worker.addEventListener("message", (event) => {
+            worker.addEventListener('message', event => {
                 if (event.data.ciphers == null) {
                     console.log(event.data);
                     return;
                 }
                 console.log(event.data);
 
-                // needs to be done in a better, more reproducible way. hacky atm just for logins.
-                const decCiphers: CipherView[] = event.data.ciphers.map((cipher: any) => {
-                    const view = new CipherView();
-                    Object.keys(view).forEach(k => {
-                        if (k == "login") {
-                            const loginView = new LoginView();
-                            Object.keys(loginView).forEach(l => (loginView as any)[l] = cipher[k][l]);
-                            (view as any)[k] = loginView;
-                        } else {
-                            (view as any)[k] = cipher[k]
-                        }
-                    })
-                    return view;
-                });
+                const decCiphers: CipherView[] = event.data.ciphers.map((v: any) => CipherView.deserialize(v));
+
                 decCiphers.sort(this.getLocaleSortingFunction());
                 this.decryptedCipherCache = decCiphers;
                 console.log(decCiphers);
@@ -372,7 +359,7 @@ export class CipherService implements CipherServiceAbstraction {
                 this.decryptionComplete = true;
                 resolve(this.decryptedCipherCache);
             });
-        })
+        });
     }
 
     async getAllDecryptedForGrouping(groupingId: string, folder: boolean = true): Promise<CipherView[]> {
