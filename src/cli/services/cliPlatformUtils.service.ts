@@ -96,8 +96,8 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
         throw new Error('Not implemented.');
     }
 
-    getApplicationVersion(): string {
-        return this.packageJson.version;
+    getApplicationVersion(): Promise<string> {
+        return Promise.resolve(this.packageJson.version);
     }
 
     supportsWebAuthn(win: Window) {
@@ -147,7 +147,7 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     }
 
     getDefaultSystemTheme() {
-        return 'light' as 'light' | 'dark';
+        return Promise.resolve('light' as 'light' | 'dark');
     }
 
     onDefaultSystemThemeChange() {

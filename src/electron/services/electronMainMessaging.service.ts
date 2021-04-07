@@ -1,9 +1,38 @@
+import { app, dialog, ipcMain, nativeTheme } from 'electron';
+import {promises as fs} from 'fs';
 import { MessagingService } from '../../abstractions/messaging.service';
 
 import { WindowMain } from '../window.main';
 
 export class ElectronMainMessagingService implements MessagingService {
-    constructor(private windowMain: WindowMain, private onMessage: (message: any) => void) { }
+    constructor(private windowMain: WindowMain, private onMessage: (message: any) => void) {
+        ipcMain.handle('appVersion', () => {
+            return app.getVersion();
+        });
+
+        ipcMain.handle('systemTheme', () => {
+            return nativeTheme.shouldUseDarkColors ? 'dark' : 'light';
+        });
+
+        ipcMain.handle('showMessageBox', (event, options) => {
+            return dialog.showMessageBox(options);
+        });
+
+        ipcMain.handle('saveFile', (event, options) => {
+            dialog.showSaveDialog(windowMain.win, {
+                defaultPath: options.fileName,
+                showsTagField: false,
+            }).then(ret => {
+                if (ret.filePath != null) {
+                    fs.writeFile(ret.filePath, options.buffer, { mode: 0o600 });
+                }
+            });
+        });
+
+        nativeTheme.on('updated', () => {
+            windowMain.win.webContents.send('systemThemeUpdated', nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
+        });
+    }
 
     send(subscriber: string, arg: any = {}) {
         const message = Object.assign({}, { command: subscriber }, arg);
