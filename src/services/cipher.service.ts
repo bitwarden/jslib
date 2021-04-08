@@ -329,7 +329,7 @@ export class CipherService implements CipherServiceAbstraction {
 
         const userId = await this.userService.getUserId();
         const ciphers = await this.getAll();
-        const cipherData = ciphers.map(c => CipherData.serialize(c.toCipherData(userId)));
+        const serializedCipherData = ciphers.map(c => JSON.stringify(c.toCipherData(userId)));
 
         const key = await this.cryptoService.getEncKey();   // this was a lucky guess/dodge - TODO fix this properly
 
@@ -337,7 +337,7 @@ export class CipherService implements CipherServiceAbstraction {
             // spin up and pass ciphers to worker
             const worker = new Worker();
             worker.postMessage({
-                ciphers: cipherData,
+                ciphers: serializedCipherData,
                 key: key,
             });
             worker.addEventListener('message', event => {

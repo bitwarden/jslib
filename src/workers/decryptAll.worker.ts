@@ -82,16 +82,16 @@ worker.addEventListener('message', async event => {
 
     Utils.global.bitwardenContainerService = new WorkerContainerService(event.data.key);
 
-    const ciphers: Cipher[] = event.data.ciphers.map((c: any) => new Cipher(CipherData.deserialize(c)));
+    const encryptedCiphers: Cipher[] = event.data.ciphers.map((c: any) => new Cipher(JSON.parse(c)));
 
     const promises: any[] = [];
-    const decCiphers: CipherView[] = [];
-    ciphers.forEach(cipher => {
-        promises.push(cipher.decrypt().then(c => decCiphers.push(c)));
+    const decryptedCiphers: CipherView[] = [];
+    encryptedCiphers.forEach(cipher => {
+        promises.push(cipher.decrypt().then(c => decryptedCiphers.push(c)));
     });
     await Promise.all(promises);
 
-    const response = decCiphers.map(c => CipherView.serialize(c));
+    const response = decryptedCiphers.map(c => CipherView.serialize(c));
 
     const endTime = performance.now();
     worker.postMessage('decryptAllWorker finished in ' + (endTime - startTime));
