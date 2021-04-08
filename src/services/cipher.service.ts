@@ -291,33 +291,8 @@ export class CipherService implements CipherServiceAbstraction {
         return response;
     }
 
-    // so close, but this is stuffed - need to figure out how to wait on the web worker being done.
-    // maybe have components subscribe to an event emitted by the cipherService, or similar
-    // just don't even bother with setTimeouts, it's silly.
-
     @sequentialize(() => 'getAllDecrypted')
     async getAllDecrypted(): Promise<CipherView[]> {
-
-        const decCiphers: CipherView[] = [];
-        const hasKey = await this.cryptoService.hasKey();
-        if (!hasKey) {
-            throw new Error('No key.');
-        }
-
-        const promises: any[] = [];
-        const ciphers = await this.getAll();
-        ciphers.forEach(cipher => {
-            promises.push(cipher.decrypt().then(c => decCiphers.push(c)));
-        });
-
-        await Promise.all(promises);
-        decCiphers.sort(this.getLocaleSortingFunction());
-        this.decryptedCipherCache = decCiphers;
-        return this.decryptedCipherCache;
-    }
-
-    @sequentialize(() => 'getAllDecryptedWorker')
-    async getAllDecryptedWorker(): Promise<CipherView[]> {
         if (this.decryptedCipherCache != null) {
             return this.decryptedCipherCache;
         }
