@@ -6,9 +6,9 @@ import { WorkerLogService } from './services/workerLogService';
 
 const thisWorker: Worker = self as any;
 
-thisWorker.addEventListener('message', event => {
+thisWorker.addEventListener('message', async event => {
     const decryptAllWorker = new DecryptAllWorker(event.data);
-    decryptAllWorker.decryptAll();
+    await decryptAllWorker.decryptAll();
 });
 
 class DecryptAllWorker {
