@@ -1,8 +1,8 @@
-import { EncryptionType } from '../enums';
-import { CipherString, SymmetricCryptoKey } from '../models/domain';
-import { NodeCryptoFunctionService } from '../services/nodeCryptoFunction.service';
+import { EncryptionType } from '../../enums';
+import { CipherString, SymmetricCryptoKey } from '../../models/domain';
+import { NodeCryptoFunctionService } from '../../services/nodeCryptoFunction.service';
 import { WorkerLogService } from './workerLogService';
-import { ContainerService } from '../services/container.service';
+import { ContainerService } from '../../services/container.service';
 
 export class WorkerCryptoService {
     cryptoFunctionService = new NodeCryptoFunctionService();
