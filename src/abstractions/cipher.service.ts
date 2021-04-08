@@ -20,6 +20,7 @@ export abstract class CipherService {
     get: (id: string) => Promise<Cipher>;
     getAll: () => Promise<Cipher[]>;
     getAllDecrypted: () => Promise<CipherView[]>;
+    getAllDecryptedWorker: () => void;
     getAllDecryptedForGrouping: (groupingId: string, folder?: boolean) => Promise<CipherView[]>;
     getAllDecryptedForUrl: (url: string, includeOtherTypes?: CipherType[],
         defaultMatch?: UriMatchType) => Promise<CipherView[]>;

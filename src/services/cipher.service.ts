@@ -51,6 +51,8 @@ import { ConstantsService } from './constants.service';
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
 
+import Worker from "worker-loader!../workers/decryptAll.worker";
+
 const Keys = {
     ciphersPrefix: 'ciphers_',
     localData: 'sitesLocalData',
@@ -310,6 +312,41 @@ export class CipherService implements CipherServiceAbstraction {
         decCiphers.sort(this.getLocaleSortingFunction());
         this.decryptedCipherCache = decCiphers;
         return this.decryptedCipherCache;
+    }
+
+    async getAllDecryptedWorker(): Promise<CipherView[]> {
+
+        // repeat of original method
+        if (this.decryptedCipherCache != null) {
+            return this.decryptedCipherCache;
+        }
+
+        const hasKey = await this.cryptoService.hasKey();
+        if (!hasKey) {
+            throw new Error('No key.');
+        }
+
+        const userId = await this.userService.getUserId();
+        const ciphers = await this.getAll();
+        const cipherData = ciphers.map(c => c.toCipherData(userId));
+
+        // spin up and pass ciphers to worker
+        const worker = new Worker();
+        worker.postMessage(cipherData);
+        worker.addEventListener("message", (event) => {
+            // repeat of original method after decrypted ciphers are received from worker
+
+            // const decCiphers: CipherView[] = event.data;
+            // console.log(decCiphers);
+            // decCiphers.sort(this.getLocaleSortingFunction());
+            // this.decryptedCipherCache = decCiphers;
+            // console.log(decCiphers);
+            //return this.decryptedCipherCache;
+
+            console.log(event.data);
+        });
+        
+        return await this.getAllDecrypted();
     }
 
     async getAllDecryptedForGrouping(groupingId: string, folder: boolean = true): Promise<CipherView[]> {
