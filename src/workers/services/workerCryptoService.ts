@@ -2,7 +2,6 @@ import { EncryptionType } from '../../enums';
 import { CipherString, SymmetricCryptoKey } from '../../models/domain';
 import { NodeCryptoFunctionService } from '../../services/nodeCryptoFunction.service';
 import { WorkerLogService } from './workerLogService';
-import { ContainerService } from '../../services/container.service';
 
 export class WorkerCryptoService {
     cryptoFunctionService = new NodeCryptoFunctionService();
@@ -26,6 +25,8 @@ export class WorkerCryptoService {
 
     private async aesDecryptToUtf8(encType: EncryptionType, data: string, iv: string, mac: string,
         key: SymmetricCryptoKey): Promise<string> {
+
+        // TODO: resolve theKey properly per the following lines from the real CryptoService
         // const keyForEnc = await this.getKeyForEncryption(key);
         // const theKey = this.resolveLegacyKey(encType, keyForEnc);
         const theKey = this.key;

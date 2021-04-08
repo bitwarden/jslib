@@ -321,14 +321,14 @@ export class CipherService implements CipherServiceAbstraction {
                     return;
                 }
 
-                const decCiphers: CipherView[] = event.data.ciphers.map((v: any) => {
+                const decryptedCiphers: CipherView[] = event.data.ciphers.map((v: any) => {
                     const cipherView = new CipherView();
                     cipherView.buildFromObj(JSON.parse(v));
                     return cipherView;
                 });
 
-                decCiphers.sort(this.getLocaleSortingFunction());
-                this.decryptedCipherCache = decCiphers;
+                decryptedCiphers.sort(this.getLocaleSortingFunction());
+                this.decryptedCipherCache = decryptedCiphers;
 
                 resolve(this.decryptedCipherCache);
             });

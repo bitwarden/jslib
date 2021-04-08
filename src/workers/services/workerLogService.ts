@@ -1,7 +1,7 @@
 export class WorkerLogService {
-    worker: any
+    worker: any;
 
-    constructor(worker: any) { 
+    constructor(worker: any) {
         this.worker = worker;
     }
 
