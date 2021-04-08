@@ -4,9 +4,9 @@ import { ContainerService } from '../services/container.service';
 import { WorkerCryptoService } from './services/workerCryptoService';
 import { WorkerLogService } from './services/workerLogService';
 
-const worker: Worker = self as any;
+const thisWorker: Worker = self as any;
 
-worker.addEventListener('message', event => {
+thisWorker.addEventListener('message', event => {
     const decryptAllWorker = new DecryptAllWorker(event.data);
     decryptAllWorker.decryptAll();
 });
@@ -17,14 +17,14 @@ class DecryptAllWorker {
     constructor(data: any) {
         this.data = data;
 
-        const logService = new WorkerLogService(worker);
+        const logService = new WorkerLogService(this);
         const cryptoService = new WorkerCryptoService(this.data.key, logService);
         const containerService = new ContainerService(cryptoService as any);
         containerService.attachToGlobal(global);
     }
 
     async decryptAll() {
-        worker.postMessage('decryptAllWorker started');
+        thisWorker.postMessage('decryptAllWorker started');
         const startTime = performance.now();
 
         const encryptedCiphers: Cipher[] = this.data.ciphers.map((c: any) => new Cipher(JSON.parse(c)));
@@ -44,6 +44,6 @@ class DecryptAllWorker {
     }
 
     postMessage(message: any) {
-        worker.postMessage(message);
+        thisWorker.postMessage(message);
     }
 }
