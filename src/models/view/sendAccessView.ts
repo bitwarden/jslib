@@ -6,7 +6,7 @@ import { SendFileView } from './sendFileView';
 import { SendTextView } from './sendTextView';
 import { View } from './view';
 
-export class SendAccessView implements View {
+export class SendAccessView extends View {
     id: string = null;
     name: string = null;
     type: SendType = null;
@@ -16,6 +16,7 @@ export class SendAccessView implements View {
     creatorIdentifier: string = null;
 
     constructor(s?: SendAccess) {
+        super();
         if (!s) {
             return;
         }

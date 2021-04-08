@@ -4,23 +4,7 @@ import { View } from './view';
 import { Utils } from '../../misc/utils';
 import { Login } from '../domain/login';
 
-export class LoginView implements View {
-    static deserialize(parsed: any) {
-        const loginView = new LoginView();
-
-        loginView.username = parsed.username;
-        loginView.password = parsed.password;
-        loginView.passwordRevisionDate = parsed.passwordRevisionDate;
-        loginView.totp = parsed.totp;
-
-        if (parsed?.uris?.length != null) {
-            loginView.uris = [];
-            parsed.uris.forEach((uri: any) => loginView.uris.push(LoginUriView.deserialize(uri)));
-        }
-
-        return loginView;
-    }
-
+export class LoginView extends View {
     username: string = null;
     password: string = null;
     passwordRevisionDate?: Date = null;
@@ -28,11 +12,30 @@ export class LoginView implements View {
     uris: LoginUriView[] = null;
 
     constructor(l?: Login) {
+        super();
         if (!l) {
             return;
         }
 
         this.passwordRevisionDate = l.passwordRevisionDate;
+    }
+
+    buildFromObj(obj: any) {
+        this.buildViewModel(this, obj, {
+            username: null,
+            password: null,
+            passwordRevisionDate: null,
+            totp: null,
+        });
+
+        if (obj.uris) {
+            this.uris = [];
+            obj.uris.forEach((u: any) => {
+                const loginUriView = new LoginUriView();
+                loginUriView.buildFromObj(u);
+                this.uris.push(loginUriView);
+            });
+        }
     }
 
     get uri(): string {

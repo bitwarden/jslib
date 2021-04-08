@@ -22,19 +22,7 @@ const CanLaunchWhitelist = [
     'androidapp://',
 ];
 
-export class LoginUriView implements View {
-    static deserialize(parsed: any) {
-        const loginUriView = new LoginUriView();
-
-        loginUriView._uri = parsed._uri;
-        loginUriView._domain = parsed._domain;
-        loginUriView._hostname = parsed._hostname;
-        loginUriView._host = parsed._host;
-        loginUriView._canLaunch = parsed._canLaunch;
-
-        return loginUriView;
-    }
-    
+export class LoginUriView extends View {
     match: UriMatchType = null;
 
     // tslint:disable
@@ -46,11 +34,22 @@ export class LoginUriView implements View {
     // tslint:enable
 
     constructor(u?: LoginUri) {
+        super();
         if (!u) {
             return;
         }
 
         this.match = u.match;
+    }
+
+    buildFromObj(lu: any) {
+        this.buildViewModel(this, lu, {
+            _uri: null,
+            _domain: null,
+            _hostname: null,
+            _host: null,
+            _canLaunch: null,
+        });
     }
 
     get uri(): string {

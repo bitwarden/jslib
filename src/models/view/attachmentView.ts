@@ -3,7 +3,7 @@ import { View } from './view';
 import { Attachment } from '../domain/attachment';
 import { SymmetricCryptoKey } from '../domain/symmetricCryptoKey';
 
-export class AttachmentView implements View {
+export class AttachmentView extends View {
     id: string = null;
     url: string = null;
     size: string = null;
@@ -12,6 +12,7 @@ export class AttachmentView implements View {
     key: SymmetricCryptoKey = null;
 
     constructor(a?: Attachment) {
+        super();
         if (!a) {
             return;
         }

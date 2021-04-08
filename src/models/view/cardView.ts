@@ -2,7 +2,7 @@ import { View } from './view';
 
 import { Card } from '../domain/card';
 
-export class CardView implements View {
+export class CardView extends View {
     cardholderName: string = null;
     expMonth: string = null;
     expYear: string = null;
@@ -15,7 +15,17 @@ export class CardView implements View {
     // tslint:enable
 
     constructor(c?: Card) {
+        super();
         // ctor
+    }
+
+    buildFromObj(obj: any) {
+        this.buildViewModel(this, obj, {
+            cardholderName: null,
+            expMonth: null,
+            expYear: null,
+            code: null,
+        });
     }
 
     get maskedCode(): string {

@@ -4,7 +4,7 @@ import { Identity } from '../domain/identity';
 
 import { Utils } from '../../misc/utils';
 
-export class IdentityView implements View {
+export class IdentityView extends View {
     title: string = null;
     middleName: string = null;
     address1: string = null;
@@ -29,7 +29,29 @@ export class IdentityView implements View {
     // tslint:enable
 
     constructor(i?: Identity) {
+        super();
         // ctor
+    }
+
+    buildFromObj(obj: any) {
+        this.buildViewModel(this, obj, {
+            title: null,
+            middleName: null,
+            address1: null,
+            address2: null,
+            address3: null,
+            city: null,
+            state: null,
+            postalCode: null,
+            country: null,
+            company: null,
+            email: null,
+            phone: null,
+            ssn: null,
+            username: null,
+            passportNumber: null,
+            licenseNumber: null,
+        });
     }
 
     get firstName(): string {

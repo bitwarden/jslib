@@ -11,40 +11,7 @@ import { PasswordHistoryView } from './passwordHistoryView';
 import { SecureNoteView } from './secureNoteView';
 import { View } from './view';
 
-export class CipherView implements View {
-    static serialize(v: CipherView) {
-        return JSON.stringify(v);
-    }
-
-    static deserialize(json: string) {
-        const parsed = JSON.parse(json);
-        const cipherView = new CipherView(parsed);
-
-        cipherView.name = parsed.name;
-        cipherView.notes = parsed.notes;
-        // TODO: attachments, fields, passwordHistory
-
-        // TODO: other types
-        switch (cipherView.type) {
-            case CipherType.Login:
-                cipherView.login = LoginView.deserialize(parsed.login);
-                break;
-            case CipherType.SecureNote:
-                // cipherView.secureNote = SecureNoteView.deserialize(parsed.secureNote);
-                break;
-            case CipherType.Card:
-                // cipherView.card = CardView.deserialize(parsed.card);
-                break;
-            case CipherType.Identity:
-                // cipherView.identity = IdentityView.deserialize(parsed.identity);
-                break;
-            default:
-                break;
-        }
-
-        return cipherView;
-    }
-
+export class CipherView extends View {
     id: string = null;
     organizationId: string = null;
     folderId: string = null;
@@ -68,6 +35,7 @@ export class CipherView implements View {
     deletedDate: Date = null;
 
     constructor(c?: Cipher) {
+        super();
         if (!c) {
             return;
         }
@@ -84,6 +52,47 @@ export class CipherView implements View {
         this.collectionIds = c.collectionIds;
         this.revisionDate = c.revisionDate;
         this.deletedDate = c.deletedDate;
+    }
+
+    buildFromObj(obj: any) {
+        this.buildViewModel(this, obj, {
+            id: null,
+            organizationId: null,
+            folderId: null,
+            name: null,
+            notes: null,
+            type: null,
+            favorite: null,
+            organizationUseTotp: null,
+            edit: null,
+            viewPassword: null,
+            localData: null,
+        });
+
+        switch (this.type) {
+            case CipherType.Login:
+                const loginView = new LoginView();
+                loginView.buildFromObj(obj.login);
+                this.login = loginView;
+                break;
+            case CipherType.SecureNote:
+                const secureNoteView = new SecureNoteView();
+                secureNoteView.buildFromObj(obj.secureNote);
+                this.secureNote = secureNoteView;
+                break;
+            case CipherType.Card:
+                const cardView = new CardView();
+                cardView.buildFromObj(obj.card);
+                this.card = cardView;
+                break;
+            case CipherType.Identity:
+                const identityView = new IdentityView();
+                identityView.buildFromObj(obj.identity);
+                this.identity = identityView;
+                break;
+            default:
+                break;
+        }
     }
 
     get subTitle(): string {

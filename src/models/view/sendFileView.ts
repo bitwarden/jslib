@@ -2,13 +2,14 @@ import { View } from './view';
 
 import { SendFile } from '../domain/sendFile';
 
-export class SendFileView implements View {
+export class SendFileView extends View {
     id: string = null;
     size: string = null;
     sizeName: string = null;
     fileName: string = null;
 
     constructor(f?: SendFile) {
+        super();
         if (!f) {
             return;
         }

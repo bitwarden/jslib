@@ -36,7 +36,7 @@ class DecryptAllWorker {
         });
         await Promise.all(promises);
 
-        const response = decryptedCiphers.map(c => CipherView.serialize(c));
+        const response = decryptedCiphers.map(c => JSON.stringify(c));
 
         const endTime = performance.now();
         this.postMessage('decryptAllWorker finished in ' + (endTime - startTime));
