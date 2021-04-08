@@ -7,11 +7,11 @@ import { WorkerLogService } from './services/workerLogService';
 const thisWorker: Worker = self as any;
 
 thisWorker.addEventListener('message', async event => {
-    const decryptAllWorker = new DecryptAllWorker(event.data);
+    const decryptAllWorker = new CryptoWorker(event.data);
     await decryptAllWorker.decryptAll();
 });
 
-class DecryptAllWorker {
+class CryptoWorker {
     data: any;
 
     constructor(data: any) {
@@ -24,7 +24,7 @@ class DecryptAllWorker {
     }
 
     async decryptAll() {
-        thisWorker.postMessage('decryptAllWorker started');
+        this.postLogMessage('decryptAll started');
         const startTime = performance.now();
 
         const encryptedCiphers: Cipher[] = this.data.ciphers.map((c: any) => new Cipher(JSON.parse(c)));
@@ -39,11 +39,15 @@ class DecryptAllWorker {
         const response = decryptedCiphers.map(c => JSON.stringify(c));
 
         const endTime = performance.now();
-        this.postMessage('decryptAllWorker finished in ' + (endTime - startTime));
-        this.postMessage({ ciphers: response });
+        this.postLogMessage('decryptAllWorker finished in ' + (endTime - startTime));
+        this.postMessage({ type: 'data', message: response });
     }
 
     postMessage(message: any) {
         thisWorker.postMessage(message);
+    }
+
+    postLogMessage(message: any) {
+        this.postMessage({ type: 'logMessage', message: message });
     }
 }

@@ -45,14 +45,12 @@ import { SearchService } from '../abstractions/search.service';
 import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
-import { ConsoleLogService } from './consoleLog.service';
+import { WebWorkerService } from '../abstractions/webWorker.service';
 
 import { ConstantsService } from './constants.service';
 
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
-
-import Worker from 'worker-loader!../workers/decryptAll.worker';
 
 const Keys = {
     ciphersPrefix: 'ciphers_',
@@ -73,7 +71,7 @@ export class CipherService implements CipherServiceAbstraction {
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private settingsService: SettingsService, private apiService: ApiService,
         private storageService: StorageService, private i18nService: I18nService,
-        private searchService: () => SearchService, private logService: ConsoleLogService) {
+        private searchService: () => SearchService, private webWorkerService: WebWorkerService) {
     }
 
     get decryptedCipherCache() {
@@ -306,22 +304,21 @@ export class CipherService implements CipherServiceAbstraction {
         const ciphers = await this.getAll();
         const serializedCipherData = ciphers.map(c => JSON.stringify(c.toCipherData(userId)));
 
-        const key = await this.cryptoService.getEncKey();   // this was a lucky guess/dodge - TODO fix this properly
+        // TODO: resolve this properly - see further comments in workerCryptoService
+        const key = await this.cryptoService.getEncKey();
 
         return new Promise((resolve, reject) => {
-            // spin up and pass ciphers to worker
-            const worker = new Worker();
+            const worker = this.webWorkerService.createWorker();
             worker.postMessage({
                 ciphers: serializedCipherData,
                 key: key,
             });
             worker.addEventListener('message', event => {
-                if (event.data.ciphers == null) {
-                    this.logService.info(event.data);
+                if (event.data.type !== 'data') {
                     return;
                 }
 
-                const decryptedCiphers: CipherView[] = event.data.ciphers.map((v: any) => {
+                const decryptedCiphers: CipherView[] = event.data.message.map((v: any) => {
                     const cipherView = new CipherView();
                     cipherView.buildFromObj(JSON.parse(v));
                     return cipherView;
@@ -329,7 +326,7 @@ export class CipherService implements CipherServiceAbstraction {
 
                 decryptedCiphers.sort(this.getLocaleSortingFunction());
                 this.decryptedCipherCache = decryptedCiphers;
-
+                worker.terminate();
                 resolve(this.decryptedCipherCache);
             });
         });
