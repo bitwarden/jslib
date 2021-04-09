@@ -76,7 +76,7 @@
     "@microsoft/signalr": "3.1.0",
     "@microsoft/signalr-protocol-msgpack": "3.1.0",
     "@nodert-win10-rs4/windows.security.credentials.ui": "^0.4.4",
-    "big-integer": "1.6.36",
+    "big-integer": "1.6.48",
     "browser-hrtime": "^1.1.8",
     "chalk": "2.4.1",
     "commander": "7.0.0",
