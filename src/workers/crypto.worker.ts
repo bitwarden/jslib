@@ -1,3 +1,5 @@
+import { Utils } from '../misc/utils';
+import { SymmetricCryptoKey } from '../models/domain';
 import { Cipher } from '../models/domain/cipher';
 import { CipherView } from '../models/view/cipherView';
 import { ContainerService } from '../services/container.service';
@@ -17,8 +19,22 @@ class CryptoWorker {
     constructor(data: any) {
         this.data = data;
 
+        // deserialize and construct objects
+        const keyForEnc = new SymmetricCryptoKey(Utils.fromB64ToArray(this.data.keyForEnc));
+        const orgKeysParsed = JSON.parse(this.data.orgKeys);
+        let orgKeys: Map<string, SymmetricCryptoKey>;
+        if (orgKeysParsed != null) {
+            orgKeys = new Map<string, SymmetricCryptoKey>();
+            for (const [k, v] of JSON.parse(this.data.orgKeys)) {
+                orgKeys.set(k, new SymmetricCryptoKey(Utils.fromB64ToArray(v)));
+            }
+        } else {
+            orgKeys = null;
+        }
+
+        // create services
         const logService = new WorkerLogService(this);
-        const cryptoService = new WorkerCryptoService(this.data.key, logService);
+        const cryptoService = new WorkerCryptoService(keyForEnc, orgKeys, logService);
         const containerService = new ContainerService(cryptoService as any);
         containerService.attachToGlobal(global);
     }
@@ -27,7 +43,8 @@ class CryptoWorker {
         this.postLogMessage('decryptAll started');
         const startTime = performance.now();
 
-        const encryptedCiphers: Cipher[] = this.data.ciphers.map((c: any) => new Cipher(JSON.parse(c)));
+        const parsedCiphers = JSON.parse(this.data.ciphers);
+        const encryptedCiphers: Cipher[] = parsedCiphers.map((c: any) => new Cipher(c));
 
         const promises: any[] = [];
         const decryptedCiphers: CipherView[] = [];

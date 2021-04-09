@@ -302,16 +302,26 @@ export class CipherService implements CipherServiceAbstraction {
 
         const userId = await this.userService.getUserId();
         const ciphers = await this.getAll();
-        const serializedCipherData = ciphers.map(c => JSON.stringify(c.toCipherData(userId)));
+        const serializedCipherData = JSON.stringify(ciphers.map(c => c.toCipherData(userId)));
 
-        // TODO: resolve this properly - see further comments in workerCryptoService
-        const key = await this.cryptoService.getEncKey();
+        const orgKeys = await this.cryptoService.getOrgKeys();
+        const orgKeysArray: any[] = [];
+        if (orgKeys != null) {
+            for (const [key, value] of Array.from(orgKeys)) {
+                orgKeysArray.push([key, Utils.fromBufferToB64(value.key)]);
+            }
+        }
+        const serializedOrgKeys = JSON.stringify(orgKeysArray);
+
+        const keyForEnc = await this.cryptoService.getKeyForEncryption();
+        const serializedKeyForEnc = Utils.fromBufferToB64(keyForEnc.key);
 
         return new Promise((resolve, reject) => {
             const worker = this.webWorkerService.createWorker();
             worker.postMessage({
                 ciphers: serializedCipherData,
-                key: key,
+                keyForEnc: serializedKeyForEnc,
+                orgKeys: serializedOrgKeys,
             });
             worker.addEventListener('message', event => {
                 if (event.data.type !== 'data') {

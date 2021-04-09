@@ -4,18 +4,34 @@ import { NodeCryptoFunctionService } from '../../services/nodeCryptoFunction.ser
 import { WorkerLogService } from './workerLogService';
 
 export class WorkerCryptoService {
-    cryptoFunctionService = new NodeCryptoFunctionService();
     worker: Worker;
+    cryptoFunctionService = new NodeCryptoFunctionService();
     logService: WorkerLogService;
-    key: any;
+    keyForEnc: any;
+    orgKeys: Map<string, SymmetricCryptoKey>;
+    legacyEtmKey: SymmetricCryptoKey;
 
-    constructor(key: any, logService: any) {
-        this.key = key;
+    constructor(keyForEnc: any, orgKeys: Map<string, SymmetricCryptoKey>, logService: any) {
+        this.keyForEnc = keyForEnc;
+        this.orgKeys = orgKeys;
         this.logService = logService;
     }
 
-    getOrgKey() {
-        return this.key;
+    async getOrgKeys(): Promise<Map<string, SymmetricCryptoKey>> {
+        return this.orgKeys;
+    }
+
+    async getOrgKey(orgId: string): Promise<SymmetricCryptoKey> {
+        if (orgId == null) {
+            return null;
+        }
+
+        const orgKeys = await this.getOrgKeys();
+        if (orgKeys == null || !orgKeys.has(orgId)) {
+            return null;
+        }
+
+        return orgKeys.get(orgId);
     }
 
     async decryptToUtf8(cipherString: CipherString, key: SymmetricCryptoKey) {
@@ -23,13 +39,22 @@ export class WorkerCryptoService {
             cipherString.iv, cipherString.mac, key);
     }
 
+    private resolveLegacyKey(encType: EncryptionType, key: SymmetricCryptoKey): SymmetricCryptoKey {
+        if (encType === EncryptionType.AesCbc128_HmacSha256_B64 &&
+            key.encType === EncryptionType.AesCbc256_B64) {
+            // Old encrypt-then-mac scheme, make a new key
+            if (this.legacyEtmKey == null) {
+                this.legacyEtmKey = new SymmetricCryptoKey(key.key, EncryptionType.AesCbc128_HmacSha256_B64);
+            }
+            return this.legacyEtmKey;
+        }
+
+        return key;
+    }
+
     private async aesDecryptToUtf8(encType: EncryptionType, data: string, iv: string, mac: string,
         key: SymmetricCryptoKey): Promise<string> {
-
-        // TODO: resolve theKey properly per the following lines from the real CryptoService
-        // const keyForEnc = await this.getKeyForEncryption(key);
-        // const theKey = this.resolveLegacyKey(encType, keyForEnc);
-        const theKey = this.key;
+        const theKey = this.resolveLegacyKey(encType, this.keyForEnc);
 
         if (theKey.macKey != null && mac == null) {
             this.logService.error('mac required.');

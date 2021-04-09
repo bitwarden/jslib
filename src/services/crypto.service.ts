@@ -579,6 +579,19 @@ export class CryptoService implements CryptoServiceAbstraction {
         return min + rval;
     }
 
+    async getKeyForEncryption(key?: SymmetricCryptoKey): Promise<SymmetricCryptoKey> {
+        if (key != null) {
+            return key;
+        }
+
+        const encKey = await this.getEncKey();
+        if (encKey != null) {
+            return encKey;
+        }
+
+        return await this.getKey();
+    }
+
     // Helpers
 
     private async aesEncrypt(data: ArrayBuffer, key: SymmetricCryptoKey): Promise<EncryptedObject> {
@@ -656,19 +669,6 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
 
         return await this.cryptoFunctionService.aesDecrypt(data, iv, theKey.encKey);
-    }
-
-    private async getKeyForEncryption(key?: SymmetricCryptoKey): Promise<SymmetricCryptoKey> {
-        if (key != null) {
-            return key;
-        }
-
-        const encKey = await this.getEncKey();
-        if (encKey != null) {
-            return encKey;
-        }
-
-        return await this.getKey();
     }
 
     private resolveLegacyKey(encType: EncryptionType, key: SymmetricCryptoKey): SymmetricCryptoKey {
