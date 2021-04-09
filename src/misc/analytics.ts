@@ -41,7 +41,7 @@ export class Analytics {
             }
         }
 
-        this.appVersion = this.platformUtilsService.getApplicationVersion();
+        this.platformUtilsService.getApplicationVersion().then(v => this.appVersion = v);
         this.defaultDisabled = this.platformUtilsService.getDevice() === DeviceType.FirefoxExtension ||
             this.platformUtilsService.isMacAppStore();
         this.gaTrackingId = this.platformUtilsService.analyticsId();

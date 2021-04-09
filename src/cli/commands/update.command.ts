@@ -16,7 +16,7 @@ export class UpdateCommand {
     }
 
     async run(): Promise<Response> {
-        const currentVersion = this.platformUtilsService.getApplicationVersion();
+        const currentVersion = await this.platformUtilsService.getApplicationVersion();
 
         const response = await fetch.default('https://api.github.com/repos/bitwarden/' +
             this.repoName + '/releases/latest');

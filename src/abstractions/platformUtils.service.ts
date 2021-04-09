@@ -20,7 +20,7 @@ export abstract class PlatformUtilsService {
     lockTimeout: () => number;
     launchUri: (uri: string, options?: any) => void;
     saveFile: (win: Window, blobData: any, blobOptions: any, fileName: string) => void;
-    getApplicationVersion: () => string;
+    getApplicationVersion: () => Promise<string>;
     supportsWebAuthn: (win: Window) => boolean;
     supportsDuo: () => boolean;
     showToast: (type: 'error' | 'success' | 'warning' | 'info', title: string, text: string | string[],
@@ -34,7 +34,7 @@ export abstract class PlatformUtilsService {
     readFromClipboard: (options?: any) => Promise<string>;
     supportsBiometric: () => Promise<boolean>;
     authenticateBiometric: () => Promise<boolean>;
-    getDefaultSystemTheme: () => 'light' | 'dark';
+    getDefaultSystemTheme: () => Promise<'light' | 'dark'>;
     onDefaultSystemThemeChange: (callback: ((theme: 'light' | 'dark') => unknown)) => unknown;
     supportsSecureStorage: () => boolean;
 }

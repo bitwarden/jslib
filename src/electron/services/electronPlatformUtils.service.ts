@@ -1,10 +1,8 @@
 import {
     clipboard,
     ipcRenderer,
-    remote,
     shell,
 } from 'electron';
-import * as fs from 'fs';
 
 import {
     isDev,
@@ -114,20 +112,14 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     }
 
     saveFile(win: Window, blobData: any, blobOptions: any, fileName: string): void {
-        remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
-            defaultPath: fileName,
-            showsTagField: false,
-        }).then(ret => {
-            if (ret.filePath != null) {
-                fs.writeFile(ret.filePath, Buffer.from(blobData), { mode: 0o600 }, err => {
-                    // error check?
-                });
-            }
+        ipcRenderer.invoke('saveFile', {
+            fileName: fileName,
+            buffer: Buffer.from(blobData),
         });
     }
 
-    getApplicationVersion(): string {
-        return remote.app.getVersion();
+    getApplicationVersion(): Promise<string> {
+        return ipcRenderer.invoke('appVersion');
     }
 
     // Temporarily restricted to only Windows until https://github.com/electron/electron/pull/28349
@@ -157,7 +149,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
             buttons.push(cancelText);
         }
 
-        const result = await remote.dialog.showMessageBox(remote.getCurrentWindow(), {
+        const result = await ipcRenderer.invoke('showMessageBox', {
             type: type,
             title: title,
             message: title,
@@ -221,13 +213,11 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     }
 
     getDefaultSystemTheme() {
-        return remote.nativeTheme.shouldUseDarkColors ? 'dark' : 'light';
+        return ipcRenderer.invoke('systemTheme');
     }
 
     onDefaultSystemThemeChange(callback: ((theme: 'light' | 'dark') => unknown)) {
-        remote.nativeTheme.on('updated', () => {
-            callback(this.getDefaultSystemTheme());
-        });
+        ipcRenderer.on('systemThemeUpdated', (event, theme: 'light' | 'dark') => callback(theme));
     }
 
     supportsSecureStorage(): boolean {
