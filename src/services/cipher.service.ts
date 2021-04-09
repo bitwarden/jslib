@@ -300,10 +300,17 @@ export class CipherService implements CipherServiceAbstraction {
             throw new Error('No key.');
         }
 
-        const userId = await this.userService.getUserId();
         const ciphers = await this.getAll();
-        const serializedCipherData = JSON.stringify(ciphers.map(c => c.toCipherData(userId)));
+        const userId = await this.userService.getUserId();
+        const cipherData = ciphers.map(c => c.toCipherData(userId))
 
+        const decryptedCiphers = await this.decryptBulk(cipherData);
+        this.decryptedCipherCache = decryptedCiphers.sort(this.getLocaleSortingFunction());
+        return this.decryptedCipherCache;
+    }
+
+    async decryptBulk(cipherData: CipherData[]): Promise<CipherView[]> {
+        const serializedCipherData = JSON.stringify(cipherData);
         const orgKeys = await this.cryptoService.getOrgKeys();
         const orgKeysArray: any[] = [];
         if (orgKeys != null) {
@@ -333,11 +340,9 @@ export class CipherService implements CipherServiceAbstraction {
                     cipherView.buildFromObj(JSON.parse(v));
                     return cipherView;
                 });
-
-                decryptedCiphers.sort(this.getLocaleSortingFunction());
-                this.decryptedCipherCache = decryptedCiphers;
+                
                 worker.terminate();
-                resolve(this.decryptedCipherCache);
+                resolve(decryptedCiphers);
             });
         });
     }
@@ -458,16 +463,11 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async getAllFromApiForOrganization(organizationId: string): Promise<CipherView[]> {
-        const ciphers = await this.apiService.getCiphersOrganization(organizationId);
-        if (ciphers != null && ciphers.data != null && ciphers.data.length) {
-            const decCiphers: CipherView[] = [];
-            const promises: any[] = [];
-            ciphers.data.forEach(r => {
-                const data = new CipherData(r);
-                const cipher = new Cipher(data);
-                promises.push(cipher.decrypt().then(c => decCiphers.push(c)));
-            });
-            await Promise.all(promises);
+        const ciphersResponse = await this.apiService.getCiphersOrganization(organizationId);
+        if (ciphersResponse != null && ciphersResponse.data != null && ciphersResponse.data.length) {
+            const cipherData: CipherData[] = ciphersResponse.data.map(r => new CipherData(r));
+            const decCiphers = await this.decryptBulk(cipherData);
+            console.log(decCiphers);
             decCiphers.sort(this.getLocaleSortingFunction());
             return decCiphers;
         } else {
