@@ -19,6 +19,7 @@ export class CipherData {
     viewPassword: boolean;
     organizationUseTotp: boolean;
     favorite: boolean;
+    passwordPrompt: boolean;
     revisionDate: string;
     type: CipherType;
     sizeName: string;
@@ -47,6 +48,7 @@ export class CipherData {
         this.viewPassword = response.viewPassword;
         this.organizationUseTotp = response.organizationUseTotp;
         this.favorite = response.favorite;
+        this.passwordPrompt = response.passwordPrompt;
         this.revisionDate = response.revisionDate;
         this.type = response.type;
         this.name = response.name;

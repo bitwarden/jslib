@@ -19,6 +19,7 @@ export class CipherRequest {
     name: string;
     notes: string;
     favorite: boolean;
+    passwordPrompt: boolean;
     login: LoginApi;
     secureNote: SecureNoteApi;
     card: CardApi;
@@ -37,6 +38,7 @@ export class CipherRequest {
         this.name = cipher.name ? cipher.name.encryptedString : null;
         this.notes = cipher.notes ? cipher.notes.encryptedString : null;
         this.favorite = cipher.favorite;
+        this.passwordPrompt = cipher.passwordPrompt;
         this.lastKnownRevisionDate = cipher.revisionDate;
 
         switch (this.type) {

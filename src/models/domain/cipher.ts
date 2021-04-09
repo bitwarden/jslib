@@ -23,6 +23,7 @@ export class Cipher extends Domain {
     notes: CipherString;
     type: CipherType;
     favorite: boolean;
+    passwordPrompt: boolean;
     organizationUseTotp: boolean;
     edit: boolean;
     viewPassword: boolean;
@@ -55,6 +56,7 @@ export class Cipher extends Domain {
 
         this.type = obj.type;
         this.favorite = obj.favorite;
+        this.passwordPrompt = obj.passwordPrompt;
         this.organizationUseTotp = obj.organizationUseTotp;
         this.edit = obj.edit;
         if (obj.viewPassword != null) {
@@ -179,6 +181,7 @@ export class Cipher extends Domain {
         c.viewPassword = this.viewPassword;
         c.organizationUseTotp = this.organizationUseTotp;
         c.favorite = this.favorite;
+        c.passwordPrompt = this.passwordPrompt;
         c.revisionDate = this.revisionDate != null ? this.revisionDate.toISOString() : null;
         c.type = this.type;
         c.collectionIds = this.collectionIds;

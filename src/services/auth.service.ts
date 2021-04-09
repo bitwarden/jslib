@@ -1,3 +1,5 @@
+import Swal from 'sweetalert2/dist/sweetalert2.js';
+
 import { KdfType } from '../enums/kdfType';
 import { TwoFactorProviderType } from '../enums/twoFactorProviderType';
 
@@ -262,6 +264,32 @@ export class AuthService implements AuthServiceAbstraction {
 
     authingWithPassword(): boolean {
         return this.email != null && this.masterPasswordHash != null;
+    }
+
+    async showPasswordPrompt() {
+        const result = await Swal.fire({
+            title: this.i18nService.t('passwordConfirmation'),
+            input: 'password',
+            text: this.i18nService.t('passwordConfirmationDesc'),
+            confirmButtonText: this.i18nService.t('ok'),
+            showCancelButton: true,
+            cancelButtonText: this.i18nService.t('cancel'),
+            inputAttributes: {
+                autocapitalize: 'off',
+                autocorrect: 'off'
+            },
+            inputValidator: async (value: string): Promise<any> => {
+                const keyHash = await this.cryptoService.hashPassword(value, null);
+                const storedKeyHash = await this.cryptoService.getKeyHash();
+
+                if (storedKeyHash == null || keyHash == null || storedKeyHash !== keyHash) {
+                    return "Wrong password";
+                }
+                return false;
+            }
+        });
+
+        return result.isConfirmed === true;
     }
 
     private async logInHelper(email: string, hashedPassword: string, code: string, codeVerifier: string,

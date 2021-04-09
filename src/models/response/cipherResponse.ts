@@ -21,6 +21,7 @@ export class CipherResponse extends BaseResponse {
     identity: IdentityApi;
     secureNote: SecureNoteApi;
     favorite: boolean;
+    passwordPrompt: boolean;
     edit: boolean;
     viewPassword: boolean;
     organizationUseTotp: boolean;
@@ -39,6 +40,7 @@ export class CipherResponse extends BaseResponse {
         this.name = this.getResponseProperty('Name');
         this.notes = this.getResponseProperty('Notes');
         this.favorite = this.getResponseProperty('Favorite') || false;
+        this.passwordPrompt = this.getResponseProperty('PasswordPrompt') || false;
         this.edit = !!this.getResponseProperty('Edit');
         if (this.getResponseProperty('ViewPassword') == null) {
             this.viewPassword = true;
