@@ -92,7 +92,7 @@
     "jsdom": "13.2.0",
     "keytar": "4.13.0",
     "lowdb": "1.0.0",
-    "lunr": "2.3.3",
+    "lunr": "2.3.9",
     "ngx-infinite-scroll": "7.0.1",
     "node-fetch": "2.6.1",
     "node-forge": "0.10.0",
