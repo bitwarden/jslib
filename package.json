@@ -86,7 +86,7 @@
     "electron-store": "6.0.1",
     "electron-updater": "4.3.5",
     "forcefocus": "^1.1.0",
-    "form-data": "2.3.2",
+    "form-data": "2.5.1",
     "https-proxy-agent": "5.0.0",
     "inquirer": "6.2.0",
     "jsdom": "13.2.0",
