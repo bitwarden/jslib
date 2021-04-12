@@ -71,6 +71,7 @@ export class AddEditComponent implements OnInit {
     restorePromise: Promise<any>;
     checkPasswordPromise: Promise<number>;
     showPassword: boolean = false;
+    showCardNumber: boolean = false;
     showCardCode: boolean = false;
     cipherType = CipherType;
     fieldType = FieldType;
@@ -423,6 +424,14 @@ export class AddEditComponent implements OnInit {
         document.getElementById('loginPassword').focus();
         if (this.editMode && this.showPassword) {
             this.eventService.collect(EventType.Cipher_ClientToggledPasswordVisible, this.cipherId);
+        }
+    }
+
+    async toggleCardNumber() {
+        this.platformUtilsService.eventTrack('Toggled Card Number on Edit');
+        this.showCardNumber = !this.showCardNumber;
+        if (this.showCardNumber) {
+            this.eventService.collect(EventType.Cipher_ClientToggledCardCodeVisible, this.cipherId);
         }
     }
 

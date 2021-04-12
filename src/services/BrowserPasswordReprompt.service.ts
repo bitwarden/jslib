@@ -7,6 +7,10 @@ import { PasswordRepromptService } from "../abstractions/passwordReprompt.servic
 export class BrowserPasswordRepromptService implements PasswordRepromptService {
     constructor(private i18nService: I18nService, private cryptoService: CryptoService) { }
 
+    protectedFields() {
+        return ['TOTP', 'Password', 'H_Field', 'Number', 'Security Code'];
+    }
+
     async showPasswordPrompt() {
         const result = await Swal.fire({
             heightAuto: false,
