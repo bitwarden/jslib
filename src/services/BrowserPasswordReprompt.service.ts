@@ -1,8 +1,8 @@
 import Swal from 'sweetalert2/dist/sweetalert2.js';
 
 import { CryptoService } from '../abstractions/crypto.service';
-import { I18nService } from "../abstractions/i18n.service";
-import { PasswordRepromptService } from "../abstractions/passwordReprompt.service";
+import { I18nService } from '../abstractions/i18n.service';
+import { PasswordRepromptService } from '../abstractions/passwordReprompt.service';
 
 export class BrowserPasswordRepromptService implements PasswordRepromptService {
     constructor(private i18nService: I18nService, private cryptoService: CryptoService) { }
@@ -22,17 +22,17 @@ export class BrowserPasswordRepromptService implements PasswordRepromptService {
             cancelButtonText: this.i18nService.t('cancel'),
             inputAttributes: {
                 autocapitalize: 'off',
-                autocorrect: 'off'
+                autocorrect: 'off',
             },
             inputValidator: async (value: string): Promise<any> => {
                 const keyHash = await this.cryptoService.hashPassword(value, null);
                 const storedKeyHash = await this.cryptoService.getKeyHash();
 
                 if (storedKeyHash == null || keyHash == null || storedKeyHash !== keyHash) {
-                    return "Wrong password";
+                    return this.i18nService.t('invalidMasterPassword');
                 }
                 return false;
-            }
+            },
         });
 
         return result.isConfirmed === true;

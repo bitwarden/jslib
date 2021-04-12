@@ -23,12 +23,12 @@ import { TokenService } from '../../abstractions/token.service';
 import { TotpService } from '../../abstractions/totp.service';
 import { UserService } from '../../abstractions/user.service';
 
+import { PasswordRepromptService } from '../../abstractions/passwordReprompt.service';
 import { AttachmentView } from '../../models/view/attachmentView';
 import { CipherView } from '../../models/view/cipherView';
 import { FieldView } from '../../models/view/fieldView';
 import { LoginUriView } from '../../models/view/loginUriView';
 import { BroadcasterService } from '../services/broadcaster.service';
-import { PasswordRepromptService } from '../../abstractions/passwordReprompt.service';
 
 const BroadcasterSubscriptionId = 'ViewComponent';
 
