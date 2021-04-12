@@ -51,15 +51,6 @@ class CryptoWorker {
                 this.secureStorageService.save(prop, secureStorage[prop]);
             }
         }
-
-        // const parsedOrgKeys = JSON.parse(this.data.orgKeys);
-        // let orgKeys: Map<string, SymmetricCryptoKey> = null;
-        // if (parsedOrgKeys != null) {
-        //     orgKeys = new Map<string, SymmetricCryptoKey>();
-        //     for (const [k, v] of parsedOrgKeys) {
-        //         orgKeys.set(k, new SymmetricCryptoKey(Utils.fromB64ToArray(v)));
-        //     }
-        // }
     }
 
     startServices() {

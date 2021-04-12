@@ -311,23 +311,18 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async decryptBulk(cipherData: CipherData[]): Promise<CipherView[]> {
-        const serializedCipherData = JSON.stringify(cipherData);
-
-
-        // const orgKeys = await this.cryptoService.getOrgKeys();
-        // const orgKeysArray: any[] = [];
-        // if (orgKeys != null) {
-        //     for (const [key, value] of Array.from(orgKeys)) {
-        //         orgKeysArray.push([key, Utils.fromBufferToB64(value.key)]);
-        //     }
-        // }
-        // const serializedOrgKeys = JSON.stringify(orgKeysArray);
-
         const cryptoKeys = ConstantsService.cryptoKeys;
+        
+        const serializedCipherData = JSON.stringify(cipherData);
         const key = await this.secureStorageService.get<string>(cryptoKeys.key);
         const encKey = await this.storageService.get<string>(cryptoKeys.encKey);
+        const orgKeys = await this.storageService.get<string>(cryptoKeys.encOrgKeys);
+        const privateKey = await this.storageService.get<string>(cryptoKeys.encPrivateKey);
+        
         const storage = JSON.stringify({
             [cryptoKeys.encKey]: encKey,
+            [cryptoKeys.encOrgKeys]: orgKeys,
+            [cryptoKeys.encPrivateKey]: privateKey,
         });
         const secureStorage = JSON.stringify({
             [cryptoKeys.key]: key,
