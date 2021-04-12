@@ -120,19 +120,21 @@ export class ViewComponent implements OnDestroy, OnInit {
     }
 
     async clone() {
-        if (!await this.promptPassword()) {
-            return;
+        if (await this.promptPassword()) {
+            this.onCloneCipher.emit(this.cipher);
+            return true;
         }
 
-        this.onCloneCipher.emit(this.cipher);
+        return false;
     }
 
     async share() {
-        if (!await this.promptPassword()) {
-            return;
+        if (await this.promptPassword()) {
+            this.onShareCipher.emit(this.cipher);
+            return true;
         }
 
-        this.onShareCipher.emit(this.cipher);
+        return false;
     }
 
     async delete(): Promise<boolean> {

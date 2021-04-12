@@ -8,7 +8,7 @@ export class BrowserPasswordRepromptService implements PasswordRepromptService {
     constructor(private i18nService: I18nService, private cryptoService: CryptoService) { }
 
     protectedFields() {
-        return ['TOTP', 'Password', 'H_Field', 'Number', 'Security Code'];
+        return ['TOTP', 'Password', 'H_Field', 'Card Number', 'Security Code'];
     }
 
     async showPasswordPrompt() {
