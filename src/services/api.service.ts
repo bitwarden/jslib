@@ -444,7 +444,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     async renewFileUploadUrl(sendId: string, fileId: string): Promise<SendFileUploadDataResponse> {
-        const r = await this.send('GET', '/sends/' + sendId + '/file/' + fileId, null, true, true);
+        const r = await this.send('GET', '/sends/' + sendId + '/file/' + fileId + '/renew', null, true, true);
         return new SendFileUploadDataResponse(r);
     }
 
