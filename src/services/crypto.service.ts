@@ -20,13 +20,7 @@ import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
 import { EEFLongWordList } from '../misc/wordlist';
 
-const Keys = {
-    key: 'key', // Master Key
-    encOrgKeys: 'encOrgKeys',
-    encPrivateKey: 'encPrivateKey',
-    encKey: 'encKey', // Generated Symmetric Key
-    keyHash: 'keyHash',
-};
+const cryptoKeys = ConstantsService.cryptoKeys;
 
 export class CryptoService implements CryptoServiceAbstraction {
     private key: SymmetricCryptoKey;
@@ -52,12 +46,12 @@ export class CryptoService implements CryptoServiceAbstraction {
             return;
         }
 
-        return this.secureStorageService.save(Keys.key, key.keyB64);
+        return this.secureStorageService.save(cryptoKeys.key, key.keyB64);
     }
 
     setKeyHash(keyHash: string): Promise<{}> {
         this.keyHash = keyHash;
-        return this.storageService.save(Keys.keyHash, keyHash);
+        return this.storageService.save(cryptoKeys.keyHash, keyHash);
     }
 
     async setEncKey(encKey: string): Promise<{}> {
@@ -65,7 +59,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             return;
         }
 
-        await this.storageService.save(Keys.encKey, encKey);
+        await this.storageService.save(cryptoKeys.encKey, encKey);
         this.encKey = null;
     }
 
@@ -74,7 +68,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             return;
         }
 
-        await this.storageService.save(Keys.encPrivateKey, encPrivateKey);
+        await this.storageService.save(cryptoKeys.encPrivateKey, encPrivateKey);
         this.privateKey = null;
     }
 
@@ -85,7 +79,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         });
 
         this.orgKeys = null;
-        return this.storageService.save(Keys.encOrgKeys, orgKeys);
+        return this.storageService.save(cryptoKeys.encOrgKeys, orgKeys);
     }
 
     async getKey(): Promise<SymmetricCryptoKey> {
@@ -93,7 +87,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             return this.key;
         }
 
-        const key = await this.secureStorageService.get<string>(Keys.key);
+        const key = await this.secureStorageService.get<string>(cryptoKeys.key);
         if (key != null) {
             this.key = new SymmetricCryptoKey(Utils.fromB64ToArray(key).buffer);
         }
@@ -106,7 +100,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             return this.keyHash;
         }
 
-        const keyHash = await this.storageService.get<string>(Keys.keyHash);
+        const keyHash = await this.storageService.get<string>(cryptoKeys.keyHash);
         if (keyHash != null) {
             this.keyHash = keyHash;
         }
@@ -120,7 +114,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             return this.encKey;
         }
 
-        const encKey = await this.storageService.get<string>(Keys.encKey);
+        const encKey = await this.storageService.get<string>(cryptoKeys.encKey);
         if (encKey == null) {
             return null;
         }
@@ -169,7 +163,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             return this.privateKey;
         }
 
-        const encPrivateKey = await this.storageService.get<string>(Keys.encPrivateKey);
+        const encPrivateKey = await this.storageService.get<string>(cryptoKeys.encPrivateKey);
         if (encPrivateKey == null) {
             return null;
         }
@@ -196,7 +190,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             return this.orgKeys;
         }
 
-        const encOrgKeys = await this.storageService.get<any>(Keys.encOrgKeys);
+        const encOrgKeys = await this.storageService.get<any>(cryptoKeys.encOrgKeys);
         if (encOrgKeys == null) {
             return null;
         }
@@ -239,18 +233,18 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     async hasEncKey(): Promise<boolean> {
-        const encKey = await this.storageService.get<string>(Keys.encKey);
+        const encKey = await this.storageService.get<string>(cryptoKeys.encKey);
         return encKey != null;
     }
 
     clearKey(): Promise<any> {
         this.key = this.legacyEtmKey = null;
-        return this.secureStorageService.remove(Keys.key);
+        return this.secureStorageService.remove(cryptoKeys.key);
     }
 
     clearKeyHash(): Promise<any> {
         this.keyHash = null;
-        return this.storageService.remove(Keys.keyHash);
+        return this.storageService.remove(cryptoKeys.keyHash);
     }
 
     clearEncKey(memoryOnly?: boolean): Promise<any> {
@@ -258,7 +252,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         if (memoryOnly) {
             return Promise.resolve();
         }
-        return this.storageService.remove(Keys.encKey);
+        return this.storageService.remove(cryptoKeys.encKey);
     }
 
     clearKeyPair(memoryOnly?: boolean): Promise<any> {
@@ -267,7 +261,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         if (memoryOnly) {
             return Promise.resolve();
         }
-        return this.storageService.remove(Keys.encPrivateKey);
+        return this.storageService.remove(cryptoKeys.encPrivateKey);
     }
 
     clearOrgKeys(memoryOnly?: boolean): Promise<any> {
@@ -275,7 +269,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         if (memoryOnly) {
             return Promise.resolve();
         }
-        return this.storageService.remove(Keys.encOrgKeys);
+        return this.storageService.remove(cryptoKeys.encOrgKeys);
     }
 
     clearPinProtectedKey(): Promise<any> {
@@ -579,19 +573,6 @@ export class CryptoService implements CryptoServiceAbstraction {
         return min + rval;
     }
 
-    async getKeyForEncryption(key?: SymmetricCryptoKey): Promise<SymmetricCryptoKey> {
-        if (key != null) {
-            return key;
-        }
-
-        const encKey = await this.getEncKey();
-        if (encKey != null) {
-            return encKey;
-        }
-
-        return await this.getKey();
-    }
-
     // Helpers
 
     private async aesEncrypt(data: ArrayBuffer, key: SymmetricCryptoKey): Promise<EncryptedObject> {
@@ -669,6 +650,19 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
 
         return await this.cryptoFunctionService.aesDecrypt(data, iv, theKey.encKey);
+    }
+
+    private async getKeyForEncryption(key?: SymmetricCryptoKey): Promise<SymmetricCryptoKey> {
+        if (key != null) {
+            return key;
+        }
+
+        const encKey = await this.getEncKey();
+        if (encKey != null) {
+            return encKey;
+        }
+
+        return await this.getKey();
     }
 
     private resolveLegacyKey(encType: EncryptionType, key: SymmetricCryptoKey): SymmetricCryptoKey {

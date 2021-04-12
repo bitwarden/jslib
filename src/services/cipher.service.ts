@@ -71,7 +71,8 @@ export class CipherService implements CipherServiceAbstraction {
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private settingsService: SettingsService, private apiService: ApiService,
         private storageService: StorageService, private i18nService: I18nService,
-        private searchService: () => SearchService, private webWorkerService: WebWorkerService) {
+        private searchService: () => SearchService, private webWorkerService: WebWorkerService,
+        private secureStorageService: StorageService) {
     }
 
     get decryptedCipherCache() {
@@ -302,7 +303,7 @@ export class CipherService implements CipherServiceAbstraction {
 
         const ciphers = await this.getAll();
         const userId = await this.userService.getUserId();
-        const cipherData = ciphers.map(c => c.toCipherData(userId))
+        const cipherData = ciphers.map(c => c.toCipherData(userId));
 
         const decryptedCiphers = await this.decryptBulk(cipherData);
         this.decryptedCipherCache = decryptedCiphers.sort(this.getLocaleSortingFunction());
@@ -311,24 +312,33 @@ export class CipherService implements CipherServiceAbstraction {
 
     async decryptBulk(cipherData: CipherData[]): Promise<CipherView[]> {
         const serializedCipherData = JSON.stringify(cipherData);
-        const orgKeys = await this.cryptoService.getOrgKeys();
-        const orgKeysArray: any[] = [];
-        if (orgKeys != null) {
-            for (const [key, value] of Array.from(orgKeys)) {
-                orgKeysArray.push([key, Utils.fromBufferToB64(value.key)]);
-            }
-        }
-        const serializedOrgKeys = JSON.stringify(orgKeysArray);
 
-        const keyForEnc = await this.cryptoService.getKeyForEncryption();
-        const serializedKeyForEnc = Utils.fromBufferToB64(keyForEnc.key);
+
+        // const orgKeys = await this.cryptoService.getOrgKeys();
+        // const orgKeysArray: any[] = [];
+        // if (orgKeys != null) {
+        //     for (const [key, value] of Array.from(orgKeys)) {
+        //         orgKeysArray.push([key, Utils.fromBufferToB64(value.key)]);
+        //     }
+        // }
+        // const serializedOrgKeys = JSON.stringify(orgKeysArray);
+
+        const cryptoKeys = ConstantsService.cryptoKeys;
+        const key = await this.secureStorageService.get<string>(cryptoKeys.key);
+        const encKey = await this.storageService.get<string>(cryptoKeys.encKey);
+        const storage = JSON.stringify({
+            [cryptoKeys.encKey]: encKey,
+        });
+        const secureStorage = JSON.stringify({
+            [cryptoKeys.key]: key,
+        });
 
         return new Promise((resolve, reject) => {
             const worker = this.webWorkerService.createWorker();
             worker.postMessage({
                 ciphers: serializedCipherData,
-                keyForEnc: serializedKeyForEnc,
-                orgKeys: serializedOrgKeys,
+                storage: storage,
+                secureStorage: secureStorage,
             });
             worker.addEventListener('message', event => {
                 if (event.data.type !== 'data') {
@@ -340,7 +350,7 @@ export class CipherService implements CipherServiceAbstraction {
                     cipherView.buildFromObj(JSON.parse(v));
                     return cipherView;
                 });
-                
+
                 worker.terminate();
                 resolve(decryptedCiphers);
             });
@@ -467,7 +477,6 @@ export class CipherService implements CipherServiceAbstraction {
         if (ciphersResponse != null && ciphersResponse.data != null && ciphersResponse.data.length) {
             const cipherData: CipherData[] = ciphersResponse.data.map(r => new CipherData(r));
             const decCiphers = await this.decryptBulk(cipherData);
-            console.log(decCiphers);
             decCiphers.sort(this.getLocaleSortingFunction());
             return decCiphers;
         } else {
