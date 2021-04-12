@@ -17,6 +17,7 @@ import { MessagingService } from '../../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../../abstractions/platformUtils.service';
 import { PolicyService } from '../../../abstractions/policy.service';
 import { SendService } from '../../../abstractions/send.service';
+import { TokenService } from '../../../abstractions/token.service';
 import { UserService } from '../../../abstractions/user.service';
 
 import { SendFileView } from '../../../models/view/sendFileView';
@@ -67,7 +68,8 @@ export class AddEditComponent implements OnInit {
     deletionDateSelect = 168;
     expirationDateSelect: number = null;
     canAccessPremium = true;
-    premiumRequiredAlertShown = false;
+    emailVerified = true;
+    alertShown = false;
     showOptions = false;
 
     safariDeletionTime: string;
@@ -80,7 +82,8 @@ export class AddEditComponent implements OnInit {
     constructor(protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected environmentService: EnvironmentService, protected datePipe: DatePipe,
         protected sendService: SendService, protected userService: UserService,
-        protected messagingService: MessagingService, protected policyService: PolicyService) {
+        protected messagingService: MessagingService, protected policyService: PolicyService,
+        protected tokenService: TokenService) {
         this.typeOptions = [
             { name: i18nService.t('sendTypeFile'), value: SendType.File },
             { name: i18nService.t('sendTypeText'), value: SendType.Text },
@@ -170,7 +173,8 @@ export class AddEditComponent implements OnInit {
         });
 
         this.canAccessPremium = await this.userService.canAccessPremium();
-        if (!this.canAccessPremium) {
+        this.emailVerified = this.tokenService.getEmailVerified();
+        if (!this.canAccessPremium || !this.emailVerified) {
             this.type = SendType.Text;
         }
 
@@ -355,9 +359,15 @@ export class AddEditComponent implements OnInit {
     }
 
     typeChanged() {
-        if (!this.canAccessPremium && this.send.type === SendType.File && !this.premiumRequiredAlertShown) {
-            this.premiumRequiredAlertShown = true;
-            this.messagingService.send('premiumRequired');
+        if (this.send.type === SendType.File && !this.alertShown)
+        {
+            if (!this.canAccessPremium) {
+                this.alertShown = true;
+                this.messagingService.send('premiumRequired');
+            } else if (!this.emailVerified) {
+                this.alertShown = true;
+                this.messagingService.send('emailVerificationRequired');
+            }
         }
     }
 
