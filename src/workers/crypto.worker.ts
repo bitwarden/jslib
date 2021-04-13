@@ -7,15 +7,16 @@ import { MemoryStorageService } from '../services/memoryStorage.service';
 import { NodeCryptoFunctionService } from '../services/nodeCryptoFunction.service';
 import { WorkerLogService } from '../services/workerLogService';
 
-const thisWorker: Worker = self as any;
+const workerApi: Worker = self as any;
 
-thisWorker.addEventListener('message', async event => {
-    const decryptAllWorker = new CryptoWorker(event.data);
+workerApi.addEventListener('message', async event => {
+    const decryptAllWorker = new CryptoWorker(event.data, workerApi);
     await decryptAllWorker.decryptAll();
 });
 
 class CryptoWorker {
     data: any;
+    workerApi: Worker;
     encryptedCiphers: Cipher[];
 
     containerService: ContainerService;
@@ -26,8 +27,9 @@ class CryptoWorker {
     secureStorageService: MemoryStorageService;
     storageService: MemoryStorageService;
 
-    constructor(data: any) {
+    constructor(data: any, worker: Worker) {
         this.data = data;
+        this.workerApi = worker;
         this.startServices();
 
         this.encryptedCiphers = JSON.parse(this.data.ciphers).map((c: any) => new Cipher(c));
@@ -77,10 +79,10 @@ class CryptoWorker {
         await Promise.all(promises);
 
         const response = decryptedCiphers.map(c => JSON.stringify(c));
-        this.postMessage({ type: 'data', message: response });
+        this.postMessage({ type: 'data', ciphers: response });
     }
 
     postMessage(message: any) {
-        thisWorker.postMessage(message);
+        workerApi.postMessage(message);
     }
 }

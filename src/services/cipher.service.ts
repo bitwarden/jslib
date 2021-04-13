@@ -312,35 +312,32 @@ export class CipherService implements CipherServiceAbstraction {
 
     async decryptBulk(cipherData: CipherData[]): Promise<CipherView[]> {
         const cryptoKeys = ConstantsService.cryptoKeys;
-        
-        const serializedCipherData = JSON.stringify(cipherData);
         const key = await this.secureStorageService.get<string>(cryptoKeys.key);
         const encKey = await this.storageService.get<string>(cryptoKeys.encKey);
         const orgKeys = await this.storageService.get<string>(cryptoKeys.encOrgKeys);
         const privateKey = await this.storageService.get<string>(cryptoKeys.encPrivateKey);
-
-        const storage = JSON.stringify({
+        const storage = {
             [cryptoKeys.encKey]: encKey,
             [cryptoKeys.encOrgKeys]: orgKeys,
             [cryptoKeys.encPrivateKey]: privateKey,
-        });
-        const secureStorage = JSON.stringify({
+        };
+        const secureStorage = {
             [cryptoKeys.key]: key,
-        });
+        };
 
         return new Promise((resolve, reject) => {
             const worker = this.webWorkerService.createWorker();
             worker.postMessage({
-                ciphers: serializedCipherData,
-                storage: storage,
-                secureStorage: secureStorage,
+                ciphers: JSON.stringify(cipherData),
+                storage: JSON.stringify(storage),
+                secureStorage: JSON.stringify(secureStorage),
             });
             worker.addEventListener('message', event => {
                 if (event.data.type !== 'data') {
                     return;
                 }
 
-                const decryptedCiphers: CipherView[] = event.data.message.map((v: any) => {
+                const decryptedCiphers: CipherView[] = event.data.ciphers.map((v: any) => {
                     const cipherView = new CipherView();
                     cipherView.buildFromObj(JSON.parse(v));
                     return cipherView;
