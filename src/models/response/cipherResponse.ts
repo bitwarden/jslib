@@ -7,6 +7,7 @@ import { FieldApi } from '../api/fieldApi';
 import { IdentityApi } from '../api/identityApi';
 import { LoginApi } from '../api/loginApi';
 import { SecureNoteApi } from '../api/secureNoteApi';
+import { CipherRepromptType } from '../../enums/cipherRepromptType';
 
 export class CipherResponse extends BaseResponse {
     id: string;
@@ -21,7 +22,6 @@ export class CipherResponse extends BaseResponse {
     identity: IdentityApi;
     secureNote: SecureNoteApi;
     favorite: boolean;
-    passwordPrompt: boolean;
     edit: boolean;
     viewPassword: boolean;
     organizationUseTotp: boolean;
@@ -30,6 +30,7 @@ export class CipherResponse extends BaseResponse {
     passwordHistory: PasswordHistoryResponse[];
     collectionIds: string[];
     deletedDate: string;
+    reprompt: CipherRepromptType;
 
     constructor(response: any) {
         super(response);
@@ -40,7 +41,6 @@ export class CipherResponse extends BaseResponse {
         this.name = this.getResponseProperty('Name');
         this.notes = this.getResponseProperty('Notes');
         this.favorite = this.getResponseProperty('Favorite') || false;
-        this.passwordPrompt = this.getResponseProperty('PasswordPrompt') || false;
         this.edit = !!this.getResponseProperty('Edit');
         if (this.getResponseProperty('ViewPassword') == null) {
             this.viewPassword = true;
@@ -86,5 +86,7 @@ export class CipherResponse extends BaseResponse {
         if (passwordHistory != null) {
             this.passwordHistory = passwordHistory.map((h: any) => new PasswordHistoryResponse(h));
         }
+
+        this.reprompt = this.getResponseProperty('Reprompt') || CipherRepromptType.None;
     }
 }

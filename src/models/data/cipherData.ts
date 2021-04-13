@@ -1,4 +1,5 @@
 import { CipherType } from '../../enums/cipherType';
+import { CipherRepromptType } from '../../enums/cipherRepromptType';
 
 import { AttachmentData } from './attachmentData';
 import { CardData } from './cardData';
@@ -19,7 +20,6 @@ export class CipherData {
     viewPassword: boolean;
     organizationUseTotp: boolean;
     favorite: boolean;
-    passwordPrompt: boolean;
     revisionDate: string;
     type: CipherType;
     sizeName: string;
@@ -34,6 +34,7 @@ export class CipherData {
     passwordHistory?: PasswordHistoryData[];
     collectionIds?: string[];
     deletedDate: string;
+    reprompt: CipherRepromptType;
 
     constructor(response?: CipherResponse, userId?: string, collectionIds?: string[]) {
         if (response == null) {
@@ -48,13 +49,13 @@ export class CipherData {
         this.viewPassword = response.viewPassword;
         this.organizationUseTotp = response.organizationUseTotp;
         this.favorite = response.favorite;
-        this.passwordPrompt = response.passwordPrompt;
         this.revisionDate = response.revisionDate;
         this.type = response.type;
         this.name = response.name;
         this.notes = response.notes;
         this.collectionIds = collectionIds != null ? collectionIds : response.collectionIds;
         this.deletedDate = response.deletedDate;
+        this.reprompt = response.reprompt;
 
         switch (this.type) {
             case CipherType.Login:

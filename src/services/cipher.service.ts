@@ -142,11 +142,11 @@ export class CipherService implements CipherServiceAbstraction {
         cipher.id = model.id;
         cipher.folderId = model.folderId;
         cipher.favorite = model.favorite;
-        cipher.passwordPrompt = model.passwordPrompt;
         cipher.organizationId = model.organizationId;
         cipher.type = model.type;
         cipher.collectionIds = model.collectionIds;
         cipher.revisionDate = model.revisionDate;
+        cipher.reprompt = model.reprompt;
 
         if (key == null && cipher.organizationId != null) {
             key = await this.cryptoService.getOrgKey(cipher.organizationId);

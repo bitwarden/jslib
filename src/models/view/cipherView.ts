@@ -1,3 +1,4 @@
+import { CipherRepromptType } from '../../enums/cipherRepromptType';
 import { CipherType } from '../../enums/cipherType';
 
 import { Cipher } from '../domain/cipher';
@@ -19,7 +20,6 @@ export class CipherView implements View {
     notes: string = null;
     type: CipherType = null;
     favorite = false;
-    passwordPrompt = false;
     organizationUseTotp = false;
     edit = false;
     viewPassword = true;
@@ -34,6 +34,7 @@ export class CipherView implements View {
     collectionIds: string[] = null;
     revisionDate: Date = null;
     deletedDate: Date = null;
+    reprompt: CipherRepromptType = null;
 
     constructor(c?: Cipher) {
         if (!c) {
@@ -44,7 +45,6 @@ export class CipherView implements View {
         this.organizationId = c.organizationId;
         this.folderId = c.folderId;
         this.favorite = c.favorite;
-        this.passwordPrompt = c.passwordPrompt;
         this.organizationUseTotp = c.organizationUseTotp;
         this.edit = c.edit;
         this.viewPassword = c.viewPassword;
@@ -53,6 +53,7 @@ export class CipherView implements View {
         this.collectionIds = c.collectionIds;
         this.revisionDate = c.revisionDate;
         this.deletedDate = c.deletedDate;
+        this.reprompt = c.reprompt;
     }
 
     get subTitle(): string {

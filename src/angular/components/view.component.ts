@@ -331,7 +331,7 @@ export class ViewComponent implements OnDestroy, OnInit {
     }
 
     protected async promptPassword() {
-        if (!this.cipher.passwordPrompt || this.passwordReprompted) {
+        if (!this.cipher.reprompt || this.passwordReprompted) {
             return true;
         }
 

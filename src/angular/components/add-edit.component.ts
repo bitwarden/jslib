@@ -43,6 +43,7 @@ import { LoginView } from '../../models/view/loginView';
 import { SecureNoteView } from '../../models/view/secureNoteView';
 
 import { Utils } from '../../misc/utils';
+import { CipherRepromptType } from '../../enums/cipherRepromptType';
 
 @Directive()
 export class AddEditComponent implements OnInit {
@@ -85,6 +86,7 @@ export class AddEditComponent implements OnInit {
     ownershipOptions: any[] = [];
     currentDate = new Date();
     allowPersonal = true;
+    reprompt: boolean = false;
 
     protected writeableCollections: CollectionView[];
     private previousCipherId: string;
@@ -246,6 +248,7 @@ export class AddEditComponent implements OnInit {
             this.eventService.collect(EventType.Cipher_ClientViewed, this.cipherId);
         }
         this.previousCipherId = this.cipherId;
+        this.reprompt = this.cipher.reprompt != CipherRepromptType.None;
     }
 
     async submit(): Promise<boolean> {
@@ -500,6 +503,15 @@ export class AddEditComponent implements OnInit {
                 this.i18nService.t('passwordExposed', matches.toString()));
         } else {
             this.platformUtilsService.showToast('success', null, this.i18nService.t('passwordSafe'));
+        }
+    }
+
+    repromptChanged() {
+        this.reprompt = !this.reprompt;
+        if (this.reprompt) {
+            this.cipher.reprompt = CipherRepromptType.Password;
+        } else {
+            this.cipher.reprompt = CipherRepromptType.None;
         }
     }
 
