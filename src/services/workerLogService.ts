@@ -1,11 +1,11 @@
-import { LogLevelType } from '../../enums/logLevelType';
+import { LogLevelType } from '../enums/logLevelType';
 
-export class WorkerLogService {
-    worker: any;
+import { LogService as LogServiceAbstraction } from '../abstractions/log.service';
 
-    constructor(protected isDev: boolean, protected filter: (level: LogLevelType) => boolean = null, worker: Worker) {
-        this.worker = worker;
-     }
+export class WorkerLogService implements LogServiceAbstraction {
+    protected timersMap: Map<string, [number, number]> = new Map();
+
+    constructor(protected isDev: boolean, protected filter: (level: LogLevelType) => boolean = null) { }
 
     debug(message: string) {
         if (!this.isDev) {
@@ -54,10 +54,15 @@ export class WorkerLogService {
     }
 
     time(label: string = 'default') {
-        throw new Error('Not implemented');
+        if (!this.timersMap.has(label)) {
+            this.timersMap.set(label, [performance.now(),0]);
+        }
     }
 
     timeEnd(label: string = 'default'): [number, number] {
-        throw new Error('Not implemented');
+        const elapsed = performance.now() - this.timersMap.get(label)[0];
+        this.timersMap.delete(label);
+        this.write(LogLevelType.Info, `${label}: ${elapsed}ms`);
+        return [elapsed, 0];
     }
 }

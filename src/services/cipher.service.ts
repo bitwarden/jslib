@@ -318,7 +318,7 @@ export class CipherService implements CipherServiceAbstraction {
         const encKey = await this.storageService.get<string>(cryptoKeys.encKey);
         const orgKeys = await this.storageService.get<string>(cryptoKeys.encOrgKeys);
         const privateKey = await this.storageService.get<string>(cryptoKeys.encPrivateKey);
-        
+
         const storage = JSON.stringify({
             [cryptoKeys.encKey]: encKey,
             [cryptoKeys.encOrgKeys]: orgKeys,

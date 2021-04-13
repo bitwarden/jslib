@@ -5,7 +5,7 @@ import { ContainerService } from '../services/container.service';
 import { CryptoService } from '../services/crypto.service';
 import { MemoryStorageService } from '../services/memoryStorage.service';
 import { NodeCryptoFunctionService } from '../services/nodeCryptoFunction.service';
-import { WorkerLogService } from './services/workerLogService';
+import { WorkerLogService } from '../services/workerLogService';
 
 const thisWorker: Worker = self as any;
 
@@ -55,7 +55,7 @@ class CryptoWorker {
 
     startServices() {
         this.cryptoFunctionService = new NodeCryptoFunctionService();
-        this.logService = new WorkerLogService(false, level => true, thisWorker);
+        this.logService = new WorkerLogService(false);
         this.platformUtilsService = null as any;
         this.secureStorageService = new MemoryStorageService();
         this.storageService = new MemoryStorageService();
@@ -68,28 +68,19 @@ class CryptoWorker {
     }
 
     async decryptAll() {
-        this.postLogMessage('decryptAll started');
-        const startTime = performance.now();
-
         const promises: any[] = [];
         const decryptedCiphers: CipherView[] = [];
+
         this.encryptedCiphers.forEach(cipher => {
             promises.push(cipher.decrypt().then(c => decryptedCiphers.push(c)));
         });
         await Promise.all(promises);
 
         const response = decryptedCiphers.map(c => JSON.stringify(c));
-
-        const endTime = performance.now();
-        this.postLogMessage('decryptAllWorker finished in ' + (endTime - startTime));
         this.postMessage({ type: 'data', message: response });
     }
 
     postMessage(message: any) {
         thisWorker.postMessage(message);
-    }
-
-    postLogMessage(message: any) {
-        this.postMessage({ type: 'logMessage', message: message });
     }
 }
