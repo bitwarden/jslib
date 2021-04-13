@@ -305,12 +305,12 @@ export class CipherService implements CipherServiceAbstraction {
         const userId = await this.userService.getUserId();
         const cipherData = ciphers.map(c => c.toCipherData(userId));
 
-        const decryptedCiphers = await this.decryptBulk(cipherData);
+        const decryptedCiphers = await this.decryptBulk('getAllDecrypted', cipherData);
         this.decryptedCipherCache = decryptedCiphers.sort(this.getLocaleSortingFunction());
         return this.decryptedCipherCache;
     }
 
-    async decryptBulk(cipherData: CipherData[]): Promise<CipherView[]> {
+    async decryptBulk(workerName: string, cipherData: CipherData[]): Promise<CipherView[]> {
         const cryptoKeys = ConstantsService.cryptoKeys;
         const key = await this.secureStorageService.get<string>(cryptoKeys.key);
         const encKey = await this.storageService.get<string>(cryptoKeys.encKey);
@@ -326,14 +326,15 @@ export class CipherService implements CipherServiceAbstraction {
         };
 
         return new Promise((resolve, reject) => {
-            const worker = this.webWorkerService.createWorker();
+            const worker = this.webWorkerService.create(workerName);
             worker.postMessage({
+                type: 'decryptAllRequest',
                 ciphers: JSON.stringify(cipherData),
                 storage: JSON.stringify(storage),
                 secureStorage: JSON.stringify(secureStorage),
             });
             worker.addEventListener('message', event => {
-                if (event.data.type !== 'data') {
+                if (event.data.type !== 'decryptAllResponse') {
                     return;
                 }
 
@@ -343,7 +344,7 @@ export class CipherService implements CipherServiceAbstraction {
                     return cipherView;
                 });
 
-                worker.terminate();
+                this.webWorkerService.terminate(workerName);
                 resolve(decryptedCiphers);
             });
         });
@@ -468,7 +469,7 @@ export class CipherService implements CipherServiceAbstraction {
         const ciphersResponse = await this.apiService.getCiphersOrganization(organizationId);
         if (ciphersResponse != null && ciphersResponse.data != null && ciphersResponse.data.length) {
             const cipherData: CipherData[] = ciphersResponse.data.map(r => new CipherData(r));
-            const decCiphers = await this.decryptBulk(cipherData);
+            const decCiphers = await this.decryptBulk(organizationId, cipherData);
             decCiphers.sort(this.getLocaleSortingFunction());
             return decCiphers;
         } else {

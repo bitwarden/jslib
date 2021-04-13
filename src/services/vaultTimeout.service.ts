@@ -11,6 +11,7 @@ import { StorageService } from '../abstractions/storage.service';
 import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
 import { VaultTimeoutService as VaultTimeoutServiceAbstraction } from '../abstractions/vaultTimeout.service';
+import { WebWorkerService } from '../abstractions/webWorker.service';
 
 import { CipherString } from '../models/domain/cipherString';
 
@@ -25,7 +26,8 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         protected platformUtilsService: PlatformUtilsService, private storageService: StorageService,
         private messagingService: MessagingService, private searchService: SearchService,
         private userService: UserService, private tokenService: TokenService,
-        private lockedCallback: () => Promise<void> = null, private loggedOutCallback: () => Promise<void> = null) {
+        private lockedCallback: () => Promise<void> = null, private loggedOutCallback: () => Promise<void> = null,
+        private webWorkerService: WebWorkerService) {
     }
 
     init(checkOnInterval: boolean) {
@@ -118,6 +120,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
             this.cryptoService.clearOrgKeys(true),
             this.cryptoService.clearKeyPair(true),
             this.cryptoService.clearEncKey(true),
+            this.webWorkerService.terminateAll(),
         ]);
 
         this.folderService.clearCache();

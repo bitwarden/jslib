@@ -1,4 +1,5 @@
 export abstract class WebWorkerService {
-    createWorker: () => Worker;
-    attachLogger: (worker: Worker) => void;
+    create: (name: string) => Worker;
+    terminate: (name: string) => Promise<void>;
+    terminateAll: () => Promise<void[]>;
 }

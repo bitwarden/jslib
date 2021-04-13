@@ -10,6 +10,9 @@ import { WorkerLogService } from '../services/workerLogService';
 const workerApi: Worker = self as any;
 
 workerApi.addEventListener('message', async event => {
+    if (event.data.type !== 'decryptAllRequest') {
+        return;
+    };
     const decryptAllWorker = new CryptoWorker(event.data, workerApi);
     await decryptAllWorker.decryptAll();
 });
@@ -31,6 +34,7 @@ class CryptoWorker {
         this.data = data;
         this.workerApi = worker;
         this.startServices();
+        this.listen();
 
         this.encryptedCiphers = JSON.parse(this.data.ciphers).map((c: any) => new Cipher(c));
 
@@ -79,10 +83,33 @@ class CryptoWorker {
         await Promise.all(promises);
 
         const response = decryptedCiphers.map(c => JSON.stringify(c));
-        this.postMessage({ type: 'data', ciphers: response });
+        
+        this.postMessage({ type: 'decryptAllResponse', ciphers: response });
     }
 
     postMessage(message: any) {
         workerApi.postMessage(message);
+    }
+
+    async clearCache() {
+        await Promise.all([
+            this.cryptoService.clearKey(),
+            this.cryptoService.clearOrgKeys(false),
+            this.cryptoService.clearKeyPair(false),
+            this.cryptoService.clearEncKey(false),
+        ]);
+    }
+
+    listen() {
+        workerApi.addEventListener('message', async event => {
+            switch (event.data?.type) {
+                case 'clearCacheRequest':
+                    await this.clearCache();
+                    this.postMessage({ type: 'clearCacheResponse' });
+                    break;
+                default:
+                    break;
+            }
+        });
     }
 }
