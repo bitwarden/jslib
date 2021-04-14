@@ -1,5 +1,5 @@
-import { CipherType } from '../../enums/cipherType';
 import { CipherRepromptType } from '../../enums/cipherRepromptType';
+import { CipherType } from '../../enums/cipherType';
 
 import { AttachmentData } from './attachmentData';
 import { CardData } from './cardData';

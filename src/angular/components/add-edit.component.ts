@@ -42,8 +42,8 @@ import { LoginUriView } from '../../models/view/loginUriView';
 import { LoginView } from '../../models/view/loginView';
 import { SecureNoteView } from '../../models/view/secureNoteView';
 
-import { Utils } from '../../misc/utils';
 import { CipherRepromptType } from '../../enums/cipherRepromptType';
+import { Utils } from '../../misc/utils';
 
 @Directive()
 export class AddEditComponent implements OnInit {
@@ -248,7 +248,7 @@ export class AddEditComponent implements OnInit {
             this.eventService.collect(EventType.Cipher_ClientViewed, this.cipherId);
         }
         this.previousCipherId = this.cipherId;
-        this.reprompt = this.cipher.reprompt != CipherRepromptType.None;
+        this.reprompt = this.cipher.reprompt !== CipherRepromptType.None;
     }
 
     async submit(): Promise<boolean> {
