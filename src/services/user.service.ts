@@ -14,6 +14,7 @@ const Keys = {
     kdf: 'kdf',
     kdfIterations: 'kdfIterations',
     organizationsPrefix: 'organizations_',
+    emailVerified: 'emailVerified',
 };
 
 export class UserService implements UserServiceAbstraction {
@@ -22,6 +23,7 @@ export class UserService implements UserServiceAbstraction {
     private stamp: string;
     private kdf: KdfType;
     private kdfIterations: number;
+    private emailVerified: boolean;
 
     constructor(private tokenService: TokenService, private storageService: StorageService) { }
 
@@ -42,6 +44,11 @@ export class UserService implements UserServiceAbstraction {
     setSecurityStamp(stamp: string): Promise<any> {
         this.stamp = stamp;
         return this.storageService.save(Keys.stamp, stamp);
+    }
+
+    setEmailVerified(emailVerified: boolean) {
+        this.emailVerified = emailVerified;
+        return this.storageService.save(Keys.emailVerified, emailVerified);
     }
 
     async getUserId(): Promise<string> {
@@ -77,6 +84,13 @@ export class UserService implements UserServiceAbstraction {
             this.kdfIterations = await this.storageService.get<number>(Keys.kdfIterations);
         }
         return this.kdfIterations;
+    }
+
+    async getEmailVerified(): Promise<boolean> {
+        if (this.emailVerified == null) {
+            this.emailVerified = await this.storageService.get<boolean>(Keys.emailVerified);
+        }
+        return this.emailVerified;
     }
 
     async clear(): Promise<any> {
