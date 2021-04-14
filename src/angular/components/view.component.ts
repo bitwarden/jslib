@@ -29,6 +29,7 @@ import { CipherView } from '../../models/view/cipherView';
 import { FieldView } from '../../models/view/fieldView';
 import { LoginUriView } from '../../models/view/loginUriView';
 import { BroadcasterService } from '../services/broadcaster.service';
+import { CipherRepromptType } from '../../enums/cipherRepromptType';
 
 const BroadcasterSubscriptionId = 'ViewComponent';
 
@@ -331,7 +332,7 @@ export class ViewComponent implements OnDestroy, OnInit {
     }
 
     protected async promptPassword() {
-        if (!this.cipher.reprompt || this.passwordReprompted) {
+        if (this.cipher.reprompt === CipherRepromptType.None || this.passwordReprompted) {
             return true;
         }
 
