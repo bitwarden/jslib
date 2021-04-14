@@ -187,7 +187,6 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         if (this.onSuccessfulLogin != null) {
             this.onSuccessfulLogin();
         }
-        this.platformUtilsService.eventTrack('Logged In From Two-step');
         if (response.resetMasterPassword) {
             this.successRoute = 'set-password';
         }

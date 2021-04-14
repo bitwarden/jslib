@@ -2,8 +2,11 @@ import { SendData } from '../models/data/sendData';
 
 import { SendRequest } from '../models/request/sendRequest';
 
+import { ErrorResponse } from '../models/response/errorResponse';
 import { SendResponse } from '../models/response/sendResponse';
 
+import { CipherArrayBuffer } from '../models/domain/cipherArrayBuffer';
+import { CipherString } from '../models/domain/cipherString';
 import { Send } from '../models/domain/send';
 import { SendFile } from '../models/domain/sendFile';
 import { SendText } from '../models/domain/sendText';
@@ -24,8 +27,6 @@ import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
 import { Utils } from '../misc/utils';
-import { CipherString } from '../models/domain';
-import { ErrorResponse } from '../models/response';
 
 const Keys = {
     sendsPrefix: 'sends_',
@@ -44,8 +45,8 @@ export class SendService implements SendServiceAbstraction {
     }
 
     async encrypt(model: SendView, file: File | ArrayBuffer, password: string,
-        key?: SymmetricCryptoKey): Promise<[Send, ArrayBuffer]> {
-        let fileData: ArrayBuffer = null;
+        key?: SymmetricCryptoKey): Promise<[Send, CipherArrayBuffer]> {
+        let fileData: CipherArrayBuffer = null;
         const send = new Send();
         send.id = model.id;
         send.type = model.type;
@@ -131,8 +132,8 @@ export class SendService implements SendServiceAbstraction {
         return this.decryptedSendCache;
     }
 
-    async saveWithServer(sendData: [Send, ArrayBuffer]): Promise<any> {
-        const request = new SendRequest(sendData[0], sendData[1]?.byteLength);
+    async saveWithServer(sendData: [Send, CipherArrayBuffer]): Promise<any> {
+        const request = new SendRequest(sendData[0], sendData[1]?.buffer.byteLength);
         let response: SendResponse;
         if (sendData[0].id == null) {
             if (sendData[0].type === SendType.Text) {
@@ -168,17 +169,17 @@ export class SendService implements SendServiceAbstraction {
      * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
      * This method still exists for backward compatibility with old server versions.
      */
-    async legacyServerSendFileUpload(sendData: [Send, ArrayBuffer], request: SendRequest): Promise<SendResponse>
+    async legacyServerSendFileUpload(sendData: [Send, CipherArrayBuffer], request: SendRequest): Promise<SendResponse>
     {
         const fd = new FormData();
         try {
-            const blob = new Blob([sendData[1]], { type: 'application/octet-stream' });
+            const blob = new Blob([sendData[1].buffer], { type: 'application/octet-stream' });
             fd.append('model', JSON.stringify(request));
             fd.append('data', blob, sendData[0].file.fileName.encryptedString);
         } catch (e) {
             if (Utils.isNode && !Utils.isBrowser) {
                 fd.append('model', JSON.stringify(request));
-                fd.append('data', Buffer.from(sendData[1]) as any, {
+                fd.append('data', Buffer.from(sendData[1].buffer) as any, {
                     filepath: sendData[0].file.fileName.encryptedString,
                     contentType: 'application/octet-stream',
                 } as any);
@@ -256,7 +257,7 @@ export class SendService implements SendServiceAbstraction {
         await this.upsert(data);
     }
 
-    private parseFile(send: Send, file: File, key: SymmetricCryptoKey): Promise<ArrayBuffer> {
+    private parseFile(send: Send, file: File, key: SymmetricCryptoKey): Promise<CipherArrayBuffer> {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsArrayBuffer(file);
@@ -276,7 +277,7 @@ export class SendService implements SendServiceAbstraction {
     }
 
     private async encryptFileData(fileName: string, data: ArrayBuffer,
-        key: SymmetricCryptoKey): Promise<[CipherString, ArrayBuffer]> {
+        key: SymmetricCryptoKey): Promise<[CipherString, CipherArrayBuffer]> {
         const encFileName = await this.cryptoService.encrypt(fileName, key);
         const encFileData = await this.cryptoService.encryptToBytes(data, key);
         return [encFileName, encFileData];

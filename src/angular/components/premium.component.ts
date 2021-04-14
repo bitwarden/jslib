@@ -31,7 +31,6 @@ export class PremiumComponent implements OnInit {
         const confirmed = await this.platformUtilsService.showDialog(this.i18nService.t('premiumPurchaseAlert'),
             this.i18nService.t('premiumPurchase'), this.i18nService.t('yes'), this.i18nService.t('cancel'));
         if (confirmed) {
-            this.platformUtilsService.eventTrack('Clicked Purchase Premium');
             this.platformUtilsService.launchUri('https://vault.bitwarden.com/#/?premium=purchase');
         }
     }
@@ -40,7 +39,6 @@ export class PremiumComponent implements OnInit {
         const confirmed = await this.platformUtilsService.showDialog(this.i18nService.t('premiumManageAlert'),
             this.i18nService.t('premiumManage'), this.i18nService.t('yes'), this.i18nService.t('cancel'));
         if (confirmed) {
-            this.platformUtilsService.eventTrack('Clicked Manage Membership');
             this.platformUtilsService.launchUri('https://vault.bitwarden.com/#/?premium=manage');
         }
     }

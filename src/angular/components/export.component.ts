@@ -46,7 +46,6 @@ export class ExportComponent {
             try {
                 this.formPromise = this.getExportData();
                 const data = await this.formPromise;
-                this.platformUtilsService.eventTrack('Exported Data');
                 this.downloadFile(data);
                 this.saved();
                 await this.collectEvent();
@@ -74,7 +73,6 @@ export class ExportComponent {
     }
 
     togglePassword() {
-        this.platformUtilsService.eventTrack('Toggled Master Password on Export');
         this.showPassword = !this.showPassword;
         document.getElementById('masterPassword').focus();
     }

@@ -18,7 +18,6 @@ export class PasswordHistoryComponent implements OnInit {
     }
 
     copy(password: string) {
-        this.platformUtilsService.eventTrack('Copied Password History');
         const copyOptions = this.win != null ? { window: this.win } : null;
         this.platformUtilsService.copyToClipboard(password, copyOptions);
         this.platformUtilsService.showToast('info', null,

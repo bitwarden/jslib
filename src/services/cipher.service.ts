@@ -7,6 +7,7 @@ import { CipherData } from '../models/data/cipherData';
 import { Attachment } from '../models/domain/attachment';
 import { Card } from '../models/domain/card';
 import { Cipher } from '../models/domain/cipher';
+import { CipherArrayBuffer } from '../models/domain/cipherArrayBuffer';
 import { CipherString } from '../models/domain/cipherString';
 import Domain from '../models/domain/domainBase';
 import { Field } from '../models/domain/field';
@@ -17,6 +18,7 @@ import { Password } from '../models/domain/password';
 import { SecureNote } from '../models/domain/secureNote';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
+import { AttachmentRequest } from '../models/request/attachmentRequest';
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
 import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
 import { CipherBulkRestoreRequest } from '../models/request/cipherBulkRestoreRequest';
@@ -51,7 +53,6 @@ import { ConstantsService } from './constants.service';
 
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
-import { AttachmentRequest } from '../models/request/attachmentRequest';
 
 const Keys = {
     ciphersPrefix: 'ciphers_',
@@ -624,7 +625,7 @@ export class CipherService implements CipherServiceAbstraction {
         const request: AttachmentRequest = {
             key: dataEncKey[1].encryptedString,
             fileName: encFileName.encryptedString,
-            fileSize: encData.byteLength,
+            fileSize: encData.buffer.byteLength,
             adminRequest: admin,
         };
 
@@ -632,7 +633,7 @@ export class CipherService implements CipherServiceAbstraction {
         try {
             const uploadDataResponse = await this.apiService.postCipherAttachment(cipher.id, request);
             response = admin ? uploadDataResponse.cipherMiniResponse : uploadDataResponse.cipherResponse;
-            await this.fileUploadService.uploadCipherAttachment(admin, uploadDataResponse, filename, data);
+            await this.fileUploadService.uploadCipherAttachment(admin, uploadDataResponse, filename, encData);
         } catch (e) {
             if (e instanceof ErrorResponse && (e as ErrorResponse).statusCode === 404 || (e as ErrorResponse).statusCode === 405) {
                 response = await this.legacyServerAttachmentFileUpload(admin, cipher.id, encFileName, encData, dataEncKey[1]);
@@ -656,16 +657,16 @@ export class CipherService implements CipherServiceAbstraction {
      * This method still exists for backward compatibility with old server versions.
      */
     async legacyServerAttachmentFileUpload(admin: boolean, cipherId: string, encFileName: CipherString,
-        encData: ArrayBuffer, key: CipherString) {
+        encData: CipherArrayBuffer, key: CipherString) {
         const fd = new FormData();
         try {
-            const blob = new Blob([encData], { type: 'application/octet-stream' });
+            const blob = new Blob([encData.buffer], { type: 'application/octet-stream' });
             fd.append('key', key.encryptedString);
             fd.append('data', blob, encFileName.encryptedString);
         } catch (e) {
             if (Utils.isNode && !Utils.isBrowser) {
                 fd.append('key', key.encryptedString);
-                fd.append('data', Buffer.from(encData) as any, {
+                fd.append('data', Buffer.from(encData.buffer) as any, {
                     filepath: encFileName.encryptedString,
                     contentType: 'application/octet-stream',
                 } as any);
@@ -971,13 +972,13 @@ export class CipherService implements CipherServiceAbstraction {
 
         const fd = new FormData();
         try {
-            const blob = new Blob([encData], { type: 'application/octet-stream' });
+            const blob = new Blob([encData.buffer], { type: 'application/octet-stream' });
             fd.append('key', dataEncKey[1].encryptedString);
             fd.append('data', blob, encFileName.encryptedString);
         } catch (e) {
             if (Utils.isNode && !Utils.isBrowser) {
                 fd.append('key', dataEncKey[1].encryptedString);
-                fd.append('data', Buffer.from(encData) as any, {
+                fd.append('data', Buffer.from(encData.buffer) as any, {
                     filepath: encFileName.encryptedString,
                     contentType: 'application/octet-stream',
                 } as any);

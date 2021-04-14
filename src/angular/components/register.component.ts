@@ -138,14 +138,12 @@ export class RegisterComponent {
         try {
             this.formPromise = this.apiService.postRegister(request);
             await this.formPromise;
-            this.platformUtilsService.eventTrack('Registered');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('newAccountCreated'));
             this.router.navigate([this.successRoute], { queryParams: { email: this.email } });
         } catch { }
     }
 
     togglePassword(confirmField: boolean) {
-        this.platformUtilsService.eventTrack('Toggled Master Password on Register');
         this.showPassword = !this.showPassword;
         document.getElementById(confirmField ? 'masterPasswordRetype' : 'masterPassword').focus();
     }

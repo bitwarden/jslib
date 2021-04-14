@@ -152,7 +152,6 @@ export class ViewComponent implements OnDestroy, OnInit {
 
         try {
             await this.deleteCipher();
-            this.platformUtilsService.eventTrack((this.cipher.isDeleted ? 'Permanently ' : '') + 'Deleted Cipher');
             this.platformUtilsService.showToast('success', null,
                 this.i18nService.t(this.cipher.isDeleted ? 'permanentlyDeletedItem' : 'deletedItem'));
             this.onDeletedCipher.emit(this.cipher);
@@ -175,7 +174,6 @@ export class ViewComponent implements OnDestroy, OnInit {
 
         try {
             await this.restoreCipher();
-            this.platformUtilsService.eventTrack('Restored Cipher');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('restoredItem'));
             this.onRestoredCipher.emit(this.cipher);
         } catch { }
@@ -188,7 +186,6 @@ export class ViewComponent implements OnDestroy, OnInit {
             return;
         }
 
-        this.platformUtilsService.eventTrack('Toggled Password');
         this.showPassword = !this.showPassword;
         if (this.showPassword) {
             this.eventService.collect(EventType.Cipher_ClientToggledPasswordVisible, this.cipherId);
@@ -200,7 +197,6 @@ export class ViewComponent implements OnDestroy, OnInit {
             return;
         }
 
-        this.platformUtilsService.eventTrack('Toggled Card Number');
         this.showCardNumber = !this.showCardNumber;
         if (this.showCardNumber) {
             this.eventService.collect(EventType.Cipher_ClientToggledCardCodeVisible, this.cipherId);
@@ -212,7 +208,6 @@ export class ViewComponent implements OnDestroy, OnInit {
             return;
         }
 
-        this.platformUtilsService.eventTrack('Toggled Card Code');
         this.showCardCode = !this.showCardCode;
         if (this.showCardCode) {
             this.eventService.collect(EventType.Cipher_ClientToggledCardCodeVisible, this.cipherId);
@@ -224,7 +219,6 @@ export class ViewComponent implements OnDestroy, OnInit {
             return;
         }
 
-        this.platformUtilsService.eventTrack('Check Password');
         this.checkPasswordPromise = this.auditService.passwordLeaked(this.cipher.login.password);
         const matches = await this.checkPasswordPromise;
 
@@ -257,7 +251,6 @@ export class ViewComponent implements OnDestroy, OnInit {
             this.cipherService.updateLastLaunchedDate(cipherId);
         }
 
-        this.platformUtilsService.eventTrack('Launched Login URI');
         this.platformUtilsService.launchUri(uri.launchUri);
     }
 
@@ -270,7 +263,6 @@ export class ViewComponent implements OnDestroy, OnInit {
             return;
         }
 
-        this.platformUtilsService.eventTrack('Copied ' + aType);
         const copyOptions = this.win != null ? { window: this.win } : null;
         this.platformUtilsService.copyToClipboard(value, copyOptions);
         this.platformUtilsService.showToast('info', null,

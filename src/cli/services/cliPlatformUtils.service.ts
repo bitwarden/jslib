@@ -72,10 +72,6 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
         return false;
     }
 
-    analyticsId() {
-        return null as string;
-    }
-
     isViewOpen() {
         return Promise.resolve(false);
     }
@@ -115,10 +111,6 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
 
     showDialog(text: string, title?: string, confirmText?: string, cancelText?: string, type?: string):
         Promise<boolean> {
-        throw new Error('Not implemented.');
-    }
-
-    eventTrack(action: string, label?: string, options?: any) {
         throw new Error('Not implemented.');
     }
 

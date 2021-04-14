@@ -12,7 +12,6 @@ export abstract class PlatformUtilsService {
     isSafari: () => boolean;
     isIE: () => boolean;
     isMacAppStore: () => boolean;
-    analyticsId: () => string;
     isViewOpen: () => Promise<boolean>;
     /**
      * @deprecated This only ever returns null. Pull from your platform's storage using ConstantsService.vaultTimeoutKey
@@ -27,7 +26,6 @@ export abstract class PlatformUtilsService {
         options?: any) => void;
     showDialog: (body: string, title?: string, confirmText?: string, cancelText?: string,
         type?: string, bodyIsHtml?: boolean) => Promise<boolean>;
-    eventTrack: (action: string, label?: string, options?: any) => void;
     isDev: () => boolean;
     isSelfHost: () => boolean;
     copyToClipboard: (text: string, options?: any) => void;

@@ -23,7 +23,6 @@ export class PasswordGeneratorHistoryComponent implements OnInit {
     }
 
     copy(password: string) {
-        this.platformUtilsService.eventTrack('Copied Historical Password');
         const copyOptions = this.win != null ? { window: this.win } : null;
         this.platformUtilsService.copyToClipboard(password, copyOptions);
         this.platformUtilsService.showToast('info', null,
