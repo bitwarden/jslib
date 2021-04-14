@@ -41,6 +41,7 @@ import { ApiService } from '../abstractions/api.service';
 import { CipherService as CipherServiceAbstraction } from '../abstractions/cipher.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { I18nService } from '../abstractions/i18n.service';
+import { LogService } from '../abstractions/log.service';
 import { SearchService } from '../abstractions/search.service';
 import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
@@ -65,6 +66,7 @@ const DomainMatchBlacklist = new Map<string, Set<string>>([
 export class CipherService implements CipherServiceAbstraction {
     // tslint:disable-next-line
     _decryptedCipherCache: CipherView[];
+    workerThreshold: number = 250;
 
     private sortedCiphersCache: SortedCiphersCache = new SortedCiphersCache(this.sortCiphersByLastUsed);
 
@@ -72,7 +74,7 @@ export class CipherService implements CipherServiceAbstraction {
         private settingsService: SettingsService, private apiService: ApiService,
         private storageService: StorageService, private i18nService: I18nService,
         private searchService: () => SearchService, private webWorkerService: WebWorkerService,
-        private secureStorageService: StorageService) {
+        private secureStorageService: StorageService, private consoleLogService: LogService) {
     }
 
     get decryptedCipherCache() {
@@ -302,15 +304,41 @@ export class CipherService implements CipherServiceAbstraction {
         }
 
         const ciphers = await this.getAll();
-        const userId = await this.userService.getUserId();
-        const cipherData = ciphers.map(c => c.toCipherData(userId));
 
-        const decryptedCiphers = await this.decryptBulk('getAllDecrypted', cipherData);
+        this.consoleLogService.time('getAllDecrypted');
+        let decryptedCiphers;
+        if (ciphers.length > this.workerThreshold) {
+            this.consoleLogService.info('getAllDecrypted started using worker');
+            const userId = await this.userService.getUserId();
+            const cipherData = ciphers.map(c => c.toCipherData(userId));
+            decryptedCiphers = await this.decryptManyCiphersWithWorker('getAllDecrypted', cipherData);
+        } else {
+            this.consoleLogService.info('getAllDecrypted started on main thread');
+            decryptedCiphers = await this.decryptManyCiphers(ciphers);
+        }
+        this.consoleLogService.timeEnd('getAllDecrypted');
+
         this.decryptedCipherCache = decryptedCiphers.sort(this.getLocaleSortingFunction());
         return this.decryptedCipherCache;
     }
 
-    async decryptBulk(workerName: string, cipherData: CipherData[]): Promise<CipherView[]> {
+    async decryptManyCiphers(ciphers: Cipher[]) {
+        const decryptedCiphers: CipherView[] = [];
+        const hasKey = await this.cryptoService.hasKey();
+        if (!hasKey) {
+            throw new Error('No key.');
+        }
+
+        const promises: any[] = [];
+        ciphers.forEach(cipher => {
+            promises.push(cipher.decrypt().then(c => decryptedCiphers.push(c)));
+        });
+
+        await Promise.all(promises);
+        return decryptedCiphers;
+    }
+
+    async decryptManyCiphersWithWorker(workerName: string, cipherData: CipherData[]): Promise<CipherView[]> {
         const cryptoKeys = ConstantsService.cryptoKeys;
         const key = await this.secureStorageService.get<string>(cryptoKeys.key);
         const encKey = await this.storageService.get<string>(cryptoKeys.encKey);
@@ -468,10 +496,22 @@ export class CipherService implements CipherServiceAbstraction {
     async getAllFromApiForOrganization(organizationId: string): Promise<CipherView[]> {
         const ciphersResponse = await this.apiService.getCiphersOrganization(organizationId);
         if (ciphersResponse != null && ciphersResponse.data != null && ciphersResponse.data.length) {
-            const cipherData: CipherData[] = ciphersResponse.data.map(r => new CipherData(r));
-            const decCiphers = await this.decryptBulk(organizationId, cipherData);
-            decCiphers.sort(this.getLocaleSortingFunction());
-            return decCiphers;
+            const consoleLogKey = 'getAllFromApiForOrganization (' + organizationId + ')';
+            this.consoleLogService.time(consoleLogKey);
+            let decryptedCiphers;
+            if (ciphersResponse.data.length > this.workerThreshold) {
+                this.consoleLogService.info('getAllFromApiForOrganization started using worker');
+                const cipherData: CipherData[] = ciphersResponse.data.map(r => new CipherData(r));
+                decryptedCiphers = await this.decryptManyCiphersWithWorker(organizationId, cipherData);
+            } else {
+                this.consoleLogService.info('getAllFromApiForOrganization started on main thread');
+                const ciphers: Cipher[] = ciphersResponse.data.map(r => new Cipher(new CipherData(r)));
+                decryptedCiphers = await this.decryptManyCiphers(ciphers);
+            }
+            this.consoleLogService.timeEnd(consoleLogKey);
+
+            decryptedCiphers.sort(this.getLocaleSortingFunction());
+            return decryptedCiphers;
         } else {
             return [];
         }
