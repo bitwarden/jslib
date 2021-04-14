@@ -631,7 +631,7 @@ export class CipherService implements CipherServiceAbstraction {
         try {
             const uploadDataResponse = await this.apiService.postCipherAttachment(cipher.id, request);
             response = admin ? uploadDataResponse.cipherMiniResponse : uploadDataResponse.cipherResponse;
-            await this.fileUploadService.uploadCipherAttachment(admin, uploadDataResponse, filename, data);
+            await this.fileUploadService.uploadCipherAttachment(admin, uploadDataResponse, filename, encData);
         } catch (e) {
             if (e instanceof ErrorResponse && (e as ErrorResponse).statusCode === 404 || (e as ErrorResponse).statusCode === 405) {
                 response = await this.legacyServerAttachmentFileUpload(admin, cipher.id, encFileName, encData, dataEncKey[1]);
