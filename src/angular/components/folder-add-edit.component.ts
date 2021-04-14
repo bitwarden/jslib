@@ -42,7 +42,6 @@ export class FolderAddEditComponent implements OnInit {
             const folder = await this.folderService.encrypt(this.folder);
             this.formPromise = this.folderService.saveWithServer(folder);
             await this.formPromise;
-            this.platformUtilsService.eventTrack(this.editMode ? 'Edited Folder' : 'Added Folder');
             this.platformUtilsService.showToast('success', null,
                 this.i18nService.t(this.editMode ? 'editedFolder' : 'addedFolder'));
             this.onSavedFolder.emit(this.folder);
@@ -63,7 +62,6 @@ export class FolderAddEditComponent implements OnInit {
         try {
             this.deletePromise = this.folderService.deleteWithServer(this.folder.id);
             await this.deletePromise;
-            this.platformUtilsService.eventTrack('Deleted Folder');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedFolder'));
             this.onDeletedFolder.emit(this.folder);
         } catch { }

@@ -34,14 +34,12 @@ export class PasswordGeneratorComponent implements OnInit {
         this.avoidAmbiguous = !this.options.ambiguous;
         this.options.type = this.options.type === 'passphrase' ? 'passphrase' : 'password';
         this.password = await this.passwordGenerationService.generatePassword(this.options);
-        this.platformUtilsService.eventTrack('Generated Password');
         await this.passwordGenerationService.addHistory(this.password);
     }
 
     async sliderChanged() {
         this.saveOptions(false);
         await this.passwordGenerationService.addHistory(this.password);
-        this.platformUtilsService.eventTrack('Regenerated Password');
     }
 
     async sliderInput() {
@@ -61,11 +59,9 @@ export class PasswordGeneratorComponent implements OnInit {
     async regenerate() {
         this.password = await this.passwordGenerationService.generatePassword(this.options);
         await this.passwordGenerationService.addHistory(this.password);
-        this.platformUtilsService.eventTrack('Regenerated Password');
     }
 
     copy() {
-        this.platformUtilsService.eventTrack('Copied Generated Password');
         const copyOptions = this.win != null ? { window: this.win } : null;
         this.platformUtilsService.copyToClipboard(this.password, copyOptions);
         this.platformUtilsService.showToast('info', null,
@@ -73,7 +69,6 @@ export class PasswordGeneratorComponent implements OnInit {
     }
 
     select() {
-        this.platformUtilsService.eventTrack('Selected Generated Password');
         this.onSelected.emit(this.password);
     }
 

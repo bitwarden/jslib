@@ -164,7 +164,6 @@ export class LockComponent implements OnInit {
     }
 
     togglePassword() {
-        this.platformUtilsService.eventTrack('Toggled Master Password on Unlock');
         this.showPassword = !this.showPassword;
         document.getElementById(this.pinLock ? 'pin' : 'masterPassword').focus();
     }

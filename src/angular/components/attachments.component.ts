@@ -69,7 +69,6 @@ export class AttachmentsComponent implements OnInit {
             this.formPromise = this.saveCipherAttachment(files[0]);
             this.cipherDomain = await this.formPromise;
             this.cipher = await this.cipherDomain.decrypt();
-            this.platformUtilsService.eventTrack('Added Attachment');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('attachmentSaved'));
             this.onUploadedAttachment.emit();
         } catch { }
@@ -96,7 +95,6 @@ export class AttachmentsComponent implements OnInit {
         try {
             this.deletePromises[attachment.id] = this.deleteCipherAttachment(attachment.id);
             await this.deletePromises[attachment.id];
-            this.platformUtilsService.eventTrack('Deleted Attachment');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedAttachment'));
             const i = this.cipher.attachments.indexOf(attachment);
             if (i > -1) {
@@ -219,7 +217,6 @@ export class AttachmentsComponent implements OnInit {
                         }
                     }
 
-                    this.platformUtilsService.eventTrack('Reuploaded Attachment');
                     this.platformUtilsService.showToast('success', null, this.i18nService.t('attachmentSaved'));
                     this.onReuploadedAttachment.emit();
                 } catch (e) {
