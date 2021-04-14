@@ -99,7 +99,6 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
     }
 
     togglePassword(confirmField: boolean) {
-        this.platformUtilsService.eventTrack('Toggled Master Password on Set Password');
         this.showPassword = !this.showPassword;
         document.getElementById(confirmField ? 'masterPasswordRetype' : 'masterPassword').focus();
     }

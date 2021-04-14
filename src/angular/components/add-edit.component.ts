@@ -286,7 +286,6 @@ export class AddEditComponent implements OnInit {
             this.formPromise = this.saveCipher(cipher);
             await this.formPromise;
             this.cipher.id = cipher.id;
-            this.platformUtilsService.eventTrack(this.editMode && !this.cloneMode ? 'Edited Cipher' : 'Added Cipher');
             this.platformUtilsService.showToast('success', null,
                 this.i18nService.t(this.editMode && !this.cloneMode ? 'editedItem' : 'addedItem'));
             this.onSavedCipher.emit(this.cipher);
@@ -369,7 +368,6 @@ export class AddEditComponent implements OnInit {
         try {
             this.deletePromise = this.deleteCipher();
             await this.deletePromise;
-            this.platformUtilsService.eventTrack((this.cipher.isDeleted ? 'Permanently ' : '') + 'Deleted Cipher');
             this.platformUtilsService.showToast('success', null,
                 this.i18nService.t(this.cipher.isDeleted ? 'permanentlyDeletedItem' : 'deletedItem'));
             this.onDeletedCipher.emit(this.cipher);
@@ -394,7 +392,6 @@ export class AddEditComponent implements OnInit {
         try {
             this.restorePromise = this.restoreCipher();
             await this.restorePromise;
-            this.platformUtilsService.eventTrack('Restored Cipher');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('restoredItem'));
             this.onRestoredCipher.emit(this.cipher);
             this.messagingService.send('restoredCipher');
@@ -418,7 +415,6 @@ export class AddEditComponent implements OnInit {
     }
 
     togglePassword() {
-        this.platformUtilsService.eventTrack('Toggled Password on Edit');
         this.showPassword = !this.showPassword;
         document.getElementById('loginPassword').focus();
         if (this.editMode && this.showPassword) {
@@ -427,7 +423,6 @@ export class AddEditComponent implements OnInit {
     }
 
     toggleCardCode() {
-        this.platformUtilsService.eventTrack('Toggled CardCode on Edit');
         this.showCardCode = !this.showCardCode;
         document.getElementById('cardCode').focus();
         if (this.editMode && this.showCardCode) {
@@ -481,7 +476,6 @@ export class AddEditComponent implements OnInit {
             return;
         }
 
-        this.platformUtilsService.eventTrack('Check Password');
         this.checkPasswordPromise = this.auditService.passwordLeaked(this.cipher.login.password);
         const matches = await this.checkPasswordPromise;
         this.checkPasswordPromise = null;

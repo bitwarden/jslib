@@ -90,7 +90,6 @@ export class LoginComponent implements OnInit {
                 await this.storageService.remove(Keys.rememberedEmail);
             }
             if (response.twoFactor) {
-                this.platformUtilsService.eventTrack('Logged In To Two-step');
                 if (this.onSuccessfulLoginTwoFactorNavigate != null) {
                     this.onSuccessfulLoginTwoFactorNavigate();
                 } else {
@@ -102,7 +101,6 @@ export class LoginComponent implements OnInit {
                 if (this.onSuccessfulLogin != null) {
                     this.onSuccessfulLogin();
                 }
-                this.platformUtilsService.eventTrack('Logged In');
                 if (this.onSuccessfulLoginNavigate != null) {
                     this.onSuccessfulLoginNavigate();
                 } else {
@@ -113,7 +111,6 @@ export class LoginComponent implements OnInit {
     }
 
     togglePassword() {
-        this.platformUtilsService.eventTrack('Toggled Master Password on Login');
         this.showPassword = !this.showPassword;
         document.getElementById('masterPassword').focus();
     }

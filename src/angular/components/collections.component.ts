@@ -64,7 +64,6 @@ export class CollectionsComponent implements OnInit {
             this.formPromise = this.saveCollections();
             await this.formPromise;
             this.onSavedCollections.emit();
-            this.platformUtilsService.eventTrack('Edited Cipher Collections');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('editedItem'));
         } catch { }
     }

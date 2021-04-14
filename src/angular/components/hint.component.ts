@@ -31,7 +31,6 @@ export class HintComponent {
         try {
             this.formPromise = this.apiService.postPasswordHint(new PasswordHintRequest(this.email));
             await this.formPromise;
-            this.platformUtilsService.eventTrack('Requested Hint');
             this.platformUtilsService.showToast('success', null, this.i18nService.t('masterPassSent'));
             if (this.onSuccessfulSubmit != null) {
                 this.onSuccessfulSubmit();

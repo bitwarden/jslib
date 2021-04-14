@@ -16,14 +16,12 @@ import { MessagingService } from '../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StorageService } from '../../abstractions/storage.service';
 
-import { AnalyticsIds } from '../../misc/analytics';
 import { ElectronConstants } from '../electronConstants';
 
 export class ElectronPlatformUtilsService implements PlatformUtilsService {
     identityClientId: string;
 
     private deviceCache: DeviceType = null;
-    private analyticsIdCache: string = null;
 
     constructor(private i18nService: I18nService, private messagingService: MessagingService,
         private isDesktopApp: boolean, private storageService: StorageService) {
@@ -84,19 +82,6 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
 
     isMacAppStore(): boolean {
         return isMacAppStore();
-    }
-
-    analyticsId(): string {
-        if (!this.isDesktopApp) {
-            return null;
-        }
-
-        if (this.analyticsIdCache) {
-            return this.analyticsIdCache;
-        }
-
-        this.analyticsIdCache = (AnalyticsIds as any)[this.getDevice()];
-        return this.analyticsIdCache;
     }
 
     isViewOpen(): Promise<boolean> {
@@ -161,14 +146,6 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         });
 
         return Promise.resolve(result.response === 0);
-    }
-
-    eventTrack(action: string, label?: string, options?: any) {
-        this.messagingService.send('analyticsEventTrack', {
-            action: action,
-            label: label,
-            options: options,
-        });
     }
 
     isDev(): boolean {
