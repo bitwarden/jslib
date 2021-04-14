@@ -12,7 +12,7 @@ const workerApi: Worker = self as any;
 workerApi.addEventListener('message', async event => {
     if (event.data.type !== 'decryptAllRequest') {
         return;
-    };
+    }
     const decryptAllWorker = new CryptoWorker(event.data, workerApi);
     await decryptAllWorker.decryptAll();
 });
@@ -83,7 +83,7 @@ class CryptoWorker {
         await Promise.all(promises);
 
         const response = decryptedCiphers.map(c => JSON.stringify(c));
-        
+
         this.postMessage({ type: 'decryptAllResponse', ciphers: response });
     }
 

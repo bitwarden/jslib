@@ -55,7 +55,7 @@ export class WorkerLogService implements LogServiceAbstraction {
 
     time(label: string = 'default') {
         if (!this.timersMap.has(label)) {
-            this.timersMap.set(label, [performance.now(),0]);
+            this.timersMap.set(label, [performance.now(), 0]);
         }
     }
 

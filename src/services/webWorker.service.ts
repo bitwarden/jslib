@@ -1,13 +1,9 @@
-import { ConsoleLogService } from './consoleLog.service';
-
 import { WebWorkerService as WebWorkerServiceAbstraction } from '../abstractions/webWorker.service';
 
 import Worker from 'worker-loader!../workers/crypto.worker';
 
 export class WebWorkerService implements WebWorkerServiceAbstraction {
     workers = new Map<string, Worker>();
-
-    constructor() { }
 
     create(name: string) {
         const worker = new Worker();
@@ -22,7 +18,7 @@ export class WebWorkerService implements WebWorkerServiceAbstraction {
         }
 
         worker.postMessage({
-            type: 'clearCacheRequest'
+            type: 'clearCacheRequest',
         });
         return new Promise((resolve, reject) => {
             const terminateWorkerTimeout = setTimeout(() => {
