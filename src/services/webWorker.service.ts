@@ -27,12 +27,14 @@ export class WebWorkerService implements WebWorkerServiceAbstraction {
         return new Promise((resolve, reject) => {
             const terminateWorkerTimeout = setTimeout(() => {
                 worker.terminate();
+                this.workers.delete(name);
                 resolve();
             }, 500);
 
             worker.addEventListener('message', event => {
                 if (event.data.type === 'clearCacheResponse') {
                     worker.terminate();
+                    this.workers.delete(name);
                     clearTimeout(terminateWorkerTimeout);
                     resolve();
                 }
