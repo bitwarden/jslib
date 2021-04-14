@@ -4,7 +4,9 @@ import { LogService } from '../abstractions/log.service';
 
 import { FileUploadType } from '../enums/fileUploadType';
 
-import { CipherString } from '../models/domain';
+import { CipherArrayBuffer } from '../models/domain/cipherArrayBuffer';
+import { CipherString } from '../models/domain/cipherString';
+
 import { AttachmentUploadDataResponse } from '../models/response/attachmentUploadDataResponse';
 import { SendFileUploadDataResponse } from '../models/response/sendFileUploadDataResponse';
 
@@ -20,7 +22,7 @@ export class FileUploadService implements FileUploadServiceAbstraction {
         this.bitwardenFileUploadService = new BitwardenFileUploadService(apiService);
     }
 
-    async uploadSendFile(uploadData: SendFileUploadDataResponse, fileName: CipherString, encryptedFileData: ArrayBuffer) {
+    async uploadSendFile(uploadData: SendFileUploadDataResponse, fileName: CipherString, encryptedFileData: CipherArrayBuffer) {
         try {
             switch (uploadData.fileUploadType) {
                 case FileUploadType.Direct:
@@ -45,7 +47,7 @@ export class FileUploadService implements FileUploadServiceAbstraction {
         }
     }
 
-    async uploadCipherAttachment(admin: boolean, uploadData: AttachmentUploadDataResponse, encryptedFileName: string, encryptedFileData: ArrayBuffer) {
+    async uploadCipherAttachment(admin: boolean, uploadData: AttachmentUploadDataResponse, encryptedFileName: string, encryptedFileData: CipherArrayBuffer) {
         const response = admin ? uploadData.cipherMiniResponse : uploadData.cipherResponse;
         try {
             switch (uploadData.fileUploadType) {

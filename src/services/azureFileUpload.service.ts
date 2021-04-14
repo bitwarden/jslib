@@ -2,30 +2,32 @@ import { LogService } from '../abstractions/log.service';
 
 import { Utils } from '../misc/utils';
 
+import { CipherArrayBuffer } from '../models/domain/cipherArrayBuffer';
+
 const MAX_SINGLE_BLOB_UPLOAD_SIZE = 256 * 1024 * 1024; // 256 MiB
 const MAX_BLOCKS_PER_BLOB = 50000;
 
 export class AzureFileUploadService {
     constructor(private logService: LogService) { }
 
-    async upload(url: string, data: ArrayBuffer, renewalCallback: () => Promise<string>) {
-        if (data.byteLength <= MAX_SINGLE_BLOB_UPLOAD_SIZE) {
+    async upload(url: string, data: CipherArrayBuffer, renewalCallback: () => Promise<string>) {
+        if (data.buffer.byteLength <= MAX_SINGLE_BLOB_UPLOAD_SIZE) {
             return await this.azureUploadBlob(url, data);
         } else {
             return await this.azureUploadBlocks(url, data, renewalCallback);
         }
     }
-    private async azureUploadBlob(url: string, data: ArrayBuffer) {
+    private async azureUploadBlob(url: string, data: CipherArrayBuffer) {
         const urlObject = Utils.getUrl(url);
         const headers = new Headers({
             'x-ms-date': new Date().toUTCString(),
             'x-ms-version': urlObject.searchParams.get('sv'),
-            'Content-Length': data.byteLength.toString(),
+            'Content-Length': data.buffer.byteLength.toString(),
             'x-ms-blob-type': 'BlockBlob',
         });
 
         const request = new Request(url, {
-            body: data,
+            body: data.buffer,
             cache: 'no-store',
             method: 'PUT',
             headers: headers,
@@ -37,11 +39,11 @@ export class AzureFileUploadService {
             throw new Error(`Failed to create Azure blob: ${blobResponse.status}`);
         }
     }
-    private async azureUploadBlocks(url: string, data: ArrayBuffer, renewalCallback: () => Promise<string>) {
+    private async azureUploadBlocks(url: string, data: CipherArrayBuffer, renewalCallback: () => Promise<string>) {
         const baseUrl = Utils.getUrl(url);
         const blockSize = this.getMaxBlockSize(baseUrl.searchParams.get('sv'));
         let blockIndex = 0;
-        const numBlocks = Math.ceil(data.byteLength / blockSize);
+        const numBlocks = Math.ceil(data.buffer.byteLength / blockSize);
         const blocksStaged: string[] = [];
 
         if (numBlocks > MAX_BLOCKS_PER_BLOB) {
@@ -56,7 +58,7 @@ export class AzureFileUploadService {
                 blockUrl.searchParams.append('comp', 'block');
                 blockUrl.searchParams.append('blockid', blockId);
                 const start = blockIndex * blockSize;
-                const blockData = data.slice(start, start + blockSize);
+                const blockData = data.buffer.slice(start, start + blockSize);
                 const blockHeaders = new Headers({
                     'x-ms-date': new Date().toUTCString(),
                     'x-ms-version': blockUrl.searchParams.get('sv'),
