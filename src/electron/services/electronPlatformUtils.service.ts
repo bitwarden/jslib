@@ -9,8 +9,6 @@ import {
     isMacAppStore,
 } from '../utils';
 
-import Swal from 'sweetalert2';
-
 import { DeviceType } from '../../enums/deviceType';
 
 import { I18nService } from '../../abstractions/i18n.service';
@@ -25,7 +23,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
 
     private deviceCache: DeviceType = null;
 
-    constructor(private i18nService: I18nService, private messagingService: MessagingService,
+    constructor(protected i18nService: I18nService, private messagingService: MessagingService,
         private isDesktopApp: boolean, private storageService: StorageService) {
         this.identityClientId = isDesktopApp ? 'desktop' : 'connector';
     }
