@@ -423,8 +423,8 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
 
-    async getSendFileDownloadData(send: SendAccessView, request: SendAccessRequest): Promise<SendFileDownloadDataResponse> {
-        const r = await this.send('POST', '/sends/' + send.id + '/access/file/' + send.file.id, request, false, true);
+    async getSendFileDownloadData(send: SendAccessView, request: SendAccessRequest, apiUrl?: string): Promise<SendFileDownloadDataResponse> {
+        const r = await this.send('POST', '/sends/' + send.id + '/access/file/' + send.file.id, request, false, true, apiUrl);
         return new SendFileDownloadDataResponse(r);
     }
 
