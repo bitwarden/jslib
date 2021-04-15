@@ -114,7 +114,7 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
         throw new Error('Not implemented.');
     }
 
-    showPasswordDialog(body: string, title: string, passwordValidation: (value: string) => Promise<boolean>):
+    showPasswordDialog(title: string, body: string, passwordValidation: (value: string) => Promise<boolean>):
         Promise<boolean> {
         throw new Error('Not implemented.');
     }

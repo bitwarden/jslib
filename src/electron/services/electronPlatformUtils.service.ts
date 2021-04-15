@@ -150,7 +150,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return Promise.resolve(result.response === 0);
     }
 
-    async showPasswordDialog(body: string, title: string, passwordValidation: (value: string) => Promise<boolean>):
+    async showPasswordDialog(title: string, body: string, passwordValidation: (value: string) => Promise<boolean>):
         Promise<boolean> {
         throw new Error('Not implemented.');
     }
