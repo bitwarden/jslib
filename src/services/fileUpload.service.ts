@@ -31,7 +31,7 @@ export class FileUploadService implements FileUploadServiceAbstraction {
                     break;
                 case FileUploadType.Azure:
                     const renewalCallback = async () => {
-                        const renewalResponse = await this.apiService.renewFileUploadUrl(uploadData.sendResponse.id,
+                        const renewalResponse = await this.apiService.renewSendFileUploadUrl(uploadData.sendResponse.id,
                             uploadData.sendResponse.file.id);
                         return renewalResponse.url;
                     };
