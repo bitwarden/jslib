@@ -427,7 +427,6 @@ export class AddEditComponent implements OnInit {
     }
 
     async toggleCardNumber() {
-        this.platformUtilsService.eventTrack('Toggled Card Number on Edit');
         this.showCardNumber = !this.showCardNumber;
         if (this.showCardNumber) {
             this.eventService.collect(EventType.Cipher_ClientToggledCardCodeVisible, this.cipherId);

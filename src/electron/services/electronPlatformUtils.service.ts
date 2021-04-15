@@ -9,6 +9,8 @@ import {
     isMacAppStore,
 } from '../utils';
 
+import Swal from 'sweetalert2';
+
 import { DeviceType } from '../../enums/deviceType';
 
 import { I18nService } from '../../abstractions/i18n.service';
@@ -146,6 +148,11 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         });
 
         return Promise.resolve(result.response === 0);
+    }
+
+    async showPasswordDialog(body: string, title: string, passwordValidation: (value: string) => Promise<boolean>):
+        Promise<boolean> {
+        throw new Error('Not implemented.');
     }
 
     isDev(): boolean {
