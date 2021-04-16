@@ -1,3 +1,4 @@
+import { CipherArrayBuffer } from '../models/domain/cipherArrayBuffer';
 import { CipherString } from '../models/domain/cipherString';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
@@ -40,7 +41,7 @@ export abstract class CryptoService {
     makeEncKey: (key: SymmetricCryptoKey) => Promise<[SymmetricCryptoKey, CipherString]>;
     remakeEncKey: (key: SymmetricCryptoKey, encKey?: SymmetricCryptoKey) => Promise<[SymmetricCryptoKey, CipherString]>;
     encrypt: (plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey) => Promise<CipherString>;
-    encryptToBytes: (plainValue: ArrayBuffer, key?: SymmetricCryptoKey) => Promise<ArrayBuffer>;
+    encryptToBytes: (plainValue: ArrayBuffer, key?: SymmetricCryptoKey) => Promise<CipherArrayBuffer>;
     rsaEncrypt: (data: ArrayBuffer, publicKey?: ArrayBuffer) => Promise<CipherString>;
     rsaDecrypt: (encValue: string) => Promise<ArrayBuffer>;
     decryptToBytes: (cipherString: CipherString, key?: SymmetricCryptoKey) => Promise<ArrayBuffer>;

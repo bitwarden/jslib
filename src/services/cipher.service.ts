@@ -7,6 +7,7 @@ import { CipherData } from '../models/data/cipherData';
 import { Attachment } from '../models/domain/attachment';
 import { Card } from '../models/domain/card';
 import { Cipher } from '../models/domain/cipher';
+import { CipherArrayBuffer } from '../models/domain/cipherArrayBuffer';
 import { CipherString } from '../models/domain/cipherString';
 import Domain from '../models/domain/domainBase';
 import { Field } from '../models/domain/field';
@@ -17,6 +18,7 @@ import { Password } from '../models/domain/password';
 import { SecureNote } from '../models/domain/secureNote';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
+import { AttachmentRequest } from '../models/request/attachmentRequest';
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
 import { CipherBulkMoveRequest } from '../models/request/cipherBulkMoveRequest';
 import { CipherBulkRestoreRequest } from '../models/request/cipherBulkRestoreRequest';
@@ -40,6 +42,7 @@ import { SortedCiphersCache } from '../models/domain/sortedCiphersCache';
 import { ApiService } from '../abstractions/api.service';
 import { CipherService as CipherServiceAbstraction } from '../abstractions/cipher.service';
 import { CryptoService } from '../abstractions/crypto.service';
+import { FileUploadService } from '../abstractions/fileUpload.service';
 import { I18nService } from '../abstractions/i18n.service';
 import { LogService } from '../abstractions/log.service';
 import { SearchService } from '../abstractions/search.service';
@@ -72,9 +75,10 @@ export class CipherService implements CipherServiceAbstraction {
 
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private settingsService: SettingsService, private apiService: ApiService,
-        private storageService: StorageService, private i18nService: I18nService,
-        private searchService: () => SearchService, private webWorkerService: WebWorkerService,
-        private secureStorageService: StorageService, private consoleLogService: LogService) {
+        private fileUploadService: FileUploadService, private storageService: StorageService,
+        private i18nService: I18nService, private searchService: () => SearchService,
+        private webWorkerService: WebWorkerService, private secureStorageService: StorageService,
+        private consoleLogService: LogService) {
     }
 
     get decryptedCipherCache() {
@@ -148,6 +152,7 @@ export class CipherService implements CipherServiceAbstraction {
         cipher.type = model.type;
         cipher.collectionIds = model.collectionIds;
         cipher.revisionDate = model.revisionDate;
+        cipher.reprompt = model.reprompt;
 
         if (key == null && cipher.organizationId != null) {
             key = await this.cryptoService.getOrgKey(cipher.organizationId);
@@ -690,15 +695,51 @@ export class CipherService implements CipherServiceAbstraction {
         const dataEncKey = await this.cryptoService.makeEncKey(key);
         const encData = await this.cryptoService.encryptToBytes(data, dataEncKey[0]);
 
+        const request: AttachmentRequest = {
+            key: dataEncKey[1].encryptedString,
+            fileName: encFileName.encryptedString,
+            fileSize: encData.buffer.byteLength,
+            adminRequest: admin,
+        };
+
+        let response: CipherResponse;
+        try {
+            const uploadDataResponse = await this.apiService.postCipherAttachment(cipher.id, request);
+            response = admin ? uploadDataResponse.cipherMiniResponse : uploadDataResponse.cipherResponse;
+            await this.fileUploadService.uploadCipherAttachment(admin, uploadDataResponse, filename, encData);
+        } catch (e) {
+            if (e instanceof ErrorResponse && (e as ErrorResponse).statusCode === 404 || (e as ErrorResponse).statusCode === 405) {
+                response = await this.legacyServerAttachmentFileUpload(admin, cipher.id, encFileName, encData, dataEncKey[1]);
+            } else if (e instanceof ErrorResponse) {
+                throw new Error((e as ErrorResponse).getSingleMessage());
+            } else {
+                throw e;
+            }
+        }
+
+        const userId = await this.userService.getUserId();
+        const cData = new CipherData(response, userId, cipher.collectionIds);
+        if (!admin) {
+            await this.upsert(cData);
+        }
+        return new Cipher(cData);
+    }
+
+    /**
+     * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
+     * This method still exists for backward compatibility with old server versions.
+     */
+    async legacyServerAttachmentFileUpload(admin: boolean, cipherId: string, encFileName: CipherString,
+        encData: CipherArrayBuffer, key: CipherString) {
         const fd = new FormData();
         try {
-            const blob = new Blob([encData], { type: 'application/octet-stream' });
-            fd.append('key', dataEncKey[1].encryptedString);
+            const blob = new Blob([encData.buffer], { type: 'application/octet-stream' });
+            fd.append('key', key.encryptedString);
             fd.append('data', blob, encFileName.encryptedString);
         } catch (e) {
             if (Utils.isNode && !Utils.isBrowser) {
-                fd.append('key', dataEncKey[1].encryptedString);
-                fd.append('data', Buffer.from(encData) as any, {
+                fd.append('key', key.encryptedString);
+                fd.append('data', Buffer.from(encData.buffer) as any, {
                     filepath: encFileName.encryptedString,
                     contentType: 'application/octet-stream',
                 } as any);
@@ -710,20 +751,15 @@ export class CipherService implements CipherServiceAbstraction {
         let response: CipherResponse;
         try {
             if (admin) {
-                response = await this.apiService.postCipherAttachmentAdmin(cipher.id, fd);
+                response = await this.apiService.postCipherAttachmentAdminLegacy(cipherId, fd);
             } else {
-                response = await this.apiService.postCipherAttachment(cipher.id, fd);
+                response = await this.apiService.postCipherAttachmentLegacy(cipherId, fd);
             }
         } catch (e) {
             throw new Error((e as ErrorResponse).getSingleMessage());
         }
 
-        const userId = await this.userService.getUserId();
-        const cData = new CipherData(response, userId, cipher.collectionIds);
-        if (!admin) {
-            await this.upsert(cData);
-        }
-        return new Cipher(cData);
+        return response;
     }
 
     async saveCollectionsWithServer(cipher: Cipher): Promise<any> {
@@ -1009,13 +1045,13 @@ export class CipherService implements CipherServiceAbstraction {
 
         const fd = new FormData();
         try {
-            const blob = new Blob([encData], { type: 'application/octet-stream' });
+            const blob = new Blob([encData.buffer], { type: 'application/octet-stream' });
             fd.append('key', dataEncKey[1].encryptedString);
             fd.append('data', blob, encFileName.encryptedString);
         } catch (e) {
             if (Utils.isNode && !Utils.isBrowser) {
                 fd.append('key', dataEncKey[1].encryptedString);
-                fd.append('data', Buffer.from(encData) as any, {
+                fd.append('data', Buffer.from(encData.buffer) as any, {
                     filepath: encFileName.encryptedString,
                     contentType: 'application/octet-stream',
                 } as any);

@@ -3,6 +3,7 @@ import * as bigInt from 'big-integer';
 import { EncryptionType } from '../enums/encryptionType';
 import { KdfType } from '../enums/kdfType';
 
+import { CipherArrayBuffer } from '../models/domain/cipherArrayBuffer';
 import { CipherString } from '../models/domain/cipherString';
 import { EncryptedObject } from '../models/domain/encryptedObject';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
@@ -400,7 +401,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         return new CipherString(encObj.key.encType, data, iv, mac);
     }
 
-    async encryptToBytes(plainValue: ArrayBuffer, key?: SymmetricCryptoKey): Promise<ArrayBuffer> {
+    async encryptToBytes(plainValue: ArrayBuffer, key?: SymmetricCryptoKey): Promise<CipherArrayBuffer> {
         const encValue = await this.aesEncrypt(plainValue, key);
         let macLen = 0;
         if (encValue.mac != null) {
@@ -415,7 +416,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
 
         encBytes.set(new Uint8Array(encValue.data), 1 + encValue.iv.byteLength + macLen);
-        return encBytes.buffer;
+        return new CipherArrayBuffer(encBytes.buffer);
     }
 
     async rsaEncrypt(data: ArrayBuffer, publicKey?: ArrayBuffer): Promise<CipherString> {

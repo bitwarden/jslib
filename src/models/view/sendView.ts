@@ -25,6 +25,7 @@ export class SendView extends View {
     expirationDate: Date = null;
     password: string = null;
     disabled: boolean = false;
+    hideEmail: boolean = false;
 
     constructor(s?: Send) {
         super();
@@ -42,6 +43,7 @@ export class SendView extends View {
         this.expirationDate = s.expirationDate;
         this.disabled = s.disabled;
         this.password = s.password;
+        this.hideEmail = s.hideEmail;
     }
 
     get urlB64Key(): string {

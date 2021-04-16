@@ -52,7 +52,6 @@ export class EnvironmentComponent {
         this.notificationsUrl = resUrls.notifications;
         this.enterpriseUrl = resUrls.enterprise;
 
-        this.platformUtilsService.eventTrack('Set Environment URLs');
         this.platformUtilsService.showToast('success', null, this.i18nService.t('environmentSaved'));
         this.saved();
     }

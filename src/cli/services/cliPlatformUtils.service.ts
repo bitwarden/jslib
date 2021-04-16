@@ -72,10 +72,6 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
         return false;
     }
 
-    analyticsId() {
-        return null as string;
-    }
-
     isViewOpen() {
         return Promise.resolve(false);
     }
@@ -96,11 +92,11 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
         throw new Error('Not implemented.');
     }
 
-    getApplicationVersion(): string {
-        return this.packageJson.version;
+    getApplicationVersion(): Promise<string> {
+        return Promise.resolve(this.packageJson.version);
     }
 
-    supportsU2f(win: Window) {
+    supportsWebAuthn(win: Window) {
         return false;
     }
 
@@ -118,7 +114,8 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
         throw new Error('Not implemented.');
     }
 
-    eventTrack(action: string, label?: string, options?: any) {
+    showPasswordDialog(title: string, body: string, passwordValidation: (value: string) => Promise<boolean>):
+        Promise<boolean> {
         throw new Error('Not implemented.');
     }
 
@@ -147,7 +144,7 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     }
 
     getDefaultSystemTheme() {
-        return 'light' as 'light' | 'dark';
+        return Promise.resolve('light' as 'light' | 'dark');
     }
 
     onDefaultSystemThemeChange() {

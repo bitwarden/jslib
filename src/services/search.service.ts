@@ -3,6 +3,7 @@ import * as lunr from 'lunr';
 import { CipherView } from '../models/view/cipherView';
 
 import { CipherService } from '../abstractions/cipher.service';
+import { I18nService } from '../abstractions/i18n.service';
 import { LogService } from '../abstractions/log.service';
 import { SearchService as SearchServiceAbstraction } from '../abstractions/search.service';
 
@@ -14,8 +15,13 @@ import { SendView } from '../models/view/sendView';
 export class SearchService implements SearchServiceAbstraction {
     private indexing = false;
     private index: lunr.Index = null;
+    private searchableMinLength = 2;
 
-    constructor(private cipherService: CipherService, private logService: LogService) {
+    constructor(private cipherService: CipherService, private logService: LogService,
+        private i18nService: I18nService) {
+        if (['zh-CN', 'zh-TW'].indexOf(i18nService.locale) !== -1) {
+            this.searchableMinLength = 1;
+        }
     }
 
     clearIndex(): void {
@@ -23,12 +29,12 @@ export class SearchService implements SearchServiceAbstraction {
     }
 
     isSearchable(query: string): boolean {
-        const notSearchable = query == null || (this.index == null && query.length < 2) ||
-            (this.index != null && query.length < 2 && query.indexOf('>') !== 0);
+        const notSearchable = query == null || (this.index == null && query.length < this.searchableMinLength) ||
+            (this.index != null && query.length < this.searchableMinLength && query.indexOf('>') !== 0);
         return !notSearchable;
     }
 
-    async indexCiphers(): Promise<void> {
+    async indexCiphers(ciphers?: CipherView[]): Promise<void> {
         if (this.indexing) {
             return;
         }
@@ -60,7 +66,7 @@ export class SearchService implements SearchServiceAbstraction {
         builder.field('attachments_joined',
             { extractor: (c: CipherView) => this.attachmentExtractor(c, true) });
         builder.field('organizationid', { extractor: (c: CipherView) => c.organizationId });
-        const ciphers = await this.cipherService.getAllDecrypted();
+        ciphers = ciphers || await this.cipherService.getAllDecrypted();
         ciphers.forEach(c => builder.add(c));
         this.index = builder.build();
         this.indexing = false;

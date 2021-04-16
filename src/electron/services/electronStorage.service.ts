@@ -1,3 +1,4 @@
+import { ipcMain, ipcRenderer } from 'electron';
 import * as fs from 'fs';
 
 import { StorageService } from '../../abstractions/storage.service';
@@ -19,6 +20,17 @@ export class ElectronStorageService implements StorageService {
             name: 'data',
         };
         this.store = new Store(storeConfig);
+
+        ipcMain.handle('storageService', (event, options) => {
+            switch (options.action) {
+                case 'get':
+                    return this.get(options.key);
+                case 'save':
+                    return this.save(options.key, options.obj);
+                case 'remove':
+                    return this.remove(options.key);
+            }
+        });
     }
 
     get<T>(key: string): Promise<T> {

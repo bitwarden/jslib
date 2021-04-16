@@ -149,6 +149,14 @@ export class Utils {
         return Utils.fromB64ToUtf8(Utils.fromUrlB64ToB64(urlB64Str));
     }
 
+    static fromUtf8ToB64(utfStr: string): string {
+        if (Utils.isNode || Utils.isNativeScript) {
+            return Buffer.from(utfStr, 'utf8').toString('base64');
+        } else {
+            return decodeURIComponent(escape(window.btoa(utfStr)));
+        }
+    }
+
     static fromB64ToUtf8(b64Str: string): string {
         if (Utils.isNode || Utils.isNativeScript) {
             return Buffer.from(b64Str, 'base64').toString('utf8');
@@ -281,6 +289,26 @@ export class Utils {
         return Object.assign(target, source);
     }
 
+    static getUrl(uriString: string): URL {
+        if (uriString == null) {
+            return null;
+        }
+
+        uriString = uriString.trim();
+        if (uriString === '') {
+            return null;
+        }
+
+        let url = Utils.getUrlObject(uriString);
+        if (url == null) {
+            const hasHttpProtocol = uriString.indexOf('http://') === 0 || uriString.indexOf('https://') === 0;
+            if (!hasHttpProtocol && uriString.indexOf('.') > -1) {
+                url = Utils.getUrlObject('http://' + uriString);
+            }
+        }
+        return url;
+    }
+
     private static validIpAddress(ipString: string): boolean {
         // tslint:disable-next-line
         const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
@@ -300,26 +328,6 @@ export class Utils {
 
     private static isAppleMobile(win: Window) {
         return win.navigator.userAgent.match(/iPhone/i) != null || win.navigator.userAgent.match(/iPad/i) != null;
-    }
-
-    private static getUrl(uriString: string): URL {
-        if (uriString == null) {
-            return null;
-        }
-
-        uriString = uriString.trim();
-        if (uriString === '') {
-            return null;
-        }
-
-        let url = Utils.getUrlObject(uriString);
-        if (url == null) {
-            const hasHttpProtocol = uriString.indexOf('http://') === 0 || uriString.indexOf('https://') === 0;
-            if (!hasHttpProtocol && uriString.indexOf('.') > -1) {
-                url = Utils.getUrlObject('http://' + uriString);
-            }
-        }
-        return url;
     }
 
     private static getUrlObject(uriString: string): URL {

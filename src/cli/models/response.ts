@@ -7,7 +7,8 @@ export class Response {
         if (typeof (error) === 'string') {
             res.message = error;
         } else {
-            res.message = error.message != null ? error.message : error.toString();
+            res.message = error.message != null ? error.message :
+                error.toString() === '[object Object]' ? JSON.stringify(error) : error.toString();
         }
         res.data = data;
         return res;

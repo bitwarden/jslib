@@ -18,6 +18,7 @@ export class SendRequest {
     file: SendFileApi;
     password: string;
     disabled: boolean;
+    hideEmail: boolean;
 
     constructor(send: Send, fileLength?: number) {
         this.type = send.type;
@@ -30,6 +31,7 @@ export class SendRequest {
         this.key = send.key != null ? send.key.encryptedString : null;
         this.password = send.password;
         this.disabled = send.disabled;
+        this.hideEmail = send.hideEmail;
 
         switch (this.type) {
             case SendType.Text:
