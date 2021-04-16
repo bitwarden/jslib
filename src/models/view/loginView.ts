@@ -4,19 +4,16 @@ import { View } from './view';
 import { Utils } from '../../misc/utils';
 import { Login } from '../domain/login';
 
-import { AutofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
-
 export class LoginView implements View {
     username: string = null;
     password: string = null;
     passwordRevisionDate?: Date = null;
     totp: string = null;
     uris: LoginUriView[] = null;
-    autofillOnPageLoad: AutofillOnPageLoadOptions = null;
+    autofillOnPageLoad: boolean = null;
 
     constructor(l?: Login) {
         if (!l) {
-            this.autofillOnPageLoad = AutofillOnPageLoadOptions.UseGlobalSetting;
             return;
         }
 

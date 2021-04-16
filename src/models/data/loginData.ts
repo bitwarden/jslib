@@ -2,15 +2,13 @@ import { LoginApi } from '../api/loginApi';
 
 import { LoginUriData } from './loginUriData';
 
-import { AutofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
-
 export class LoginData {
     uris: LoginUriData[];
     username: string;
     password: string;
     passwordRevisionDate: string;
     totp: string;
-    autofillOnPageLoad: AutofillOnPageLoadOptions;
+    autofillOnPageLoad: boolean;
 
     constructor(data?: LoginApi) {
         if (data == null) {

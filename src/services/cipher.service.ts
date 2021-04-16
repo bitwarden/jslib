@@ -1,4 +1,3 @@
-import { AutofillOnPageLoadOptions } from '../enums/autofillOnPageLoadOptions';
 import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
 import { UriMatchType } from '../enums/uriMatchType';
@@ -1056,7 +1055,6 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     private async getCipherForUrl(url: string, lastUsed: boolean, lastLaunched: boolean, autofillOnPageLoad: boolean): Promise<CipherView> {
-
         const cacheKey = autofillOnPageLoad ? 'autofillOnPageLoad-' + url : url;
 
         if (!this.sortedCiphersCache.isCached(cacheKey)) {
@@ -1066,11 +1064,9 @@ export class CipherService implements CipherServiceAbstraction {
             }
 
             if (autofillOnPageLoad) {
-                const globalAutofill = await this.storageService.get(ConstantsService.enableAutoFillOnPageLoadKey);
-                ciphers = ciphers.filter((cipher: CipherView) => {
-                    return cipher.login.autofillOnPageLoad === AutofillOnPageLoadOptions.Always ||
-                        (cipher.login.autofillOnPageLoad === AutofillOnPageLoadOptions.UseGlobalSetting && globalAutofill);
-                });
+                const autofillOnPageLoadDefault = await this.storageService.get(ConstantsService.autoFillOnPageLoadDefaultKey);
+                ciphers = ciphers.filter((cipher: CipherView) => cipher.login.autofillOnPageLoad ||
+                        (cipher.login.autofillOnPageLoad === null && autofillOnPageLoadDefault));
                 if (ciphers.length === 0) {
                     return null;
                 }

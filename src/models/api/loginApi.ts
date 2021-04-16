@@ -2,15 +2,13 @@ import { BaseResponse } from '../response/baseResponse';
 
 import { LoginUriApi } from './loginUriApi';
 
-import { AutofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
-
 export class LoginApi extends BaseResponse {
     uris: LoginUriApi[];
     username: string;
     password: string;
     passwordRevisionDate: string;
     totp: string;
-    autofillOnPageLoad: AutofillOnPageLoadOptions;
+    autofillOnPageLoad: boolean;
 
     constructor(data: any = null) {
         super(data);

@@ -10,7 +10,6 @@ import {
     Output,
 } from '@angular/core';
 
-import { AutofillOnPageLoadOptions } from '../../enums/autofillOnPageLoadOptions';
 import { CipherType } from '../../enums/cipherType';
 import { EventType } from '../../enums/eventType';
 import { FieldType } from '../../enums/fieldType';
@@ -151,9 +150,9 @@ export class AddEditComponent implements OnInit {
             { name: i18nService.t('never'), value: UriMatchType.Never },
         ];
         this.autofillOnPageLoadOptions = [
-            { name: i18nService.t('itemAutoFillOnPageLoadUseGlobal'), value: AutofillOnPageLoadOptions.UseGlobalSetting },
-            { name: i18nService.t('itemAutoFillOnPageLoadAlways'), value: AutofillOnPageLoadOptions.Always },
-            { name: i18nService.t('itemAutoFillOnPageLoadNever'), value: AutofillOnPageLoadOptions.Never },
+            { name: i18nService.t('autoFillOnPageLoadUseDefault'), value: null },
+            { name: i18nService.t('autoFillOnPageLoadYes'), value: true },
+            { name: i18nService.t('autoFillOnPageLoadNo'), value: false },
         ];
     }
 
