@@ -1065,7 +1065,7 @@ export class CipherService implements CipherServiceAbstraction {
 
             if (autofillOnPageLoad) {
                 const autofillOnPageLoadDefault = await this.storageService.get(ConstantsService.autoFillOnPageLoadDefaultKey);
-                ciphers = ciphers.filter((cipher: CipherView) => cipher.login.autofillOnPageLoad ||
+                ciphers = ciphers.filter(cipher => cipher.login.autofillOnPageLoad ||
                         (cipher.login.autofillOnPageLoad === null && autofillOnPageLoadDefault));
                 if (ciphers.length === 0) {
                     return null;
