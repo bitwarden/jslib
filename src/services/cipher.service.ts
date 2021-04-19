@@ -327,6 +327,9 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async decryptManyCiphers(ciphers: Cipher[]) {
+        if (ciphers == null || ciphers.length === 0) {
+            return null;
+        }
         const decryptedCiphers: CipherView[] = [];
         const hasKey = await this.cryptoService.hasKey();
         if (!hasKey) {
@@ -343,6 +346,10 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async decryptManyCiphersWithWorker(workerName: string, cipherData: CipherData[]): Promise<CipherView[]> {
+        if (cipherData == null || cipherData.length === 0) {
+            return null;
+        }
+
         const cryptoKeys = ConstantsService.cryptoKeys;
         const key = (await this.cryptoService.getKey()).keyB64;
         const encKey = await this.storageService.get<string>(cryptoKeys.encKey);
