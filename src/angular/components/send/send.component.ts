@@ -1,7 +1,4 @@
-import {
-    NgZone,
-    OnInit,
-} from '@angular/core';
+import { NgZone, OnInit, Directive } from '@angular/core';
 
 import { OrganizationUserStatusType } from '../../../enums/organizationUserStatusType';
 import { PolicyType } from '../../../enums/policyType';
@@ -17,6 +14,7 @@ import { SearchService } from '../../../abstractions/search.service';
 import { SendService } from '../../../abstractions/send.service';
 import { UserService } from '../../../abstractions/user.service';
 
+@Directive()
 export class SendComponent implements OnInit {
 
     disableSend = false;

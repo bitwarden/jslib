@@ -22,7 +22,9 @@ import { SetPasswordRequest } from '../../models/request/setPasswordRequest';
 import { ChangePasswordComponent as BaseChangePasswordComponent } from './change-password.component';
 
 import { KdfType } from '../../enums/kdfType';
+import { Directive } from "@angular/core";
 
+@Directive()
 export class SetPasswordComponent extends BaseChangePasswordComponent {
     syncLoading: boolean = true;
     showPassword: boolean = false;

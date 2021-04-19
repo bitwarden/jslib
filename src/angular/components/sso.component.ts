@@ -17,7 +17,9 @@ import { ConstantsService } from '../../services/constants.service';
 import { Utils } from '../../misc/utils';
 
 import { AuthResult } from '../../models/domain/authResult';
+import { Directive } from "@angular/core";
 
+@Directive()
 export class SsoComponent {
     identifier: string;
     loggingIn = false;

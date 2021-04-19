@@ -1,4 +1,4 @@
-import { OnInit } from '@angular/core';
+import { OnInit, Directive } from '@angular/core';
 
 import { I18nService } from '../../abstractions/i18n.service';
 import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
@@ -6,6 +6,7 @@ import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 
 import { GeneratedPasswordHistory } from '../../models/domain/generatedPasswordHistory';
 
+@Directive()
 export class PasswordGeneratorHistoryComponent implements OnInit {
     history: GeneratedPasswordHistory[] = [];
 
