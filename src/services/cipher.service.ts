@@ -69,7 +69,7 @@ const DomainMatchBlacklist = new Map<string, Set<string>>([
 export class CipherService implements CipherServiceAbstraction {
     // tslint:disable-next-line
     _decryptedCipherCache: CipherView[];
-    workerThreshold: number = 250;
+    workerThreshold: number = 0;
 
     private sortedCiphersCache: SortedCiphersCache = new SortedCiphersCache(this.sortCiphersByLastUsed);
 
@@ -77,8 +77,7 @@ export class CipherService implements CipherServiceAbstraction {
         private settingsService: SettingsService, private apiService: ApiService,
         private fileUploadService: FileUploadService, private storageService: StorageService,
         private i18nService: I18nService, private searchService: () => SearchService,
-        private webWorkerService: WebWorkerService, private secureStorageService: StorageService,
-        private consoleLogService: LogService) {
+        private webWorkerService: WebWorkerService, private consoleLogService: LogService) {
     }
 
     get decryptedCipherCache() {
@@ -345,7 +344,7 @@ export class CipherService implements CipherServiceAbstraction {
 
     async decryptManyCiphersWithWorker(workerName: string, cipherData: CipherData[]): Promise<CipherView[]> {
         const cryptoKeys = ConstantsService.cryptoKeys;
-        const key = await this.secureStorageService.get<string>(cryptoKeys.key);
+        const key = (await this.cryptoService.getKey()).keyB64;
         const encKey = await this.storageService.get<string>(cryptoKeys.encKey);
         const orgKeys = await this.storageService.get<string>(cryptoKeys.encOrgKeys);
         const privateKey = await this.storageService.get<string>(cryptoKeys.encPrivateKey);
