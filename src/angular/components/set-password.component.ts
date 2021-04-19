@@ -21,8 +21,8 @@ import { SetPasswordRequest } from '../../models/request/setPasswordRequest';
 
 import { ChangePasswordComponent as BaseChangePasswordComponent } from './change-password.component';
 
+import { Directive } from '@angular/core';
 import { KdfType } from '../../enums/kdfType';
-import { Directive } from "@angular/core";
 
 @Directive()
 export class SetPasswordComponent extends BaseChangePasswordComponent {

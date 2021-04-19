@@ -1,4 +1,4 @@
-import { OnInit, Directive } from '@angular/core';
+import { Directive, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { ApiService } from '../../abstractions/api.service';

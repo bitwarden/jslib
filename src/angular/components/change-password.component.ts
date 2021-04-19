@@ -1,4 +1,4 @@
-import { OnInit, Directive } from '@angular/core';
+import { Directive, OnInit } from '@angular/core';
 
 import { CryptoService } from '../../abstractions/crypto.service';
 import { I18nService } from '../../abstractions/i18n.service';

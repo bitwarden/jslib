@@ -16,8 +16,8 @@ import { ConstantsService } from '../../services/constants.service';
 
 import { Utils } from '../../misc/utils';
 
+import { Directive } from '@angular/core';
 import { AuthResult } from '../../models/domain/authResult';
-import { Directive } from "@angular/core";
 
 @Directive()
 export class SsoComponent {

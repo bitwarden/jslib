@@ -1,4 +1,4 @@
-import { OnDestroy, OnInit, Directive } from '@angular/core';
+import { Directive, OnDestroy, OnInit } from '@angular/core';
 
 import {
     ActivatedRoute,
