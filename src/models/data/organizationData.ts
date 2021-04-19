@@ -27,7 +27,7 @@ export class OrganizationData {
     ssoBound: boolean;
     identifier: string;
     permissions: PermissionsApi;
-    resetPasswordKey: string;
+    resetPasswordEnrolled: boolean;
     userId: string;
 
     constructor(response: ProfileOrganizationResponse) {
@@ -53,7 +53,7 @@ export class OrganizationData {
         this.ssoBound = response.ssoBound;
         this.identifier = response.identifier;
         this.permissions = response.permissions;
-        this.resetPasswordKey = response.resetPasswordKey;
+        this.resetPasswordEnrolled = response.resetPasswordEnrolled;
         this.userId = response.userId;
     }
 }

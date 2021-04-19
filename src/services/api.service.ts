@@ -42,6 +42,7 @@ import { OrganizationUserAcceptRequest } from '../models/request/organizationUse
 import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
 import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
 import { OrganizationUserResetPasswordEnrollmentRequest } from '../models/request/organizationUserResetPasswordEnrollmentRequest';
+import { OrganizationUserResetPasswordRequest } from '../models/request/organizationUserResetPasswordRequest';
 import { OrganizationUserUpdateGroupsRequest } from '../models/request/organizationUserUpdateGroupsRequest';
 import { OrganizationUserUpdateRequest } from '../models/request/organizationUserUpdateRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
@@ -107,6 +108,7 @@ import { OrganizationResponse } from '../models/response/organizationResponse';
 import { OrganizationSubscriptionResponse } from '../models/response/organizationSubscriptionResponse';
 import {
     OrganizationUserDetailsResponse,
+    OrganizationUserResetPasswordDetailsReponse,
     OrganizationUserUserDetailsResponse,
 } from '../models/response/organizationUserResponse';
 import { PaymentResponse } from '../models/response/paymentResponse';
@@ -793,6 +795,13 @@ export class ApiService implements ApiServiceAbstraction {
         return new ListResponse(r, OrganizationUserUserDetailsResponse);
     }
 
+    async getOrganizationUserResetPasswordDetails(organizationId: string, userId: string):
+        Promise<OrganizationUserResetPasswordDetailsReponse> {
+        const r = await this.send('GET', '/organizations/' + organizationId + '/users/' + userId +
+            '/reset-password-details', null, true, true);
+        return new OrganizationUserResetPasswordDetailsReponse(r);
+    }
+
     postOrganizationUserInvite(organizationId: string, request: OrganizationUserInviteRequest): Promise<any> {
         return this.send('POST', '/organizations/' + organizationId + '/users/invite', request, true, false);
     }
@@ -824,6 +833,12 @@ export class ApiService implements ApiServiceAbstraction {
     putOrganizationUserResetPasswordEnrollment(organizationId: string, userId: string,
         request: OrganizationUserResetPasswordEnrollmentRequest): Promise<any> {
         return this.send('PUT', '/organizations/' + organizationId + '/users/' + userId + '/reset-password-enrollment',
+            request, true, false);
+    }
+
+    putOrganizationUserResetPassword(organizationId: string, userId: string,
+        request: OrganizationUserResetPasswordRequest): Promise<any> {
+        return this.send('PUT', '/organizations/' + organizationId + '/users/' + userId + '/reset-password',
             request, true, false);
     }
 

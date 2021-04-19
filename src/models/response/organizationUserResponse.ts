@@ -3,6 +3,7 @@ import { SelectionReadOnlyResponse } from './selectionReadOnlyResponse';
 
 import { PermissionsApi } from '../api/permissionsApi';
 
+import { KdfType } from '../../enums/kdfType';
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
 
@@ -13,6 +14,7 @@ export class OrganizationUserResponse extends BaseResponse {
     status: OrganizationUserStatusType;
     accessAll: boolean;
     permissions: PermissionsApi;
+    resetPasswordEnrolled: boolean;
 
     constructor(response: any) {
         super(response);
@@ -22,6 +24,7 @@ export class OrganizationUserResponse extends BaseResponse {
         this.status = this.getResponseProperty('Status');
         this.permissions = new PermissionsApi(this.getResponseProperty('Permissions'));
         this.accessAll = this.getResponseProperty('AccessAll');
+        this.resetPasswordEnrolled = this.getResponseProperty('ResetPasswordEnrolled');
     }
 }
 
@@ -47,5 +50,18 @@ export class OrganizationUserDetailsResponse extends OrganizationUserResponse {
         if (collections != null) {
             this.collections = collections.map((c: any) => new SelectionReadOnlyResponse(c));
         }
+    }
+}
+
+export class OrganizationUserResetPasswordDetailsReponse extends BaseResponse {
+    kdf: KdfType;
+    kdfIterations: number;
+    resetPasswordKey: string;
+
+    constructor(response: any) {
+        super(response);
+        this.kdf = this.getResponseProperty('Kdf');
+        this.kdfIterations = this.getResponseProperty('KdfIterations');
+        this.resetPasswordKey = this.getResponseProperty('ResetPasswordKey');
     }
 }

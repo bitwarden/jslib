@@ -38,6 +38,7 @@ import { OrganizationUserAcceptRequest } from '../models/request/organizationUse
 import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
 import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
 import { OrganizationUserResetPasswordEnrollmentRequest } from '../models/request/organizationUserResetPasswordEnrollmentRequest';
+import { OrganizationUserResetPasswordRequest } from '../models/request/organizationUserResetPasswordRequest';
 import { OrganizationUserUpdateGroupsRequest } from '../models/request/organizationUserUpdateGroupsRequest';
 import { OrganizationUserUpdateRequest } from '../models/request/organizationUserUpdateRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
@@ -101,6 +102,7 @@ import { OrganizationResponse } from '../models/response/organizationResponse';
 import { OrganizationSubscriptionResponse } from '../models/response/organizationSubscriptionResponse';
 import {
     OrganizationUserDetailsResponse,
+    OrganizationUserResetPasswordDetailsReponse,
     OrganizationUserUserDetailsResponse,
 } from '../models/response/organizationUserResponse';
 import { PaymentResponse } from '../models/response/paymentResponse';
@@ -270,6 +272,8 @@ export abstract class ApiService {
     getOrganizationUser: (organizationId: string, id: string) => Promise<OrganizationUserDetailsResponse>;
     getOrganizationUserGroups: (organizationId: string, id: string) => Promise<string[]>;
     getOrganizationUsers: (organizationId: string) => Promise<ListResponse<OrganizationUserUserDetailsResponse>>;
+    getOrganizationUserResetPasswordDetails: (organizationId: string, userId: string)
+        => Promise<OrganizationUserResetPasswordDetailsReponse>;
     postOrganizationUserInvite: (organizationId: string, request: OrganizationUserInviteRequest) => Promise<any>;
     postOrganizationUserReinvite: (organizationId: string, id: string) => Promise<any>;
     postOrganizationUserAccept: (organizationId: string, id: string,
@@ -281,6 +285,8 @@ export abstract class ApiService {
         request: OrganizationUserUpdateGroupsRequest) => Promise<any>;
     putOrganizationUserResetPasswordEnrollment: (organizationId: string, userId: string,
         request: OrganizationUserResetPasswordEnrollmentRequest) => Promise<any>;
+    putOrganizationUserResetPassword: (organizationId: string, userId: string,
+        request: OrganizationUserResetPasswordRequest) => Promise<any>;
     deleteOrganizationUser: (organizationId: string, id: string) => Promise<any>;
 
     getSync: () => Promise<SyncResponse>;
