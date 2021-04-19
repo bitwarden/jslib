@@ -104,6 +104,10 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
         return false;
     }
 
+    supportsWebWorkers(): boolean {
+        return false;
+    }
+
     showToast(type: 'error' | 'success' | 'warning' | 'info', title: string, text: string | string[],
         options?: any): void {
         throw new Error('Not implemented.');

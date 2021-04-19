@@ -45,6 +45,7 @@ import { CryptoService } from '../abstractions/crypto.service';
 import { FileUploadService } from '../abstractions/fileUpload.service';
 import { I18nService } from '../abstractions/i18n.service';
 import { LogService } from '../abstractions/log.service';
+import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { SearchService } from '../abstractions/search.service';
 import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
@@ -77,7 +78,8 @@ export class CipherService implements CipherServiceAbstraction {
         private settingsService: SettingsService, private apiService: ApiService,
         private fileUploadService: FileUploadService, private storageService: StorageService,
         private i18nService: I18nService, private searchService: () => SearchService,
-        private webWorkerService: WebWorkerService, private consoleLogService: LogService) {
+        private webWorkerService: WebWorkerService, private consoleLogService: LogService,
+        private platformUtilsService: PlatformUtilsService) {
     }
 
     get decryptedCipherCache() {
@@ -311,7 +313,7 @@ export class CipherService implements CipherServiceAbstraction {
 
         this.consoleLogService.time('getAllDecrypted');
         let decryptedCiphers;
-        if (ciphers.length > this.workerThreshold) {
+        if (this.platformUtilsService.supportsWebWorkers() && ciphers.length > this.workerThreshold) {
             this.consoleLogService.info('getAllDecrypted started using worker');
             const userId = await this.userService.getUserId();
             const cipherData = ciphers.map(c => c.toCipherData(userId));
@@ -510,7 +512,7 @@ export class CipherService implements CipherServiceAbstraction {
             const consoleLogKey = 'getAllFromApiForOrganization (' + organizationId + ')';
             this.consoleLogService.time(consoleLogKey);
             let decryptedCiphers;
-            if (ciphersResponse.data.length > this.workerThreshold) {
+            if (this.platformUtilsService.supportsWebWorkers() && ciphersResponse.data.length > this.workerThreshold) {
                 this.consoleLogService.info('getAllFromApiForOrganization started using worker');
                 const cipherData: CipherData[] = ciphersResponse.data.map(r => new CipherData(r));
                 decryptedCiphers = await this.decryptManyCiphersWithWorker(organizationId, cipherData);

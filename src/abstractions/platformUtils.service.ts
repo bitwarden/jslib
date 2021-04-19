@@ -22,6 +22,7 @@ export abstract class PlatformUtilsService {
     getApplicationVersion: () => Promise<string>;
     supportsWebAuthn: (win: Window) => boolean;
     supportsDuo: () => boolean;
+    supportsWebWorkers: () => boolean;
     showToast: (type: 'error' | 'success' | 'warning' | 'info', title: string, text: string | string[],
         options?: any) => void;
     showDialog: (body: string, title?: string, confirmText?: string, cancelText?: string,

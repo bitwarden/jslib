@@ -117,6 +117,10 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return true;
     }
 
+    supportsWebWorkers(): boolean {
+        return true;
+    }
+
     showToast(type: 'error' | 'success' | 'warning' | 'info', title: string, text: string | string[],
         options?: any): void {
         this.messagingService.send('showToast', {
