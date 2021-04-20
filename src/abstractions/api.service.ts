@@ -272,7 +272,7 @@ export abstract class ApiService {
     getOrganizationUser: (organizationId: string, id: string) => Promise<OrganizationUserDetailsResponse>;
     getOrganizationUserGroups: (organizationId: string, id: string) => Promise<string[]>;
     getOrganizationUsers: (organizationId: string) => Promise<ListResponse<OrganizationUserUserDetailsResponse>>;
-    getOrganizationUserResetPasswordDetails: (organizationId: string, userId: string)
+    getOrganizationUserResetPasswordDetails: (organizationId: string, id: string)
         => Promise<OrganizationUserResetPasswordDetailsReponse>;
     postOrganizationUserInvite: (organizationId: string, request: OrganizationUserInviteRequest) => Promise<any>;
     postOrganizationUserReinvite: (organizationId: string, id: string) => Promise<any>;
@@ -285,7 +285,7 @@ export abstract class ApiService {
         request: OrganizationUserUpdateGroupsRequest) => Promise<any>;
     putOrganizationUserResetPasswordEnrollment: (organizationId: string, userId: string,
         request: OrganizationUserResetPasswordEnrollmentRequest) => Promise<any>;
-    putOrganizationUserResetPassword: (organizationId: string, userId: string,
+    putOrganizationUserResetPassword: (organizationId: string, id: string,
         request: OrganizationUserResetPasswordRequest) => Promise<any>;
     deleteOrganizationUser: (organizationId: string, id: string) => Promise<any>;
 

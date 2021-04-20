@@ -795,9 +795,9 @@ export class ApiService implements ApiServiceAbstraction {
         return new ListResponse(r, OrganizationUserUserDetailsResponse);
     }
 
-    async getOrganizationUserResetPasswordDetails(organizationId: string, userId: string):
+    async getOrganizationUserResetPasswordDetails(organizationId: string, id: string):
         Promise<OrganizationUserResetPasswordDetailsReponse> {
-        const r = await this.send('GET', '/organizations/' + organizationId + '/users/' + userId +
+        const r = await this.send('GET', '/organizations/' + organizationId + '/users/' + id +
             '/reset-password-details', null, true, true);
         return new OrganizationUserResetPasswordDetailsReponse(r);
     }
@@ -836,9 +836,9 @@ export class ApiService implements ApiServiceAbstraction {
             request, true, false);
     }
 
-    putOrganizationUserResetPassword(organizationId: string, userId: string,
+    putOrganizationUserResetPassword(organizationId: string, id: string,
         request: OrganizationUserResetPasswordRequest): Promise<any> {
-        return this.send('PUT', '/organizations/' + organizationId + '/users/' + userId + '/reset-password',
+        return this.send('PUT', '/organizations/' + organizationId + '/users/' + id + '/reset-password',
             request, true, false);
     }
 
