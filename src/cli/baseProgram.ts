@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 
 import { Response } from './models/response';
 import { ListResponse } from './models/response/listResponse';
