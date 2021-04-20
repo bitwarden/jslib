@@ -2,7 +2,7 @@ import { FieldType } from '../../enums/fieldType';
 
 import { FieldView } from '../view/fieldView';
 
-import { CipherString } from '../domain/cipherString';
+import { EncString } from '../domain/encString';
 import { Field as FieldDomain } from '../domain/field';
 
 export class Field {
@@ -23,8 +23,8 @@ export class Field {
 
     static toDomain(req: Field, domain = new FieldDomain()) {
         domain.type = req.type;
-        domain.value = req.value != null ? new CipherString(req.value) : null;
-        domain.name = req.name != null ? new CipherString(req.name) : null;
+        domain.value = req.value != null ? new EncString(req.value) : null;
+        domain.name = req.name != null ? new EncString(req.name) : null;
         return domain;
     }
 

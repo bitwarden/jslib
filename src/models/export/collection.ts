@@ -1,7 +1,7 @@
 import { CollectionView } from '../view/collectionView';
 
-import { CipherString } from '../domain/cipherString';
 import { Collection as CollectionDomain } from '../domain/collection';
+import { EncString } from '../domain/encString';
 
 export class Collection {
     static template(): Collection {
@@ -22,7 +22,7 @@ export class Collection {
     }
 
     static toDomain(req: Collection, domain = new CollectionDomain()) {
-        domain.name = req.name != null ? new CipherString(req.name) : null;
+        domain.name = req.name != null ? new EncString(req.name) : null;
         domain.externalId = req.externalId;
         if (domain.organizationId == null) {
             domain.organizationId = req.organizationId;

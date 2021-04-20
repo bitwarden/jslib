@@ -3,9 +3,9 @@ import * as bigInt from 'big-integer';
 import { EncryptionType } from '../enums/encryptionType';
 import { KdfType } from '../enums/kdfType';
 
-import { CipherArrayBuffer } from '../models/domain/cipherArrayBuffer';
-import { CipherString } from '../models/domain/cipherString';
+import { EncArrayBuffer } from '../models/domain/encArrayBuffer';
 import { EncryptedObject } from '../models/domain/encryptedObject';
+import { EncString } from '../models/domain/encString';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 import { ProfileOrganizationResponse } from '../models/response/profileOrganizationResponse';
 
@@ -134,7 +134,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
 
         let decEncKey: ArrayBuffer;
-        const encKeyCipher = new CipherString(encKey);
+        const encKeyCipher = new EncString(encKey);
         if (encKeyCipher.encryptionType === EncryptionType.AesCbc256_B64) {
             decEncKey = await this.decryptToBytes(encKeyCipher, key);
         } else if (encKeyCipher.encryptionType === EncryptionType.AesCbc256_HmacSha256_B64) {
@@ -175,7 +175,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             return null;
         }
 
-        this.privateKey = await this.decryptToBytes(new CipherString(encPrivateKey), null);
+        this.privateKey = await this.decryptToBytes(new EncString(encPrivateKey), null);
         return this.privateKey;
     }
 
@@ -325,28 +325,28 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     async makeKeyFromPin(pin: string, salt: string, kdf: KdfType, kdfIterations: number,
-        protectedKeyCs: CipherString = null):
+        protectedKeyCs: EncString = null):
         Promise<SymmetricCryptoKey> {
         if (protectedKeyCs == null) {
             const pinProtectedKey = await this.storageService.get<string>(ConstantsService.pinProtectedKey);
             if (pinProtectedKey == null) {
                 throw new Error('No PIN protected key found.');
             }
-            protectedKeyCs = new CipherString(pinProtectedKey);
+            protectedKeyCs = new EncString(pinProtectedKey);
         }
         const pinKey = await this.makePinKey(pin, salt, kdf, kdfIterations);
         const decKey = await this.decryptToBytes(protectedKeyCs, pinKey);
         return new SymmetricCryptoKey(decKey);
     }
 
-    async makeShareKey(): Promise<[CipherString, SymmetricCryptoKey]> {
+    async makeShareKey(): Promise<[EncString, SymmetricCryptoKey]> {
         const shareKey = await this.cryptoFunctionService.randomBytes(64);
         const publicKey = await this.getPublicKey();
         const encShareKey = await this.rsaEncrypt(shareKey, publicKey);
         return [encShareKey, new SymmetricCryptoKey(shareKey)];
     }
 
-    async makeKeyPair(key?: SymmetricCryptoKey): Promise<[string, CipherString]> {
+    async makeKeyPair(key?: SymmetricCryptoKey): Promise<[string, EncString]> {
         const keyPair = await this.cryptoFunctionService.rsaGenerateKeyPair(2048);
         const publicB64 = Utils.fromBufferToB64(keyPair[0]);
         const privateEnc = await this.encrypt(keyPair[1], key);
@@ -375,20 +375,20 @@ export class CryptoService implements CryptoServiceAbstraction {
         return Utils.fromBufferToB64(hash);
     }
 
-    async makeEncKey(key: SymmetricCryptoKey): Promise<[SymmetricCryptoKey, CipherString]> {
+    async makeEncKey(key: SymmetricCryptoKey): Promise<[SymmetricCryptoKey, EncString]> {
         const theKey = await this.getKeyForEncryption(key);
         const encKey = await this.cryptoFunctionService.randomBytes(64);
         return this.buildEncKey(theKey, encKey);
     }
 
-    async remakeEncKey(key: SymmetricCryptoKey, encKey?: SymmetricCryptoKey): Promise<[SymmetricCryptoKey, CipherString]> {
+    async remakeEncKey(key: SymmetricCryptoKey, encKey?: SymmetricCryptoKey): Promise<[SymmetricCryptoKey, EncString]> {
         if (encKey == null) {
             encKey = await this.getEncKey();
         }
         return this.buildEncKey(key, encKey.key);
     }
 
-    async encrypt(plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey): Promise<CipherString> {
+    async encrypt(plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey): Promise<EncString> {
         if (plainValue == null) {
             return Promise.resolve(null);
         }
@@ -404,10 +404,10 @@ export class CryptoService implements CryptoServiceAbstraction {
         const iv = Utils.fromBufferToB64(encObj.iv);
         const data = Utils.fromBufferToB64(encObj.data);
         const mac = encObj.mac != null ? Utils.fromBufferToB64(encObj.mac) : null;
-        return new CipherString(encObj.key.encType, data, iv, mac);
+        return new EncString(encObj.key.encType, data, iv, mac);
     }
 
-    async encryptToBytes(plainValue: ArrayBuffer, key?: SymmetricCryptoKey): Promise<CipherArrayBuffer> {
+    async encryptToBytes(plainValue: ArrayBuffer, key?: SymmetricCryptoKey): Promise<EncArrayBuffer> {
         const encValue = await this.aesEncrypt(plainValue, key);
         let macLen = 0;
         if (encValue.mac != null) {
@@ -422,10 +422,10 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
 
         encBytes.set(new Uint8Array(encValue.data), 1 + encValue.iv.byteLength + macLen);
-        return new CipherArrayBuffer(encBytes.buffer);
+        return new EncArrayBuffer(encBytes.buffer);
     }
 
-    async rsaEncrypt(data: ArrayBuffer, publicKey?: ArrayBuffer): Promise<CipherString> {
+    async rsaEncrypt(data: ArrayBuffer, publicKey?: ArrayBuffer): Promise<EncString> {
         if (publicKey == null) {
             publicKey = await this.getPublicKey();
         }
@@ -434,7 +434,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
 
         const encBytes = await this.cryptoFunctionService.rsaEncrypt(data, publicKey, 'sha1');
-        return new CipherString(EncryptionType.Rsa2048_OaepSha1_B64, Utils.fromBufferToB64(encBytes));
+        return new EncString(EncryptionType.Rsa2048_OaepSha1_B64, Utils.fromBufferToB64(encBytes));
     }
 
     async rsaDecrypt(encValue: string): Promise<ArrayBuffer> {
@@ -489,11 +489,11 @@ export class CryptoService implements CryptoServiceAbstraction {
         return this.cryptoFunctionService.rsaDecrypt(data, privateKey, alg);
     }
 
-    async decryptToBytes(cipherString: CipherString, key?: SymmetricCryptoKey): Promise<ArrayBuffer> {
-        const iv = Utils.fromB64ToArray(cipherString.iv).buffer;
-        const data = Utils.fromB64ToArray(cipherString.data).buffer;
-        const mac = cipherString.mac ? Utils.fromB64ToArray(cipherString.mac).buffer : null;
-        const decipher = await this.aesDecryptToBytes(cipherString.encryptionType, data, iv, mac, key);
+    async decryptToBytes(encString: EncString, key?: SymmetricCryptoKey): Promise<ArrayBuffer> {
+        const iv = Utils.fromB64ToArray(encString.iv).buffer;
+        const data = Utils.fromB64ToArray(encString.data).buffer;
+        const mac = encString.mac ? Utils.fromB64ToArray(encString.mac).buffer : null;
+        const decipher = await this.aesDecryptToBytes(encString.encryptionType, data, iv, mac, key);
         if (decipher == null) {
             return null;
         }
@@ -501,9 +501,9 @@ export class CryptoService implements CryptoServiceAbstraction {
         return decipher;
     }
 
-    async decryptToUtf8(cipherString: CipherString, key?: SymmetricCryptoKey): Promise<string> {
-        return await this.aesDecryptToUtf8(cipherString.encryptionType, cipherString.data,
-            cipherString.iv, cipherString.mac, key);
+    async decryptToUtf8(encString: EncString, key?: SymmetricCryptoKey): Promise<string> {
+        return await this.aesDecryptToUtf8(encString.encryptionType, encString.data,
+            encString.iv, encString.mac, key);
     }
 
     async decryptFromBytes(encBuf: ArrayBuffer, key: SymmetricCryptoKey): Promise<ArrayBuffer> {
@@ -715,8 +715,8 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     private async buildEncKey(key: SymmetricCryptoKey, encKey: ArrayBuffer)
-        : Promise<[SymmetricCryptoKey, CipherString]> {
-        let encKeyEnc: CipherString = null;
+        : Promise<[SymmetricCryptoKey, EncString]> {
+        let encKeyEnc: EncString = null;
         if (key.key.byteLength === 32) {
             const newKey = await this.stretchKey(key);
             encKeyEnc = await this.encrypt(encKey, newKey);

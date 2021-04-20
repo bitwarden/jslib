@@ -13,7 +13,7 @@ import { PolicyService } from '../../abstractions/policy.service';
 import { SyncService } from '../../abstractions/sync.service';
 import { UserService } from '../../abstractions/user.service';
 
-import { CipherString } from '../../models/domain/cipherString';
+import { EncString } from '../../models/domain/encString';
 import { SymmetricCryptoKey } from '../../models/domain/symmetricCryptoKey';
 
 import { KeysRequest } from '../../models/request/keysRequest';
@@ -65,7 +65,7 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
     }
 
     async performSubmitActions(masterPasswordHash: string, key: SymmetricCryptoKey,
-        encKey: [SymmetricCryptoKey, CipherString]) {
+        encKey: [SymmetricCryptoKey, EncString]) {
         const request = new SetPasswordRequest();
         request.masterPasswordHash = masterPasswordHash;
         request.key = encKey[1].encryptedString;
