@@ -8,7 +8,7 @@ import { UserService } from '../../abstractions/user.service';
 import { VaultTimeoutService } from '../../abstractions/vaultTimeout.service';
 
 @Injectable()
-export class lockGuardService implements CanActivate {
+export class LockGuardService implements CanActivate {
     constructor(private vaultTimeoutService: VaultTimeoutService, private userService: UserService,
         private router: Router) { }
 
