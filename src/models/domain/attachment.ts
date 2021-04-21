@@ -2,8 +2,8 @@ import { AttachmentData } from '../data/attachmentData';
 
 import { AttachmentView } from '../view/attachmentView';
 
-import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { EncString } from './encString';
 import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
 import { CryptoService } from '../../abstractions/crypto.service';
@@ -15,8 +15,8 @@ export class Attachment extends Domain {
     url: string;
     size: string;
     sizeName: string;
-    key: CipherString;
-    fileName: CipherString;
+    key: EncString;
+    fileName: EncString;
 
     constructor(obj?: AttachmentData, alreadyEncrypted: boolean = false) {
         super();

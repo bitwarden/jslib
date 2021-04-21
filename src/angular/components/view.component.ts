@@ -23,8 +23,6 @@ import { TokenService } from '../../abstractions/token.service';
 import { TotpService } from '../../abstractions/totp.service';
 import { UserService } from '../../abstractions/user.service';
 
-import { PasswordRepromptService } from '../../abstractions/passwordReprompt.service';
-import { CipherRepromptType } from '../../enums/cipherRepromptType';
 import { AttachmentView } from '../../models/view/attachmentView';
 import { CipherView } from '../../models/view/cipherView';
 import { FieldView } from '../../models/view/fieldView';
@@ -44,7 +42,6 @@ export class ViewComponent implements OnDestroy, OnInit {
 
     cipher: CipherView;
     showPassword: boolean;
-    showCardNumber: boolean;
     showCardCode: boolean;
     canAccessPremium: boolean;
     totpCode: string;
@@ -57,7 +54,6 @@ export class ViewComponent implements OnDestroy, OnInit {
 
     private totpInterval: any;
     private previousCipherId: string;
-    private passwordReprompted: boolean = false;
 
     constructor(protected cipherService: CipherService, protected totpService: TotpService,
         protected tokenService: TokenService, protected i18nService: I18nService,
@@ -65,7 +61,7 @@ export class ViewComponent implements OnDestroy, OnInit {
         protected auditService: AuditService, protected win: Window,
         protected broadcasterService: BroadcasterService, protected ngZone: NgZone,
         protected changeDetectorRef: ChangeDetectorRef, protected userService: UserService,
-        protected eventService: EventService, protected passwordRepromptService: PasswordRepromptService) { }
+        protected eventService: EventService) { }
 
     ngOnInit() {
         this.broadcasterService.subscribe(BroadcasterSubscriptionId, (message: any) => {
@@ -111,38 +107,19 @@ export class ViewComponent implements OnDestroy, OnInit {
         this.previousCipherId = this.cipherId;
     }
 
-    async edit() {
-        if (await this.promptPassword()) {
-            this.onEditCipher.emit(this.cipher);
-            return true;
-        }
-
-        return false;
+    edit() {
+        this.onEditCipher.emit(this.cipher);
     }
 
-    async clone() {
-        if (await this.promptPassword()) {
-            this.onCloneCipher.emit(this.cipher);
-            return true;
-        }
-
-        return false;
+    clone() {
+        this.onCloneCipher.emit(this.cipher);
     }
 
-    async share() {
-        if (await this.promptPassword()) {
-            this.onShareCipher.emit(this.cipher);
-            return true;
-        }
-
-        return false;
+    share() {
+        this.onShareCipher.emit(this.cipher);
     }
 
     async delete(): Promise<boolean> {
-        if (!await this.promptPassword()) {
-            return;
-        }
-
         const confirmed = await this.platformUtilsService.showDialog(
             this.i18nService.t(this.cipher.isDeleted ? 'permanentlyDeleteItemConfirmation' : 'deleteItemConfirmation'),
             this.i18nService.t('deleteItem'), this.i18nService.t('yes'), this.i18nService.t('no'), 'warning');
@@ -181,33 +158,14 @@ export class ViewComponent implements OnDestroy, OnInit {
         return true;
     }
 
-    async togglePassword() {
-        if (!await this.promptPassword()) {
-            return;
-        }
-
+    togglePassword() {
         this.showPassword = !this.showPassword;
         if (this.showPassword) {
             this.eventService.collect(EventType.Cipher_ClientToggledPasswordVisible, this.cipherId);
         }
     }
 
-    async toggleCardNumber() {
-        if (!await this.promptPassword()) {
-            return;
-        }
-
-        this.showCardNumber = !this.showCardNumber;
-        if (this.showCardNumber) {
-            this.eventService.collect(EventType.Cipher_ClientToggledCardCodeVisible, this.cipherId);
-        }
-    }
-
-    async toggleCardCode() {
-        if (!await this.promptPassword()) {
-            return;
-        }
-
+    toggleCardCode() {
         this.showCardCode = !this.showCardCode;
         if (this.showCardCode) {
             this.eventService.collect(EventType.Cipher_ClientToggledCardCodeVisible, this.cipherId);
@@ -230,11 +188,7 @@ export class ViewComponent implements OnDestroy, OnInit {
         }
     }
 
-    async toggleFieldValue(field: FieldView) {
-        if (!await this.promptPassword()) {
-            return;
-        }
-
+    toggleFieldValue(field: FieldView) {
         const f = (field as any);
         f.showValue = !f.showValue;
         if (f.showValue) {
@@ -254,12 +208,8 @@ export class ViewComponent implements OnDestroy, OnInit {
         this.platformUtilsService.launchUri(uri.launchUri);
     }
 
-    async copy(value: string, typeI18nKey: string, aType: string) {
+    copy(value: string, typeI18nKey: string, aType: string) {
         if (value == null) {
-            return;
-        }
-
-        if (this.passwordRepromptService.protectedFields().includes(aType) && !await this.promptPassword()) {
             return;
         }
 
@@ -321,14 +271,6 @@ export class ViewComponent implements OnDestroy, OnInit {
 
     protected restoreCipher() {
         return this.cipherService.restoreWithServer(this.cipher.id);
-    }
-
-    protected async promptPassword() {
-        if (this.cipher.reprompt === CipherRepromptType.None || this.passwordReprompted) {
-            return true;
-        }
-
-        return this.passwordReprompted = await this.passwordRepromptService.showPasswordPrompt();
     }
 
     private cleanUp() {

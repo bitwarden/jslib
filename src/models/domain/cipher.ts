@@ -1,4 +1,3 @@
-import { CipherRepromptType } from '../../enums/cipherRepromptType';
 import { CipherType } from '../../enums/cipherType';
 
 import { CipherData } from '../data/cipherData';
@@ -7,8 +6,8 @@ import { CipherView } from '../view/cipherView';
 
 import { Attachment } from './attachment';
 import { Card } from './card';
-import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { EncString } from './encString';
 import { Field } from './field';
 import { Identity } from './identity';
 import { Login } from './login';
@@ -20,8 +19,8 @@ export class Cipher extends Domain {
     id: string;
     organizationId: string;
     folderId: string;
-    name: CipherString;
-    notes: CipherString;
+    name: EncString;
+    notes: EncString;
     type: CipherType;
     favorite: boolean;
     organizationUseTotp: boolean;
@@ -38,7 +37,6 @@ export class Cipher extends Domain {
     passwordHistory: Password[];
     collectionIds: string[];
     deletedDate: Date;
-    reprompt: CipherRepromptType;
 
     constructor(obj?: CipherData, alreadyEncrypted: boolean = false, localData: any = null) {
         super();
@@ -68,7 +66,6 @@ export class Cipher extends Domain {
         this.collectionIds = obj.collectionIds;
         this.localData = localData;
         this.deletedDate = obj.deletedDate != null ? new Date(obj.deletedDate) : null;
-        this.reprompt = obj.reprompt;
 
         switch (this.type) {
             case CipherType.Login:
@@ -186,7 +183,6 @@ export class Cipher extends Domain {
         c.type = this.type;
         c.collectionIds = this.collectionIds;
         c.deletedDate = this.deletedDate != null ? this.deletedDate.toISOString() : null;
-        c.reprompt = this.reprompt;
 
         this.buildDataModel(this, c, {
             name: null,

@@ -4,8 +4,8 @@ import { SendAccessResponse } from '../response/sendAccessResponse';
 
 import { SendAccessView } from '../view/sendAccessView';
 
-import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { EncString } from './encString';
 import { SendFile } from './sendFile';
 import { SendText } from './sendText';
 import { SymmetricCryptoKey } from './symmetricCryptoKey';
@@ -13,7 +13,7 @@ import { SymmetricCryptoKey } from './symmetricCryptoKey';
 export class SendAccess extends Domain {
     id: string;
     type: SendType;
-    name: CipherString;
+    name: EncString;
     file: SendFile;
     text: SendText;
     expirationDate: Date;

@@ -8,8 +8,8 @@ import { SendData } from '../data/sendData';
 
 import { SendView } from '../view/sendView';
 
-import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { EncString } from './encString';
 import { SendFile } from './sendFile';
 import { SendText } from './sendText';
 
@@ -18,11 +18,11 @@ export class Send extends Domain {
     accessId: string;
     userId: string;
     type: SendType;
-    name: CipherString;
-    notes: CipherString;
+    name: EncString;
+    notes: EncString;
     file: SendFile;
     text: SendText;
-    key: CipherString;
+    key: EncString;
     maxAccessCount?: number;
     accessCount: number;
     revisionDate: Date;

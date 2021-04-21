@@ -3,7 +3,7 @@ import { CipherType } from '../../enums/cipherType';
 import { CipherView } from '../view/cipherView';
 
 import { Cipher as CipherDomain } from '../domain/cipher';
-import { CipherString } from '../domain/cipherString';
+import { EncString } from '../domain/encString';
 
 import { Card } from './card';
 import { Field } from './field';
@@ -71,8 +71,8 @@ export class Cipher {
         if (domain.organizationId == null) {
             domain.organizationId = req.organizationId;
         }
-        domain.name = req.name != null ? new CipherString(req.name) : null;
-        domain.notes = req.notes != null ? new CipherString(req.notes) : null;
+        domain.name = req.name != null ? new EncString(req.name) : null;
+        domain.notes = req.notes != null ? new EncString(req.notes) : null;
         domain.favorite = req.favorite;
 
         if (req.fields != null) {

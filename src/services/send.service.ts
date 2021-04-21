@@ -5,8 +5,8 @@ import { SendRequest } from '../models/request/sendRequest';
 import { ErrorResponse } from '../models/response/errorResponse';
 import { SendResponse } from '../models/response/sendResponse';
 
-import { CipherArrayBuffer } from '../models/domain/cipherArrayBuffer';
-import { CipherString } from '../models/domain/cipherString';
+import { EncArrayBuffer } from '../models/domain/encArrayBuffer';
+import { EncString } from '../models/domain/encString';
 import { Send } from '../models/domain/send';
 import { SendFile } from '../models/domain/sendFile';
 import { SendText } from '../models/domain/sendText';
@@ -45,8 +45,8 @@ export class SendService implements SendServiceAbstraction {
     }
 
     async encrypt(model: SendView, file: File | ArrayBuffer, password: string,
-        key?: SymmetricCryptoKey): Promise<[Send, CipherArrayBuffer]> {
-        let fileData: CipherArrayBuffer = null;
+        key?: SymmetricCryptoKey): Promise<[Send, EncArrayBuffer]> {
+        let fileData: EncArrayBuffer = null;
         const send = new Send();
         send.id = model.id;
         send.type = model.type;
@@ -132,7 +132,7 @@ export class SendService implements SendServiceAbstraction {
         return this.decryptedSendCache;
     }
 
-    async saveWithServer(sendData: [Send, CipherArrayBuffer]): Promise<any> {
+    async saveWithServer(sendData: [Send, EncArrayBuffer]): Promise<any> {
         const request = new SendRequest(sendData[0], sendData[1]?.buffer.byteLength);
         let response: SendResponse;
         if (sendData[0].id == null) {
@@ -169,7 +169,7 @@ export class SendService implements SendServiceAbstraction {
      * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
      * This method still exists for backward compatibility with old server versions.
      */
-    async legacyServerSendFileUpload(sendData: [Send, CipherArrayBuffer], request: SendRequest): Promise<SendResponse>
+    async legacyServerSendFileUpload(sendData: [Send, EncArrayBuffer], request: SendRequest): Promise<SendResponse>
     {
         const fd = new FormData();
         try {
@@ -257,7 +257,7 @@ export class SendService implements SendServiceAbstraction {
         await this.upsert(data);
     }
 
-    private parseFile(send: Send, file: File, key: SymmetricCryptoKey): Promise<CipherArrayBuffer> {
+    private parseFile(send: Send, file: File, key: SymmetricCryptoKey): Promise<EncArrayBuffer> {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsArrayBuffer(file);
@@ -277,7 +277,7 @@ export class SendService implements SendServiceAbstraction {
     }
 
     private async encryptFileData(fileName: string, data: ArrayBuffer,
-        key: SymmetricCryptoKey): Promise<[CipherString, CipherArrayBuffer]> {
+        key: SymmetricCryptoKey): Promise<[EncString, EncArrayBuffer]> {
         const encFileName = await this.cryptoService.encrypt(fileName, key);
         const encFileData = await this.cryptoService.encryptToBytes(data, key);
         return [encFileName, encFileData];

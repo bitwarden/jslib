@@ -2,7 +2,7 @@ export { Attachment } from './attachment';
 export { AuthResult } from './authResult';
 export { Card } from './card';
 export { Cipher } from './cipher';
-export { CipherString } from './cipherString';
+export { EncString } from './encString';
 export { Collection } from './collection';
 export { EncryptedObject } from './encryptedObject';
 export { EnvironmentUrls } from './environmentUrls';

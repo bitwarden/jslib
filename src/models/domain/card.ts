@@ -1,18 +1,18 @@
 import { CardData } from '../data/cardData';
 
-import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { EncString } from './encString';
 
 import { CardView } from '../view/cardView';
 import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
 export class Card extends Domain {
-    cardholderName: CipherString;
-    brand: CipherString;
-    number: CipherString;
-    expMonth: CipherString;
-    expYear: CipherString;
-    code: CipherString;
+    cardholderName: EncString;
+    brand: EncString;
+    number: EncString;
+    expMonth: EncString;
+    expYear: EncString;
+    code: EncString;
 
     constructor(obj?: CardData, alreadyEncrypted: boolean = false) {
         super();

@@ -23,7 +23,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
 
     private deviceCache: DeviceType = null;
 
-    constructor(protected i18nService: I18nService, private messagingService: MessagingService,
+    constructor(private i18nService: I18nService, private messagingService: MessagingService,
         private isDesktopApp: boolean, private storageService: StorageService) {
         this.identityClientId = isDesktopApp ? 'desktop' : 'connector';
     }
@@ -150,11 +150,6 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         });
 
         return Promise.resolve(result.response === 0);
-    }
-
-    async showPasswordDialog(title: string, body: string, passwordValidation: (value: string) => Promise<boolean>):
-        Promise<boolean> {
-        throw new Error('Not implemented.');
     }
 
     isDev(): boolean {
