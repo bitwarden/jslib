@@ -1,5 +1,5 @@
-import { CipherArrayBuffer } from '../models/domain/cipherArrayBuffer';
-import { CipherString } from '../models/domain/cipherString';
+import { EncArrayBuffer } from '../models/domain/encArrayBuffer';
+import { EncString } from '../models/domain/encString';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
 import { ProfileOrganizationResponse } from '../models/response/profileOrganizationResponse';
@@ -32,20 +32,20 @@ export abstract class CryptoService {
     toggleKey: () => Promise<any>;
     makeKey: (password: string, salt: string, kdf: KdfType, kdfIterations: number) => Promise<SymmetricCryptoKey>;
     makeKeyFromPin: (pin: string, salt: string, kdf: KdfType, kdfIterations: number,
-        protectedKeyCs?: CipherString) => Promise<SymmetricCryptoKey>;
-    makeShareKey: () => Promise<[CipherString, SymmetricCryptoKey]>;
-    makeKeyPair: (key?: SymmetricCryptoKey) => Promise<[string, CipherString]>;
+        protectedKeyCs?: EncString) => Promise<SymmetricCryptoKey>;
+    makeShareKey: () => Promise<[EncString, SymmetricCryptoKey]>;
+    makeKeyPair: (key?: SymmetricCryptoKey) => Promise<[string, EncString]>;
     makePinKey: (pin: string, salt: string, kdf: KdfType, kdfIterations: number) => Promise<SymmetricCryptoKey>;
     makeSendKey: (keyMaterial: ArrayBuffer) => Promise<SymmetricCryptoKey>;
     hashPassword: (password: string, key: SymmetricCryptoKey) => Promise<string>;
-    makeEncKey: (key: SymmetricCryptoKey) => Promise<[SymmetricCryptoKey, CipherString]>;
-    remakeEncKey: (key: SymmetricCryptoKey, encKey?: SymmetricCryptoKey) => Promise<[SymmetricCryptoKey, CipherString]>;
-    encrypt: (plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey) => Promise<CipherString>;
-    encryptToBytes: (plainValue: ArrayBuffer, key?: SymmetricCryptoKey) => Promise<CipherArrayBuffer>;
-    rsaEncrypt: (data: ArrayBuffer, publicKey?: ArrayBuffer) => Promise<CipherString>;
+    makeEncKey: (key: SymmetricCryptoKey) => Promise<[SymmetricCryptoKey, EncString]>;
+    remakeEncKey: (key: SymmetricCryptoKey, encKey?: SymmetricCryptoKey) => Promise<[SymmetricCryptoKey, EncString]>;
+    encrypt: (plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey) => Promise<EncString>;
+    encryptToBytes: (plainValue: ArrayBuffer, key?: SymmetricCryptoKey) => Promise<EncArrayBuffer>;
+    rsaEncrypt: (data: ArrayBuffer, publicKey?: ArrayBuffer) => Promise<EncString>;
     rsaDecrypt: (encValue: string) => Promise<ArrayBuffer>;
-    decryptToBytes: (cipherString: CipherString, key?: SymmetricCryptoKey) => Promise<ArrayBuffer>;
-    decryptToUtf8: (cipherString: CipherString, key?: SymmetricCryptoKey) => Promise<string>;
+    decryptToBytes: (encString: EncString, key?: SymmetricCryptoKey) => Promise<ArrayBuffer>;
+    decryptToUtf8: (encString: EncString, key?: SymmetricCryptoKey) => Promise<string>;
     decryptFromBytes: (encBuf: ArrayBuffer, key: SymmetricCryptoKey) => Promise<ArrayBuffer>;
     randomNumber: (min: number, max: number) => Promise<number>;
 }

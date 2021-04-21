@@ -1,8 +1,8 @@
-import { CipherString } from '../models/domain/cipherString';
+import { EncString } from '../models/domain/encString';
 
 export abstract class VaultTimeoutService {
     biometricLocked: boolean;
-    pinProtectedKey: CipherString;
+    pinProtectedKey: EncString;
     isLocked: () => Promise<boolean>;
     checkVaultTimeout: () => Promise<void>;
     lock: (allowSoftLock?: boolean) => Promise<void>;

@@ -1,7 +1,7 @@
 import { CardView } from '../view/cardView';
 
 import { Card as CardDomain } from '../domain/card';
-import { CipherString } from '../domain/cipherString';
+import { EncString } from '../domain/encString';
 
 export class Card {
     static template(): Card {
@@ -26,12 +26,12 @@ export class Card {
     }
 
     static toDomain(req: Card, domain = new CardDomain()) {
-        domain.cardholderName = req.cardholderName != null ? new CipherString(req.cardholderName) : null;
-        domain.brand = req.brand != null ? new CipherString(req.brand) : null;
-        domain.number = req.number != null ? new CipherString(req.number) : null;
-        domain.expMonth = req.expMonth != null ? new CipherString(req.expMonth) : null;
-        domain.expYear = req.expYear != null ? new CipherString(req.expYear) : null;
-        domain.code = req.code != null ? new CipherString(req.code) : null;
+        domain.cardholderName = req.cardholderName != null ? new EncString(req.cardholderName) : null;
+        domain.brand = req.brand != null ? new EncString(req.brand) : null;
+        domain.number = req.number != null ? new EncString(req.number) : null;
+        domain.expMonth = req.expMonth != null ? new EncString(req.expMonth) : null;
+        domain.expYear = req.expYear != null ? new EncString(req.expYear) : null;
+        domain.code = req.code != null ? new EncString(req.code) : null;
         return domain;
     }
 

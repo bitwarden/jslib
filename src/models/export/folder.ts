@@ -1,6 +1,6 @@
 import { FolderView } from '../view/folderView';
 
-import { CipherString } from '../domain/cipherString';
+import { EncString } from '../domain/encString';
 import { Folder as FolderDomain } from '../domain/folder';
 
 export class Folder {
@@ -16,7 +16,7 @@ export class Folder {
     }
 
     static toDomain(req: Folder, domain = new FolderDomain()) {
-        domain.name = req.name != null ? new CipherString(req.name) : null;
+        domain.name = req.name != null ? new EncString(req.name) : null;
         return domain;
     }
 

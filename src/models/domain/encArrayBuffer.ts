@@ -1,3 +1,3 @@
-export class CipherArrayBuffer {
+export class EncArrayBuffer {
     constructor(public buffer: ArrayBuffer) { }
 }

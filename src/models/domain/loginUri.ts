@@ -4,12 +4,12 @@ import { LoginUriData } from '../data/loginUriData';
 
 import { LoginUriView } from '../view/loginUriView';
 
-import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { EncString } from './encString';
 import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
 export class LoginUri extends Domain {
-    uri: CipherString;
+    uri: EncString;
     match: UriMatchType;
 
     constructor(obj?: LoginUriData, alreadyEncrypted: boolean = false) {
