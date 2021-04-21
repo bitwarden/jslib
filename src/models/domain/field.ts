@@ -2,15 +2,15 @@ import { FieldType } from '../../enums/fieldType';
 
 import { FieldData } from '../data/fieldData';
 
-import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { EncString } from './encString';
 
 import { FieldView } from '../view/fieldView';
 import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
 export class Field extends Domain {
-    name: CipherString;
-    value: CipherString;
+    name: EncString;
+    value: EncString;
     type: FieldType;
 
     constructor(obj?: FieldData, alreadyEncrypted: boolean = false) {

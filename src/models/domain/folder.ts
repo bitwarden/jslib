@@ -2,12 +2,12 @@ import { FolderData } from '../data/folderData';
 
 import { FolderView } from '../view/folderView';
 
-import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { EncString } from './encString';
 
 export class Folder extends Domain {
     id: string;
-    name: CipherString;
+    name: EncString;
     revisionDate: Date;
 
     constructor(obj?: FolderData, alreadyEncrypted: boolean = false) {

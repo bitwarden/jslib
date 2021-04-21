@@ -2,7 +2,7 @@ import { LogService } from '../abstractions/log.service';
 
 import { Utils } from '../misc/utils';
 
-import { CipherArrayBuffer } from '../models/domain/cipherArrayBuffer';
+import { EncArrayBuffer } from '../models/domain/encArrayBuffer';
 
 const MAX_SINGLE_BLOB_UPLOAD_SIZE = 256 * 1024 * 1024; // 256 MiB
 const MAX_BLOCKS_PER_BLOB = 50000;
@@ -10,14 +10,14 @@ const MAX_BLOCKS_PER_BLOB = 50000;
 export class AzureFileUploadService {
     constructor(private logService: LogService) { }
 
-    async upload(url: string, data: CipherArrayBuffer, renewalCallback: () => Promise<string>) {
+    async upload(url: string, data: EncArrayBuffer, renewalCallback: () => Promise<string>) {
         if (data.buffer.byteLength <= MAX_SINGLE_BLOB_UPLOAD_SIZE) {
             return await this.azureUploadBlob(url, data);
         } else {
             return await this.azureUploadBlocks(url, data, renewalCallback);
         }
     }
-    private async azureUploadBlob(url: string, data: CipherArrayBuffer) {
+    private async azureUploadBlob(url: string, data: EncArrayBuffer) {
         const urlObject = Utils.getUrl(url);
         const headers = new Headers({
             'x-ms-date': new Date().toUTCString(),
@@ -39,7 +39,7 @@ export class AzureFileUploadService {
             throw new Error(`Failed to create Azure blob: ${blobResponse.status}`);
         }
     }
-    private async azureUploadBlocks(url: string, data: CipherArrayBuffer, renewalCallback: () => Promise<string>) {
+    private async azureUploadBlocks(url: string, data: EncArrayBuffer, renewalCallback: () => Promise<string>) {
         const baseUrl = Utils.getUrl(url);
         const blockSize = this.getMaxBlockSize(baseUrl.searchParams.get('sv'));
         let blockIndex = 0;

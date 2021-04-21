@@ -1,4 +1,4 @@
-import { CipherString } from './cipherString';
+import { EncString } from './encString';
 
 import { View } from '../view/view';
 
@@ -16,21 +16,21 @@ export default class Domain {
             if (alreadyEncrypted === true || notEncList.indexOf(prop) > -1) {
                 (domain as any)[prop] = objProp ? objProp : null;
             } else {
-                (domain as any)[prop] = objProp ? new CipherString(objProp) : null;
+                (domain as any)[prop] = objProp ? new EncString(objProp) : null;
             }
         }
     }
-    protected buildDataModel<D extends Domain>(domain: D, dataObj: any, map: any, notCipherStringList: any[] = []) {
+    protected buildDataModel<D extends Domain>(domain: D, dataObj: any, map: any, notEncStringList: any[] = []) {
         for (const prop in map) {
             if (!map.hasOwnProperty(prop)) {
                 continue;
             }
 
             const objProp = (domain as any)[(map[prop] || prop)];
-            if (notCipherStringList.indexOf(prop) > -1) {
+            if (notEncStringList.indexOf(prop) > -1) {
                 (dataObj as any)[prop] = objProp != null ? objProp : null;
             } else {
-                (dataObj as any)[prop] = objProp != null ? (objProp as CipherString).encryptedString : null;
+                (dataObj as any)[prop] = objProp != null ? (objProp as EncString).encryptedString : null;
             }
         }
     }

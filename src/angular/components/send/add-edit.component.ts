@@ -23,7 +23,7 @@ import { SendFileView } from '../../../models/view/sendFileView';
 import { SendTextView } from '../../../models/view/sendTextView';
 import { SendView } from '../../../models/view/sendView';
 
-import { CipherArrayBuffer } from '../../../models/domain/cipherArrayBuffer';
+import { EncArrayBuffer } from '../../../models/domain/encArrayBuffer';
 import { Send } from '../../../models/domain/send';
 
 // TimeOption is used for the dropdown implementation of custom times
@@ -384,7 +384,7 @@ export class AddEditComponent implements OnInit {
         return this.sendService.get(this.sendId);
     }
 
-    protected async encryptSend(file: File): Promise<[Send, CipherArrayBuffer]> {
+    protected async encryptSend(file: File): Promise<[Send, EncArrayBuffer]> {
         const sendData = await this.sendService.encrypt(this.send, file, this.password, null);
 
         // Parse dates

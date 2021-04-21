@@ -10,14 +10,14 @@ import { StorageService } from '../../../src/abstractions/storage.service';
 import { UserService } from '../../../src/abstractions/user.service';
 import { Utils } from '../../../src/misc/utils';
 import { Cipher } from '../../../src/models/domain/cipher';
-import { CipherArrayBuffer } from '../../../src/models/domain/cipherArrayBuffer';
-import { CipherString } from '../../../src/models/domain/cipherString';
+import { EncArrayBuffer } from '../../../src/models/domain/encArrayBuffer';
+import { EncString } from '../../../src/models/domain/encString';
 import { SymmetricCryptoKey } from '../../../src/models/domain/symmetricCryptoKey';
 
 import { CipherService } from '../../../src/services/cipher.service';
 
 const ENCRYPTED_TEXT = 'This data has been encrypted';
-const ENCRYPTED_BYTES = new CipherArrayBuffer(Utils.fromUtf8ToArray(ENCRYPTED_TEXT).buffer);
+const ENCRYPTED_BYTES = new EncArrayBuffer(Utils.fromUtf8ToArray(ENCRYPTED_TEXT).buffer);
 
 describe('Cipher Service', () => {
     let cryptoService: SubstituteOf<CryptoService>;
@@ -42,7 +42,7 @@ describe('Cipher Service', () => {
         searchService = Substitute.for<SearchService>();
 
         cryptoService.encryptToBytes(Arg.any(), Arg.any()).resolves(ENCRYPTED_BYTES);
-        cryptoService.encrypt(Arg.any(), Arg.any()).resolves(new CipherString(ENCRYPTED_TEXT));
+        cryptoService.encrypt(Arg.any(), Arg.any()).resolves(new EncString(ENCRYPTED_TEXT));
 
         cipherService = new CipherService(cryptoService, userService, settingsService, apiService, fileUploadService,
             storageService, i18nService, () => searchService);

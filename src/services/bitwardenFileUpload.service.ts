@@ -1,6 +1,6 @@
 import { ApiService } from '../abstractions/api.service';
 
-import { CipherArrayBuffer } from '../models/domain/cipherArrayBuffer';
+import { EncArrayBuffer } from '../models/domain/encArrayBuffer';
 
 import { Utils } from '../misc/utils';
 
@@ -8,7 +8,7 @@ export class BitwardenFileUploadService
 {
     constructor(private apiService: ApiService) { }
 
-    async upload(encryptedFileName: string, encryptedFileData: CipherArrayBuffer, apiCall: (fd: FormData) => Promise<any>) {
+    async upload(encryptedFileName: string, encryptedFileData: EncArrayBuffer, apiCall: (fd: FormData) => Promise<any>) {
         const fd = new FormData();
         try {
             const blob = new Blob([encryptedFileData.buffer], { type: 'application/octet-stream' });

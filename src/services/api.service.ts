@@ -425,8 +425,8 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
 
-    async getSendFileDownloadData(send: SendAccessView, request: SendAccessRequest): Promise<SendFileDownloadDataResponse> {
-        const r = await this.send('POST', '/sends/' + send.id + '/access/file/' + send.file.id, request, false, true);
+    async getSendFileDownloadData(send: SendAccessView, request: SendAccessRequest, apiUrl?: string): Promise<SendFileDownloadDataResponse> {
+        const r = await this.send('POST', '/sends/' + send.id + '/access/file/' + send.file.id, request, false, true, apiUrl);
         return new SendFileDownloadDataResponse(r);
     }
 
@@ -445,8 +445,8 @@ export class ApiService implements ApiServiceAbstraction {
         return new SendFileUploadDataResponse(r);
     }
 
-    async renewFileUploadUrl(sendId: string, fileId: string): Promise<SendFileUploadDataResponse> {
-        const r = await this.send('GET', '/sends/' + sendId + '/file/' + fileId + '/renew', null, true, true);
+    async renewSendFileUploadUrl(sendId: string, fileId: string): Promise<SendFileUploadDataResponse> {
+        const r = await this.send('GET', '/sends/' + sendId + '/file/' + fileId, null, true, true);
         return new SendFileUploadDataResponse(r);
     }
 
@@ -652,7 +652,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     async renewAttachmentUploadUrl(id: string, attachmentId: string): Promise<AttachmentUploadDataResponse> {
-        const r = await this.send('GET', '/ciphers/' + id + '/attachment/' + attachmentId, null, true, true);
+        const r = await this.send('GET', '/ciphers/' + id + '/attachment/' + attachmentId + '/renew', null, true, true);
         return new AttachmentUploadDataResponse(r);
     }
 

@@ -12,10 +12,10 @@ import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
 import { VaultTimeoutService as VaultTimeoutServiceAbstraction } from '../abstractions/vaultTimeout.service';
 
-import { CipherString } from '../models/domain/cipherString';
+import { EncString } from '../models/domain/encString';
 
 export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
-    pinProtectedKey: CipherString = null;
+    pinProtectedKey: EncString = null;
     biometricLocked: boolean = true;
 
     private inited = false;

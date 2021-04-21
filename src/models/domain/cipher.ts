@@ -7,8 +7,8 @@ import { CipherView } from '../view/cipherView';
 
 import { Attachment } from './attachment';
 import { Card } from './card';
-import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { EncString } from './encString';
 import { Field } from './field';
 import { Identity } from './identity';
 import { Login } from './login';
@@ -20,8 +20,8 @@ export class Cipher extends Domain {
     id: string;
     organizationId: string;
     folderId: string;
-    name: CipherString;
-    notes: CipherString;
+    name: EncString;
+    notes: EncString;
     type: CipherType;
     favorite: boolean;
     organizationUseTotp: boolean;
