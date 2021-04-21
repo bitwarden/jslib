@@ -18,8 +18,8 @@
     "build:watch": "npm run clean && tsc -watch",
     "lint": "tslint 'src/**/*.ts' 'spec/**/*.ts'",
     "lint:fix": "tslint 'src/**/*.ts' 'spec/**/*.ts' --fix",
-    "test": "node --max_old_space_size=4096 node_modules/karma/bin/karma start ./spec/support/karma.conf.js --single-run",
-    "test:watch": "node --max_old_space_size=4096 node_modules/karma/bin/karma start ./spec/support/karma.conf.js",
+    "test": "karma start ./spec/support/karma.conf.js --single-run",
+    "test:watch": "karma start ./spec/support/karma.conf.js",
     "test:node": "npm run build && jasmine",
     "test:node:watch": "concurrently -k -n TSC,Node -c yellow,cyan \"npm run build:watch\" \"nodemon -w ./dist --delay 500ms --exec jasmine\""
   },
