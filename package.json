@@ -46,7 +46,6 @@
     "karma-chrome-launcher": "^3.1.0",
     "karma-cli": "^2.0.0",
     "karma-detect-browsers": "^2.3.3",
-    "karma-edge-launcher": "^0.4.2",
     "karma-firefox-launcher": "^2.1.0",
     "karma-jasmine": "^4.0.1",
     "karma-jasmine-html-reporter": "^1.5.4",

@@ -92,10 +92,8 @@ module.exports = (config) => {
                 removeBrowser('Opera');
                 removeBrowser('SafariTechPreview');
 
-                var ci = process.env.CI === 'True' || process.env.CI === 'true';
                 var githubAction = process.env.GITHUB_WORKFLOW != null && process.env.GITHUB_WORKFLOW !== '';
                 if (githubAction) {
-                    removeBrowser('Edge');                    
                     removeBrowser('Firefox');
                     removeBrowser('Safari');
                 }
