@@ -22,10 +22,6 @@ export class CardView implements View {
         return this.code != null ? '•'.repeat(this.code.length) : null;
     }
 
-    get maskedNumber(): string {
-        return this.number != null ? '•'.repeat(this.number.length) : null;
-    }
-
     get brand(): string {
         return this._brand;
     }
