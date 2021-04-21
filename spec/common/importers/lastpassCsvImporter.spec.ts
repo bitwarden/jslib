@@ -3,16 +3,7 @@ import { LastPassCsvImporter as Importer } from '../../../src/importers/lastpass
 import { CipherView } from '../../../src/models/view/cipherView';
 import { FieldView } from '../../../src/models/view/fieldView';
 
-import { Utils } from '../../../src/misc/utils';
-
 import { FieldType } from '../../../src/enums';
-
-if (Utils.isNode) {
-    // Polyfills
-    // tslint:disable-next-line
-    const jsdom: any = require('jsdom');
-    (global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;
-}
 
 const CipherData = [
     {

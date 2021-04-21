@@ -1,15 +1,6 @@
 import { FieldType } from '../../../src/enums/fieldType';
 import { OnePassword1PifImporter as Importer } from '../../../src/importers/onepasswordImporters/onepassword1PifImporter';
 
-import { Utils } from '../../../src/misc/utils';
-
-if (Utils.isNode) {
-    // Polyfills
-    // tslint:disable-next-line
-    const jsdom: any = require('jsdom');
-    (global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;
-}
-
 const TestData: string = '***aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee***\n' +
     JSON.stringify({
         uuid: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',

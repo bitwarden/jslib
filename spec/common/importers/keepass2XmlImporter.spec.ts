@@ -1,14 +1,5 @@
 import { KeePass2XmlImporter as Importer } from '../../../src/importers/keepass2XmlImporter';
 
-import { Utils } from '../../../src/misc/utils';
-
-if (Utils.isNode) {
-    // Polyfills
-    // tslint:disable-next-line
-    const jsdom: any = require('jsdom');
-    (global as any).DOMParser = new jsdom.JSDOM().window.DOMParser;
-}
-
 const TestData: string = `<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <KeePassFile>
 	<Meta>
