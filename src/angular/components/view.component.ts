@@ -13,6 +13,7 @@ import { CipherType } from '../../enums/cipherType';
 import { EventType } from '../../enums/eventType';
 import { FieldType } from '../../enums/fieldType';
 
+import { ApiService } from '../../abstractions/api.service';
 import { AuditService } from '../../abstractions/audit.service';
 import { CipherService } from '../../abstractions/cipher.service';
 import { CryptoService } from '../../abstractions/crypto.service';
@@ -22,6 +23,8 @@ import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { TokenService } from '../../abstractions/token.service';
 import { TotpService } from '../../abstractions/totp.service';
 import { UserService } from '../../abstractions/user.service';
+
+import { ErrorResponse } from '../../models/response/errorResponse';
 
 import { AttachmentView } from '../../models/view/attachmentView';
 import { CipherView } from '../../models/view/cipherView';
@@ -61,7 +64,7 @@ export class ViewComponent implements OnDestroy, OnInit {
         protected auditService: AuditService, protected win: Window,
         protected broadcasterService: BroadcasterService, protected ngZone: NgZone,
         protected changeDetectorRef: ChangeDetectorRef, protected userService: UserService,
-        protected eventService: EventService) { }
+        protected eventService: EventService, protected apiService: ApiService) { }
 
     ngOnInit() {
         this.broadcasterService.subscribe(BroadcasterSubscriptionId, (message: any) => {
@@ -243,8 +246,22 @@ export class ViewComponent implements OnDestroy, OnInit {
             return;
         }
 
+        let url: string;
+        try {
+            const attachmentDownloadResponse = await this.apiService.getAttachmentData(this.cipher.id, attachment.id);
+            url = attachmentDownloadResponse.url;
+        } catch (e) {
+            if (e instanceof ErrorResponse && (e as ErrorResponse).statusCode === 404) {
+                url = attachment.url;
+            } else if (e instanceof ErrorResponse) {
+                throw new Error((e as ErrorResponse).getSingleMessage());
+            } else {
+                throw e;
+            }
+        }
+
         a.downloading = true;
-        const response = await fetch(new Request(attachment.url, { cache: 'no-store' }));
+        const response = await fetch(new Request(url, { cache: 'no-store' }));
         if (response.status !== 200) {
             this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
             a.downloading = false;
