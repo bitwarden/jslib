@@ -24,9 +24,10 @@ import { TokenService } from '../../abstractions/token.service';
 import { TotpService } from '../../abstractions/totp.service';
 import { UserService } from '../../abstractions/user.service';
 
+import { ErrorResponse } from '../../models/response/errorResponse';
+
 import { AttachmentView } from '../../models/view/attachmentView';
 import { CipherView } from '../../models/view/cipherView';
-import { ErrorResponse } from '../../models/response/errorResponse';
 import { FieldView } from '../../models/view/fieldView';
 import { LoginUriView } from '../../models/view/loginUriView';
 import { BroadcasterService } from '../services/broadcaster.service';
