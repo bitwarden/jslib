@@ -1,4 +1,8 @@
-import { Directive, NgZone, OnInit } from '@angular/core';
+import {
+    Directive,
+    NgZone,
+    OnInit,
+} from '@angular/core';
 
 import { OrganizationUserStatusType } from '../../../enums/organizationUserStatusType';
 import { PolicyType } from '../../../enums/policyType';

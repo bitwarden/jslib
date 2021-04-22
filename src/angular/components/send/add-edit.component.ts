@@ -1,6 +1,11 @@
 import { DatePipe } from '@angular/common';
-
-import { Directive, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+    Directive,
+    EventEmitter,
+    Input,
+    OnInit,
+    Output
+} from '@angular/core';
 
 import { OrganizationUserStatusType } from '../../../enums/organizationUserStatusType';
 import { PolicyType } from '../../../enums/policyType';

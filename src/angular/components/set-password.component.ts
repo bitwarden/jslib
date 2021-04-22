@@ -1,3 +1,4 @@
+import { Directive } from '@angular/core';
 import {
     ActivatedRoute,
     Router
@@ -21,7 +22,6 @@ import { SetPasswordRequest } from '../../models/request/setPasswordRequest';
 
 import { ChangePasswordComponent as BaseChangePasswordComponent } from './change-password.component';
 
-import { Directive } from '@angular/core';
 import { KdfType } from '../../enums/kdfType';
 
 @Directive()

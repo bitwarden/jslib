@@ -1,3 +1,4 @@
+import { Directive } from '@angular/core';
 import {
     ActivatedRoute,
     Router,
@@ -16,7 +17,6 @@ import { ConstantsService } from '../../services/constants.service';
 
 import { Utils } from '../../misc/utils';
 
-import { Directive } from '@angular/core';
 import { AuthResult } from '../../models/domain/authResult';
 
 @Directive()
