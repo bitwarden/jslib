@@ -65,19 +65,6 @@ module.exports = (config) => {
             devtool: 'inline-source-map',
         },
 
-        karmaTypescriptConfig: {
-            tsconfig: './tsconfig.json',
-            bundlerOptions: {
-                entrypoints: /\.spec\.ts$/,
-                sourceMap: true,
-                resolve: {
-                    alias: {
-                        "util": "node_modules/util/util.js"
-                    }
-                }
-            }
-        },
-
         detectBrowsers: {
             usePhantomJS: false,
             postDetection: (availableBrowsers) => {
