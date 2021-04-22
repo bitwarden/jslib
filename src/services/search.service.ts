@@ -13,6 +13,7 @@ import { UriMatchType } from '../enums/uriMatchType';
 import { SendView } from '../models/view/sendView';
 
 export class SearchService implements SearchServiceAbstraction {
+    indexedEntityId?: string = null;
     private indexing = false;
     private index: lunr.Index = null;
     private searchableMinLength = 2;
@@ -34,7 +35,7 @@ export class SearchService implements SearchServiceAbstraction {
         return !notSearchable;
     }
 
-    async indexCiphers(ciphers?: CipherView[]): Promise<void> {
+    async indexCiphers(indexedEntityId?: string, ciphers?: CipherView[]): Promise<void> {
         if (this.indexing) {
             return;
         }
@@ -69,6 +70,7 @@ export class SearchService implements SearchServiceAbstraction {
         ciphers = ciphers || await this.cipherService.getAllDecrypted();
         ciphers.forEach(c => builder.add(c));
         this.index = builder.build();
+        this.indexedEntityId = indexedEntityId;
         this.indexing = false;
 
         this.logService.timeEnd('search indexing');
