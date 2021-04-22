@@ -192,8 +192,8 @@ export abstract class ApiService {
     putSend: (id: string, request: SendRequest) => Promise<SendResponse>;
     putSendRemovePassword: (id: string) => Promise<SendResponse>;
     deleteSend: (id: string) => Promise<any>;
-    getSendFileDownloadData: (send: SendAccessView, request: SendAccessRequest) => Promise<SendFileDownloadDataResponse>;
-    renewFileUploadUrl: (sendId: string, fileId: string) => Promise<SendFileUploadDataResponse>;
+    getSendFileDownloadData: (send: SendAccessView, request: SendAccessRequest, apiUrl?: string) => Promise<SendFileDownloadDataResponse>;
+    renewSendFileUploadUrl: (sendId: string, fileId: string) => Promise<SendFileUploadDataResponse>;
 
     getCipher: (id: string) => Promise<CipherResponse>;
     getCipherAdmin: (id: string) => Promise<CipherResponse>;

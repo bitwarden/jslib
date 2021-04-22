@@ -8,7 +8,7 @@ import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { PolicyService } from '../../abstractions/policy.service';
 import { UserService } from '../../abstractions/user.service';
 
-import { CipherString } from '../../models/domain/cipherString';
+import { EncString } from '../../models/domain/encString';
 import { MasterPasswordPolicyOptions } from '../../models/domain/masterPasswordPolicyOptions';
 import { SymmetricCryptoKey } from '../../models/domain/symmetricCryptoKey';
 
@@ -78,7 +78,7 @@ export class ChangePasswordComponent implements OnInit {
             this.kdf, this.kdfIterations);
         const masterPasswordHash = await this.cryptoService.hashPassword(this.masterPassword, key);
 
-        let encKey: [SymmetricCryptoKey, CipherString] = null;
+        let encKey: [SymmetricCryptoKey, EncString] = null;
         const existingEncKey = await this.cryptoService.getEncKey();
         if (existingEncKey == null) {
             encKey = await this.cryptoService.makeEncKey(key);
@@ -96,7 +96,7 @@ export class ChangePasswordComponent implements OnInit {
     }
 
     async performSubmitActions(masterPasswordHash: string, key: SymmetricCryptoKey,
-        encKey: [SymmetricCryptoKey, CipherString]) {
+        encKey: [SymmetricCryptoKey, EncString]) {
         // Override in sub-class
     }
 

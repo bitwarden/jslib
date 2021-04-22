@@ -1,5 +1,5 @@
-import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { EncString } from './encString';
 import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
 import { SendTextData } from '../data/sendTextData';
@@ -7,7 +7,7 @@ import { SendTextData } from '../data/sendTextData';
 import { SendTextView } from '../view/sendTextView';
 
 export class SendText extends Domain {
-    text: CipherString;
+    text: EncString;
     hidden: boolean;
 
     constructor(obj?: SendTextData, alreadyEncrypted: boolean = false) {

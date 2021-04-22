@@ -1,5 +1,5 @@
-import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { EncString } from './encString';
 import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
 import { SendFileData } from '../data/sendFileData';
@@ -10,7 +10,7 @@ export class SendFile extends Domain {
     id: string;
     size: string;
     sizeName: string;
-    fileName: CipherString;
+    fileName: EncString;
 
     constructor(obj?: SendFileData, alreadyEncrypted: boolean = false) {
         super();

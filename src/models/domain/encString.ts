@@ -6,7 +6,7 @@ import { Utils } from '../../misc/utils';
 
 import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
-export class CipherString {
+export class EncString {
     encryptedString?: string;
     encryptionType?: EncryptionType;
     decryptedValue?: string;

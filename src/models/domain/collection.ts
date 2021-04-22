@@ -2,13 +2,13 @@ import { CollectionData } from '../data/collectionData';
 
 import { CollectionView } from '../view/collectionView';
 
-import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { EncString } from './encString';
 
 export class Collection extends Domain {
     id: string;
     organizationId: string;
-    name: CipherString;
+    name: EncString;
     externalId: string;
     readOnly: boolean;
     hidePasswords: boolean;

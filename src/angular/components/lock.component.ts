@@ -14,7 +14,7 @@ import { VaultTimeoutService } from '../../abstractions/vaultTimeout.service';
 
 import { ConstantsService } from '../../services/constants.service';
 
-import { CipherString } from '../../models/domain/cipherString';
+import { EncString } from '../../models/domain/encString';
 import { SymmetricCryptoKey } from '../../models/domain/symmetricCryptoKey';
 
 import { PasswordVerificationRequest } from '../../models/request/passwordVerificationRequest';
@@ -84,7 +84,7 @@ export class LockComponent implements OnInit {
                         this.vaultTimeoutService.pinProtectedKey);
                     const encKey = await this.cryptoService.getEncKey(key);
                     const protectedPin = await this.storageService.get<string>(ConstantsService.protectedPin);
-                    const decPin = await this.cryptoService.decryptToUtf8(new CipherString(protectedPin), encKey);
+                    const decPin = await this.cryptoService.decryptToUtf8(new EncString(protectedPin), encKey);
                     failed = decPin !== this.pin;
                     if (!failed) {
                         await this.setKeyAndContinue(key);
@@ -133,7 +133,7 @@ export class LockComponent implements OnInit {
                 if (this.pinSet[0]) {
                     const protectedPin = await this.storageService.get<string>(ConstantsService.protectedPin);
                     const encKey = await this.cryptoService.getEncKey(key);
-                    const decPin = await this.cryptoService.decryptToUtf8(new CipherString(protectedPin), encKey);
+                    const decPin = await this.cryptoService.decryptToUtf8(new EncString(protectedPin), encKey);
                     const pinKey = await this.cryptoService.makePinKey(decPin, this.email, kdf, kdfIterations);
                     this.vaultTimeoutService.pinProtectedKey = await this.cryptoService.encrypt(key.key, pinKey);
                 }

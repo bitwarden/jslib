@@ -7,9 +7,9 @@ import { CipherData } from '../models/data/cipherData';
 import { Attachment } from '../models/domain/attachment';
 import { Card } from '../models/domain/card';
 import { Cipher } from '../models/domain/cipher';
-import { CipherArrayBuffer } from '../models/domain/cipherArrayBuffer';
-import { CipherString } from '../models/domain/cipherString';
 import Domain from '../models/domain/domainBase';
+import { EncArrayBuffer } from '../models/domain/encArrayBuffer';
+import { EncString } from '../models/domain/encString';
 import { Field } from '../models/domain/field';
 import { Identity } from '../models/domain/identity';
 import { Login } from '../models/domain/login';
@@ -147,7 +147,6 @@ export class CipherService implements CipherServiceAbstraction {
         cipher.type = model.type;
         cipher.collectionIds = model.collectionIds;
         cipher.revisionDate = model.revisionDate;
-        cipher.reprompt = model.reprompt;
 
         if (key == null && cipher.organizationId != null) {
             key = await this.cryptoService.getOrgKey(cipher.organizationId);
@@ -656,8 +655,8 @@ export class CipherService implements CipherServiceAbstraction {
      * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
      * This method still exists for backward compatibility with old server versions.
      */
-    async legacyServerAttachmentFileUpload(admin: boolean, cipherId: string, encFileName: CipherString,
-        encData: CipherArrayBuffer, key: CipherString) {
+    async legacyServerAttachmentFileUpload(admin: boolean, cipherId: string, encFileName: EncString,
+        encData: EncArrayBuffer, key: EncString) {
         const fd = new FormData();
         try {
             const blob = new Blob([encData.buffer], { type: 'application/octet-stream' });
@@ -1012,7 +1011,7 @@ export class CipherService implements CipherServiceAbstraction {
                         return self.cryptoService.encrypt(modelProp, key);
                     }
                     return null;
-                }).then((val: CipherString) => {
+                }).then((val: EncString) => {
                     (theObj as any)[theProp] = val;
                 });
                 promises.push(p);
