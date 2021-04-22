@@ -1,3 +1,4 @@
+import { Directive } from '@angular/core';
 import {
     ActivatedRoute,
     Router,
@@ -18,6 +19,7 @@ import { Utils } from '../../misc/utils';
 
 import { AuthResult } from '../../models/domain/authResult';
 
+@Directive()
 export class SsoComponent {
     identifier: string;
     loggingIn = false;

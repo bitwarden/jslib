@@ -1,10 +1,10 @@
 import { DatePipe } from '@angular/common';
-
 import {
+    Directive,
     EventEmitter,
     Input,
     OnInit,
-    Output,
+    Output
 } from '@angular/core';
 
 import { OrganizationUserStatusType } from '../../../enums/organizationUserStatusType';
@@ -38,6 +38,7 @@ enum DateField {
     ExpriationDate = 'expiration',
 }
 
+@Directive()
 export class AddEditComponent implements OnInit {
     @Input() sendId: string;
     @Input() type: SendType;

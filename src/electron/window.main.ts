@@ -27,7 +27,7 @@ export class WindowMain {
         private createWindowCallback: (win: BrowserWindow) => void) { }
 
     init(): Promise<any> {
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             try {
                 if (!isMacAppStore() && !isSnapStore()) {
                     const gotTheLock = app.requestSingleInstanceLock();

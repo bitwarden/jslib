@@ -1,4 +1,4 @@
-import { OnInit } from '@angular/core';
+import { Directive, OnInit } from '@angular/core';
 
 import { ApiService } from '../../abstractions/api.service';
 import { I18nService } from '../../abstractions/i18n.service';
@@ -6,6 +6,7 @@ import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { TokenService } from '../../abstractions/token.service';
 import { UserService } from '../../abstractions/user.service';
 
+@Directive()
 export class PremiumComponent implements OnInit {
     isPremium: boolean = false;
     price: number = 10;

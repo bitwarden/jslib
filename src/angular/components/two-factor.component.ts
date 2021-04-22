@@ -1,7 +1,4 @@
-import {
-    OnDestroy,
-    OnInit,
-} from '@angular/core';
+import { Directive, OnDestroy, OnInit } from '@angular/core';
 
 import {
     ActivatedRoute,
@@ -28,6 +25,7 @@ import { ConstantsService } from '../../services/constants.service';
 import * as DuoWebSDK from 'duo_web_sdk';
 import { WebAuthn } from '../../misc/webauthn';
 
+@Directive()
 export class TwoFactorComponent implements OnInit, OnDestroy {
     token: string = '';
     remember: boolean = false;

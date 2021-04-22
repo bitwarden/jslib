@@ -291,7 +291,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
             // Have to specify some algorithm
             hash: { name: this.toWebCryptoAlgorithm('sha1') },
         };
-        const keyPair = await this.subtle.generateKey(rsaParams, true, ['encrypt', 'decrypt']);
+        const keyPair = (await this.subtle.generateKey(rsaParams, true, ['encrypt', 'decrypt'])) as CryptoKeyPair;
         const publicKey = await this.subtle.exportKey('spki', keyPair.publicKey);
         const privateKey = await this.subtle.exportKey('pkcs8', keyPair.privateKey);
         return [publicKey, privateKey];
