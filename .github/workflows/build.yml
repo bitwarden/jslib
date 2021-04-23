@@ -30,7 +30,10 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v1
         with:
-          node-version: '10.x'
+          node-version: '14.x'
+      
+      - name: Update NPM
+        rum: npm install -g npm@7
 
       - name: Print environment
         run: |
