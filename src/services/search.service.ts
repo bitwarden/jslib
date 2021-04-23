@@ -26,6 +26,7 @@ export class SearchService implements SearchServiceAbstraction {
     }
 
     clearIndex(): void {
+        this.indexedEntityId = null;
         this.index = null;
     }
 
@@ -42,6 +43,7 @@ export class SearchService implements SearchServiceAbstraction {
 
         this.logService.time('search indexing');
         this.indexing = true;
+        this.indexedEntityId = indexedEntityId;
         this.index = null;
         const builder = new lunr.Builder();
         builder.ref('id');
@@ -70,7 +72,7 @@ export class SearchService implements SearchServiceAbstraction {
         ciphers = ciphers || await this.cipherService.getAllDecrypted();
         ciphers.forEach(c => builder.add(c));
         this.index = builder.build();
-        this.indexedEntityId = indexedEntityId;
+
         this.indexing = false;
 
         this.logService.timeEnd('search indexing');

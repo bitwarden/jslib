@@ -297,7 +297,7 @@ export class CipherService implements CipherServiceAbstraction {
             const userId = await this.userService.getUserId();
             if ((this.searchService().indexedEntityId ?? userId) !== userId)
             {
-                await this.searchService().indexCiphers();
+                await this.searchService().indexCiphers(userId, this.decryptedCipherCache);
             }
             return this.decryptedCipherCache;
         }
