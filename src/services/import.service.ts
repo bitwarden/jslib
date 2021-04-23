@@ -54,6 +54,7 @@ import { LogMeOnceCsvImporter } from '../importers/logMeOnceCsvImporter';
 import { MeldiumCsvImporter } from '../importers/meldiumCsvImporter';
 import { MSecureCsvImporter } from '../importers/msecureCsvImporter';
 import { MykiCsvImporter } from '../importers/mykiCsvImporter';
+import { NordPassCsvImporter } from '../importers/nordpassCsvImporter';
 import { OnePassword1PifImporter } from '../importers/onepasswordImporters/onepassword1PifImporter';
 import { OnePasswordMacCsvImporter } from '../importers/onepasswordImporters/onepasswordMacCsvImporter';
 import { OnePasswordWinCsvImporter } from '../importers/onepasswordImporters/onepasswordWinCsvImporter';
@@ -137,6 +138,7 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'codebookcsv', name: 'Codebook (csv)' },
         { id: 'encryptrcsv', name: 'Encryptr (csv)' },
         { id: 'yoticsv', name: 'Yoti (csv)' },
+        { id: 'nordpasscsv', name: 'Nordpass (csv)' },
     ];
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
@@ -294,6 +296,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new EncryptrCsvImporter();
             case 'yoticsv':
                 return new YotiCsvImporter();
+            case 'nordpasscsv':
+                return new NordPassCsvImporter();
             default:
                 return null;
         }
