@@ -241,6 +241,7 @@ export abstract class BaseImporter {
 
     protected setCardExpiration(cipher: CipherView, expiration: string): boolean {
         if (!this.isNullOrWhitespace(expiration)) {
+            expiration = expiration.replace(/\s/g, '');
             const parts = expiration.split('/');
             if (parts.length === 2) {
                 let month: string = null;
