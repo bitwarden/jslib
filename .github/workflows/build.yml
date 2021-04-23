@@ -33,7 +33,7 @@ jobs:
           node-version: '14.x'
       
       - name: Update NPM
-        rum: npm install -g npm@7
+        run: npm install -g npm@7
 
       - name: Print environment
         run: |
