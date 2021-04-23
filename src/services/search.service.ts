@@ -17,6 +17,7 @@ export class SearchService implements SearchServiceAbstraction {
     private indexing = false;
     private index: lunr.Index = null;
     private searchableMinLength = 2;
+    private indexingPromise: Promise<void> = null;
 
     constructor(private cipherService: CipherService, private logService: LogService,
         private i18nService: I18nService) {
@@ -26,7 +27,15 @@ export class SearchService implements SearchServiceAbstraction {
     }
 
     clearIndex(): void {
+        this.indexedEntityId = null;
         this.index = null;
+    }
+
+    async awaitAndClearIndex(): Promise<void> {
+        if (this.indexing && this.indexingPromise != null) {
+            await this.indexingPromise;
+        }
+        this.clearIndex();
     }
 
     isSearchable(query: string): boolean {
@@ -42,35 +51,9 @@ export class SearchService implements SearchServiceAbstraction {
 
         this.logService.time('search indexing');
         this.indexing = true;
-        this.index = null;
-        const builder = new lunr.Builder();
-        builder.ref('id');
-        builder.field('shortid', { boost: 100, extractor: (c: CipherView) => c.id.substr(0, 8) });
-        builder.field('name', { boost: 10 });
-        builder.field('subtitle', {
-            boost: 5,
-            extractor: (c: CipherView) => {
-                if (c.subTitle != null && c.type === CipherType.Card) {
-                    return c.subTitle.replace(/\*/g, '');
-                }
-                return c.subTitle;
-            },
-        });
-        builder.field('notes');
-        builder.field('login.username', {
-            extractor: (c: CipherView) => c.type === CipherType.Login && c.login != null ? c.login.username : null,
-        });
-        builder.field('login.uris', { boost: 2, extractor: (c: CipherView) => this.uriExtractor(c) });
-        builder.field('fields', { extractor: (c: CipherView) => this.fieldExtractor(c, false) });
-        builder.field('fields_joined', { extractor: (c: CipherView) => this.fieldExtractor(c, true) });
-        builder.field('attachments', { extractor: (c: CipherView) => this.attachmentExtractor(c, false) });
-        builder.field('attachments_joined',
-            { extractor: (c: CipherView) => this.attachmentExtractor(c, true) });
-        builder.field('organizationid', { extractor: (c: CipherView) => c.organizationId });
-        ciphers = ciphers || await this.cipherService.getAllDecrypted();
-        ciphers.forEach(c => builder.add(c));
-        this.index = builder.build();
         this.indexedEntityId = indexedEntityId;
+        this.indexingPromise = this.indexCiphersWork(ciphers);
+        await this.indexingPromise;
         this.indexing = false;
 
         this.logService.timeEnd('search indexing');
@@ -264,5 +247,36 @@ export class SearchService implements SearchServiceAbstraction {
             uris.push(uri);
         });
         return uris.length > 0 ? uris : null;
+    }
+
+    private async indexCiphersWork(ciphers?: CipherView[]) {
+        this.index = null;
+        const builder = new lunr.Builder();
+        builder.ref('id');
+        builder.field('shortid', { boost: 100, extractor: (c: CipherView) => c.id.substr(0, 8) });
+        builder.field('name', { boost: 10 });
+        builder.field('subtitle', {
+            boost: 5,
+            extractor: (c: CipherView) => {
+                if (c.subTitle != null && c.type === CipherType.Card) {
+                    return c.subTitle.replace(/\*/g, '');
+                }
+                return c.subTitle;
+            },
+        });
+        builder.field('notes');
+        builder.field('login.username', {
+            extractor: (c: CipherView) => c.type === CipherType.Login && c.login != null ? c.login.username : null,
+        });
+        builder.field('login.uris', { boost: 2, extractor: (c: CipherView) => this.uriExtractor(c) });
+        builder.field('fields', { extractor: (c: CipherView) => this.fieldExtractor(c, false) });
+        builder.field('fields_joined', { extractor: (c: CipherView) => this.fieldExtractor(c, true) });
+        builder.field('attachments', { extractor: (c: CipherView) => this.attachmentExtractor(c, false) });
+        builder.field('attachments_joined',
+            { extractor: (c: CipherView) => this.attachmentExtractor(c, true) });
+        builder.field('organizationid', { extractor: (c: CipherView) => c.organizationId });
+        ciphers = ciphers || await this.cipherService.getAllDecrypted();
+        ciphers.forEach(c => builder.add(c));
+        this.index = builder.build();
     }
 }

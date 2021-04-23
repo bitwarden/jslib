@@ -295,9 +295,10 @@ export class CipherService implements CipherServiceAbstraction {
     async getAllDecrypted(): Promise<CipherView[]> {
         if (this.decryptedCipherCache != null) {
             const userId = await this.userService.getUserId();
-            if ((this.searchService().indexedEntityId ?? userId) !== userId)
+            if (this.searchService().indexedEntityId ?? userId !== userId)
             {
-                await this.searchService().indexCiphers();
+                await this.searchService().awaitAndClearIndex();
+                this.searchService().indexCiphers();
             }
             return this.decryptedCipherCache;
         }
