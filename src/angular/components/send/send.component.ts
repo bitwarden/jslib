@@ -1,4 +1,5 @@
 import {
+    Directive,
     NgZone,
     OnInit,
 } from '@angular/core';
@@ -17,6 +18,7 @@ import { SearchService } from '../../../abstractions/search.service';
 import { SendService } from '../../../abstractions/send.service';
 import { UserService } from '../../../abstractions/user.service';
 
+@Directive()
 export class SendComponent implements OnInit {
 
     disableSend = false;

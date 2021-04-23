@@ -147,7 +147,6 @@ export class CipherService implements CipherServiceAbstraction {
         cipher.type = model.type;
         cipher.collectionIds = model.collectionIds;
         cipher.revisionDate = model.revisionDate;
-        cipher.reprompt = model.reprompt;
 
         if (key == null && cipher.organizationId != null) {
             key = await this.cryptoService.getOrgKey(cipher.organizationId);
@@ -295,6 +294,11 @@ export class CipherService implements CipherServiceAbstraction {
     @sequentialize(() => 'getAllDecrypted')
     async getAllDecrypted(): Promise<CipherView[]> {
         if (this.decryptedCipherCache != null) {
+            const userId = await this.userService.getUserId();
+            if ((this.searchService().indexedEntityId ?? userId) !== userId)
+            {
+                await this.searchService().indexCiphers();
+            }
             return this.decryptedCipherCache;
         }
 

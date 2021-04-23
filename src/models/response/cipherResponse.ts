@@ -2,7 +2,6 @@ import { AttachmentResponse } from './attachmentResponse';
 import { BaseResponse } from './baseResponse';
 import { PasswordHistoryResponse } from './passwordHistoryResponse';
 
-import { CipherRepromptType } from '../../enums/cipherRepromptType';
 import { CardApi } from '../api/cardApi';
 import { FieldApi } from '../api/fieldApi';
 import { IdentityApi } from '../api/identityApi';
@@ -30,7 +29,6 @@ export class CipherResponse extends BaseResponse {
     passwordHistory: PasswordHistoryResponse[];
     collectionIds: string[];
     deletedDate: string;
-    reprompt: CipherRepromptType;
 
     constructor(response: any) {
         super(response);
@@ -86,7 +84,5 @@ export class CipherResponse extends BaseResponse {
         if (passwordHistory != null) {
             this.passwordHistory = passwordHistory.map((h: any) => new PasswordHistoryResponse(h));
         }
-
-        this.reprompt = this.getResponseProperty('Reprompt') || CipherRepromptType.None;
     }
 }

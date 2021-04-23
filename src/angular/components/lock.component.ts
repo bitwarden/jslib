@@ -1,4 +1,4 @@
-import { OnInit } from '@angular/core';
+import { Directive, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { ApiService } from '../../abstractions/api.service';
@@ -21,6 +21,7 @@ import { PasswordVerificationRequest } from '../../models/request/passwordVerifi
 
 import { Utils } from '../../misc/utils';
 
+@Directive()
 export class LockComponent implements OnInit {
     masterPassword: string = '';
     pin: string = '';

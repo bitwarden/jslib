@@ -1,3 +1,4 @@
+import { Directive } from '@angular/core';
 import {
     ActivatedRoute,
     Router
@@ -23,6 +24,7 @@ import { ChangePasswordComponent as BaseChangePasswordComponent } from './change
 
 import { KdfType } from '../../enums/kdfType';
 
+@Directive()
 export class SetPasswordComponent extends BaseChangePasswordComponent {
     syncLoading: boolean = true;
     showPassword: boolean = false;

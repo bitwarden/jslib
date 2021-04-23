@@ -2,9 +2,10 @@ import { CipherView } from '../models/view/cipherView';
 import { SendView } from '../models/view/sendView';
 
 export abstract class SearchService {
+    indexedEntityId?: string = null;
     clearIndex: () => void;
     isSearchable: (query: string) => boolean;
-    indexCiphers: (ciphersToIndex?: CipherView[]) => Promise<void>;
+    indexCiphers: (indexedEntityGuid?: string, ciphersToIndex?: CipherView[]) => Promise<void>;
     searchCiphers: (query: string,
         filter?: ((cipher: CipherView) => boolean) | (((cipher: CipherView) => boolean)[]),
         ciphers?: CipherView[]) => Promise<CipherView[]>;

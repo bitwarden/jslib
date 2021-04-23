@@ -1,4 +1,4 @@
-import { OnInit } from '@angular/core';
+import { Directive, OnInit } from '@angular/core';
 
 import { CryptoService } from '../../abstractions/crypto.service';
 import { I18nService } from '../../abstractions/i18n.service';
@@ -14,6 +14,7 @@ import { SymmetricCryptoKey } from '../../models/domain/symmetricCryptoKey';
 
 import { KdfType } from '../../enums/kdfType';
 
+@Directive()
 export class ChangePasswordComponent implements OnInit {
     masterPassword: string;
     masterPasswordRetype: string;

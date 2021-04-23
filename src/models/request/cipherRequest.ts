@@ -1,4 +1,3 @@
-import { CipherRepromptType } from '../../enums/cipherRepromptType';
 import { CipherType } from '../../enums/cipherType';
 
 import { Cipher } from '../domain/cipher';
@@ -30,7 +29,6 @@ export class CipherRequest {
     attachments: { [id: string]: string; };
     attachments2: { [id: string]: AttachmentRequest; };
     lastKnownRevisionDate: Date;
-    reprompt: CipherRepromptType;
 
     constructor(cipher: Cipher) {
         this.type = cipher.type;
@@ -40,7 +38,6 @@ export class CipherRequest {
         this.notes = cipher.notes ? cipher.notes.encryptedString : null;
         this.favorite = cipher.favorite;
         this.lastKnownRevisionDate = cipher.revisionDate;
-        this.reprompt = cipher.reprompt;
 
         switch (this.type) {
             case CipherType.Login:
