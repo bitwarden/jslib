@@ -1,12 +1,10 @@
 import { WebWorkerService as WebWorkerServiceAbstraction } from '../abstractions/webWorker.service';
 
-import Worker from 'worker-loader!../workers/crypto.worker';
-
 export class WebWorkerService implements WebWorkerServiceAbstraction {
     workers = new Map<string, Worker>();
 
     create(name: string) {
-        const worker = new Worker();
+        const worker = new Worker('../workers/crypto.worker.ts', { type: 'module' });
         this.workers.set(name, worker);
         return worker;
     }
