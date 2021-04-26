@@ -1,9 +1,7 @@
-const path = require("path");
-
 module.exports = (config) => {
     config.set({
         // base path that will be used to resolve all patterns (eg. files, exclude)
-        basePath:  path.resolve(__dirname, '../../'),
+        basePath: '../../',
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
@@ -59,7 +57,7 @@ module.exports = (config) => {
                         test: /\.tsx?$/,
                         loader: 'ts-loader',
                         options: {
-                        compiler: 'ttypescript'
+                            compiler: 'ttypescript'
                         },
                     },
                 ],
