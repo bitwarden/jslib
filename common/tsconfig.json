@@ -13,17 +13,12 @@
     "emitDecoratorMetadata": true,
     "declarationDir": "dist/types",
     "outDir": "dist",
-    "baseUrl": ".",
-    "paths": {
-      "jslib-common/*": [
-        "common/src/*"
-      ],
-      "jslib-angular/*": [
-        "angular/src/*"
-      ]
-    }
+    "typeRoots": [
+      "node_modules/@types"
+    ]
   },
   "include": [
+    "src",
     "spec"
   ],
   "exclude": [

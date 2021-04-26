@@ -1,3 +1,5 @@
+const path = require("path");
+
 module.exports = (config) => {
     config.set({
         // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -53,7 +55,7 @@ module.exports = (config) => {
             },
             module: {
                 rules: [
-                    {test: /\.tsx?$/, loader: 'ts-loader'}
+                    {test: /\.tsx?$/, loader: 'ts-loader', options: { configFile: path.resolve(__dirname, '../../tsconfig.json')}}
                 ]
             },
             stats: {
