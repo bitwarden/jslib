@@ -15,4 +15,4 @@ export class NamedCharacterData {
     toHTMLString() {
         return this._name;
     }
-};
+}

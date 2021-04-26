@@ -1,3 +1,6 @@
+// Copyright (c) 2019 - 2020 Apple Inc. Licensed under MIT License.
+// Adapted to typescript and Bitwarden by João Miguel P. Campos (@mikibakaiki) for PassCert project.
+
 import { PasswordRulesParserService as PasswordRulesParserServiceAbstraction } from '../abstractions/passwordRulesParser.service';
 import { CustomCharacterData } from '../models/data/passwordRules/customCharacterData';
 import { NamedCharacterData } from '../models/data/passwordRules/namedCharacterData';
@@ -48,18 +51,18 @@ const PwDefaultOptions = {
     includeNumber: false,
 };
 
-var maxLeng: number = 0;
-var minLeng: number = 0;
-var pwLeng: number = PwDefaultOptions["length"];
-var pwCanHaveNumbers: boolean = false;
-var pwCanHaveUppercase: boolean = false;
-var pwCanHaveLowercase: boolean = false;
-var pwCanHaveSpecial: boolean = false;
+let maxLeng: number = 0;
+let minLeng: number = 0;
+let pwLeng: number = PwDefaultOptions["length"];
+let pwCanHaveNumbers: boolean = false;
+let pwCanHaveUppercase: boolean = false;
+let pwCanHaveLowercase: boolean = false;
+let pwCanHaveSpecial: boolean = false;
 
-var pwMinNumbers: number = 0;
-var pwMinUppercase: number = 0;
-var pwMinLowercase: number = 0;
-var pwMinSpecial: number = 0;
+let pwMinNumbers: number = 0;
+let pwMinUppercase: number = 0;
+let pwMinLowercase: number = 0;
+let pwMinSpecial: number = 0;
 export class PasswordRulesParserService implements PasswordRulesParserServiceAbstraction {
 
     parsePasswordRules(input: string, formatRulesForMinifiedVersion?: boolean): any[] {

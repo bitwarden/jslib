@@ -7,11 +7,11 @@ export class RuleData {
         this.value = value;
     }
 
-    public get name(): string {
+    get name(): string {
         return this._name;
     }
 
     toString() {
         return JSON.stringify(this);
     }
-};
+}

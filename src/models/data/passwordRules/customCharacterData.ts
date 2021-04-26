@@ -14,4 +14,4 @@ export class CustomCharacterData {
     toHTMLString() {
         return `[${this._characters.join("").replace('"', "&quot;")}]`;
     }
-};
+}
