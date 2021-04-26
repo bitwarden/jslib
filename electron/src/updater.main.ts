@@ -15,7 +15,7 @@ import {
     isWindowsStore,
 } from './utils';
 
-import { I18nService } from '../abstractions/i18n.service';
+import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { WindowMain } from './window.main';
 
 const UpdaterCheckInitalDelay = 5 * 1000; // 5 seconds

@@ -1,6 +1,6 @@
 import { app, dialog, ipcMain, Menu, MenuItem, nativeTheme } from 'electron';
 import { promises as fs } from 'fs';
-import { MessagingService } from '../../abstractions/messaging.service';
+import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { RendererMenuItem } from '../utils';
 
 import { WindowMain } from '../window.main';

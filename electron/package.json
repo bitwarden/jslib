@@ -20,12 +20,15 @@
     "lint:fix": "tslint 'src/**/*.ts' 'spec/**/*.ts' --fix"
   },
   "devDependencies": {
+    "electron": "11.4.3",
+    "rimraf": "^3.0.2",
     "typescript": "4.1.5"
   },
   "dependencies": {
-    "electron": "11.4.3",
     "electron-log": "4.3.4",
     "electron-store": "8.0.0",
-    "electron-updater": "4.3.8"
+    "electron-updater": "4.3.8",
+    "forcefocus": "^1.1.0",
+    "keytar": "^7.6.0"
   }
 }

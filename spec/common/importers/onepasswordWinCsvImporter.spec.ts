@@ -1,8 +1,8 @@
-import { OnePasswordWinCsvImporter as Importer } from 'jslib-common//importers/onepasswordImporters/onepasswordWinCsvImporter';
+import { OnePasswordWinCsvImporter as Importer } from 'jslib-common/importers/onepasswordImporters/onepasswordWinCsvImporter';
 
-import { CipherType, FieldType } from 'jslib-common//enums';
-import { CipherView } from 'jslib-common//models/view/cipherView';
-import { FieldView } from 'jslib-common//models/view/fieldView';
+import { CipherType, FieldType } from 'jslib-common/enums';
+import { CipherView } from 'jslib-common/models/view/cipherView';
+import { FieldView } from 'jslib-common/models/view/fieldView';
 
 import { data as creditCardData } from './testData/onePasswordCsv/creditCard.windows.csv';
 import { data as identityData } from './testData/onePasswordCsv/identity.windows.csv';

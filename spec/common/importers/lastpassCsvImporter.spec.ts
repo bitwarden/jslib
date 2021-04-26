@@ -1,9 +1,9 @@
-import { LastPassCsvImporter as Importer } from 'jslib-common//importers/lastpassCsvImporter';
+import { LastPassCsvImporter as Importer } from 'jslib-common/importers/lastpassCsvImporter';
 
-import { CipherView } from 'jslib-common//models/view/cipherView';
-import { FieldView } from 'jslib-common//models/view/fieldView';
+import { CipherView } from 'jslib-common/models/view/cipherView';
+import { FieldView } from 'jslib-common/models/view/fieldView';
 
-import { FieldType } from 'jslib-common//enums';
+import { FieldType } from 'jslib-common/enums';
 
 const CipherData = [
     {

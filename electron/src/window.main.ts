@@ -6,7 +6,7 @@ import * as url from 'url';
 
 import { isDev, isMacAppStore, isSnapStore } from './utils';
 
-import { StorageService } from '../abstractions/storage.service';
+import { StorageService } from 'jslib-common/abstractions/storage.service';
 
 const WindowEventHandlingDelay = 100;
 const Keys = {

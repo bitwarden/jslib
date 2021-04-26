@@ -1,20 +1,20 @@
 import { Arg, Substitute, SubstituteOf } from '@fluffy-spoon/substitute';
 
-import { ApiService } from 'jslib-common//abstractions/api.service';
-import { CryptoService } from 'jslib-common//abstractions/crypto.service';
-import { FileUploadService } from 'jslib-common//abstractions/fileUpload.service';
-import { I18nService } from 'jslib-common//abstractions/i18n.service';
-import { SearchService } from 'jslib-common//abstractions/search.service';
-import { SettingsService } from 'jslib-common//abstractions/settings.service';
-import { StorageService } from 'jslib-common//abstractions/storage.service';
-import { UserService } from 'jslib-common//abstractions/user.service';
-import { Utils } from 'jslib-common//misc/utils';
-import { Cipher } from 'jslib-common//models/domain/cipher';
-import { EncArrayBuffer } from 'jslib-common//models/domain/encArrayBuffer';
-import { EncString } from 'jslib-common//models/domain/encString';
-import { SymmetricCryptoKey } from 'jslib-common//models/domain/symmetricCryptoKey';
+import { ApiService } from 'jslib-common/abstractions/api.service';
+import { CryptoService } from 'jslib-common/abstractions/crypto.service';
+import { FileUploadService } from 'jslib-common/abstractions/fileUpload.service';
+import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { SearchService } from 'jslib-common/abstractions/search.service';
+import { SettingsService } from 'jslib-common/abstractions/settings.service';
+import { StorageService } from 'jslib-common/abstractions/storage.service';
+import { UserService } from 'jslib-common/abstractions/user.service';
+import { Utils } from 'jslib-common/misc/utils';
+import { Cipher } from 'jslib-common/models/domain/cipher';
+import { EncArrayBuffer } from 'jslib-common/models/domain/encArrayBuffer';
+import { EncString } from 'jslib-common/models/domain/encString';
+import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
 
-import { CipherService } from 'jslib-common//services/cipher.service';
+import { CipherService } from 'jslib-common/services/cipher.service';
 
 const ENCRYPTED_TEXT = 'This data has been encrypted';
 const ENCRYPTED_BYTES = new EncArrayBuffer(Utils.fromUtf8ToArray(ENCRYPTED_TEXT).buffer);

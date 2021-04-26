@@ -9,8 +9,8 @@ import {
 } from 'electron';
 import * as path from 'path';
 
-import { I18nService } from '../abstractions/i18n.service';
-import { StorageService } from '../abstractions/storage.service';
+import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { StorageService } from 'jslib-common/abstractions/storage.service';
 
 import { ElectronConstants } from './electronConstants';
 import { WindowMain } from './window.main';

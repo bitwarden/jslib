@@ -4,10 +4,10 @@ import forceFocus from 'forcefocus';
 import { ElectronConstants } from './electronConstants';
 import { WindowMain } from './window.main';
 
-import { BiometricMain } from '../abstractions/biometric.main';
-import { I18nService } from '../abstractions/i18n.service';
-import { StorageService } from '../abstractions/storage.service';
-import { ConstantsService } from '../services/constants.service';
+import { BiometricMain } from 'jslib-common/abstractions/biometric.main';
+import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { StorageService } from 'jslib-common/abstractions/storage.service';
+import { ConstantsService } from 'jslib-common/services/constants.service';
 
 export default class BiometricWindowsMain implements BiometricMain {
     isError: boolean = false;

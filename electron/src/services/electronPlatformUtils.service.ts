@@ -9,12 +9,12 @@ import {
     isMacAppStore,
 } from '../utils';
 
-import { DeviceType } from '../../enums/deviceType';
+import { DeviceType } from 'jslib-common/enums/deviceType';
 
-import { I18nService } from '../../abstractions/i18n.service';
-import { MessagingService } from '../../abstractions/messaging.service';
-import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
-import { StorageService } from '../../abstractions/storage.service';
+import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { MessagingService } from 'jslib-common/abstractions/messaging.service';
+import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
+import { StorageService } from 'jslib-common/abstractions/storage.service';
 
 import { ElectronConstants } from '../electronConstants';
 
