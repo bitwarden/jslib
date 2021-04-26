@@ -22,6 +22,7 @@ export class PasswordGeneratorComponent implements OnInit {
     showOptions = false;
     avoidAmbiguous = false;
     enforcedPolicyOptions: PasswordGeneratorPolicyOptions;
+    websiteHasConstraints = false;
 
     constructor(protected passwordGenerationService: PasswordGenerationService,
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
@@ -30,6 +31,12 @@ export class PasswordGeneratorComponent implements OnInit {
     async ngOnInit() {
         const optionsResponse = await this.passwordGenerationService.getOptions();
         this.options = optionsResponse[0];
+        console.log("@ pw generator component PARENT -> ", this.options);
+        // check if the website has password constraints
+        if (this.options.hasOwnProperty('websiteConstraints')) {
+            this.websiteHasConstraints = this.options['websiteConstraints'];
+            this.options = this.options['websiteOptions'];
+        }
         this.enforcedPolicyOptions = optionsResponse[1];
         this.avoidAmbiguous = !this.options.ambiguous;
         this.options.type = this.options.type === 'passphrase' ? 'passphrase' : 'password';
@@ -57,6 +64,7 @@ export class PasswordGeneratorComponent implements OnInit {
     }
 
     async regenerate() {
+        console.log("@ pw gen component regenerate(): options -> ", this.options);
         this.password = await this.passwordGenerationService.generatePassword(this.options);
         await this.passwordGenerationService.addHistory(this.password);
     }

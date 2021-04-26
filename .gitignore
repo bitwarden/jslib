@@ -7,3 +7,4 @@ vwd.webinfo
 *.pem
 dist
 coverage
+.DS_Store

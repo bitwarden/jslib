@@ -44,13 +44,28 @@ const MaxPasswordsInHistory = 100;
 export class PasswordGenerationService implements PasswordGenerationServiceAbstraction {
     private optionsCache: any;
     private history: GeneratedPasswordHistory[];
+    smartPasswordOptions: any = null;
 
-    constructor(private cryptoService: CryptoService, private storageService: StorageService,
+    constructor(private cryptoService: CryptoService,
+        private storageService: StorageService,
         private policyService: PolicyService) { }
 
     async generatePassword(options: any): Promise<string> {
-        // overload defaults with given options
-        const o = Object.assign({}, DefaultOptions, options);
+
+        console.log("WEBSITE PASSWORD CONSTRAINT -> ", this.smartPasswordOptions);
+        console.log("I RECEIVED THIS -> ", options);
+
+        let o: any;
+        /*  if (this.websitePasswordConstraints !== null) {
+ 
+             o = Object.assign({}, DefaultOptions, this.websitePasswordConstraints['websiteOptions']);
+ 
+         } else {
+             // overload defaults with given options
+             o = Object.assign({}, DefaultOptions, options);
+         } */
+        o = Object.assign({}, DefaultOptions, options);
+
 
         if (o.type === 'passphrase') {
             return this.generatePassphrase(options);
@@ -88,13 +103,14 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         while (positions.length < o.length) {
             positions.push('a');
         }
-
+        const aux = [...positions];
+        console.log("POSITIONS -> ", aux);
         // shuffle
         await this.shuffleArray(positions);
 
         // build out the char sets
         let allCharSet = '';
-
+        console.log("AFTER SHUFFLE -> ", positions);
         let lowercaseCharSet = 'abcdefghijkmnopqrstuvwxyz';
         if (o.ambiguous) {
             lowercaseCharSet += 'l';
@@ -188,16 +204,30 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     }
 
     async getOptions(): Promise<[any, PasswordGeneratorPolicyOptions]> {
+        console.log("getOptions init -> ", this.optionsCache);
         if (this.optionsCache == null) {
+            console.log("optionsCache is null");
             const options = await this.storageService.get(Keys.options);
             if (options == null) {
+                // the storage doesn't have any user preferences. Use the default options.
                 this.optionsCache = DefaultOptions;
             } else {
+                // the storage has user preferences. use them here.
+                console.log("options is not null from storageService -> ", options);
                 this.optionsCache = Object.assign({}, DefaultOptions, options);
             }
         }
+
+        // compare the actual options against the minimum required by the website's password constraints
+        if (this.smartPasswordOptions !== null) {
+            this.optionsCache = this.compareWebsiteConstraintsWithDefault(this.smartPasswordOptions, this.optionsCache);
+            console.log("websitePassword is NOT NULL => ", this.optionsCache);
+        }
+
         const enforcedOptions = await this.enforcePasswordGeneratorPoliciesOnOptions(this.optionsCache);
+        console.log("enforced => ", enforcedOptions);
         this.optionsCache = enforcedOptions[0];
+        console.log("@ getOptions -> ", this.optionsCache);
         return [this.optionsCache, enforcedOptions[1]];
     }
 
@@ -453,6 +483,13 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         this.sanitizePasswordLength(options, false);
     }
 
+    setWebsitePasswordConstraints(constraints: any) {
+        // check if the options are from a website constraint
+        console.log("Setting the smartpasswordOptions => ", constraints);
+        this.smartPasswordOptions = Object.assign({}, constraints);
+        console.log("Set these smartpasswordOptions -> ", this.smartPasswordOptions);
+    }
+
     private capitalize(str: string) {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
@@ -556,5 +593,22 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             options.minNumber = minNumberCalc;
             options.minSpecial = minSpecialCalc;
         }
+    }
+
+    private compareWebsiteConstraintsWithDefault(siteConstraints: any, defaultOptions: any): any {
+
+        let aux = Object.assign({}, siteConstraints['websiteOptions']);
+        console.log("aux => ", aux);
+        const defaultKeys = ['length', 'ambiguous', 'number', 'minNumber', 'uppercase', 'minUppercase', 'lowercase', 'minLowercase', 'special', 'minSpecial'];
+        let siteOptions = siteConstraints['websiteOptions'];
+        defaultKeys.forEach((v: string) => {
+            if (siteOptions[v] >= defaultOptions[v]) {
+                aux[v] = siteOptions[v];
+            } else {
+                aux[v] = defaultOptions[v];
+            }
+        });
+        aux = Object.assign({}, { websiteConstraints: siteConstraints['websiteConstraints'], websiteOptions: aux });
+        return aux;
     }
 }
