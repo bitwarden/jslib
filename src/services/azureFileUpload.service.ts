@@ -84,6 +84,7 @@ export class AzureFileUploadService {
                 blockIndex++;
             }
 
+            url = await this.renewUrlIfNecessary(url, renewalCallback);
             const blockListUrl = Utils.getUrl(url);
             const blockListXml = this.blockListXml(blocksStaged);
             blockListUrl.searchParams.append('comp', 'blocklist');
