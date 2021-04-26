@@ -3,7 +3,7 @@ const path = require("path");
 module.exports = (config) => {
     config.set({
         // base path that will be used to resolve all patterns (eg. files, exclude)
-        basePath: '../../',
+        basePath:  path.resolve(__dirname, '../../'),
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
@@ -55,14 +55,20 @@ module.exports = (config) => {
             },
             module: {
                 rules: [
-                    {test: /\.tsx?$/, loader: 'ts-loader', options: { configFile: path.resolve(__dirname, '../../tsconfig.json')}}
-                ]
+                    {
+                        test: /\.tsx?$/,
+                        loader: 'ts-loader',
+                        options: {
+                        compiler: 'ttypescript'
+                        },
+                    },
+                ],
             },
             stats: {
                 colors: true,
                 modules: true,
                 reasons: true,
-                errorDetails: true
+                errorDetails: true,
             },
             devtool: 'inline-source-map',
         },

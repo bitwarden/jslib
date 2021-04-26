@@ -3,9 +3,9 @@ import * as path from 'path';
 
 import { isDev } from '../utils';
 
-import { LogLevelType } from '../../enums/logLevelType';
+import { LogLevelType } from 'jslib-common/enums/logLevelType';
 
-import { ConsoleLogService as BaseLogService } from '../../services/consoleLog.service';
+import { ConsoleLogService as BaseLogService } from 'jslib-common/services/consoleLog.service';
 
 export class ElectronLogService extends BaseLogService {
 

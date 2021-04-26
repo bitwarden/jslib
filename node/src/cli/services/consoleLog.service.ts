@@ -1,6 +1,6 @@
-import { LogLevelType } from '../../enums/logLevelType';
+import { LogLevelType } from 'jslib-common/enums/logLevelType';
 
-import { ConsoleLogService as BaseConsoleLogService } from '../../services/consoleLog.service';
+import { ConsoleLogService as BaseConsoleLogService } from 'jslib-common/services/consoleLog.service';
 
 export class ConsoleLogService extends BaseConsoleLogService {
     constructor(isDev: boolean, filter: (level: LogLevelType) => boolean = null) {

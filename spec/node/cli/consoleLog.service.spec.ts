@@ -1,4 +1,4 @@
-import { ConsoleLogService } from '../../../src/cli/services/consoleLog.service';
+import { ConsoleLogService } from 'jslib-node/cli/services/consoleLog.service';
 import { interceptConsole, restoreConsole } from '../../common/services/consoleLog.service.spec';
 
 const originalConsole = console;

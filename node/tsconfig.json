@@ -13,28 +13,14 @@
     "emitDecoratorMetadata": true,
     "declarationDir": "dist/types",
     "outDir": "dist",
-    "baseUrl": ".",
     "paths": {
       "jslib-common/*": [
-        "common/src/*"
-      ],
-      "jslib-angular/*": [
-        "angular/src/*"
-      ],
-      "jslib-electron/*": [
-        "electron/src/*"
-      ],
-      "jslib-node/*": [
-        "node/src/*"
+        "../common/src/*"
       ]
-    },
-    "plugins": [
-      {
-          "transform": "typescript-transform-paths"
-      }
-    ],
+    }
   },
   "include": [
+    "src",
     "spec"
   ],
   "exclude": [
