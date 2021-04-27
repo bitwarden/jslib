@@ -22,4 +22,8 @@ export class FieldView implements View {
     get maskedValue(): string {
         return this.value != null ? '••••••••' : null;
     }
+
+    get arrayValue(): string[] {
+        return this.value != null ?  Array.from(this.value) : [];
+    }
 }

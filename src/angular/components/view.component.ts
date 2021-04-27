@@ -199,6 +199,14 @@ export class ViewComponent implements OnDestroy, OnInit {
         }
     }
 
+    toggleFieldCount(field: FieldView) {
+        const f = (field as any);
+        f.showCount = !f.showCount;
+        if (f.showCount) {
+            this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldCount, this.cipherId);
+        }
+    }
+
     launch(uri: LoginUriView, cipherId?: string) {
         if (!uri.canLaunch) {
             return;
