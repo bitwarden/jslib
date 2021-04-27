@@ -4,7 +4,7 @@ import { CipherView } from '../models/view/cipherView';
 import { ContainerService } from '../services/container.service';
 import { CryptoService } from '../services/crypto.service';
 import { MemoryStorageService } from '../services/memoryStorage.service';
-import { NodeCryptoFunctionService } from '../services/nodeCryptoFunction.service';
+import { WebCryptoFunctionService } from '../services/webCryptoFunction.service';
 import { WorkerLogService } from '../services/workerLogService';
 
 const workerApi: Worker = self as any;
@@ -23,10 +23,10 @@ class CryptoWorker {
     encryptedCiphers: Cipher[];
 
     containerService: ContainerService;
-    cryptoFunctionService: NodeCryptoFunctionService;
+    cryptoFunctionService: WebCryptoFunctionService;
     cryptoService: CryptoService;
     logService: WorkerLogService;
-    platformUtilsService: null;
+    platformUtilsService: any;
     secureStorageService: MemoryStorageService;
     storageService: MemoryStorageService;
 
@@ -60,9 +60,16 @@ class CryptoWorker {
     }
 
     startServices() {
-        this.cryptoFunctionService = new NodeCryptoFunctionService();
+        if (this.data.platformUtilsData != null) {
+            const platformUtilsData = JSON.parse(this.data.platformUtilsData);
+            this.platformUtilsService = {
+                isIE: () => platformUtilsData.isIE,
+                isSafari: () => platformUtilsData.isSafari,
+            }
+        }
+        
+        this.cryptoFunctionService = new WebCryptoFunctionService(self, this.platformUtilsService);
         this.logService = new WorkerLogService(false);
-        this.platformUtilsService = null as any;
         this.secureStorageService = new MemoryStorageService();
         this.storageService = new MemoryStorageService();
 

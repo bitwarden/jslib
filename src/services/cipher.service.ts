@@ -364,6 +364,10 @@ export class CipherService implements CipherServiceAbstraction {
         const secureStorage = {
             [cryptoKeys.key]: key,
         };
+        const platformUtilsData = {
+            isIE: this.platformUtilsService.isIE(),
+            isSafari: this.platformUtilsService.isSafari(),
+        }
 
         return new Promise((resolve, reject) => {
             const worker = this.webWorkerService.create(workerName);
@@ -372,6 +376,7 @@ export class CipherService implements CipherServiceAbstraction {
                 ciphers: JSON.stringify(cipherData),
                 storage: JSON.stringify(storage),
                 secureStorage: JSON.stringify(secureStorage),
+                platformUtilsData: JSON.stringify(platformUtilsData),
             });
             worker.addEventListener('message', event => {
                 if (event.data.type !== 'decryptAllResponse') {
