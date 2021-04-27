@@ -56,16 +56,13 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         console.log("I RECEIVED THIS -> ", options);
 
         let o: any;
-        /*  if (this.websitePasswordConstraints !== null) {
- 
-             o = Object.assign({}, DefaultOptions, this.websitePasswordConstraints['websiteOptions']);
- 
-         } else {
-             // overload defaults with given options
-             o = Object.assign({}, DefaultOptions, options);
-         } */
-        o = Object.assign({}, DefaultOptions, options);
-
+        if (options['type'] === 'smartpassword') {
+            console.log("Client wants a smartpassword");
+            o = Object.assign({}, DefaultOptions, this.smartPasswordOptions);
+            console.log("these are the default smartpassword -> ", o);
+        } else {
+            o = Object.assign({}, DefaultOptions, options);
+        }
 
         if (o.type === 'passphrase') {
             return this.generatePassphrase(options);
@@ -219,16 +216,26 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         }
 
         // compare the actual options against the minimum required by the website's password constraints
-        if (this.smartPasswordOptions !== null) {
+        /* if (this.smartPasswordOptions !== null) {
             this.optionsCache = this.compareWebsiteConstraintsWithDefault(this.smartPasswordOptions, this.optionsCache);
             console.log("websitePassword is NOT NULL => ", this.optionsCache);
-        }
+        } */
 
         const enforcedOptions = await this.enforcePasswordGeneratorPoliciesOnOptions(this.optionsCache);
         console.log("enforced => ", enforcedOptions);
         this.optionsCache = enforcedOptions[0];
         console.log("@ getOptions -> ", this.optionsCache);
         return [this.optionsCache, enforcedOptions[1]];
+    }
+
+    async getWebsiteOptions(): Promise<[any, PasswordGeneratorPolicyOptions]> {
+        console.log("entered getWebsiteOptions");
+
+        const enforcedOptions = await this.enforcePasswordGeneratorPoliciesOnOptions(this.smartPasswordOptions);
+        console.log("enforced => ", enforcedOptions);
+        // TODO maybe have a variable to store the value of enforced policies in smartpasswords.
+
+        return [enforcedOptions[0], enforcedOptions[1]];
     }
 
     async enforcePasswordGeneratorPoliciesOnOptions(options: any): Promise<[any, PasswordGeneratorPolicyOptions]> {
@@ -483,11 +490,11 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         this.sanitizePasswordLength(options, false);
     }
 
-    setWebsitePasswordConstraints(constraints: any) {
+    setWebsitePasswordRules(constraints: any) {
         // check if the options are from a website constraint
-        console.log("Setting the smartpasswordOptions => ", constraints);
         this.smartPasswordOptions = Object.assign({}, constraints);
         console.log("Set these smartpasswordOptions -> ", this.smartPasswordOptions);
+        console.log("These are the options in cache -> ", this.getOptions());
     }
 
     private capitalize(str: string) {

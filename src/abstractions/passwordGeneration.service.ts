@@ -14,5 +14,6 @@ export abstract class PasswordGenerationService {
     clear: () => Promise<any>;
     passwordStrength: (password: string, userInputs?: string[]) => zxcvbn.ZXCVBNResult;
     normalizeOptions: (options: any, enforcedPolicyOptions: PasswordGeneratorPolicyOptions) => void;
-    setWebsitePasswordConstraints: (constraints: any) => void;
+    setWebsitePasswordRules: (constraints: any) => void;
+    getWebsiteOptions: () => Promise<[any, PasswordGeneratorPolicyOptions]>;
 }

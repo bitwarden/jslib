@@ -51,9 +51,6 @@ const PwDefaultOptions = {
     includeNumber: false,
 };
 
-let maxLeng: number = 0;
-let minLeng: number = 0;
-let pwLeng: number = PwDefaultOptions["length"];
 let pwCanHaveNumbers: boolean = false;
 let pwCanHaveUppercase: boolean = false;
 let pwCanHaveLowercase: boolean = false;
@@ -63,6 +60,7 @@ let pwMinNumbers: number = 0;
 let pwMinUppercase: number = 0;
 let pwMinLowercase: number = 0;
 let pwMinSpecial: number = 0;
+
 export class PasswordRulesParserService implements PasswordRulesParserServiceAbstraction {
 
     parsePasswordRules(input: string, formatRulesForMinifiedVersion?: boolean): any[] {
@@ -576,43 +574,12 @@ export class PasswordRulesParserService implements PasswordRulesParserServiceAbs
         return parsedProperties;
     }
 
+
     convertToBitwardensObject(rules: RuleData[]): any {
+        let lengthObj: any = {};
 
-        // get the min and max length of password
-        rules.forEach(r => {
-            if (r.name === RuleName.MIN_LENGTH) {
-                minLeng = r.value;
-            }
-            if (r.name === RuleName.MAX_LENGTH) {
-                maxLeng = r.value;
-            }
-        });
-        console.log("Min Length => ", minLeng);
-        console.log("Max Length => ", maxLeng);
-        if (maxLeng - minLeng > 0) {
-            // max is bigger than min
-            if (maxLeng < pwLeng) {
-                // max is lower than default. Update default
-                pwLeng = maxLeng;
-            } else if (minLeng > pwLeng) {
-                pwLeng = minLeng;
-            }
-            console.log("min < max -> ", pwLeng);
-
-        } else if (maxLeng == minLeng) {
-            // password must have exactly the minLeng = maxLeng
-            console.log("password MUST HAVE this size -> ", minLeng, maxLeng);
-            pwLeng = minLeng;
-            console.log(" max = min -> ", pwLeng);
-        } else {
-
-            if (maxLeng < pwLeng) {
-                pwLeng = maxLeng;
-            }
-            console.log(" else -> ", pwLeng);
-        }
-        console.log("default value | real length = " + PwDefaultOptions["length"] + " | " + pwLeng);
-
+        lengthObj = this.applyPasswordLengthRules(rules);
+        console.log("I got this lengthObj => ", lengthObj);
         rules.forEach(r => {
             switch (r.name) {
                 case RuleName.MAX_CONSECUTIVE:
@@ -631,7 +598,7 @@ export class PasswordRulesParserService implements PasswordRulesParserServiceAbs
         });
 
         let siteOptions = {
-            length: pwLeng,
+            length: lengthObj['length'],
             number: pwCanHaveNumbers,
             minNumber: pwMinNumbers,
             uppercase: pwCanHaveUppercase,
@@ -640,13 +607,73 @@ export class PasswordRulesParserService implements PasswordRulesParserServiceAbs
             minLowercase: pwMinLowercase,
             special: pwCanHaveSpecial,
             minSpecial: pwMinSpecial,
-            type: 'smartpassword'
+            type: 'smartpassword',
+            minLength: lengthObj['minLength'] != 0 ? lengthObj['minLength'] : PwDefaultOptions['length'],
+            maxLength: lengthObj['maxLength'] != 0 ? lengthObj['maxLength'] : 128,
+            reqNumber: pwCanHaveNumbers && pwMinNumbers > 0,
+            reqUpper: pwCanHaveUppercase && pwMinUppercase > 0,
+            reqLower: pwCanHaveLowercase && pwMinLowercase > 0,
+            reqSpecial: pwCanHaveSpecial && pwMinSpecial > 0,
         };
+        console.log("I WILL RETURN THIS OVERALL SITE OPTIONS -> ", siteOptions);
+
         var aux = Object.assign({}, PwDefaultOptions, siteOptions);
         return aux;
     }
 
-    private applyPasswordRules(rules: any[], required: boolean = false): any {
+    private applyPasswordLengthRules(rules: RuleData[]) {
+        // get the min and max length of password
+        let lengthObj: any = {};
+        let minLeng = 0;
+        let maxLeng = 0;
+        let pwLeng = PwDefaultOptions['length'];
+
+        rules.forEach((r: any) => {
+            if (r.name === RuleName.MIN_LENGTH) {
+                minLeng = r.value;
+            }
+            if (r.name === RuleName.MAX_LENGTH) {
+                maxLeng = r.value;
+            }
+        });
+        console.log("Min Length => ", minLeng);
+        console.log("Max Length => ", maxLeng);
+        console.log("Default Leng -> ", pwLeng);
+
+        if (maxLeng > minLeng) {
+            // max is bigger than min
+            if (maxLeng < pwLeng) {
+                // max is lower than default. Update default
+                pwLeng = maxLeng;
+            } else if (minLeng > pwLeng) {
+                pwLeng = minLeng;
+            }
+            console.log("min < max -> ", pwLeng);
+
+        } else if (maxLeng == minLeng) {
+            // password must have exactly the minLeng = maxLeng
+            console.log("password MUST HAVE this size -> ", minLeng, maxLeng);
+            pwLeng = minLeng;
+            console.log(" max = min -> ", pwLeng);
+        } else {
+            // max is lower than min
+
+            if (maxLeng != 0 && maxLeng < pwLeng) {
+                // exists a max value and it's lower than the default value
+                pwLeng = maxLeng;
+            } else if (pwLeng < minLeng) {
+                pwLeng = minLeng;
+            }
+            console.log(" else -> ", pwLeng);
+        }
+        console.log("default value | real length = " + PwDefaultOptions["length"] + " | " + pwLeng);
+        lengthObj = { minLength: minLeng, maxLength: maxLeng, length: pwLeng };
+        console.log("I WILL RETURN THIS -> ", lengthObj);
+        return lengthObj;
+    }
+
+    private applyPasswordRules(rules: any[], required: boolean = false): void {
+
         let requiredValue = 0;
         if (required) {
             requiredValue = 1;
@@ -707,6 +734,18 @@ export class PasswordRulesParserService implements PasswordRulesParserServiceAbs
                 }
             }
         });
+    }
+
+    resetRulesReferences(): void {
+        pwCanHaveNumbers = false;
+        pwCanHaveUppercase = false;
+        pwCanHaveLowercase = false;
+        pwCanHaveSpecial = false;
+
+        pwMinNumbers = 0;
+        pwMinUppercase = 0;
+        pwMinLowercase = 0;
+        pwMinSpecial = 0;
     }
 
 }
