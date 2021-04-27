@@ -70,7 +70,7 @@ const DomainMatchBlacklist = new Map<string, Set<string>>([
 export class CipherService implements CipherServiceAbstraction {
     // tslint:disable-next-line
     _decryptedCipherCache: CipherView[];
-    workerThreshold: number = 0;
+    workerThreshold: number = 250;
 
     private sortedCiphersCache: SortedCiphersCache = new SortedCiphersCache(this.sortCiphersByLastUsed);
 
