@@ -19,17 +19,6 @@ export class ElectronMainMessagingService implements MessagingService {
             return dialog.showMessageBox(options);
         });
 
-        ipcMain.handle('saveFile', (event, options) => {
-            dialog.showSaveDialog(windowMain.win, {
-                defaultPath: options.fileName,
-                showsTagField: false,
-            }).then(ret => {
-                if (ret.filePath != null) {
-                    fs.writeFile(ret.filePath, options.buffer, { mode: 0o600 });
-                }
-            });
-        });
-
         ipcMain.handle('openContextMenu', (event, options: {menu: RendererMenuItem[]}) => {
             return new Promise(resolve => {
                 const menu = new Menu();

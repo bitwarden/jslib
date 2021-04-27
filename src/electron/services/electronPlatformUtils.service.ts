@@ -97,10 +97,13 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     }
 
     saveFile(win: Window, blobData: any, blobOptions: any, fileName: string): void {
-        ipcRenderer.invoke('saveFile', {
-            fileName: fileName,
-            buffer: Buffer.from(blobData),
-        });
+        const blob = new Blob([blobData], blobOptions);
+        const a = win.document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = fileName;
+        win.document.body.appendChild(a);
+        a.click();
+        win.document.body.removeChild(a);
     }
 
     getApplicationVersion(): Promise<string> {
