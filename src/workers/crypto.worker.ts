@@ -10,11 +10,11 @@ import { WorkerLogService } from '../services/workerLogService';
 const workerApi: Worker = self as any;
 
 workerApi.addEventListener('message', async event => {
-    if (event.data.type !== 'decryptAllRequest') {
+    if (event.data.type !== 'decryptManyRequest') {
         return;
     }
     const decryptAllWorker = new CryptoWorker(event.data, workerApi);
-    await decryptAllWorker.decryptAll();
+    await decryptAllWorker.decryptMany();
 });
 
 class CryptoWorker {
@@ -80,7 +80,7 @@ class CryptoWorker {
         this.containerService.attachToGlobal(global);
     }
 
-    async decryptAll() {
+    async decryptMany() {
         const promises: any[] = [];
         const decryptedCiphers: CipherView[] = [];
 
@@ -91,7 +91,7 @@ class CryptoWorker {
 
         const response = decryptedCiphers.map(c => JSON.stringify(c));
 
-        this.postMessage({ type: 'decryptAllResponse', ciphers: response });
+        this.postMessage({ type: 'decryptManyResponse', ciphers: response });
     }
 
     postMessage(message: any) {

@@ -372,14 +372,14 @@ export class CipherService implements CipherServiceAbstraction {
         return new Promise((resolve, reject) => {
             const worker = this.webWorkerService.create(workerName);
             worker.postMessage({
-                type: 'decryptAllRequest',
+                type: 'decryptManyRequest',
                 ciphers: JSON.stringify(cipherData),
                 storage: JSON.stringify(storage),
                 secureStorage: JSON.stringify(secureStorage),
                 platformUtilsData: JSON.stringify(platformUtilsData),
             });
             worker.addEventListener('message', event => {
-                if (event.data.type !== 'decryptAllResponse') {
+                if (event.data.type !== 'decryptManyResponse') {
                     return;
                 }
 
