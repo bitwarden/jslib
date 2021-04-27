@@ -367,7 +367,7 @@ export class CipherService implements CipherServiceAbstraction {
         const platformUtilsData = {
             isIE: this.platformUtilsService.isIE(),
             isSafari: this.platformUtilsService.isSafari(),
-        }
+        };
 
         return new Promise((resolve, reject) => {
             const worker = this.webWorkerService.create(workerName);

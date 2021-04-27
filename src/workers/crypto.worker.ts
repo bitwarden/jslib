@@ -65,9 +65,9 @@ class CryptoWorker {
             this.platformUtilsService = {
                 isIE: () => platformUtilsData.isIE,
                 isSafari: () => platformUtilsData.isSafari,
-            }
+            };
         }
-        
+
         this.cryptoFunctionService = new WebCryptoFunctionService(self, this.platformUtilsService);
         this.logService = new WorkerLogService(false);
         this.secureStorageService = new MemoryStorageService();
