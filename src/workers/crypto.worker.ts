@@ -92,6 +92,8 @@ class CryptoWorker {
         const response = decryptedCiphers.map(c => JSON.stringify(c));
 
         this.postMessage({ type: 'decryptManyResponse', ciphers: response });
+
+        this.clearCache();
     }
 
     postMessage(message: any) {

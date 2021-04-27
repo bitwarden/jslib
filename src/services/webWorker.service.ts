@@ -4,9 +4,11 @@ export class WebWorkerService implements WebWorkerServiceAbstraction {
     workers = new Map<string, Worker>();
 
     create(name: string) {
-        const worker = new Worker('../workers/crypto.worker.ts', { type: 'module' });
-        this.workers.set(name, worker);
-        return worker;
+        if (!this.workers.has(name)) {
+            const worker = new Worker('../workers/crypto.worker.ts', { type: 'module' });
+            this.workers.set(name, worker);
+        }
+        return this.workers.get(name);
     }
 
     terminate(name: string): Promise<void> {
@@ -23,7 +25,7 @@ export class WebWorkerService implements WebWorkerServiceAbstraction {
                 worker.terminate();
                 this.workers.delete(name);
                 resolve();
-            }, 500);
+            }, 250);
 
             worker.addEventListener('message', event => {
                 if (event.data.type === 'clearCacheResponse') {
