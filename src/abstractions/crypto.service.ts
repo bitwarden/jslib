@@ -48,4 +48,5 @@ export abstract class CryptoService {
     decryptToUtf8: (encString: EncString, key?: SymmetricCryptoKey) => Promise<string>;
     decryptFromBytes: (encBuf: ArrayBuffer, key: SymmetricCryptoKey) => Promise<ArrayBuffer>;
     randomNumber: (min: number, max: number) => Promise<number>;
+    validateKey: (key: SymmetricCryptoKey) => Promise<boolean>;
 }
