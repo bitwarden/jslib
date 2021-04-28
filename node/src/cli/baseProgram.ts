@@ -5,7 +5,7 @@ import { ListResponse } from './models/response/listResponse';
 import { MessageResponse } from './models/response/messageResponse';
 import { StringResponse } from './models/response/stringResponse';
 
-import { UserService } from '../abstractions/user.service';
+import { UserService } from 'jslib-common/abstractions/user.service';
 
 export abstract class BaseProgram {
     constructor(

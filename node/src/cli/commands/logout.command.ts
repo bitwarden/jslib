@@ -1,7 +1,7 @@
 import * as program from 'commander';
 
-import { AuthService } from '../../abstractions/auth.service';
-import { I18nService } from '../../abstractions/i18n.service';
+import { AuthService } from 'jslib-common/abstractions/auth.service';
+import { I18nService } from 'jslib-common/abstractions/i18n.service';
 
 import { Response } from '../models/response';
 import { MessageResponse } from '../models/response/messageResponse';

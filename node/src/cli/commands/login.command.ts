@@ -2,25 +2,25 @@ import * as program from 'commander';
 import * as http from 'http';
 import * as inquirer from 'inquirer';
 
-import { TwoFactorProviderType } from '../../enums/twoFactorProviderType';
+import { TwoFactorProviderType } from 'jslib-common/enums/twoFactorProviderType';
 
-import { AuthResult } from '../../models/domain/authResult';
-import { TwoFactorEmailRequest } from '../../models/request/twoFactorEmailRequest';
+import { AuthResult } from 'jslib-common/models/domain/authResult';
+import { TwoFactorEmailRequest } from 'jslib-common/models/request/twoFactorEmailRequest';
 
-import { ApiService } from '../../abstractions/api.service';
-import { AuthService } from '../../abstractions/auth.service';
-import { CryptoFunctionService } from '../../abstractions/cryptoFunction.service';
-import { EnvironmentService } from '../../abstractions/environment.service';
-import { I18nService } from '../../abstractions/i18n.service';
-import { PasswordGenerationService } from '../../abstractions/passwordGeneration.service';
-import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
+import { ApiService } from 'jslib-common/abstractions/api.service';
+import { AuthService } from 'jslib-common/abstractions/auth.service';
+import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
+import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
+import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
+import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 
 import { Response } from '../models/response';
 
 import { MessageResponse } from '../models/response/messageResponse';
 
-import { NodeUtils } from '../../misc/nodeUtils';
-import { Utils } from '../../misc/utils';
+import { NodeUtils } from 'jslib-common/misc/nodeUtils';
+import { Utils } from 'jslib-common/misc/utils';
 
 // tslint:disable-next-line
 const open = require('open');

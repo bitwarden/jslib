@@ -1,8 +1,8 @@
 import * as child_process from 'child_process';
 
-import { DeviceType } from '../../enums/deviceType';
+import { DeviceType } from 'jslib-common/enums/deviceType';
 
-import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
+import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 
 // tslint:disable-next-line
 const open = require('open');

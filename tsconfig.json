@@ -32,7 +32,7 @@
       {
           "transform": "typescript-transform-paths"
       }
-    ],
+    ]
   },
   "include": [
     "spec"

@@ -2,10 +2,10 @@ import * as FormData from 'form-data';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import * as fe from 'node-fetch';
 
-import { ApiService } from './api.service';
+import { ApiService } from 'jslib-common/services/api.service';
 
-import { PlatformUtilsService } from '../abstractions/platformUtils.service';
-import { TokenService } from '../abstractions/token.service';
+import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
+import { TokenService } from 'jslib-common/abstractions/token.service';
 
 (global as any).fetch = fe.default;
 (global as any).Request = fe.Request;

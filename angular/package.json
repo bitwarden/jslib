@@ -20,7 +20,6 @@
     "lint:fix": "tslint 'src/**/*.ts' 'spec/**/*.ts' --fix"
   },
   "devDependencies": {
-    "@types/tldjs": "^2.3.0",
     "rimraf": "^3.0.2",
     "typescript": "4.1.5"
   },
