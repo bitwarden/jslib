@@ -92,10 +92,9 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
 
         const key = await this.secureStorageService.get<string>(Keys.key);
-
         if (key != null) {
             if (!await this.shouldStoreKey()) {
-                console.error("Throwing away stored key since settings have changed")
+                this.logService.warning('Throwing away stored key since settings have changed');
                 this.secureStorageService.remove(Keys.key);
                 return null;
             }
@@ -103,7 +102,7 @@ export class CryptoService implements CryptoServiceAbstraction {
             const symmetricKey = new SymmetricCryptoKey(Utils.fromB64ToArray(key).buffer);
 
             if (!await this.validateKey(symmetricKey)) {
-                console.error('Wrong key, throwing away stored key');
+                this.logService.warning('Wrong key, throwing away stored key');
                 this.secureStorageService.remove(Keys.key);
                 return null;
             }
@@ -598,10 +597,10 @@ export class CryptoService implements CryptoServiceAbstraction {
             if (encPrivateKey == null) {
                 return false;
             }
-    
+
             const encKey = await this.getEncKey(key);
             const privateKey = await this.decryptToBytes(new EncString(encPrivateKey), encKey);
-            await this.cryptoFunctionService.rsaExtractPublicKey(privateKey)
+            await this.cryptoFunctionService.rsaExtractPublicKey(privateKey);
         } catch (e) {
             return false;
         }
