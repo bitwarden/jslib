@@ -49,6 +49,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
                 cipher.login.uris = this.makeUriArray(value.url);
                 cipher.login.username = this.getValueOrDefault(value.username);
                 cipher.login.password = this.getValueOrDefault(value.password);
+                cipher.login.totp = this.getValueOrDefault(value.totp);
             } else if (cipher.type === CipherType.SecureNote) {
                 this.parseSecureNote(value, cipher);
             } else if (cipher.type === CipherType.Card) {
