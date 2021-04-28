@@ -4,8 +4,7 @@ import { ImportResult } from '../../../src/models/domain/importResult';
 import { CipherView } from '../../../src/models/view/cipherView';
 import { FieldView } from '../../../src/models/view/fieldView';
 
-import { CipherType } from '../../../src/enums';
-import { FieldType } from '../../../src/enums';
+import { CipherType, FieldType } from '../../../src/enums';
 
 function baseExcept(result: ImportResult) {
     expect(result).not.toBeNull();
