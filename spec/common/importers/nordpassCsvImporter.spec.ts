@@ -1,12 +1,61 @@
 import { NordPassCsvImporter as Importer } from '../../../src/importers/nordpassCsvImporter';
 
 import { CipherType, SecureNoteType } from '../../../src/enums';
-import { CipherView } from '../../../src/models/view/cipherView';
+import { CipherView, IdentityView } from '../../../src/models/view/';
 
 import { data as creditCardData } from './testData/nordpassCsv/nordpass.card.csv';
 import { data as identityData } from './testData/nordpassCsv/nordpass.identity.csv';
 import { data as loginData } from './testData/nordpassCsv/nordpass.login.csv';
 import { data as secureNoteData } from './testData/nordpassCsv/nordpass.secureNote.csv';
+
+const namesTestData = [
+    {
+        title: 'Given #fullName should set firstName',
+        fullName: 'MyFirstName',
+        expected: Object.assign(new IdentityView(), {
+            firstName: 'MyFirstName',
+            middleName: null,
+            lastName: null,
+        }),
+    },
+    {
+        title: 'Given #fullName should set first- and lastName',
+        fullName: 'MyFirstName MyLastName',
+        expected: Object.assign(new IdentityView(), {
+            firstName: 'MyFirstName',
+            middleName: null,
+            lastName: 'MyLastName',
+        }),
+    },
+    {
+        title: 'Given #fullName should set first-, middle and lastName',
+        fullName: 'MyFirstName MyMiddleName MyLastName',
+        expected: Object.assign(new IdentityView(), {
+            firstName: 'MyFirstName',
+            middleName: 'MyMiddleName',
+            lastName: 'MyLastName',
+        }),
+    },
+    {
+        title: 'Given #fullName should set first-, middle and lastName with Jr',
+        fullName: 'MyFirstName MyMiddleName MyLastName Jr',
+        expected: Object.assign(new IdentityView(), {
+            firstName: 'MyFirstName',
+            middleName: 'MyMiddleName',
+            lastName: 'MyLastName Jr',
+        }),
+    },
+    {
+        title: 'Given #fullName should set first-, middle and lastName with Jr and III',
+        fullName: 'MyFirstName MyMiddleName MyLastName Jr III',
+        expected: Object.assign(new IdentityView(), {
+            firstName: 'MyFirstName',
+            middleName: 'MyMiddleName',
+            lastName: 'MyLastName Jr III',
+        }),
+    },
+];
+
 
 function expectLogin(cipher: CipherView) {
     expect(cipher.type).toBe(CipherType.Login);
@@ -34,10 +83,10 @@ function expectIdentity(cipher: CipherView) {
     expect(cipher.type).toBe(CipherType.Identity);
 
     expect(cipher.name).toBe('SomeTitle');
-    expect(cipher.identity.fullName).toBe('myFirstname myMiddlename myLastname');
-    expect(cipher.identity.firstName).toBe('myFirstname');
-    expect(cipher.identity.middleName).toBe('myMiddlename');
-    expect(cipher.identity.lastName).toBe('myLastname');
+    expect(cipher.identity.fullName).toBe('MyFirstName MyMiddleName MyLastName');
+    expect(cipher.identity.firstName).toBe('MyFirstName');
+    expect(cipher.identity.middleName).toBe('MyMiddleName');
+    expect(cipher.identity.lastName).toBe('MyLastName');
     expect(cipher.identity.email).toBe('hello@bitwarden.com');
     expect(cipher.identity.phone).toBe('123456789');
 
@@ -85,13 +134,27 @@ describe('NordPass CSV Importer', () => {
     });
 
     it('should parse identity records', async () => {
-        const result = await importer.parse(identityData);
+        const result = await importer.parse(identityData.replace('#fullName', 'MyFirstName MyMiddleName MyLastName'));
 
         expect(result).not.toBeNull();
         expect(result.success).toBe(true);
         expect(result.ciphers.length).toBe(1);
         const cipher = result.ciphers[0];
         expectIdentity(cipher);
+    });
+
+    namesTestData.forEach(data => {
+        it(data.title.replace('#fullName', data.fullName), async () => {
+            const result = await importer.parse(identityData.replace('#fullName', data.fullName));
+
+            expect(result).not.toBeNull();
+            expect(result.success).toBe(true);
+            expect(result.ciphers.length).toBe(1);
+            const cipher = result.ciphers[0];
+            expect(cipher.identity.firstName).toBe(data.expected.firstName);
+            expect(cipher.identity.middleName).toBe(data.expected.middleName);
+            expect(cipher.identity.lastName).toBe(data.expected.lastName);
+        });
     });
 
     it('should parse secureNote records', async () => {

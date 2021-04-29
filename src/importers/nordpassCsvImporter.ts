@@ -131,7 +131,9 @@ export class NordPassCsvImporter extends BaseImporter implements Importer {
 
     private processName(cipher: CipherView, fullName: string) {
 
-        if (this.isNullOrWhitespace(fullName)) return;
+        if (this.isNullOrWhitespace(fullName)) {
+            return;
+        }
 
         const nameParts = fullName.split(' ');
         if (nameParts.length > 0) {
@@ -139,9 +141,9 @@ export class NordPassCsvImporter extends BaseImporter implements Importer {
         }
         if (nameParts.length === 2) {
             cipher.identity.lastName = this.getValueOrDefault(nameParts[1]);
-        } else if (nameParts.length === 3) {
+        } else if (nameParts.length >= 3) {
             cipher.identity.middleName = this.getValueOrDefault(nameParts[1]);
-            cipher.identity.lastName = this.getValueOrDefault(nameParts[2]);
+            cipher.identity.lastName = nameParts.slice(2, nameParts.length).join(' ');
         }
     }
 }
