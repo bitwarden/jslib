@@ -110,13 +110,21 @@ export class NordPassCsvImporter extends BaseImporter implements Importer {
 
     private evaluateType(record: nodePassCsvParsed): CipherType {
 
-        if (!this.isNullOrWhitespace(record.username)) return CipherType.Login;
+        if (!this.isNullOrWhitespace(record.username)) {
+            return CipherType.Login;
+        }
 
-        if (!this.isNullOrWhitespace(record.cardnumber)) return CipherType.Card;
+        if (!this.isNullOrWhitespace(record.cardnumber)) {
+            return CipherType.Card;
+        }
 
-        if (!this.isNullOrWhitespace(record.full_name)) return CipherType.Identity;
+        if (!this.isNullOrWhitespace(record.full_name)) {
+            return CipherType.Identity;
+        }
 
-        if (!this.isNullOrWhitespace(record.note)) return CipherType.SecureNote;
+        if (!this.isNullOrWhitespace(record.note)) {
+            return CipherType.SecureNote;
+        }
 
         return undefined;
     }
