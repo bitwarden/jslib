@@ -23,7 +23,6 @@ export class PasswordGeneratorComponent implements OnInit {
     avoidAmbiguous = false;
     enforcedPolicyOptions: PasswordGeneratorPolicyOptions;
     websitePasswordOptions: any = {};
-    websiteHasConstraints = false;
 
     constructor(protected passwordGenerationService: PasswordGenerationService,
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
@@ -36,12 +35,6 @@ export class PasswordGeneratorComponent implements OnInit {
         this.websitePasswordOptions = websiteOptionsResponse[0];
         console.log("@ pw generator component PARENT -> ", this.options);
         console.log("@ pw generator component PARENT website  -> ", websiteOptionsResponse[0]);
-        /* // check if the website has password constraints
-        if (this.options.hasOwnProperty('websiteConstraints')) {
-            this.websiteHasConstraints = this.options['websiteConstraints'];
-            this.options = this.options['websiteOptions'];
-        } */
-
         this.enforcedPolicyOptions = optionsResponse[1];
         this.avoidAmbiguous = !this.options.ambiguous;
         this.options.type = this.options.type === 'passphrase' ? 'passphrase' : 'password';
@@ -55,10 +48,9 @@ export class PasswordGeneratorComponent implements OnInit {
     }
 
     async sliderInput() {
-        console.log("slider was changed -> ", this.websitePasswordOptions);
         this.normalizeOptions();
-        console.log("this are the options -> ", this.options);
-        console.log("this are the WEBSITE options -> ", this.websitePasswordOptions);
+        console.log("component-parent: this are the options -> ", this.options);
+        console.log("component-parent: this are the WEBSITE options -> ", this.websitePasswordOptions);
 
         this.password = await this.passwordGenerationService.generatePassword(this.options);
 
@@ -74,7 +66,7 @@ export class PasswordGeneratorComponent implements OnInit {
     }
 
     async regenerate() {
-        console.log("@ pw gen component regenerate(): options -> ", this.options);
+        console.log("component-parent: regenerate(): options -> ", this.options);
         this.password = await this.passwordGenerationService.generatePassword(this.options);
         await this.passwordGenerationService.addHistory(this.password);
     }
