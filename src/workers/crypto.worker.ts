@@ -77,7 +77,7 @@ class CryptoWorker {
             this.platformUtilsService, this.logService);
 
         this.containerService = new ContainerService(this.cryptoService);
-        this.containerService.attachToGlobal(global);
+        this.containerService.attachToGlobal(self);
     }
 
     async decryptMany() {
