@@ -328,10 +328,11 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async decryptManyCiphers(ciphers: Cipher[]) {
-        if (ciphers == null || ciphers.length === 0) {
-            return null;
-        }
         const decryptedCiphers: CipherView[] = [];
+        if (ciphers == null || ciphers.length === 0) {
+            return decryptedCiphers;
+        }
+        
         const hasKey = await this.cryptoService.hasKey();
         if (!hasKey) {
             throw new Error('No key.');
