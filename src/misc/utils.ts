@@ -29,21 +29,15 @@ export class Utils {
         Utils.isNativeScript = !Utils.isNode && !Utils.isBrowser && !Utils.isWebWorker;
         Utils.isMobileBrowser = Utils.isBrowser && this.isMobile(window);
         Utils.isAppleMobileBrowser = Utils.isBrowser && this.isAppleMobile(window);
-
-        if (Utils.isNativeScript || (Utils.isNode && !Utils.isBrowser && !Utils.isWebWorker)) {
-            Utils.global = global;
-        } else if (Utils.isWebWorker) {
-            Utils.global = self;
-        } else {
-            Utils.global = window;
-        }
+        Utils.global = Utils.isNativeScript ?
+            global : (Utils.isNode && !Utils.isBrowser && !Utils.isWebWorker ? global : self);
     }
 
     static fromB64ToArray(str: string): Uint8Array {
-        if (!Utils.isWebWorker && (Utils.isNode || Utils.isNativeScript)) {
+        if (Utils.isNode || Utils.isNativeScript) {
             return new Uint8Array(Buffer.from(str, 'base64'));
         } else {
-            const binaryString = Utils.global.atob(str);
+            const binaryString = self.atob(str);
             const bytes = new Uint8Array(binaryString.length);
             for (let i = 0; i < binaryString.length; i++) {
                 bytes[i] = binaryString.charCodeAt(i);
@@ -90,7 +84,7 @@ export class Utils {
     }
 
     static fromBufferToB64(buffer: ArrayBuffer): string {
-        if (!Utils.isWebWorker && (Utils.isNode || Utils.isNativeScript)) {
+        if (Utils.isNode || Utils.isNativeScript) {
             return Buffer.from(buffer).toString('base64');
         } else {
             let binary = '';
@@ -98,7 +92,7 @@ export class Utils {
             for (let i = 0; i < bytes.byteLength; i++) {
                 binary += String.fromCharCode(bytes[i]);
             }
-            return Utils.global.btoa(binary);
+            return self.btoa(binary);
         }
     }
 
