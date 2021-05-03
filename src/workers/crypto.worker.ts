@@ -8,11 +8,13 @@ import { WebCryptoFunctionService } from '../services/webCryptoFunction.service'
 import { WorkerLogService } from '../services/workerLogService';
 
 const workerApi: Worker = self as any;
+let firstRun = true;
 
 workerApi.addEventListener('message', async event => {
-    if (event.data.type !== 'decryptManyRequest') {
+    if (event.data.type !== 'decryptManyRequest' || !firstRun) {
         return;
     }
+    firstRun = false;
     const decryptAllWorker = new CryptoWorker(event.data, workerApi);
     await decryptAllWorker.decryptMany();
 });
