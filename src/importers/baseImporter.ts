@@ -293,7 +293,6 @@ export abstract class BaseImporter {
         cipher.fields = [];
         cipher.login = new LoginView();
         cipher.type = CipherType.Login;
-        cipher.reprompt = CipherRepromptType.None;
         return cipher;
     }
 

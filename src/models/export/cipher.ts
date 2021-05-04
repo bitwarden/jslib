@@ -27,6 +27,7 @@ export class Cipher {
         req.secureNote = null;
         req.card = null;
         req.identity = null;
+        req.reprompt = CipherRepromptType.None;
         return req;
     }
 
@@ -43,7 +44,7 @@ export class Cipher {
         view.name = req.name;
         view.notes = req.notes;
         view.favorite = req.favorite;
-        view.reprompt = CipherRepromptType.None;
+        view.reprompt = req.reprompt;
 
         if (req.fields != null) {
             view.fields = req.fields.map(f => Field.toView(f));
@@ -76,6 +77,7 @@ export class Cipher {
         domain.name = req.name != null ? new EncString(req.name) : null;
         domain.notes = req.notes != null ? new EncString(req.notes) : null;
         domain.favorite = req.favorite;
+        domain.reprompt = req.reprompt;
 
         if (req.fields != null) {
             domain.fields = req.fields.map(f => Field.toDomain(f));
@@ -111,12 +113,14 @@ export class Cipher {
     secureNote: SecureNote;
     card: Card;
     identity: Identity;
+    reprompt: CipherRepromptType;
 
     // Use build method instead of ctor so that we can control order of JSON stringify for pretty print
     build(o: CipherView | CipherDomain) {
         this.organizationId = o.organizationId;
         this.folderId = o.folderId;
         this.type = o.type;
+        this.reprompt = o.reprompt;
 
         if (o instanceof CipherView) {
             this.name = o.name;
