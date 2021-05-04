@@ -15,6 +15,7 @@ import { FolderView } from '../models/view/folderView';
 import { LoginView } from '../models/view/loginView';
 import { SecureNoteView } from '../models/view/secureNoteView';
 
+import { CipherRepromptType } from '../enums/cipherRepromptType';
 import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
 import { SecureNoteType } from '../enums/secureNoteType';
@@ -292,6 +293,7 @@ export abstract class BaseImporter {
         cipher.fields = [];
         cipher.login = new LoginView();
         cipher.type = CipherType.Login;
+        cipher.reprompt = CipherRepromptType.None;
         return cipher;
     }
 

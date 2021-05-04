@@ -1,3 +1,4 @@
+import { CipherRepromptType } from '../../enums/cipherRepromptType';
 import { CipherType } from '../../enums/cipherType';
 
 import { CipherView } from '../view/cipherView';
@@ -42,6 +43,7 @@ export class Cipher {
         view.name = req.name;
         view.notes = req.notes;
         view.favorite = req.favorite;
+        view.reprompt = CipherRepromptType.None;
 
         if (req.fields != null) {
             view.fields = req.fields.map(f => Field.toView(f));
