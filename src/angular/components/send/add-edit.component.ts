@@ -302,10 +302,10 @@ export class AddEditComponent implements OnInit {
         this.formPromise = this.encryptSend(file)
             .then(async (encSend) => {
                 try {
-                    this.formPromise = this.sendService.saveWithServer(encSend);
+                    const uploadPromise = this.sendService.saveWithServer(encSend);
                     let inactive = false;
                     setTimeout(() => inactive = true, 4500);
-                    await this.formPromise;
+                    await uploadPromise;
                     if (this.send.id == null) {
                         this.send.id = encSend[0].id;
                     }
