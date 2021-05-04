@@ -299,27 +299,30 @@ export class AddEditComponent implements OnInit {
             this.password = null;
         }
 
-        const encSend = await this.encryptSend(file);
-        try {
-            this.formPromise = this.sendService.saveWithServer(encSend);
-            let inactive = false;
-            setTimeout(() => inactive = true, 4500);
-            await this.formPromise;
-            if (this.send.id == null) {
-                this.send.id = encSend[0].id;
-            }
-            if (this.send.accessId == null) {
-                this.send.accessId = encSend[0].accessId;
-            }
-            this.onSavedSend.emit(this.send);
-            await this.showSuccessMessage(inactive);
-            if (this.copyLink) {
-                this.copyLinkToClipboard(this.link);
-            }
-            return true;
-        } catch { }
+        this.formPromise = this.encryptSend(file)
+            .then(async (encSend) => {
+                try {
+                    this.formPromise = this.sendService.saveWithServer(encSend);
+                    let inactive = false;
+                    setTimeout(() => inactive = true, 4500);
+                    await this.formPromise;
+                    if (this.send.id == null) {
+                        this.send.id = encSend[0].id;
+                    }
+                    if (this.send.accessId == null) {
+                        this.send.accessId = encSend[0].accessId;
+                    }
+                    this.onSavedSend.emit(this.send);
+                    await this.showSuccessMessage(inactive);
+                    if (this.copyLink) {
+                        this.copyLinkToClipboard(this.link);
+                    }
+                    return true;
+                } catch { }
+                return false;
+            });
 
-        return false;
+        return await this.formPromise;
     }
 
     async showSuccessMessage(inactive: boolean) {
