@@ -228,6 +228,7 @@ export class AddEditComponent implements OnInit {
                 this.cipher.identity = new IdentityView();
                 this.cipher.secureNote = new SecureNoteView();
                 this.cipher.secureNote.type = SecureNoteType.Generic;
+                this.cipher.reprompt = CipherRepromptType.None;
             }
         }
 
