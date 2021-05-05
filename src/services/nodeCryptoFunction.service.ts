@@ -108,12 +108,12 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         return this.compare(a, b);
     }
 
-    aesEncrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
+    aesEncrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer, mode: 'cbc' | 'gcm'): Promise<ArrayBuffer> {
         const nodeData = this.toNodeBuffer(data);
         const nodeIv = this.toNodeBuffer(iv);
         const nodeKey = this.toNodeBuffer(key);
-        const cipher = crypto.createCipheriv('aes-256-cbc', nodeKey, nodeIv);
-        const encBuf = Buffer.concat([cipher.update(nodeData), cipher.final()]);
+        const cipher = crypto.createCipheriv(this.toNodeCryptoAesMode(mode), nodeKey, nodeIv);
+        const encBuf = Buffer.concat([cipher.update(nodeData), cipher.final(), (cipher as any).getAuthTag()]);
         return Promise.resolve(this.toArrayBuffer(encBuf));
     }
 
@@ -139,16 +139,24 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         return p;
     }
 
-    async aesDecryptFast(parameters: DecryptParameters<ArrayBuffer>): Promise<string> {
-        const decBuf = await this.aesDecrypt(parameters.data, parameters.iv, parameters.encKey);
+    async aesDecryptFast(parameters: DecryptParameters<ArrayBuffer>, mode: 'cbc' | 'gcm'): Promise<string> {
+        const decBuf = await this.aesDecrypt(parameters.data, parameters.iv, parameters.encKey, mode);
         return Utils.fromBufferToUtf8(decBuf);
     }
 
-    aesDecrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
-        const nodeData = this.toNodeBuffer(data);
+    aesDecrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer, mode: 'cbc' | 'gcm'): Promise<ArrayBuffer> {
         const nodeIv = this.toNodeBuffer(iv);
         const nodeKey = this.toNodeBuffer(key);
-        const decipher = crypto.createDecipheriv('aes-256-cbc', nodeKey, nodeIv);
+        const decipher = crypto.createDecipheriv(this.toNodeCryptoAesMode(mode), nodeKey, nodeIv);
+        let nodeData: Buffer;
+        if(mode === 'gcm') {
+            const dataPart = data.slice(0, data.byteLength - 16);
+            nodeData = this.toNodeBuffer(dataPart);
+            const tagPart = data.slice(data.byteLength - 16);
+            (decipher as any).setAuthTag(tagPart);
+        } else {
+            nodeData = this.toNodeBuffer(data);
+        }
         const decBuf = Buffer.concat([decipher.update(nodeData), decipher.final()]);
         return Promise.resolve(this.toArrayBuffer(decBuf));
     }
@@ -260,5 +268,9 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         const asn1 = forge.asn1.fromDer(byteString);
         const publicKey = (forge as any).pki.publicKeyFromAsn1(asn1);
         return (forge.pki as any).publicKeyToPem(publicKey);
+    }
+
+    private toNodeCryptoAesMode(mode: 'cbc' | 'gcm'): string {
+        return mode === 'cbc' ? 'aes-256-cbc' : 'aes-256-gcm';
     }
 }
