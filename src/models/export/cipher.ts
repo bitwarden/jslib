@@ -44,7 +44,7 @@ export class Cipher {
         view.name = req.name;
         view.notes = req.notes;
         view.favorite = req.favorite;
-        view.reprompt = req.reprompt;
+        view.reprompt = req.reprompt ?? CipherRepromptType.None;
 
         if (req.fields != null) {
             view.fields = req.fields.map(f => Field.toView(f));
@@ -77,7 +77,7 @@ export class Cipher {
         domain.name = req.name != null ? new EncString(req.name) : null;
         domain.notes = req.notes != null ? new EncString(req.notes) : null;
         domain.favorite = req.favorite;
-        domain.reprompt = req.reprompt;
+        domain.reprompt = req.reprompt ?? CipherRepromptType.None;
 
         if (req.fields != null) {
             domain.fields = req.fields.map(f => Field.toDomain(f));
