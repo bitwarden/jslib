@@ -6,4 +6,5 @@ export enum EncryptionType {
     Rsa2048_OaepSha1_B64 = 4,
     Rsa2048_OaepSha256_HmacSha256_B64 = 5,
     Rsa2048_OaepSha1_HmacSha256_B64 = 6,
+    AesGcm256_B64 = 7,
 }

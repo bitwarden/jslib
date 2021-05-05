@@ -187,9 +187,10 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return equals;
     }
 
-    async aesEncrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
-        const impKey = await this.subtle.importKey('raw', key, { name: 'AES-CBC' } as any, false, ['encrypt']);
-        return await this.subtle.encrypt({ name: 'AES-CBC', iv: iv }, impKey, data);
+    async aesEncrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer, mode: 'cbc' | 'gcm'): Promise<ArrayBuffer> {
+        const impKey = await this.subtle.importKey('raw', key,
+            { name: this.toWebCryptoAesMode(mode) } as any, false, ['encrypt']);
+        return await this.subtle.encrypt({ name: this.toWebCryptoAesMode(mode), iv: iv }, impKey, data);
     }
 
     aesDecryptFastParameters(data: string, iv: string, mac: string, key: SymmetricCryptoKey):
@@ -227,19 +228,27 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return p;
     }
 
-    aesDecryptFast(parameters: DecryptParameters<string>): Promise<string> {
-        const dataBuffer = (forge as any).util.createBuffer(parameters.data);
-        const decipher = (forge as any).cipher.createDecipher('AES-CBC', parameters.encKey);
-        decipher.start({ iv: parameters.iv });
+    aesDecryptFast(parameters: DecryptParameters<string>, mode: 'cbc' | 'gcm'): Promise<string> {
+        const decipher = (forge as any).cipher.createDecipher(this.toWebCryptoAesMode(mode), parameters.encKey);
+        const options = { iv: parameters.iv } as any;
+        let dataBuffer: any = null;
+        if (mode == 'gcm') {
+            dataBuffer = (forge as any).util.createBuffer(parameters.data.slice(0, parameters.data.length - 16));
+            options.tag = (forge as any).util.createBuffer(parameters.data.slice(parameters.data.length - 16));
+        } else {
+            dataBuffer = (forge as any).util.createBuffer(parameters.data);
+        }
+        decipher.start(options);
         decipher.update(dataBuffer);
         decipher.finish();
         const val = decipher.output.toString('utf8');
         return Promise.resolve(val);
     }
 
-    async aesDecrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
-        const impKey = await this.subtle.importKey('raw', key, { name: 'AES-CBC' } as any, false, ['decrypt']);
-        return await this.subtle.decrypt({ name: 'AES-CBC', iv: iv }, impKey, data);
+    async aesDecrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer, mode: 'cbc' | 'gcm'): Promise<ArrayBuffer> {
+        const impKey = await this.subtle.importKey('raw', key,
+            { name: this.toWebCryptoAesMode(mode) } as any, false, ['decrypt']);
+        return await this.subtle.decrypt({ name: this.toWebCryptoAesMode(mode), iv: iv }, impKey, data);
     }
 
     async rsaEncrypt(data: ArrayBuffer, publicKey: ArrayBuffer, algorithm: 'sha1' | 'sha256'): Promise<ArrayBuffer> {
@@ -328,5 +337,9 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
             throw new Error('MD5 is not supported in WebCrypto.');
         }
         return algorithm === 'sha1' ? 'SHA-1' : algorithm === 'sha256' ? 'SHA-256' : 'SHA-512';
+    }
+
+    private toWebCryptoAesMode(mode: 'cbc' | 'gcm'): string {
+        return mode === 'cbc' ? 'AES-CBC' : 'AES-GCM';
     }
 }

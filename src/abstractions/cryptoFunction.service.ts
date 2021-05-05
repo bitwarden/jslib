@@ -14,11 +14,11 @@ export abstract class CryptoFunctionService {
     hmacFast: (value: ArrayBuffer | string, key: ArrayBuffer | string, algorithm: 'sha1' | 'sha256' | 'sha512') =>
         Promise<ArrayBuffer | string>;
     compareFast: (a: ArrayBuffer | string, b: ArrayBuffer | string) => Promise<boolean>;
-    aesEncrypt: (data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer) => Promise<ArrayBuffer>;
+    aesEncrypt: (data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer, mode: 'cbc' | 'gcm') => Promise<ArrayBuffer>;
     aesDecryptFastParameters: (data: string, iv: string, mac: string, key: SymmetricCryptoKey) =>
         DecryptParameters<ArrayBuffer | string>;
-    aesDecryptFast: (parameters: DecryptParameters<ArrayBuffer | string>) => Promise<string>;
-    aesDecrypt: (data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer) => Promise<ArrayBuffer>;
+    aesDecryptFast: (parameters: DecryptParameters<ArrayBuffer | string>, mode: 'cbc' | 'gcm') => Promise<string>;
+    aesDecrypt: (data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer, mode: 'cbc' | 'gcm') => Promise<ArrayBuffer>;
     rsaEncrypt: (data: ArrayBuffer, publicKey: ArrayBuffer, algorithm: 'sha1' | 'sha256') => Promise<ArrayBuffer>;
     rsaDecrypt: (data: ArrayBuffer, privateKey: ArrayBuffer, algorithm: 'sha1' | 'sha256') => Promise<ArrayBuffer>;
     rsaExtractPublicKey: (privateKey: ArrayBuffer) => Promise<ArrayBuffer>;

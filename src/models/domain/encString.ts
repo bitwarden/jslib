@@ -71,6 +71,7 @@ export class EncString {
                 this.mac = encPieces[2];
                 break;
             case EncryptionType.AesCbc256_B64:
+            case EncryptionType.AesGcm256_B64:
                 if (encPieces.length !== 2) {
                     return;
                 }

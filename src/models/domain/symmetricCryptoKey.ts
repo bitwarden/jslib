@@ -6,7 +6,7 @@ export class SymmetricCryptoKey {
     key: ArrayBuffer;
     encKey?: ArrayBuffer;
     macKey?: ArrayBuffer;
-    encType: EncryptionType;
+    encTypes = new Set<EncryptionType>();
 
     keyB64: string;
     encKeyB64: string;
@@ -30,17 +30,19 @@ export class SymmetricCryptoKey {
         }
 
         this.key = key;
-        this.encType = encType;
+        this.encTypes.add(encType);
 
         if (encType === EncryptionType.AesCbc256_B64 && key.byteLength === 32) {
             this.encKey = key;
             this.macKey = null;
+            this.encTypes.add(EncryptionType.AesGcm256_B64);
         } else if (encType === EncryptionType.AesCbc128_HmacSha256_B64 && key.byteLength === 32) {
             this.encKey = key.slice(0, 16);
             this.macKey = key.slice(16, 32);
         } else if (encType === EncryptionType.AesCbc256_HmacSha256_B64 && key.byteLength === 64) {
             this.encKey = key.slice(0, 32);
             this.macKey = key.slice(32, 64);
+            this.encTypes.add(EncryptionType.AesGcm256_B64);
         } else {
             throw new Error('Unsupported encType/key length.');
         }

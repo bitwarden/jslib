@@ -415,7 +415,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         const iv = Utils.fromBufferToB64(encObj.iv);
         const data = Utils.fromBufferToB64(encObj.data);
         const mac = encObj.mac != null ? Utils.fromBufferToB64(encObj.mac) : null;
-        return new EncString(encObj.key.encType, data, iv, mac);
+        return new EncString(encObj.type, data, iv, mac);
     }
 
     async encryptToBytes(plainValue: ArrayBuffer, key?: SymmetricCryptoKey): Promise<EncArrayBuffer> {
@@ -426,7 +426,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
 
         const encBytes = new Uint8Array(1 + encValue.iv.byteLength + macLen + encValue.data.byteLength);
-        encBytes.set([encValue.key.encType]);
+        encBytes.set([encValue.type]);
         encBytes.set(new Uint8Array(encValue.iv), 1);
         if (encValue.mac != null) {
             encBytes.set(new Uint8Array(encValue.mac), 1 + encValue.iv.byteLength);
@@ -547,6 +547,14 @@ export class CryptoService implements CryptoServiceAbstraction {
                 ivBytes = encBytes.slice(1, 17);
                 ctBytes = encBytes.slice(17);
                 break;
+            case EncryptionType.AesGcm256_B64:
+                if (encBytes.length <= 13) { // 1 + 12 + ctLength
+                    return null;
+                }
+
+                ivBytes = encBytes.slice(1, 13);
+                ctBytes = encBytes.slice(13);
+                break;
             default:
                 return null;
         }
@@ -623,16 +631,22 @@ export class CryptoService implements CryptoServiceAbstraction {
     private async aesEncrypt(data: ArrayBuffer, key: SymmetricCryptoKey): Promise<EncryptedObject> {
         const obj = new EncryptedObject();
         obj.key = await this.getKeyForEncryption(key);
-        obj.iv = await this.cryptoFunctionService.randomBytes(16);
-        obj.data = await this.cryptoFunctionService.aesEncrypt(data, obj.iv, obj.key.encKey);
-
-        if (obj.key.macKey != null) {
-            const macData = new Uint8Array(obj.iv.byteLength + obj.data.byteLength);
-            macData.set(new Uint8Array(obj.iv), 0);
-            macData.set(new Uint8Array(obj.data), obj.iv.byteLength);
-            obj.mac = await this.cryptoFunctionService.hmac(macData.buffer, obj.key.macKey, 'sha256');
+        if (true) {
+            obj.type = EncryptionType.AesCbc256_HmacSha256_B64;
+            obj.iv = await this.cryptoFunctionService.randomBytes(16);
+            obj.data = await this.cryptoFunctionService.aesEncrypt(data, obj.iv, obj.key.encKey, 'cbc');
+            if (obj.key.macKey != null) {
+                const macData = new Uint8Array(obj.iv.byteLength + obj.data.byteLength);
+                macData.set(new Uint8Array(obj.iv), 0);
+                macData.set(new Uint8Array(obj.data), obj.iv.byteLength);
+                obj.mac = await this.cryptoFunctionService.hmac(macData.buffer, obj.key.macKey, 'sha256');
+            }
+        } else {
+            // TODO: make this case live when we switch to GCM encryption
+            obj.type = EncryptionType.AesGcm256_B64;
+            obj.iv = await this.cryptoFunctionService.randomBytes(12);
+            obj.data = await this.cryptoFunctionService.aesEncrypt(data, obj.iv, obj.key.encKey, 'gcm');
         }
-
         return obj;
     }
 
@@ -641,12 +655,14 @@ export class CryptoService implements CryptoServiceAbstraction {
         const keyForEnc = await this.getKeyForEncryption(key);
         const theKey = this.resolveLegacyKey(encType, keyForEnc);
 
-        if (theKey.macKey != null && mac == null) {
+        const macType = encType === EncryptionType.AesCbc256_HmacSha256_B64 ||
+            encType === EncryptionType.AesCbc128_HmacSha256_B64;
+        if (macType && theKey.macKey != null && mac == null) {
             this.logService.error('mac required.');
             return null;
         }
 
-        if (theKey.encType !== encType) {
+        if (!theKey.encTypes.has(encType)) {
             this.logService.error('encType unavailable.');
             return null;
         }
@@ -662,7 +678,8 @@ export class CryptoService implements CryptoServiceAbstraction {
             }
         }
 
-        return this.cryptoFunctionService.aesDecryptFast(fastParams);
+        return this.cryptoFunctionService.aesDecryptFast(fastParams,
+            encType === EncryptionType.AesGcm256_B64 ? 'gcm' : 'cbc');
     }
 
     private async aesDecryptToBytes(encType: EncryptionType, data: ArrayBuffer, iv: ArrayBuffer,
@@ -670,11 +687,13 @@ export class CryptoService implements CryptoServiceAbstraction {
         const keyForEnc = await this.getKeyForEncryption(key);
         const theKey = this.resolveLegacyKey(encType, keyForEnc);
 
-        if (theKey.macKey != null && mac == null) {
+        const macType = encType === EncryptionType.AesCbc256_HmacSha256_B64 ||
+            encType === EncryptionType.AesCbc128_HmacSha256_B64;
+        if (macType && theKey.macKey != null && mac == null) {
             return null;
         }
 
-        if (theKey.encType !== encType) {
+        if (!theKey.encTypes.has(encType)) {
             return null;
         }
 
@@ -694,7 +713,8 @@ export class CryptoService implements CryptoServiceAbstraction {
             }
         }
 
-        return await this.cryptoFunctionService.aesDecrypt(data, iv, theKey.encKey);
+        return await this.cryptoFunctionService.aesDecrypt(data, iv, theKey.encKey,
+            encType === EncryptionType.AesGcm256_B64 ? 'gcm' : 'cbc');
     }
 
     private async getKeyForEncryption(key?: SymmetricCryptoKey): Promise<SymmetricCryptoKey> {
@@ -712,7 +732,7 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     private resolveLegacyKey(encType: EncryptionType, key: SymmetricCryptoKey): SymmetricCryptoKey {
         if (encType === EncryptionType.AesCbc128_HmacSha256_B64 &&
-            key.encType === EncryptionType.AesCbc256_B64) {
+            key.encTypes.has(EncryptionType.AesCbc256_B64)) {
             // Old encrypt-then-mac scheme, make a new key
             if (this.legacyEtmKey == null) {
                 this.legacyEtmKey = new SymmetricCryptoKey(key.key, EncryptionType.AesCbc128_HmacSha256_B64);
