@@ -34,7 +34,7 @@ export class CipherView implements View {
     collectionIds: string[] = null;
     revisionDate: Date = null;
     deletedDate: Date = null;
-    reprompt: CipherRepromptType = null;
+    reprompt: CipherRepromptType = CipherRepromptType.None;
 
     constructor(c?: Cipher) {
         if (!c) {

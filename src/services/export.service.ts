@@ -308,6 +308,7 @@ export class ExportService implements ExportServiceAbstraction {
         cipher.name = c.name;
         cipher.notes = c.notes;
         cipher.fields = null;
+        cipher.reprompt = c.reprompt;
         // Login props
         cipher.login_uri = null;
         cipher.login_username = null;
