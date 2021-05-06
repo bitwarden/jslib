@@ -113,7 +113,11 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         const nodeIv = this.toNodeBuffer(iv);
         const nodeKey = this.toNodeBuffer(key);
         const cipher = crypto.createCipheriv(this.toNodeCryptoAesMode(mode), nodeKey, nodeIv);
-        const encBuf = Buffer.concat([cipher.update(nodeData), cipher.final(), (cipher as any).getAuthTag()]);
+        const encArr = [cipher.update(nodeData), cipher.final()];
+        if (mode == 'gcm') {
+            encArr.push((cipher as any).getAuthTag());
+        }
+        const encBuf = Buffer.concat(encArr);
         return Promise.resolve(this.toArrayBuffer(encBuf));
     }
 
@@ -149,11 +153,11 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         const nodeKey = this.toNodeBuffer(key);
         const decipher = crypto.createDecipheriv(this.toNodeCryptoAesMode(mode), nodeKey, nodeIv);
         let nodeData: Buffer;
-        if(mode === 'gcm') {
+        if (mode === 'gcm') {
             const dataPart = data.slice(0, data.byteLength - 16);
             nodeData = this.toNodeBuffer(dataPart);
             const tagPart = data.slice(data.byteLength - 16);
-            (decipher as any).setAuthTag(tagPart);
+            (decipher as any).setAuthTag(this.toNodeBuffer(tagPart));
         } else {
             nodeData = this.toNodeBuffer(data);
         }
