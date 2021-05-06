@@ -37,6 +37,10 @@ export class ElectronMainMessagingService implements MessagingService {
             });
         });
 
+        ipcMain.handle('windowVisible', () => {
+            return windowMain.win?.isVisible();
+        });
+
         nativeTheme.on('updated', () => {
             windowMain.win.webContents.send('systemThemeUpdated', nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
         });
