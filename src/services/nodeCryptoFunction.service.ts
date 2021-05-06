@@ -114,7 +114,7 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         const nodeKey = this.toNodeBuffer(key);
         const cipher = crypto.createCipheriv(this.toNodeCryptoAesMode(mode), nodeKey, nodeIv);
         const encArr = [cipher.update(nodeData), cipher.final()];
-        if (mode == 'gcm') {
+        if (mode === 'gcm') {
             encArr.push((cipher as any).getAuthTag());
         }
         const encBuf = Buffer.concat(encArr);

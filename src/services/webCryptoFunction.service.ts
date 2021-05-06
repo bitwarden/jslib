@@ -232,7 +232,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         const decipher = (forge as any).cipher.createDecipher(this.toWebCryptoAesMode(mode), parameters.encKey);
         const options = { iv: parameters.iv } as any;
         let dataBuffer: any = null;
-        if (mode == 'gcm') {
+        if (mode === 'gcm') {
             dataBuffer = (forge as any).util.createBuffer(parameters.data.slice(0, parameters.data.length - 16));
             options.tag = (forge as any).util.createBuffer(parameters.data.slice(parameters.data.length - 16));
         } else {
