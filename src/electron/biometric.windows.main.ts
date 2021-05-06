@@ -27,6 +27,7 @@ export default class BiometricWindowsMain implements BiometricMain {
         }
         this.storageService.save(ElectronConstants.enableBiometric, supportsBiometric);
         this.storageService.save(ConstantsService.biometricText, 'unlockWithWindowsHello');
+        this.storageService.save(ElectronConstants.noAutoPromptBiometricsText, 'noAutoPromptWindowsHello');
 
         ipcMain.on('biometric', async (event: any, message: any) => {
             event.returnValue = await this.requestCreate();
