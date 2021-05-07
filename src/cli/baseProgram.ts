@@ -1,4 +1,4 @@
-import * as chalk from 'chalk';
+import * as chk from 'chalk';
 
 import { Response } from './models/response';
 import { ListResponse } from './models/response/listResponse';
@@ -6,6 +6,8 @@ import { MessageResponse } from './models/response/messageResponse';
 import { StringResponse } from './models/response/stringResponse';
 
 import { UserService } from '../abstractions/user.service';
+
+const chalk = chk.default;
 
 export abstract class BaseProgram {
     constructor(
