@@ -301,28 +301,28 @@ export class AddEditComponent implements OnInit {
 
         this.formPromise = this.encryptSend(file)
             .then(async encSend => {
-                try {
-                    const uploadPromise = this.sendService.saveWithServer(encSend);
-                    let inactive = false;
-                    setTimeout(() => inactive = true, 4500);
-                    await uploadPromise;
-                    if (this.send.id == null) {
-                        this.send.id = encSend[0].id;
-                    }
-                    if (this.send.accessId == null) {
-                        this.send.accessId = encSend[0].accessId;
-                    }
-                    this.onSavedSend.emit(this.send);
-                    await this.showSuccessMessage(inactive);
-                    if (this.copyLink) {
-                        this.copyLinkToClipboard(this.link);
-                    }
-                    return true;
-                } catch { }
-                return false;
+                const uploadPromise = this.sendService.saveWithServer(encSend);
+                let inactive = false;
+                setTimeout(() => inactive = true, 4500);
+                await uploadPromise;
+                if (this.send.id == null) {
+                    this.send.id = encSend[0].id;
+                }
+                if (this.send.accessId == null) {
+                    this.send.accessId = encSend[0].accessId;
+                }
+                this.onSavedSend.emit(this.send);
+                await this.showSuccessMessage(inactive);
+                if (this.copyLink) {
+                    this.copyLinkToClipboard(this.link);
+                }
             });
 
-        return await this.formPromise;
+        try {
+            await this.formPromise;
+            return true;
+        } catch { }
+        return false;
     }
 
     async showSuccessMessage(inactive: boolean) {
