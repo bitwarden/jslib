@@ -100,14 +100,12 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         while (positions.length < o.length) {
             positions.push('a');
         }
-        const aux = [...positions];
-        console.log("POSITIONS -> ", aux);
+
         // shuffle
         await this.shuffleArray(positions);
 
         // build out the char sets
         let allCharSet = '';
-        console.log("AFTER SHUFFLE -> ", positions);
         let lowercaseCharSet = 'abcdefghijkmnopqrstuvwxyz';
         if (o.ambiguous) {
             lowercaseCharSet += 'l';
@@ -215,12 +213,6 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             }
         }
 
-        // compare the actual options against the minimum required by the website's password constraints
-        /* if (this.smartPasswordOptions !== null) {
-            this.optionsCache = this.compareWebsiteConstraintsWithDefault(this.smartPasswordOptions, this.optionsCache);
-            console.log("websitePassword is NOT NULL => ", this.optionsCache);
-        } */
-
         const enforcedOptions = await this.enforcePasswordGeneratorPoliciesOnOptions(this.optionsCache);
         console.log("enforced => ", enforcedOptions);
         this.optionsCache = enforcedOptions[0];
@@ -239,57 +231,68 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     }
 
     async enforcePasswordGeneratorPoliciesOnOptions(options: any): Promise<[any, PasswordGeneratorPolicyOptions]> {
+        console.log("enforced Password Generator -> ", options);
         let enforcedPolicyOptions = await this.getPasswordGeneratorPolicyOptions();
         if (enforcedPolicyOptions != null) {
-            if (options.length < enforcedPolicyOptions.minLength) {
-                options.length = enforcedPolicyOptions.minLength;
-            }
+            if (options.type === 'smartpassword') {
+                if (enforcedPolicyOptions.minLength <= options.maxLength
+                    && enforcedPolicyOptions.minLength >= options.minLength
+                    && options.length < enforcedPolicyOptions.minLength) {
+                    options.length = enforcedPolicyOptions.minLength;
+                }
+                // if ()
+            } else {
+                // regular password or passphrase
+                if (options.length < enforcedPolicyOptions.minLength) {
+                    options.length = enforcedPolicyOptions.minLength;
+                }
 
-            if (enforcedPolicyOptions.useUppercase) {
-                options.uppercase = true;
-            }
+                if (enforcedPolicyOptions.useUppercase) {
+                    options.uppercase = true;
+                }
 
-            if (enforcedPolicyOptions.useLowercase) {
-                options.lowercase = true;
-            }
+                if (enforcedPolicyOptions.useLowercase) {
+                    options.lowercase = true;
+                }
 
-            if (enforcedPolicyOptions.useNumbers) {
-                options.number = true;
-            }
+                if (enforcedPolicyOptions.useNumbers) {
+                    options.number = true;
+                }
 
-            if (options.minNumber < enforcedPolicyOptions.numberCount) {
-                options.minNumber = enforcedPolicyOptions.numberCount;
-            }
+                if (options.minNumber < enforcedPolicyOptions.numberCount) {
+                    options.minNumber = enforcedPolicyOptions.numberCount;
+                }
 
-            if (enforcedPolicyOptions.useSpecial) {
-                options.special = true;
-            }
+                if (enforcedPolicyOptions.useSpecial) {
+                    options.special = true;
+                }
 
-            if (options.minSpecial < enforcedPolicyOptions.specialCount) {
-                options.minSpecial = enforcedPolicyOptions.specialCount;
-            }
+                if (options.minSpecial < enforcedPolicyOptions.specialCount) {
+                    options.minSpecial = enforcedPolicyOptions.specialCount;
+                }
 
-            // Must normalize these fields because the receiving call expects all options to pass the current rules
-            if (options.minSpecial + options.minNumber > options.length) {
-                options.minSpecial = options.length - options.minNumber;
-            }
+                // Must normalize these fields because the receiving call expects all options to pass the current rules
+                if (options.minSpecial + options.minNumber > options.length) {
+                    options.minSpecial = options.length - options.minNumber;
+                }
 
-            if (options.numWords < enforcedPolicyOptions.minNumberWords) {
-                options.numWords = enforcedPolicyOptions.minNumberWords;
-            }
+                if (options.numWords < enforcedPolicyOptions.minNumberWords) {
+                    options.numWords = enforcedPolicyOptions.minNumberWords;
+                }
 
-            if (enforcedPolicyOptions.capitalize) {
-                options.capitalize = true;
-            }
+                if (enforcedPolicyOptions.capitalize) {
+                    options.capitalize = true;
+                }
 
-            if (enforcedPolicyOptions.includeNumber) {
-                options.includeNumber = true;
-            }
+                if (enforcedPolicyOptions.includeNumber) {
+                    options.includeNumber = true;
+                }
 
-            // Force default type if password/passphrase selected via policy
-            if (enforcedPolicyOptions.defaultType === 'password' ||
-                enforcedPolicyOptions.defaultType === 'passphrase') {
-                options.type = enforcedPolicyOptions.defaultType;
+                // Force default type if password/passphrase selected via policy
+                if (enforcedPolicyOptions.defaultType === 'password' ||
+                    enforcedPolicyOptions.defaultType === 'passphrase') {
+                    options.type = enforcedPolicyOptions.defaultType;
+                }
             }
         } else { // UI layer expects an instantiated object to prevent more explicit null checks
             enforcedPolicyOptions = new PasswordGeneratorPolicyOptions();
