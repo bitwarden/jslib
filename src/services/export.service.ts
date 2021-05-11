@@ -21,6 +21,8 @@ import { CollectionDetailsResponse } from '../models/response/collectionResponse
 
 import { CipherWithIds as CipherExport } from '../models/export/cipherWithIds';
 import { CollectionWithId as CollectionExport } from '../models/export/collectionWithId';
+import { Event } from '../models/export/event';
+import { EventView } from '../models/view/eventView';
 import { FolderWithId as FolderExport } from '../models/export/folderWithId';
 
 export class ExportService implements ExportServiceAbstraction {
@@ -42,6 +44,10 @@ export class ExportService implements ExportServiceAbstraction {
         } else {
             return this.getOrganizationDecryptedExport(organizationId, format);
         }
+    }
+
+    async getEventExport(events: EventView[]): Promise<string> {
+        return papa.unparse(events.map(e => new Event(e)));
     }
 
     getFileName(prefix: string = null, extension: string = 'csv'): string {
