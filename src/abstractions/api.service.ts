@@ -67,6 +67,7 @@ import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEm
 import { UpdateTwoFactorWebAuthnDeleteRequest } from '../models/request/updateTwoFactorWebAuthnDeleteRequest';
 import { UpdateTwoFactorWebAuthnRequest } from '../models/request/updateTwoFactorWebAuthnRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
+import { UserBulkReinviteRequest } from '../models/request/userBulkReinviteRequest';
 import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
@@ -272,6 +273,7 @@ export abstract class ApiService {
     getOrganizationUsers: (organizationId: string) => Promise<ListResponse<OrganizationUserUserDetailsResponse>>;
     postOrganizationUserInvite: (organizationId: string, request: OrganizationUserInviteRequest) => Promise<any>;
     postOrganizationUserReinvite: (organizationId: string, id: string) => Promise<any>;
+    postManyOrganizationUserReinvite: (organizationId: string, request: UserBulkReinviteRequest) => Promise<any>;
     postOrganizationUserAccept: (organizationId: string, id: string,
         request: OrganizationUserAcceptRequest) => Promise<any>;
     postOrganizationUserConfirm: (organizationId: string, id: string,
