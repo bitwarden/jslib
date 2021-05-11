@@ -614,6 +614,10 @@ export class PasswordRulesParserService implements PasswordRulesParserServiceAbs
             reqUpper: pwCanHaveUppercase && pwMinUppercase > 0,
             reqLower: pwCanHaveLowercase && pwMinLowercase > 0,
             reqSpecial: pwCanHaveSpecial && pwMinSpecial > 0,
+            allowedNumber: pwCanHaveNumbers,
+            allowedUpper: pwCanHaveUppercase,
+            allowedLower: pwCanHaveLowercase,
+            allowedSpecial: pwCanHaveSpecial,
         };
         console.log("I WILL RETURN THIS OVERALL SITE OPTIONS -> ", siteOptions);
 
