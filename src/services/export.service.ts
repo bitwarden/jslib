@@ -22,8 +22,8 @@ import { CollectionDetailsResponse } from '../models/response/collectionResponse
 import { CipherWithIds as CipherExport } from '../models/export/cipherWithIds';
 import { CollectionWithId as CollectionExport } from '../models/export/collectionWithId';
 import { Event } from '../models/export/event';
-import { EventView } from '../models/view/eventView';
 import { FolderWithId as FolderExport } from '../models/export/folderWithId';
+import { EventView } from '../models/view/eventView';
 
 export class ExportService implements ExportServiceAbstraction {
     constructor(private folderService: FolderService, private cipherService: CipherService,
