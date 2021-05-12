@@ -72,6 +72,7 @@ import { UpdateTwoFactorWebAuthnDeleteRequest } from '../models/request/updateTw
 import { UpdateTwoFactorWebAuthnRequest } from '../models/request/updateTwoFactorWebAuthnRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
 import { UserBulkReinviteRequest } from '../models/request/userBulkReinviteRequest';
+import { UserBulkRemoveRequest } from '../models/request/userBulkRemoveRequest';
 import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
@@ -834,6 +835,10 @@ export class ApiService implements ApiServiceAbstraction {
 
     deleteOrganizationUser(organizationId: string, id: string): Promise<any> {
         return this.send('DELETE', '/organizations/' + organizationId + '/users/' + id, null, true, false);
+    }
+
+    deleteManyOrganizationUsers(organizationId: string, request: UserBulkRemoveRequest): Promise<any> {
+        return this.send('DELETE', '/organizations/' + organizationId + '/users', request, true, false);
     }
 
     // Plan APIs

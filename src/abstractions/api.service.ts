@@ -68,6 +68,7 @@ import { UpdateTwoFactorWebAuthnDeleteRequest } from '../models/request/updateTw
 import { UpdateTwoFactorWebAuthnRequest } from '../models/request/updateTwoFactorWebAuthnRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
 import { UserBulkReinviteRequest } from '../models/request/userBulkReinviteRequest';
+import { UserBulkRemoveRequest } from '../models/request/userBulkRemoveRequest';
 import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
@@ -284,6 +285,7 @@ export abstract class ApiService {
     putOrganizationUserResetPasswordEnrollment: (organizationId: string, userId: string,
         request: OrganizationUserResetPasswordEnrollmentRequest) => Promise<any>;
     deleteOrganizationUser: (organizationId: string, id: string) => Promise<any>;
+    deleteManyOrganizationUsers: (organizationId: string, request: UserBulkRemoveRequest) => Promise<any>;
 
     getSync: () => Promise<SyncResponse>;
     postImportDirectory: (organizationId: string, request: ImportDirectoryRequest) => Promise<any>;
