@@ -1,4 +1,4 @@
-export class UserBulkRemoveRequest {
+export class UserBulkDeleteRequest {
     ids: string[];
 
     constructor(ids: string[]) {

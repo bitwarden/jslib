@@ -71,8 +71,8 @@ import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEm
 import { UpdateTwoFactorWebAuthnDeleteRequest } from '../models/request/updateTwoFactorWebAuthnDeleteRequest';
 import { UpdateTwoFactorWebAuthnRequest } from '../models/request/updateTwoFactorWebAuthnRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
+import { UserBulkDeleteRequest } from '../models/request/userBulkDeleteRequest';
 import { UserBulkReinviteRequest } from '../models/request/userBulkReinviteRequest';
-import { UserBulkRemoveRequest } from '../models/request/userBulkRemoveRequest';
 import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
@@ -837,7 +837,7 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('DELETE', '/organizations/' + organizationId + '/users/' + id, null, true, false);
     }
 
-    deleteManyOrganizationUsers(organizationId: string, request: UserBulkRemoveRequest): Promise<any> {
+    deleteManyOrganizationUsers(organizationId: string, request: UserBulkDeleteRequest): Promise<any> {
         return this.send('DELETE', '/organizations/' + organizationId + '/users', request, true, false);
     }
 
