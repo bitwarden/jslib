@@ -157,14 +157,13 @@ export class ImportService implements ImportServiceAbstraction {
             if (importResult.folders.length === 0 && importResult.ciphers.length === 0) {
                 return new Error(this.i18nService.t('importNothingError'));
             } else if (importResult.ciphers.length > 0) {
-                let badDataThreshold = 10;
-                for (const cipher of importResult.ciphers) {
-                    if (this.badData(cipher)) {
-                        badDataThreshold--;
-                        if (badDataThreshold === 0) {
-                            return new Error(this.i18nService.t('importFormatError'));
-                        }
-                    }
+                const halfway = Math.floor(importResult.ciphers.length / 2);
+                const last = importResult.ciphers.length - 1;
+
+                if (this.badData(importResult.ciphers[0]) &&
+                    this.badData(importResult.ciphers[halfway]) &&
+                    this.badData(importResult.ciphers[last])) {
+                    return new Error(this.i18nService.t('importFormatError'));
                 }
             }
             try {
