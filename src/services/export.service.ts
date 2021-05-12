@@ -23,6 +23,7 @@ import { CollectionDetailsResponse } from '../models/response/collectionResponse
 import { CipherWithIds as CipherExport } from '../models/export/cipherWithIds';
 import { CollectionWithId as CollectionExport } from '../models/export/collectionWithId';
 import { FolderWithId as FolderExport } from '../models/export/folderWithId';
+import { Utils } from '../misc/utils';
 
 export class ExportService implements ExportServiceAbstraction {
     constructor(private folderService: FolderService, private cipherService: CipherService,
@@ -142,12 +143,11 @@ export class ExportService implements ExportServiceAbstraction {
 
         await Promise.all(promises);
 
-        const testValue = await this.cryptoService.randomNumber(2048, 65536);
-        const encKeyTest = await this.cryptoService.encrypt(testValue.toString());
+        const encKeyValidation = await this.cryptoService.encrypt(Utils.newGuid());
 
         const jsonDoc: any = {
             encrypted: true,
-            encKeyTest: encKeyTest.encryptedString,
+            encKeyValidation_DO_NOT_EDIT: encKeyValidation.encryptedString,
             folders: [],
             items: [],
         };

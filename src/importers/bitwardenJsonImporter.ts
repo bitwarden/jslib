@@ -37,10 +37,10 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
     }
 
     private async parseEncrypted() {
-        if (this.results.encKeyTest != null) {
-            const encKeyTest = new EncString(this.results.encKeyTest);
-            const encKeyTestDecrypted = await this.cryptoService.decryptToUtf8(encKeyTest);
-            if (encKeyTestDecrypted === null) {
+        if (this.results.encKeyValidation_DO_NOT_EDIT != null) {
+            const encKeyValidation = new EncString(this.results.encKeyValidation_DO_NOT_EDIT);
+            const encKeyValidationDecrypt = await this.cryptoService.decryptToUtf8(encKeyValidation);
+            if (encKeyValidationDecrypt === null) {
                 this.result.success = false;
                 this.result.errorMessage = this.i18nService.t('importEncKeyError');
                 return;
