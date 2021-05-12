@@ -1,15 +1,23 @@
 import { BaseImporter } from './baseImporter';
 import { Importer } from './importer';
 
+import { EncString } from '../models/domain/encString';
 import { ImportResult } from '../models/domain/importResult';
 
 import { CipherWithIds } from '../models/export/cipherWithIds';
 import { CollectionWithId } from '../models/export/collectionWithId';
 import { FolderWithId } from '../models/export/folderWithId';
 
+import { CryptoService } from '../abstractions/crypto.service';
+import { I18nService } from '../abstractions/i18n.service';
+
 export class BitwardenJsonImporter extends BaseImporter implements Importer {
     private results: any;
     private result: ImportResult;
+
+    constructor(private cryptoService: CryptoService, private i18nService: I18nService) {
+        super();
+    }
 
     async parse(data: string): Promise<ImportResult> {
         this.result = new ImportResult();
@@ -25,11 +33,20 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
             this.parseDecrypted();
         }
 
-        this.result.success = true;
         return this.result;
     }
 
     private async parseEncrypted() {
+        if (this.results.encKeyTest != null) {
+            const encKeyTest = new EncString(this.results.encKeyTest);
+            const encKeyTestDecrypted = await this.cryptoService.decryptToUtf8(encKeyTest);
+            if (encKeyTestDecrypted === null) {
+                this.result.success = false;
+                this.result.errorMessage = this.i18nService.t('importEncKeyError');
+                return;
+            }
+        }
+
         const groupingsMap = new Map<string, number>();
 
         if (this.organization && this.results.collections != null) {
@@ -82,6 +99,8 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
             this.cleanupCipher(view);
             this.result.ciphers.push(view);
         }
+
+        this.result.success = true;
     }
 
     private parseDecrypted() {
@@ -133,5 +152,7 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
             this.cleanupCipher(cipher);
             this.result.ciphers.push(cipher);
         });
+
+        this.result.success = true;
     }
 }
