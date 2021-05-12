@@ -71,6 +71,7 @@ import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEm
 import { UpdateTwoFactorWebAuthnDeleteRequest } from '../models/request/updateTwoFactorWebAuthnDeleteRequest';
 import { UpdateTwoFactorWebAuthnRequest } from '../models/request/updateTwoFactorWebAuthnRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
+import { UserBulkReinviteRequest } from '../models/request/userBulkReinviteRequest';
 import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
@@ -799,6 +800,10 @@ export class ApiService implements ApiServiceAbstraction {
 
     postOrganizationUserReinvite(organizationId: string, id: string): Promise<any> {
         return this.send('POST', '/organizations/' + organizationId + '/users/' + id + '/reinvite', null, true, false);
+    }
+
+    postManyOrganizationUserReinvite(organizationId: string, request: UserBulkReinviteRequest): Promise<any> {
+        return this.send('POST', '/organizations/' + organizationId + '/users/reinvite', request, true, false);
     }
 
     postOrganizationUserAccept(organizationId: string, id: string,
