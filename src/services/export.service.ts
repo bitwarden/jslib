@@ -4,6 +4,7 @@ import { CipherType } from '../enums/cipherType';
 
 import { ApiService } from '../abstractions/api.service';
 import { CipherService } from '../abstractions/cipher.service';
+import { CryptoService } from '../abstractions/crypto.service';
 import { ExportService as ExportServiceAbstraction } from '../abstractions/export.service';
 import { FolderService } from '../abstractions/folder.service';
 
@@ -23,9 +24,11 @@ import { CipherWithIds as CipherExport } from '../models/export/cipherWithIds';
 import { CollectionWithId as CollectionExport } from '../models/export/collectionWithId';
 import { FolderWithId as FolderExport } from '../models/export/folderWithId';
 
+import { Utils } from '../misc/utils';
+
 export class ExportService implements ExportServiceAbstraction {
     constructor(private folderService: FolderService, private cipherService: CipherService,
-        private apiService: ApiService) { }
+        private apiService: ApiService, private cryptoService: CryptoService) { }
 
     async getExport(format: 'csv' | 'json' | 'encrypted_json' = 'csv'): Promise<string> {
         if (format === 'encrypted_json') {
@@ -141,8 +144,11 @@ export class ExportService implements ExportServiceAbstraction {
 
         await Promise.all(promises);
 
+        const encKeyValidation = await this.cryptoService.encrypt(Utils.newGuid());
+
         const jsonDoc: any = {
             encrypted: true,
+            encKeyValidation_DO_NOT_EDIT: encKeyValidation.encryptedString,
             folders: [],
             items: [],
         };

@@ -1,6 +1,7 @@
 import { ApiService } from '../abstractions/api.service';
 import { CipherService } from '../abstractions/cipher.service';
 import { CollectionService } from '../abstractions/collection.service';
+import { CryptoService } from '../abstractions/crypto.service';
 import { FolderService } from '../abstractions/folder.service';
 import { I18nService } from '../abstractions/i18n.service';
 import {
@@ -143,7 +144,8 @@ export class ImportService implements ImportServiceAbstraction {
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private apiService: ApiService, private i18nService: I18nService,
-        private collectionService: CollectionService, private platformUtilsService: PlatformUtilsService) { }
+        private collectionService: CollectionService, private platformUtilsService: PlatformUtilsService,
+        private cryptoService: CryptoService) { }
 
     getImportOptions(): ImportOption[] {
         return this.featuredImportOptions.concat(this.regularImportOptions);
@@ -172,7 +174,11 @@ export class ImportService implements ImportServiceAbstraction {
             }
             return null;
         } else {
-            return new Error(this.i18nService.t('importFormatError'));
+            if (!Utils.isNullOrWhitespace(importResult.errorMessage)) {
+                return new Error(importResult.errorMessage);
+            } else {
+                return new Error(this.i18nService.t('importFormatError'));
+            }
         }
     }
 
@@ -194,7 +200,7 @@ export class ImportService implements ImportServiceAbstraction {
             case 'bitwardencsv':
                 return new BitwardenCsvImporter();
             case 'bitwardenjson':
-                return new BitwardenJsonImporter();
+                return new BitwardenJsonImporter(this.cryptoService, this.i18nService);
             case 'lastpasscsv':
             case 'passboltcsv':
                 return new LastPassCsvImporter();
