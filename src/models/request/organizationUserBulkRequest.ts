@@ -1,4 +1,4 @@
-export class UserBulkReinviteRequest {
+export class OrganizationUserBulkRequest {
     ids: string[];
 
     constructor(ids: string[]) {
