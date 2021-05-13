@@ -2,6 +2,7 @@ import { Substitute, SubstituteOf } from '@fluffy-spoon/substitute';
 
 import { ApiService } from '../../../src/abstractions/api.service';
 import { CipherService } from '../../../src/abstractions/cipher.service';
+import { CryptoService } from '../../../src/abstractions/crypto.service';
 import { FolderService } from '../../../src/abstractions/folder.service';
 
 import { ExportService } from '../../../src/services/export.service';
@@ -74,16 +75,18 @@ describe('ExportService', () => {
     let apiService: SubstituteOf<ApiService>;
     let cipherService: SubstituteOf<CipherService>;
     let folderService: SubstituteOf<FolderService>;
+    let cryptoService: SubstituteOf<CryptoService>;
 
     beforeEach(() => {
         apiService = Substitute.for<ApiService>();
         cipherService = Substitute.for<CipherService>();
         folderService = Substitute.for<FolderService>();
+        cryptoService = Substitute.for<CryptoService>();
 
         folderService.getAllDecrypted().resolves([]);
         folderService.getAll().resolves([]);
 
-        exportService = new ExportService(folderService, cipherService, apiService);
+        exportService = new ExportService(folderService, cipherService, apiService, cryptoService);
     });
 
     it('exports unecrypted user ciphers', async () => {
