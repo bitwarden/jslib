@@ -1,24 +1,37 @@
-export class U2f {
+import { I18nService } from '../abstractions/i18n.service';
+import { PlatformUtilsService } from '../abstractions/platformUtils.service';
+
+export class WebAuthn {
     private iframe: HTMLIFrameElement = null;
     private connectorLink: HTMLAnchorElement;
     private parseFunction = this.parseMessage.bind(this);
 
-    constructor(private win: Window, private webVaultUrl: string, private successCallback: Function,
-        private errorCallback: Function, private infoCallback: Function) {
+    constructor(private win: Window, private webVaultUrl: string, private webAuthnNewTab: boolean,
+        private platformUtilsService: PlatformUtilsService, private i18nService: I18nService,
+        private successCallback: Function, private errorCallback: Function, private infoCallback: Function) {
         this.connectorLink = win.document.createElement('a');
-        this.webVaultUrl = webVaultUrl != null && webVaultUrl !== '' ? webVaultUrl : 'https://vault.bitwarden.com';
     }
 
     init(data: any): void {
-        this.connectorLink.href = this.webVaultUrl + '/u2f-connector.html' +
-            '?data=' + this.base64Encode(JSON.stringify(data)) +
-            '&parent=' + encodeURIComponent(this.win.document.location.href) +
-            '&v=1';
+        const params = new URLSearchParams({
+            data: this.base64Encode(JSON.stringify(data)),
+            parent: encodeURIComponent(this.win.document.location.href),
+            btnText: encodeURIComponent(this.i18nService.t('webAuthnAuthenticate')),
+            v: '1',
+        });
 
-        this.iframe = this.win.document.getElementById('u2f_iframe') as HTMLIFrameElement;
-        this.iframe.src = this.connectorLink.href;
+        if (this.webAuthnNewTab) {
+            // Firefox fallback which opens the webauthn page in a new tab
+            params.append('locale', this.i18nService.translationLocale);
+            this.platformUtilsService.launchUri(`${this.webVaultUrl}/webauthn-fallback-connector.html?${params}`);
+        } else {
+            this.connectorLink.href = `${this.webVaultUrl}/webauthn-connector.html?${params}`;
+            this.iframe = this.win.document.getElementById('webauthn_iframe') as HTMLIFrameElement;
+            this.iframe.allow = 'publickey-credentials-get ' + new URL(this.webVaultUrl).origin;
+            this.iframe.src = this.connectorLink.href;
 
-        this.win.addEventListener('message', this.parseFunction, false);
+            this.win.addEventListener('message', this.parseFunction, false);
+        }
     }
 
     stop() {

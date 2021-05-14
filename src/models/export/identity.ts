@@ -1,6 +1,6 @@
 import { IdentityView } from '../view/identityView';
 
-import { CipherString } from '../domain/cipherString';
+import { EncString } from '../domain/encString';
 import { Identity as IdentityDomain } from '../domain/identity';
 
 export class Identity {
@@ -50,24 +50,24 @@ export class Identity {
     }
 
     static toDomain(req: Identity, domain = new IdentityDomain()) {
-        domain.title = req.title != null ? new CipherString(req.title) : null;
-        domain.firstName = req.firstName != null ? new CipherString(req.firstName) : null;
-        domain.middleName = req.middleName != null ? new CipherString(req.middleName) : null;
-        domain.lastName = req.lastName != null ? new CipherString(req.lastName) : null;
-        domain.address1 = req.address1 != null ? new CipherString(req.address1) : null;
-        domain.address2 = req.address2 != null ? new CipherString(req.address2) : null;
-        domain.address3 = req.address3 != null ? new CipherString(req.address3) : null;
-        domain.city = req.city != null ? new CipherString(req.city) : null;
-        domain.state = req.state != null ? new CipherString(req.state) : null;
-        domain.postalCode = req.postalCode != null ? new CipherString(req.postalCode) : null;
-        domain.country = req.country != null ? new CipherString(req.country) : null;
-        domain.company = req.company != null ? new CipherString(req.company) : null;
-        domain.email = req.email != null ? new CipherString(req.email) : null;
-        domain.phone = req.phone != null ? new CipherString(req.phone) : null;
-        domain.ssn = req.ssn != null ? new CipherString(req.ssn) : null;
-        domain.username = req.username != null ? new CipherString(req.username) : null;
-        domain.passportNumber = req.passportNumber != null ? new CipherString(req.passportNumber) : null;
-        domain.licenseNumber = req.licenseNumber != null ? new CipherString(req.licenseNumber) : null;
+        domain.title = req.title != null ? new EncString(req.title) : null;
+        domain.firstName = req.firstName != null ? new EncString(req.firstName) : null;
+        domain.middleName = req.middleName != null ? new EncString(req.middleName) : null;
+        domain.lastName = req.lastName != null ? new EncString(req.lastName) : null;
+        domain.address1 = req.address1 != null ? new EncString(req.address1) : null;
+        domain.address2 = req.address2 != null ? new EncString(req.address2) : null;
+        domain.address3 = req.address3 != null ? new EncString(req.address3) : null;
+        domain.city = req.city != null ? new EncString(req.city) : null;
+        domain.state = req.state != null ? new EncString(req.state) : null;
+        domain.postalCode = req.postalCode != null ? new EncString(req.postalCode) : null;
+        domain.country = req.country != null ? new EncString(req.country) : null;
+        domain.company = req.company != null ? new EncString(req.company) : null;
+        domain.email = req.email != null ? new EncString(req.email) : null;
+        domain.phone = req.phone != null ? new EncString(req.phone) : null;
+        domain.ssn = req.ssn != null ? new EncString(req.ssn) : null;
+        domain.username = req.username != null ? new EncString(req.username) : null;
+        domain.passportNumber = req.passportNumber != null ? new EncString(req.passportNumber) : null;
+        domain.licenseNumber = req.licenseNumber != null ? new EncString(req.licenseNumber) : null;
         return domain;
     }
 

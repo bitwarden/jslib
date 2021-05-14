@@ -62,7 +62,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
                 skipNegotiation: true,
                 transport: signalR.HttpTransportType.WebSockets,
             })
-            .withHubProtocol(new signalRMsgPack.MessagePackHubProtocol())
+            .withHubProtocol(new signalRMsgPack.MessagePackHubProtocol() as signalR.IHubProtocol)
             // .configureLogging(signalR.LogLevel.Trace)
             .build();
 

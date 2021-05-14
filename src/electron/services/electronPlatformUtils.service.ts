@@ -1,10 +1,8 @@
 import {
     clipboard,
     ipcRenderer,
-    remote,
     shell,
 } from 'electron';
-import * as fs from 'fs';
 
 import {
     isDev,
@@ -18,16 +16,14 @@ import { MessagingService } from '../../abstractions/messaging.service';
 import { PlatformUtilsService } from '../../abstractions/platformUtils.service';
 import { StorageService } from '../../abstractions/storage.service';
 
-import { AnalyticsIds } from '../../misc/analytics';
 import { ElectronConstants } from '../electronConstants';
 
 export class ElectronPlatformUtilsService implements PlatformUtilsService {
     identityClientId: string;
 
     private deviceCache: DeviceType = null;
-    private analyticsIdCache: string = null;
 
-    constructor(private i18nService: I18nService, private messagingService: MessagingService,
+    constructor(protected i18nService: I18nService, private messagingService: MessagingService,
         private isDesktopApp: boolean, private storageService: StorageService) {
         this.identityClientId = isDesktopApp ? 'desktop' : 'connector';
     }
@@ -88,19 +84,6 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return isMacAppStore();
     }
 
-    analyticsId(): string {
-        if (!this.isDesktopApp) {
-            return null;
-        }
-
-        if (this.analyticsIdCache) {
-            return this.analyticsIdCache;
-        }
-
-        this.analyticsIdCache = (AnalyticsIds as any)[this.getDevice()];
-        return this.analyticsIdCache;
-    }
-
     isViewOpen(): Promise<boolean> {
         return Promise.resolve(false);
     }
@@ -114,26 +97,23 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     }
 
     saveFile(win: Window, blobData: any, blobOptions: any, fileName: string): void {
-        remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
-            defaultPath: fileName,
-            showsTagField: false,
-        }).then(ret => {
-            if (ret.filePath != null) {
-                fs.writeFile(ret.filePath, Buffer.from(blobData), { mode: 0o600 }, err => {
-                    // error check?
-                });
-            }
-        });
+        const blob = new Blob([blobData], blobOptions);
+        const a = win.document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = fileName;
+        win.document.body.appendChild(a);
+        a.click();
+        win.document.body.removeChild(a);
     }
 
-    getApplicationVersion(): string {
-        return remote.app.getVersion();
+    getApplicationVersion(): Promise<string> {
+        return ipcRenderer.invoke('appVersion');
     }
 
-    supportsU2f(win: Window): boolean {
-        // Not supported in Electron at this time.
-        // ref: https://github.com/electron/electron/issues/3226
-        return false;
+    // Temporarily restricted to only Windows until https://github.com/electron/electron/pull/28349
+    // has been merged and an updated electron build is available.
+    supportsWebAuthn(win: Window): boolean {
+        return process.platform === 'win32';
     }
 
     supportsDuo(): boolean {
@@ -157,7 +137,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
             buttons.push(cancelText);
         }
 
-        const result = await remote.dialog.showMessageBox(remote.getCurrentWindow(), {
+        const result = await ipcRenderer.invoke('showMessageBox', {
             type: type,
             title: title,
             message: title,
@@ -171,12 +151,9 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return Promise.resolve(result.response === 0);
     }
 
-    eventTrack(action: string, label?: string, options?: any) {
-        this.messagingService.send('analyticsEventTrack', {
-            action: action,
-            label: label,
-            options: options,
-        });
+    async showPasswordDialog(title: string, body: string, passwordValidation: (value: string) => Promise<boolean>):
+        Promise<boolean> {
+        throw new Error('Not implemented.');
     }
 
     isDev(): boolean {
@@ -221,13 +198,11 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     }
 
     getDefaultSystemTheme() {
-        return remote.nativeTheme.shouldUseDarkColors ? 'dark' : 'light';
+        return ipcRenderer.invoke('systemTheme');
     }
 
     onDefaultSystemThemeChange(callback: ((theme: 'light' | 'dark') => unknown)) {
-        remote.nativeTheme.on('updated', () => {
-            callback(this.getDefaultSystemTheme());
-        });
+        ipcRenderer.on('systemThemeUpdated', (event, theme: 'light' | 'dark') => callback(theme));
     }
 
     supportsSecureStorage(): boolean {

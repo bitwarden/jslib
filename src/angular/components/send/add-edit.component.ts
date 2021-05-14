@@ -1,10 +1,10 @@
 import { DatePipe } from '@angular/common';
-
 import {
+    Directive,
     EventEmitter,
     Input,
     OnInit,
-    Output,
+    Output
 } from '@angular/core';
 
 import { OrganizationUserStatusType } from '../../../enums/organizationUserStatusType';
@@ -23,6 +23,7 @@ import { SendFileView } from '../../../models/view/sendFileView';
 import { SendTextView } from '../../../models/view/sendTextView';
 import { SendView } from '../../../models/view/sendView';
 
+import { EncArrayBuffer } from '../../../models/domain/encArrayBuffer';
 import { Send } from '../../../models/domain/send';
 
 // TimeOption is used for the dropdown implementation of custom times
@@ -37,6 +38,7 @@ enum DateField {
     ExpriationDate = 'expiration',
 }
 
+@Directive()
 export class AddEditComponent implements OnInit {
     @Input() sendId: string;
     @Input() type: SendType;
@@ -47,6 +49,7 @@ export class AddEditComponent implements OnInit {
 
     copyLink = false;
     disableSend = false;
+    disableHideEmail = false;
     send: SendView;
     deletionDate: string;
     deletionDateFallback: string;
@@ -66,7 +69,8 @@ export class AddEditComponent implements OnInit {
     deletionDateSelect = 168;
     expirationDateSelect: number = null;
     canAccessPremium = true;
-    premiumRequiredAlertShown = false;
+    emailVerified = true;
+    alertShown = false;
     showOptions = false;
 
     safariDeletionTime: string;
@@ -74,7 +78,7 @@ export class AddEditComponent implements OnInit {
     safariDeletionTimeOptions: TimeOption[];
     safariExpirationTimeOptions: TimeOption[];
 
-    private webVaultUrl: string;
+    private sendLinkBaseUrl: string;
 
     constructor(protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected environmentService: EnvironmentService, protected datePipe: DatePipe,
@@ -97,15 +101,17 @@ export class AddEditComponent implements OnInit {
             { name: i18nService.t('never'), value: null },
         ].concat([...this.deletionDateOptions]);
 
-        this.webVaultUrl = this.environmentService.getWebVaultUrl();
-        if (this.webVaultUrl == null) {
-            this.webVaultUrl = 'https://vault.bitwarden.com';
+        const webVaultUrl = this.environmentService.getWebVaultUrl();
+        if (webVaultUrl == null) {
+            this.sendLinkBaseUrl = 'https://send.bitwarden.com/#';
+        } else {
+            this.sendLinkBaseUrl = webVaultUrl + '/#/send/';
         }
     }
 
     get link(): string {
         if (this.send.id != null && this.send.accessId != null) {
-            return this.webVaultUrl + '/#/send/' + this.send.accessId + '/' + this.send.urlB64Key;
+            return this.sendLinkBaseUrl + this.send.accessId + '/' + this.send.urlB64Key;
         }
         return null;
     }
@@ -147,18 +153,28 @@ export class AddEditComponent implements OnInit {
     }
 
     async load() {
-        const policies = await this.policyService.getAll(PolicyType.DisableSend);
+        const disableSendPolicies = await this.policyService.getAll(PolicyType.DisableSend);
         const organizations = await this.userService.getAllOrganizations();
         this.disableSend = organizations.some(o => {
             return o.enabled &&
                 o.status === OrganizationUserStatusType.Confirmed &&
                 o.usePolicies &&
                 !o.canManagePolicies &&
-                policies.some(p => p.organizationId === o.id && p.enabled);
+                disableSendPolicies.some(p => p.organizationId === o.id && p.enabled);
+        });
+
+        const sendOptionsPolicies = await this.policyService.getAll(PolicyType.SendOptions);
+        this.disableHideEmail = await organizations.some(o => {
+            return o.enabled &&
+                o.status === OrganizationUserStatusType.Confirmed &&
+                o.usePolicies &&
+                !o.canManagePolicies &&
+                sendOptionsPolicies.some(p => p.organizationId === o.id && p.enabled && p.data.disableHideEmail);
         });
 
         this.canAccessPremium = await this.userService.canAccessPremium();
-        if (!this.canAccessPremium) {
+        this.emailVerified = await this.userService.getEmailVerified();
+        if (!this.canAccessPremium || !this.emailVerified) {
             this.type = SendType.Text;
         }
 
@@ -258,7 +274,7 @@ export class AddEditComponent implements OnInit {
             }
 
             file = files[0];
-            if (file.size > 104857600) { // 100 MB
+            if (files[0].size > 524288000) { // 500 MB
                 this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                     this.i18nService.t('maxFileSize'));
                 return;
@@ -283,25 +299,35 @@ export class AddEditComponent implements OnInit {
             this.password = null;
         }
 
-        const encSend = await this.encryptSend(file);
+        this.formPromise = this.encryptSend(file)
+            .then(async encSend => {
+                const uploadPromise = this.sendService.saveWithServer(encSend);
+                await uploadPromise;
+                if (this.send.id == null) {
+                    this.send.id = encSend[0].id;
+                }
+                if (this.send.accessId == null) {
+                    this.send.accessId = encSend[0].accessId;
+                }
+                this.onSavedSend.emit(this.send);
+                if (this.copyLink && this.link != null) {
+                    const copySuccess = await this.copyLinkToClipboard(this.link);
+                    if (copySuccess ?? true) {
+                        this.platformUtilsService.showToast('success', null,
+                            this.i18nService.t(this.editMode ? 'editedSend' : 'createdSend'));
+                    } else {
+                        await this.platformUtilsService.showDialog(
+                            this.i18nService.t(this.editMode ? 'editedSend' : 'createdSend'), null,
+                            this.i18nService.t('ok'), null, 'success', null);
+                        await this.copyLinkToClipboard(this.link);
+                    }
+                }
+            });
+
         try {
-            this.formPromise = this.sendService.saveWithServer(encSend);
             await this.formPromise;
-            if (this.send.id == null) {
-                this.send.id = encSend[0].id;
-            }
-            if (this.send.accessId == null) {
-                this.send.accessId = encSend[0].accessId;
-            }
-            this.platformUtilsService.showToast('success', null,
-                this.i18nService.t(this.editMode ? 'editedSend' : 'createdSend'));
-            this.onSavedSend.emit(this.send);
-            if (this.copyLink) {
-                this.copyLinkToClipboard(this.link);
-            }
             return true;
         } catch { }
-
         return false;
     }
 
@@ -312,10 +338,8 @@ export class AddEditComponent implements OnInit {
         this.safariExpirationTime = null;
     }
 
-    copyLinkToClipboard(link: string) {
-        if (link != null) {
-            this.platformUtilsService.copyToClipboard(link);
-        }
+    async copyLinkToClipboard(link: string): Promise<void | boolean> {
+        return Promise.resolve(this.platformUtilsService.copyToClipboard(link));
     }
 
     async delete(): Promise<boolean> {
@@ -343,9 +367,15 @@ export class AddEditComponent implements OnInit {
     }
 
     typeChanged() {
-        if (!this.canAccessPremium && this.send.type === SendType.File && !this.premiumRequiredAlertShown) {
-            this.premiumRequiredAlertShown = true;
-            this.messagingService.send('premiumRequired');
+        if (this.send.type === SendType.File && !this.alertShown)
+        {
+            if (!this.canAccessPremium) {
+                this.alertShown = true;
+                this.messagingService.send('premiumRequired');
+            } else if (!this.emailVerified) {
+                this.alertShown = true;
+                this.messagingService.send('emailVerificationRequired');
+            }
         }
     }
 
@@ -363,7 +393,7 @@ export class AddEditComponent implements OnInit {
         return this.sendService.get(this.sendId);
     }
 
-    protected async encryptSend(file: File): Promise<[Send, ArrayBuffer]> {
+    protected async encryptSend(file: File): Promise<[Send, EncArrayBuffer]> {
         const sendData = await this.sendService.encrypt(this.send, file, this.password, null);
 
         // Parse dates
@@ -484,7 +514,7 @@ export class AddEditComponent implements OnInit {
                 standard: this.datePipe.transform(this.expirationDateTimeFallback, 'hh:mm a'),
                 military: this.datePipe.transform(this.expirationDateTimeFallback, 'HH:mm'),
             };
-            return [previousValue, {standard: null, military: null}, ...validTimes];
+            return [previousValue, { standard: null, military: null }, ...validTimes];
         } else if (field === DateField.DeletionDate && this.deletionDateTimeFallback != null && this.editMode) {
             const previousValue: TimeOption = {
                 standard: this.datePipe.transform(this.deletionDateTimeFallback, 'hh:mm a'),
@@ -492,7 +522,7 @@ export class AddEditComponent implements OnInit {
             };
             return [previousValue, ...validTimes];
         } else {
-            return  [{standard: null, military: null}, ...validTimes];
+            return [{ standard: null, military: null }, ...validTimes];
         }
     }
 }

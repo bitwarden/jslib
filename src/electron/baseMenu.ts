@@ -9,8 +9,6 @@ import {
 import { I18nService } from '../abstractions/i18n.service';
 import { WindowMain } from './window.main';
 
-import { isMacAppStore } from './utils';
-
 export class BaseMenu {
     protected editMenuItemOptions: MenuItemConstructorOptions;
     protected viewSubMenuItemOptions: MenuItemConstructorOptions[];
@@ -143,7 +141,7 @@ export class BaseMenu {
                 },
                 {
                     label: this.i18nService.t('close'),
-                    role: isMacAppStore() ? 'quit' : 'close',
+                    role: 'close',
                 },
             ];
         }

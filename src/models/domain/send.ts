@@ -8,8 +8,8 @@ import { SendData } from '../data/sendData';
 
 import { SendView } from '../view/sendView';
 
-import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { EncString } from './encString';
 import { SendFile } from './sendFile';
 import { SendText } from './sendText';
 
@@ -18,11 +18,11 @@ export class Send extends Domain {
     accessId: string;
     userId: string;
     type: SendType;
-    name: CipherString;
-    notes: CipherString;
+    name: EncString;
+    notes: EncString;
     file: SendFile;
     text: SendText;
-    key: CipherString;
+    key: EncString;
     maxAccessCount?: number;
     accessCount: number;
     revisionDate: Date;
@@ -30,6 +30,7 @@ export class Send extends Domain {
     deletionDate: Date;
     password: string;
     disabled: boolean;
+    hideEmail: boolean;
 
     constructor(obj?: SendData, alreadyEncrypted: boolean = false) {
         super();
@@ -54,6 +55,7 @@ export class Send extends Domain {
         this.revisionDate = obj.revisionDate != null ? new Date(obj.revisionDate) : null;
         this.deletionDate = obj.deletionDate != null ? new Date(obj.deletionDate) : null;
         this.expirationDate = obj.expirationDate != null ? new Date(obj.expirationDate) : null;
+        this.hideEmail = obj.hideEmail;
 
         switch (this.type) {
             case SendType.Text:

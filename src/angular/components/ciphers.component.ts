@@ -77,20 +77,20 @@ export class CiphersComponent {
         await this.search(null);
     }
 
-    async search(timeout: number = null) {
+    async search(timeout: number = null, indexedCiphers?: CipherView[]) {
         this.searchPending = false;
         if (this.searchTimeout != null) {
             clearTimeout(this.searchTimeout);
         }
         const deletedFilter: (cipher: CipherView) => boolean = c => c.isDeleted === this.deleted;
         if (timeout == null) {
-            this.ciphers = await this.searchService.searchCiphers(this.searchText, [this.filter, deletedFilter], null);
+            this.ciphers = await this.searchService.searchCiphers(this.searchText, [this.filter, deletedFilter], indexedCiphers);
             await this.resetPaging();
             return;
         }
         this.searchPending = true;
         this.searchTimeout = setTimeout(async () => {
-            this.ciphers = await this.searchService.searchCiphers(this.searchText, [this.filter, deletedFilter], null);
+            this.ciphers = await this.searchService.searchCiphers(this.searchText, [this.filter, deletedFilter], indexedCiphers);
             await this.resetPaging();
             this.searchPending = false;
         }, timeout);

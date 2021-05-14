@@ -28,6 +28,8 @@ export class Organization {
     ssoBound: boolean;
     identifier: string;
     permissions: PermissionsApi;
+    resetPasswordKey: string;
+    userId: string;
 
     constructor(obj?: OrganizationData) {
         if (obj == null) {
@@ -56,6 +58,8 @@ export class Organization {
         this.ssoBound = obj.ssoBound;
         this.identifier = obj.identifier;
         this.permissions = obj.permissions;
+        this.resetPasswordKey = obj.resetPasswordKey;
+        this.userId = obj.userId;
     }
 
     get canAccess() {
@@ -116,5 +120,9 @@ export class Organization {
 
     get canManageUsers() {
         return this.isAdmin || this.permissions.manageUsers;
+    }
+
+    get isResetPasswordEnrolled() {
+        return this.resetPasswordKey != null;
     }
 }

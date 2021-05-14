@@ -1,6 +1,7 @@
 import { PolicyType } from '../enums/policyType';
 
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
+import { AttachmentRequest } from '../models/request/attachmentRequest';
 
 import { BitPayInvoiceRequest } from '../models/request/bitPayInvoiceRequest';
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
@@ -36,6 +37,7 @@ import { OrganizationUpgradeRequest } from '../models/request/organizationUpgrad
 import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
 import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
 import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
+import { OrganizationUserResetPasswordEnrollmentRequest } from '../models/request/organizationUserResetPasswordEnrollmentRequest';
 import { OrganizationUserUpdateGroupsRequest } from '../models/request/organizationUserUpdateGroupsRequest';
 import { OrganizationUserUpdateRequest } from '../models/request/organizationUserUpdateRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
@@ -62,14 +64,17 @@ import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
 import { UpdateTwoFactorAuthenticatorRequest } from '../models/request/updateTwoFactorAuthenticatorRequest';
 import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoRequest';
 import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEmailRequest';
-import { UpdateTwoFactorU2fDeleteRequest } from '../models/request/updateTwoFactorU2fDeleteRequest';
-import { UpdateTwoFactorU2fRequest } from '../models/request/updateTwoFactorU2fRequest';
+import { UpdateTwoFactorWebAuthnDeleteRequest } from '../models/request/updateTwoFactorWebAuthnDeleteRequest';
+import { UpdateTwoFactorWebAuthnRequest } from '../models/request/updateTwoFactorWebAuthnRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
+import { UserBulkReinviteRequest } from '../models/request/userBulkReinviteRequest';
 import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
 import { ApiKeyResponse } from '../models/response/apiKeyResponse';
+import { AttachmentResponse } from '../models/response/attachmentResponse';
+import { AttachmentUploadDataResponse } from '../models/response/attachmentUploadDataResponse';
 import { BillingResponse } from '../models/response/billingResponse';
 import { BreachAccountResponse } from '../models/response/breachAccountResponse';
 import { CipherResponse } from '../models/response/cipherResponse';
@@ -107,6 +112,7 @@ import { ProfileResponse } from '../models/response/profileResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
 import { SendAccessResponse } from '../models/response/sendAccessResponse';
 import { SendFileDownloadDataResponse } from '../models/response/sendFileDownloadDataResponse';
+import { SendFileUploadDataResponse } from '../models/response/sendFileUploadDataResponse';
 import { SendResponse } from '../models/response/sendResponse';
 import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
@@ -117,10 +123,7 @@ import { TwoFactorDuoResponse } from '../models/response/twoFactorDuoResponse';
 import { TwoFactorEmailResponse } from '../models/response/twoFactorEmailResponse';
 import { TwoFactorProviderResponse } from '../models/response/twoFactorProviderResponse';
 import { TwoFactorRecoverResponse } from '../models/response/twoFactorRescoverResponse';
-import {
-    ChallengeResponse,
-    TwoFactorU2fResponse,
-} from '../models/response/twoFactorU2fResponse';
+import { ChallengeResponse, TwoFactorWebAuthnResponse } from '../models/response/twoFactorWebAuthnResponse';
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
@@ -180,14 +183,22 @@ export abstract class ApiService {
     postSendAccess: (id: string, request: SendAccessRequest, apiUrl?: string) => Promise<SendAccessResponse>;
     getSends: () => Promise<ListResponse<SendResponse>>;
     postSend: (request: SendRequest) => Promise<SendResponse>;
-    postSendFile: (data: FormData) => Promise<SendResponse>;
+    postFileTypeSend: (request: SendRequest) => Promise<SendFileUploadDataResponse>;
+    postSendFile: (sendId: string, fileId: string, data: FormData) => Promise<any>;
+    /**
+     * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
+     * This method still exists for backward compatibility with old server versions.
+     */
+    postSendFileLegacy: (data: FormData) => Promise<SendResponse>;
     putSend: (id: string, request: SendRequest) => Promise<SendResponse>;
     putSendRemovePassword: (id: string) => Promise<SendResponse>;
     deleteSend: (id: string) => Promise<any>;
-    getSendFileDownloadData: (send: SendAccessView, request: SendAccessRequest) => Promise<SendFileDownloadDataResponse>;
+    getSendFileDownloadData: (send: SendAccessView, request: SendAccessRequest, apiUrl?: string) => Promise<SendFileDownloadDataResponse>;
+    renewSendFileUploadUrl: (sendId: string, fileId: string) => Promise<SendFileUploadDataResponse>;
 
     getCipher: (id: string) => Promise<CipherResponse>;
     getCipherAdmin: (id: string) => Promise<CipherResponse>;
+    getAttachmentData: (cipherId: string, attachmentId: string, emergencyAccessId?: string) => Promise<AttachmentResponse>;
     getCiphersOrganization: (organizationId: string) => Promise<ListResponse<CipherResponse>>;
     postCipher: (request: CipherRequest) => Promise<CipherResponse>;
     postCipherCreate: (request: CipherCreateRequest) => Promise<CipherResponse>;
@@ -214,12 +225,23 @@ export abstract class ApiService {
     putRestoreCipherAdmin: (id: string) => Promise<CipherResponse>;
     putRestoreManyCiphers: (request: CipherBulkRestoreRequest) => Promise<ListResponse<CipherResponse>>;
 
-    postCipherAttachment: (id: string, data: FormData) => Promise<CipherResponse>;
-    postCipherAttachmentAdmin: (id: string, data: FormData) => Promise<CipherResponse>;
+    /**
+     * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
+     * This method still exists for backward compatibility with old server versions.
+     */
+    postCipherAttachmentLegacy: (id: string, data: FormData) => Promise<CipherResponse>;
+    /**
+     * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
+     * This method still exists for backward compatibility with old server versions.
+     */
+    postCipherAttachmentAdminLegacy: (id: string, data: FormData) => Promise<CipherResponse>;
+    postCipherAttachment: (id: string, request: AttachmentRequest) => Promise<AttachmentUploadDataResponse>;
     deleteCipherAttachment: (id: string, attachmentId: string) => Promise<any>;
     deleteCipherAttachmentAdmin: (id: string, attachmentId: string) => Promise<any>;
     postShareCipherAttachment: (id: string, attachmentId: string, data: FormData,
         organizationId: string) => Promise<any>;
+    renewAttachmentUploadUrl: (id: string, attachmentId: string) => Promise<AttachmentUploadDataResponse>;
+    postAttachmentFile: (id: string, attachmentId: string, data: FormData) => Promise<any>;
 
     getCollectionDetails: (organizationId: string, id: string) => Promise<CollectionGroupDetailsResponse>;
     getUserCollections: () => Promise<ListResponse<CollectionResponse>>;
@@ -251,6 +273,7 @@ export abstract class ApiService {
     getOrganizationUsers: (organizationId: string) => Promise<ListResponse<OrganizationUserUserDetailsResponse>>;
     postOrganizationUserInvite: (organizationId: string, request: OrganizationUserInviteRequest) => Promise<any>;
     postOrganizationUserReinvite: (organizationId: string, id: string) => Promise<any>;
+    postManyOrganizationUserReinvite: (organizationId: string, request: UserBulkReinviteRequest) => Promise<any>;
     postOrganizationUserAccept: (organizationId: string, id: string,
         request: OrganizationUserAcceptRequest) => Promise<any>;
     postOrganizationUserConfirm: (organizationId: string, id: string,
@@ -258,6 +281,8 @@ export abstract class ApiService {
     putOrganizationUser: (organizationId: string, id: string, request: OrganizationUserUpdateRequest) => Promise<any>;
     putOrganizationUserGroups: (organizationId: string, id: string,
         request: OrganizationUserUpdateGroupsRequest) => Promise<any>;
+    putOrganizationUserResetPasswordEnrollment: (organizationId: string, userId: string,
+        request: OrganizationUserResetPasswordEnrollmentRequest) => Promise<any>;
     deleteOrganizationUser: (organizationId: string, id: string) => Promise<any>;
 
     getSync: () => Promise<SyncResponse>;
@@ -274,8 +299,8 @@ export abstract class ApiService {
     getTwoFactorOrganizationDuo: (organizationId: string,
         request: PasswordVerificationRequest) => Promise<TwoFactorDuoResponse>;
     getTwoFactorYubiKey: (request: PasswordVerificationRequest) => Promise<TwoFactorYubiKeyResponse>;
-    getTwoFactorU2f: (request: PasswordVerificationRequest) => Promise<TwoFactorU2fResponse>;
-    getTwoFactorU2fChallenge: (request: PasswordVerificationRequest) => Promise<ChallengeResponse>;
+    getTwoFactorWebAuthn: (request: PasswordVerificationRequest) => Promise<TwoFactorWebAuthnResponse>;
+    getTwoFactorWebAuthnChallenge: (request: PasswordVerificationRequest) => Promise<ChallengeResponse>;
     getTwoFactorRecover: (request: PasswordVerificationRequest) => Promise<TwoFactorRecoverResponse>;
     putTwoFactorAuthenticator: (
         request: UpdateTwoFactorAuthenticatorRequest) => Promise<TwoFactorAuthenticatorResponse>;
@@ -284,8 +309,8 @@ export abstract class ApiService {
     putTwoFactorOrganizationDuo: (organizationId: string,
         request: UpdateTwoFactorDuoRequest) => Promise<TwoFactorDuoResponse>;
     putTwoFactorYubiKey: (request: UpdateTwoFactorYubioOtpRequest) => Promise<TwoFactorYubiKeyResponse>;
-    putTwoFactorU2f: (request: UpdateTwoFactorU2fRequest) => Promise<TwoFactorU2fResponse>;
-    deleteTwoFactorU2f: (request: UpdateTwoFactorU2fDeleteRequest) => Promise<TwoFactorU2fResponse>;
+    putTwoFactorWebAuthn: (request: UpdateTwoFactorWebAuthnRequest) => Promise<TwoFactorWebAuthnResponse>;
+    deleteTwoFactorWebAuthn: (request: UpdateTwoFactorWebAuthnDeleteRequest) => Promise<TwoFactorWebAuthnResponse>;
     putTwoFactorDisable: (request: TwoFactorProviderRequest) => Promise<TwoFactorProviderResponse>;
     putTwoFactorOrganizationDisable: (organizationId: string,
         request: TwoFactorProviderRequest) => Promise<TwoFactorProviderResponse>;

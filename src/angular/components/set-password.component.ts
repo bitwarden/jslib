@@ -1,3 +1,4 @@
+import { Directive } from '@angular/core';
 import {
     ActivatedRoute,
     Router
@@ -13,7 +14,7 @@ import { PolicyService } from '../../abstractions/policy.service';
 import { SyncService } from '../../abstractions/sync.service';
 import { UserService } from '../../abstractions/user.service';
 
-import { CipherString } from '../../models/domain/cipherString';
+import { EncString } from '../../models/domain/encString';
 import { SymmetricCryptoKey } from '../../models/domain/symmetricCryptoKey';
 
 import { KeysRequest } from '../../models/request/keysRequest';
@@ -23,6 +24,7 @@ import { ChangePasswordComponent as BaseChangePasswordComponent } from './change
 
 import { KdfType } from '../../enums/kdfType';
 
+@Directive()
 export class SetPasswordComponent extends BaseChangePasswordComponent {
     syncLoading: boolean = true;
     showPassword: boolean = false;
@@ -65,7 +67,7 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
     }
 
     async performSubmitActions(masterPasswordHash: string, key: SymmetricCryptoKey,
-        encKey: [SymmetricCryptoKey, CipherString]) {
+        encKey: [SymmetricCryptoKey, EncString]) {
         const request = new SetPasswordRequest();
         request.masterPasswordHash = masterPasswordHash;
         request.key = encKey[1].encryptedString;
@@ -99,7 +101,6 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
     }
 
     togglePassword(confirmField: boolean) {
-        this.platformUtilsService.eventTrack('Toggled Master Password on Set Password');
         this.showPassword = !this.showPassword;
         document.getElementById(confirmField ? 'masterPasswordRetype' : 'masterPassword').focus();
     }

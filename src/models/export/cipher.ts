@@ -1,9 +1,10 @@
+import { CipherRepromptType } from '../../enums/cipherRepromptType';
 import { CipherType } from '../../enums/cipherType';
 
 import { CipherView } from '../view/cipherView';
 
 import { Cipher as CipherDomain } from '../domain/cipher';
-import { CipherString } from '../domain/cipherString';
+import { EncString } from '../domain/encString';
 
 import { Card } from './card';
 import { Field } from './field';
@@ -15,6 +16,7 @@ export class Cipher {
     static template(): Cipher {
         const req = new Cipher();
         req.organizationId = null;
+        req.collectionIds = null;
         req.folderId = null;
         req.type = CipherType.Login;
         req.name = 'Item name';
@@ -25,6 +27,7 @@ export class Cipher {
         req.secureNote = null;
         req.card = null;
         req.identity = null;
+        req.reprompt = CipherRepromptType.None;
         return req;
     }
 
@@ -34,9 +37,14 @@ export class Cipher {
         if (view.organizationId == null) {
             view.organizationId = req.organizationId;
         }
+        if (view.collectionIds || req.collectionIds) {
+            const set = new Set((view.collectionIds ?? []).concat(req.collectionIds ?? []));
+            view.collectionIds = Array.from(set.values());
+        }
         view.name = req.name;
         view.notes = req.notes;
         view.favorite = req.favorite;
+        view.reprompt = req.reprompt ?? CipherRepromptType.None;
 
         if (req.fields != null) {
             view.fields = req.fields.map(f => Field.toView(f));
@@ -66,9 +74,10 @@ export class Cipher {
         if (domain.organizationId == null) {
             domain.organizationId = req.organizationId;
         }
-        domain.name = req.name != null ? new CipherString(req.name) : null;
-        domain.notes = req.notes != null ? new CipherString(req.notes) : null;
+        domain.name = req.name != null ? new EncString(req.name) : null;
+        domain.notes = req.notes != null ? new EncString(req.notes) : null;
         domain.favorite = req.favorite;
+        domain.reprompt = req.reprompt ?? CipherRepromptType.None;
 
         if (req.fields != null) {
             domain.fields = req.fields.map(f => Field.toDomain(f));
@@ -95,6 +104,7 @@ export class Cipher {
     type: CipherType;
     folderId: string;
     organizationId: string;
+    collectionIds: string[];
     name: string;
     notes: string;
     favorite: boolean;
@@ -103,12 +113,14 @@ export class Cipher {
     secureNote: SecureNote;
     card: Card;
     identity: Identity;
+    reprompt: CipherRepromptType;
 
     // Use build method instead of ctor so that we can control order of JSON stringify for pretty print
     build(o: CipherView | CipherDomain) {
         this.organizationId = o.organizationId;
         this.folderId = o.folderId;
         this.type = o.type;
+        this.reprompt = o.reprompt;
 
         if (o instanceof CipherView) {
             this.name = o.name;

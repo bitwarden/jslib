@@ -1,3 +1,4 @@
+import { Directive } from '@angular/core';
 import {
     ActivatedRoute,
     Router,
@@ -18,6 +19,7 @@ import { Utils } from '../../misc/utils';
 
 import { AuthResult } from '../../models/domain/authResult';
 
+@Directive()
 export class SsoComponent {
     identifier: string;
     loggingIn = false;
@@ -138,7 +140,6 @@ export class SsoComponent {
             this.formPromise = this.authService.logInSso(code, codeVerifier, this.redirectUri);
             const response = await this.formPromise;
             if (response.twoFactor) {
-                this.platformUtilsService.eventTrack('SSO Logged In To Two-step');
                 if (this.onSuccessfulLoginTwoFactorNavigate != null) {
                     this.onSuccessfulLoginTwoFactorNavigate();
                 } else {
@@ -150,7 +151,6 @@ export class SsoComponent {
                     });
                 }
             } else if (response.resetMasterPassword) {
-                this.platformUtilsService.eventTrack('SSO - routing to complete registration');
                 if (this.onSuccessfulLoginChangePasswordNavigate != null) {
                     this.onSuccessfulLoginChangePasswordNavigate();
                 } else {
@@ -166,7 +166,6 @@ export class SsoComponent {
                 if (this.onSuccessfulLogin != null) {
                     this.onSuccessfulLogin();
                 }
-                this.platformUtilsService.eventTrack('SSO Logged In');
                 if (this.onSuccessfulLoginNavigate != null) {
                     this.onSuccessfulLoginNavigate();
                 } else {

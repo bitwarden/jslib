@@ -1,30 +1,30 @@
 import { IdentityData } from '../data/identityData';
 
-import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { EncString } from './encString';
 import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
 import { IdentityView } from '../view/identityView';
 
 export class Identity extends Domain {
-    title: CipherString;
-    firstName: CipherString;
-    middleName: CipherString;
-    lastName: CipherString;
-    address1: CipherString;
-    address2: CipherString;
-    address3: CipherString;
-    city: CipherString;
-    state: CipherString;
-    postalCode: CipherString;
-    country: CipherString;
-    company: CipherString;
-    email: CipherString;
-    phone: CipherString;
-    ssn: CipherString;
-    username: CipherString;
-    passportNumber: CipherString;
-    licenseNumber: CipherString;
+    title: EncString;
+    firstName: EncString;
+    middleName: EncString;
+    lastName: EncString;
+    address1: EncString;
+    address2: EncString;
+    address3: EncString;
+    city: EncString;
+    state: EncString;
+    postalCode: EncString;
+    country: EncString;
+    company: EncString;
+    email: EncString;
+    phone: EncString;
+    ssn: EncString;
+    username: EncString;
+    passportNumber: EncString;
+    licenseNumber: EncString;
 
     constructor(obj?: IdentityData, alreadyEncrypted: boolean = false) {
         super();

@@ -1,11 +1,11 @@
-[![appveyor build](https://ci.appveyor.com/api/projects/status/github/bitwarden/jslib?branch=master&svg=true)](https://ci.appveyor.com/project/bitwarden/jslib)
+[![Github Workflow build on master](https://github.com/bitwarden/jslib/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/bitwarden/jslib/actions/workflows/build.yml?query=branch:master)
 
 # Bitwarden JavaScript Library
 
 Common code referenced across Bitwarden JavaScript projects.
 
 ## Requirements
-
+* [Node.js](https://nodejs.org) v14.17 or greater
 * Git
 * node-gyp
 

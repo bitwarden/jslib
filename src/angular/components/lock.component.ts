@@ -1,4 +1,4 @@
-import { OnInit } from '@angular/core';
+import { Directive, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { ApiService } from '../../abstractions/api.service';
@@ -14,13 +14,14 @@ import { VaultTimeoutService } from '../../abstractions/vaultTimeout.service';
 
 import { ConstantsService } from '../../services/constants.service';
 
-import { CipherString } from '../../models/domain/cipherString';
+import { EncString } from '../../models/domain/encString';
 import { SymmetricCryptoKey } from '../../models/domain/symmetricCryptoKey';
 
 import { PasswordVerificationRequest } from '../../models/request/passwordVerificationRequest';
 
 import { Utils } from '../../misc/utils';
 
+@Directive()
 export class LockComponent implements OnInit {
     masterPassword: string = '';
     pin: string = '';
@@ -83,7 +84,7 @@ export class LockComponent implements OnInit {
                         this.vaultTimeoutService.pinProtectedKey);
                     const encKey = await this.cryptoService.getEncKey(key);
                     const protectedPin = await this.storageService.get<string>(ConstantsService.protectedPin);
-                    const decPin = await this.cryptoService.decryptToUtf8(new CipherString(protectedPin), encKey);
+                    const decPin = await this.cryptoService.decryptToUtf8(new EncString(protectedPin), encKey);
                     failed = decPin !== this.pin;
                     if (!failed) {
                         await this.setKeyAndContinue(key);
@@ -132,7 +133,7 @@ export class LockComponent implements OnInit {
                 if (this.pinSet[0]) {
                     const protectedPin = await this.storageService.get<string>(ConstantsService.protectedPin);
                     const encKey = await this.cryptoService.getEncKey(key);
-                    const decPin = await this.cryptoService.decryptToUtf8(new CipherString(protectedPin), encKey);
+                    const decPin = await this.cryptoService.decryptToUtf8(new EncString(protectedPin), encKey);
                     const pinKey = await this.cryptoService.makePinKey(decPin, this.email, kdf, kdfIterations);
                     this.vaultTimeoutService.pinProtectedKey = await this.cryptoService.encrypt(key.key, pinKey);
                 }
@@ -164,7 +165,6 @@ export class LockComponent implements OnInit {
     }
 
     togglePassword() {
-        this.platformUtilsService.eventTrack('Toggled Master Password on Unlock');
         this.showPassword = !this.showPassword;
         document.getElementById(this.pinLock ? 'pin' : 'masterPassword').focus();
     }

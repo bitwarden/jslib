@@ -1,4 +1,5 @@
 import {
+    Directive,
     NgZone,
     OnInit,
 } from '@angular/core';
@@ -17,6 +18,7 @@ import { SearchService } from '../../../abstractions/search.service';
 import { SendService } from '../../../abstractions/send.service';
 import { UserService } from '../../../abstractions/user.service';
 
+@Directive()
 export class SendComponent implements OnInit {
 
     disableSend = false;
@@ -168,11 +170,12 @@ export class SendComponent implements OnInit {
     }
 
     copy(s: SendView) {
-        let webVaultUrl = this.environmentService.getWebVaultUrl();
-        if (webVaultUrl == null) {
-            webVaultUrl = 'https://vault.bitwarden.com';
+        let sendLinkBaseUrl = 'https://send.bitwarden.com/#';
+        const webVaultUrl = this.environmentService.getWebVaultUrl();
+        if (webVaultUrl != null) {
+            sendLinkBaseUrl = webVaultUrl + '/#/send/';
         }
-        const link = webVaultUrl + '/#/send/' + s.accessId + '/' + s.urlB64Key;
+        const link = sendLinkBaseUrl + s.accessId + '/' + s.urlB64Key;
         this.platformUtilsService.copyToClipboard(link);
         this.platformUtilsService.showToast('success', null,
             this.i18nService.t('valueCopied', this.i18nService.t('sendLink')));

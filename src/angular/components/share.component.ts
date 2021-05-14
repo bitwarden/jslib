@@ -82,7 +82,6 @@ export class ShareComponent implements OnInit {
             this.formPromise = this.cipherService.shareWithServer(cipherView, this.organizationId,
                 selectedCollectionIds).then(async () => {
                     this.onSharedCipher.emit();
-                    this.platformUtilsService.eventTrack('Shared Cipher');
                     this.platformUtilsService.showToast('success', null, this.i18nService.t('sharedItem'));
                 });
             await this.formPromise;

@@ -4,16 +4,16 @@ import { LoginData } from '../data/loginData';
 
 import { LoginView } from '../view/loginView';
 
-import { CipherString } from './cipherString';
 import Domain from './domainBase';
+import { EncString } from './encString';
 import { SymmetricCryptoKey } from './symmetricCryptoKey';
 
 export class Login extends Domain {
     uris: LoginUri[];
-    username: CipherString;
-    password: CipherString;
+    username: EncString;
+    password: EncString;
     passwordRevisionDate?: Date;
-    totp: CipherString;
+    totp: EncString;
     autofillOnPageLoad: boolean;
 
     constructor(obj?: LoginData, alreadyEncrypted: boolean = false) {

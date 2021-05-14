@@ -1,5 +1,6 @@
 import { SendData } from '../models/data/sendData';
 
+import { EncArrayBuffer } from '../models/domain/encArrayBuffer';
 import { Send } from '../models/domain/send';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
@@ -9,11 +10,11 @@ export abstract class SendService {
     decryptedSendCache: SendView[];
 
     clearCache: () => void;
-    encrypt: (model: SendView, file: File | ArrayBuffer, password: string, key?: SymmetricCryptoKey) => Promise<[Send, ArrayBuffer]>;
+    encrypt: (model: SendView, file: File | ArrayBuffer, password: string, key?: SymmetricCryptoKey) => Promise<[Send, EncArrayBuffer]>;
     get: (id: string) => Promise<Send>;
     getAll: () => Promise<Send[]>;
     getAllDecrypted: () => Promise<SendView[]>;
-    saveWithServer: (sendData: [Send, ArrayBuffer]) => Promise<any>;
+    saveWithServer: (sendData: [Send, EncArrayBuffer]) => Promise<any>;
     upsert: (send: SendData | SendData[]) => Promise<any>;
     replace: (sends: { [id: string]: SendData; }) => Promise<any>;
     clear: (userId: string) => Promise<any>;
