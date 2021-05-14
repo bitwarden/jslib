@@ -13,6 +13,7 @@ export default class BiometricDarwinMain implements BiometricMain {
     async init() {
         this.storageService.save(ElectronConstants.enableBiometric, await this.supportsBiometric());
         this.storageService.save(ConstantsService.biometricText, 'unlockWithTouchId');
+        this.storageService.save(ElectronConstants.noAutoPromptBiometricsText, 'noAutoPromptTouchId');
 
         ipcMain.on('biometric', async (event: any, message: any) => {
             event.returnValue = await this.requestCreate();

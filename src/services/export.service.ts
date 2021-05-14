@@ -4,6 +4,7 @@ import { CipherType } from '../enums/cipherType';
 
 import { ApiService } from '../abstractions/api.service';
 import { CipherService } from '../abstractions/cipher.service';
+import { CryptoService } from '../abstractions/crypto.service';
 import { ExportService as ExportServiceAbstraction } from '../abstractions/export.service';
 import { FolderService } from '../abstractions/folder.service';
 
@@ -21,11 +22,15 @@ import { CollectionDetailsResponse } from '../models/response/collectionResponse
 
 import { CipherWithIds as CipherExport } from '../models/export/cipherWithIds';
 import { CollectionWithId as CollectionExport } from '../models/export/collectionWithId';
+import { Event } from '../models/export/event';
 import { FolderWithId as FolderExport } from '../models/export/folderWithId';
+import { EventView } from '../models/view/eventView';
+
+import { Utils } from '../misc/utils';
 
 export class ExportService implements ExportServiceAbstraction {
     constructor(private folderService: FolderService, private cipherService: CipherService,
-        private apiService: ApiService) { }
+        private apiService: ApiService, private cryptoService: CryptoService) { }
 
     async getExport(format: 'csv' | 'json' | 'encrypted_json' = 'csv'): Promise<string> {
         if (format === 'encrypted_json') {
@@ -42,6 +47,10 @@ export class ExportService implements ExportServiceAbstraction {
         } else {
             return this.getOrganizationDecryptedExport(organizationId, format);
         }
+    }
+
+    async getEventExport(events: EventView[]): Promise<string> {
+        return papa.unparse(events.map(e => new Event(e)));
     }
 
     getFileName(prefix: string = null, extension: string = 'csv'): string {
@@ -141,8 +150,11 @@ export class ExportService implements ExportServiceAbstraction {
 
         await Promise.all(promises);
 
+        const encKeyValidation = await this.cryptoService.encrypt(Utils.newGuid());
+
         const jsonDoc: any = {
             encrypted: true,
+            encKeyValidation_DO_NOT_EDIT: encKeyValidation.encryptedString,
             folders: [],
             items: [],
         };
@@ -308,6 +320,7 @@ export class ExportService implements ExportServiceAbstraction {
         cipher.name = c.name;
         cipher.notes = c.notes;
         cipher.fields = null;
+        cipher.reprompt = c.reprompt;
         // Login props
         cipher.login_uri = null;
         cipher.login_username = null;

@@ -1,6 +1,7 @@
 import { ApiService } from '../abstractions/api.service';
 import { CipherService } from '../abstractions/cipher.service';
 import { CollectionService } from '../abstractions/collection.service';
+import { CryptoService } from '../abstractions/crypto.service';
 import { FolderService } from '../abstractions/folder.service';
 import { I18nService } from '../abstractions/i18n.service';
 import {
@@ -54,6 +55,7 @@ import { LogMeOnceCsvImporter } from '../importers/logMeOnceCsvImporter';
 import { MeldiumCsvImporter } from '../importers/meldiumCsvImporter';
 import { MSecureCsvImporter } from '../importers/msecureCsvImporter';
 import { MykiCsvImporter } from '../importers/mykiCsvImporter';
+import { NordPassCsvImporter } from '../importers/nordpassCsvImporter';
 import { OnePassword1PifImporter } from '../importers/onepasswordImporters/onepassword1PifImporter';
 import { OnePasswordMacCsvImporter } from '../importers/onepasswordImporters/onepasswordMacCsvImporter';
 import { OnePasswordWinCsvImporter } from '../importers/onepasswordImporters/onepasswordWinCsvImporter';
@@ -137,11 +139,13 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'codebookcsv', name: 'Codebook (csv)' },
         { id: 'encryptrcsv', name: 'Encryptr (csv)' },
         { id: 'yoticsv', name: 'Yoti (csv)' },
+        { id: 'nordpasscsv', name: 'Nordpass (csv)' },
     ];
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private apiService: ApiService, private i18nService: I18nService,
-        private collectionService: CollectionService, private platformUtilsService: PlatformUtilsService) { }
+        private collectionService: CollectionService, private platformUtilsService: PlatformUtilsService,
+        private cryptoService: CryptoService) { }
 
     getImportOptions(): ImportOption[] {
         return this.featuredImportOptions.concat(this.regularImportOptions);
@@ -170,7 +174,11 @@ export class ImportService implements ImportServiceAbstraction {
             }
             return null;
         } else {
-            return new Error(this.i18nService.t('importFormatError'));
+            if (!Utils.isNullOrWhitespace(importResult.errorMessage)) {
+                return new Error(importResult.errorMessage);
+            } else {
+                return new Error(this.i18nService.t('importFormatError'));
+            }
         }
     }
 
@@ -192,7 +200,7 @@ export class ImportService implements ImportServiceAbstraction {
             case 'bitwardencsv':
                 return new BitwardenCsvImporter();
             case 'bitwardenjson':
-                return new BitwardenJsonImporter();
+                return new BitwardenJsonImporter(this.cryptoService, this.i18nService);
             case 'lastpasscsv':
             case 'passboltcsv':
                 return new LastPassCsvImporter();
@@ -294,6 +302,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new EncryptrCsvImporter();
             case 'yoticsv':
                 return new YotiCsvImporter();
+            case 'nordpasscsv':
+                return new NordPassCsvImporter();
             default:
                 return null;
         }

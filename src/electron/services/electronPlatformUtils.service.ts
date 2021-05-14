@@ -23,7 +23,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
 
     private deviceCache: DeviceType = null;
 
-    constructor(private i18nService: I18nService, private messagingService: MessagingService,
+    constructor(protected i18nService: I18nService, private messagingService: MessagingService,
         private isDesktopApp: boolean, private storageService: StorageService) {
         this.identityClientId = isDesktopApp ? 'desktop' : 'connector';
     }
@@ -97,10 +97,13 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     }
 
     saveFile(win: Window, blobData: any, blobOptions: any, fileName: string): void {
-        ipcRenderer.invoke('saveFile', {
-            fileName: fileName,
-            buffer: Buffer.from(blobData),
-        });
+        const blob = new Blob([blobData], blobOptions);
+        const a = win.document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = fileName;
+        win.document.body.appendChild(a);
+        a.click();
+        win.document.body.removeChild(a);
     }
 
     getApplicationVersion(): Promise<string> {
@@ -146,6 +149,11 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         });
 
         return Promise.resolve(result.response === 0);
+    }
+
+    async showPasswordDialog(title: string, body: string, passwordValidation: (value: string) => Promise<boolean>):
+        Promise<boolean> {
+        throw new Error('Not implemented.');
     }
 
     isDev(): boolean {

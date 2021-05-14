@@ -10,6 +10,7 @@ import { FolderView } from '../models/view/folderView';
 import { LoginView } from '../models/view/loginView';
 import { SecureNoteView } from '../models/view/secureNoteView';
 
+import { CipherRepromptType } from '../enums/cipherRepromptType';
 import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
 import { SecureNoteType } from '../enums/secureNoteType';
@@ -55,6 +56,13 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
             cipher.type = CipherType.Login;
             cipher.notes = this.getValueOrDefault(value.notes);
             cipher.name = this.getValueOrDefault(value.name, '--');
+            try {
+                cipher.reprompt = parseInt(this.getValueOrDefault(value.reprompt, CipherRepromptType.None.toString()), 10);
+            } catch (e) {
+                // tslint:disable-next-line
+                console.error('Unable to parse reprompt value', e);
+                cipher.reprompt = CipherRepromptType.None;
+            }
 
             if (!this.isNullOrWhitespace(value.fields)) {
                 const fields = this.splitNewLine(value.fields);

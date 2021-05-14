@@ -10,4 +10,6 @@ export class ElectronConstants {
     static readonly enableBrowserIntegrationFingerprint: string = 'enableBrowserIntegrationFingerprint';
     static readonly alwaysShowDock: string = 'alwaysShowDock';
     static readonly openAtLogin: string = 'openAtLogin';
+    static readonly noAutoPromptBiometrics: string = 'noAutoPromptBiometrics';
+    static readonly noAutoPromptBiometricsText: string = 'noAutoPromptBiometricsText';
 }

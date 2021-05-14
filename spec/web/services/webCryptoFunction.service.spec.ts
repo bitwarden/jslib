@@ -1,4 +1,4 @@
-import * as TypeMoq from 'typemoq';
+import Substitute from '@fluffy-spoon/substitute';
 
 import { PlatformUtilsService } from '../../../src/abstractions/platformUtils.service';
 
@@ -467,11 +467,12 @@ function testRsaGenerateKeyPair(length: 1024 | 2048 | 4096) {
 }
 
 function getWebCryptoFunctionService() {
-    const platformUtilsMock = TypeMoq.Mock.ofType<PlatformUtilsService>(PlatformUtilsServiceMock);
-    platformUtilsMock.setup(x => x.isEdge()).returns(() => navigator.userAgent.indexOf(' Edg/') !== -1);
-    platformUtilsMock.setup(x => x.isIE()).returns(() => navigator.userAgent.indexOf(' Edg/') === -1 &&
+    const platformUtilsMock = Substitute.for<PlatformUtilsService>();
+    platformUtilsMock.isEdge().mimicks(() => navigator.userAgent.indexOf(' Edg/') !== -1);
+    platformUtilsMock.isIE().mimicks(() => navigator.userAgent.indexOf(' Edg/') === -1 &&
         navigator.userAgent.indexOf(' Trident/') !== -1);
-    return new WebCryptoFunctionService(window, platformUtilsMock.object);
+
+    return new WebCryptoFunctionService(window, platformUtilsMock);
 }
 
 function makeStaticByteArray(length: number) {
@@ -480,10 +481,4 @@ function makeStaticByteArray(length: number) {
         arr[i] = i;
     }
     return arr;
-}
-
-class PlatformUtilsServiceMock extends PlatformUtilsService {
-    isEdge = () => false;
-    isIE = () => false;
-    isSafari = () => super.isSafari();
 }
