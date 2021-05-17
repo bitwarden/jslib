@@ -8,7 +8,6 @@ export class ConstantsService {
     static readonly disableBadgeCounterKey: string = 'disableBadgeCounter';
     static readonly disableAutoTotpCopyKey: string = 'disableAutoTotpCopy';
     static readonly enableAutoFillOnPageLoadKey: string = 'enableAutoFillOnPageLoad';
-    static readonly enableAutoTotpCopyOnAutoFillKey: string = 'enableAutoTotpCopyOnAutoFillKey';
     static readonly vaultTimeoutKey: string = 'lockOption';
     static readonly vaultTimeoutActionKey: string = 'vaultTimeoutAction';
     static readonly lastActiveKey: string = 'lastActive';
@@ -40,7 +39,6 @@ export class ConstantsService {
     readonly disableBadgeCounterKey: string = ConstantsService.disableBadgeCounterKey;
     readonly disableAutoTotpCopyKey: string = ConstantsService.disableAutoTotpCopyKey;
     readonly enableAutoFillOnPageLoadKey: string = ConstantsService.enableAutoFillOnPageLoadKey;
-    readonly enableAutoTotpCopyOnAutoFillKey: string = ConstantsService.enableAutoTotpCopyOnAutoFillKey;
     readonly vaultTimeoutKey: string = ConstantsService.vaultTimeoutKey;
     readonly vaultTimeoutActionKey: string = ConstantsService.vaultTimeoutActionKey;
     readonly lastActiveKey: string = ConstantsService.lastActiveKey;
