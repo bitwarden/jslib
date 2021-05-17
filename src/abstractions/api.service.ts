@@ -35,6 +35,7 @@ import { OrganizationTaxInfoUpdateRequest } from '../models/request/organization
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
 import { OrganizationUpgradeRequest } from '../models/request/organizationUpgradeRequest';
 import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
+import { OrganizationUserBulkRequest } from '../models/request/organizationUserBulkRequest';
 import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
 import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
 import { OrganizationUserResetPasswordEnrollmentRequest } from '../models/request/organizationUserResetPasswordEnrollmentRequest';
@@ -67,7 +68,6 @@ import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEm
 import { UpdateTwoFactorWebAuthnDeleteRequest } from '../models/request/updateTwoFactorWebAuthnDeleteRequest';
 import { UpdateTwoFactorWebAuthnRequest } from '../models/request/updateTwoFactorWebAuthnRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
-import { UserBulkReinviteRequest } from '../models/request/userBulkReinviteRequest';
 import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
@@ -273,7 +273,7 @@ export abstract class ApiService {
     getOrganizationUsers: (organizationId: string) => Promise<ListResponse<OrganizationUserUserDetailsResponse>>;
     postOrganizationUserInvite: (organizationId: string, request: OrganizationUserInviteRequest) => Promise<any>;
     postOrganizationUserReinvite: (organizationId: string, id: string) => Promise<any>;
-    postManyOrganizationUserReinvite: (organizationId: string, request: UserBulkReinviteRequest) => Promise<any>;
+    postManyOrganizationUserReinvite: (organizationId: string, request: OrganizationUserBulkRequest) => Promise<any>;
     postOrganizationUserAccept: (organizationId: string, id: string,
         request: OrganizationUserAcceptRequest) => Promise<any>;
     postOrganizationUserConfirm: (organizationId: string, id: string,
@@ -284,6 +284,7 @@ export abstract class ApiService {
     putOrganizationUserResetPasswordEnrollment: (organizationId: string, userId: string,
         request: OrganizationUserResetPasswordEnrollmentRequest) => Promise<any>;
     deleteOrganizationUser: (organizationId: string, id: string) => Promise<any>;
+    deleteManyOrganizationUsers: (organizationId: string, request: OrganizationUserBulkRequest) => Promise<any>;
 
     getSync: () => Promise<SyncResponse>;
     postImportDirectory: (organizationId: string, request: ImportDirectoryRequest) => Promise<any>;
