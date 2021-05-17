@@ -9,7 +9,6 @@ export class ConstantsService {
     static readonly disableAutoTotpCopyKey: string = 'disableAutoTotpCopy';
     static readonly enableAutoFillOnPageLoadKey: string = 'enableAutoFillOnPageLoad';
     static readonly autoFillOnPageLoadDefaultKey: string = 'autoFillOnPageLoadDefault';
-    static readonly enableAutoTotpCopyOnAutoFillKey: string = 'enableAutoTotpCopyOnAutoFillKey';
     static readonly vaultTimeoutKey: string = 'lockOption';
     static readonly vaultTimeoutActionKey: string = 'vaultTimeoutAction';
     static readonly lastActiveKey: string = 'lastActive';
@@ -42,7 +41,6 @@ export class ConstantsService {
     readonly disableAutoTotpCopyKey: string = ConstantsService.disableAutoTotpCopyKey;
     readonly enableAutoFillOnPageLoadKey: string = ConstantsService.enableAutoFillOnPageLoadKey;
     readonly autoFillOnPageLoadDefaultKey: string = ConstantsService.autoFillOnPageLoadDefaultKey;
-    readonly enableAutoTotpCopyOnAutoFillKey: string = ConstantsService.enableAutoTotpCopyOnAutoFillKey;
     readonly vaultTimeoutKey: string = ConstantsService.vaultTimeoutKey;
     readonly vaultTimeoutActionKey: string = ConstantsService.vaultTimeoutActionKey;
     readonly lastActiveKey: string = ConstantsService.lastActiveKey;
