@@ -28,11 +28,9 @@ export class ApiKeyService implements ApiKeyServiceAbstraction {
         this.entityType = idParts[0];
         this.entityId = idParts[1];
 
-        return Promise.all([
-            this.storageService.save(Keys.clientId, this.clientId),
-            this.storageService.save(Keys.entityId, this.entityId),
-            this.storageService.save(Keys.entityType, this.entityType),
-        ]);
+        return this.storageService.save(Keys.clientId, this.clientId)
+            .then(async v => await this.storageService.save(Keys.entityId, this.entityId))
+            .then(async v => await this.storageService.save(Keys.entityType, this.entityType));
     }
 
     async getEntityType(): Promise<string> {
@@ -50,11 +48,9 @@ export class ApiKeyService implements ApiKeyServiceAbstraction {
     }
 
     async clear(): Promise<any> {
-        await Promise.all([
-            this.storageService.remove(Keys.clientId),
-            this.storageService.remove(Keys.entityId),
-            this.storageService.remove(Keys.entityType),
-        ]);
+        await this.storageService.remove(Keys.clientId)
+            .then(async v => await this.storageService.remove(Keys.entityId))
+            .then(async v => await this.storageService.remove(Keys.entityType));
 
         this.clientId = this.entityId = this.entityType = null;
     }

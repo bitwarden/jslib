@@ -101,10 +101,8 @@ export class TokenService implements TokenServiceAbstraction {
         this.decodedToken = null;
         this.refreshToken = null;
 
-        return Promise.all([
-            this.storageService.remove(Keys.accessToken),
-            this.storageService.remove(Keys.refreshToken),
-        ]);
+        return this.storageService.remove(Keys.accessToken)
+            .then(async v => await this.storageService.remove(Keys.refreshToken));
     }
 
     // jwthelper methods
