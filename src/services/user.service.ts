@@ -33,12 +33,10 @@ export class UserService implements UserServiceAbstraction {
         this.kdf = kdf;
         this.kdfIterations = kdfIterations;
 
-        return Promise.all([
-            this.storageService.save(Keys.userEmail, email),
-            this.storageService.save(Keys.userId, userId),
-            this.storageService.save(Keys.kdf, kdf),
-            this.storageService.save(Keys.kdfIterations, kdfIterations),
-        ]);
+        return this.storageService.save(Keys.userEmail, email)
+            .then(async v => await this.storageService.save(Keys.userId, userId))
+            .then(async v => await this.storageService.save(Keys.kdf, kdf))
+            .then(async v => await this.storageService.save(Keys.kdfIterations, kdfIterations));
     }
 
     setSecurityStamp(stamp: string): Promise<any> {
@@ -96,14 +94,12 @@ export class UserService implements UserServiceAbstraction {
     async clear(): Promise<any> {
         const userId = await this.getUserId();
 
-        await Promise.all([
-            this.storageService.remove(Keys.userId),
-            this.storageService.remove(Keys.userEmail),
-            this.storageService.remove(Keys.stamp),
-            this.storageService.remove(Keys.kdf),
-            this.storageService.remove(Keys.kdfIterations),
-            this.clearOrganizations(userId),
-        ]);
+        await this.storageService.remove(Keys.userId)
+            .then(async v => await this.storageService.remove(Keys.userEmail))
+            .then(async v => await this.storageService.remove(Keys.stamp))
+            .then(async v => await this.storageService.remove(Keys.kdf))
+            .then(async v => await this.storageService.remove(Keys.kdfIterations))
+            .then(async v => await this.clearOrganizations(userId));
 
         this.userId = this.email = this.stamp = null;
         this.kdf = null;

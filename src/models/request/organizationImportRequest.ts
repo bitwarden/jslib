@@ -1,7 +1,6 @@
 import { ImportDirectoryRequest } from './importDirectoryRequest';
-import { ImportDirectoryRequestGroup } from './importDirectoryRequestGroup';
-import { OrganizationImportMemberRequest } from './organizationImportedMemberRequest';
 import { OrganizationImportGroupRequest } from './organizationImportGroupRequest';
+import { OrganizationImportMemberRequest } from './organizationImportMemberRequest';
 
 export class OrganizationImportRequest {
     groups: OrganizationImportGroupRequest[] = [];

@@ -295,14 +295,12 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     clearKeys(): Promise<any> {
-        return Promise.all([
-            this.clearKey(),
-            this.clearKeyHash(),
-            this.clearOrgKeys(),
-            this.clearEncKey(),
-            this.clearKeyPair(),
-            this.clearPinProtectedKey(),
-        ]);
+        return this.clearEncKey()
+            .then(async v => await this.clearKeyHash())
+            .then(async v => await this.clearOrgKeys())
+            .then(async v => await this.clearEncKey())
+            .then(async v => await this.clearKeyPair())
+            .then(async v => await this.clearPinProtectedKey());
     }
 
     async toggleKey(): Promise<any> {
