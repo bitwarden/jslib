@@ -141,7 +141,7 @@ export class PolicyService implements PolicyServiceAbstraction {
     }
 
     getResetPasswordPolicyOptions(policy: Policy): ResetPasswordPolicyOptions {
-        let resetPasswordPolicyOptions = new ResetPasswordPolicyOptions;
+        const resetPasswordPolicyOptions = new ResetPasswordPolicyOptions();
 
         if (policy != null && policy.enabled && policy.data != null) {
             resetPasswordPolicyOptions.autoEnrollEnabled = policy.data.autoEnrollEnabled;
