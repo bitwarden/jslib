@@ -40,6 +40,7 @@ import { OrganizationTaxInfoUpdateRequest } from '../models/request/organization
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
 import { OrganizationUpgradeRequest } from '../models/request/organizationUpgradeRequest';
 import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
+import { OrganizationUserBulkRequest } from '../models/request/organizationUserBulkRequest';
 import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
 import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
 import { OrganizationUserResetPasswordEnrollmentRequest } from '../models/request/organizationUserResetPasswordEnrollmentRequest';
@@ -73,7 +74,6 @@ import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEm
 import { UpdateTwoFactorWebAuthnDeleteRequest } from '../models/request/updateTwoFactorWebAuthnDeleteRequest';
 import { UpdateTwoFactorWebAuthnRequest } from '../models/request/updateTwoFactorWebAuthnRequest';
 import { UpdateTwoFactorYubioOtpRequest } from '../models/request/updateTwoFactorYubioOtpRequest';
-import { UserBulkReinviteRequest } from '../models/request/userBulkReinviteRequest';
 import { VerifyBankRequest } from '../models/request/verifyBankRequest';
 import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecoverRequest';
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
@@ -813,7 +813,7 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/organizations/' + organizationId + '/users/' + id + '/reinvite', null, true, false);
     }
 
-    postManyOrganizationUserReinvite(organizationId: string, request: UserBulkReinviteRequest): Promise<any> {
+    postManyOrganizationUserReinvite(organizationId: string, request: OrganizationUserBulkRequest): Promise<any> {
         return this.send('POST', '/organizations/' + organizationId + '/users/reinvite', request, true, false);
     }
 
@@ -851,6 +851,10 @@ export class ApiService implements ApiServiceAbstraction {
 
     deleteOrganizationUser(organizationId: string, id: string): Promise<any> {
         return this.send('DELETE', '/organizations/' + organizationId + '/users/' + id, null, true, false);
+    }
+
+    deleteManyOrganizationUsers(organizationId: string, request: OrganizationUserBulkRequest): Promise<any> {
+        return this.send('DELETE', '/organizations/' + organizationId + '/users', request, true, false);
     }
 
     // Plan APIs

@@ -51,6 +51,7 @@ export class CipherRequest {
                 this.login.passwordRevisionDate = cipher.login.passwordRevisionDate != null ?
                     cipher.login.passwordRevisionDate.toISOString() : null;
                 this.login.totp = cipher.login.totp ? cipher.login.totp.encryptedString : null;
+                this.login.autofillOnPageLoad = cipher.login.autofillOnPageLoad;
 
                 if (cipher.login.uris != null) {
                     this.login.uris = cipher.login.uris.map(u => {
