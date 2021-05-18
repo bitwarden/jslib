@@ -31,7 +31,7 @@ export class ApiKeyService implements ApiKeyServiceAbstraction {
         return Promise.all([
             this.storageService.save(Keys.clientId, this.clientId),
             this.storageService.save(Keys.entityId, this.entityId),
-            this.storageService.save(Keys.entityType, this.entityType)
+            this.storageService.save(Keys.entityType, this.entityType),
         ]);
     }
 
