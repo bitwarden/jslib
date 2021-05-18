@@ -41,7 +41,7 @@ export class TokenRequest {
         };
 
         if (this.clientSecret != null) {
-            obj.scope = 'api';
+            obj.scope = clientId.startsWith('organization') ? 'api.organization' : 'api';
             obj.grant_type = 'client_credentials';
             obj.client_secret = this.clientSecret;
         } else if (this.masterPasswordHash != null && this.email != null) {
