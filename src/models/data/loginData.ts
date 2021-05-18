@@ -8,6 +8,7 @@ export class LoginData {
     password: string;
     passwordRevisionDate: string;
     totp: string;
+    autofillOnPageLoad: boolean;
 
     constructor(data?: LoginApi) {
         if (data == null) {
@@ -18,6 +19,7 @@ export class LoginData {
         this.password = data.password;
         this.passwordRevisionDate = data.passwordRevisionDate;
         this.totp = data.totp;
+        this.autofillOnPageLoad = data.autofillOnPageLoad;
 
         if (data.uris) {
             this.uris = data.uris.map(u => new LoginUriData(u));

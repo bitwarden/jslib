@@ -10,6 +10,7 @@ export class LoginView implements View {
     passwordRevisionDate?: Date = null;
     totp: string = null;
     uris: LoginUriView[] = null;
+    autofillOnPageLoad: boolean = null;
 
     constructor(l?: Login) {
         if (!l) {
@@ -17,6 +18,7 @@ export class LoginView implements View {
         }
 
         this.passwordRevisionDate = l.passwordRevisionDate;
+        this.autofillOnPageLoad = l.autofillOnPageLoad;
     }
 
     get uri(): string {

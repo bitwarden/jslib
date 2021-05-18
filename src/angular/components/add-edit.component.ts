@@ -84,6 +84,7 @@ export class AddEditComponent implements OnInit {
     addFieldTypeOptions: any[];
     uriMatchOptions: any[];
     ownershipOptions: any[] = [];
+    autofillOnPageLoadOptions: any[];
     currentDate = new Date();
     allowPersonal = true;
     reprompt: boolean = false;
@@ -150,6 +151,11 @@ export class AddEditComponent implements OnInit {
             { name: i18nService.t('regEx'), value: UriMatchType.RegularExpression },
             { name: i18nService.t('exact'), value: UriMatchType.Exact },
             { name: i18nService.t('never'), value: UriMatchType.Never },
+        ];
+        this.autofillOnPageLoadOptions = [
+            { name: i18nService.t('autoFillOnPageLoadUseDefault'), value: null },
+            { name: i18nService.t('autoFillOnPageLoadYes'), value: true },
+            { name: i18nService.t('autoFillOnPageLoadNo'), value: false },
         ];
     }
 

@@ -14,6 +14,7 @@ export class Login extends Domain {
     password: EncString;
     passwordRevisionDate?: Date;
     totp: EncString;
+    autofillOnPageLoad: boolean;
 
     constructor(obj?: LoginData, alreadyEncrypted: boolean = false) {
         super();
@@ -22,6 +23,7 @@ export class Login extends Domain {
         }
 
         this.passwordRevisionDate = obj.passwordRevisionDate != null ? new Date(obj.passwordRevisionDate) : null;
+        this.autofillOnPageLoad = obj.autofillOnPageLoad;
         this.buildDomainModel(this, obj, {
             username: null,
             password: null,
@@ -57,6 +59,7 @@ export class Login extends Domain {
     toLoginData(): LoginData {
         const l = new LoginData();
         l.passwordRevisionDate = this.passwordRevisionDate != null ? this.passwordRevisionDate.toISOString() : null;
+        l.autofillOnPageLoad = this.autofillOnPageLoad;
         this.buildDataModel(this, l, {
             username: null,
             password: null,

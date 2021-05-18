@@ -8,6 +8,7 @@ export class LoginApi extends BaseResponse {
     password: string;
     passwordRevisionDate: string;
     totp: string;
+    autofillOnPageLoad: boolean;
 
     constructor(data: any = null) {
         super(data);
@@ -18,6 +19,7 @@ export class LoginApi extends BaseResponse {
         this.password = this.getResponseProperty('Password');
         this.passwordRevisionDate = this.getResponseProperty('PasswordRevisionDate');
         this.totp = this.getResponseProperty('Totp');
+        this.autofillOnPageLoad = this.getResponseProperty('AutofillOnPageLoad');
 
         const uris = this.getResponseProperty('Uris');
         if (uris != null) {
