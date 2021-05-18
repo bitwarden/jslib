@@ -35,6 +35,7 @@ import { ImportOrganizationCiphersRequest } from '../models/request/importOrgani
 import { KdfRequest } from '../models/request/kdfRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
+import { OrganizationKeysRequest } from '../models/request/organizationKeysRequest';
 import { OrganizationTaxInfoUpdateRequest } from '../models/request/organizationTaxInfoUpdateRequest';
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
 import { OrganizationUpgradeRequest } from '../models/request/organizationUpgradeRequest';
@@ -105,6 +106,7 @@ import {
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
+import { OrganizationKeysResponse } from '../models/response/organizationKeysResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import { OrganizationSubscriptionResponse } from '../models/response/organizationSubscriptionResponse';
 import {
@@ -1185,6 +1187,16 @@ export class ApiService implements ApiServiceAbstraction {
 
     deleteOrganization(id: string, request: PasswordVerificationRequest): Promise<any> {
         return this.send('DELETE', '/organizations/' + id, request, true, false);
+    }
+
+    async getOrganizationKeys(id: string): Promise<OrganizationKeysResponse> {
+        const r = await this.send('GET', '/organizations/' + id + '/keys', null, true, true);
+        return new OrganizationKeysResponse(r);
+    }
+
+    async postOrganizationKeys(id: string, request: OrganizationKeysRequest): Promise<OrganizationKeysResponse> {
+        const r = await this.send('POST', '/organizations/' + id + '/keys', request, true, true);
+        return new OrganizationKeysResponse(r);
     }
 
     // Event APIs
