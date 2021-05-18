@@ -8,6 +8,7 @@ import { MasterPasswordPolicyOptions } from '../models/domain/masterPasswordPoli
 import { Policy } from '../models/domain/policy';
 
 import { PolicyType } from '../enums/policyType';
+import { ResetPasswordPolicyOptions } from '../models/domain/resetPasswordPolicyOptions';
 
 const Keys = {
     policiesPrefix: 'policies_',
@@ -137,5 +138,15 @@ export class PolicyService implements PolicyServiceAbstraction {
         }
 
         return true;
+    }
+
+    getResetPasswordPolicyOptions(policy: Policy): ResetPasswordPolicyOptions {
+        let resetPasswordPolicyOptions = new ResetPasswordPolicyOptions;
+
+        if (policy != null && policy.enabled && policy.data != null) {
+            resetPasswordPolicyOptions.autoEnrollEnabled = policy.data.autoEnrollEnabled;
+        }
+
+        return resetPasswordPolicyOptions;
     }
 }

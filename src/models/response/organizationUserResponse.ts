@@ -57,11 +57,13 @@ export class OrganizationUserResetPasswordDetailsReponse extends BaseResponse {
     kdf: KdfType;
     kdfIterations: number;
     resetPasswordKey: string;
+    encryptedPrivateKey: string;
 
     constructor(response: any) {
         super(response);
         this.kdf = this.getResponseProperty('Kdf');
         this.kdfIterations = this.getResponseProperty('KdfIterations');
         this.resetPasswordKey = this.getResponseProperty('ResetPasswordKey');
+        this.encryptedPrivateKey = this.getResponseProperty('EncryptedPrivateKey');
     }
 }

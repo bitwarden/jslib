@@ -19,6 +19,7 @@ export class OrganizationData {
     useApi: boolean;
     useBusinessPortal: boolean;
     useSso: boolean;
+    useResetPassword: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
     seats: number;
@@ -29,6 +30,7 @@ export class OrganizationData {
     permissions: PermissionsApi;
     resetPasswordEnrolled: boolean;
     userId: string;
+    hasPublicAndPrivateKeys: boolean;
 
     constructor(response: ProfileOrganizationResponse) {
         this.id = response.id;
@@ -45,6 +47,7 @@ export class OrganizationData {
         this.useApi = response.useApi;
         this.useBusinessPortal = response.useBusinessPortal;
         this.useSso = response.useSso;
+        this.useResetPassword = response.useResetPassword;
         this.selfHost = response.selfHost;
         this.usersGetPremium = response.usersGetPremium;
         this.seats = response.seats;
@@ -55,5 +58,6 @@ export class OrganizationData {
         this.permissions = response.permissions;
         this.resetPasswordEnrolled = response.resetPasswordEnrolled;
         this.userId = response.userId;
+        this.hasPublicAndPrivateKeys = response.hasPublicAndPrivateKeys;
     }
 }

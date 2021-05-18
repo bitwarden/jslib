@@ -32,6 +32,7 @@ export class PlanResponse extends BaseResponse {
     has2fa: boolean;
     hasApi: boolean;
     hasSso: boolean;
+    hasResetPassword: boolean;
     usersGetPremium: boolean;
 
     upgradeSortOrder: number;
@@ -76,6 +77,7 @@ export class PlanResponse extends BaseResponse {
         this.has2fa = this.getResponseProperty('Has2fa');
         this.hasApi = this.getResponseProperty('HasApi');
         this.hasSso = this.getResponseProperty('HasSso');
+        this.hasResetPassword = this.getResponseProperty('HasResetPassword');
         this.usersGetPremium = this.getResponseProperty('UsersGetPremium');
         this.upgradeSortOrder = this.getResponseProperty('UpgradeSortOrder');
         this.displaySortOrder = this.getResponseProperty('SortOrder');

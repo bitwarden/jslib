@@ -20,6 +20,7 @@ export class Organization {
     useApi: boolean;
     useBusinessPortal: boolean;
     useSso: boolean;
+    useResetPassword: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
     seats: number;
@@ -30,6 +31,7 @@ export class Organization {
     permissions: PermissionsApi;
     resetPasswordEnrolled: boolean;
     userId: string;
+    hasPublicAndPrivateKeys: boolean;
 
     constructor(obj?: OrganizationData) {
         if (obj == null) {
@@ -50,6 +52,7 @@ export class Organization {
         this.useApi = obj.useApi;
         this.useBusinessPortal = obj.useBusinessPortal;
         this.useSso = obj.useSso;
+        this.useResetPassword = obj.useResetPassword;
         this.selfHost = obj.selfHost;
         this.usersGetPremium = obj.usersGetPremium;
         this.seats = obj.seats;
@@ -60,6 +63,7 @@ export class Organization {
         this.permissions = obj.permissions;
         this.resetPasswordEnrolled = obj.resetPasswordEnrolled;
         this.userId = obj.userId;
+        this.hasPublicAndPrivateKeys = obj.hasPublicAndPrivateKeys;
     }
 
     get canAccess() {
