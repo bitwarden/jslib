@@ -88,10 +88,10 @@ export class AuthService implements AuthServiceAbstraction {
 
     private key: SymmetricCryptoKey;
 
-    constructor(private cryptoService: CryptoService, private apiService: ApiService,
-        private userService: UserService, private tokenService: TokenService,
-        private appIdService: AppIdService, private i18nService: I18nService,
-        private platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
+    constructor(private cryptoService: CryptoService, protected apiService: ApiService,
+        private userService: UserService, protected tokenService: TokenService,
+        protected appIdService: AppIdService, private i18nService: I18nService,
+        protected platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
         private vaultTimeoutService: VaultTimeoutService, private logService: LogService,
         private setCryptoKeys = true) {
     }
