@@ -1,12 +1,15 @@
 import { PaymentMethodType } from '../../enums/paymentMethodType';
 import { PlanType } from '../../enums/planType';
 
+import { OrganizationKeysRequest } from './organizationKeysRequest';
+
 export class OrganizationCreateRequest {
     name: string;
     businessName: string;
     billingEmail: string;
     planType: PlanType;
     key: string;
+    keys: OrganizationKeysRequest;
     paymentMethodType: PaymentMethodType;
     paymentToken: string;
     additionalSeats: number;

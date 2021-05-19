@@ -35,6 +35,7 @@ import { ImportOrganizationCiphersRequest } from '../models/request/importOrgani
 import { KdfRequest } from '../models/request/kdfRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
+import { OrganizationKeysRequest } from '../models/request/organizationKeysRequest';
 import { OrganizationTaxInfoUpdateRequest } from '../models/request/organizationTaxInfoUpdateRequest';
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
 import { OrganizationUpgradeRequest } from '../models/request/organizationUpgradeRequest';
@@ -43,6 +44,7 @@ import { OrganizationUserBulkRequest } from '../models/request/organizationUserB
 import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
 import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
 import { OrganizationUserResetPasswordEnrollmentRequest } from '../models/request/organizationUserResetPasswordEnrollmentRequest';
+import { OrganizationUserResetPasswordRequest } from '../models/request/organizationUserResetPasswordRequest';
 import { OrganizationUserUpdateGroupsRequest } from '../models/request/organizationUserUpdateGroupsRequest';
 import { OrganizationUserUpdateRequest } from '../models/request/organizationUserUpdateRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
@@ -104,10 +106,12 @@ import {
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
+import { OrganizationKeysResponse } from '../models/response/organizationKeysResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import { OrganizationSubscriptionResponse } from '../models/response/organizationSubscriptionResponse';
 import {
     OrganizationUserDetailsResponse,
+    OrganizationUserResetPasswordDetailsReponse,
     OrganizationUserUserDetailsResponse,
 } from '../models/response/organizationUserResponse';
 import { PaymentResponse } from '../models/response/paymentResponse';
@@ -794,6 +798,13 @@ export class ApiService implements ApiServiceAbstraction {
         return new ListResponse(r, OrganizationUserUserDetailsResponse);
     }
 
+    async getOrganizationUserResetPasswordDetails(organizationId: string, id: string):
+        Promise<OrganizationUserResetPasswordDetailsReponse> {
+        const r = await this.send('GET', '/organizations/' + organizationId + '/users/' + id +
+            '/reset-password-details', null, true, true);
+        return new OrganizationUserResetPasswordDetailsReponse(r);
+    }
+
     postOrganizationUserInvite(organizationId: string, request: OrganizationUserInviteRequest): Promise<any> {
         return this.send('POST', '/organizations/' + organizationId + '/users/invite', request, true, false);
     }
@@ -829,6 +840,12 @@ export class ApiService implements ApiServiceAbstraction {
     putOrganizationUserResetPasswordEnrollment(organizationId: string, userId: string,
         request: OrganizationUserResetPasswordEnrollmentRequest): Promise<any> {
         return this.send('PUT', '/organizations/' + organizationId + '/users/' + userId + '/reset-password-enrollment',
+            request, true, false);
+    }
+
+    putOrganizationUserResetPassword(organizationId: string, id: string,
+        request: OrganizationUserResetPasswordRequest): Promise<any> {
+        return this.send('PUT', '/organizations/' + organizationId + '/users/' + id + '/reset-password',
             request, true, false);
     }
 
@@ -1174,6 +1191,16 @@ export class ApiService implements ApiServiceAbstraction {
 
     deleteOrganization(id: string, request: PasswordVerificationRequest): Promise<any> {
         return this.send('DELETE', '/organizations/' + id, request, true, false);
+    }
+
+    async getOrganizationKeys(id: string): Promise<OrganizationKeysResponse> {
+        const r = await this.send('GET', '/organizations/' + id + '/keys', null, true, true);
+        return new OrganizationKeysResponse(r);
+    }
+
+    async postOrganizationKeys(id: string, request: OrganizationKeysRequest): Promise<OrganizationKeysResponse> {
+        const r = await this.send('POST', '/organizations/' + id + '/keys', request, true, true);
+        return new OrganizationKeysResponse(r);
     }
 
     // Event APIs
