@@ -18,7 +18,7 @@ export class ApiKeyService implements ApiKeyServiceAbstraction {
 
     constructor(private tokenService: TokenService, private storageService: StorageService) { }
 
-    setInformation(clientId: string) {
+    async setInformation(clientId: string) {
         this.clientId = clientId;
         const idParts = clientId.split('.');
 
@@ -28,9 +28,9 @@ export class ApiKeyService implements ApiKeyServiceAbstraction {
         this.entityType = idParts[0];
         this.entityId = idParts[1];
 
-        return this.storageService.save(Keys.clientId, this.clientId)
-            .then(async v => await this.storageService.save(Keys.entityId, this.entityId))
-            .then(async v => await this.storageService.save(Keys.entityType, this.entityType));
+        await this.storageService.save(Keys.clientId, this.clientId);
+        await this.storageService.save(Keys.entityId, this.entityId);
+        await this.storageService.save(Keys.entityType, this.entityType);
     }
 
     async getEntityType(): Promise<string> {
@@ -48,9 +48,9 @@ export class ApiKeyService implements ApiKeyServiceAbstraction {
     }
 
     async clear(): Promise<any> {
-        await this.storageService.remove(Keys.clientId)
-            .then(async v => await this.storageService.remove(Keys.entityId))
-            .then(async v => await this.storageService.remove(Keys.entityType));
+        await this.storageService.remove(Keys.clientId);
+        await this.storageService.remove(Keys.entityId);
+        await this.storageService.remove(Keys.entityType);
 
         this.clientId = this.entityId = this.entityType = null;
     }

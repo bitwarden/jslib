@@ -113,10 +113,10 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
             }
         }
 
-        await this.cryptoService.clearKey()
-            .then(async v => await this.cryptoService.clearOrgKeys(true))
-            .then(async v => await this.cryptoService.clearKeyPair(true))
-            .then(async v => await this.cryptoService.clearEncKey(true));
+        await this.cryptoService.clearKey();
+        await this.cryptoService.clearOrgKeys(true);
+        await this.cryptoService.clearKeyPair(true);
+        await this.cryptoService.clearEncKey(true);
 
         this.folderService.clearCache();
         this.cipherService.clearCache();
