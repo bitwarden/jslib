@@ -94,7 +94,7 @@ export class UserService implements UserServiceAbstraction {
     async clear(): Promise<any> {
         const userId = await this.getUserId();
 
-        await this.storageService.remove(Keys.userId)
+        await this.storageService.remove(Keys.userId);
         await this.storageService.remove(Keys.userEmail);
         await this.storageService.remove(Keys.stamp);
         await this.storageService.remove(Keys.kdf);
