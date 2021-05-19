@@ -27,18 +27,16 @@ export class UserService implements UserServiceAbstraction {
 
     constructor(private tokenService: TokenService, private storageService: StorageService) { }
 
-    setInformation(userId: string, email: string, kdf: KdfType, kdfIterations: number): Promise<any> {
+    async setInformation(userId: string, email: string, kdf: KdfType, kdfIterations: number): Promise<any> {
         this.email = email;
         this.userId = userId;
         this.kdf = kdf;
         this.kdfIterations = kdfIterations;
 
-        return Promise.all([
-            this.storageService.save(Keys.userEmail, email),
-            this.storageService.save(Keys.userId, userId),
-            this.storageService.save(Keys.kdf, kdf),
-            this.storageService.save(Keys.kdfIterations, kdfIterations),
-        ]);
+        await this.storageService.save(Keys.userEmail, email);
+        await this.storageService.save(Keys.userId, userId);
+        await this.storageService.save(Keys.kdf, kdf);
+        await this.storageService.save(Keys.kdfIterations, kdfIterations);
     }
 
     setSecurityStamp(stamp: string): Promise<any> {
@@ -96,14 +94,12 @@ export class UserService implements UserServiceAbstraction {
     async clear(): Promise<any> {
         const userId = await this.getUserId();
 
-        await Promise.all([
-            this.storageService.remove(Keys.userId),
-            this.storageService.remove(Keys.userEmail),
-            this.storageService.remove(Keys.stamp),
-            this.storageService.remove(Keys.kdf),
-            this.storageService.remove(Keys.kdfIterations),
-            this.clearOrganizations(userId),
-        ]);
+        await this.storageService.remove(Keys.userId);
+        await this.storageService.remove(Keys.userEmail);
+        await this.storageService.remove(Keys.stamp);
+        await this.storageService.remove(Keys.kdf);
+        await this.storageService.remove(Keys.kdfIterations);
+        await this.clearOrganizations(userId);
 
         this.userId = this.email = this.stamp = null;
         this.kdf = null;

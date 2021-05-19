@@ -35,6 +35,7 @@ import { ImportOrganizationCiphersRequest } from '../models/request/importOrgani
 import { KdfRequest } from '../models/request/kdfRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
+import { OrganizationImportRequest } from '../models/request/organizationImportRequest';
 import { OrganizationKeysRequest } from '../models/request/organizationKeysRequest';
 import { OrganizationTaxInfoUpdateRequest } from '../models/request/organizationTaxInfoUpdateRequest';
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
@@ -866,6 +867,10 @@ export class ApiService implements ApiServiceAbstraction {
 
     async postImportDirectory(organizationId: string, request: ImportDirectoryRequest): Promise<any> {
         return this.send('POST', '/organizations/' + organizationId + '/import', request, true, false);
+    }
+
+    async postPublicImportDirectory(request: OrganizationImportRequest): Promise<any> {
+        return this.send('POST', '/public/organization/import', request, true, false);
     }
 
     async getTaxRates(): Promise<ListResponse<TaxRateResponse>> {
