@@ -39,6 +39,7 @@ import { OrganizationTaxInfoUpdateRequest } from '../models/request/organization
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
 import { OrganizationUpgradeRequest } from '../models/request/organizationUpgradeRequest';
 import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
+import { OrganizationUserBulkConfirmRequest } from '../models/request/organizationUserBulkConfirmRequest';
 import { OrganizationUserBulkRequest } from '../models/request/organizationUserBulkRequest';
 import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
 import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
@@ -106,6 +107,8 @@ import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorR
 import { ListResponse } from '../models/response/listResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import { OrganizationSubscriptionResponse } from '../models/response/organizationSubscriptionResponse';
+import { OrganizationUserBulkConfirmResponse } from '../models/response/organizationUserBulkConfirmResponse';
+import { OrganizationUserBulkPublicKeyResponse } from '../models/response/organizationUserBulkPublicKeyResponse';
 import {
     OrganizationUserDetailsResponse,
     OrganizationUserUserDetailsResponse,
@@ -815,6 +818,16 @@ export class ApiService implements ApiServiceAbstraction {
         request: OrganizationUserConfirmRequest): Promise<any> {
         return this.send('POST', '/organizations/' + organizationId + '/users/' + id + '/confirm',
             request, true, false);
+    }
+
+    async postOrganizationUsersPublicKey(organizationId: string, request: OrganizationUserBulkRequest): Promise<ListResponse<OrganizationUserBulkPublicKeyResponse>> {
+        const r = await this.send('POST', '/organizations/' + organizationId + '/users/public-keys', request, true, true);
+        return new ListResponse(r, OrganizationUserBulkPublicKeyResponse);
+    }
+
+    async postOrganizationUserBulkConfirm(organizationId: string, request: OrganizationUserBulkConfirmRequest): Promise<ListResponse<OrganizationUserBulkConfirmResponse>> {
+        const r = await this.send('POST',  '/organizations/' + organizationId + '/users/confirm', request, true, true);
+        return new ListResponse(r, OrganizationUserBulkConfirmResponse);
     }
 
     putOrganizationUser(organizationId: string, id: string, request: OrganizationUserUpdateRequest): Promise<any> {
