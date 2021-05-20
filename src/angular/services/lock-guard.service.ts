@@ -20,10 +20,11 @@ export class LockGuardService implements CanActivate {
                 return true;
             } else {
                 this.router.navigate(['vault']);
+                return false;
             }
-            return false;
         }
 
         this.router.navigate(['']);
+        return false;
     }
 }
