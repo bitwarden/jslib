@@ -13,17 +13,18 @@ export class LockGuardService implements CanActivate {
         private router: Router) { }
 
     async canActivate() {
-        const locked = await this.vaultTimeoutService.isLocked();
-        if (!locked) {
-            const isAuthed = await this.userService.isAuthenticated();
-            if (!isAuthed) {
-                this.router.navigate(['login']);
+        const isAuthed = await this.userService.isAuthenticated();
+        if (isAuthed) {
+            const locked = await this.vaultTimeoutService.isLocked();
+            if (locked) {
+                return true;
             } else {
                 this.router.navigate(['vault']);
+                return false;
             }
-            return false;
         }
 
-        return true;
+        this.router.navigate(['']);
+        return false;
     }
 }
