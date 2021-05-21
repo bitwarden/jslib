@@ -1,6 +1,6 @@
 import { BaseResponse } from './baseResponse';
 
-export class OrganizationUserBulkConfirmResponse extends BaseResponse {
+export class OrganizationUserBulkResponse extends BaseResponse {
     id: string;
     error: string;
 
