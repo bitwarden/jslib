@@ -5,4 +5,8 @@ type OrganizationUserBulkRequestEntry = {
 
 export class OrganizationUserBulkConfirmRequest {
     keys: OrganizationUserBulkRequestEntry[];
+    
+    constructor(keys: OrganizationUserBulkRequestEntry[]) {
+        this.keys = keys;
+    }
 }
