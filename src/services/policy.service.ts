@@ -6,9 +6,12 @@ import { PolicyData } from '../models/data/policyData';
 
 import { MasterPasswordPolicyOptions } from '../models/domain/masterPasswordPolicyOptions';
 import { Policy } from '../models/domain/policy';
+import { ResetPasswordPolicyOptions } from '../models/domain/resetPasswordPolicyOptions';
 
 import { PolicyType } from '../enums/policyType';
-import { ResetPasswordPolicyOptions } from '../models/domain/resetPasswordPolicyOptions';
+
+import { ListResponse } from '../models/response/listResponse';
+import { PolicyResponse } from '../models/response/policyResponse';
 
 const Keys = {
     policiesPrefix: 'policies_',
@@ -140,13 +143,25 @@ export class PolicyService implements PolicyServiceAbstraction {
         return true;
     }
 
-    getResetPasswordPolicyOptions(policy: Policy): ResetPasswordPolicyOptions {
+    getResetPasswordPolicyOptions(policies: Policy[], orgId: string): [ResetPasswordPolicyOptions, boolean] {
         const resetPasswordPolicyOptions = new ResetPasswordPolicyOptions();
 
-        if (policy != null && policy.enabled && policy.data != null) {
-            resetPasswordPolicyOptions.autoEnrollEnabled = policy.data.autoEnrollEnabled;
+        if (policies == null || orgId == null) {
+            return [resetPasswordPolicyOptions, false];
         }
 
-        return resetPasswordPolicyOptions;
+        const policy = policies.find(p => p.organizationId === orgId && p.type === PolicyType.ResetPassword && p.enabled);
+        resetPasswordPolicyOptions.autoEnrollEnabled = policy?.data?.autoEnrollEnabled ?? false;
+
+        return [resetPasswordPolicyOptions, policy?.enabled ?? false];
+    }
+
+    mapPoliciesFromToken(policiesResponse: ListResponse<PolicyResponse>): Policy[] {
+        if (policiesResponse == null || policiesResponse.data == null) {
+            return null;
+        }
+
+        const policiesData = policiesResponse.data.map(p => new PolicyData(p));
+        return policiesData.map(p => new Policy(p));
     }
 }

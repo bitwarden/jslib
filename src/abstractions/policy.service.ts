@@ -6,6 +6,9 @@ import { ResetPasswordPolicyOptions } from '../models/domain/resetPasswordPolicy
 
 import { PolicyType } from '../enums/policyType';
 
+import { ListResponse } from '../models/response/listResponse';
+import { PolicyResponse } from '../models/response/policyResponse';
+
 export abstract class PolicyService {
     policyCache: Policy[];
 
@@ -16,5 +19,6 @@ export abstract class PolicyService {
     getMasterPasswordPolicyOptions: (policies?: Policy[]) => Promise<MasterPasswordPolicyOptions>;
     evaluateMasterPassword: (passwordStrength: number, newPassword: string,
         enforcedPolicyOptions?: MasterPasswordPolicyOptions) => boolean;
-    getResetPasswordPolicyOptions: (policy: Policy) => ResetPasswordPolicyOptions;
+    getResetPasswordPolicyOptions: (policies: Policy[], orgId: string) => [ResetPasswordPolicyOptions, boolean];
+    mapPoliciesFromToken: (policiesResponse: ListResponse<PolicyResponse>) => Policy[];
 }

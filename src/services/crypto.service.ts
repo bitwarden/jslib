@@ -446,7 +446,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         return new EncString(EncryptionType.Rsa2048_OaepSha1_B64, Utils.fromBufferToB64(encBytes));
     }
 
-    async rsaDecrypt(encValue: string): Promise<ArrayBuffer> {
+    async rsaDecrypt(encValue: string, privateKeyValue?: ArrayBuffer): Promise<ArrayBuffer> {
         const headerPieces = encValue.split('.');
         let encType: EncryptionType = null;
         let encPieces: string[];
@@ -477,7 +477,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
 
         const data = Utils.fromB64ToArray(encPieces[0]).buffer;
-        const privateKey = await this.getPrivateKey();
+        const privateKey = privateKeyValue ?? await this.getPrivateKey();
         if (privateKey == null) {
             throw new Error('No private key.');
         }
