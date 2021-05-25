@@ -41,6 +41,7 @@ import { OrganizationTaxInfoUpdateRequest } from '../models/request/organization
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
 import { OrganizationUpgradeRequest } from '../models/request/organizationUpgradeRequest';
 import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
+import { OrganizationUserBulkConfirmRequest } from '../models/request/organizationUserBulkConfirmRequest';
 import { OrganizationUserBulkRequest } from '../models/request/organizationUserBulkRequest';
 import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
 import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
@@ -110,6 +111,8 @@ import { ListResponse } from '../models/response/listResponse';
 import { OrganizationKeysResponse } from '../models/response/organizationKeysResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import { OrganizationSubscriptionResponse } from '../models/response/organizationSubscriptionResponse';
+import { OrganizationUserBulkPublicKeyResponse } from '../models/response/organizationUserBulkPublicKeyResponse';
+import { OrganizationUserBulkResponse } from '../models/response/organizationUserBulkResponse';
 import {
     OrganizationUserDetailsResponse,
     OrganizationUserResetPasswordDetailsReponse,
@@ -814,8 +817,9 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/organizations/' + organizationId + '/users/' + id + '/reinvite', null, true, false);
     }
 
-    postManyOrganizationUserReinvite(organizationId: string, request: OrganizationUserBulkRequest): Promise<any> {
-        return this.send('POST', '/organizations/' + organizationId + '/users/reinvite', request, true, false);
+    async postManyOrganizationUserReinvite(organizationId: string, request: OrganizationUserBulkRequest): Promise<ListResponse<OrganizationUserBulkResponse>> {
+        const r = await this.send('POST', '/organizations/' + organizationId + '/users/reinvite', request, true, true);
+        return new ListResponse(r, OrganizationUserBulkResponse);
     }
 
     postOrganizationUserAccept(organizationId: string, id: string,
@@ -827,6 +831,16 @@ export class ApiService implements ApiServiceAbstraction {
         request: OrganizationUserConfirmRequest): Promise<any> {
         return this.send('POST', '/organizations/' + organizationId + '/users/' + id + '/confirm',
             request, true, false);
+    }
+
+    async postOrganizationUsersPublicKey(organizationId: string, request: OrganizationUserBulkRequest): Promise<ListResponse<OrganizationUserBulkPublicKeyResponse>> {
+        const r = await this.send('POST', '/organizations/' + organizationId + '/users/public-keys', request, true, true);
+        return new ListResponse(r, OrganizationUserBulkPublicKeyResponse);
+    }
+
+    async postOrganizationUserBulkConfirm(organizationId: string, request: OrganizationUserBulkConfirmRequest): Promise<ListResponse<OrganizationUserBulkResponse>> {
+        const r = await this.send('POST',  '/organizations/' + organizationId + '/users/confirm', request, true, true);
+        return new ListResponse(r, OrganizationUserBulkResponse);
     }
 
     putOrganizationUser(organizationId: string, id: string, request: OrganizationUserUpdateRequest): Promise<any> {
@@ -854,8 +868,9 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('DELETE', '/organizations/' + organizationId + '/users/' + id, null, true, false);
     }
 
-    deleteManyOrganizationUsers(organizationId: string, request: OrganizationUserBulkRequest): Promise<any> {
-        return this.send('DELETE', '/organizations/' + organizationId + '/users', request, true, false);
+    async deleteManyOrganizationUsers(organizationId: string, request: OrganizationUserBulkRequest): Promise<ListResponse<OrganizationUserBulkResponse>> {
+        const r = await this.send('DELETE', '/organizations/' + organizationId + '/users', request, true, true);
+        return new ListResponse(r, OrganizationUserBulkResponse);
     }
 
     // Plan APIs
