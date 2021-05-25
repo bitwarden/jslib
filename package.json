@@ -64,7 +64,10 @@
     "@bitwarden/jslib-angular": "file:angular",
     "@bitwarden/jslib-common": "file:common",
     "@bitwarden/jslib-electron": "file:electron",
-    "@bitwarden/jslib-node": "file:node"
+    "@bitwarden/jslib-node": "file:node",
+    "electron": "11.4.3",
+    "electron-log": "^4.3.5",
+    "tldjs": "^2.3.1"
   },
   "engines": {
     "node": "~14",
