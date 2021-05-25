@@ -24,8 +24,8 @@ export abstract class CipherService {
     getAllDecryptedForUrl: (url: string, includeOtherTypes?: CipherType[],
         defaultMatch?: UriMatchType) => Promise<CipherView[]>;
     getAllFromApiForOrganization: (organizationId: string) => Promise<CipherView[]>;
-    getLastUsedForUrl: (url: string) => Promise<CipherView>;
-    getLastLaunchedForUrl: (url: string) => Promise<CipherView>;
+    getLastUsedForUrl: (url: string, autofillOnPageLoad: boolean) => Promise<CipherView>;
+    getLastLaunchedForUrl: (url: string, autofillOnPageLoad: boolean) => Promise<CipherView>;
     getNextCipherForUrl: (url: string) => Promise<CipherView>;
     updateLastUsedIndexForUrl: (url: string) => void;
     updateLastUsedDate: (id: string) => Promise<void>;

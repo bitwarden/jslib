@@ -299,25 +299,35 @@ export class AddEditComponent implements OnInit {
             this.password = null;
         }
 
-        const encSend = await this.encryptSend(file);
+        this.formPromise = this.encryptSend(file)
+            .then(async encSend => {
+                const uploadPromise = this.sendService.saveWithServer(encSend);
+                await uploadPromise;
+                if (this.send.id == null) {
+                    this.send.id = encSend[0].id;
+                }
+                if (this.send.accessId == null) {
+                    this.send.accessId = encSend[0].accessId;
+                }
+                this.onSavedSend.emit(this.send);
+                if (this.copyLink && this.link != null) {
+                    const copySuccess = await this.copyLinkToClipboard(this.link);
+                    if (copySuccess ?? true) {
+                        this.platformUtilsService.showToast('success', null,
+                            this.i18nService.t(this.editMode ? 'editedSend' : 'createdSend'));
+                    } else {
+                        await this.platformUtilsService.showDialog(
+                            this.i18nService.t(this.editMode ? 'editedSend' : 'createdSend'), null,
+                            this.i18nService.t('ok'), null, 'success', null);
+                        await this.copyLinkToClipboard(this.link);
+                    }
+                }
+            });
+
         try {
-            this.formPromise = this.sendService.saveWithServer(encSend);
             await this.formPromise;
-            if (this.send.id == null) {
-                this.send.id = encSend[0].id;
-            }
-            if (this.send.accessId == null) {
-                this.send.accessId = encSend[0].accessId;
-            }
-            this.platformUtilsService.showToast('success', null,
-                this.i18nService.t(this.editMode ? 'editedSend' : 'createdSend'));
-            this.onSavedSend.emit(this.send);
-            if (this.copyLink) {
-                this.copyLinkToClipboard(this.link);
-            }
             return true;
         } catch { }
-
         return false;
     }
 
@@ -328,10 +338,8 @@ export class AddEditComponent implements OnInit {
         this.safariExpirationTime = null;
     }
 
-    copyLinkToClipboard(link: string) {
-        if (link != null) {
-            this.platformUtilsService.copyToClipboard(link);
-        }
+    async copyLinkToClipboard(link: string): Promise<void | boolean> {
+        return Promise.resolve(this.platformUtilsService.copyToClipboard(link));
     }
 
     async delete(): Promise<boolean> {

@@ -25,6 +25,8 @@ export class OrganizationResponse extends BaseResponse {
     useTotp: boolean;
     use2fa: boolean;
     useApi: boolean;
+    useResetPassword: boolean;
+    hasPublicAndPrivateKeys: boolean;
 
     constructor(response: any) {
         super(response);
@@ -50,5 +52,7 @@ export class OrganizationResponse extends BaseResponse {
         this.useTotp = this.getResponseProperty('UseTotp');
         this.use2fa = this.getResponseProperty('Use2fa');
         this.useApi = this.getResponseProperty('UseApi');
+        this.useResetPassword = this.getResponseProperty('UseResetPassword');
+        this.hasPublicAndPrivateKeys = this.getResponseProperty('HasPublicAndPrivateKeys');
     }
 }

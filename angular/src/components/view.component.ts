@@ -15,6 +15,7 @@ import { FieldType } from 'jslib-common/enums/fieldType';
 
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { AuditService } from 'jslib-common/abstractions/audit.service';
+import { BroadcasterService } from 'jslib-common/abstractions/broadcaster.service';
 import { CipherService } from 'jslib-common/abstractions/cipher.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { EventService } from 'jslib-common/abstractions/event.service';
@@ -30,7 +31,6 @@ import { AttachmentView } from 'jslib-common/models/view/attachmentView';
 import { CipherView } from 'jslib-common/models/view/cipherView';
 import { FieldView } from 'jslib-common/models/view/fieldView';
 import { LoginUriView } from 'jslib-common/models/view/loginUriView';
-import { BroadcasterService } from '../services/broadcaster.service';
 
 const BroadcasterSubscriptionId = 'ViewComponent';
 
@@ -45,6 +45,7 @@ export class ViewComponent implements OnDestroy, OnInit {
 
     cipher: CipherView;
     showPassword: boolean;
+    showCardNumber: boolean;
     showCardCode: boolean;
     canAccessPremium: boolean;
     totpCode: string;
@@ -57,6 +58,7 @@ export class ViewComponent implements OnDestroy, OnInit {
 
     private totpInterval: any;
     private previousCipherId: string;
+    private passwordReprompted: boolean = false;
 
     constructor(protected cipherService: CipherService, protected totpService: TotpService,
         protected tokenService: TokenService, protected i18nService: I18nService,
@@ -64,7 +66,8 @@ export class ViewComponent implements OnDestroy, OnInit {
         protected auditService: AuditService, protected win: Window,
         protected broadcasterService: BroadcasterService, protected ngZone: NgZone,
         protected changeDetectorRef: ChangeDetectorRef, protected userService: UserService,
-        protected eventService: EventService, protected apiService: ApiService) { }
+        protected eventService: EventService, protected apiService: ApiService,
+        protected passwordRepromptService: PasswordRepromptService) { }
 
     ngOnInit() {
         this.broadcasterService.subscribe(BroadcasterSubscriptionId, (message: any) => {
@@ -110,19 +113,38 @@ export class ViewComponent implements OnDestroy, OnInit {
         this.previousCipherId = this.cipherId;
     }
 
-    edit() {
-        this.onEditCipher.emit(this.cipher);
+    async edit() {
+        if (await this.promptPassword()) {
+            this.onEditCipher.emit(this.cipher);
+            return true;
+        }
+
+        return false;
     }
 
-    clone() {
-        this.onCloneCipher.emit(this.cipher);
+    async clone() {
+        if (await this.promptPassword()) {
+            this.onCloneCipher.emit(this.cipher);
+            return true;
+        }
+
+        return false;
     }
 
-    share() {
-        this.onShareCipher.emit(this.cipher);
+    async share() {
+        if (await this.promptPassword()) {
+            this.onShareCipher.emit(this.cipher);
+            return true;
+        }
+
+        return false;
     }
 
     async delete(): Promise<boolean> {
+        if (!await this.promptPassword()) {
+            return;
+        }
+
         const confirmed = await this.platformUtilsService.showDialog(
             this.i18nService.t(this.cipher.isDeleted ? 'permanentlyDeleteItemConfirmation' : 'deleteItemConfirmation'),
             this.i18nService.t('deleteItem'), this.i18nService.t('yes'), this.i18nService.t('no'), 'warning');
@@ -161,14 +183,33 @@ export class ViewComponent implements OnDestroy, OnInit {
         return true;
     }
 
-    togglePassword() {
+    async togglePassword() {
+        if (!await this.promptPassword()) {
+            return;
+        }
+
         this.showPassword = !this.showPassword;
         if (this.showPassword) {
             this.eventService.collect(EventType.Cipher_ClientToggledPasswordVisible, this.cipherId);
         }
     }
 
-    toggleCardCode() {
+    async toggleCardNumber() {
+        if (!await this.promptPassword()) {
+            return;
+        }
+
+        this.showCardNumber = !this.showCardNumber;
+        if (this.showCardNumber) {
+            this.eventService.collect(EventType.Cipher_ClientToggledCardCodeVisible, this.cipherId);
+        }
+    }
+
+    async toggleCardCode() {
+        if (!await this.promptPassword()) {
+            return;
+        }
+
         this.showCardCode = !this.showCardCode;
         if (this.showCardCode) {
             this.eventService.collect(EventType.Cipher_ClientToggledCardCodeVisible, this.cipherId);
@@ -191,7 +232,11 @@ export class ViewComponent implements OnDestroy, OnInit {
         }
     }
 
-    toggleFieldValue(field: FieldView) {
+    async toggleFieldValue(field: FieldView) {
+        if (!await this.promptPassword()) {
+            return;
+        }
+
         const f = (field as any);
         f.showValue = !f.showValue;
         if (f.showValue) {
@@ -211,8 +256,12 @@ export class ViewComponent implements OnDestroy, OnInit {
         this.platformUtilsService.launchUri(uri.launchUri);
     }
 
-    copy(value: string, typeI18nKey: string, aType: string) {
+    async copy(value: string, typeI18nKey: string, aType: string) {
         if (value == null) {
+            return;
+        }
+
+        if (this.passwordRepromptService.protectedFields().includes(aType) && !await this.promptPassword()) {
             return;
         }
 
@@ -288,6 +337,14 @@ export class ViewComponent implements OnDestroy, OnInit {
 
     protected restoreCipher() {
         return this.cipherService.restoreWithServer(this.cipher.id);
+    }
+
+    protected async promptPassword() {
+        if (this.cipher.reprompt === CipherRepromptType.None || this.passwordReprompted) {
+            return true;
+        }
+
+        return this.passwordReprompted = await this.passwordRepromptService.showPasswordPrompt();
     }
 
     private cleanUp() {

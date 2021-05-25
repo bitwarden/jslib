@@ -10,6 +10,7 @@ import {
     Output,
 } from '@angular/core';
 
+import { CipherRepromptType } from 'jslib-common/enums/cipherRepromptType';
 import { CipherType } from 'jslib-common/enums/cipherType';
 import { EventType } from 'jslib-common/enums/eventType';
 import { FieldType } from 'jslib-common/enums/fieldType';
@@ -71,6 +72,7 @@ export class AddEditComponent implements OnInit {
     restorePromise: Promise<any>;
     checkPasswordPromise: Promise<number>;
     showPassword: boolean = false;
+    showCardNumber: boolean = false;
     showCardCode: boolean = false;
     cipherType = CipherType;
     fieldType = FieldType;
@@ -82,8 +84,10 @@ export class AddEditComponent implements OnInit {
     addFieldTypeOptions: any[];
     uriMatchOptions: any[];
     ownershipOptions: any[] = [];
+    autofillOnPageLoadOptions: any[];
     currentDate = new Date();
     allowPersonal = true;
+    reprompt: boolean = false;
 
     protected writeableCollections: CollectionView[];
     private previousCipherId: string;
@@ -147,6 +151,11 @@ export class AddEditComponent implements OnInit {
             { name: i18nService.t('regEx'), value: UriMatchType.RegularExpression },
             { name: i18nService.t('exact'), value: UriMatchType.Exact },
             { name: i18nService.t('never'), value: UriMatchType.Never },
+        ];
+        this.autofillOnPageLoadOptions = [
+            { name: i18nService.t('autoFillOnPageLoadUseDefault'), value: null },
+            { name: i18nService.t('autoFillOnPageLoadYes'), value: true },
+            { name: i18nService.t('autoFillOnPageLoadNo'), value: false },
         ];
     }
 
@@ -225,6 +234,7 @@ export class AddEditComponent implements OnInit {
                 this.cipher.identity = new IdentityView();
                 this.cipher.secureNote = new SecureNoteView();
                 this.cipher.secureNote.type = SecureNoteType.Generic;
+                this.cipher.reprompt = CipherRepromptType.None;
             }
         }
 
@@ -245,6 +255,7 @@ export class AddEditComponent implements OnInit {
             this.eventService.collect(EventType.Cipher_ClientViewed, this.cipherId);
         }
         this.previousCipherId = this.cipherId;
+        this.reprompt = this.cipher.reprompt !== CipherRepromptType.None;
     }
 
     async submit(): Promise<boolean> {
@@ -422,6 +433,13 @@ export class AddEditComponent implements OnInit {
         }
     }
 
+    async toggleCardNumber() {
+        this.showCardNumber = !this.showCardNumber;
+        if (this.showCardNumber) {
+            this.eventService.collect(EventType.Cipher_ClientToggledCardCodeVisible, this.cipherId);
+        }
+    }
+
     toggleCardCode() {
         this.showCardCode = !this.showCardCode;
         document.getElementById('cardCode').focus();
@@ -485,6 +503,15 @@ export class AddEditComponent implements OnInit {
                 this.i18nService.t('passwordExposed', matches.toString()));
         } else {
             this.platformUtilsService.showToast('success', null, this.i18nService.t('passwordSafe'));
+        }
+    }
+
+    repromptChanged() {
+        this.reprompt = !this.reprompt;
+        if (this.reprompt) {
+            this.cipher.reprompt = CipherRepromptType.Password;
+        } else {
+            this.cipher.reprompt = CipherRepromptType.None;
         }
     }
 

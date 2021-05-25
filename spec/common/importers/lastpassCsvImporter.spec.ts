@@ -1,9 +1,27 @@
 import { LastPassCsvImporter as Importer } from 'jslib-common/importers/lastpassCsvImporter';
 
+import { ImportResult } from 'jslib-common/models/domain/importResult';
 import { CipherView } from 'jslib-common/models/view/cipherView';
 import { FieldView } from 'jslib-common/models/view/fieldView';
 
-import { FieldType } from 'jslib-common/enums';
+import { CipherType, FieldType } from 'jslib-common/enums';
+
+function baseExcept(result: ImportResult) {
+    expect(result).not.toBeNull();
+    expect(result.success).toBe(true);
+    expect(result.ciphers.length).toBe(1);
+}
+
+function expectLogin(cipher: CipherView) {
+    expect(cipher.type).toBe(CipherType.Login);
+
+    expect(cipher.name).toBe('example.com');
+    expect(cipher.notes).toBe('super secure notes');
+    expect(cipher.login.uri).toBe('http://example.com');
+    expect(cipher.login.username).toBe('someUser');
+    expect(cipher.login.password).toBe('myPassword');
+    expect(cipher.login.totp).toBe('Y64VEVMBTSXCYIWRSHRNDZW62MPGVU2G');
+}
 
 const CipherData = [
     {
@@ -167,5 +185,17 @@ describe('Lastpass CSV Importer', () => {
                 }
             }
         });
+    });
+
+    it('should parse login with totp', async () => {
+        const input = `url,username,password,totp,extra,name,grouping,fav
+        http://example.com,someUser,myPassword,Y64VEVMBTSXCYIWRSHRNDZW62MPGVU2G,super secure notes,example.com,,0`;
+
+        const importer = new Importer();
+        const result = await importer.parse(input);
+        baseExcept(result);
+
+        const cipher = result.ciphers[0];
+        expectLogin(cipher);
     });
 });

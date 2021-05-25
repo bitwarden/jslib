@@ -46,10 +46,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     async setKey(key: SymmetricCryptoKey): Promise<any> {
         this.key = key;
 
-        const option = await this.storageService.get<number>(ConstantsService.vaultTimeoutKey);
-        const biometric = await this.storageService.get<boolean>(ConstantsService.biometricUnlockKey);
-        if (option != null && !(biometric && this.platformUtilService.supportsSecureStorage())) {
-            // if we have a lock option set, we do not store the key
+        if (!await this.shouldStoreKey()) {
             return;
         }
 
@@ -96,7 +93,21 @@ export class CryptoService implements CryptoServiceAbstraction {
 
         const key = await this.secureStorageService.get<string>(Keys.key);
         if (key != null) {
-            this.key = new SymmetricCryptoKey(Utils.fromB64ToArray(key).buffer);
+            if (!await this.shouldStoreKey()) {
+                this.logService.warning('Throwing away stored key since settings have changed');
+                this.secureStorageService.remove(Keys.key);
+                return null;
+            }
+
+            const symmetricKey = new SymmetricCryptoKey(Utils.fromB64ToArray(key).buffer);
+
+            if (!await this.validateKey(symmetricKey)) {
+                this.logService.warning('Wrong key, throwing away stored key');
+                this.secureStorageService.remove(Keys.key);
+                return null;
+            }
+
+            this.key = symmetricKey;
         }
 
         return key == null ? null : this.key;
@@ -283,15 +294,13 @@ export class CryptoService implements CryptoServiceAbstraction {
         return this.storageService.remove(ConstantsService.pinProtectedKey);
     }
 
-    clearKeys(): Promise<any> {
-        return Promise.all([
-            this.clearKey(),
-            this.clearKeyHash(),
-            this.clearOrgKeys(),
-            this.clearEncKey(),
-            this.clearKeyPair(),
-            this.clearPinProtectedKey(),
-        ]);
+    async clearKeys(): Promise<any> {
+        await this.clearEncKey();
+        await this.clearKeyHash();
+        await this.clearOrgKeys();
+        await this.clearEncKey();
+        await this.clearKeyPair();
+        await this.clearPinProtectedKey();
     }
 
     async toggleKey(): Promise<any> {
@@ -437,7 +446,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         return new EncString(EncryptionType.Rsa2048_OaepSha1_B64, Utils.fromBufferToB64(encBytes));
     }
 
-    async rsaDecrypt(encValue: string): Promise<ArrayBuffer> {
+    async rsaDecrypt(encValue: string, privateKeyValue?: ArrayBuffer): Promise<ArrayBuffer> {
         const headerPieces = encValue.split('.');
         let encType: EncryptionType = null;
         let encPieces: string[];
@@ -468,7 +477,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
 
         const data = Utils.fromB64ToArray(encPieces[0]).buffer;
-        const privateKey = await this.getPrivateKey();
+        const privateKey = privateKeyValue ?? await this.getPrivateKey();
         if (privateKey == null) {
             throw new Error('No private key.');
         }
@@ -580,7 +589,34 @@ export class CryptoService implements CryptoServiceAbstraction {
         return min + rval;
     }
 
+    async validateKey(key: SymmetricCryptoKey) {
+        try {
+            const encPrivateKey = await this.storageService.get<string>(Keys.encPrivateKey);
+            if (encPrivateKey == null) {
+                return false;
+            }
+
+            const encKey = await this.getEncKey(key);
+            const privateKey = await this.decryptToBytes(new EncString(encPrivateKey), encKey);
+            await this.cryptoFunctionService.rsaExtractPublicKey(privateKey);
+        } catch (e) {
+            return false;
+        }
+
+        return true;
+    }
+
     // Helpers
+
+    private async shouldStoreKey() {
+        const vaultTimeout = await this.storageService.get<number>(ConstantsService.vaultTimeoutKey);
+        const biometricUnlock = await this.storageService.get<boolean>(ConstantsService.biometricUnlockKey);
+
+        const biometricsEnabled = biometricUnlock && this.platformUtilService.supportsSecureStorage();
+        const noVaultTimeout = vaultTimeout == null;
+
+        return noVaultTimeout || biometricsEnabled;
+    }
 
     private async aesEncrypt(data: ArrayBuffer, key: SymmetricCryptoKey): Promise<EncryptedObject> {
         const obj = new EncryptedObject();

@@ -5,7 +5,7 @@
 Common code referenced across Bitwarden JavaScript projects.
 
 ## Requirements
-
+* [Node.js](https://nodejs.org) v14.17 or greater
 * Git
 * node-gyp
 

@@ -147,6 +147,7 @@ export class CipherService implements CipherServiceAbstraction {
         cipher.type = model.type;
         cipher.collectionIds = model.collectionIds;
         cipher.revisionDate = model.revisionDate;
+        cipher.reprompt = model.reprompt;
 
         if (key == null && cipher.organizationId != null) {
             key = await this.cryptoService.getOrgKey(cipher.organizationId);
@@ -295,7 +296,7 @@ export class CipherService implements CipherServiceAbstraction {
     async getAllDecrypted(): Promise<CipherView[]> {
         if (this.decryptedCipherCache != null) {
             const userId = await this.userService.getUserId();
-            if ((this.searchService().indexedEntityId ?? userId) !== userId)
+            if (this.searchService != null && (this.searchService().indexedEntityId ?? userId) !== userId)
             {
                 await this.searchService().indexCiphers(userId, this.decryptedCipherCache);
             }
@@ -453,16 +454,16 @@ export class CipherService implements CipherServiceAbstraction {
         }
     }
 
-    async getLastUsedForUrl(url: string): Promise<CipherView> {
-        return this.getCipherForUrl(url, true, false);
+    async getLastUsedForUrl(url: string, autofillOnPageLoad: boolean = false): Promise<CipherView> {
+        return this.getCipherForUrl(url, true, false, autofillOnPageLoad);
     }
 
-    async getLastLaunchedForUrl(url: string): Promise<CipherView> {
-        return this.getCipherForUrl(url, false, true);
+    async getLastLaunchedForUrl(url: string, autofillOnPageLoad: boolean = false): Promise<CipherView> {
+        return this.getCipherForUrl(url, false, true, autofillOnPageLoad);
     }
 
     async getNextCipherForUrl(url: string): Promise<CipherView> {
-        return this.getCipherForUrl(url, false, false);
+        return this.getCipherForUrl(url, false, false, false);
     }
 
     updateLastUsedIndexForUrl(url: string) {
@@ -1031,6 +1032,7 @@ export class CipherService implements CipherServiceAbstraction {
             case CipherType.Login:
                 cipher.login = new Login();
                 cipher.login.passwordRevisionDate = model.login.passwordRevisionDate;
+                cipher.login.autofillOnPageLoad = model.login.autofillOnPageLoad;
                 await this.encryptObjProperty(model.login, cipher.login, {
                     username: null,
                     password: null,
@@ -1092,21 +1094,33 @@ export class CipherService implements CipherServiceAbstraction {
         }
     }
 
-    private async getCipherForUrl(url: string, lastUsed: boolean, lastLaunched: boolean): Promise<CipherView> {
-        if (!this.sortedCiphersCache.isCached(url)) {
-            const ciphers = await this.getAllDecryptedForUrl(url);
+    private async getCipherForUrl(url: string, lastUsed: boolean, lastLaunched: boolean, autofillOnPageLoad: boolean): Promise<CipherView> {
+        const cacheKey = autofillOnPageLoad ? 'autofillOnPageLoad-' + url : url;
+
+        if (!this.sortedCiphersCache.isCached(cacheKey)) {
+            let ciphers = await this.getAllDecryptedForUrl(url);
             if (!ciphers) {
                 return null;
             }
-            this.sortedCiphersCache.addCiphers(url, ciphers);
+
+            if (autofillOnPageLoad) {
+                const autofillOnPageLoadDefault = await this.storageService.get(ConstantsService.autoFillOnPageLoadDefaultKey);
+                ciphers = ciphers.filter(cipher => cipher.login.autofillOnPageLoad ||
+                        (cipher.login.autofillOnPageLoad == null && autofillOnPageLoadDefault));
+                if (ciphers.length === 0) {
+                    return null;
+                }
+            }
+
+            this.sortedCiphersCache.addCiphers(cacheKey, ciphers);
         }
 
         if (lastLaunched) {
-            return this.sortedCiphersCache.getLastLaunched(url);
+            return this.sortedCiphersCache.getLastLaunched(cacheKey);
         } else if (lastUsed) {
-            return this.sortedCiphersCache.getLastUsed(url);
+            return this.sortedCiphersCache.getLastUsed(cacheKey);
         } else {
-            return this.sortedCiphersCache.getNext(url);
+            return this.sortedCiphersCache.getNext(cacheKey);
         }
     }
 }

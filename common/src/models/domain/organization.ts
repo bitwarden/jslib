@@ -20,6 +20,7 @@ export class Organization {
     useApi: boolean;
     useBusinessPortal: boolean;
     useSso: boolean;
+    useResetPassword: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
     seats: number;
@@ -28,8 +29,9 @@ export class Organization {
     ssoBound: boolean;
     identifier: string;
     permissions: PermissionsApi;
-    resetPasswordKey: string;
+    resetPasswordEnrolled: boolean;
     userId: string;
+    hasPublicAndPrivateKeys: boolean;
 
     constructor(obj?: OrganizationData) {
         if (obj == null) {
@@ -50,6 +52,7 @@ export class Organization {
         this.useApi = obj.useApi;
         this.useBusinessPortal = obj.useBusinessPortal;
         this.useSso = obj.useSso;
+        this.useResetPassword = obj.useResetPassword;
         this.selfHost = obj.selfHost;
         this.usersGetPremium = obj.usersGetPremium;
         this.seats = obj.seats;
@@ -58,8 +61,9 @@ export class Organization {
         this.ssoBound = obj.ssoBound;
         this.identifier = obj.identifier;
         this.permissions = obj.permissions;
-        this.resetPasswordKey = obj.resetPasswordKey;
+        this.resetPasswordEnrolled = obj.resetPasswordEnrolled;
         this.userId = obj.userId;
+        this.hasPublicAndPrivateKeys = obj.hasPublicAndPrivateKeys;
     }
 
     get canAccess() {
@@ -122,7 +126,7 @@ export class Organization {
         return this.isAdmin || this.permissions.manageUsers;
     }
 
-    get isResetPasswordEnrolled() {
-        return this.resetPasswordKey != null;
+    get canManageUsersPassword() {
+        return this.isAdmin || this.permissions.manageResetPassword;
     }
 }

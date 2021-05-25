@@ -29,14 +29,14 @@
     "@types/jasmine": "^3.6.9",
     "@types/lowdb": "^1.0.9",
     "@types/lunr": "^2.3.3",
-    "@types/node": "^10.17.57",
+    "@types/node": "^14.14.41",
     "@types/node-fetch": "^2.5.10",
     "@types/node-forge": "^0.9.7",
     "@types/papaparse": "^5.2.5",
     "@types/tldjs": "^2.3.0",
     "@types/webcrypto": "0.0.28",
     "@types/zxcvbn": "^4.4.1",
-    "concurrently": "6.0.2",
+    "concurrently": "^6.1.0",
     "jasmine": "^3.7.0",
     "jasmine-core": "^3.7.1",
     "jasmine-ts-console-reporter": "^3.1.1",
@@ -66,5 +66,9 @@
     "@bitwarden/jslib-angular": "file:angular",
     "@bitwarden/jslib-electron": "file:electron",
     "@bitwarden/jslib-node": "file:node"
+  },
+  "engines": {
+    "node": "~14",
+    "npm": "~6"
   }
 }

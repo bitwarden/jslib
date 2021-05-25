@@ -1,5 +1,7 @@
 import { PlanType } from '../../enums/planType';
 
+import { OrganizationKeysRequest } from './organizationKeysRequest';
+
 export class OrganizationUpgradeRequest {
     businessName: string;
     planType: PlanType;
@@ -8,4 +10,5 @@ export class OrganizationUpgradeRequest {
     premiumAccessAddon: boolean;
     billingAddressCountry: string;
     billingAddressPostalCode: string;
+    keys: OrganizationKeysRequest;
 }

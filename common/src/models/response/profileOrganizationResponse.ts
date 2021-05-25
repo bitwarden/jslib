@@ -16,19 +16,21 @@ export class ProfileOrganizationResponse extends BaseResponse {
     useApi: boolean;
     useBusinessPortal: boolean;
     useSso: boolean;
+    useResetPassword: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
     seats: number;
     maxCollections: number;
     maxStorageGb?: number;
     key: string;
+    hasPublicAndPrivateKeys: boolean;
     status: OrganizationUserStatusType;
     type: OrganizationUserType;
     enabled: boolean;
     ssoBound: boolean;
     identifier: string;
     permissions: PermissionsApi;
-    resetPasswordKey: string;
+    resetPasswordEnrolled: boolean;
     userId: string;
 
     constructor(response: any) {
@@ -44,19 +46,21 @@ export class ProfileOrganizationResponse extends BaseResponse {
         this.useApi = this.getResponseProperty('UseApi');
         this.useBusinessPortal = this.getResponseProperty('UseBusinessPortal');
         this.useSso = this.getResponseProperty('UseSso');
+        this.useResetPassword = this.getResponseProperty('UseResetPassword');
         this.selfHost = this.getResponseProperty('SelfHost');
         this.usersGetPremium = this.getResponseProperty('UsersGetPremium');
         this.seats = this.getResponseProperty('Seats');
         this.maxCollections = this.getResponseProperty('MaxCollections');
         this.maxStorageGb = this.getResponseProperty('MaxStorageGb');
         this.key = this.getResponseProperty('Key');
+        this.hasPublicAndPrivateKeys = this.getResponseProperty('HasPublicAndPrivateKeys');
         this.status = this.getResponseProperty('Status');
         this.type = this.getResponseProperty('Type');
         this.enabled = this.getResponseProperty('Enabled');
         this.ssoBound = this.getResponseProperty('SsoBound');
         this.identifier = this.getResponseProperty('Identifier');
         this.permissions = new PermissionsApi(this.getResponseProperty('permissions'));
-        this.resetPasswordKey = this.getResponseProperty('ResetPasswordKey');
+        this.resetPasswordEnrolled = this.getResponseProperty('ResetPasswordEnrolled');
         this.userId = this.getResponseProperty('UserId');
     }
 }

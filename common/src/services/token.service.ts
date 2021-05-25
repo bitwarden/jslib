@@ -19,11 +19,9 @@ export class TokenService implements TokenServiceAbstraction {
     constructor(private storageService: StorageService) {
     }
 
-    setTokens(accessToken: string, refreshToken: string): Promise<any> {
-        return Promise.all([
-            this.setToken(accessToken),
-            this.setRefreshToken(refreshToken),
-        ]);
+    async setTokens(accessToken: string, refreshToken: string): Promise<any> {
+        await this.setToken(accessToken);
+        await this.setRefreshToken(refreshToken);
     }
 
     async setToken(token: string): Promise<any> {
@@ -96,15 +94,13 @@ export class TokenService implements TokenServiceAbstraction {
         return this.storageService.remove(Keys.twoFactorTokenPrefix + email);
     }
 
-    clearToken(): Promise<any> {
+    async clearToken(): Promise<any> {
         this.token = null;
         this.decodedToken = null;
         this.refreshToken = null;
 
-        return Promise.all([
-            this.storageService.remove(Keys.accessToken),
-            this.storageService.remove(Keys.refreshToken),
-        ]);
+        await this.storageService.remove(Keys.accessToken);
+        await this.storageService.remove(Keys.refreshToken);
     }
 
     // jwthelper methods

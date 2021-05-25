@@ -31,13 +31,17 @@ import { ImportOrganizationCiphersRequest } from '../models/request/importOrgani
 import { KdfRequest } from '../models/request/kdfRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
+import { OrganizationImportRequest } from '../models/request/organizationImportRequest';
+import { OrganizationKeysRequest } from '../models/request/organizationKeysRequest';
 import { OrganizationTaxInfoUpdateRequest } from '../models/request/organizationTaxInfoUpdateRequest';
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
 import { OrganizationUpgradeRequest } from '../models/request/organizationUpgradeRequest';
 import { OrganizationUserAcceptRequest } from '../models/request/organizationUserAcceptRequest';
+import { OrganizationUserBulkRequest } from '../models/request/organizationUserBulkRequest';
 import { OrganizationUserConfirmRequest } from '../models/request/organizationUserConfirmRequest';
 import { OrganizationUserInviteRequest } from '../models/request/organizationUserInviteRequest';
 import { OrganizationUserResetPasswordEnrollmentRequest } from '../models/request/organizationUserResetPasswordEnrollmentRequest';
+import { OrganizationUserResetPasswordRequest } from '../models/request/organizationUserResetPasswordRequest';
 import { OrganizationUserUpdateGroupsRequest } from '../models/request/organizationUserUpdateGroupsRequest';
 import { OrganizationUserUpdateRequest } from '../models/request/organizationUserUpdateRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
@@ -97,10 +101,12 @@ import {
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
+import { OrganizationKeysResponse } from '../models/response/organizationKeysResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import { OrganizationSubscriptionResponse } from '../models/response/organizationSubscriptionResponse';
 import {
     OrganizationUserDetailsResponse,
+    OrganizationUserResetPasswordDetailsReponse,
     OrganizationUserUserDetailsResponse,
 } from '../models/response/organizationUserResponse';
 import { PaymentResponse } from '../models/response/paymentResponse';
@@ -270,8 +276,11 @@ export abstract class ApiService {
     getOrganizationUser: (organizationId: string, id: string) => Promise<OrganizationUserDetailsResponse>;
     getOrganizationUserGroups: (organizationId: string, id: string) => Promise<string[]>;
     getOrganizationUsers: (organizationId: string) => Promise<ListResponse<OrganizationUserUserDetailsResponse>>;
+    getOrganizationUserResetPasswordDetails: (organizationId: string, id: string)
+        => Promise<OrganizationUserResetPasswordDetailsReponse>;
     postOrganizationUserInvite: (organizationId: string, request: OrganizationUserInviteRequest) => Promise<any>;
     postOrganizationUserReinvite: (organizationId: string, id: string) => Promise<any>;
+    postManyOrganizationUserReinvite: (organizationId: string, request: OrganizationUserBulkRequest) => Promise<any>;
     postOrganizationUserAccept: (organizationId: string, id: string,
         request: OrganizationUserAcceptRequest) => Promise<any>;
     postOrganizationUserConfirm: (organizationId: string, id: string,
@@ -281,10 +290,14 @@ export abstract class ApiService {
         request: OrganizationUserUpdateGroupsRequest) => Promise<any>;
     putOrganizationUserResetPasswordEnrollment: (organizationId: string, userId: string,
         request: OrganizationUserResetPasswordEnrollmentRequest) => Promise<any>;
+    putOrganizationUserResetPassword: (organizationId: string, id: string,
+        request: OrganizationUserResetPasswordRequest) => Promise<any>;
     deleteOrganizationUser: (organizationId: string, id: string) => Promise<any>;
+    deleteManyOrganizationUsers: (organizationId: string, request: OrganizationUserBulkRequest) => Promise<any>;
 
     getSync: () => Promise<SyncResponse>;
     postImportDirectory: (organizationId: string, request: ImportDirectoryRequest) => Promise<any>;
+    postPublicImportDirectory: (request: OrganizationImportRequest) => Promise<any>;
 
     getSettingsDomains: () => Promise<DomainsResponse>;
     putSettingsDomains: (request: UpdateDomainsRequest) => Promise<DomainsResponse>;
@@ -356,6 +369,8 @@ export abstract class ApiService {
     deleteOrganization: (id: string, request: PasswordVerificationRequest) => Promise<any>;
     getPlans: () => Promise<ListResponse<PlanResponse>>;
     getTaxRates: () => Promise<ListResponse<TaxRateResponse>>;
+    getOrganizationKeys: (id: string) => Promise<OrganizationKeysResponse>;
+    postOrganizationKeys: (id: string, request: OrganizationKeysRequest) => Promise<OrganizationKeysResponse>;
 
     getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
     getEventsCipher: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
