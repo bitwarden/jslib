@@ -289,8 +289,12 @@ export class ExportService implements ExportServiceAbstraction {
 
         await Promise.all(promises);
 
+        const orgKey = await this.cryptoService.getOrgKey(organizationId);
+        const encKeyValidation = await this.cryptoService.encrypt(Utils.newGuid(), orgKey);
+
         const jsonDoc: any = {
             encrypted: true,
+            encKeyValidation_DO_NOT_EDIT: encKeyValidation.encryptedString,
             collections: [],
             items: [],
         };
