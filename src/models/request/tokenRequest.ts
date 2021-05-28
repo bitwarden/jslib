@@ -73,4 +73,10 @@ export class TokenRequest {
 
         return obj;
     }
+
+    alterIdentityTokenHeaders(headers: Headers) {
+        if (this.clientSecret == null && this.masterPasswordHash != null && this.email != null) {
+            headers.set('Auth-Email', this.email);
+        }
+    }
 }
