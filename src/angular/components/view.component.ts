@@ -286,6 +286,9 @@ export class ViewComponent implements OnDestroy, OnInit {
     }
 
     async downloadAttachment(attachment: AttachmentView) {
+        if (!await this.promptPassword()) {
+            return;
+        }
         const a = (attachment as any);
         if (a.downloading) {
             return;
