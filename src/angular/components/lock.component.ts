@@ -166,7 +166,12 @@ export class LockComponent implements OnInit {
 
     togglePassword() {
         this.showPassword = !this.showPassword;
-        document.getElementById(this.pinLock ? 'pin' : 'masterPassword').focus();
+        const inputField: any = document.getElementById(this.pinLock ? 'pin' : 'masterPassword');
+        const cursorPosition = [inputField.selectionStart, inputField.selectionEnd];
+        inputField.focus();
+        if (cursorPosition) {
+            setTimeout(() => inputField.setSelectionRange(cursorPosition[0], cursorPosition[1]), 10);
+        }
     }
 
     private async setKeyAndContinue(key: SymmetricCryptoKey) {

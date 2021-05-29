@@ -427,7 +427,12 @@ export class AddEditComponent implements OnInit {
 
     togglePassword() {
         this.showPassword = !this.showPassword;
-        document.getElementById('loginPassword').focus();
+        const inputField: any = document.getElementById('loginPassword');
+        const cursorPosition = [inputField.selectionStart, inputField.selectionEnd];
+        inputField.focus();
+        if (cursorPosition) {
+            setTimeout(() => inputField.setSelectionRange(cursorPosition[0], cursorPosition[1]), 10);
+        }
         if (this.editMode && this.showPassword) {
             this.eventService.collect(EventType.Cipher_ClientToggledPasswordVisible, this.cipherId);
         }
