@@ -42,7 +42,7 @@ export class ElectronMainMessagingService implements MessagingService {
         });
 
         nativeTheme.on('updated', () => {
-            windowMain.win.webContents.send('systemThemeUpdated', nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
+            windowMain.win?.webContents.send('systemThemeUpdated', nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
         });
     }
 
