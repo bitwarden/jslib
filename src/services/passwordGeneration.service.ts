@@ -12,7 +12,7 @@ import {
 import { PolicyService } from '../abstractions/policy.service';
 import { StorageService } from '../abstractions/storage.service';
 
-import { EEFLongWordList } from '../misc/wordlist';
+import * as WordList from '../misc/wordlist';
 
 import { PolicyType } from '../enums/policyType';
 
@@ -29,6 +29,7 @@ const DefaultOptions = {
     minSpecial: 1,
     type: 'password',
     numWords: 3,
+    shortWords: false,
     wordSeparator: '-',
     capitalize: false,
     includeNumber: false,
@@ -52,7 +53,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         // overload defaults with given options
         const o = Object.assign({}, DefaultOptions, options);
 
-        if (o.type === 'passphrase') {
+        if (o.type === 'passphrase' || o.type === 'passphrase_limited') {
             return this.generatePassphrase(options);
         }
 
@@ -157,11 +158,14 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     async generatePassphrase(options: any): Promise<string> {
         const o = Object.assign({}, DefaultOptions, options);
 
+        const longestWord = WordList.EEFLongWordListOffsets.LengthLongest;
+        const shortestWord = WordList.EEFLongWordListOffsets.LengthShortest;
+
+        if (o.length == null || o.length < longestWord) {
+            o.length = longestWord;
+        }
         if (o.numWords == null || o.numWords <= 2) {
             o.numWords = DefaultOptions.numWords;
-        }
-        if (o.wordSeparator == null || o.wordSeparator.length === 0 || o.wordSeparator.length > 1) {
-            o.wordSeparator = ' ';
         }
         if (o.capitalize == null) {
             o.capitalize = false;
@@ -169,21 +173,55 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         if (o.includeNumber == null) {
             o.includeNumber = false;
         }
+        if (o.shortWords == null) {
+            o.shortWords = false;
+        }
+        if (o.wordSeparator == null || o.wordSeparator.length === 0) {
+            o.wordSeparator = '';
+        } else if (o.wordSeparator.length > 1) {
+            o.wordSeparator = ' ';
+        }
 
-        const listLength = EEFLongWordList.length - 1;
-        const wordList = new Array(o.numWords);
-        for (let i = 0; i < o.numWords; i++) {
-            const wordIndex = await this.cryptoService.randomNumber(0, listLength);
-            if (o.capitalize) {
-                wordList[i] = this.capitalize(EEFLongWordList[wordIndex]);
-            } else {
-                wordList[i] = EEFLongWordList[wordIndex];
+        // Words with up to 5 chars are considered short
+        const listLength = o.shortWords ? WordList.EEFLongWordListOffsets.Last_5_chars :
+                                          WordList.EEFLongWordListOffsets.Last;
+
+        const wordList = new Array<string>();
+
+        if (o.type === 'passphrase_limited') { // by char limiting
+            let charsLeft: number;
+            do {
+                // Check, if the chars left are associated with a list position. If not, it's undefined.
+                // This limits the list to words, that will fit into the left space.
+                const charsLeftListPos: number = (WordList.EEFLongWordListOffsets as any)[`Last_${charsLeft}_chars`];
+                const maxListPosition = charsLeftListPos ? Math.min(listLength, charsLeftListPos) : listLength;
+                const wordIndex = await this.cryptoService.randomNumber(0, maxListPosition);
+
+                if (o.capitalize) {
+                    wordList.push(this.capitalize(WordList.EEFLongWordList[wordIndex]));
+                } else {
+                    wordList.push(WordList.EEFLongWordList[wordIndex]);
+                }
+
+                const password = wordList.join(o.wordSeparator);
+                charsLeft = o.length - password.length - o.wordSeparator.length - (o.includeNumber ? 1 : 0);
+            }
+            while (charsLeft >= shortestWord);
+        } else { // by word count
+            for (let i = 0; i < o.numWords; i++) {
+                const wordIndex = await this.cryptoService.randomNumber(0, listLength);
+                if (o.capitalize) {
+                    wordList.push(this.capitalize(WordList.EEFLongWordList[wordIndex]));
+                } else {
+                    wordList.push(WordList.EEFLongWordList[wordIndex]);
+                }
             }
         }
 
         if (o.includeNumber) {
             await this.appendRandomNumberToRandomWord(wordList);
         }
+
         return wordList.join(o.wordSeparator);
     }
 
@@ -226,6 +264,10 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
 
             if (enforcedPolicyOptions.useSpecial) {
                 options.special = true;
+            }
+
+            if (enforcedPolicyOptions.useShortWords) {
+                options.shortWords = true;
             }
 
             if (options.minSpecial < enforcedPolicyOptions.specialCount) {

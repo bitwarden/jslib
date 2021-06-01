@@ -10,6 +10,7 @@ export class PasswordGeneratorPolicyOptions extends Domain {
     useSpecial: boolean = false;
     specialCount: number = 0;
     minNumberWords: number = 0;
+    useShortWords: boolean = false;
     capitalize: boolean = false;
     includeNumber: boolean = false;
 
@@ -23,6 +24,7 @@ export class PasswordGeneratorPolicyOptions extends Domain {
             this.useNumbers ||
             this.useSpecial ||
             this.minNumberWords > 0 ||
+            this.useShortWords ||
             this.capitalize ||
             this.includeNumber;
     }
