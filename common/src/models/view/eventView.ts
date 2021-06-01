@@ -1,9 +1,11 @@
+import { DeviceType } from '../../enums';
 import { EventType } from '../../enums/eventType';
 
 export class EventView {
     message: string;
     humanReadableMessage: string;
     appIcon: string;
+    deviceType: DeviceType;
     appName: string;
     userId: string;
     userName: string;
@@ -17,6 +19,7 @@ export class EventView {
         this.humanReadableMessage = data.humanReadableMessage;
         this.appIcon = data.appIcon;
         this.appName = data.appName;
+        this.deviceType = data.deviceType;
         this.userId = data.userId;
         this.userName = data.userName;
         this.userEmail = data.userEmail;
