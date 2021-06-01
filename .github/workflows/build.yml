@@ -32,6 +32,12 @@ jobs:
         with:
           node-version: '14'
 
+      - name: Update NPM
+        run: |
+          npm install -g npm@7
+          npm install -g node-gyp
+          node-gyp install $(node -v)
+
       - name: Print environment
         run: |
           node --version

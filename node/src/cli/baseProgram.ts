@@ -21,10 +21,11 @@ export abstract class BaseProgram {
                     this.writeLn(chalk.redBright(response.message), true, true);
                 }
             }
+            const exitCode = process.env.BW_CLEANEXIT ? 0 : 1;
             if (exitImmediately) {
-                process.exit(1);
+                process.exit(exitCode);
             } else {
-                process.exitCode = 1;
+                process.exitCode = exitCode;
             }
             return;
         }
