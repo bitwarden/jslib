@@ -116,6 +116,7 @@ export class WindowMain {
             show: false,
             backgroundColor: '#fff',
             alwaysOnTop: this.enableAlwaysOnTop,
+            autoHideMenuBar: true,
             webPreferences: {
                 nodeIntegration: true,
                 webviewTag: true,
