@@ -102,6 +102,11 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
 
     togglePassword(confirmField: boolean) {
         this.showPassword = !this.showPassword;
-        document.getElementById(confirmField ? 'masterPasswordRetype' : 'masterPassword').focus();
+        const inputField: any = document.getElementById(confirmField ? 'masterPasswordRetype' : 'masterPassword');
+        const cursorPosition = [inputField.selectionStart, inputField.selectionEnd];
+        inputField.focus();
+        if (cursorPosition) {
+            setTimeout(() => inputField.setSelectionRange(cursorPosition[0], cursorPosition[1]), 10);
+        }
     }
 }

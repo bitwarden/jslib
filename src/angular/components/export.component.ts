@@ -74,7 +74,12 @@ export class ExportComponent {
 
     togglePassword() {
         this.showPassword = !this.showPassword;
-        document.getElementById('masterPassword').focus();
+        const inputField: any = document.getElementById('masterPassword');
+        const cursorPosition = [inputField.selectionStart, inputField.selectionEnd];
+        inputField.focus();
+        if (cursorPosition) {
+            setTimeout(() => inputField.setSelectionRange(cursorPosition[0], cursorPosition[1]), 10);
+        }
     }
 
     protected saved() {
