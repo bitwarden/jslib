@@ -1,11 +1,11 @@
 import Substitute from '@fluffy-spoon/substitute';
 
-import { PlatformUtilsService } from '../../../src/abstractions/platformUtils.service';
+import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 
-import { WebCryptoFunctionService } from '../../../src/services/webCryptoFunction.service';
+import { WebCryptoFunctionService } from 'jslib-common/services/webCryptoFunction.service';
 
-import { Utils } from '../../../src/misc/utils';
-import { SymmetricCryptoKey } from '../../../src/models/domain';
+import { Utils } from 'jslib-common/misc/utils';
+import { SymmetricCryptoKey } from 'jslib-common/models/domain';
 
 const RsaPublicKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAl0Vawl/toXzkEvB82FEtqHP' +
     '4xlU2ab/v0crqIfXfIoWF/XXdHGIdrZeilnRXPPJT1B9dTsasttEZNnua/0Rek/cjNDHtzT52irfoZYS7X6HNIfOi54Q+egP' +

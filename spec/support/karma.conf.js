@@ -53,14 +53,20 @@ module.exports = (config) => {
             },
             module: {
                 rules: [
-                    {test: /\.tsx?$/, loader: 'ts-loader'}
-                ]
+                    {
+                        test: /\.tsx?$/,
+                        loader: 'ts-loader',
+                        options: {
+                            compiler: 'ttypescript'
+                        },
+                    },
+                ],
             },
             stats: {
                 colors: true,
                 modules: true,
                 reasons: true,
-                errorDetails: true
+                errorDetails: true,
             },
             devtool: 'inline-source-map',
         },

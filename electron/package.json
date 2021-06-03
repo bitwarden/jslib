@@ -1,0 +1,37 @@
+{
+  "name": "@bitwarden/jslib-electron",
+  "version": "0.0.0",
+  "description": "Common code used across Bitwarden JavaScript projects.",
+  "keywords": [
+    "bitwarden"
+  ],
+  "author": "Bitwarden Inc.",
+  "homepage": "https://bitwarden.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bitwarden/jslib"
+  },
+  "license": "GPL-3.0",
+  "scripts": {
+    "clean": "rimraf dist/**/*",
+    "build": "npm run clean && tsc",
+    "build:watch": "npm run clean && tsc -watch",
+    "lint": "tslint 'src/**/*.ts' 'spec/**/*.ts'",
+    "lint:fix": "tslint 'src/**/*.ts' 'spec/**/*.ts' --fix"
+  },
+  "devDependencies": {
+    "@types/node": "^14.17.1",
+    "rimraf": "^3.0.2",
+    "typescript": "4.1.5"
+  },
+  "dependencies": {
+    "@bitwarden/jslib-common": "file:../common",
+    "@nodert-win10-rs4/windows.security.credentials.ui": "^0.4.4",
+    "electron": "11.4.5",
+    "electron-log": "4.3.5",
+    "electron-store": "8.0.0",
+    "electron-updater": "4.3.9",
+    "forcefocus": "^1.1.0",
+    "keytar": "7.6.0"
+  }
+}
