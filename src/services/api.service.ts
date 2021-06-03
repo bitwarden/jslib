@@ -143,6 +143,8 @@ import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyRes
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
 import { SendAccessView } from '../models/view/sendAccessView';
+import { ProviderSetupRequest } from '../models/request/providerSetupRequest';
+import { ProviderResponse } from '../models/response/providerResponse';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
@@ -1222,6 +1224,13 @@ export class ApiService implements ApiServiceAbstraction {
     async postOrganizationKeys(id: string, request: OrganizationKeysRequest): Promise<OrganizationKeysResponse> {
         const r = await this.send('POST', '/organizations/' + id + '/keys', request, true, true);
         return new OrganizationKeysResponse(r);
+    }
+
+    // Provider APIs
+
+    async postProviderSetup(id: string, request: ProviderSetupRequest) {
+        const r = await this.send('POST', '/providers/' + id + '/setup', request, true, true);
+        return new ProviderResponse(r);
     }
 
     // Event APIs

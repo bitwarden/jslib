@@ -51,6 +51,7 @@ import { PasswordVerificationRequest } from '../models/request/passwordVerificat
 import { PaymentRequest } from '../models/request/paymentRequest';
 import { PolicyRequest } from '../models/request/policyRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
+import { ProviderSetupRequest } from '../models/request/providerSetupRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
@@ -117,6 +118,7 @@ import { PlanResponse } from '../models/response/planResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
+import { ProviderResponse } from '../models/response/providerResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
 import { SendAccessResponse } from '../models/response/sendAccessResponse';
 import { SendFileDownloadDataResponse } from '../models/response/sendFileDownloadDataResponse';
@@ -378,6 +380,8 @@ export abstract class ApiService {
     getTaxRates: () => Promise<ListResponse<TaxRateResponse>>;
     getOrganizationKeys: (id: string) => Promise<OrganizationKeysResponse>;
     postOrganizationKeys: (id: string, request: OrganizationKeysRequest) => Promise<OrganizationKeysResponse>;
+
+    postProviderSetup: (id: string, request: ProviderSetupRequest) => Promise<ProviderResponse>;
 
     getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
     getEventsCipher: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
