@@ -9,6 +9,7 @@ import {
     Output,
 } from '@angular/core';
 
+import { CipherRepromptType } from 'jslib-common/enums/cipherRepromptType';
 import { CipherType } from 'jslib-common/enums/cipherType';
 import { EventType } from 'jslib-common/enums/eventType';
 import { FieldType } from 'jslib-common/enums/fieldType';
@@ -20,6 +21,7 @@ import { CipherService } from 'jslib-common/abstractions/cipher.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { EventService } from 'jslib-common/abstractions/event.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { PasswordRepromptService } from 'jslib-common/abstractions/passwordReprompt.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { TokenService } from 'jslib-common/abstractions/token.service';
 import { TotpService } from 'jslib-common/abstractions/totp.service';
