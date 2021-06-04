@@ -1,10 +1,10 @@
-import { LastPassCsvImporter as Importer } from '../../../src/importers/lastpassCsvImporter';
+import { LastPassCsvImporter as Importer } from 'jslib-common/importers/lastpassCsvImporter';
 
-import { ImportResult } from '../../../src/models/domain/importResult';
-import { CipherView } from '../../../src/models/view/cipherView';
-import { FieldView } from '../../../src/models/view/fieldView';
+import { ImportResult } from 'jslib-common/models/domain/importResult';
+import { CipherView } from 'jslib-common/models/view/cipherView';
+import { FieldView } from 'jslib-common/models/view/fieldView';
 
-import { CipherType, FieldType } from '../../../src/enums';
+import { CipherType, FieldType } from 'jslib-common/enums';
 
 function baseExcept(result: ImportResult) {
     expect(result).not.toBeNull();
