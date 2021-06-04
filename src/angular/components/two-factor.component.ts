@@ -114,13 +114,11 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         const providerData = this.authService.twoFactorProvidersData.get(this.selectedProviderType);
         switch (this.selectedProviderType) {
             case TwoFactorProviderType.WebAuthn:
-                if (!this.webAuthnSupported || this.webAuthn == null) {
-                    break;
+                if (!this.webAuthnNewTab) {
+                    setTimeout(() => {
+                        this.authWebAuthn();
+                    }, 500);
                 }
-
-                setTimeout(() => {
-                    this.webAuthn.init(providerData);
-                }, 500);
                 break;
             case TwoFactorProviderType.Duo:
             case TwoFactorProviderType.OrganizationDuo:
@@ -219,6 +217,16 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         } catch { }
 
         this.emailPromise = null;
+    }
+
+    authWebAuthn() {
+        const providerData = this.authService.twoFactorProvidersData.get(this.selectedProviderType);
+
+        if (!this.webAuthnSupported || this.webAuthn == null) {
+            return;
+        }
+
+        this.webAuthn.init(providerData);
     }
 
     private cleanupWebAuthn() {
