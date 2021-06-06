@@ -11,6 +11,8 @@ import { VaultTimeoutService } from 'jslib-common/abstractions/vaultTimeout.serv
 export class LockGuardService implements CanActivate {
     constructor(private vaultTimeoutService: VaultTimeoutService, private userService: UserService,
         private router: Router) { }
+    
+    protected homepage = 'vault';
 
     async canActivate() {
         const isAuthed = await this.userService.isAuthenticated();
@@ -19,7 +21,7 @@ export class LockGuardService implements CanActivate {
             if (locked) {
                 return true;
             } else {
-                this.router.navigate(['vault']);
+                this.router.navigate([this.homepage]);
                 return false;
             }
         }
