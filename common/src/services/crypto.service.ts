@@ -13,7 +13,10 @@ import { CryptoService as CryptoServiceAbstraction } from '../abstractions/crypt
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 import { LogService } from '../abstractions/log.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
-import { StorageService } from '../abstractions/storage.service';
+import {
+    KeySuffixOptions,
+    StorageService,
+} from '../abstractions/storage.service';
 
 import { ConstantsService } from './constants.service';
 
@@ -46,11 +49,17 @@ export class CryptoService implements CryptoServiceAbstraction {
     async setKey(key: SymmetricCryptoKey): Promise<any> {
         this.key = key;
 
-        if (!await this.shouldStoreKey()) {
-            return;
+        if (await this.shouldStoreKey('auto')) {
+            await this.secureStorageService.save(Keys.key, key.keyB64, { keySuffix: 'auto' });
+        } else {
+            this.clearStoredKey('auto');
         }
 
-        return this.secureStorageService.save(Keys.key, key.keyB64);
+        if (await this.shouldStoreKey('biometric')) {
+            await this.secureStorageService.save(Keys.key, key.keyB64, { keySuffix: 'biometric' });
+        } else {
+            this.clearStoredKey('biometric');
+        }
     }
 
     setKeyHash(keyHash: string): Promise<{}> {
@@ -86,28 +95,23 @@ export class CryptoService implements CryptoServiceAbstraction {
         return this.storageService.save(Keys.encOrgKeys, orgKeys);
     }
 
-    async getKey(): Promise<SymmetricCryptoKey> {
+    async getKey(keySuffix?: KeySuffixOptions): Promise<SymmetricCryptoKey> {
         if (this.key != null) {
             return this.key;
         }
-
-        const key = await this.secureStorageService.get<string>(Keys.key);
+        keySuffix ||= 'auto';
+        const key = await this.retrieveKeyFromStorage(keySuffix);
         if (key != null) {
-            if (!await this.shouldStoreKey()) {
-                this.logService.warning('Throwing away stored key since settings have changed');
-                this.secureStorageService.remove(Keys.key);
-                return null;
-            }
 
             const symmetricKey = new SymmetricCryptoKey(Utils.fromB64ToArray(key).buffer);
 
             if (!await this.validateKey(symmetricKey)) {
                 this.logService.warning('Wrong key, throwing away stored key');
-                this.secureStorageService.remove(Keys.key);
+                this.secureStorageService.remove(Keys.key, { keySuffix: keySuffix });
                 return null;
             }
 
-            this.key = symmetricKey;
+            this.setKey(symmetricKey);
         }
 
         return key == null ? null : this.key;
@@ -247,7 +251,15 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     async hasKey(): Promise<boolean> {
-        return (await this.getKey()) != null;
+        return this.hasKeyInMemory() || await this.hasKeyStored('auto') || await this.hasKeyStored('biometric');
+    }
+
+    hasKeyInMemory(): boolean {
+        return this.key != null;
+    }
+
+    async hasKeyStored(keySuffix: KeySuffixOptions): Promise<boolean> {
+        return await this.secureStorageService.has(Keys.key, { keySuffix: keySuffix });
     }
 
     async hasEncKey(): Promise<boolean> {
@@ -255,9 +267,16 @@ export class CryptoService implements CryptoServiceAbstraction {
         return encKey != null;
     }
 
-    clearKey(): Promise<any> {
+    async clearKey(clearSecretStorage: boolean = true): Promise<any> {
         this.key = this.legacyEtmKey = null;
-        return this.secureStorageService.remove(Keys.key);
+        if (clearSecretStorage) {
+            this.clearStoredKey('auto');
+            this.clearStoredKey('biometric');
+        }
+    }
+
+    async clearStoredKey(keySuffix: KeySuffixOptions) {
+        await this.secureStorageService.remove(Keys.key, { keySuffix: keySuffix });
     }
 
     clearKeyHash(): Promise<any> {
@@ -305,14 +324,6 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     async toggleKey(): Promise<any> {
         const key = await this.getKey();
-        const option = await this.storageService.get(ConstantsService.vaultTimeoutKey);
-        const biometric = await this.storageService.get(ConstantsService.biometricUnlockKey);
-        if ((!biometric && this.platformUtilService.supportsSecureStorage()) && (option != null || option === 0)) {
-            // if we have a lock option set, clear the key
-            await this.clearKey();
-            this.key = key;
-            return;
-        }
 
         await this.setKey(key);
     }
@@ -592,11 +603,11 @@ export class CryptoService implements CryptoServiceAbstraction {
     async validateKey(key: SymmetricCryptoKey) {
         try {
             const encPrivateKey = await this.storageService.get<string>(Keys.encPrivateKey);
-            if (encPrivateKey == null) {
+            const encKey = await this.getEncKey(key);
+            if (encPrivateKey == null || encKey == null) {
                 return false;
             }
 
-            const encKey = await this.getEncKey(key);
             const privateKey = await this.decryptToBytes(new EncString(encPrivateKey), encKey);
             await this.cryptoFunctionService.rsaExtractPublicKey(privateKey);
         } catch (e) {
@@ -608,14 +619,44 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     // Helpers
 
-    private async shouldStoreKey() {
-        const vaultTimeout = await this.storageService.get<number>(ConstantsService.vaultTimeoutKey);
-        const biometricUnlock = await this.storageService.get<boolean>(ConstantsService.biometricUnlockKey);
+    private async shouldStoreKey(keySuffix: KeySuffixOptions) {
+        let shouldStoreKey = false;
+        if (keySuffix === 'auto') {
+            const vaultTimeout = await this.storageService.get<number>(ConstantsService.vaultTimeoutKey);
+            shouldStoreKey = vaultTimeout == null;
+        } else if (keySuffix === 'biometric') {
+            const biometricUnlock = await this.storageService.get<boolean>(ConstantsService.biometricUnlockKey);
+            shouldStoreKey = biometricUnlock && this.platformUtilService.supportsSecureStorage();
+        }
+        return shouldStoreKey;
+    }
 
-        const biometricsEnabled = biometricUnlock && this.platformUtilService.supportsSecureStorage();
-        const noVaultTimeout = vaultTimeout == null;
+    private async retrieveKeyFromStorage(keySuffix: KeySuffixOptions) {
+        await this.upgradeSecurelyStoredKey();
 
-        return noVaultTimeout || biometricsEnabled;
+        return await this.secureStorageService.get<string>(Keys.key, { keySuffix: keySuffix });
+    }
+
+    /**
+     * @deprecated 4 Jun 2021 This is temporary upgrade method to move from a single shared stored key to
+     * multiple, unique stored keys for each use, e.g. never logout vs. biometric authentication.
+     */
+    private async upgradeSecurelyStoredKey() {
+        const key = await this.secureStorageService.get<string>(Keys.key);
+
+        if (key != null) {
+            let success = true;
+            if (this.shouldStoreKey('auto')) {
+                success = !!(await this.secureStorageService.save(Keys.key, key, { keySuffix: 'auto' }));
+            }
+            if (this.shouldStoreKey('biometric')) {
+                success ||= !!(await this.secureStorageService.save(Keys.key, key, { keySuffix: 'biometric' }));
+            }
+
+            if (success) {
+                await this.secureStorageService.remove(Keys.key);
+            }
+        }
     }
 
     private async aesEncrypt(data: ArrayBuffer, key: SymmetricCryptoKey): Promise<EncryptedObject> {

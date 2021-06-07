@@ -5,6 +5,7 @@ import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 import { ProfileOrganizationResponse } from '../models/response/profileOrganizationResponse';
 
 import { KdfType } from '../enums/kdfType';
+import { KeySuffixOptions } from './storage.service';
 
 export abstract class CryptoService {
     setKey: (key: SymmetricCryptoKey) => Promise<any>;
@@ -12,7 +13,7 @@ export abstract class CryptoService {
     setEncKey: (encKey: string) => Promise<{}>;
     setEncPrivateKey: (encPrivateKey: string) => Promise<{}>;
     setOrgKeys: (orgs: ProfileOrganizationResponse[]) => Promise<{}>;
-    getKey: () => Promise<SymmetricCryptoKey>;
+    getKey: (keySuffix?: KeySuffixOptions) => Promise<SymmetricCryptoKey>;
     getKeyHash: () => Promise<string>;
     getEncKey: (key?: SymmetricCryptoKey) => Promise<SymmetricCryptoKey>;
     getPublicKey: () => Promise<ArrayBuffer>;
@@ -21,8 +22,10 @@ export abstract class CryptoService {
     getOrgKeys: () => Promise<Map<string, SymmetricCryptoKey>>;
     getOrgKey: (orgId: string) => Promise<SymmetricCryptoKey>;
     hasKey: () => Promise<boolean>;
+    hasKeyInMemory: () => boolean;
+    hasKeyStored: (keySuffix?: KeySuffixOptions) => Promise<boolean>;
     hasEncKey: () => Promise<boolean>;
-    clearKey: () => Promise<any>;
+    clearKey: (clearSecretStorage?: boolean) => Promise<any>;
     clearKeyHash: () => Promise<any>;
     clearEncKey: (memoryOnly?: boolean) => Promise<any>;
     clearKeyPair: (memoryOnly?: boolean) => Promise<any>;

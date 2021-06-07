@@ -25,6 +25,8 @@ export class ElectronStorageService implements StorageService {
             switch (options.action) {
                 case 'get':
                     return this.get(options.key);
+                case 'has':
+                    return this.has(options.key);
                 case 'save':
                     return this.save(options.key, options.obj);
                 case 'remove':
@@ -36,6 +38,11 @@ export class ElectronStorageService implements StorageService {
     get<T>(key: string): Promise<T> {
         const val = this.store.get(key) as T;
         return Promise.resolve(val != null ? val : null);
+    }
+
+    has(key: string): Promise<boolean> {
+        const val = this.store.get(key);
+        return Promise.resolve(val != null);
     }
 
     save(key: string, obj: any): Promise<any> {

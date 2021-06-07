@@ -30,7 +30,7 @@ export default class BiometricWindowsMain implements BiometricMain {
         this.storageService.save(ElectronConstants.noAutoPromptBiometricsText, 'noAutoPromptWindowsHello');
 
         ipcMain.on('biometric', async (event: any, message: any) => {
-            event.returnValue = await this.requestCreate();
+            event.returnValue = await this.authenticateBiometric();
         });
     }
 
@@ -40,7 +40,7 @@ export default class BiometricWindowsMain implements BiometricMain {
         return this.getAllowedAvailabilities().includes(availability);
     }
 
-    async requestCreate(): Promise<boolean> {
+    async authenticateBiometric(): Promise<boolean> {
         const module = this.getWindowsSecurityCredentialsUiModule();
         if (module == null) {
             return false;

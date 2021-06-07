@@ -16,7 +16,7 @@ export default class BiometricDarwinMain implements BiometricMain {
         this.storageService.save(ElectronConstants.noAutoPromptBiometricsText, 'noAutoPromptTouchId');
 
         ipcMain.on('biometric', async (event: any, message: any) => {
-            event.returnValue = await this.requestCreate();
+            event.returnValue = await this.authenticateBiometric();
         });
     }
 
@@ -24,7 +24,7 @@ export default class BiometricDarwinMain implements BiometricMain {
         return Promise.resolve(systemPreferences.canPromptTouchID());
     }
 
-    async requestCreate(): Promise<boolean> {
+    async authenticateBiometric(): Promise<boolean> {
         try {
             await systemPreferences.promptTouchID(this.i18nservice.t('touchIdConsentMessage'));
             return true;
