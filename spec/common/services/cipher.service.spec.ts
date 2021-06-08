@@ -56,6 +56,6 @@ describe('Cipher Service', () => {
 
         await cipherService.saveAttachmentRawWithServer(new Cipher(), fileName, fileData);
 
-        fileUploadService.received(1).uploadCipherAttachment(Arg.any(), Arg.any(), fileName, ENCRYPTED_BYTES);
+        fileUploadService.received(1).uploadCipherAttachment(Arg.any(), Arg.any(), new EncString(ENCRYPTED_TEXT), ENCRYPTED_BYTES);
     });
 });

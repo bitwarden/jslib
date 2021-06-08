@@ -6,6 +6,6 @@ import { SendFileUploadDataResponse } from '../models/response/sendFileUploadDat
 export abstract class FileUploadService {
     uploadSendFile: (uploadData: SendFileUploadDataResponse, fileName: EncString,
         encryptedFileData: EncArrayBuffer) => Promise<any>;
-    uploadCipherAttachment: (admin: boolean, uploadData: AttachmentUploadDataResponse, fileName: string,
+    uploadCipherAttachment: (admin: boolean, uploadData: AttachmentUploadDataResponse, fileName: EncString,
         encryptedFileData: EncArrayBuffer) => Promise<any>;
 }
