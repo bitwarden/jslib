@@ -9,6 +9,8 @@ import { VaultTimeoutService } from 'jslib-common/abstractions/vaultTimeout.serv
 
 @Injectable()
 export class LockGuardService implements CanActivate {
+
+    protected homepage = 'vault';
     constructor(private vaultTimeoutService: VaultTimeoutService, private userService: UserService,
         private router: Router) { }
 
@@ -19,7 +21,7 @@ export class LockGuardService implements CanActivate {
             if (locked) {
                 return true;
             } else {
-                this.router.navigate(['vault']);
+                this.router.navigate([this.homepage]);
                 return false;
             }
         }

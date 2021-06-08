@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+    ActivatedRouteSnapshot,
     CanActivate,
     Router,
 } from '@angular/router';
@@ -9,6 +10,8 @@ import { VaultTimeoutService } from 'jslib-common/abstractions/vaultTimeout.serv
 
 @Injectable()
 export class UnauthGuardService implements CanActivate {
+
+    protected homepage = 'vault';
     constructor(private vaultTimeoutService: VaultTimeoutService, private userService: UserService,
         private router: Router) { }
 
@@ -19,7 +22,7 @@ export class UnauthGuardService implements CanActivate {
             if (locked) {
                 this.router.navigate(['lock']);
             } else {
-                this.router.navigate(['vault']);
+                this.router.navigate([this.homepage]);
             }
             return false;
         }
