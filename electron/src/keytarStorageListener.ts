@@ -19,7 +19,7 @@ export class KeytarStorageListener {
             try {
                 const serviceName = this.serviceName + '_' + message.keySuffix;
                 const authenticationRequired = AuthenticatedActions.includes(message.action) &&
-                    AuthRequiredSuffix == message.keySuffix;
+                    AuthRequiredSuffix === message.keySuffix;
                 const authenticated = !authenticationRequired || await this.biometricService.authenticateBiometric();
 
                 let val: string | boolean = null;
