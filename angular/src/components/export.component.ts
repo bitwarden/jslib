@@ -9,7 +9,9 @@ import { EventService } from 'jslib-common/abstractions/event.service';
 import { ExportService } from 'jslib-common/abstractions/export.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
+
 import { EventType } from 'jslib-common/enums/eventType';
+import { HashPurpose } from 'jslib-common/enums/hashPurpose';
 
 @Directive()
 export class ExportComponent {
@@ -40,7 +42,7 @@ export class ExportComponent {
             return;
         }
 
-        const keyHash = await this.cryptoService.hashPassword(this.masterPassword, null);
+        const keyHash = await this.cryptoService.hashPassword(this.masterPassword, null, HashPurpose.LocalAuthorization);
         const storedKeyHash = await this.cryptoService.getKeyHash();
         if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
             try {

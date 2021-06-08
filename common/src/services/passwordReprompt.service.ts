@@ -4,6 +4,8 @@ import { CryptoService } from '../abstractions/crypto.service';
 import { I18nService } from '../abstractions/i18n.service';
 import { PasswordRepromptService as PasswordRepromptServiceAbstraction } from '../abstractions/passwordReprompt.service';
 
+import { HashPurpose } from '../enums/hashPurpose';
+
 export class PasswordRepromptService implements PasswordRepromptServiceAbstraction {
     constructor(private i18nService: I18nService, private cryptoService: CryptoService,
         private platformUtilService: PlatformUtilsService) { }
@@ -14,7 +16,7 @@ export class PasswordRepromptService implements PasswordRepromptServiceAbstracti
 
     async showPasswordPrompt() {
         const passwordValidator = async (value: string) => {
-            const keyHash = await this.cryptoService.hashPassword(value, null);
+            const keyHash = await this.cryptoService.hashPassword(value, null, HashPurpose.LocalAuthorization);
             const storedKeyHash = await this.cryptoService.getKeyHash();
 
             if (storedKeyHash == null || keyHash == null || storedKeyHash !== keyHash) {

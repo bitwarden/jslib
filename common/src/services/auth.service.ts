@@ -1,3 +1,4 @@
+import { HashPurpose } from '../enums/hashPurpose';
 import { KdfType } from '../enums/kdfType';
 import { TwoFactorProviderType } from '../enums/twoFactorProviderType';
 
@@ -78,6 +79,7 @@ export const TwoFactorProviders = {
 export class AuthService implements AuthServiceAbstraction {
     email: string;
     masterPasswordHash: string;
+    localMasterPasswordHash: string;
     code: string;
     codeVerifier: string;
     ssoRedirectUrl: string;
@@ -122,26 +124,28 @@ export class AuthService implements AuthServiceAbstraction {
         this.selectedTwoFactorProviderType = null;
         const key = await this.makePreloginKey(masterPassword, email);
         const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
-        return await this.logInHelper(email, hashedPassword, null, null, null, null, null,
+        const localHashedPassword = await this.cryptoService.hashPassword(masterPassword, key,
+            HashPurpose.LocalAuthorization);
+        return await this.logInHelper(email, hashedPassword, localHashedPassword, null, null, null, null, null,
             key, null, null, null);
     }
 
     async logInSso(code: string, codeVerifier: string, redirectUrl: string): Promise<AuthResult> {
         this.selectedTwoFactorProviderType = null;
-        return await this.logInHelper(null, null, code, codeVerifier, redirectUrl, null, null,
+        return await this.logInHelper(null, null, null, code, codeVerifier, redirectUrl, null, null,
             null, null, null, null);
     }
 
     async logInApiKey(clientId: string, clientSecret: string): Promise<AuthResult> {
         this.selectedTwoFactorProviderType = null;
-        return await this.logInHelper(null, null, null, null, null, clientId, clientSecret,
+        return await this.logInHelper(null, null, null, null, null, null, clientId, clientSecret,
             null, null, null, null);
     }
 
     async logInTwoFactor(twoFactorProvider: TwoFactorProviderType, twoFactorToken: string,
         remember?: boolean): Promise<AuthResult> {
-        return await this.logInHelper(this.email, this.masterPasswordHash, this.code, this.codeVerifier,
-            this.ssoRedirectUrl, this.clientId, this.clientSecret, this.key, twoFactorProvider,
+        return await this.logInHelper(this.email, this.masterPasswordHash, this.localMasterPasswordHash, this.code,
+            this.codeVerifier, this.ssoRedirectUrl, this.clientId, this.clientSecret, this.key, twoFactorProvider,
             twoFactorToken, remember);
     }
 
@@ -150,21 +154,23 @@ export class AuthService implements AuthServiceAbstraction {
         this.selectedTwoFactorProviderType = null;
         const key = await this.makePreloginKey(masterPassword, email);
         const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
-        return await this.logInHelper(email, hashedPassword, null, null, null, null, null, key,
+        const localHashedPassword = await this.cryptoService.hashPassword(masterPassword, key,
+            HashPurpose.LocalAuthorization);
+        return await this.logInHelper(email, hashedPassword, localHashedPassword, null, null, null, null, null, key,
             twoFactorProvider, twoFactorToken, remember);
     }
 
     async logInSsoComplete(code: string, codeVerifier: string, redirectUrl: string,
         twoFactorProvider: TwoFactorProviderType, twoFactorToken: string, remember?: boolean): Promise<AuthResult> {
         this.selectedTwoFactorProviderType = null;
-        return await this.logInHelper(null, null, code, codeVerifier, redirectUrl, null,
+        return await this.logInHelper(null, null, null, code, codeVerifier, redirectUrl, null,
             null, null, twoFactorProvider, twoFactorToken, remember);
     }
 
     async logInApiKeyComplete(clientId: string, clientSecret: string, twoFactorProvider: TwoFactorProviderType,
         twoFactorToken: string, remember?: boolean): Promise<AuthResult> {
         this.selectedTwoFactorProviderType = null;
-        return await this.logInHelper(null, null, null, null, null, clientId, clientSecret, null,
+        return await this.logInHelper(null, null, null, null, null, null, clientId, clientSecret, null,
             twoFactorProvider, twoFactorToken, remember);
     }
 
@@ -264,8 +270,8 @@ export class AuthService implements AuthServiceAbstraction {
         return this.email != null && this.masterPasswordHash != null;
     }
 
-    private async logInHelper(email: string, hashedPassword: string, code: string, codeVerifier: string,
-        redirectUrl: string, clientId: string, clientSecret: string, key: SymmetricCryptoKey,
+    private async logInHelper(email: string, hashedPassword: string, localHashedPassword: string, code: string,
+        codeVerifier: string, redirectUrl: string, clientId: string, clientSecret: string, key: SymmetricCryptoKey,
         twoFactorProvider?: TwoFactorProviderType, twoFactorToken?: string, remember?: boolean): Promise<AuthResult> {
         const storedTwoFactorToken = await this.tokenService.getTwoFactorToken(email);
         const appId = await this.appIdService.getAppId();
@@ -314,6 +320,7 @@ export class AuthService implements AuthServiceAbstraction {
             const twoFactorResponse = response as IdentityTwoFactorResponse;
             this.email = email;
             this.masterPasswordHash = hashedPassword;
+            this.localMasterPasswordHash = localHashedPassword;
             this.code = code;
             this.codeVerifier = codeVerifier;
             this.ssoRedirectUrl = redirectUrl;
@@ -339,7 +346,7 @@ export class AuthService implements AuthServiceAbstraction {
                 await this.cryptoService.setKey(key);
             }
             if (hashedPassword != null) {
-                await this.cryptoService.setKeyHash(hashedPassword);
+                await this.cryptoService.setKeyHash(localHashedPassword);
             }
 
             // Skip this step during SSO new user flow. No key is returned from server.
@@ -373,6 +380,7 @@ export class AuthService implements AuthServiceAbstraction {
         this.key = null;
         this.email = null;
         this.masterPasswordHash = null;
+        this.localMasterPasswordHash = null;
         this.code = null;
         this.codeVerifier = null;
         this.ssoRedirectUrl = null;
