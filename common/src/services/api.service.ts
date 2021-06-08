@@ -428,13 +428,19 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     async postSendAccess(id: string, request: SendAccessRequest, apiUrl?: string): Promise<SendAccessResponse> {
-        const r = await this.send('POST', '/sends/access/' + id, request, false, true, apiUrl);
+        const addSendIdHeader = (headers: Headers) => {
+            headers.set('Send-Id', id);
+        };
+        const r = await this.send('POST', '/sends/access/' + id, request, false, true, apiUrl, addSendIdHeader);
         return new SendAccessResponse(r);
     }
 
-
     async getSendFileDownloadData(send: SendAccessView, request: SendAccessRequest, apiUrl?: string): Promise<SendFileDownloadDataResponse> {
-        const r = await this.send('POST', '/sends/' + send.id + '/access/file/' + send.file.id, request, false, true, apiUrl);
+        const addSendIdHeader = (headers: Headers) => {
+            headers.set('Send-Id', send.id);
+        };
+        const r = await this.send('POST', '/sends/' + send.id + '/access/file/' + send.file.id, request, false, true,
+            apiUrl, addSendIdHeader);
         return new SendFileDownloadDataResponse(r);
     }
 
@@ -1353,7 +1359,8 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     private async send(method: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string, body: any,
-        authed: boolean, hasResponse: boolean, apiUrl?: string): Promise<any> {
+        authed: boolean, hasResponse: boolean, apiUrl?: string,
+        alterHeaders?: (headers: Headers) => void): Promise<any> {
         apiUrl = Utils.isNullOrWhitespace(apiUrl) ? this.apiBaseUrl : apiUrl;
         const headers = new Headers({
             'Device-Type': this.deviceType,
@@ -1387,6 +1394,9 @@ export class ApiService implements ApiServiceAbstraction {
         }
         if (hasResponse) {
             headers.set('Accept', 'application/json');
+        }
+        if (alterHeaders != null) {
+            alterHeaders(headers);
         }
 
         requestInit.headers = headers;
