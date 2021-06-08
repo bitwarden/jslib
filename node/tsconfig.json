@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "pretty": true,
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "target": "ES6",
+    "module": "commonjs",
+    "lib": ["es5", "es6", "es7", "dom"],
+    "sourceMap": true,
+    "declaration": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "declarationDir": "dist/types",
+    "outDir": "dist",
+    "types": [],
+    "paths": {
+      "jslib-common/*": [
+        "../common/src/*"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "spec"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

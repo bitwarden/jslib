@@ -1,0 +1,42 @@
+{
+  "name": "@bitwarden/jslib-common",
+  "version": "0.0.0",
+  "description": "Common code used across Bitwarden JavaScript projects.",
+  "keywords": [
+    "bitwarden"
+  ],
+  "author": "Bitwarden Inc.",
+  "homepage": "https://bitwarden.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bitwarden/jslib"
+  },
+  "license": "GPL-3.0",
+  "scripts": {
+    "clean": "rimraf dist/**/*",
+    "build": "npm run clean && tsc",
+    "build:watch": "npm run clean && tsc -watch",
+    "lint": "tslint 'src/**/*.ts' 'spec/**/*.ts'",
+    "lint:fix": "tslint 'src/**/*.ts' 'spec/**/*.ts' --fix"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2",
+    "typescript": "4.1.5"
+  },
+  "dependencies": {
+    "@angular/animations": "^11.2.11",
+    "@angular/cdk": "^11.2.10",
+    "@angular/common": "^11.2.11",
+    "@angular/compiler": "^11.2.11",
+    "@angular/core": "^11.2.11",
+    "@angular/forms": "^11.2.11",
+    "@angular/platform-browser": "^11.2.11",
+    "@angular/platform-browser-dynamic": "^11.2.11",
+    "@angular/router": "^11.2.11",
+    "@bitwarden/jslib-common": "file:../common",
+    "ngx-infinite-scroll": "10.0.1",
+    "rxjs": "6.6.7",
+    "tldjs": "^2.3.1",
+    "zone.js": "0.11.4"
+  }
+}
