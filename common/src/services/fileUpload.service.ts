@@ -47,12 +47,13 @@ export class FileUploadService implements FileUploadServiceAbstraction {
         }
     }
 
-    async uploadCipherAttachment(admin: boolean, uploadData: AttachmentUploadDataResponse, encryptedFileName: string, encryptedFileData: EncArrayBuffer) {
+    async uploadCipherAttachment(admin: boolean, uploadData: AttachmentUploadDataResponse, encryptedFileName: EncString,
+        encryptedFileData: EncArrayBuffer) {
         const response = admin ? uploadData.cipherMiniResponse : uploadData.cipherResponse;
         try {
             switch (uploadData.fileUploadType) {
                 case FileUploadType.Direct:
-                    await this.bitwardenFileUploadService.upload(encryptedFileName, encryptedFileData,
+                    await this.bitwardenFileUploadService.upload(encryptedFileName.encryptedString, encryptedFileData,
                         fd => this.apiService.postAttachmentFile(response.id, uploadData.attachmentId, fd));
                     break;
                 case FileUploadType.Azure:
