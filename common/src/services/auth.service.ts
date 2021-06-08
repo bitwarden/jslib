@@ -345,7 +345,7 @@ export class AuthService implements AuthServiceAbstraction {
             if (key != null) {
                 await this.cryptoService.setKey(key);
             }
-            if (hashedPassword != null) {
+            if (localHashedPassword != null) {
                 await this.cryptoService.setKeyHash(localHashedPassword);
             }
 
