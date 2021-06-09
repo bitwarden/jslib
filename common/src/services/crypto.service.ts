@@ -643,22 +643,27 @@ export class CryptoService implements CryptoServiceAbstraction {
      * multiple, unique stored keys for each use, e.g. never logout vs. biometric authentication.
      */
     private async upgradeSecurelyStoredKey() {
-        const key = await this.secureStorageService.get<string>(Keys.key);
+        try {
+            const key = await this.secureStorageService.get<string>(Keys.key);
 
-        if (key != null) {
-            let success = true;
-            if (await this.shouldStoreKey('auto')) {
-                await this.secureStorageService.save(Keys.key, key, { keySuffix: 'auto' });
-                success = await this.secureStorageService.has(Keys.key, { keySuffix: 'auto' });
-            }
-            if (await this.shouldStoreKey('biometric')) {
-                await this.secureStorageService.save(Keys.key, key, { keySuffix: 'biometric' });
-                success &&= await this.secureStorageService.has(Keys.key, { keySuffix: 'biometric' });
-            }
+            if (key != null) {
+                let success = true;
+                if (await this.shouldStoreKey('auto')) {
+                    await this.secureStorageService.save(Keys.key, key, { keySuffix: 'auto' });
+                    success = await this.secureStorageService.has(Keys.key, { keySuffix: 'auto' });
+                }
+                if (await this.shouldStoreKey('biometric')) {
+                    await this.secureStorageService.save(Keys.key, key, { keySuffix: 'biometric' });
+                    success &&= await this.secureStorageService.has(Keys.key, { keySuffix: 'biometric' });
+                }
 
-            if (success) {
-                await this.secureStorageService.remove(Keys.key);
+                if (success) {
+                    await this.secureStorageService.remove(Keys.key);
+                }
             }
+        } catch (e) {
+            this.logService.error(`Encountered error while upgrading obsolete Bitwarden secure storage item:`);
+            this.logService.error(e);
         }
     }
 
