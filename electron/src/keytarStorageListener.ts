@@ -25,7 +25,7 @@ export class KeytarStorageListener {
 
                 const authenticationRequired = AuthenticatedActions.includes(message.action) &&
                     AuthRequiredSuffix === message.keySuffix;
-                const authenticated = !authenticationRequired || await this.biometricService.authenticateBiometric();
+                const authenticated = !authenticationRequired || await this.authenticateBiometric();
 
                 let val: string | boolean = null;
                 if (authenticated && message.action && message.key) {
@@ -45,5 +45,12 @@ export class KeytarStorageListener {
                 event.returnValue = null;
             }
         });
+    }
+
+    private async authenticateBiometric(): Promise<boolean> {
+        if (this.biometricService) {
+            return await this.biometricService.authenticateBiometric();
+        }
+        return false;
     }
 }
