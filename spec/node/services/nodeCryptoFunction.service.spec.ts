@@ -1,4 +1,4 @@
-import { NodeCryptoFunctionService } from 'jslib-common/services/nodeCryptoFunction.service';
+import { NodeCryptoFunctionService } from 'jslib-node/services/nodeCryptoFunction.service';
 
 import { Utils } from 'jslib-common/misc/utils';
 import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
