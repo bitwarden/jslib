@@ -4,6 +4,7 @@ import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
 import { ProfileOrganizationResponse } from '../models/response/profileOrganizationResponse';
 
+import { HashPurpose } from '../enums/hashPurpose';
 import { KdfType } from '../enums/kdfType';
 import { KeySuffixOptions } from './storage.service';
 
@@ -40,7 +41,7 @@ export abstract class CryptoService {
     makeKeyPair: (key?: SymmetricCryptoKey) => Promise<[string, EncString]>;
     makePinKey: (pin: string, salt: string, kdf: KdfType, kdfIterations: number) => Promise<SymmetricCryptoKey>;
     makeSendKey: (keyMaterial: ArrayBuffer) => Promise<SymmetricCryptoKey>;
-    hashPassword: (password: string, key: SymmetricCryptoKey) => Promise<string>;
+    hashPassword: (password: string, key: SymmetricCryptoKey, hashPurpose?: HashPurpose) => Promise<string>;
     makeEncKey: (key: SymmetricCryptoKey) => Promise<[SymmetricCryptoKey, EncString]>;
     remakeEncKey: (key: SymmetricCryptoKey, encKey?: SymmetricCryptoKey) => Promise<[SymmetricCryptoKey, EncString]>;
     encrypt: (plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey) => Promise<EncString>;

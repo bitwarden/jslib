@@ -21,6 +21,8 @@ import { PasswordVerificationRequest } from 'jslib-common/models/request/passwor
 
 import { Utils } from 'jslib-common/misc/utils';
 
+import { HashPurpose } from 'jslib-common/enums/hashPurpose';
+
 @Directive()
 export class LockComponent implements OnInit {
     masterPassword: string = '';
@@ -110,22 +112,25 @@ export class LockComponent implements OnInit {
             }
         } else {
             const key = await this.cryptoService.makeKey(this.masterPassword, this.email, kdf, kdfIterations);
-            const keyHash = await this.cryptoService.hashPassword(this.masterPassword, key);
+            const localKeyHash = await this.cryptoService.hashPassword(this.masterPassword, key,
+                HashPurpose.LocalAuthorization);
 
             let passwordValid = false;
 
-            if (keyHash != null) {
+            if (localKeyHash != null) {
                 const storedKeyHash = await this.cryptoService.getKeyHash();
                 if (storedKeyHash != null) {
-                    passwordValid = storedKeyHash === keyHash;
+                    passwordValid = storedKeyHash === localKeyHash;
                 } else {
                     const request = new PasswordVerificationRequest();
-                    request.masterPasswordHash = keyHash;
+                    const serverKeyHash = await this.cryptoService.hashPassword(this.masterPassword, key,
+                        HashPurpose.ServerAuthorization);
+                    request.masterPasswordHash = serverKeyHash;
                     try {
                         this.formPromise = this.apiService.postAccountVerifyPassword(request);
                         await this.formPromise;
                         passwordValid = true;
-                        await this.cryptoService.setKeyHash(keyHash);
+                        await this.cryptoService.setKeyHash(localKeyHash);
                     } catch { }
                 }
             }

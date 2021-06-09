@@ -1,6 +1,7 @@
 import * as bigInt from 'big-integer';
 
 import { EncryptionType } from '../enums/encryptionType';
+import { HashPurpose } from '../enums/hashPurpose';
 import { KdfType } from '../enums/kdfType';
 
 import { EncArrayBuffer } from '../models/domain/encArrayBuffer';
@@ -384,7 +385,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         return new SymmetricCryptoKey(sendKey);
     }
 
-    async hashPassword(password: string, key: SymmetricCryptoKey): Promise<string> {
+    async hashPassword(password: string, key: SymmetricCryptoKey, hashPurpose?: HashPurpose): Promise<string> {
         if (key == null) {
             key = await this.getKey();
         }
@@ -392,7 +393,8 @@ export class CryptoService implements CryptoServiceAbstraction {
             throw new Error('Invalid parameters.');
         }
 
-        const hash = await this.cryptoFunctionService.pbkdf2(key.key, password, 'sha256', 1);
+        const iterations = hashPurpose === HashPurpose.LocalAuthorization ? 2 : 1;
+        const hash = await this.cryptoFunctionService.pbkdf2(key.key, password, 'sha256', iterations);
         return Utils.fromBufferToB64(hash);
     }
 
