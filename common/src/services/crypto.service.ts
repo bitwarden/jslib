@@ -643,28 +643,23 @@ export class CryptoService implements CryptoServiceAbstraction {
      * multiple, unique stored keys for each use, e.g. never logout vs. biometric authentication.
      */
     private async upgradeSecurelyStoredKey() {
-        try {
-            const key = await this.secureStorageService.get<string>(Keys.key);
+        // attempt key upgrade, but if we fail just delete it. Keys will be stored property upon unlock anyway.
+        const key = await this.secureStorageService.get<string>(Keys.key);
 
-            if (key != null) {
-                let success = true;
-                if (await this.shouldStoreKey('auto')) {
-                    await this.secureStorageService.save(Keys.key, key, { keySuffix: 'auto' });
-                    success = await this.secureStorageService.has(Keys.key, { keySuffix: 'auto' });
-                }
-                if (await this.shouldStoreKey('biometric')) {
-                    await this.secureStorageService.save(Keys.key, key, { keySuffix: 'biometric' });
-                    success &&= await this.secureStorageService.has(Keys.key, { keySuffix: 'biometric' });
-                }
-
-                if (success) {
-                    await this.secureStorageService.remove(Keys.key);
-                }
-            }
-        } catch (e) {
-            this.logService.error(`Encountered error while upgrading obsolete Bitwarden secure storage item:`);
-            this.logService.error(e);
+        if (key == null) {
+            return;
         }
+
+        try {
+            if (await this.shouldStoreKey('auto')) {
+                await this.secureStorageService.save(Keys.key, key, { keySuffix: 'auto' });
+            }
+            if (await this.shouldStoreKey('biometric')) {
+                await this.secureStorageService.save(Keys.key, key, { keySuffix: 'biometric' });
+            }
+        } catch (e) { }
+
+        await this.secureStorageService.remove(Keys.key);
     }
 
     private async aesEncrypt(data: ArrayBuffer, key: SymmetricCryptoKey): Promise<EncryptedObject> {
