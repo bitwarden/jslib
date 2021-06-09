@@ -18,7 +18,7 @@ export class ElectronRendererSecureStorageService implements StorageService {
             key: key,
             keySuffix: options?.keySuffix ?? '',
         });
-        return Promise.resolve(val != null ? JSON.parse(val) as boolean : null);
+        return Promise.resolve(!!val);
     }
 
     async save(key: string, obj: any, options?: StorageServiceOptions): Promise<any> {
