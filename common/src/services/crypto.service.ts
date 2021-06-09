@@ -657,7 +657,10 @@ export class CryptoService implements CryptoServiceAbstraction {
             if (await this.shouldStoreKey('biometric')) {
                 await this.secureStorageService.save(Keys.key, key, { keySuffix: 'biometric' });
             }
-        } catch (e) { }
+        } catch (e) {
+            this.logService.error(`Encountered error while upgrading obsolete Bitwarden secure storage item:`);
+            this.logService.error(e);
+        }
 
         await this.secureStorageService.remove(Keys.key);
     }
