@@ -8,7 +8,7 @@ import {
 
 import { BiometricMain } from 'jslib-common/abstractions/biometric.main';
 
-const AuthRequiredSuffix = 'biometric';
+const AuthRequiredSuffix = '_biometric';
 const AuthenticatedActions = ['getPassword'];
 
 export class KeytarStorageListener {
@@ -17,7 +17,12 @@ export class KeytarStorageListener {
     init() {
         ipcMain.on('keytar', async (event: any, message: any) => {
             try {
-                const serviceName = this.serviceName + '_' + message.keySuffix;
+                let serviceName = this.serviceName;
+                message.keySuffix = '_' + (message.keySuffix ?? '');
+                if (message.keySuffix !== '_') {
+                    serviceName += message.keySuffix;
+                }
+
                 const authenticationRequired = AuthenticatedActions.includes(message.action) &&
                     AuthRequiredSuffix === message.keySuffix;
                 const authenticated = !authenticationRequired || await this.biometricService.authenticateBiometric();

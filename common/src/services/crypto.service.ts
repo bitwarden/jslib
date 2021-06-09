@@ -259,6 +259,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     async hasKeyStored(keySuffix: KeySuffixOptions): Promise<boolean> {
+        await this.upgradeSecurelyStoredKey();
         return await this.secureStorageService.has(Keys.key, { keySuffix: keySuffix });
     }
 
@@ -646,11 +647,13 @@ export class CryptoService implements CryptoServiceAbstraction {
 
         if (key != null) {
             let success = true;
-            if (this.shouldStoreKey('auto')) {
-                success = !!(await this.secureStorageService.save(Keys.key, key, { keySuffix: 'auto' }));
+            if (await this.shouldStoreKey('auto')) {
+                await this.secureStorageService.save(Keys.key, key, { keySuffix: 'auto' });
+                success = await this.secureStorageService.has(Keys.key, { keySuffix: 'auto' });
             }
-            if (this.shouldStoreKey('biometric')) {
-                success ||= !!(await this.secureStorageService.save(Keys.key, key, { keySuffix: 'biometric' }));
+            if (await this.shouldStoreKey('biometric')) {
+                await this.secureStorageService.save(Keys.key, key, { keySuffix: 'biometric' });
+                success &&= await this.secureStorageService.has(Keys.key, { keySuffix: 'biometric' });
             }
 
             if (success) {
