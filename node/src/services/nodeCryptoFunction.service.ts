@@ -1,12 +1,12 @@
 import * as crypto from 'crypto';
 import * as forge from 'node-forge';
 
-import { CryptoFunctionService } from '../../../common/src/abstractions/cryptoFunction.service';
+import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
 
-import { Utils } from '../../../common/src/misc/utils';
+import { DecryptParameters } from 'jslib-common/models/domain/decryptParameters';
+import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
 
-import { DecryptParameters } from '../../../common/src/models/domain/decryptParameters';
-import { SymmetricCryptoKey } from '../../../common/src/models/domain/symmetricCryptoKey';
+import { Utils } from 'jslib-common/misc/utils';
 
 export class NodeCryptoFunctionService implements CryptoFunctionService {
     pbkdf2(password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
