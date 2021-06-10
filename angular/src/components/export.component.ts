@@ -42,9 +42,8 @@ export class ExportComponent {
             return;
         }
 
-        const keyHash = await this.cryptoService.hashPassword(this.masterPassword, null, HashPurpose.LocalAuthorization);
-        const storedKeyHash = await this.cryptoService.getKeyHash();
-        if (storedKeyHash != null && keyHash != null && storedKeyHash === keyHash) {
+        const passwordValid = await this.cryptoService.compareAndUpdateKeyHash(this.masterPassword, null);
+        if (passwordValid) {
             try {
                 this.formPromise = this.getExportData();
                 const data = await this.formPromise;

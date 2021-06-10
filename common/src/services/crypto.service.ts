@@ -131,6 +131,24 @@ export class CryptoService implements CryptoServiceAbstraction {
         return keyHash == null ? null : this.keyHash;
     }
 
+    async compareAndUpdateKeyHash(masterPassword: string, key: SymmetricCryptoKey): Promise<boolean> {
+        const storedKeyHash = await this.getKeyHash();
+        if (masterPassword != null && storedKeyHash != null) {
+            const localKeyHash = await this.hashPassword(masterPassword, key, HashPurpose.LocalAuthorization);
+            if (localKeyHash != null && storedKeyHash === localKeyHash) {
+                return true;
+            }
+
+            const serverKeyHash = await this.hashPassword(masterPassword, key, HashPurpose.ServerAuthorization);
+            if (serverKeyHash != null && storedKeyHash === serverKeyHash) {
+                await this.setKeyHash(localKeyHash);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     @sequentialize(() => 'getEncKey')
     async getEncKey(key: SymmetricCryptoKey = null): Promise<SymmetricCryptoKey> {
         if (this.encKey != null) {
