@@ -139,6 +139,7 @@ export class CryptoService implements CryptoServiceAbstraction {
                 return true;
             }
 
+            // TODO: remove serverKeyHash check in 1-2 releases after everyone's keyHash has been updated
             const serverKeyHash = await this.hashPassword(masterPassword, key, HashPurpose.ServerAuthorization);
             if (serverKeyHash != null && storedKeyHash === serverKeyHash) {
                 await this.setKeyHash(localKeyHash);
