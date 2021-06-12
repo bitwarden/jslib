@@ -64,6 +64,7 @@ const DomainMatchBlacklist = new Map<string, Set<string>>([
 export class CipherService implements CipherServiceAbstraction {
     // tslint:disable-next-line
     _decryptedCipherCache: CipherView[];
+    topUsernames: string[];
 
     private sortedCiphersCache: SortedCiphersCache = new SortedCiphersCache(this.sortCiphersByLastUsed);
 
@@ -72,8 +73,6 @@ export class CipherService implements CipherServiceAbstraction {
         private storageService: StorageService, private i18nService: I18nService,
         private searchService: () => SearchService) {
     }
-
-    topUsernames: string[];
 
     get decryptedCipherCache() {
         return this._decryptedCipherCache;
@@ -857,7 +856,7 @@ export class CipherService implements CipherServiceAbstraction {
             return obj;
          }, {}));
 
-        this.topUsernames = countedUsernames.sort((a, b) => b.occurrences - a.occurrences).slice(0,5).map(x => x.login);
+        this.topUsernames = countedUsernames.sort((a, b) => b.occurrences - a.occurrences).slice(0, 5).map(x => x.login);
     }
 
     async softDelete(id: string | string[]): Promise<any> {
