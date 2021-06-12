@@ -73,6 +73,8 @@ export class CipherService implements CipherServiceAbstraction {
         private searchService: () => SearchService) {
     }
 
+    topUsernames: string[];
+
     get decryptedCipherCache() {
         return this._decryptedCipherCache;
     }
@@ -90,6 +92,7 @@ export class CipherService implements CipherServiceAbstraction {
     clearCache(): void {
         this.decryptedCipherCache = null;
         this.sortedCiphersCache.clear();
+        this.topUsernames = null;
     }
 
     async encrypt(model: CipherView, key?: SymmetricCryptoKey, originalCipher: Cipher = null): Promise<Cipher> {
@@ -308,6 +311,9 @@ export class CipherService implements CipherServiceAbstraction {
 
         await Promise.all(promises);
         decCiphers.sort(this.getLocaleSortingFunction());
+
+        this.setTopUsernames(decCiphers);
+
         this.decryptedCipherCache = decCiphers;
         return this.decryptedCipherCache;
     }
@@ -839,6 +845,19 @@ export class CipherService implements CipherServiceAbstraction {
             return this.i18nService.collator ? this.i18nService.collator.compare(aName, bName) :
                 aName.localeCompare(bName);
         };
+    }
+
+    setTopUsernames(decCiphers: CipherView[]) {
+        const logins = decCiphers.map(c => c.login.username);
+        var countedUsernames = Object.values(logins.reduce((obj, login) => {
+            if (obj[login] === undefined)
+               obj[login] = { login: login, occurrences: 1 };
+            else
+               obj[login].occurrences++;
+            return obj;
+         }, {}));
+
+        this.topUsernames = countedUsernames.sort((a, b) => b.occurrences - a.occurrences).slice(0,5).map(x => x.login);
     }
 
     async softDelete(id: string | string[]): Promise<any> {

@@ -12,6 +12,7 @@ import { FieldView } from '../models/view/fieldView';
 
 export abstract class CipherService {
     decryptedCipherCache: CipherView[];
+    topUsernames: string[];
 
     clearCache: () => void;
     encrypt: (model: CipherView, key?: SymmetricCryptoKey, originalCipher?: Cipher) => Promise<Cipher>;
