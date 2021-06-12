@@ -60,7 +60,6 @@ import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
 import { TwoFactorProviderRequest } from '../models/request/twoFactorProviderRequest';
 import { TwoFactorRecoveryRequest } from '../models/request/twoFactorRecoveryRequest';
-import { UpdateDefaultUsernamesRequest } from '../models/request/updateDefaultUsernamesRequest';
 import { UpdateDomainsRequest } from '../models/request/updateDomainsRequest';
 import { UpdateKeyRequest } from '../models/request/updateKeyRequest';
 import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
@@ -83,7 +82,6 @@ import {
     CollectionGroupDetailsResponse,
     CollectionResponse,
 } from '../models/response/collectionResponse';
-import { DefaultUsernamesResponse } from '../models/response/DefaultUsernamesResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import {
     EmergencyAccessGranteeDetailsResponse,
@@ -793,16 +791,6 @@ export class ApiService implements ApiServiceAbstraction {
     async putSettingsDomains(request: UpdateDomainsRequest): Promise<DomainsResponse> {
         const r = await this.send('PUT', '/settings/domains', request, true, true);
         return new DomainsResponse(r);
-    }
-
-    async getSettingsDefaultUsernames(): Promise<DefaultUsernamesResponse> {
-        const r = await this.send('GET', '/settings/usernames', null, true, true);
-        return new DefaultUsernamesResponse(r);
-    }
-
-    async putSettingsDefaultUsernames(request: UpdateDefaultUsernamesRequest): Promise<DefaultUsernamesResponse> {
-        const r = await this.send('PUT', '/settings/usernames', request, true, true);
-        return new DefaultUsernamesResponse(r);
     }
 
     // Sync APIs

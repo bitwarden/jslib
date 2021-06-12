@@ -56,7 +56,6 @@ import { TokenRequest } from '../models/request/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
 import { TwoFactorProviderRequest } from '../models/request/twoFactorProviderRequest';
 import { TwoFactorRecoveryRequest } from '../models/request/twoFactorRecoveryRequest';
-import { UpdateDefaultUsernamesRequest } from '../models/request/updateDefaultUsernamesRequest';
 import { UpdateDomainsRequest } from '../models/request/updateDomainsRequest';
 import { UpdateKeyRequest } from '../models/request/updateKeyRequest';
 import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
@@ -78,7 +77,6 @@ import {
     CollectionGroupDetailsResponse,
     CollectionResponse,
 } from '../models/response/collectionResponse';
-import { DefaultUsernamesResponse } from '../models/response/defaultUsernamesResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import {
     EmergencyAccessGranteeDetailsResponse,
@@ -263,8 +261,6 @@ export abstract class ApiService {
 
     getSettingsDomains: () => Promise<DomainsResponse>;
     putSettingsDomains: (request: UpdateDomainsRequest) => Promise<DomainsResponse>;
-    getSettingsDefaultUsernames: () => Promise<DefaultUsernamesResponse>;
-    putSettingsDefaultUsernames: (request: UpdateDefaultUsernamesRequest) => Promise<DefaultUsernamesResponse>;
 
     getTwoFactorProviders: () => Promise<ListResponse<TwoFactorProviderResponse>>;
     getTwoFactorOrganizationProviders: (organizationId: string) => Promise<ListResponse<TwoFactorProviderResponse>>;
