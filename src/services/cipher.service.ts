@@ -849,7 +849,7 @@ export class CipherService implements CipherServiceAbstraction {
 
     setTopUsernames(decCiphers: CipherView[]) {
         const logins = decCiphers.map(c => c.login.username);
-        var countedUsernames = Object.values(logins.reduce((obj, login) => {
+        var countedUsernames = Object.values(logins.reduce<Record<string, {login: string, occurrences: number}>>((obj, login) => {
             if (obj[login] === undefined)
                obj[login] = { login: login, occurrences: 1 };
             else
