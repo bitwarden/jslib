@@ -50,16 +50,26 @@ export class CryptoService implements CryptoServiceAbstraction {
     async setKey(key: SymmetricCryptoKey): Promise<any> {
         this.key = key;
 
-        if (await this.shouldStoreKey('auto')) {
-            await this.secureStorageService.save(Keys.key, key.keyB64, { keySuffix: 'auto' });
-        } else {
-            this.clearStoredKey('auto');
-        }
+        const storeAuto = await this.shouldStoreKey('auto');
+        const storeBiometric = await this.shouldStoreKey('biometric');
 
-        if (await this.shouldStoreKey('biometric')) {
-            await this.secureStorageService.save(Keys.key, key.keyB64, { keySuffix: 'biometric' });
+        if (this.platformUtilService.isDesktopClient) {
+            // Desktop clients store keys separately, handle storage cases separately
+            if (storeAuto) {
+                await this.secureStorageService.save(Keys.key, key.keyB64, { keySuffix: 'auto' });
+            } else {
+                this.clearStoredKey('auto');
+            }
+
+            if (storeBiometric) {
+                await this.secureStorageService.save(Keys.key, key.keyB64, { keySuffix: 'biometric' });
+            } else {
+                this.clearStoredKey('biometric');
+            }
+        } else if (storeAuto || storeBiometric) {
+            this.secureStorageService.save(Keys.key, key.keyB64);
         } else {
-            this.clearStoredKey('biometric');
+            this.secureStorageService.remove(Keys.key);
         }
     }
 
@@ -645,7 +655,10 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     private async retrieveKeyFromStorage(keySuffix: KeySuffixOptions) {
-        await this.upgradeSecurelyStoredKey();
+        if (this.platformUtilService.isDesktopClient) {
+            // Uprage only needed in desktop clients, where keys are stored separately
+            await this.upgradeSecurelyStoredKey();
+        }
 
         return await this.secureStorageService.get<string>(Keys.key, { keySuffix: keySuffix });
     }
