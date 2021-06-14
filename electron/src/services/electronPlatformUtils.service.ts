@@ -20,6 +20,7 @@ import { ElectronConstants } from '../electronConstants';
 
 export class ElectronPlatformUtilsService implements PlatformUtilsService {
     identityClientId: string;
+    isDesktopClient = true;
 
     private deviceCache: DeviceType = null;
 
