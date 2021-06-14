@@ -25,7 +25,7 @@ import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
 import { EEFLongWordList } from '../misc/wordlist';
 
-const Keys = {
+export const Keys = {
     key: 'key', // Master Key
     encOrgKeys: 'encOrgKeys',
     encPrivateKey: 'encPrivateKey',
@@ -42,35 +42,15 @@ export class CryptoService implements CryptoServiceAbstraction {
     private privateKey: ArrayBuffer;
     private orgKeys: Map<string, SymmetricCryptoKey>;
 
-    constructor(private storageService: StorageService, private secureStorageService: StorageService,
-        private cryptoFunctionService: CryptoFunctionService, private platformUtilService: PlatformUtilsService,
-        private logService: LogService) {
+    constructor(private storageService: StorageService, protected secureStorageService: StorageService,
+        private cryptoFunctionService: CryptoFunctionService, protected platformUtilService: PlatformUtilsService,
+        protected logService: LogService) {
     }
 
     async setKey(key: SymmetricCryptoKey): Promise<any> {
         this.key = key;
 
-        const storeAuto = await this.shouldStoreKey('auto');
-        const storeBiometric = await this.shouldStoreKey('biometric');
-
-        if (this.platformUtilService.isDesktopClient) {
-            // Desktop clients store keys separately, handle storage cases separately
-            if (storeAuto) {
-                await this.secureStorageService.save(Keys.key, key.keyB64, { keySuffix: 'auto' });
-            } else {
-                this.clearStoredKey('auto');
-            }
-
-            if (storeBiometric) {
-                await this.secureStorageService.save(Keys.key, key.keyB64, { keySuffix: 'biometric' });
-            } else {
-                this.clearStoredKey('biometric');
-            }
-        } else if (storeAuto || storeBiometric) {
-            this.secureStorageService.save(Keys.key, key.keyB64);
-        } else {
-            this.secureStorageService.remove(Keys.key);
-        }
+        await this.storeKey(key)
     }
 
     setKeyHash(keyHash: string): Promise<{}> {
@@ -279,9 +259,8 @@ export class CryptoService implements CryptoServiceAbstraction {
         return this.key != null;
     }
 
-    async hasKeyStored(keySuffix: KeySuffixOptions): Promise<boolean> {
-        await this.upgradeSecurelyStoredKey();
-        return await this.secureStorageService.has(Keys.key, { keySuffix: keySuffix });
+    hasKeyStored(keySuffix: KeySuffixOptions): Promise<boolean> {
+        return this.secureStorageService.has(Keys.key, { keySuffix: keySuffix });
     }
 
     async hasEncKey(): Promise<boolean> {
@@ -642,7 +621,15 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     // Helpers
 
-    private async shouldStoreKey(keySuffix: KeySuffixOptions) {
+    protected async storeKey(key: SymmetricCryptoKey) {
+        if (await this.shouldStoreKey('auto') || await this.shouldStoreKey('biometric')) {
+            this.secureStorageService.save(Keys.key, key.keyB64);
+        } else {
+            this.secureStorageService.remove(Keys.key);
+        }
+    }
+
+    protected async shouldStoreKey(keySuffix: KeySuffixOptions) {
         let shouldStoreKey = false;
         if (keySuffix === 'auto') {
             const vaultTimeout = await this.storageService.get<number>(ConstantsService.vaultTimeoutKey);
@@ -654,40 +641,8 @@ export class CryptoService implements CryptoServiceAbstraction {
         return shouldStoreKey;
     }
 
-    private async retrieveKeyFromStorage(keySuffix: KeySuffixOptions) {
-        if (this.platformUtilService.isDesktopClient) {
-            // Uprage only needed in desktop clients, where keys are stored separately
-            await this.upgradeSecurelyStoredKey();
-        }
-
-        return await this.secureStorageService.get<string>(Keys.key, { keySuffix: keySuffix });
-    }
-
-    /**
-     * @deprecated 4 Jun 2021 This is temporary upgrade method to move from a single shared stored key to
-     * multiple, unique stored keys for each use, e.g. never logout vs. biometric authentication.
-     */
-    private async upgradeSecurelyStoredKey() {
-        // attempt key upgrade, but if we fail just delete it. Keys will be stored property upon unlock anyway.
-        const key = await this.secureStorageService.get<string>(Keys.key);
-
-        if (key == null) {
-            return;
-        }
-
-        try {
-            if (await this.shouldStoreKey('auto')) {
-                await this.secureStorageService.save(Keys.key, key, { keySuffix: 'auto' });
-            }
-            if (await this.shouldStoreKey('biometric')) {
-                await this.secureStorageService.save(Keys.key, key, { keySuffix: 'biometric' });
-            }
-        } catch (e) {
-            this.logService.error(`Encountered error while upgrading obsolete Bitwarden secure storage item:`);
-            this.logService.error(e);
-        }
-
-        await this.secureStorageService.remove(Keys.key);
+    protected retrieveKeyFromStorage(keySuffix: KeySuffixOptions) {
+        return this.secureStorageService.get<string>(Keys.key, { keySuffix: keySuffix });
     }
 
     private async aesEncrypt(data: ArrayBuffer, key: SymmetricCryptoKey): Promise<EncryptedObject> {
