@@ -15,14 +15,8 @@ export class PasswordRepromptService implements PasswordRepromptServiceAbstracti
     }
 
     async showPasswordPrompt() {
-        const passwordValidator = async (value: string) => {
-            const keyHash = await this.cryptoService.hashPassword(value, null, HashPurpose.LocalAuthorization);
-            const storedKeyHash = await this.cryptoService.getKeyHash();
-
-            if (storedKeyHash == null || keyHash == null || storedKeyHash !== keyHash) {
-                return false;
-            }
-            return true;
+        const passwordValidator = (value: string) => {
+            return this.cryptoService.compareAndUpdateKeyHash(value, null);
         };
 
         return this.platformUtilService.showPasswordDialog(this.i18nService.t('passwordConfirmation'), this.i18nService.t('passwordConfirmationDesc'), passwordValidator);

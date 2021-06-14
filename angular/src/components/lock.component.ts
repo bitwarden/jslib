@@ -112,27 +112,25 @@ export class LockComponent implements OnInit {
             }
         } else {
             const key = await this.cryptoService.makeKey(this.masterPassword, this.email, kdf, kdfIterations);
-            const localKeyHash = await this.cryptoService.hashPassword(this.masterPassword, key,
-                HashPurpose.LocalAuthorization);
+            const storedKeyHash = await this.cryptoService.getKeyHash();
 
             let passwordValid = false;
 
-            if (localKeyHash != null) {
-                const storedKeyHash = await this.cryptoService.getKeyHash();
-                if (storedKeyHash != null) {
-                    passwordValid = storedKeyHash === localKeyHash;
-                } else {
-                    const request = new PasswordVerificationRequest();
-                    const serverKeyHash = await this.cryptoService.hashPassword(this.masterPassword, key,
-                        HashPurpose.ServerAuthorization);
-                    request.masterPasswordHash = serverKeyHash;
-                    try {
-                        this.formPromise = this.apiService.postAccountVerifyPassword(request);
-                        await this.formPromise;
-                        passwordValid = true;
-                        await this.cryptoService.setKeyHash(localKeyHash);
-                    } catch { }
-                }
+            if (storedKeyHash != null) {
+                passwordValid = await this.cryptoService.compareAndUpdateKeyHash(this.masterPassword, key);
+            } else {
+                const request = new PasswordVerificationRequest();
+                const serverKeyHash = await this.cryptoService.hashPassword(this.masterPassword, key,
+                    HashPurpose.ServerAuthorization);
+                request.masterPasswordHash = serverKeyHash;
+                try {
+                    this.formPromise = this.apiService.postAccountVerifyPassword(request);
+                    await this.formPromise;
+                    passwordValid = true;
+                    const localKeyHash = await this.cryptoService.hashPassword(this.masterPassword, key,
+                        HashPurpose.LocalAuthorization);
+                    await this.cryptoService.setKeyHash(localKeyHash);
+                } catch { }
             }
 
             if (passwordValid) {

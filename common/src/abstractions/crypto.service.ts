@@ -17,6 +17,7 @@ export abstract class CryptoService {
     getKey: (keySuffix?: KeySuffixOptions) => Promise<SymmetricCryptoKey>;
     getKeyFromStorage: (keySuffix: KeySuffixOptions) => Promise<SymmetricCryptoKey>;
     getKeyHash: () => Promise<string>;
+    compareAndUpdateKeyHash: (masterPassword: string, key: SymmetricCryptoKey) => Promise<boolean>;
     getEncKey: (key?: SymmetricCryptoKey) => Promise<SymmetricCryptoKey>;
     getPublicKey: () => Promise<ArrayBuffer>;
     getPrivateKey: () => Promise<ArrayBuffer>;
