@@ -14,6 +14,7 @@ export abstract class CryptoService {
     setEncPrivateKey: (encPrivateKey: string) => Promise<{}>;
     setOrgKeys: (orgs: ProfileOrganizationResponse[]) => Promise<{}>;
     getKey: (keySuffix?: KeySuffixOptions) => Promise<SymmetricCryptoKey>;
+    getKeyFromStorage: (keySuffix: KeySuffixOptions) => Promise<SymmetricCryptoKey>;
     getKeyHash: () => Promise<string>;
     getEncKey: (key?: SymmetricCryptoKey) => Promise<SymmetricCryptoKey>;
     getPublicKey: () => Promise<ArrayBuffer>;

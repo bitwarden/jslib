@@ -99,7 +99,18 @@ export class CryptoService implements CryptoServiceAbstraction {
         if (this.key != null) {
             return this.key;
         }
+
         keySuffix ||= 'auto';
+        const symmetricKey = await this.getKeyFromStorage(keySuffix);
+
+        if (symmetricKey != null) {
+            this.setKey(symmetricKey);
+        }
+
+        return symmetricKey;
+    }
+
+    async getKeyFromStorage(keySuffix: KeySuffixOptions): Promise<SymmetricCryptoKey> {
         const key = await this.retrieveKeyFromStorage(keySuffix);
         if (key != null) {
 
@@ -111,10 +122,9 @@ export class CryptoService implements CryptoServiceAbstraction {
                 return null;
             }
 
-            this.setKey(symmetricKey);
+            return symmetricKey;
         }
-
-        return key == null ? null : this.key;
+        return null;
     }
 
     async getKeyHash(): Promise<string> {
