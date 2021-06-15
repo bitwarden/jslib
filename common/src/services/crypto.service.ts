@@ -50,7 +50,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     async setKey(key: SymmetricCryptoKey): Promise<any> {
         this.key = key;
 
-        await this.storeKey(key)
+        await this.storeKey(key);
     }
 
     setKeyHash(keyHash: string): Promise<{}> {
