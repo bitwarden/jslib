@@ -148,6 +148,8 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     }
 
     clear(): Promise<any> {
+        this.everBeenUnlocked = false;
+        this.manuallyOrTimerLocked = false;
         this.pinProtectedKey = null;
         return this.storageService.remove(ConstantsService.protectedPin);
     }
