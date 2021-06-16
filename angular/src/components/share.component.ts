@@ -77,12 +77,14 @@ export class ShareComponent implements OnInit {
 
         const cipherDomain = await this.cipherService.get(this.cipherId);
         const cipherView = await cipherDomain.decrypt();
+        const orgName = this.organizations.find(o => o.id === this.organizationId)?.name ?? this.i18nService.t('organization');
 
         try {
             this.formPromise = this.cipherService.shareWithServer(cipherView, this.organizationId,
                 selectedCollectionIds).then(async () => {
                     this.onSharedCipher.emit();
-                    this.platformUtilsService.showToast('success', null, this.i18nService.t('sharedItem'));
+                    this.platformUtilsService.showToast('success', null,
+                        this.i18nService.t('movedItemToOrg', cipherView.name, orgName));
                 });
             await this.formPromise;
             return true;
