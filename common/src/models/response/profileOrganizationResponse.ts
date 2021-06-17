@@ -32,6 +32,8 @@ export class ProfileOrganizationResponse extends BaseResponse {
     permissions: PermissionsApi;
     resetPasswordEnrolled: boolean;
     userId: string;
+    providerId: string;
+    providerName: string;
 
     constructor(response: any) {
         super(response);
@@ -62,5 +64,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
         this.permissions = new PermissionsApi(this.getResponseProperty('permissions'));
         this.resetPasswordEnrolled = this.getResponseProperty('ResetPasswordEnrolled');
         this.userId = this.getResponseProperty('UserId');
+        this.providerId = this.getResponseProperty('ProviderId');
+        this.providerName = this.getResponseProperty('ProviderName');
     }
 }

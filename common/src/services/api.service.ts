@@ -55,6 +55,13 @@ import { PasswordVerificationRequest } from '../models/request/passwordVerificat
 import { PaymentRequest } from '../models/request/paymentRequest';
 import { PolicyRequest } from '../models/request/policyRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
+import { ProviderSetupRequest } from '../models/request/provider/providerSetupRequest';
+import { ProviderUserAcceptRequest } from '../models/request/provider/providerUserAcceptRequest';
+import { ProviderUserBulkConfirmRequest } from '../models/request/provider/providerUserBulkConfirmRequest';
+import { ProviderUserBulkRequest } from '../models/request/provider/providerUserBulkRequest';
+import { ProviderUserConfirmRequest } from '../models/request/provider/providerUserConfirmRequest';
+import { ProviderUserInviteRequest } from '../models/request/provider/providerUserInviteRequest';
+import { ProviderUserUpdateRequest } from '../models/request/provider/providerUserUpdateRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
@@ -81,6 +88,7 @@ import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecove
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
 import { Utils } from '../misc/utils';
+
 import { ApiKeyResponse } from '../models/response/apiKeyResponse';
 import { AttachmentResponse } from '../models/response/attachmentResponse';
 import { AttachmentUploadDataResponse } from '../models/response/attachmentUploadDataResponse';
@@ -123,6 +131,12 @@ import { PlanResponse } from '../models/response/planResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
+import { ProviderResponse } from '../models/response/provider/providerResponse';
+import { ProviderUserBulkResponse } from '../models/response/provider/providerUserBulkResponse';
+import {
+    ProviderUserResponse,
+    ProviderUserUserDetailsResponse
+} from '../models/response/provider/providerUserResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
 import { SendAccessResponse } from '../models/response/sendAccessResponse';
 import { SendFileDownloadDataResponse } from '../models/response/sendFileDownloadDataResponse';
@@ -142,9 +156,9 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
-import { ProviderSetupRequest } from '../models/request/providerSetupRequest';
-import { ProviderResponse } from '../models/response/providerResponse';
+import { ProviderUserBulkPublicKeyResponse } from '../models/response/provider/providerUserBulkPublicKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
+import { ProviderOrganizationOrganizationDetailsResponse } from '../models/response/provider/providerOrganizationResponse';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
@@ -1237,6 +1251,67 @@ export class ApiService implements ApiServiceAbstraction {
     async postProviderSetup(id: string, request: ProviderSetupRequest) {
         const r = await this.send('POST', '/providers/' + id + '/setup', request, true, true);
         return new ProviderResponse(r);
+    }
+
+    async getProviderUsers(providerId: string): Promise<ListResponse<ProviderUserUserDetailsResponse>> {
+        const r = await this.send('GET', '/providers/' + providerId + '/users', null, true, true);
+        return new ListResponse(r, ProviderUserUserDetailsResponse);
+    }
+
+    async getProviderUser(providerId: string, id: string): Promise<ProviderUserResponse> {
+        const r = await this.send('GET', '/providers/' + providerId + '/users/' + id, null, true, true);
+        return new ProviderUserResponse(r);
+    }
+
+    postProviderUserInvite(providerId: string, request: ProviderUserInviteRequest): Promise<any> {
+        return this.send('POST', '/providers/' + providerId + '/users/invite', request, true, false);
+    }
+
+    postProviderUserReinvite(providerId: string, id: string): Promise<any> {
+        return this.send('POST', '/providers/' + providerId + '/users/' + id + '/reinvite', null, true, false);
+    }
+
+    async postManyProviderUserReinvite(providerId: string, request: ProviderUserBulkRequest): Promise<ListResponse<ProviderUserBulkResponse>> {
+        const r = await this.send('POST', '/providers/' + providerId + '/users/reinvite', request, true, true);
+        return new ListResponse(r, ProviderUserBulkResponse);
+    }
+
+    async postProviderUserBulkConfirm(providerId: string, request: ProviderUserBulkConfirmRequest): Promise<ListResponse<ProviderUserBulkResponse>> {
+        const r = await this.send('POST',  '/providers/' + providerId + '/users/confirm', request, true, true);
+        return new ListResponse(r, ProviderUserBulkResponse);
+    }
+
+    async deleteManyProviderUsers(providerId: string, request: ProviderUserBulkRequest): Promise<ListResponse<ProviderUserBulkResponse>> {
+        const r = await this.send('DELETE', '/providers/' + providerId + '/users', request, true, true);
+        return new ListResponse(r, ProviderUserBulkResponse);
+    }
+
+    postProviderUserAccept(providerId: string, id: string, request: ProviderUserAcceptRequest): Promise<any> {
+        return this.send('POST', '/providers/' + providerId + '/users/' + id + '/accept', request, true, false);
+    }
+
+    postProviderUserConfirm(providerId: string, id: string, request: ProviderUserConfirmRequest): Promise<any> {
+        return this.send('POST', '/providers/' + providerId + '/users/' + id + '/confirm',
+            request, true, false);
+    }
+
+    async postProviderUsersPublicKey(providerId: string, request: ProviderUserBulkRequest): Promise<ListResponse<ProviderUserBulkPublicKeyResponse>> {
+        const r = await this.send('POST', '/providers/' + providerId + '/users/public-keys', request, true, true);
+        return new ListResponse(r, ProviderUserBulkPublicKeyResponse);
+    }
+
+
+    putProviderUser(providerId: string, id: string, request: ProviderUserUpdateRequest): Promise<any> {
+        return this.send('PUT', '/providers/' + providerId + '/users/' + id, request, true, false);
+    }
+
+    deleteProviderUser(providerId: string, id: string): Promise<any> {
+        return this.send('DELETE', '/providers/' + providerId + '/users/' + id, null, true, false);
+    }
+
+    async getProviderClients(providerId: string): Promise<ListResponse<ProviderOrganizationOrganizationDetailsResponse>> {
+        const r = await this.send('GET', '/providers/' + providerId + '/organizations', null, true, true);
+        return new ListResponse(r, ProviderOrganizationOrganizationDetailsResponse);
     }
 
     // Event APIs

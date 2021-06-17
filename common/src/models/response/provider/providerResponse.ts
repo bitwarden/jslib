@@ -1,4 +1,4 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from '../baseResponse';
 
 export class ProviderResponse extends BaseResponse {
     id: string;

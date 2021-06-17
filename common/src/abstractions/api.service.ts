@@ -51,7 +51,13 @@ import { PasswordVerificationRequest } from '../models/request/passwordVerificat
 import { PaymentRequest } from '../models/request/paymentRequest';
 import { PolicyRequest } from '../models/request/policyRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
-import { ProviderSetupRequest } from '../models/request/providerSetupRequest';
+import { ProviderSetupRequest } from '../models/request/provider/providerSetupRequest';
+import { ProviderUserAcceptRequest } from '../models/request/provider/providerUserAcceptRequest';
+import { ProviderUserBulkConfirmRequest } from '../models/request/provider/providerUserBulkConfirmRequest';
+import { ProviderUserBulkRequest } from '../models/request/provider/providerUserBulkRequest';
+import { ProviderUserConfirmRequest } from '../models/request/provider/providerUserConfirmRequest';
+import { ProviderUserInviteRequest } from '../models/request/provider/providerUserInviteRequest';
+import { ProviderUserUpdateRequest } from '../models/request/provider/providerUserUpdateRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
@@ -118,7 +124,11 @@ import { PlanResponse } from '../models/response/planResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
-import { ProviderResponse } from '../models/response/providerResponse';
+import { ProviderOrganizationOrganizationDetailsResponse } from '../models/response/provider/providerOrganizationResponse';
+import { ProviderResponse } from '../models/response/provider/providerResponse';
+import { ProviderUserBulkPublicKeyResponse } from '../models/response/provider/providerUserBulkPublicKeyResponse';
+import { ProviderUserBulkResponse } from '../models/response/provider/providerUserBulkResponse';
+import { ProviderUserResponse, ProviderUserUserDetailsResponse } from '../models/response/provider/providerUserResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
 import { SendAccessResponse } from '../models/response/sendAccessResponse';
 import { SendFileDownloadDataResponse } from '../models/response/sendFileDownloadDataResponse';
@@ -382,6 +392,20 @@ export abstract class ApiService {
     postOrganizationKeys: (id: string, request: OrganizationKeysRequest) => Promise<OrganizationKeysResponse>;
 
     postProviderSetup: (id: string, request: ProviderSetupRequest) => Promise<ProviderResponse>;
+    getProviderUsers: (providerId: string) => Promise<ListResponse<ProviderUserUserDetailsResponse>>;
+    getProviderUser: (providerId: string, id: string) => Promise<ProviderUserResponse>;
+    postProviderUserInvite: (providerId: string, request: ProviderUserInviteRequest) => Promise<any>;
+    postProviderUserReinvite: (providerId: string, id: string) => Promise<any>;
+    postManyProviderUserReinvite: (providerId: string, request: ProviderUserBulkRequest) => Promise<ListResponse<ProviderUserBulkResponse>>;
+    postProviderUserAccept: (providerId: string, id: string, request: ProviderUserAcceptRequest) => Promise<any>;
+    postProviderUserConfirm: (providerId: string, id: string, request: ProviderUserConfirmRequest) => Promise<any>;
+    postProviderUsersPublicKey: (providerId: string, request: ProviderUserBulkRequest) =>
+        Promise<ListResponse<ProviderUserBulkPublicKeyResponse>>;
+    postProviderUserBulkConfirm: (providerId: string, request: ProviderUserBulkConfirmRequest) => Promise<ListResponse<ProviderUserBulkResponse>>;
+    putProviderUser: (providerId: string, id: string, request: ProviderUserUpdateRequest) => Promise<any>;
+    deleteProviderUser: (organizationId: string, id: string) => Promise<any>;
+    deleteManyProviderUsers: (providerId: string, request: ProviderUserBulkRequest) => Promise<ListResponse<ProviderUserBulkResponse>>;
+    getProviderClients: (providerId: string) => Promise<ListResponse<ProviderOrganizationOrganizationDetailsResponse>>;
 
     getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
     getEventsCipher: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;

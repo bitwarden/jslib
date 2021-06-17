@@ -31,6 +31,8 @@ export class OrganizationData {
     resetPasswordEnrolled: boolean;
     userId: string;
     hasPublicAndPrivateKeys: boolean;
+    providerId: string;
+    providerName: string;
 
     constructor(response: ProfileOrganizationResponse) {
         this.id = response.id;
@@ -59,5 +61,7 @@ export class OrganizationData {
         this.resetPasswordEnrolled = response.resetPasswordEnrolled;
         this.userId = response.userId;
         this.hasPublicAndPrivateKeys = response.hasPublicAndPrivateKeys;
+        this.providerId = response.providerId;
+        this.providerName = response.providerName;
     }
 }

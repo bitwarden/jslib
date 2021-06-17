@@ -7,6 +7,7 @@ import { ProfileOrganizationResponse } from '../models/response/profileOrganizat
 import { HashPurpose } from '../enums/hashPurpose';
 import { KdfType } from '../enums/kdfType';
 import { KeySuffixOptions } from './storage.service';
+import { ProfileProviderResponse } from '../models/response/profileProviderResponse';
 
 export abstract class CryptoService {
     setKey: (key: SymmetricCryptoKey) => Promise<any>;
@@ -14,6 +15,7 @@ export abstract class CryptoService {
     setEncKey: (encKey: string) => Promise<{}>;
     setEncPrivateKey: (encPrivateKey: string) => Promise<{}>;
     setOrgKeys: (orgs: ProfileOrganizationResponse[]) => Promise<{}>;
+    setProviderKeys: (orgs: ProfileProviderResponse[]) => Promise<{}>;
     getKey: (keySuffix?: KeySuffixOptions) => Promise<SymmetricCryptoKey>;
     getKeyFromStorage: (keySuffix: KeySuffixOptions) => Promise<SymmetricCryptoKey>;
     getKeyHash: () => Promise<string>;
@@ -24,6 +26,7 @@ export abstract class CryptoService {
     getFingerprint: (userId: string, publicKey?: ArrayBuffer) => Promise<string[]>;
     getOrgKeys: () => Promise<Map<string, SymmetricCryptoKey>>;
     getOrgKey: (orgId: string) => Promise<SymmetricCryptoKey>;
+    getProviderKey: (providerId: string) => Promise<SymmetricCryptoKey>;
     hasKey: () => Promise<boolean>;
     hasKeyInMemory: () => boolean;
     hasKeyStored: (keySuffix?: KeySuffixOptions) => Promise<boolean>;
@@ -33,6 +36,7 @@ export abstract class CryptoService {
     clearEncKey: (memoryOnly?: boolean) => Promise<any>;
     clearKeyPair: (memoryOnly?: boolean) => Promise<any>;
     clearOrgKeys: (memoryOnly?: boolean) => Promise<any>;
+    clearProviderKeys: (memoryOnly?: boolean) => Promise<any>;
     clearPinProtectedKey: () => Promise<any>;
     clearKeys: () => Promise<any>;
     toggleKey: () => Promise<any>;

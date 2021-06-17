@@ -1,5 +1,6 @@
 import { BaseResponse } from './baseResponse';
 import { ProfileOrganizationResponse } from './profileOrganizationResponse';
+import { ProfileProviderResponse } from './profileProviderResponse';
 
 export class ProfileResponse extends BaseResponse {
     id: string;
@@ -14,6 +15,7 @@ export class ProfileResponse extends BaseResponse {
     privateKey: string;
     securityStamp: string;
     organizations: ProfileOrganizationResponse[] = [];
+    providers: ProfileProviderResponse[] = [];
 
     constructor(response: any) {
         super(response);
@@ -32,6 +34,10 @@ export class ProfileResponse extends BaseResponse {
         const organizations = this.getResponseProperty('Organizations');
         if (organizations != null) {
             this.organizations = organizations.map((o: any) => new ProfileOrganizationResponse(o));
+        }
+        const providers = this.getResponseProperty('Providers');
+        if (providers != null) {
+            this.providers = providers.map((o: any) => new ProfileProviderResponse(o));
         }
     }
 }
