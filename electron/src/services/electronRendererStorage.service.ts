@@ -10,6 +10,13 @@ export class ElectronRendererStorageService implements StorageService {
         });
     }
 
+    has(key: string): Promise<boolean> {
+        return ipcRenderer.invoke('storageService', {
+            action: 'has',
+            key: key,
+        });
+    }
+
     save(key: string, obj: any): Promise<any> {
         return ipcRenderer.invoke('storageService', {
             action: 'save',

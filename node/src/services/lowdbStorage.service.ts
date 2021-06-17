@@ -84,6 +84,10 @@ export class LowdbStorageService implements StorageService {
         });
     }
 
+    has(key: string): Promise<boolean> {
+        return this.get(key).then(v => v != null);
+    }
+
     save(key: string, obj: any): Promise<any> {
         return this.lockDbFile(() => {
             this.readForNoCache();
