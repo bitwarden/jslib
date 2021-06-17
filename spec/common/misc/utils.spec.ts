@@ -37,7 +37,7 @@ describe('Utils Service', () => {
         it('should reject invalid or malicious hostnames', () => {
             expect(Utils.getDomain('https://bitwarden.com$.badactor.com')).toBeNull();
             expect(Utils.getDomain('https://bitwarden.com!.badactor.com')).toBeNull();
-        })
+        });
     });
 
     describe('getHostname', () => {
