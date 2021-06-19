@@ -182,7 +182,6 @@ export class LockComponent implements OnInit {
     private async doContinue() {
         this.vaultTimeoutService.biometricLocked = false;
         this.vaultTimeoutService.everBeenUnlocked = true;
-        this.vaultTimeoutService.manuallyOrTimerLocked = false;
         const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
         await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
         this.messagingService.send('unlocked');
