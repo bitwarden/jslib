@@ -21,6 +21,8 @@ import { PasswordVerificationRequest } from 'jslib-common/models/request/passwor
 
 import { Utils } from 'jslib-common/misc/utils';
 
+import { HashPurpose } from 'jslib-common/enums/hashPurpose';
+
 @Directive()
 export class LockComponent implements OnInit {
     masterPassword: string = '';
@@ -51,7 +53,8 @@ export class LockComponent implements OnInit {
         this.pinSet = await this.vaultTimeoutService.isPinLockSet();
         this.pinLock = (this.pinSet[0] && this.vaultTimeoutService.pinProtectedKey != null) || this.pinSet[1];
         this.supportsBiometric = await this.platformUtilsService.supportsBiometric();
-        this.biometricLock = await this.vaultTimeoutService.isBiometricLockSet() && (await this.cryptoService.hasKey() || !this.platformUtilsService.supportsSecureStorage());
+        this.biometricLock = await this.vaultTimeoutService.isBiometricLockSet() &&
+            (await this.cryptoService.hasKeyStored('biometric') || !this.platformUtilsService.supportsSecureStorage());
         this.biometricText = await this.storageService.get(ConstantsService.biometricText);
         this.email = await this.userService.getEmail();
         let vaultUrl = this.environmentService.getWebVaultUrl();
@@ -109,24 +112,25 @@ export class LockComponent implements OnInit {
             }
         } else {
             const key = await this.cryptoService.makeKey(this.masterPassword, this.email, kdf, kdfIterations);
-            const keyHash = await this.cryptoService.hashPassword(this.masterPassword, key);
+            const storedKeyHash = await this.cryptoService.getKeyHash();
 
             let passwordValid = false;
 
-            if (keyHash != null) {
-                const storedKeyHash = await this.cryptoService.getKeyHash();
-                if (storedKeyHash != null) {
-                    passwordValid = storedKeyHash === keyHash;
-                } else {
-                    const request = new PasswordVerificationRequest();
-                    request.masterPasswordHash = keyHash;
-                    try {
-                        this.formPromise = this.apiService.postAccountVerifyPassword(request);
-                        await this.formPromise;
-                        passwordValid = true;
-                        await this.cryptoService.setKeyHash(keyHash);
-                    } catch { }
-                }
+            if (storedKeyHash != null) {
+                passwordValid = await this.cryptoService.compareAndUpdateKeyHash(this.masterPassword, key);
+            } else {
+                const request = new PasswordVerificationRequest();
+                const serverKeyHash = await this.cryptoService.hashPassword(this.masterPassword, key,
+                    HashPurpose.ServerAuthorization);
+                request.masterPasswordHash = serverKeyHash;
+                try {
+                    this.formPromise = this.apiService.postAccountVerifyPassword(request);
+                    await this.formPromise;
+                    passwordValid = true;
+                    const localKeyHash = await this.cryptoService.hashPassword(this.masterPassword, key,
+                        HashPurpose.LocalAuthorization);
+                    await this.cryptoService.setKeyHash(localKeyHash);
+                } catch { }
             }
 
             if (passwordValid) {
@@ -157,7 +161,8 @@ export class LockComponent implements OnInit {
         if (!this.biometricLock) {
             return;
         }
-        const success = await this.platformUtilsService.authenticateBiometric();
+
+        const success = (await this.cryptoService.getKey('biometric')) != null;
 
         if (success) {
             await this.doContinue();
@@ -176,6 +181,8 @@ export class LockComponent implements OnInit {
 
     private async doContinue() {
         this.vaultTimeoutService.biometricLocked = false;
+        this.vaultTimeoutService.everBeenUnlocked = true;
+        this.vaultTimeoutService.manuallyOrTimerLocked = false;
         const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
         await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
         this.messagingService.send('unlocked');

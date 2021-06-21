@@ -4,7 +4,9 @@ import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
 import { ProfileOrganizationResponse } from '../models/response/profileOrganizationResponse';
 
+import { HashPurpose } from '../enums/hashPurpose';
 import { KdfType } from '../enums/kdfType';
+import { KeySuffixOptions } from './storage.service';
 
 export abstract class CryptoService {
     setKey: (key: SymmetricCryptoKey) => Promise<any>;
@@ -12,8 +14,10 @@ export abstract class CryptoService {
     setEncKey: (encKey: string) => Promise<{}>;
     setEncPrivateKey: (encPrivateKey: string) => Promise<{}>;
     setOrgKeys: (orgs: ProfileOrganizationResponse[]) => Promise<{}>;
-    getKey: () => Promise<SymmetricCryptoKey>;
+    getKey: (keySuffix?: KeySuffixOptions) => Promise<SymmetricCryptoKey>;
+    getKeyFromStorage: (keySuffix: KeySuffixOptions) => Promise<SymmetricCryptoKey>;
     getKeyHash: () => Promise<string>;
+    compareAndUpdateKeyHash: (masterPassword: string, key: SymmetricCryptoKey) => Promise<boolean>;
     getEncKey: (key?: SymmetricCryptoKey) => Promise<SymmetricCryptoKey>;
     getPublicKey: () => Promise<ArrayBuffer>;
     getPrivateKey: () => Promise<ArrayBuffer>;
@@ -21,8 +25,10 @@ export abstract class CryptoService {
     getOrgKeys: () => Promise<Map<string, SymmetricCryptoKey>>;
     getOrgKey: (orgId: string) => Promise<SymmetricCryptoKey>;
     hasKey: () => Promise<boolean>;
+    hasKeyInMemory: () => boolean;
+    hasKeyStored: (keySuffix?: KeySuffixOptions) => Promise<boolean>;
     hasEncKey: () => Promise<boolean>;
-    clearKey: () => Promise<any>;
+    clearKey: (clearSecretStorage?: boolean) => Promise<any>;
     clearKeyHash: () => Promise<any>;
     clearEncKey: (memoryOnly?: boolean) => Promise<any>;
     clearKeyPair: (memoryOnly?: boolean) => Promise<any>;
@@ -37,7 +43,7 @@ export abstract class CryptoService {
     makeKeyPair: (key?: SymmetricCryptoKey) => Promise<[string, EncString]>;
     makePinKey: (pin: string, salt: string, kdf: KdfType, kdfIterations: number) => Promise<SymmetricCryptoKey>;
     makeSendKey: (keyMaterial: ArrayBuffer) => Promise<SymmetricCryptoKey>;
-    hashPassword: (password: string, key: SymmetricCryptoKey) => Promise<string>;
+    hashPassword: (password: string, key: SymmetricCryptoKey, hashPurpose?: HashPurpose) => Promise<string>;
     makeEncKey: (key: SymmetricCryptoKey) => Promise<[SymmetricCryptoKey, EncString]>;
     remakeEncKey: (key: SymmetricCryptoKey, encKey?: SymmetricCryptoKey) => Promise<[SymmetricCryptoKey, EncString]>;
     encrypt: (plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey) => Promise<EncString>;

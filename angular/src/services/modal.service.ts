@@ -25,11 +25,15 @@ export class ModalService {
         private injector: Injector) {}
 
     open(componentType: Type<any>, config: ModalConfig) {
-        const dialogRef = this.appendModalComponentToBody(config);
+        const modalRef = this.appendModalComponentToBody(config);
 
-        this.dialogComponentRef.instance.childComponentType = componentType;
+        modalRef.onClose.subscribe(() => {
+            modalRef.closed();
+        });
 
-        return dialogRef;
+        this.dialogComponentRef.instance.childComponentType = componentType;        
+
+        return modalRef;
     }
 
     private appendModalComponentToBody(config: ModalConfig) {

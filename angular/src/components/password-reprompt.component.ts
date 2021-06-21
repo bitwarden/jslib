@@ -1,13 +1,11 @@
-import { Component } from '@angular/core';
+import { Directive } from '@angular/core';
 
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { ModalRef } from './modal/modal.ref';
 
-@Component({
-    templateUrl: 'password-reprompt.component.html',
-})
+@Directive()
 export class PasswordRepromptComponent {
 
     showPassword = false;
@@ -21,10 +19,7 @@ export class PasswordRepromptComponent {
     }
 
     async submit() {
-        const keyHash = await this.cryptoService.hashPassword(this.masterPassword, null);
-        const storedKeyHash = await this.cryptoService.getKeyHash();
-
-        if (storedKeyHash == null || keyHash == null || storedKeyHash !== keyHash) {
+        if (!await this.cryptoService.compareAndUpdateKeyHash(this.masterPassword, null)) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('invalidMasterPassword'));
             return;

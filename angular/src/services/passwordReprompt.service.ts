@@ -1,15 +1,14 @@
-import { ComponentRef, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 import { PasswordRepromptService as PasswordRepromptServiceAbstraction } from 'jslib-common/abstractions/passwordReprompt.service';
 import { first } from 'rxjs/operators';
 
-import { ModalComponent } from '../components/modal.component';
 import { PasswordRepromptComponent } from '../components/password-reprompt.component';
 import { ModalService } from './modal.service';
 
 @Injectable()
 export class PasswordRepromptService implements PasswordRepromptServiceAbstraction {
-    repromptComponentRef: ComponentRef<ModalComponent>;
+    protected component = PasswordRepromptComponent;
 
     constructor(private modalService: ModalService) { }
 
@@ -18,10 +17,9 @@ export class PasswordRepromptService implements PasswordRepromptServiceAbstracti
     }
 
     async showPasswordPrompt() {
-        const ref = this.modalService.open(PasswordRepromptComponent, null);
+        const ref = this.modalService.open(this.component, null);
 
         const result = await ref.onClosed.pipe(first()).toPromise();
         return result === true;
     }
-
 }

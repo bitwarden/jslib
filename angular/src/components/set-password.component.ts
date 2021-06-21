@@ -22,6 +22,7 @@ import { SetPasswordRequest } from 'jslib-common/models/request/setPasswordReque
 
 import { ChangePasswordComponent as BaseChangePasswordComponent } from './change-password.component';
 
+import { HashPurpose } from 'jslib-common/enums/hashPurpose';
 import { KdfType } from 'jslib-common/enums/kdfType';
 
 @Directive()
@@ -86,9 +87,12 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
             await this.userService.setInformation(await this.userService.getUserId(), await this.userService.getEmail(),
                 this.kdf, this.kdfIterations);
             await this.cryptoService.setKey(key);
-            await this.cryptoService.setKeyHash(masterPasswordHash);
             await this.cryptoService.setEncKey(encKey[1].encryptedString);
             await this.cryptoService.setEncPrivateKey(keys[1].encryptedString);
+
+            const localKeyHash = await this.cryptoService.hashPassword(this.masterPassword, key,
+                HashPurpose.LocalAuthorization);
+            await this.cryptoService.setKeyHash(localKeyHash);
 
             if (this.onSuccessfulChangePassword != null) {
                 this.onSuccessfulChangePassword();
