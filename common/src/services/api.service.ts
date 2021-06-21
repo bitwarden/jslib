@@ -1358,6 +1358,43 @@ export class ApiService implements ApiServiceAbstraction {
         }
     }
 
+    protected async doRefreshToken(): Promise<void> {
+        const refreshToken = await this.tokenService.getRefreshToken();
+        if (refreshToken == null || refreshToken === '') {
+            throw new Error();
+        }
+        const headers = new Headers({
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+            'Accept': 'application/json',
+            'Device-Type': this.deviceType,
+        });
+        if (this.customUserAgent != null) {
+            headers.set('User-Agent', this.customUserAgent);
+        }
+
+        const decodedToken = this.tokenService.decodeToken();
+        const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
+            body: this.qsStringify({
+                grant_type: 'refresh_token',
+                client_id: decodedToken.client_id,
+                refresh_token: refreshToken,
+            }),
+            cache: 'no-store',
+            credentials: this.getCredentials(),
+            headers: headers,
+            method: 'POST',
+        }));
+
+        if (response.status === 200) {
+            const responseJson = await response.json();
+            const tokenResponse = new IdentityTokenResponse(responseJson);
+            await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken);
+        } else {
+            const error = await this.handleError(response, true, true);
+            return Promise.reject(error);
+        }
+    }
+
     private async send(method: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string, body: any,
         authed: boolean, hasResponse: boolean, apiUrl?: string,
         alterHeaders?: (headers: Headers) => void): Promise<any> {
@@ -1425,43 +1462,6 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         return new ErrorResponse(responseJson, response.status, tokenError);
-    }
-
-    protected async doRefreshToken(): Promise<void> {
-        const refreshToken = await this.tokenService.getRefreshToken();
-        if (refreshToken == null || refreshToken === '') {
-            throw new Error();
-        }
-        const headers = new Headers({
-            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-            'Accept': 'application/json',
-            'Device-Type': this.deviceType,
-        });
-        if (this.customUserAgent != null) {
-            headers.set('User-Agent', this.customUserAgent);
-        }
-
-        const decodedToken = this.tokenService.decodeToken();
-        const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
-            body: this.qsStringify({
-                grant_type: 'refresh_token',
-                client_id: decodedToken.client_id,
-                refresh_token: refreshToken,
-            }),
-            cache: 'no-store',
-            credentials: this.getCredentials(),
-            headers: headers,
-            method: 'POST',
-        }));
-
-        if (response.status === 200) {
-            const responseJson = await response.json();
-            const tokenResponse = new IdentityTokenResponse(responseJson);
-            await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken);
-        } else {
-            const error = await this.handleError(response, true, true);
-            return Promise.reject(error);
-        }
     }
 
     private qsStringify(params: any): string {

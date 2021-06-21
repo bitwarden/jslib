@@ -22,7 +22,7 @@ export class ApiKeyService implements ApiKeyServiceAbstraction {
 
     async setInformation(clientId: string, clientSecret: string) {
         this.clientId = clientId;
-        this.clientSecret = clientSecret
+        this.clientSecret = clientSecret;
         const idParts = clientId.split('.');
 
         if (idParts.length !== 2 || !Utils.isGuid(idParts[1])) {
