@@ -1312,8 +1312,8 @@ export class ApiService implements ApiServiceAbstraction {
     async getActiveBearerToken(): Promise<string> {
         let accessToken = await this.tokenService.getToken();
         if (this.tokenService.tokenNeedsRefresh()) {
-            const tokenResponse = await this.doRefreshToken();
-            accessToken = tokenResponse.accessToken;
+            await this.doRefreshToken();
+            accessToken = await this.tokenService.getToken();
         }
         return accessToken;
     }
@@ -1354,6 +1354,43 @@ export class ApiService implements ApiServiceAbstraction {
             return true;
         } else {
             const error = await this.handleError(response, false, true);
+            return Promise.reject(error);
+        }
+    }
+
+    protected async doRefreshToken(): Promise<void> {
+        const refreshToken = await this.tokenService.getRefreshToken();
+        if (refreshToken == null || refreshToken === '') {
+            throw new Error();
+        }
+        const headers = new Headers({
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+            'Accept': 'application/json',
+            'Device-Type': this.deviceType,
+        });
+        if (this.customUserAgent != null) {
+            headers.set('User-Agent', this.customUserAgent);
+        }
+
+        const decodedToken = this.tokenService.decodeToken();
+        const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
+            body: this.qsStringify({
+                grant_type: 'refresh_token',
+                client_id: decodedToken.client_id,
+                refresh_token: refreshToken,
+            }),
+            cache: 'no-store',
+            credentials: this.getCredentials(),
+            headers: headers,
+            method: 'POST',
+        }));
+
+        if (response.status === 200) {
+            const responseJson = await response.json();
+            const tokenResponse = new IdentityTokenResponse(responseJson);
+            await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken);
+        } else {
+            const error = await this.handleError(response, true, true);
             return Promise.reject(error);
         }
     }
@@ -1425,44 +1462,6 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         return new ErrorResponse(responseJson, response.status, tokenError);
-    }
-
-    private async doRefreshToken(): Promise<IdentityTokenResponse> {
-        const refreshToken = await this.tokenService.getRefreshToken();
-        if (refreshToken == null || refreshToken === '') {
-            throw new Error();
-        }
-        const headers = new Headers({
-            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-            'Accept': 'application/json',
-            'Device-Type': this.deviceType,
-        });
-        if (this.customUserAgent != null) {
-            headers.set('User-Agent', this.customUserAgent);
-        }
-
-        const decodedToken = this.tokenService.decodeToken();
-        const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
-            body: this.qsStringify({
-                grant_type: 'refresh_token',
-                client_id: decodedToken.client_id,
-                refresh_token: refreshToken,
-            }),
-            cache: 'no-store',
-            credentials: this.getCredentials(),
-            headers: headers,
-            method: 'POST',
-        }));
-
-        if (response.status === 200) {
-            const responseJson = await response.json();
-            const tokenResponse = new IdentityTokenResponse(responseJson);
-            await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken);
-            return tokenResponse;
-        } else {
-            const error = await this.handleError(response, true, true);
-            return Promise.reject(error);
-        }
     }
 
     private qsStringify(params: any): string {
