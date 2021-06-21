@@ -2,11 +2,13 @@ import { Observable, Subject } from 'rxjs';
 
 export class ModalRef {
 
+    onCreated: Observable<void>;
     onClose: Observable<any>;
     onClosed: Observable<any>;
     onShow: Observable<any>;
     onShown: Observable<any>;
 
+    private readonly _onCreated = new Subject<void>();
     private readonly _onClose = new Subject<any>();
     private readonly _onClosed = new Subject<any>();
     private readonly _onShow = new Subject<any>();
@@ -14,6 +16,7 @@ export class ModalRef {
     private lastResult: any;
 
     constructor() {
+        this.onCreated = this._onCreated.asObservable();
         this.onClose = this._onClose.asObservable();
         this.onClosed = this._onClosed.asObservable();
         this.onShow = this._onShow.asObservable();
@@ -35,5 +38,9 @@ export class ModalRef {
 
     closed() {
         this._onClosed.next(this.lastResult);
+    }
+
+    created() {
+        this._onCreated.next();
     }
 }

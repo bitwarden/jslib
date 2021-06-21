@@ -19,28 +19,37 @@ export class ModalConfig<D = any> {
 
 @Injectable()
 export class ModalService {
-    dialogComponentRef: ComponentRef<DynamicModalComponent>;
+    modalComponentRef: ComponentRef<DynamicModalComponent>;
+
+    protected modalOpen = false;
 
     constructor(private componentFactoryResolver: ComponentFactoryResolver, private applicationRef: ApplicationRef,
         private injector: Injector) {}
 
     open(componentType: Type<any>, config: ModalConfig) {
+        // Prevent showing multiple modals at the same time
+        if (this.modalOpen) {
+            return;
+        }
+        this.modalOpen = true;
+
         const modalRef = this.appendModalComponentToBody(config);
 
-        modalRef.onClose.subscribe(() => {
+        // onClose is used in Web to hook into bootstrap. On other projects we directly pipe it to closed.
+        modalRef.onClose.pipe(first()).subscribe(() => {
             modalRef.closed();
         });
 
-        this.dialogComponentRef.instance.childComponentType = componentType;
+        this.modalComponentRef.instance.childComponentType = componentType;
 
         return modalRef;
     }
 
-    private appendModalComponentToBody(config: ModalConfig) {
+    protected appendModalComponentToBody(config: ModalConfig) {
+        const modalRef = new ModalRef();
+
         const map = new WeakMap();
         map.set(ModalConfig, config);
-
-        const modalRef = new ModalRef();
         map.set(ModalRef, modalRef);
 
         modalRef.onClosed.pipe(first()).subscribe(() => {
@@ -55,13 +64,14 @@ export class ModalService {
         const domElem = (componentRef.hostView as EmbeddedViewRef<any>).rootNodes[0] as HTMLElement;
         document.body.appendChild(domElem);
 
-        this.dialogComponentRef = componentRef;
+        this.modalComponentRef = componentRef;
 
         return modalRef;
     }
 
-    private removeModalComponentFromBody() {
-        this.applicationRef.detachView(this.dialogComponentRef.hostView);
-        this.dialogComponentRef.destroy();
+    protected removeModalComponentFromBody() {
+        this.applicationRef.detachView(this.modalComponentRef.hostView);
+        this.modalComponentRef.destroy();
+        this.modalOpen = false;
     }
 }

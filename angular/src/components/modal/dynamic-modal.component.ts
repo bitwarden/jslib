@@ -40,6 +40,8 @@ export class DynamicModalComponent implements AfterViewInit, OnDestroy {
                 this.close();
             });
         }
+
+        this.modalRef.created();
     }
 
     onOverlayClicked(evt: MouseEvent) {
