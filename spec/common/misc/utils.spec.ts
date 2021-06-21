@@ -35,8 +35,8 @@ describe('Utils Service', () => {
         });
 
         it('should reject invalid hostnames', () => {
-            expect(Utils.getDomain('https://mywebsite.com$.myotherwebsite.com')).toBeNull();
-            expect(Utils.getDomain('https://mywebsite.com!.myotherwebsite.com')).toBeNull();
+            expect(Utils.getDomain('https://mywebsite.com$.mywebsite.com')).toBeNull();
+            expect(Utils.getDomain('https://mywebsite.com!.mywebsite.com')).toBeNull();
         });
     });
 
