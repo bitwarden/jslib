@@ -31,7 +31,7 @@ export class ModalService {
             modalRef.closed();
         });
 
-        this.dialogComponentRef.instance.childComponentType = componentType;        
+        this.dialogComponentRef.instance.childComponentType = componentType;
 
         return modalRef;
     }
