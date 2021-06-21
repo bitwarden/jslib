@@ -1312,8 +1312,8 @@ export class ApiService implements ApiServiceAbstraction {
     async getActiveBearerToken(): Promise<string> {
         let accessToken = await this.tokenService.getToken();
         if (this.tokenService.tokenNeedsRefresh()) {
-            const tokenResponse = await this.doRefreshToken();
-            accessToken = tokenResponse.accessToken;
+            await this.doRefreshToken();
+            accessToken = await this.tokenService.getToken();
         }
         return accessToken;
     }
@@ -1427,7 +1427,7 @@ export class ApiService implements ApiServiceAbstraction {
         return new ErrorResponse(responseJson, response.status, tokenError);
     }
 
-    private async doRefreshToken(): Promise<IdentityTokenResponse> {
+    protected async doRefreshToken(): Promise<void> {
         const refreshToken = await this.tokenService.getRefreshToken();
         if (refreshToken == null || refreshToken === '') {
             throw new Error();
@@ -1458,7 +1458,6 @@ export class ApiService implements ApiServiceAbstraction {
             const responseJson = await response.json();
             const tokenResponse = new IdentityTokenResponse(responseJson);
             await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken);
-            return tokenResponse;
         } else {
             const error = await this.handleError(response, true, true);
             return Promise.reject(error);
