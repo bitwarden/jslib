@@ -51,6 +51,7 @@ import { PasswordVerificationRequest } from '../models/request/passwordVerificat
 import { PaymentRequest } from '../models/request/paymentRequest';
 import { PolicyRequest } from '../models/request/policyRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
+import { ProviderAddOrganizationRequest } from '../models/request/provider/providerAddOrganizationRequest';
 import { ProviderSetupRequest } from '../models/request/provider/providerSetupRequest';
 import { ProviderUserAcceptRequest } from '../models/request/provider/providerUserAcceptRequest';
 import { ProviderUserBulkConfirmRequest } from '../models/request/provider/providerUserBulkConfirmRequest';
@@ -406,6 +407,7 @@ export abstract class ApiService {
     deleteProviderUser: (organizationId: string, id: string) => Promise<any>;
     deleteManyProviderUsers: (providerId: string, request: ProviderUserBulkRequest) => Promise<ListResponse<ProviderUserBulkResponse>>;
     getProviderClients: (providerId: string) => Promise<ListResponse<ProviderOrganizationOrganizationDetailsResponse>>;
+    postProviderAddOrganization: (providerId: string, request: ProviderAddOrganizationRequest) => Promise<any>;
 
     getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
     getEventsCipher: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;

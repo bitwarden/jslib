@@ -30,4 +30,8 @@ export class Provider {
         }
         return this.enabled && this.status === ProviderUserStatusType.Confirmed;
     }
+
+    get canCreateOrganizations() {
+        return this.enabled && this.type === ProviderUserType.ProviderAdmin;
+    }
 }

@@ -156,9 +156,10 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
+import { ProviderOrganizationOrganizationDetailsResponse } from '../models/response/provider/providerOrganizationResponse';
 import { ProviderUserBulkPublicKeyResponse } from '../models/response/provider/providerUserBulkPublicKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
-import { ProviderOrganizationOrganizationDetailsResponse } from '../models/response/provider/providerOrganizationResponse';
+import { ProviderAddOrganizationRequest } from '../models/request/provider/providerAddOrganizationRequest';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;
@@ -1312,6 +1313,10 @@ export class ApiService implements ApiServiceAbstraction {
     async getProviderClients(providerId: string): Promise<ListResponse<ProviderOrganizationOrganizationDetailsResponse>> {
         const r = await this.send('GET', '/providers/' + providerId + '/organizations', null, true, true);
         return new ListResponse(r, ProviderOrganizationOrganizationDetailsResponse);
+    }
+
+    postProviderAddOrganization(providerId: string, request: ProviderAddOrganizationRequest): Promise<any> {
+        return this.send('POST', '/providers/' + providerId + '/organizations/add', request, true, false);
     }
 
     // Event APIs

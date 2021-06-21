@@ -6,8 +6,8 @@ import { ProfileOrganizationResponse } from '../models/response/profileOrganizat
 
 import { HashPurpose } from '../enums/hashPurpose';
 import { KdfType } from '../enums/kdfType';
-import { KeySuffixOptions } from './storage.service';
 import { ProfileProviderResponse } from '../models/response/profileProviderResponse';
+import { KeySuffixOptions } from './storage.service';
 
 export abstract class CryptoService {
     setKey: (key: SymmetricCryptoKey) => Promise<any>;
