@@ -44,7 +44,7 @@ export class ModalService {
         });
 
         // Add backdrop, setup [data-dismiss] handler.
-        modalRef.onCreated.pipe(first()).subscribe((el) => {
+        modalRef.onCreated.pipe(first()).subscribe(el => {
             document.body.classList.add('modal-open');
             const backdrop = document.createElement('div');
             backdrop.className = 'modal-backdrop fade';
@@ -53,7 +53,7 @@ export class ModalService {
             el.querySelector('.modal-dialog').addEventListener('click', (e: Event) => {
                 e.stopPropagation();
             });
-    
+
             const modals = Array.from(el.querySelectorAll('.modal, .modal *[data-dismiss="modal"]'));
             for (const closeElement of modals) {
                 closeElement.addEventListener('click', event => {
