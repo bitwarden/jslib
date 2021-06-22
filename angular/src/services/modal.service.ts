@@ -38,6 +38,28 @@ export class ModalService {
         // onClose is used in Web to hook into bootstrap. On other projects we directly pipe it to closed.
         modalRef.onClose.pipe(first()).subscribe(() => {
             modalRef.closed();
+
+            document.body.classList.remove('modal-open');
+            document.body.removeChild(document.querySelector('.modal-backdrop'));
+        });
+
+        // Add backdrop, setup [data-dismiss] handler.
+        modalRef.onCreated.pipe(first()).subscribe((el) => {
+            document.body.classList.add('modal-open');
+            const backdrop = document.createElement('div');
+            backdrop.className = 'modal-backdrop fade';
+            document.body.appendChild(backdrop);
+
+            el.querySelector('.modal-dialog').addEventListener('click', (e: Event) => {
+                e.stopPropagation();
+            });
+    
+            const modals = Array.from(el.querySelectorAll('.modal, .modal *[data-dismiss="modal"]'));
+            for (const closeElement of modals) {
+                closeElement.addEventListener('click', event => {
+                    modalRef.close();
+                });
+            }
         });
 
         this.modalComponentRef.instance.childComponentType = componentType;

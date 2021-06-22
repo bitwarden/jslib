@@ -30,26 +30,7 @@ export class DynamicModalComponent implements AfterViewInit, OnDestroy {
         this.loadChildComponent(this.childComponentType);
         this.cd.detectChanges();
 
-        this.el.nativeElement.querySelector('.modal-dialog').addEventListener('click', (e: Event) => {
-            e.stopPropagation();
-        });
-
-        const modals = Array.from(this.el.nativeElement.querySelectorAll('.modal, .modal *[data-dismiss="modal"]'));
-        for (const closeElement of modals) {
-            closeElement.addEventListener('click', event => {
-                this.close();
-            });
-        }
-
-        this.modalRef.created();
-    }
-
-    onOverlayClicked(evt: MouseEvent) {
-        this.close();
-    }
-
-    onDialogClicked(evt: MouseEvent) {
-        evt.stopPropagation();
+        this.modalRef.created(this.el.nativeElement);
     }
 
     loadChildComponent(componentType: Type<any>) {
