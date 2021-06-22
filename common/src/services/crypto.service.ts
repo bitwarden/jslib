@@ -334,7 +334,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     async clearKeys(): Promise<any> {
-        await this.clearEncKey();
+        await this.clearKey();
         await this.clearKeyHash();
         await this.clearOrgKeys();
         await this.clearEncKey();
