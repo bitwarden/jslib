@@ -221,6 +221,11 @@ export class Utils {
         if (httpUrl) {
             try {
                 const url = Utils.getUrlObject(uriString);
+                const validHostname = tldjs?.isValid != null ? tldjs.isValid(url.hostname) : true;
+                if (!validHostname) {
+                    return null;
+                }
+
                 if (url.hostname === 'localhost' || Utils.validIpAddress(url.hostname)) {
                     return url.hostname;
                 }

@@ -33,6 +33,11 @@ describe('Utils Service', () => {
             expect(Utils.getDomain('https://localhost')).toBe('localhost');
             expect(Utils.getDomain('https://192.168.1.1')).toBe('192.168.1.1');
         });
+
+        it('should reject invalid hostnames', () => {
+            expect(Utils.getDomain('https://mywebsite.com$.mywebsite.com')).toBeNull();
+            expect(Utils.getDomain('https://mywebsite.com!.mywebsite.com')).toBeNull();
+        });
     });
 
     describe('getHostname', () => {
