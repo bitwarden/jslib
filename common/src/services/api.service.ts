@@ -1319,6 +1319,11 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/providers/' + providerId + '/organizations/add', request, true, false);
     }
 
+    async postProviderCreateOrganization(providerId: string, request: OrganizationCreateRequest): Promise<OrganizationResponse> {
+        const r = await this.send('POST', '/providers/' + providerId + '/organizations', request, true, true);
+        return new OrganizationResponse(r);
+    }
+
     // Event APIs
 
     async getEvents(start: string, end: string, token: string): Promise<ListResponse<EventResponse>> {

@@ -408,6 +408,7 @@ export abstract class ApiService {
     deleteManyProviderUsers: (providerId: string, request: ProviderUserBulkRequest) => Promise<ListResponse<ProviderUserBulkResponse>>;
     getProviderClients: (providerId: string) => Promise<ListResponse<ProviderOrganizationOrganizationDetailsResponse>>;
     postProviderAddOrganization: (providerId: string, request: ProviderAddOrganizationRequest) => Promise<any>;
+    postProviderCreateOrganization: (providerId: string, request: OrganizationCreateRequest) => Promise<OrganizationResponse>;
 
     getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
     getEventsCipher: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
