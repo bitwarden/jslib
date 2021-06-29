@@ -58,8 +58,8 @@ export class LoginComponent implements OnInit {
         if (this.rememberEmail == null) {
             this.rememberEmail = true;
         }
-        if (Utils.isBrowser) {
-            document.getElementById(this.email == null || this.email === '' ? 'email' : 'masterPassword').focus();
+        if (Utils.isBrowser && !(Utils.isNode && process.platform === 'darwin')) {
+            this.focusInput();
         }
     }
 
@@ -142,5 +142,9 @@ export class LoginComponent implements OnInit {
         this.platformUtilsService.launchUri(webUrl + '/#/sso?clientId=' + clientId +
             '&redirectUri=' + encodeURIComponent(ssoRedirectUri) +
             '&state=' + state + '&codeChallenge=' + codeChallenge);
+    }
+
+    protected focusInput() {
+        document.getElementById(this.email == null || this.email === '' ? 'email' : 'masterPassword').focus();
     }
 }
