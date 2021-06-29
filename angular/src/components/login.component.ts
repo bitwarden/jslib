@@ -40,7 +40,6 @@ export class LoginComponent implements OnInit {
 
     protected twoFactorRoute = '2fa';
     protected successRoute = 'vault';
-    protected focusInputOnPageLoad = Utils.isBrowser;
 
     constructor(protected authService: AuthService, protected router: Router,
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
@@ -59,7 +58,7 @@ export class LoginComponent implements OnInit {
         if (this.rememberEmail == null) {
             this.rememberEmail = true;
         }
-        if (this.focusInputOnPageLoad) {
+        if (Utils.isBrowser && !Utils.isNode) {
             this.focusInput();
         }
     }
