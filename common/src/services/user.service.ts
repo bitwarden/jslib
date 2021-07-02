@@ -157,7 +157,7 @@ export class UserService implements UserServiceAbstraction {
             Keys.organizationsPrefix + userId);
         const response: Organization[] = [];
         for (const id in organizations) {
-            if (organizations.hasOwnProperty(id)) {
+            if (organizations.hasOwnProperty(id) && !organizations[id].isProviderUser) {
                 response.push(new Organization(organizations[id]));
             }
         }

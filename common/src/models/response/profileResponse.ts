@@ -1,5 +1,6 @@
 import { BaseResponse } from './baseResponse';
 import { ProfileOrganizationResponse } from './profileOrganizationResponse';
+import { ProfileProviderOrganizationResponse } from './profileProviderOrganizationResponse';
 import { ProfileProviderResponse } from './profileProviderResponse';
 
 export class ProfileResponse extends BaseResponse {
@@ -16,6 +17,7 @@ export class ProfileResponse extends BaseResponse {
     securityStamp: string;
     organizations: ProfileOrganizationResponse[] = [];
     providers: ProfileProviderResponse[] = [];
+    providerOrganizations: ProfileProviderOrganizationResponse[] = [];
 
     constructor(response: any) {
         super(response);
@@ -38,6 +40,10 @@ export class ProfileResponse extends BaseResponse {
         const providers = this.getResponseProperty('Providers');
         if (providers != null) {
             this.providers = providers.map((o: any) => new ProfileProviderResponse(o));
+        }
+        const providerOrganizations = this.getResponseProperty('ProviderOrganizations');
+        if (providerOrganizations != null) {
+            this.providerOrganizations = providerOrganizations.map((o: any) => new ProfileProviderOrganizationResponse(o));
         }
     }
 }

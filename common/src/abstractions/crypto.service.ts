@@ -3,10 +3,12 @@ import { EncString } from '../models/domain/encString';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
 import { ProfileOrganizationResponse } from '../models/response/profileOrganizationResponse';
+import { ProfileProviderOrganizationResponse } from '../models/response/profileProviderOrganizationResponse';
+import { ProfileProviderResponse } from '../models/response/profileProviderResponse';
 
 import { HashPurpose } from '../enums/hashPurpose';
 import { KdfType } from '../enums/kdfType';
-import { ProfileProviderResponse } from '../models/response/profileProviderResponse';
+
 import { KeySuffixOptions } from './storage.service';
 
 export abstract class CryptoService {
@@ -14,7 +16,7 @@ export abstract class CryptoService {
     setKeyHash: (keyHash: string) => Promise<{}>;
     setEncKey: (encKey: string) => Promise<{}>;
     setEncPrivateKey: (encPrivateKey: string) => Promise<{}>;
-    setOrgKeys: (orgs: ProfileOrganizationResponse[]) => Promise<{}>;
+    setOrgKeys: (orgs: ProfileOrganizationResponse[], providerOrgs: ProfileProviderOrganizationResponse[]) => Promise<{}>;
     setProviderKeys: (orgs: ProfileProviderResponse[]) => Promise<{}>;
     getKey: (keySuffix?: KeySuffixOptions) => Promise<SymmetricCryptoKey>;
     getKeyFromStorage: (keySuffix: KeySuffixOptions) => Promise<SymmetricCryptoKey>;

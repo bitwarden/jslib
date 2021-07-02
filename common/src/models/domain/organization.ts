@@ -34,6 +34,7 @@ export class Organization {
     hasPublicAndPrivateKeys: boolean;
     providerId: string;
     providerName: string;
+    isProviderUser: boolean;
 
     constructor(obj?: OrganizationData) {
         if (obj == null) {
@@ -68,6 +69,7 @@ export class Organization {
         this.hasPublicAndPrivateKeys = obj.hasPublicAndPrivateKeys;
         this.providerId = obj.providerId;
         this.providerName = obj.providerName;
+        this.isProviderUser = obj.isProviderUser;
     }
 
     get canAccess() {

@@ -24,6 +24,7 @@ import { ConstantsService } from './constants.service';
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
 import { EEFLongWordList } from '../misc/wordlist';
+import { ProfileProviderOrganizationResponse } from '../models/response/profileProviderOrganizationResponse';
 import { ProfileProviderResponse } from '../models/response/profileProviderResponse';
 
 export const Keys = {
@@ -79,10 +80,13 @@ export class CryptoService implements CryptoServiceAbstraction {
         this.privateKey = null;
     }
 
-    setOrgKeys(orgs: ProfileOrganizationResponse[]): Promise<{}> {
+    setOrgKeys(orgs: ProfileOrganizationResponse[], providerOrgs: ProfileProviderOrganizationResponse[]): Promise<{}> {
         const orgKeys: any = {};
         orgs.forEach(org => {
             orgKeys[org.id] = org.key;
+        });
+        providerOrgs.forEach(providerOrg => {
+            orgKeys[providerOrg.id] = providerOrg.key;
         });
 
         this.orgKeys = null;

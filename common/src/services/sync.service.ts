@@ -287,7 +287,7 @@ export class SyncService implements SyncServiceAbstraction {
 
         await this.cryptoService.setEncKey(response.key);
         await this.cryptoService.setEncPrivateKey(response.privateKey);
-        await this.cryptoService.setOrgKeys(response.organizations);
+        await this.cryptoService.setOrgKeys(response.organizations, response.providerOrganizations);
         await this.cryptoService.setProviderKeys(response.providers);
         await this.userService.setSecurityStamp(response.securityStamp);
         await this.userService.setEmailVerified(response.emailVerified);
@@ -300,6 +300,13 @@ export class SyncService implements SyncServiceAbstraction {
         const providers: { [id: string]: ProviderData; } = {};
         response.providers.forEach(p => {
             providers[p.id] = new ProviderData(p);
+        });
+
+        response.providerOrganizations.forEach(o => {
+            if (organizations[o.id] == null) {
+                organizations[o.id] = new OrganizationData(o);
+                organizations[o.id].isProviderUser = true;
+            }
         });
         return Promise.all([
             this.userService.replaceOrganizations(organizations),

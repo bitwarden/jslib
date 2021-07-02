@@ -156,10 +156,10 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
+import { ProviderAddOrganizationRequest } from '../models/request/provider/providerAddOrganizationRequest';
 import { ProviderOrganizationOrganizationDetailsResponse } from '../models/response/provider/providerOrganizationResponse';
 import { ProviderUserBulkPublicKeyResponse } from '../models/response/provider/providerUserBulkPublicKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
-import { ProviderAddOrganizationRequest } from '../models/request/provider/providerAddOrganizationRequest';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;

@@ -33,6 +33,7 @@ export class OrganizationData {
     hasPublicAndPrivateKeys: boolean;
     providerId: string;
     providerName: string;
+    isProviderUser: boolean;
 
     constructor(response: ProfileOrganizationResponse) {
         this.id = response.id;
