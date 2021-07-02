@@ -46,7 +46,7 @@ In order to easily develop local changes to jslib across each of the TypeScript/
         * browser - `git clone --recurse-submodules https://github.com/bitwarden/browser.git` (/dev/browser)
         * cli - `git clone --recurse-submodules https://github.com/bitwarden/cli` (/dev/cli)
 
-    You should notice web, desktop, browser and cli each reference jslib as a git submodule. If you've already cloned the repos but didn't use `--recurse-submodules` then you'll need to init the submodule with     `npm run sub:init`.
+    You should notice web, desktop, browser and cli each reference jslib as a git submodule. If you've already cloned the repos but didn't use `--recurse-submodules` then you'll need to init the submodule with `npm run sub:init`.
 
 ## Configure Symlinks
 Using `git clone` will make symlinks added to your repo be seen by git as plain text file paths. We need to prevent that. In the project root run, `git config core.symlinks true`.
@@ -72,7 +72,7 @@ If you've submitted a client PR and a jslib PR, your jslib PR will be approved a
 2. Update the jslib submodule:
    * if you're working on your own fork, run `git submodule update --remote --reference upstream`.
    * if you're working on a branch on the official repo, run `npm run sub:update`
-3. To check you've done this correctly, you can `cd` into your jslib directory and run `git log`. You should see your recent changes in the log. You can also use `git diff` to see what commit hash is being used by the submodule.
+3. To check you've done this correctly, you can `cd` into your jslib directory and run `git log`. You should see your recent changes in the log. This will also show you the most recent commit hash, which should match the most recent commit hash on [Github](https://github.com/bitwarden/jslib).
 4. Add your changes: `git add jslib`
 5. Commit your changes: `git commit -m "update jslib version"`
 6. Push your changes: `git push`
