@@ -174,6 +174,12 @@ export class WindowMain {
         this.win.on('move', () => {
             this.windowStateChangeHandler(Keys.mainWindowSize, this.win);
         });
+        this.win.on('focus', () => {
+            this.win.webContents.send('messagingService', {
+                command: 'windowIsFocused',
+                windowIsFocused: true,
+            });
+        });
 
         if (this.createWindowCallback) {
             this.createWindowCallback(this.win);
