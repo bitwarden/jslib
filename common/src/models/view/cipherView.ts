@@ -53,7 +53,8 @@ export class CipherView implements View {
         this.collectionIds = c.collectionIds;
         this.revisionDate = c.revisionDate;
         this.deletedDate = c.deletedDate;
-        this.reprompt = c.reprompt;
+        // Old locally stored ciphers might have reprompt == null. If so set it to None.
+        this.reprompt = c.reprompt ?? CipherRepromptType.None;
     }
 
     get subTitle(): string {
