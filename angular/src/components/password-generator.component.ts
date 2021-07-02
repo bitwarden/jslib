@@ -17,6 +17,7 @@ export class PasswordGeneratorComponent implements OnInit {
     @Input() showSelect: boolean = false;
     @Output() onSelected = new EventEmitter<string>();
 
+    passTypeOptions: any[];
     options: any = {};
     password: string = '-';
     showOptions = false;
@@ -25,7 +26,12 @@ export class PasswordGeneratorComponent implements OnInit {
 
     constructor(protected passwordGenerationService: PasswordGenerationService,
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
-        private win: Window) { }
+        private win: Window) {
+            this.passTypeOptions = [
+                { name: i18nService.t('password'), value: 'password' },
+                { name: i18nService.t('passphrase'), value: 'passphrase' },
+            ];
+         }
 
     async ngOnInit() {
         const optionsResponse = await this.passwordGenerationService.getOptions();
