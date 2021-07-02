@@ -80,14 +80,18 @@ export class CryptoService implements CryptoServiceAbstraction {
         this.privateKey = null;
     }
 
-    setOrgKeys(orgs: ProfileOrganizationResponse[], providerOrgs: ProfileProviderOrganizationResponse[]): Promise<{}> {
+    async setOrgKeys(orgs: ProfileOrganizationResponse[], providerOrgs: ProfileProviderOrganizationResponse[]): Promise<{}> {
         const orgKeys: any = {};
         orgs.forEach(org => {
             orgKeys[org.id] = org.key;
         });
-        providerOrgs.forEach(providerOrg => {
-            orgKeys[providerOrg.id] = providerOrg.key;
-        });
+
+        for (const providerOrg of providerOrgs) {
+            // Convert provider encrypted keys to user encrypted.
+            const providerKey = await this.getProviderKey(providerOrg.providerId);
+            const decValue = await this.decryptToBytes(new EncString(providerOrg.key), providerKey);
+            orgKeys[providerOrg.id] = await (await this.rsaEncrypt(decValue)).encryptedString;
+        }
 
         this.orgKeys = null;
         return this.storageService.save(Keys.encOrgKeys, orgKeys);
