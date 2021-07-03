@@ -21,6 +21,7 @@ import { MessageResponse } from '../models/response/messageResponse';
 
 import { NodeUtils } from 'jslib-common/misc/nodeUtils';
 import { Utils } from 'jslib-common/misc/utils';
+import { ConsoleLogService } from 'jslib-common/services/consoleLog.service';
 
 // tslint:disable-next-line
 const open = require('open');
@@ -32,6 +33,7 @@ export class LoginCommand {
     protected clientId: string;
 
     private ssoRedirectUri: string = null;
+    private logService: ConsoleLogService;
 
     constructor(protected authService: AuthService, protected apiService: ApiService,
         protected i18nService: I18nService, protected environmentService: EnvironmentService,
@@ -39,6 +41,7 @@ export class LoginCommand {
         protected cryptoFunctionService: CryptoFunctionService, protected platformUtilsService: PlatformUtilsService,
         clientId: string) {
         this.clientId = clientId;
+        this.logService = new ConsoleLogService(false);
     }
 
     async run(email: string, password: string, options: program.OptionValues) {
@@ -114,20 +117,26 @@ export class LoginCommand {
             if (password == null || password === '') {
                 if (options.passwordfile) {
                     password = await NodeUtils.readFirstLine(options.passwordfile);
-                } else if (options.passwordenv && process.env[options.passwordenv]) {
-                    password = process.env[options.passwordenv];
-                } else if (this.canInteract) {
+                } else if (options.passwordenv) {
+                    if (process.env[options.passwordenv]) {
+                        password = process.env[options.passwordenv];
+                    } else {
+                        this.logService.warning(`Warning: Provided passwordenv ${options.passwordenv} is not set`);
+                    }
+                }
+            }
+
+            if (password == null || password === '') {
+                if (this.canInteract) {
                     const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
                         type: 'password',
                         name: 'password',
                         message: 'Master password:',
                     });
                     password = answer.password;
+                } else {
+                    return Response.badRequest('Master password is required.');
                 }
-            }
-
-            if (password == null || password === '') {
-                return Response.badRequest('Master password is required.');
             }
         }
 
