@@ -28,7 +28,7 @@ Please sign the [Contributor Agreement](https://cla-assistant.io/bitwarden/jslib
 
 # Introduction to jslib and git submodules
 
-jslib is a repository that contains shared code for all Bitwarden Typescript/Javascript clients (web, desktop, browser and CLI). The clients use this code by consuming jslib as a submodule. This makes jslib code available to each client under the `jslib` directory of the client repository.
+jslib is a repository that contains shared code for all Bitwarden Typescript/Javascript clients (web, desktop, browser, CLI, and directory connector). The clients use this code by consuming jslib as a submodule. This makes jslib code available to each client under the `jslib` directory of the client repository.
 
 If you haven't worked with submodules before, you should start by reading some basic guides (such as the [git scm chapter](https://git-scm.com/book/en/v2/Git-Tools-Submodules) or the [Atlassian tutorial](https://www.atlassian.com/git/tutorials/git-submodule)).
 
