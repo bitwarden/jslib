@@ -1,4 +1,5 @@
 import { Observable, Subject } from 'rxjs';
+import { first } from 'rxjs/operators';
 
 export class ModalRef {
 
@@ -42,5 +43,9 @@ export class ModalRef {
 
     created(el: HTMLElement) {
         this._onCreated.next(el);
+    }
+
+    onClosedPromise(): Promise<any> {
+        return this.onClosed.pipe(first()).toPromise()
     }
 }
