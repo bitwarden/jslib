@@ -35,7 +35,7 @@ export class ModalService {
 
         const modalRef = this.appendModalComponentToBody(config);
 
-        // onClose is used in Web to hook into bootstrap. On other projects we directly pipe it to closed.
+        // onClose is used in Web to hook into bootstrap. On other projects we pipe it directly to closed.
         modalRef.onClose.pipe(first()).subscribe(() => {
             modalRef.closed();
 

@@ -10,10 +10,6 @@ export class ModalInjector implements Injector {
 
     get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
     get(token: any, notFoundValue?: any, flags?: any) {
-        const value = this._additionalTokens.get(token);
-
-        if (value) return value;
-
-        return this._parentInjector.get<any>(token, notFoundValue);
+        return this._additionalTokens.get(token) ?? this._parentInjector.get<any>(token, notFoundValue);
     }
 }
