@@ -46,6 +46,6 @@ export class ModalRef {
     }
 
     onClosedPromise(): Promise<any> {
-        return this.onClosed.pipe(first()).toPromise()
+        return this.onClosed.pipe(first()).toPromise();
     }
 }
