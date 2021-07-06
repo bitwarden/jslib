@@ -14,6 +14,7 @@ export class ProfileProviderResponse extends BaseResponse {
     enabled: boolean;
     permissions: PermissionsApi;
     userId: string;
+    useEvents: boolean;
 
     constructor(response: any) {
         super(response);
@@ -25,5 +26,6 @@ export class ProfileProviderResponse extends BaseResponse {
         this.enabled = this.getResponseProperty('Enabled');
         this.permissions = new PermissionsApi(this.getResponseProperty('permissions'));
         this.userId = this.getResponseProperty('UserId');
+        this.useEvents = this.getResponseProperty('UseEvents');
     }
 }

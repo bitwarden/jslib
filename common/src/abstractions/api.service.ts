@@ -53,6 +53,7 @@ import { PolicyRequest } from '../models/request/policyRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
 import { ProviderAddOrganizationRequest } from '../models/request/provider/providerAddOrganizationRequest';
 import { ProviderSetupRequest } from '../models/request/provider/providerSetupRequest';
+import { ProviderUpdateRequest } from '../models/request/provider/providerUpdateRequest';
 import { ProviderUserAcceptRequest } from '../models/request/provider/providerUserAcceptRequest';
 import { ProviderUserBulkConfirmRequest } from '../models/request/provider/providerUserBulkConfirmRequest';
 import { ProviderUserBulkRequest } from '../models/request/provider/providerUserBulkRequest';
@@ -393,6 +394,9 @@ export abstract class ApiService {
     postOrganizationKeys: (id: string, request: OrganizationKeysRequest) => Promise<OrganizationKeysResponse>;
 
     postProviderSetup: (id: string, request: ProviderSetupRequest) => Promise<ProviderResponse>;
+    getProvider: (id: string) => Promise<ProviderResponse>;
+    putProvider: (id: string, request: ProviderUpdateRequest) => Promise<ProviderResponse>;
+
     getProviderUsers: (providerId: string) => Promise<ListResponse<ProviderUserUserDetailsResponse>>;
     getProviderUser: (providerId: string, id: string) => Promise<ProviderUserResponse>;
     postProviderUserInvite: (providerId: string, request: ProviderUserInviteRequest) => Promise<any>;
@@ -416,6 +420,7 @@ export abstract class ApiService {
         token: string) => Promise<ListResponse<EventResponse>>;
     getEventsOrganizationUser: (organizationId: string, id: string,
         start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
+    getEventsProvider: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
     postEventsCollect: (request: EventRequest[]) => Promise<any>;
 
     deleteSsoUser: (organizationId: string) => Promise<any>;

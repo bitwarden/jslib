@@ -2,7 +2,6 @@ import { ProviderUserStatusType } from '../../enums/providerUserStatusType';
 import { ProviderUserType } from '../../enums/providerUserType';
 import { ProviderData } from '../data/providerData';
 
-
 export class Provider {
     id: string;
     name: string;
@@ -10,6 +9,7 @@ export class Provider {
     type: ProviderUserType;
     enabled: boolean;
     userId: string;
+    useEvents: boolean;
 
     constructor(obj?: ProviderData) {
         if (obj == null) {
@@ -22,16 +22,29 @@ export class Provider {
         this.type = obj.type;
         this.enabled = obj.enabled;
         this.userId = obj.userId;
+        this.useEvents = obj.useEvents;
     }
 
     get canAccess() {
-        if (this.type === ProviderUserType.ProviderAdmin) {
+        if (this.isProviderAdmin) {
             return true;
         }
         return this.enabled && this.status === ProviderUserStatusType.Confirmed;
     }
 
     get canCreateOrganizations() {
-        return this.enabled && this.type === ProviderUserType.ProviderAdmin;
+        return this.enabled && this.isProviderAdmin;
+    }
+
+    get canManageUsers() {
+        return this.isProviderAdmin;
+    }
+
+    get canAccessEventLogs() {
+        return this.isProviderAdmin;
+    }
+
+    get isProviderAdmin() {
+        return this.type === ProviderUserType.ProviderAdmin;
     }
 }

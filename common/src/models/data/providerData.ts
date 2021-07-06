@@ -10,6 +10,7 @@ export class ProviderData {
     type: ProviderUserType;
     enabled: boolean;
     userId: string;
+    useEvents: boolean;
 
     constructor(response: ProfileProviderResponse) {
         this.id = response.id;
@@ -18,5 +19,6 @@ export class ProviderData {
         this.type = response.type;
         this.enabled = response.enabled;
         this.userId = response.userId;
+        this.useEvents = response.useEvents;
     }
 }

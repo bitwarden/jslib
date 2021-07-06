@@ -55,7 +55,9 @@ import { PasswordVerificationRequest } from '../models/request/passwordVerificat
 import { PaymentRequest } from '../models/request/paymentRequest';
 import { PolicyRequest } from '../models/request/policyRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
+import { ProviderAddOrganizationRequest } from '../models/request/provider/providerAddOrganizationRequest';
 import { ProviderSetupRequest } from '../models/request/provider/providerSetupRequest';
+import { ProviderUpdateRequest } from '../models/request/provider/providerUpdateRequest';
 import { ProviderUserAcceptRequest } from '../models/request/provider/providerUserAcceptRequest';
 import { ProviderUserBulkConfirmRequest } from '../models/request/provider/providerUserBulkConfirmRequest';
 import { ProviderUserBulkRequest } from '../models/request/provider/providerUserBulkRequest';
@@ -131,7 +133,9 @@ import { PlanResponse } from '../models/response/planResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
+import { ProviderOrganizationOrganizationDetailsResponse } from '../models/response/provider/providerOrganizationResponse';
 import { ProviderResponse } from '../models/response/provider/providerResponse';
+import { ProviderUserBulkPublicKeyResponse } from '../models/response/provider/providerUserBulkPublicKeyResponse';
 import { ProviderUserBulkResponse } from '../models/response/provider/providerUserBulkResponse';
 import {
     ProviderUserResponse,
@@ -156,9 +160,6 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
-import { ProviderAddOrganizationRequest } from '../models/request/provider/providerAddOrganizationRequest';
-import { ProviderOrganizationOrganizationDetailsResponse } from '../models/response/provider/providerOrganizationResponse';
-import { ProviderUserBulkPublicKeyResponse } from '../models/response/provider/providerUserBulkPublicKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
 
 export class ApiService implements ApiServiceAbstraction {
@@ -1254,6 +1255,18 @@ export class ApiService implements ApiServiceAbstraction {
         return new ProviderResponse(r);
     }
 
+    async getProvider(id: string) {
+        const r = await this.send('GET', '/providers/' + id, null, true, true);
+        return new ProviderResponse(r);
+    }
+
+    async putProvider(id: string, request: ProviderUpdateRequest) {
+        const r = await this.send('PUT', '/providers/' + id, request, true, true);
+        return new ProviderResponse(r);
+    }
+
+    // Provider User APIs
+
     async getProviderUsers(providerId: string): Promise<ListResponse<ProviderUserUserDetailsResponse>> {
         const r = await this.send('GET', '/providers/' + providerId + '/users', null, true, true);
         return new ListResponse(r, ProviderUserUserDetailsResponse);
@@ -1350,6 +1363,11 @@ export class ApiService implements ApiServiceAbstraction {
         const r = await this.send('GET',
             this.addEventParameters('/organizations/' + organizationId + '/users/' + id + '/events', start, end, token),
             null, true, true);
+        return new ListResponse(r, EventResponse);
+    }
+
+    async getEventsProvider(id: string, start: string, end: string, token: string): Promise<ListResponse<EventResponse>> {
+        const r = await this.send('GET', this.addEventParameters('/providers/' + id + '/events', start, end, token), null, true, true);
         return new ListResponse(r, EventResponse);
     }
 
