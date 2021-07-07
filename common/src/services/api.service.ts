@@ -1371,6 +1371,14 @@ export class ApiService implements ApiServiceAbstraction {
         return new ListResponse(r, EventResponse);
     }
 
+    async getEventsProviderUser(providerId: string, id: string,
+        start: string, end: string, token: string): Promise<ListResponse<EventResponse>> {
+        const r = await this.send('GET',
+            this.addEventParameters('/providers/' + providerId + '/users/' + id + '/events', start, end, token),
+            null, true, true);
+        return new ListResponse(r, EventResponse);
+    }
+
     async postEventsCollect(request: EventRequest[]): Promise<any> {
         const authHeader = await this.getActiveBearerToken();
         const headers = new Headers({

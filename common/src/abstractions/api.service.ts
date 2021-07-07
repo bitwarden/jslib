@@ -421,6 +421,7 @@ export abstract class ApiService {
     getEventsOrganizationUser: (organizationId: string, id: string,
         start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
     getEventsProvider: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
+    getEventsProviderUser: (providerId: string, id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
     postEventsCollect: (request: EventRequest[]) => Promise<any>;
 
     deleteSsoUser: (organizationId: string) => Promise<any>;
