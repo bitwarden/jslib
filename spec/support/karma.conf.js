@@ -5,19 +5,13 @@ module.exports = (config) => {
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-        frameworks: ['jasmine', 'karma-typescript', 'detectBrowsers'],
+        frameworks: ['jasmine', 'detectBrowsers'],
 
         // list of files / patterns to load in the browser
         files: [
-            'spec/utils.ts',
-            'spec/common/**/*.ts',
-            'spec/web/**/*.ts',
-            'src/abstractions/**/*.ts',
-            'src/importers/**/*.ts',
-            'src/enums/**/*.ts',
-            'src/models/**/*.ts',
-            'src/misc/**/*.ts',
-            'src/services/**/*.ts'
+            { pattern: 'spec/utils.ts', watched: false },
+            { pattern: 'spec/common/**/*.ts', watched: false },
+            { pattern: 'spec/web/**/*.ts', watched: false },
         ],
 
         // list of files to exclude
@@ -27,13 +21,13 @@ module.exports = (config) => {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            '**/*.ts': 'karma-typescript'
+            'spec/**/*.ts': 'webpack'
         },
 
         // test results reporter to use
         // possible values: 'dots', 'progress'
         // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['progress', 'karma-typescript', 'kjhtml'],
+        reporters: ['progress', 'kjhtml'],
 
         // web server port
         port: 9876,
@@ -53,17 +47,28 @@ module.exports = (config) => {
             clearContext: false // leave Jasmine Spec Runner output visible in browser
         },
 
-        karmaTypescriptConfig: {
-            tsconfig: './tsconfig.json',
-            bundlerOptions: {
-                entrypoints: /\.spec\.ts$/,
-                sourceMap: true,
-                resolve: {
-                    alias: {
-                        "util": "node_modules/util/util.js"
-                    }
-                }
-            }
+        webpack: {
+            resolve: {
+                extensions: ['.js', '.ts', '.tsx'],
+            },
+            module: {
+                rules: [
+                    {
+                        test: /\.tsx?$/,
+                        loader: 'ts-loader',
+                        options: {
+                            compiler: 'ttypescript'
+                        },
+                    },
+                ],
+            },
+            stats: {
+                colors: true,
+                modules: true,
+                reasons: true,
+                errorDetails: true,
+            },
+            devtool: 'inline-source-map',
         },
 
         detectBrowsers: {
@@ -80,10 +85,8 @@ module.exports = (config) => {
                 removeBrowser('Opera');
                 removeBrowser('SafariTechPreview');
 
-                var ci = process.env.CI === 'True' || process.env.CI === 'true';
                 var githubAction = process.env.GITHUB_WORKFLOW != null && process.env.GITHUB_WORKFLOW !== '';
                 if (githubAction) {
-                    removeBrowser('Edge');                    
                     removeBrowser('Firefox');
                     removeBrowser('Safari');
                 }

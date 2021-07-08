@@ -1,11 +1,11 @@
-import * as TypeMoq from 'typemoq';
+import Substitute from '@fluffy-spoon/substitute';
 
-import { PlatformUtilsService } from '../../../src/abstractions/platformUtils.service';
+import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 
-import { WebCryptoFunctionService } from '../../../src/services/webCryptoFunction.service';
+import { WebCryptoFunctionService } from 'jslib-common/services/webCryptoFunction.service';
 
-import { Utils } from '../../../src/misc/utils';
-import { SymmetricCryptoKey } from '../../../src/models/domain';
+import { Utils } from 'jslib-common/misc/utils';
+import { SymmetricCryptoKey } from 'jslib-common/models/domain';
 
 const RsaPublicKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAl0Vawl/toXzkEvB82FEtqHP' +
     '4xlU2ab/v0crqIfXfIoWF/XXdHGIdrZeilnRXPPJT1B9dTsasttEZNnua/0Rek/cjNDHtzT52irfoZYS7X6HNIfOi54Q+egP' +
@@ -467,11 +467,12 @@ function testRsaGenerateKeyPair(length: 1024 | 2048 | 4096) {
 }
 
 function getWebCryptoFunctionService() {
-    const platformUtilsMock = TypeMoq.Mock.ofType<PlatformUtilsService>(PlatformUtilsServiceMock);
-    platformUtilsMock.setup(x => x.isEdge()).returns(() => navigator.userAgent.indexOf(' Edg/') !== -1);
-    platformUtilsMock.setup(x => x.isIE()).returns(() => navigator.userAgent.indexOf(' Edg/') === -1 &&
+    const platformUtilsMock = Substitute.for<PlatformUtilsService>();
+    platformUtilsMock.isEdge().mimicks(() => navigator.userAgent.indexOf(' Edg/') !== -1);
+    platformUtilsMock.isIE().mimicks(() => navigator.userAgent.indexOf(' Edg/') === -1 &&
         navigator.userAgent.indexOf(' Trident/') !== -1);
-    return new WebCryptoFunctionService(window, platformUtilsMock.object);
+
+    return new WebCryptoFunctionService(window, platformUtilsMock);
 }
 
 function makeStaticByteArray(length: number) {
@@ -480,10 +481,4 @@ function makeStaticByteArray(length: number) {
         arr[i] = i;
     }
     return arr;
-}
-
-class PlatformUtilsServiceMock extends PlatformUtilsService {
-    isEdge = () => false;
-    isIE = () => false;
-    isSafari = () => super.isSafari();
 }

@@ -1,7 +1,7 @@
-import { NodeCryptoFunctionService } from '../../../src/services/nodeCryptoFunction.service';
+import { NodeCryptoFunctionService } from 'jslib-node/services/nodeCryptoFunction.service';
 
-import { Utils } from '../../../src/misc/utils';
-import { SymmetricCryptoKey } from '../../../src/models/domain/symmetricCryptoKey';
+import { Utils } from 'jslib-common/misc/utils';
+import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
 
 const RsaPublicKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAl0Vawl/toXzkEvB82FEtqHP' +
     '4xlU2ab/v0crqIfXfIoWF/XXdHGIdrZeilnRXPPJT1B9dTsasttEZNnua/0Rek/cjNDHtzT52irfoZYS7X6HNIfOi54Q+egP' +

@@ -1,4 +1,4 @@
-import { sequentialize } from '../../../src/misc/sequentialize';
+import { sequentialize } from 'jslib-common/misc/sequentialize';
 
 describe('sequentialize decorator', () => {
     it('should call the function once', async () => {
