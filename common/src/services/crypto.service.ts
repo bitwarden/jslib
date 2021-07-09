@@ -25,13 +25,7 @@ import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
 import { EEFLongWordList } from '../misc/wordlist';
 
-export const Keys = {
-    key: 'key', // Master Key
-    encOrgKeys: 'encOrgKeys',
-    encPrivateKey: 'encPrivateKey',
-    encKey: 'encKey', // Generated Symmetric Key
-    keyHash: 'keyHash',
-};
+export const Keys = ConstantsService.cryptoKeys;
 
 export class CryptoService implements CryptoServiceAbstraction {
     private key: SymmetricCryptoKey;

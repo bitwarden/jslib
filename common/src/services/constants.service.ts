@@ -31,6 +31,13 @@ export class ConstantsService {
     static readonly biometricText: string = 'biometricText';
     static readonly biometricAwaitingAcceptance: string = 'biometricAwaitingAcceptance';
     static readonly biometricFingerprintValidated: string = 'biometricFingerprintValidated';
+    static readonly cryptoKeys = {
+        key: 'key', // Master Key
+        encOrgKeys: 'encOrgKeys',
+        encPrivateKey: 'encPrivateKey',
+        encKey: 'encKey', // Generated Symmetric Key
+        keyHash: 'keyHash',
+    };
 
     readonly environmentUrlsKey: string = ConstantsService.environmentUrlsKey;
     readonly disableGaKey: string = ConstantsService.disableGaKey;
