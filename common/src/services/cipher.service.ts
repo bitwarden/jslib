@@ -70,7 +70,7 @@ const DomainMatchBlacklist = new Map<string, Set<string>>([
 export class CipherService implements CipherServiceAbstraction {
     // tslint:disable-next-line
     _decryptedCipherCache: CipherView[];
-    
+
     private workerThreshold: number = 250;
     private sortedCiphersCache: SortedCiphersCache = new SortedCiphersCache(this.sortCiphersByLastUsed);
 
@@ -338,7 +338,7 @@ export class CipherService implements CipherServiceAbstraction {
         if (ciphers == null || ciphers.length === 0) {
             return decryptedCiphers;
         }
-        
+
         const hasKey = await this.cryptoService.hasKey();
         if (!hasKey) {
             throw new Error('No key.');
@@ -359,6 +359,7 @@ export class CipherService implements CipherServiceAbstraction {
         }
 
         const cryptoKeys = ConstantsService.cryptoKeys;
+
         const key = (await this.cryptoService.getKey()).keyB64;
         const encKey = await this.storageService.get<string>(cryptoKeys.encKey);
         const orgKeys = await this.storageService.get<string>(cryptoKeys.encOrgKeys);
