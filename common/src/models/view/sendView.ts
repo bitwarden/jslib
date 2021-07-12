@@ -8,7 +8,7 @@ import { SendFileView } from './sendFileView';
 import { SendTextView } from './sendTextView';
 import { View } from './view';
 
-export class SendView implements View {
+export class SendView extends View {
     id: string = null;
     accessId: string = null;
     name: string = null;
@@ -28,6 +28,7 @@ export class SendView implements View {
     hideEmail: boolean = false;
 
     constructor(s?: Send) {
+        super();
         if (!s) {
             return;
         }

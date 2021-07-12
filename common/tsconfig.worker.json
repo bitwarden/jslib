@@ -1,0 +1,10 @@
+{
+    "extends": "./tsconfig",
+    "include": [
+        "src/workers/*.worker.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

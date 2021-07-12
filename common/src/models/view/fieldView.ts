@@ -4,7 +4,7 @@ import { View } from './view';
 
 import { Field } from '../domain/field';
 
-export class FieldView implements View {
+export class FieldView extends View {
     name: string = null;
     value: string = null;
     type: FieldType = null;
@@ -12,6 +12,7 @@ export class FieldView implements View {
     showValue: boolean = false;
 
     constructor(f?: Field) {
+        super();
         if (!f) {
             return;
         }

@@ -4,7 +4,7 @@ import { View } from './view';
 import { Utils } from '../../misc/utils';
 import { Login } from '../domain/login';
 
-export class LoginView implements View {
+export class LoginView extends View {
     username: string = null;
     password: string = null;
     passwordRevisionDate?: Date = null;
@@ -13,12 +13,31 @@ export class LoginView implements View {
     autofillOnPageLoad: boolean = null;
 
     constructor(l?: Login) {
+        super();
         if (!l) {
             return;
         }
 
         this.passwordRevisionDate = l.passwordRevisionDate;
         this.autofillOnPageLoad = l.autofillOnPageLoad;
+    }
+
+    buildFromObj(obj: any) {
+        this.buildViewModel(this, obj, {
+            username: null,
+            password: null,
+            passwordRevisionDate: null,
+            totp: null,
+        });
+
+        if (obj.uris) {
+            this.uris = [];
+            obj.uris.forEach((u: any) => {
+                const loginUriView = new LoginUriView();
+                loginUriView.buildFromObj(u);
+                this.uris.push(loginUriView);
+            });
+        }
     }
 
     get uri(): string {

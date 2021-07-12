@@ -5,7 +5,7 @@ import { ITreeNodeObject } from '../domain/treeNode';
 
 import { CollectionGroupDetailsResponse } from '../response/collectionResponse';
 
-export class CollectionView implements View, ITreeNodeObject {
+export class CollectionView extends View implements ITreeNodeObject {
     id: string = null;
     organizationId: string = null;
     name: string = null;
@@ -14,6 +14,7 @@ export class CollectionView implements View, ITreeNodeObject {
     hidePasswords: boolean = null;
 
     constructor(c?: Collection | CollectionGroupDetailsResponse) {
+        super();
         if (!c) {
             return;
         }

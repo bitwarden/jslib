@@ -12,7 +12,7 @@ import { PasswordHistoryView } from './passwordHistoryView';
 import { SecureNoteView } from './secureNoteView';
 import { View } from './view';
 
-export class CipherView implements View {
+export class CipherView extends View {
     id: string = null;
     organizationId: string = null;
     folderId: string = null;
@@ -37,6 +37,7 @@ export class CipherView implements View {
     reprompt: CipherRepromptType = CipherRepromptType.None;
 
     constructor(c?: Cipher) {
+        super();
         if (!c) {
             return;
         }
@@ -55,6 +56,47 @@ export class CipherView implements View {
         this.deletedDate = c.deletedDate;
         // Old locally stored ciphers might have reprompt == null. If so set it to None.
         this.reprompt = c.reprompt ?? CipherRepromptType.None;
+    }
+
+    buildFromObj(obj: any) {
+        this.buildViewModel(this, obj, {
+            id: null,
+            organizationId: null,
+            folderId: null,
+            name: null,
+            notes: null,
+            type: null,
+            favorite: null,
+            organizationUseTotp: null,
+            edit: null,
+            viewPassword: null,
+            localData: null,
+        });
+
+        switch (this.type) {
+            case CipherType.Login:
+                const loginView = new LoginView();
+                loginView.buildFromObj(obj.login);
+                this.login = loginView;
+                break;
+            case CipherType.SecureNote:
+                const secureNoteView = new SecureNoteView();
+                secureNoteView.buildFromObj(obj.secureNote);
+                this.secureNote = secureNoteView;
+                break;
+            case CipherType.Card:
+                const cardView = new CardView();
+                cardView.buildFromObj(obj.card);
+                this.card = cardView;
+                break;
+            case CipherType.Identity:
+                const identityView = new IdentityView();
+                identityView.buildFromObj(obj.identity);
+                this.identity = identityView;
+                break;
+            default:
+                break;
+        }
     }
 
     get subTitle(): string {
