@@ -2,6 +2,7 @@ import {
     Pipe,
     PipeTransform,
 } from '@angular/core';
+import { Utils } from 'jslib-common/misc/utils';
 
 /*
  An updated pipe that sanitizes HTML, highlights numbers and special characters (in different colors each)
@@ -10,8 +11,6 @@ import {
 @Pipe({ name: 'colorPassword' })
 export class ColorPasswordPipe implements PipeTransform {
     transform(password: string) {
-        // Regex Unicode property escapes for checking if emoji in passwords.
-        const regexpEmojiPresentation = /\p{Emoji_Presentation}/gu;
         // Convert to an array to handle cases that stings have special characters, ie: emoji.
         const passwordArray = Array.from(password);
         let colorizedPassword = '';
@@ -40,7 +39,7 @@ export class ColorPasswordPipe implements PipeTransform {
                     break;
             }
             let type = 'letter';
-            if (character.match(regexpEmojiPresentation)) {
+            if (character.match(Utils.regexpEmojiPresentation)) {
                 type = 'emoji';
             } else if (isSpecial || character.match(/[^\w ]/)) {
                 type = 'special';
