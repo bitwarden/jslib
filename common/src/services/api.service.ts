@@ -1323,6 +1323,8 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('DELETE', '/providers/' + providerId + '/users/' + id, null, true, false);
     }
 
+    // Provider Organization APIs
+
     async getProviderClients(providerId: string): Promise<ListResponse<ProviderOrganizationOrganizationDetailsResponse>> {
         const r = await this.send('GET', '/providers/' + providerId + '/organizations', null, true, true);
         return new ListResponse(r, ProviderOrganizationOrganizationDetailsResponse);
@@ -1335,6 +1337,10 @@ export class ApiService implements ApiServiceAbstraction {
     async postProviderCreateOrganization(providerId: string, request: OrganizationCreateRequest): Promise<OrganizationResponse> {
         const r = await this.send('POST', '/providers/' + providerId + '/organizations', request, true, true);
         return new OrganizationResponse(r);
+    }
+
+    deleteProviderOrganization(providerId: string, id: string): Promise<any> {
+        return this.send('DELETE', '/providers/' + providerId + '/organizations/' + id, null, true, false);
     }
 
     // Event APIs

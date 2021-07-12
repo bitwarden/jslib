@@ -413,6 +413,7 @@ export abstract class ApiService {
     getProviderClients: (providerId: string) => Promise<ListResponse<ProviderOrganizationOrganizationDetailsResponse>>;
     postProviderAddOrganization: (providerId: string, request: ProviderAddOrganizationRequest) => Promise<any>;
     postProviderCreateOrganization: (providerId: string, request: OrganizationCreateRequest) => Promise<OrganizationResponse>;
+    deleteProviderOrganization: (providerId: string, organizationId: string) => Promise<any>;
 
     getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
     getEventsCipher: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
