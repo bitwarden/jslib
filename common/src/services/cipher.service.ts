@@ -364,12 +364,10 @@ export class CipherService implements CipherServiceAbstraction {
         const encKey = await this.storageService.get<string>(cryptoKeys.encKey);
         const orgKeys = await this.storageService.get<string>(cryptoKeys.encOrgKeys);
         const privateKey = await this.storageService.get<string>(cryptoKeys.encPrivateKey);
-        const storage = {
+        const storedKeys = {
             [cryptoKeys.encKey]: encKey,
             [cryptoKeys.encOrgKeys]: orgKeys,
             [cryptoKeys.encPrivateKey]: privateKey,
-        };
-        const secureStorage = {
             [cryptoKeys.key]: key,
         };
         const platformUtilsData = {
@@ -382,8 +380,7 @@ export class CipherService implements CipherServiceAbstraction {
             worker.postMessage({
                 type: 'decryptManyRequest',
                 ciphers: JSON.stringify(cipherData),
-                storage: JSON.stringify(storage),
-                secureStorage: JSON.stringify(secureStorage),
+                keys: JSON.stringify(storedKeys),
                 platformUtilsData: JSON.stringify(platformUtilsData),
             });
             worker.addEventListener('message', event => {

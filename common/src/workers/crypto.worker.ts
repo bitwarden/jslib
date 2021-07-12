@@ -1,13 +1,18 @@
 import { Cipher } from '../models/domain/cipher';
+import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 import { CipherView } from '../models/view/cipherView';
 
+import { ConstantsService } from '../services/constants.service';
 import { ContainerService } from '../services/container.service';
 import { CryptoService } from '../services/crypto.service';
 import { MemoryStorageService } from '../services/memoryStorage.service';
 import { WebCryptoFunctionService } from '../services/webCryptoFunction.service';
 import { WorkerLogService } from '../services/workerLogService';
 
+import { Utils } from '../misc/utils';
+
 const workerApi: Worker = self as any;
+const Keys = ConstantsService.cryptoKeys;
 let firstRun = true;
 
 workerApi.addEventListener('message', async event => {
@@ -40,25 +45,11 @@ class CryptoWorker {
 
         this.encryptedCiphers = JSON.parse(this.data.ciphers).map((c: any) => new Cipher(c));
 
-        const storage = JSON.parse(data.storage);
-        if (storage != null) {
-            for (const prop in storage) {
-                if (!storage.hasOwnProperty(prop)) {
-                    continue;
-                }
-                this.storageService.save(prop, storage[prop]);
-            }
-        }
-
-        const secureStorage = JSON.parse(data.secureStorage);
-        if (secureStorage != null) {
-            for (const prop in secureStorage) {
-                if (!secureStorage.hasOwnProperty(prop)) {
-                    continue;
-                }
-                this.secureStorageService.save(prop, secureStorage[prop]);
-            }
-        }
+        const storedKeys = JSON.parse(data.keys);
+        this.cryptoService.setEncKey(storedKeys[Keys.encKey]);
+        this.cryptoService.setEncPrivateKey(storedKeys[Keys.encPrivateKey]);
+        this.storageService.save(Keys.encOrgKeys, storedKeys[Keys.encOrgKeys]);
+        this.cryptoService.setKey(new SymmetricCryptoKey(Utils.fromB64ToArray(storedKeys[Keys.key])));
     }
 
     startServices() {
@@ -75,8 +66,8 @@ class CryptoWorker {
         this.secureStorageService = new MemoryStorageService();
         this.storageService = new MemoryStorageService();
 
-        this.cryptoService = new CryptoService(this.storageService, this.secureStorageService, this.cryptoFunctionService,
-            this.platformUtilsService, this.logService);
+        this.cryptoService = new CryptoService(this.storageService, this.secureStorageService,
+            this.cryptoFunctionService, this.platformUtilsService, this.logService);
 
         this.containerService = new ContainerService(this.cryptoService);
         this.containerService.attachToGlobal(self);
@@ -92,7 +83,6 @@ class CryptoWorker {
         await Promise.all(promises);
 
         const response = decryptedCiphers.map(c => JSON.stringify(c));
-
         this.postMessage({ type: 'decryptManyResponse', ciphers: response });
 
         this.clearCache();
