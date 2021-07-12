@@ -3,12 +3,17 @@ import { Arg, Substitute, SubstituteOf } from '@fluffy-spoon/substitute';
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { FileUploadService } from 'jslib-common/abstractions/fileUpload.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { SearchService } from 'jslib-common/abstractions/search.service';
 import { SettingsService } from 'jslib-common/abstractions/settings.service';
 import { StorageService } from 'jslib-common/abstractions/storage.service';
 import { UserService } from 'jslib-common/abstractions/user.service';
+import { WebWorkerService } from 'jslib-common/abstractions/webWorker.service';
+
 import { Utils } from 'jslib-common/misc/utils';
+
 import { Cipher } from 'jslib-common/models/domain/cipher';
 import { EncArrayBuffer } from 'jslib-common/models/domain/encArrayBuffer';
 import { EncString } from 'jslib-common/models/domain/encString';
@@ -28,6 +33,9 @@ describe('Cipher Service', () => {
     let storageService: SubstituteOf<StorageService>;
     let i18nService: SubstituteOf<I18nService>;
     let searchService: SubstituteOf<SearchService>;
+    let webWorkerService: SubstituteOf<WebWorkerService>;
+    let logService: SubstituteOf<LogService>;
+    let platformUtilsService: SubstituteOf<PlatformUtilsService>;
 
     let cipherService: CipherService;
 
@@ -40,12 +48,15 @@ describe('Cipher Service', () => {
         storageService = Substitute.for<StorageService>();
         i18nService = Substitute.for<I18nService>();
         searchService = Substitute.for<SearchService>();
+        webWorkerService = Substitute.for<WebWorkerService>();
+        logService = Substitute.for<LogService>();
+        platformUtilsService = Substitute.for<PlatformUtilsService>();
 
         cryptoService.encryptToBytes(Arg.any(), Arg.any()).resolves(ENCRYPTED_BYTES);
         cryptoService.encrypt(Arg.any(), Arg.any()).resolves(new EncString(ENCRYPTED_TEXT));
 
         cipherService = new CipherService(cryptoService, userService, settingsService, apiService, fileUploadService,
-            storageService, i18nService, () => searchService);
+            storageService, i18nService, () => searchService, webWorkerService, logService, platformUtilsService);
     });
 
     it('attachments upload encrypted file contents', async () => {
