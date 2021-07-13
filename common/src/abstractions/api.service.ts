@@ -99,6 +99,7 @@ import {
     GroupDetailsResponse,
     GroupResponse,
 } from '../models/response/groupResponse';
+import { IdentityCaptchaResponse } from '../models/response/identityCaptchaResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
@@ -144,7 +145,7 @@ export abstract class ApiService {
     eventsBaseUrl: string;
 
     setUrls: (urls: EnvironmentUrls) => void;
-    postIdentityToken: (request: TokenRequest) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse>;
+    postIdentityToken: (request: TokenRequest) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse>;
     refreshIdentityToken: () => Promise<any>;
 
     getProfile: () => Promise<ProfileResponse>;
