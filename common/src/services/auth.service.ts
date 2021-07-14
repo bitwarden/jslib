@@ -80,6 +80,7 @@ export class AuthService implements AuthServiceAbstraction {
     email: string;
     masterPasswordHash: string;
     localMasterPasswordHash: string;
+    captchaToken: string;
     code: string;
     codeVerifier: string;
     ssoRedirectUrl: string;
@@ -120,14 +121,14 @@ export class AuthService implements AuthServiceAbstraction {
         TwoFactorProviders[TwoFactorProviderType.Yubikey].description = this.i18nService.t('yubiKeyDesc');
     }
 
-    async logIn(email: string, masterPassword: string): Promise<AuthResult> {
+    async logIn(email: string, masterPassword: string, captchaToken?: string): Promise<AuthResult> {
         this.selectedTwoFactorProviderType = null;
         const key = await this.makePreloginKey(masterPassword, email);
         const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
         const localHashedPassword = await this.cryptoService.hashPassword(masterPassword, key,
             HashPurpose.LocalAuthorization);
         return await this.logInHelper(email, hashedPassword, localHashedPassword, null, null, null, null, null,
-            key, null, null, null);
+            key, null, null, null, captchaToken);
     }
 
     async logInSso(code: string, codeVerifier: string, redirectUrl: string): Promise<AuthResult> {
@@ -272,7 +273,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     private async logInHelper(email: string, hashedPassword: string, localHashedPassword: string, code: string,
         codeVerifier: string, redirectUrl: string, clientId: string, clientSecret: string, key: SymmetricCryptoKey,
-        twoFactorProvider?: TwoFactorProviderType, twoFactorToken?: string, remember?: boolean): Promise<AuthResult> {
+        twoFactorProvider?: TwoFactorProviderType, twoFactorToken?: string, remember?: boolean, captchaToken?: string): Promise<AuthResult> {
         const storedTwoFactorToken = await this.tokenService.getTwoFactorToken(email);
         const appId = await this.appIdService.getAppId();
         const deviceRequest = new DeviceRequest(appId, this.platformUtilsService);
@@ -300,25 +301,26 @@ export class AuthService implements AuthServiceAbstraction {
         let request: TokenRequest;
         if (twoFactorToken != null && twoFactorProvider != null) {
             request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, twoFactorProvider,
-                twoFactorToken, remember, deviceRequest);
+                twoFactorToken, remember, captchaToken, deviceRequest);
         } else if (storedTwoFactorToken != null) {
             request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, TwoFactorProviderType.Remember,
-                storedTwoFactorToken, false, deviceRequest);
+                storedTwoFactorToken, false, captchaToken, deviceRequest);
         } else {
             request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, null,
-                null, false, deviceRequest);
+                null, false, captchaToken, deviceRequest);
         }
 
         const response = await this.apiService.postIdentityToken(request);
 
         this.clearState();
         const result = new AuthResult();
+        result.captchaSiteKey = (response as any).siteKey;
         result.twoFactor = !(response as any).accessToken;
 
-        if (result.twoFactor) {
-            // two factor required
-            const twoFactorResponse = response as IdentityTwoFactorResponse;
+        if (result.captchaSiteKey || result.twoFactor) {
+            // Store credentials for multi-step login
             this.email = email;
+            this.captchaToken = captchaToken;
             this.masterPasswordHash = hashedPassword;
             this.localMasterPasswordHash = localHashedPassword;
             this.code = code;
@@ -327,6 +329,11 @@ export class AuthService implements AuthServiceAbstraction {
             this.clientId = clientId;
             this.clientSecret = clientSecret;
             this.key = this.setCryptoKeys ? key : null;
+        }
+
+        if (result.twoFactor) {
+            // two factor required
+            const twoFactorResponse = response as IdentityTwoFactorResponse;
             this.twoFactorProvidersData = twoFactorResponse.twoFactorProviders2;
             result.twoFactorProviders = twoFactorResponse.twoFactorProviders2;
             return result;
