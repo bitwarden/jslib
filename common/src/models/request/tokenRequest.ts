@@ -13,10 +13,11 @@ export class TokenRequest {
     token: string;
     provider: TwoFactorProviderType;
     remember: boolean;
+    captchaToken: string;
     device?: DeviceRequest;
 
     constructor(credentials: string[], codes: string[], clientIdClientSecret: string[], provider: TwoFactorProviderType,
-        token: string, remember: boolean, device?: DeviceRequest) {
+        token: string, remember: boolean, captchaToken: string, device?: DeviceRequest) {
         if (credentials != null && credentials.length > 1) {
             this.email = credentials[0];
             this.masterPasswordHash = credentials[1];
@@ -32,6 +33,7 @@ export class TokenRequest {
         this.provider = provider;
         this.remember = remember;
         this.device = device != null ? device : null;
+        this.captchaToken = captchaToken;
     }
 
     toIdentityToken(clientId: string) {
@@ -70,6 +72,11 @@ export class TokenRequest {
             obj.twoFactorProvider = this.provider;
             obj.twoFactorRemember = this.remember ? '1' : '0';
         }
+
+        if (this.captchaToken != null) {
+            obj.captchaResponse = this.captchaToken;
+        }
+
 
         return obj;
     }
