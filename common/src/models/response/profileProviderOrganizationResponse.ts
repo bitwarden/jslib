@@ -4,7 +4,7 @@ import { OrganizationUserStatusType } from '../../enums/organizationUserStatusTy
 import { OrganizationUserType } from '../../enums/organizationUserType';
 import { PermissionsApi } from '../api/permissionsApi';
 
-export class ProfileOrganizationResponse extends BaseResponse {
+export class ProfileProviderOrganizationResponse extends BaseResponse {
     id: string;
     name: string;
     usePolicies: boolean;

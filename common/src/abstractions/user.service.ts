@@ -1,5 +1,7 @@
 import { OrganizationData } from '../models/data/organizationData';
+import { ProviderData } from '../models/data/providerData';
 import { Organization } from '../models/domain/organization';
+import { Provider } from '../models/domain/provider';
 
 import { KdfType } from '../enums/kdfType';
 
@@ -20,4 +22,8 @@ export abstract class UserService {
     getAllOrganizations: () => Promise<Organization[]>;
     replaceOrganizations: (organizations: { [id: string]: OrganizationData; }) => Promise<any>;
     clearOrganizations: (userId: string) => Promise<any>;
+    getProvider: (id: string) => Promise<Provider>;
+    getAllProviders: () => Promise<Provider[]>;
+    replaceProviders: (providers: { [id: string]: ProviderData; }) => Promise<any>;
+    clearProviders: (userId: string) => Promise<any>;
 }

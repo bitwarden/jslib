@@ -32,6 +32,9 @@ export class Organization {
     resetPasswordEnrolled: boolean;
     userId: string;
     hasPublicAndPrivateKeys: boolean;
+    providerId: string;
+    providerName: string;
+    isProviderUser: boolean;
 
     constructor(obj?: OrganizationData) {
         if (obj == null) {
@@ -64,6 +67,9 @@ export class Organization {
         this.resetPasswordEnrolled = obj.resetPasswordEnrolled;
         this.userId = obj.userId;
         this.hasPublicAndPrivateKeys = obj.hasPublicAndPrivateKeys;
+        this.providerId = obj.providerId;
+        this.providerName = obj.providerName;
+        this.isProviderUser = obj.isProviderUser;
     }
 
     get canAccess() {
