@@ -3,11 +3,11 @@ import { first } from 'rxjs/operators';
 
 export class ModalRef {
 
-    onCreated: Observable<HTMLElement>;
-    onClose: Observable<any>;
-    onClosed: Observable<any>;
-    onShow: Observable<any>;
-    onShown: Observable<any>;
+    onCreated: Observable<HTMLElement>; // Modal added to the DOM.
+    onClose: Observable<any>;           // Initiated close.
+    onClosed: Observable<any>;          // Modal was closed (Remove element from DOM)
+    onShow: Observable<any>;            // Start showing modal
+    onShown: Observable<any>;           // Modal is fully visible
 
     private readonly _onCreated = new Subject<HTMLElement>();
     private readonly _onClose = new Subject<any>();

@@ -10,6 +10,7 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
+
 import { ModalRef } from './modal.ref';
 
 @Component({

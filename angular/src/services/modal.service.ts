@@ -7,8 +7,8 @@ import {
     Injector,
     Type
 } from '@angular/core';
-
 import { first } from 'rxjs/operators';
+
 import { DynamicModalComponent } from '../components/modal/dynamic-modal.component';
 import { ModalInjector } from '../components/modal/modal-injector';
 import { ModalRef } from '../components/modal/modal.ref';
@@ -35,6 +35,18 @@ export class ModalService {
 
         const modalRef = this.appendModalComponentToBody(config);
 
+        modalRef.onClosed.pipe(first()).subscribe(() => {
+            this.removeModalComponentFromBody();
+        });
+
+        this.setupHandlers(modalRef);
+
+        this.modalComponentRef.instance.childComponentType = componentType;
+
+        return modalRef;
+    }
+
+    protected setupHandlers(modalRef: ModalRef) {
         // onClose is used in Web to hook into bootstrap. On other projects we pipe it directly to closed.
         modalRef.onClose.pipe(first()).subscribe(() => {
             modalRef.closed();
@@ -61,10 +73,6 @@ export class ModalService {
                 });
             }
         });
-
-        this.modalComponentRef.instance.childComponentType = componentType;
-
-        return modalRef;
     }
 
     protected appendModalComponentToBody(config: ModalConfig) {
@@ -73,10 +81,6 @@ export class ModalService {
         const map = new WeakMap();
         map.set(ModalConfig, config);
         map.set(ModalRef, modalRef);
-
-        modalRef.onClosed.pipe(first()).subscribe(() => {
-            this.removeModalComponentFromBody();
-        });
 
         const componentFactory = this.componentFactoryResolver.resolveComponentFactory(DynamicModalComponent);
         const componentRef = componentFactory.create(new ModalInjector(this.injector, map));
