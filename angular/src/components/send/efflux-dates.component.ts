@@ -44,10 +44,10 @@ enum DatePreset {
 }
 
 // TimeOption is used for the dropdown implementation of custom times
-// twelve = displayed time; twentyFour = time used in logic
+// twelveHour = displayed time; twentyFourHour = time used in logic
 interface TimeOption {
-    twelve: string;
-    twentyFour: string;
+    twelveHour: string;
+    twentyFourHour: string;
 }
 
 @Directive()
@@ -275,26 +275,26 @@ export class EffluxDatesComponent implements OnInit {
                 // build time strings and push to relevant sort groups
                 if (h === 12) {
                     const midnightOption: TimeOption = {
-                        twelve: `${hour}:${minutes} AM`,
-                        twentyFour: `00:${minutes}`,
+                        twelveHour: `${hour}:${minutes} AM`,
+                        twentyFourHour: `00:${minutes}`,
                     };
                     midnight.push(midnightOption);
 
                     const noonOption: TimeOption = {
-                        twelve: `${hour}:${minutes} PM`,
-                        twentyFour: `${hour}:${minutes}`,
+                        twelveHour: `${hour}:${minutes} PM`,
+                        twentyFourHour: `${hour}:${minutes}`,
                     };
                     noon.push(noonOption);
                 } else {
                     const amOption: TimeOption = {
-                        twelve: `${hour}:${minutes} AM`,
-                        twentyFour: `${hour}:${minutes}`,
+                        twelveHour: `${hour}:${minutes} AM`,
+                        twentyFourHour: `${hour}:${minutes}`,
                     };
                     ams.push(amOption);
 
                     const pmOption: TimeOption = {
-                        twelve: `${hour}:${minutes} PM`,
-                        twentyFour: `${h + 12}:${minutes}`,
+                        twelveHour: `${hour}:${minutes} PM`,
+                        twentyFourHour: `${h + 12}:${minutes}`,
                     };
                     pms.push(pmOption);
                 }
@@ -308,18 +308,18 @@ export class EffluxDatesComponent implements OnInit {
         // example: if the Send was created with a different client
         if (field === DateField.ExpriationDate && this.initialExpirationDate != null && this.editMode) {
             const previousValue: TimeOption = {
-                twelve: this.datePipe.transform(this.initialExpirationDate, 'hh:mm a'),
-                twentyFour: this.datePipe.transform(this.initialExpirationDate, 'HH:mm'),
+                twelveHour: this.datePipe.transform(this.initialExpirationDate, 'hh:mm a'),
+                twentyFourHour: this.datePipe.transform(this.initialExpirationDate, 'HH:mm'),
             };
-            return [previousValue, { twelve: null, twentyFour: null }, ...validTimes];
+            return [previousValue, { twelveHour: null, twentyFourHour: null }, ...validTimes];
         } else if (field === DateField.DeletionDate && this.initialDeletionDate != null && this.editMode) {
             const previousValue: TimeOption = {
-                twelve: this.datePipe.transform(this.initialDeletionDate, 'hh:mm a'),
-                twentyFour: this.datePipe.transform(this.initialDeletionDate, 'HH:mm'),
+                twelveHour: this.datePipe.transform(this.initialDeletionDate, 'hh:mm a'),
+                twentyFourHour: this.datePipe.transform(this.initialDeletionDate, 'HH:mm'),
             };
             return [previousValue, ...validTimes];
         } else {
-            return [{ twelve: null, twentyFour: null }, ...validTimes];
+            return [{ twelveHour: null, twentyFourHour: null }, ...validTimes];
         }
     }
 }
