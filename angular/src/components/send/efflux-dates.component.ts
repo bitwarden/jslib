@@ -44,10 +44,10 @@ enum DatePreset {
 }
 
 // TimeOption is used for the dropdown implementation of custom times
-// Standard = displayed time; Military = time used in logic
+// Twelve = displayed time; TwentyFour = time used in logic
 interface TimeOption {
-    standard: string;
-    military: string;
+    Twelve: string;
+    TwentyFour: string;
 }
 
 @Directive()
@@ -275,26 +275,26 @@ export class EffluxDatesComponent implements OnInit {
                 // build time strings and push to relevant sort groups
                 if (h === 12) {
                     const midnightOption: TimeOption = {
-                        standard: `${hour}:${minutes} AM`,
-                        military: `00:${minutes}`,
+                        Twelve: `${hour}:${minutes} AM`,
+                        TwentyFour: `00:${minutes}`,
                     };
                     midnight.push(midnightOption);
 
                     const noonOption: TimeOption = {
-                        standard: `${hour}:${minutes} PM`,
-                        military: `${hour}:${minutes}`,
+                        Twelve: `${hour}:${minutes} PM`,
+                        TwentyFour: `${hour}:${minutes}`,
                     };
                     noon.push(noonOption);
                 } else {
                     const amOption: TimeOption = {
-                        standard: `${hour}:${minutes} AM`,
-                        military: `${hour}:${minutes}`,
+                        Twelve: `${hour}:${minutes} AM`,
+                        TwentyFour: `${hour}:${minutes}`,
                     };
                     ams.push(amOption);
 
                     const pmOption: TimeOption = {
-                        standard: `${hour}:${minutes} PM`,
-                        military: `${h + 12}:${minutes}`,
+                        Twelve: `${hour}:${minutes} PM`,
+                        TwentyFour: `${h + 12}:${minutes}`,
                     };
                     pms.push(pmOption);
                 }
@@ -308,18 +308,18 @@ export class EffluxDatesComponent implements OnInit {
         // example: if the Send was created with a different client
         if (field === DateField.ExpriationDate && this.initialExpirationDate != null && this.editMode) {
             const previousValue: TimeOption = {
-                standard: this.datePipe.transform(this.initialExpirationDate, 'hh:mm a'),
-                military: this.datePipe.transform(this.initialExpirationDate, 'HH:mm'),
+                Twelve: this.datePipe.transform(this.initialExpirationDate, 'hh:mm a'),
+                TwentyFour: this.datePipe.transform(this.initialExpirationDate, 'HH:mm'),
             };
-            return [previousValue, { standard: null, military: null }, ...validTimes];
+            return [previousValue, { Twelve: null, TwentyFour: null }, ...validTimes];
         } else if (field === DateField.DeletionDate && this.initialDeletionDate != null && this.editMode) {
             const previousValue: TimeOption = {
-                standard: this.datePipe.transform(this.initialDeletionDate, 'hh:mm a'),
-                military: this.datePipe.transform(this.initialDeletionDate, 'HH:mm'),
+                Twelve: this.datePipe.transform(this.initialDeletionDate, 'hh:mm a'),
+                TwentyFour: this.datePipe.transform(this.initialDeletionDate, 'HH:mm'),
             };
             return [previousValue, ...validTimes];
         } else {
-            return [{ standard: null, military: null }, ...validTimes];
+            return [{ Twelve: null, TwentyFour: null }, ...validTimes];
         }
     }
 }
