@@ -82,6 +82,7 @@ export class AddEditComponent implements OnInit {
     cardExpMonthOptions: any[];
     identityTitleOptions: any[];
     addFieldTypeOptions: any[];
+    linkedFieldTypeOptions: any[];
     uriMatchOptions: any[];
     ownershipOptions: any[] = [];
     autofillOnPageLoadOptions: any[];
@@ -142,7 +143,12 @@ export class AddEditComponent implements OnInit {
             { name: i18nService.t('cfTypeText'), value: FieldType.Text },
             { name: i18nService.t('cfTypeHidden'), value: FieldType.Hidden },
             { name: i18nService.t('cfTypeBoolean'), value: FieldType.Boolean },
+            { name: i18nService.t('cfTypeLinked'), value: FieldType.Linked },
         ];
+        this.linkedFieldTypeOptions = [
+            { name: i18nService.t('username'), value: 'username' },
+            { name: i18nService.t('password'), value: 'password' },
+        ]
         this.uriMatchOptions = [
             { name: i18nService.t('defaultMatchDetection'), value: null },
             { name: i18nService.t('baseDomain'), value: UriMatchType.Domain },
