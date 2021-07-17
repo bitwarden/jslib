@@ -169,7 +169,7 @@ export class LoginComponent implements OnInit {
             '&state=' + state + '&codeChallenge=' + codeChallenge);
     }
 
-    public showCaptcha() {
+    showCaptcha() {
         return !Utils.isNullOrWhitespace(this.captchaSiteKey);
     }
     protected focusInput() {

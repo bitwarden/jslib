@@ -7,7 +7,7 @@ export class Captcha extends IFrameComponent {
         infoCallback: (message: string) => any) {
         super(win, webVaultUrl, 'captcha-connector.html', 'hcaptcha_iframe', successCallback, errorCallback, (message: string) => {
             const parsedMessage = JSON.parse(message);
-            if (typeof (parsedMessage) !== "string") {
+            if (typeof (parsedMessage) !== 'string') {
                 this.iframe.height = (parsedMessage.height).toString();
                 this.iframe.width = (parsedMessage.width).toString();
             } else {

@@ -160,8 +160,8 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
-import { SendAccessView } from '../models/view/sendAccessView';
 import { IdentityCaptchaResponse } from '../models/response/identityCaptchaResponse';
+import { SendAccessView } from '../models/view/sendAccessView';
 
 export class ApiService implements ApiServiceAbstraction {
     urlsSet: boolean = false;

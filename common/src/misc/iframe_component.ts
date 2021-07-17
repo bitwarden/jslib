@@ -1,7 +1,7 @@
 import { I18nService } from '../abstractions/i18n.service';
 
 export abstract class IFrameComponent {
-    public iframe: HTMLIFrameElement;
+    iframe: HTMLIFrameElement;
     private connectorLink: HTMLAnchorElement;
     private parseFunction = this.parseMessage.bind(this);
 

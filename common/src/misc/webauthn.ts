@@ -7,7 +7,7 @@ export class WebAuthn extends IFrameComponent {
         private platformUtilsService: PlatformUtilsService, private i18nService: I18nService,
         successCallback: (message: string) => any, errorCallback: (message: string) => any,
         infoCallback: (message: string) => any) {
-        super(win, webVaultUrl, 'webauthn-connector.html', 'webauthn_iframe', successCallback, errorCallback, infoCallback)
+        super(win, webVaultUrl, 'webauthn-connector.html', 'webauthn_iframe', successCallback, errorCallback, infoCallback);
     }
 
 
@@ -19,7 +19,7 @@ export class WebAuthn extends IFrameComponent {
             params.append('locale', this.i18nService.translationLocale);
             this.platformUtilsService.launchUri(`${this.webVaultUrl}/webauthn-fallback-connector.html?${params}`);
         } else {
-            super.initComponent(params)
+            super.initComponent(params);
         }
     }
 }
