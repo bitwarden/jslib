@@ -386,6 +386,7 @@ export class AuthService implements AuthServiceAbstraction {
     private clearState(): void {
         this.key = null;
         this.email = null;
+        this.captchaToken = null;
         this.masterPasswordHash = null;
         this.localMasterPasswordHash = null;
         this.code = null;
