@@ -80,7 +80,6 @@ export class AuthService implements AuthServiceAbstraction {
     email: string;
     masterPasswordHash: string;
     localMasterPasswordHash: string;
-    captchaToken: string;
     code: string;
     codeVerifier: string;
     ssoRedirectUrl: string;
@@ -317,10 +316,9 @@ export class AuthService implements AuthServiceAbstraction {
         result.captchaSiteKey = (response as any).siteKey;
         result.twoFactor = !(response as any).accessToken;
 
-        if (result.captchaSiteKey || result.twoFactor) {
-            // Store credentials for multi-step login
+        if (result.twoFactor) {
+            // two factor required
             this.email = email;
-            this.captchaToken = captchaToken;
             this.masterPasswordHash = hashedPassword;
             this.localMasterPasswordHash = localHashedPassword;
             this.code = code;
@@ -329,10 +327,6 @@ export class AuthService implements AuthServiceAbstraction {
             this.clientId = clientId;
             this.clientSecret = clientSecret;
             this.key = this.setCryptoKeys ? key : null;
-        }
-
-        if (result.twoFactor) {
-            // two factor required
             const twoFactorResponse = response as IdentityTwoFactorResponse;
             this.twoFactorProvidersData = twoFactorResponse.twoFactorProviders2;
             result.twoFactorProviders = twoFactorResponse.twoFactorProviders2;
@@ -386,7 +380,6 @@ export class AuthService implements AuthServiceAbstraction {
     private clearState(): void {
         this.key = null;
         this.email = null;
-        this.captchaToken = null;
         this.masterPasswordHash = null;
         this.localMasterPasswordHash = null;
         this.code = null;
