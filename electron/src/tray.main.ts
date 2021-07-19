@@ -120,6 +120,10 @@ export class TrayMain {
         }
 
         this.tray = new Tray(this.icon);
+        if (this.tray == null) {
+            return;
+        }
+
         this.tray.setToolTip(this.appName);
         this.tray.on('click', () => this.toggleWindow());
         this.tray.on('right-click', () => this.tray.popUpContextMenu(this.contextMenu));
@@ -133,7 +137,7 @@ export class TrayMain {
     }
 
     updateContextMenu() {
-        if (this.contextMenu != null && this.isLinux()) {
+        if (this.contextMenu != null && this.tray != null && this.isLinux()) {
             this.tray.setContextMenu(this.contextMenu);
         }
     }
