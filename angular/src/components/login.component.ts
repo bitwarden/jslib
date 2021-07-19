@@ -19,7 +19,7 @@ import { StorageService } from 'jslib-common/abstractions/storage.service';
 
 import { ConstantsService } from 'jslib-common/services/constants.service';
 
-import { Captcha } from 'jslib-common/misc/captcha';
+import { CaptchaIFrame } from 'jslib-common/misc/captcha_iframe';
 import { Utils } from 'jslib-common/misc/utils';
 
 const Keys = {
@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit {
     showPassword: boolean = false;
     captchaSiteKey: string = null;
     captchaToken: string = null;
-    captcha: Captcha;
+    captcha: CaptchaIFrame;
     formPromise: Promise<AuthResult>;
     onSuccessfulLogin: () => Promise<any>;
     onSuccessfulLoginNavigate: () => Promise<any>;
@@ -71,7 +71,7 @@ export class LoginComponent implements OnInit {
         if (webVaultUrl == null) {
             webVaultUrl = 'https://vault.bitwarden.com';
         }
-        this.captcha = new Captcha(window, webVaultUrl,
+        this.captcha = new CaptchaIFrame(window, webVaultUrl,
             this.i18nService, (token: string) => {
                 this.captchaToken = token;
             }, (error: string) => {

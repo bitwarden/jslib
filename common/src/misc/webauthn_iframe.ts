@@ -2,7 +2,7 @@ import { I18nService } from '../abstractions/i18n.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { IFrameComponent } from './iframe_component';
 
-export class WebAuthn extends IFrameComponent {
+export class WebAuthnIFrame extends IFrameComponent {
     constructor(win: Window, webVaultUrl: string, private webAuthnNewTab: boolean,
         private platformUtilsService: PlatformUtilsService, private i18nService: I18nService,
         successCallback: (message: string) => any, errorCallback: (message: string) => any,

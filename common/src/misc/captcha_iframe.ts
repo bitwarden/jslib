@@ -1,7 +1,7 @@
 import { I18nService } from '../abstractions/i18n.service';
 import { IFrameComponent } from './iframe_component';
 
-export class Captcha extends IFrameComponent {
+export class CaptchaIFrame extends IFrameComponent {
     constructor(win: Window, webVaultUrl: string,
         private i18nService: I18nService, successCallback: (message: string) => any, errorCallback: (message: string) => any,
         infoCallback: (message: string) => any) {
