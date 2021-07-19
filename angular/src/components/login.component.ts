@@ -41,7 +41,6 @@ export class LoginComponent implements OnInit {
     onSuccessfulLogin: () => Promise<any>;
     onSuccessfulLoginNavigate: () => Promise<any>;
     onSuccessfulLoginTwoFactorNavigate: () => Promise<any>;
-    onCaptchaRequired: () => Promise<any>;
 
     protected twoFactorRoute = '2fa';
     protected successRoute = 'vault';
@@ -111,9 +110,6 @@ export class LoginComponent implements OnInit {
             if (!Utils.isNullOrWhitespace(response.captchaSiteKey)) {
                 this.captchaSiteKey = response.captchaSiteKey;
                 this.captcha.init(response.captchaSiteKey);
-                if (this.onCaptchaRequired != null) {
-                    this.onCaptchaRequired();
-                }
             } else if (response.twoFactor) {
                 if (this.onSuccessfulLoginTwoFactorNavigate != null) {
                     this.onSuccessfulLoginTwoFactorNavigate();
