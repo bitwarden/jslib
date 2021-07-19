@@ -23,12 +23,16 @@ export class DynamicModalComponent implements AfterViewInit, OnDestroy {
     @ViewChild('modalContent', { read: ViewContainerRef, static: true }) modalContentRef: ViewContainerRef;
 
     childComponentType: Type<any>;
+    setComponentParameters: (component: any) => void;
 
     constructor(private componentFactoryResolver: ComponentFactoryResolver, private cd: ChangeDetectorRef,
         private el: ElementRef<HTMLElement>, public modalRef: ModalRef) {}
 
     ngAfterViewInit() {
         this.loadChildComponent(this.childComponentType);
+        if (this.setComponentParameters != null) {
+            this.setComponentParameters(this.componentRef.instance);
+        }
         this.cd.detectChanges();
 
         this.modalRef.created(this.el.nativeElement);

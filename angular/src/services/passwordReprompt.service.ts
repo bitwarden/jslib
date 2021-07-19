@@ -16,7 +16,11 @@ export class PasswordRepromptService implements PasswordRepromptServiceAbstracti
     }
 
     async showPasswordPrompt() {
-        const ref = this.modalService.open(this.component, null);
+        const ref = this.modalService.open(this.component, {allowMultipleModals: true});
+
+        if (ref == null) {
+            return false;
+        }
 
         const result = await ref.onClosedPromise();
         return result === true;
