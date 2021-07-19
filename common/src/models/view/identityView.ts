@@ -5,6 +5,28 @@ import { Identity } from '../domain/identity';
 import { Utils } from '../../misc/utils';
 
 export class IdentityView implements View {
+    static linkedFieldOptions: any = {
+        'firstName': null,
+        'middleName': null,
+        'lastName': null,
+        'fullName': null,
+        'username': null,
+        'company': null,
+        'ssn': null,
+        'passportNumber': null,
+        'licenseNumber': null,
+        'email': null,
+        'phone': null,
+        'address1': null,
+        'address2': null,
+        'address3': null,
+        'city': 'cityTown',
+        'state': 'stateProvince',
+        'postalCode': 'zipPostalCode',
+        'country': null,
+        'fullAddress': null,
+    };
+
     title: string = null;
     middleName: string = null;
     address1: string = null;

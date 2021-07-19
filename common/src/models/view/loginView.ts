@@ -5,6 +5,11 @@ import { Utils } from '../../misc/utils';
 import { Login } from '../domain/login';
 
 export class LoginView implements View {
+    static linkedFieldOptions: any = {
+        'username': null,
+        'password': null,
+    };
+
     username: string = null;
     password: string = null;
     passwordRevisionDate?: Date = null;
