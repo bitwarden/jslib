@@ -145,10 +145,6 @@ export class AddEditComponent implements OnInit {
             { name: i18nService.t('cfTypeBoolean'), value: FieldType.Boolean },
             { name: i18nService.t('cfTypeLinked'), value: FieldType.Linked },
         ];
-        this.linkedFieldTypeOptions = [
-            { name: i18nService.t('username'), value: 'username' },
-            { name: i18nService.t('password'), value: 'password' },
-        ]
         this.uriMatchOptions = [
             { name: i18nService.t('defaultMatchDetection'), value: null },
             { name: i18nService.t('baseDomain'), value: UriMatchType.Domain },
@@ -262,6 +258,7 @@ export class AddEditComponent implements OnInit {
         }
         this.previousCipherId = this.cipherId;
         this.reprompt = this.cipher.reprompt !== CipherRepromptType.None;
+        this.linkedFieldTypeOptions = this.getLinkedFieldTypeOptions();
     }
 
     async submit(): Promise<boolean> {
@@ -344,6 +341,11 @@ export class AddEditComponent implements OnInit {
         const f = new FieldView();
         f.type = this.addFieldType;
         f.newField = true;
+
+        if (f.type == FieldType.Linked) {
+            f.value = this.getLinkedFieldTypeOptions()[0].value;
+        }
+
         this.cipher.fields.push(f);
     }
 
@@ -545,5 +547,49 @@ export class AddEditComponent implements OnInit {
 
     protected restoreCipher() {
         return this.cipherService.restoreWithServer(this.cipher.id);
+    }
+
+    private getLinkedFieldTypeOptions() {
+        switch (this.cipher.type) {
+            case CipherType.Card:
+                return [
+                    { name: this.i18nService.t('cardholderName'), value: 'cardholderName' },
+                    { name: this.i18nService.t('number'), value: 'expMonth' },
+                    { name: this.i18nService.t('brand'), value: 'brand' },
+                    { name: this.i18nService.t('cardExpMonth'), value: 'expMonth' },
+                    { name: this.i18nService.t('cardExpYear'), value: 'expYear' },
+                    { name: this.i18nService.t('securityCode'), value: 'code' },
+                ];
+            case CipherType.Identity:
+                return [
+                    { name: this.i18nService.t('firstName'), value: 'firstName' },
+                    { name: this.i18nService.t('middleName'), value: 'middleName' },
+                    { name: this.i18nService.t('lastName'), value: 'lastName' },
+                    { name: this.i18nService.t('fullName'), value: 'fullName' },
+                    { name: this.i18nService.t('username'), value: 'username' },
+                    { name: this.i18nService.t('company'), value: 'company' },
+                    { name: this.i18nService.t('ssn'), value: 'ssn' },
+                    { name: this.i18nService.t('passportNumber'), value: 'passportNumber' },
+                    { name: this.i18nService.t('licenseNumber'), value: 'licenseNumber' },
+                    { name: this.i18nService.t('email'), value: 'email' },
+                    { name: this.i18nService.t('phone'), value: 'phone' },
+                    { name: this.i18nService.t('address1'), value: 'address1' },
+                    { name: this.i18nService.t('address2'), value: 'address2' },
+                    { name: this.i18nService.t('address3'), value: 'address3' },
+                    { name: this.i18nService.t('cityTown'), value: 'city' },
+                    { name: this.i18nService.t('stateProvince'), value: 'state' },
+                    { name: this.i18nService.t('zipPostalCode'), value: 'postalCode' },
+                    { name: this.i18nService.t('country'), value: 'country' },
+                    { name: this.i18nService.t('fullAddress'), value: 'fullAddress' },
+                ];
+            case CipherType.Login:
+                return [
+                    { name: this.i18nService.t('username'), value: 'username' },
+                    { name: this.i18nService.t('password'), value: 'password' },
+                    { name: this.i18nService.t('verificationCodeTotp'), value: 'totpCode' }, //TODO: make this pull actual totp code
+                ];
+            default:
+                break;
+        }
     }
 }

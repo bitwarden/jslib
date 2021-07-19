@@ -109,4 +109,27 @@ export class CipherView implements View {
     get isDeleted(): boolean {
         return this.deletedDate != null;
     }
+
+    getLinkedFieldValue(fieldName: string) {
+        let subView: any;
+
+        switch (this.type) {
+            case CipherType.Card:
+                subView = this.card;
+                break;
+            case CipherType.Identity:
+                subView = this.identity;
+                break;
+            case CipherType.Login:
+                subView = this.login;
+                break;
+            default:
+                break;
+        }
+
+        if (!subView?.hasOwnProperty(fieldName)) {
+            throw new Error('Invalid linked field type');
+        }
+        return subView[fieldName];
+    }
 }
