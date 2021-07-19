@@ -28,7 +28,7 @@ export class ModalService {
 
     async openViewRef<T>(componentType: Type<T>, viewContainerRef: ViewContainerRef,
         setComponentParameters: (component: T) => void = null): Promise<[ModalRef, T]> {
-        
+
         this.modalCount++;
         const [modalRef, modalComponentRef] = this.openInternal(componentType, null, false);
         modalComponentRef.instance.setComponentParameters = setComponentParameters;
@@ -53,10 +53,10 @@ export class ModalService {
 
     protected openInternal(componentType: Type<any>, config?: ModalConfig, attachToDom?: boolean):
         [ModalRef, ComponentRef<DynamicModalComponent>] {
-        
+
         const [modalRef, componentRef] = this.createModalComponent(config);
         componentRef.instance.childComponentType = componentType;
-        
+
         if (attachToDom) {
             this.applicationRef.attachView(componentRef.hostView);
             const domElem = (componentRef.hostView as EmbeddedViewRef<any>).rootNodes[0] as HTMLElement;
@@ -82,7 +82,7 @@ export class ModalService {
         // Add backdrop, setup [data-dismiss] handler.
         modalRef.onCreated.pipe(first()).subscribe(el => {
             document.body.classList.add('modal-open');
-            
+
             backdrop = document.createElement('div');
             backdrop.className = 'modal-backdrop fade';
             backdrop.style.zIndex = `${this.modalCount}040`;
