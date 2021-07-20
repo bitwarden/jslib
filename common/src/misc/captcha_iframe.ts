@@ -17,6 +17,6 @@ export class CaptchaIFrame extends IFrameComponent {
     }
 
     init(siteKey: string): void {
-        super.initComponent(this.createParams({ siteKey: siteKey, locale: this.i18nService.translationLocale }));
+        super.initComponent(this.createParams({ siteKey: siteKey, locale: this.i18nService.translationLocale }, 1));
     }
 }

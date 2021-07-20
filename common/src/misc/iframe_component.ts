@@ -37,11 +37,11 @@ export abstract class IFrameComponent {
         this.win.removeEventListener('message', this.parseFunction, false);
     }
 
-    protected createParams(data: any) {
+    protected createParams(data: any, version: number) {
         return new URLSearchParams({
             data: this.base64Encode(JSON.stringify(data)),
             parent: encodeURIComponent(this.win.document.location.href),
-            v: '1',
+            v: version.toString(),
         });
     }
 

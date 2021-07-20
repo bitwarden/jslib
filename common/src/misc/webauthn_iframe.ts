@@ -12,7 +12,7 @@ export class WebAuthnIFrame extends IFrameComponent {
 
 
     init(data: any): void {
-        const params = this.createParams({ data: JSON.stringify(data), btnText: this.i18nService.t('webAuthnAuthenticate') });
+        const params = this.createParams({ data: JSON.stringify(data), btnText: this.i18nService.t('webAuthnAuthenticate') }, 2);
 
         if (this.webAuthnNewTab) {
             // Firefox fallback which opens the webauthn page in a new tab
