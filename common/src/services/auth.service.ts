@@ -87,6 +87,7 @@ export class AuthService implements AuthServiceAbstraction {
     clientSecret: string;
     twoFactorProvidersData: Map<TwoFactorProviderType, { [key: string]: string; }>;
     selectedTwoFactorProviderType: TwoFactorProviderType = null;
+    captchaToken: string;
 
     private key: SymmetricCryptoKey;
 
@@ -146,7 +147,7 @@ export class AuthService implements AuthServiceAbstraction {
         remember?: boolean): Promise<AuthResult> {
         return await this.logInHelper(this.email, this.masterPasswordHash, this.localMasterPasswordHash, this.code,
             this.codeVerifier, this.ssoRedirectUrl, this.clientId, this.clientSecret, this.key, twoFactorProvider,
-            twoFactorToken, remember);
+            twoFactorToken, remember, this.captchaToken);
     }
 
     async logInComplete(email: string, masterPassword: string, twoFactorProvider: TwoFactorProviderType,
@@ -302,8 +303,8 @@ export class AuthService implements AuthServiceAbstraction {
             request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, twoFactorProvider,
                 twoFactorToken, remember, captchaToken, deviceRequest);
         } else if (storedTwoFactorToken != null) {
-            request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, TwoFactorProviderType.Remember,
-                storedTwoFactorToken, false, captchaToken, deviceRequest);
+            request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret,
+                TwoFactorProviderType.Remember, storedTwoFactorToken, false, captchaToken, deviceRequest);
         } else {
             request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, null,
                 null, false, captchaToken, deviceRequest);
@@ -314,7 +315,10 @@ export class AuthService implements AuthServiceAbstraction {
         this.clearState();
         const result = new AuthResult();
         result.captchaSiteKey = (response as any).siteKey;
-        result.twoFactor = !(response as any).accessToken;
+        if (!!result.captchaSiteKey) {
+            return result;
+        }
+        result.twoFactor = !!(response as any).twoFactorProviders2;
 
         if (result.twoFactor) {
             // two factor required
@@ -330,6 +334,7 @@ export class AuthService implements AuthServiceAbstraction {
             const twoFactorResponse = response as IdentityTwoFactorResponse;
             this.twoFactorProvidersData = twoFactorResponse.twoFactorProviders2;
             result.twoFactorProviders = twoFactorResponse.twoFactorProviders2;
+            this.captchaToken = twoFactorResponse.captchaToken;
             return result;
         }
 
