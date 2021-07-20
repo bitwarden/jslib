@@ -9,7 +9,7 @@ export class IdentityTwoFactorResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.captchaToken = this.getResponseProperty('HCaptcha_BypassKey')
+        this.captchaToken = this.getResponseProperty('HCaptcha_BypassKey');
         this.twoFactorProviders = this.getResponseProperty('TwoFactorProviders');
         const twoFactorProviders2 = this.getResponseProperty('TwoFactorProviders2');
         if (twoFactorProviders2 != null) {
