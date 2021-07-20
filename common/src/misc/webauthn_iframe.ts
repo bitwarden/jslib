@@ -20,6 +20,7 @@ export class WebAuthnIFrame extends IFrameComponent {
             this.platformUtilsService.launchUri(`${this.webVaultUrl}/webauthn-fallback-connector.html?${params}`);
         } else {
             super.initComponent(params);
+            this.iframe.allow = 'publickey-credentials-get ' + new URL(this.webVaultUrl).origin;
         }
     }
 }

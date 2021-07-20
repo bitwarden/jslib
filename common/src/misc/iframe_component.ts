@@ -48,7 +48,6 @@ export abstract class IFrameComponent {
     protected initComponent(params: URLSearchParams): void {
         this.connectorLink.href = `${this.webVaultUrl}/${this.path}?${params}`;
         this.iframe = this.win.document.getElementById(this.iframeId) as HTMLIFrameElement;
-        this.iframe.allow = 'publickey-credentials-get ' + new URL(this.webVaultUrl).origin;
         this.iframe.src = this.connectorLink.href;
 
         this.win.addEventListener('message', this.parseFunction, false);
