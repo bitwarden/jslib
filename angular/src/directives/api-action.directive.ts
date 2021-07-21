@@ -5,6 +5,8 @@ import {
     OnChanges,
 } from '@angular/core';
 
+import { ErrorResponse } from 'jslib-common/models/response';
+
 import { ValidationService } from '../services/validation.service';
 
 @Directive({
@@ -26,6 +28,10 @@ export class ApiActionDirective implements OnChanges {
             this.el.nativeElement.loading = false;
         }, (e: any) => {
             this.el.nativeElement.loading = false;
+
+            if (e instanceof ErrorResponse && (e as ErrorResponse).captchaRequired) {
+                return;
+            }
             this.validationService.showError(e);
         });
     }
