@@ -57,21 +57,23 @@ export class CipherView implements View {
         this.reprompt = c.reprompt ?? CipherRepromptType.None;
     }
 
-    get subTitle(): string {
+    private get subView(): (CardView | IdentityView | LoginView | SecureNoteView) {
         switch (this.type) {
-            case CipherType.Login:
-                return this.login.subTitle;
-            case CipherType.SecureNote:
-                return this.secureNote.subTitle;
             case CipherType.Card:
-                return this.card.subTitle;
+                return this.card;
             case CipherType.Identity:
-                return this.identity.subTitle;
+                return this.identity;
+            case CipherType.Login:
+                return this.login;
+            case CipherType.SecureNote:
+                return this.secureNote;
             default:
-                break;
+                return null;
         }
+    }
 
-        return null;
+    get subTitle(): string {
+        return this.subView?.subTitle;
     }
 
     get hasPasswordHistory(): boolean {
@@ -108,5 +110,17 @@ export class CipherView implements View {
 
     get isDeleted(): boolean {
         return this.deletedDate != null;
+    }
+
+    get linkedFieldOptions() {
+        return (this.subView as any).constructor.linkedFieldOptions;
+    }
+
+    getLinkedFieldValue(field: string) {
+        return (this.subView as any)[field];
+    }
+
+    getLinkedFieldi18nKey(field: string) {
+        return this.linkedFieldOptions[field] ?? field;
     }
 }

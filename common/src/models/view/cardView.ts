@@ -3,6 +3,15 @@ import { View } from './view';
 import { Card } from '../domain/card';
 
 export class CardView implements View {
+    static linkedFieldOptions: any = {
+        'cardholderName': null,
+        'number': null,
+        'brand': null,
+        'expMonth': 'expirationMonth',
+        'expYear': 'expirationYear',
+        'code': 'securityCode',
+    };
+
     cardholderName: string = null;
     expMonth: string = null;
     expYear: string = null;

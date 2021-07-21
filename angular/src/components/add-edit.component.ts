@@ -82,6 +82,7 @@ export class AddEditComponent implements OnInit {
     cardExpMonthOptions: any[];
     identityTitleOptions: any[];
     addFieldTypeOptions: any[];
+    linkedFieldOptions: any[] = [];
     uriMatchOptions: any[];
     ownershipOptions: any[] = [];
     autofillOnPageLoadOptions: any[];
@@ -256,6 +257,7 @@ export class AddEditComponent implements OnInit {
         }
         this.previousCipherId = this.cipherId;
         this.reprompt = this.cipher.reprompt !== CipherRepromptType.None;
+        this.setLinkedFieldOptions();
     }
 
     async submit(): Promise<boolean> {
@@ -338,6 +340,11 @@ export class AddEditComponent implements OnInit {
         const f = new FieldView();
         f.type = this.addFieldType;
         f.newField = true;
+
+        if (f.type === FieldType.Linked) {
+            f.value = this.linkedFieldOptions[0].value;
+        }
+
         this.cipher.fields.push(f);
     }
 
@@ -515,6 +522,10 @@ export class AddEditComponent implements OnInit {
         }
     }
 
+    cipherTypeChanged() {
+        this.setLinkedFieldOptions();
+    }
+
     protected async loadCollections() {
         const allCollections = await this.collectionService.getAllDecrypted();
         return allCollections.filter(c => !c.readOnly);
@@ -539,5 +550,23 @@ export class AddEditComponent implements OnInit {
 
     protected restoreCipher() {
         return this.cipherService.restoreWithServer(this.cipher.id);
+    }
+
+    private setLinkedFieldOptions() {
+        if (this.cipher.type === CipherType.SecureNote) {
+            if (this.addFieldTypeOptions.length === 4) {
+                this.addFieldTypeOptions.pop();
+            }
+            return;
+        }
+
+        if (this.addFieldTypeOptions.length === 3) {
+            this.addFieldTypeOptions.push({ name: this.i18nService.t('cfTypeLinked'), value: FieldType.Linked });
+        }
+
+        this.linkedFieldOptions = [];
+        for (const [key] of Object.entries(this.cipher.linkedFieldOptions)) {
+            this.linkedFieldOptions.push({ name: this.i18nService.t(this.cipher.getLinkedFieldi18nKey(key)), value: key });
+        }
     }
 }
