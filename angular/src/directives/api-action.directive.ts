@@ -4,6 +4,7 @@ import {
     Input,
     OnChanges,
 } from '@angular/core';
+import { LogService } from 'jslib-common/abstractions/log.service';
 
 import { ErrorResponse } from 'jslib-common/models/response';
 
@@ -15,7 +16,8 @@ import { ValidationService } from '../services/validation.service';
 export class ApiActionDirective implements OnChanges {
     @Input() appApiAction: Promise<any>;
 
-    constructor(private el: ElementRef, private validationService: ValidationService) { }
+    constructor(private el: ElementRef, private validationService: ValidationService,
+        private logService: LogService) { }
 
     ngOnChanges(changes: any) {
         if (this.appApiAction == null || this.appApiAction.then == null) {
@@ -30,6 +32,7 @@ export class ApiActionDirective implements OnChanges {
             this.el.nativeElement.loading = false;
 
             if (e instanceof ErrorResponse && (e as ErrorResponse).captchaRequired) {
+                this.logService.error('Captcha required error response: ' + e.getSingleMessage());
                 return;
             }
             this.validationService.showError(e);
