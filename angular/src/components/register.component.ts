@@ -39,7 +39,7 @@ export class RegisterComponent extends CaptchaProtectedComponent implements OnIn
         protected apiService: ApiService, protected stateService: StateService,
         platformUtilsService: PlatformUtilsService,
         protected passwordGenerationService: PasswordGenerationService, environmentService: EnvironmentService) {
-        super(environmentService, i18nService, platformUtilsService)
+        super(environmentService, i18nService, platformUtilsService);
         this.showTerms = !platformUtilsService.isSelfHost();
     }
 
