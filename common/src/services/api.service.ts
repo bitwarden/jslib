@@ -160,6 +160,7 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
+import { IdentityCaptchaResponse } from '../models/response/identityCaptchaResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
 
 export class ApiService implements ApiServiceAbstraction {
@@ -215,7 +216,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     // Auth APIs
 
-    async postIdentityToken(request: TokenRequest): Promise<IdentityTokenResponse | IdentityTwoFactorResponse> {
+    async postIdentityToken(request: TokenRequest): Promise<IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse> {
         const headers = new Headers({
             'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
             'Accept': 'application/json',
@@ -245,6 +246,9 @@ export class ApiService implements ApiServiceAbstraction {
                 Object.keys(responseJson.TwoFactorProviders2).length) {
                 await this.tokenService.clearTwoFactorToken(request.email);
                 return new IdentityTwoFactorResponse(responseJson);
+            } else if (response.status === 400 && responseJson.HCaptcha_SiteKey &&
+                Object.keys(responseJson.HCaptcha_SiteKey).length) {
+                return new IdentityCaptchaResponse(responseJson);
             }
         }
 

@@ -23,7 +23,7 @@ import { TwoFactorProviders } from 'jslib-common/services/auth.service';
 import { ConstantsService } from 'jslib-common/services/constants.service';
 
 import * as DuoWebSDK from 'duo_web_sdk';
-import { WebAuthn } from 'jslib-common/misc/webauthn';
+import { WebAuthnIFrame } from 'jslib-common/misc/webauthn_iframe';
 
 @Directive()
 export class TwoFactorComponent implements OnInit, OnDestroy {
@@ -35,7 +35,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     providerType = TwoFactorProviderType;
     selectedProviderType: TwoFactorProviderType = TwoFactorProviderType.Authenticator;
     webAuthnSupported: boolean = false;
-    webAuthn: WebAuthn = null;
+    webAuthn: WebAuthnIFrame = null;
     title: string = '';
     twoFactorEmail: string = null;
     formPromise: Promise<any>;
@@ -80,7 +80,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             if (webVaultUrl == null) {
                 webVaultUrl = 'https://vault.bitwarden.com';
             }
-            this.webAuthn = new WebAuthn(this.win, webVaultUrl, this.webAuthnNewTab, this.platformUtilsService,
+            this.webAuthn = new WebAuthnIFrame(this.win, webVaultUrl, this.webAuthnNewTab, this.platformUtilsService,
                 this.i18nService, (token: string) => {
                     this.token = token;
                     this.submit();

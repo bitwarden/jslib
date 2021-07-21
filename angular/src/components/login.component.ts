@@ -19,6 +19,7 @@ import { StorageService } from 'jslib-common/abstractions/storage.service';
 
 import { ConstantsService } from 'jslib-common/services/constants.service';
 
+import { CaptchaIFrame } from 'jslib-common/misc/captcha_iframe';
 import { Utils } from 'jslib-common/misc/utils';
 
 const Keys = {
@@ -33,6 +34,9 @@ export class LoginComponent implements OnInit {
 
     masterPassword: string = '';
     showPassword: boolean = false;
+    captchaSiteKey: string = null;
+    captchaToken: string = null;
+    captcha: CaptchaIFrame;
     formPromise: Promise<AuthResult>;
     onSuccessfulLogin: () => Promise<any>;
     onSuccessfulLoginNavigate: () => Promise<any>;
@@ -61,6 +65,20 @@ export class LoginComponent implements OnInit {
         if (Utils.isBrowser && !Utils.isNode) {
             this.focusInput();
         }
+
+        let webVaultUrl = this.environmentService.getWebVaultUrl();
+        if (webVaultUrl == null) {
+            webVaultUrl = 'https://vault.bitwarden.com';
+        }
+        this.captcha = new CaptchaIFrame(window, webVaultUrl,
+            this.i18nService, (token: string) => {
+                this.captchaToken = token;
+            }, (error: string) => {
+                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), error);
+            }, (info: string) => {
+                this.platformUtilsService.showToast('info', this.i18nService.t('info'), info);
+            }
+        );
     }
 
     async submit() {
@@ -81,7 +99,7 @@ export class LoginComponent implements OnInit {
         }
 
         try {
-            this.formPromise = this.authService.logIn(this.email, this.masterPassword);
+            this.formPromise = this.authService.logIn(this.email, this.masterPassword, this.captchaToken);
             const response = await this.formPromise;
             await this.storageService.save(Keys.rememberEmail, this.rememberEmail);
             if (this.rememberEmail) {
@@ -89,7 +107,10 @@ export class LoginComponent implements OnInit {
             } else {
                 await this.storageService.remove(Keys.rememberedEmail);
             }
-            if (response.twoFactor) {
+            if (!Utils.isNullOrWhitespace(response.captchaSiteKey)) {
+                this.captchaSiteKey = response.captchaSiteKey;
+                this.captcha.init(response.captchaSiteKey);
+            } else if (response.twoFactor) {
                 if (this.onSuccessfulLoginTwoFactorNavigate != null) {
                     this.onSuccessfulLoginTwoFactorNavigate();
                 } else {
@@ -144,6 +165,9 @@ export class LoginComponent implements OnInit {
             '&state=' + state + '&codeChallenge=' + codeChallenge);
     }
 
+    showCaptcha() {
+        return !Utils.isNullOrWhitespace(this.captchaSiteKey);
+    }
     protected focusInput() {
         document.getElementById(this.email == null || this.email === '' ? 'email' : 'masterPassword').focus();
     }
