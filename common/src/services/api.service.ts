@@ -167,7 +167,6 @@ export class ApiService implements ApiServiceAbstraction {
     private deviceType: string;
     private isWebClient = false;
     private isDesktopClient = false;
-    private usingBaseUrl = false;
 
     constructor(private tokenService: TokenService, private platformUtilsService: PlatformUtilsService,
         private environmentService: EnvironmentService, private logoutCallback: (expired: boolean) => Promise<void>,
@@ -1569,7 +1568,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     private getCredentials(): RequestCredentials {
-        if (!this.isWebClient || this.usingBaseUrl) {
+        if (!this.isWebClient || this.environmentService.hasBaseUrl()) {
             return 'include';
         }
         return undefined;

@@ -1,4 +1,5 @@
 export abstract class EnvironmentService {
+    hasBaseUrl: () => boolean;
     getNotificationsUrl: () => string;
     getEnterpriseUrl: () => string;
     getWebVaultUrl: () => string;

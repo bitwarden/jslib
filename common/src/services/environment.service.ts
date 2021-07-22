@@ -28,6 +28,10 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
 
     constructor(private storageService: StorageService) { }
 
+    hasBaseUrl() {
+        return this.baseUrl != null;
+    }
+
     getNotificationsUrl() {
         if (this.notificationsUrl != null) {
             return this.notificationsUrl;
