@@ -18,7 +18,7 @@ export abstract class CaptchaProtectedComponent {
         protected platformUtilsService: PlatformUtilsService) { }
 
     async setupCaptcha() {
-        let webVaultUrl = this.environmentService.getWebVaultUrl();
+        const webVaultUrl = this.environmentService.getWebVaultUrl();
 
         this.captcha = new CaptchaIFrame(window, webVaultUrl,
             this.i18nService, (token: string) => {
