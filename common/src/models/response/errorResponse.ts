@@ -1,9 +1,13 @@
+import { Utils } from '../../misc/utils';
+
 import { BaseResponse } from './baseResponse';
 
 export class ErrorResponse extends BaseResponse {
     message: string;
     validationErrors: { [key: string]: string[]; };
     statusCode: number;
+    captchaRequired: boolean;
+    captchaSiteKey: string;
 
     constructor(response: any, status: number, identityResponse?: boolean) {
         super(response);
@@ -20,6 +24,8 @@ export class ErrorResponse extends BaseResponse {
         if (errorModel) {
             this.message = this.getResponseProperty('Message', errorModel);
             this.validationErrors = this.getResponseProperty('ValidationErrors', errorModel);
+            this.captchaSiteKey = this.validationErrors?.HCaptcha_SiteKey?.[0];
+            this.captchaRequired = !Utils.isNullOrWhitespace(this.captchaSiteKey);
         } else {
             if (status === 429) {
                 this.message = 'Rate limit exceeded. Try again later.';
