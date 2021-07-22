@@ -88,7 +88,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
 
     getIdentityUrl() {
         if (this.identityUrl != null) {
-            return this.apiUrl;
+            return this.identityUrl;
         }
 
         if (this.baseUrl) {
@@ -100,7 +100,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
 
     getEventsUrl() {
         if (this.eventsUrl != null) {
-            return this.apiUrl;
+            return this.eventsUrl;
         }
 
         if (this.baseUrl) {
