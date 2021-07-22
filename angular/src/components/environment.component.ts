@@ -6,8 +6,8 @@ import {
 
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { NotificationsService } from 'jslib-common/abstractions/notifications.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
-import { NotificationsService }from 'jslib-common/abstractions/notifications.service';
 
 @Directive()
 export class EnvironmentComponent {
@@ -26,7 +26,7 @@ export class EnvironmentComponent {
         protected i18nService: I18nService, private notificationService: NotificationsService) {
 
         const urls = this.environmentService.getUrls();
-    
+
         this.baseUrl = urls.base || '';
         this.webVaultUrl = urls.webVault || '';
         this.apiUrl = urls.api || '';
