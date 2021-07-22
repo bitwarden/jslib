@@ -2,6 +2,7 @@ import { KeysRequest } from './keysRequest';
 import { ReferenceEventRequest } from './referenceEventRequest';
 
 import { KdfType } from '../../enums/kdfType';
+
 import { CaptchaProtectedRequest } from './captchaProtectedRequest';
 
 export class RegisterRequest implements CaptchaProtectedRequest {

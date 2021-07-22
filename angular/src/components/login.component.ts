@@ -21,7 +21,7 @@ import { ConstantsService } from 'jslib-common/services/constants.service';
 
 import { Utils } from 'jslib-common/misc/utils';
 
-import { CaptchaProtectedComponent } from './captchaProtectedComponent';
+import { CaptchaProtectedComponent } from './captchaProtected.component';
 
 const Keys = {
     rememberedEmail: 'rememberedEmail',
