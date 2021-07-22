@@ -2,19 +2,8 @@ import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
 import { ConstantsService } from './constants.service';
 
-import { EnvironmentService as EnvironmentServiceAbstraction } from '../abstractions/environment.service';
+import { EnvironmentService as EnvironmentServiceAbstraction, Urls } from '../abstractions/environment.service';
 import { StorageService } from '../abstractions/storage.service';
-
-type Urls = {
-    base?: string;
-    webVault?: string;
-    api?: string;
-    identity?: string;
-    icons?: string;
-    notifications?: string;
-    events?: string;
-    enterprise?: string;
-};
 
 export class EnvironmentService implements EnvironmentServiceAbstraction {
     private baseUrl: string;
@@ -182,7 +171,22 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         this.eventsUrl = urls.events;
         this.enterpriseUrl = urls.enterprise;
 
+        // TODO: Emit event to notify other services they should change urls?
+
         return urls;
+    }
+
+    getUrls() {
+        return {
+            base: this.baseUrl,
+            webVault: this.webVaultUrl,
+            api: this.apiUrl,
+            identity: this.identityUrl,
+            icons: this.iconsUrl,
+            notifications: this.notificationsUrl,
+            events: this.eventsUrl,
+            enterprise: this.enterpriseUrl,
+        };
     }
 
     private formatUrl(url: string): string {

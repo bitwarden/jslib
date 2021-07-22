@@ -1,3 +1,14 @@
+export type Urls = {
+    base?: string;
+    webVault?: string;
+    api?: string;
+    identity?: string;
+    icons?: string;
+    notifications?: string;
+    events?: string;
+    enterprise?: string;
+};
+
 export abstract class EnvironmentService {
     hasBaseUrl: () => boolean;
     getNotificationsUrl: () => string;
@@ -9,5 +20,6 @@ export abstract class EnvironmentService {
     getIdentityUrl: () => string;
     getEventsUrl: () => string;
     setUrlsFromStorage: () => Promise<void>;
-    setUrls: (urls: any, saveSettings?: boolean) => Promise<any>;
+    setUrls: (urls: any, saveSettings?: boolean) => Promise<Urls>;
+    getUrls: () => Urls;
 }
