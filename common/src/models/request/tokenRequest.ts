@@ -1,6 +1,6 @@
 import { TwoFactorProviderType } from '../../enums/twoFactorProviderType';
-import { CaptchaProtectedRequest } from './captchaProtectedRequest';
 
+import { CaptchaProtectedRequest } from './captchaProtectedRequest';
 import { DeviceRequest } from './deviceRequest';
 
 export class TokenRequest implements CaptchaProtectedRequest {

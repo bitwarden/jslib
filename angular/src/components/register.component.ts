@@ -15,7 +15,8 @@ import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.se
 import { StateService } from 'jslib-common/abstractions/state.service';
 
 import { KdfType } from 'jslib-common/enums/kdfType';
-import { CaptchaProtectedComponent } from './captchaProtectedComponent';
+
+import { CaptchaProtectedComponent } from './captchaProtected.component';
 
 @Directive()
 export class RegisterComponent extends CaptchaProtectedComponent implements OnInit {
