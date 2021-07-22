@@ -66,10 +66,7 @@ export class LoginComponent implements OnInit {
             this.focusInput();
         }
 
-        let webVaultUrl = this.environmentService.getWebVaultUrl();
-        if (webVaultUrl == null) {
-            webVaultUrl = 'https://vault.bitwarden.com';
-        }
+        const webVaultUrl = this.environmentService.getWebVaultUrl();
         this.captcha = new CaptchaIFrame(window, webVaultUrl,
             this.i18nService, (token: string) => {
                 this.captchaToken = token;
@@ -156,8 +153,7 @@ export class LoginComponent implements OnInit {
         await this.storageService.save(ConstantsService.ssoCodeVerifierKey, ssoCodeVerifier);
 
         // Build URI
-        const webUrl = this.environmentService.getWebVaultUrl() == null ? 'https://vault.bitwarden.com' :
-            this.environmentService.getWebVaultUrl();
+        const webUrl = this.environmentService.getWebVaultUrl();
 
         // Launch browser
         this.platformUtilsService.launchUri(webUrl + '/#/sso?clientId=' + clientId +

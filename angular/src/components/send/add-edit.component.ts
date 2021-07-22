@@ -63,12 +63,7 @@ export class AddEditComponent implements OnInit {
             { name: i18nService.t('sendTypeFile'), value: SendType.File },
             { name: i18nService.t('sendTypeText'), value: SendType.Text },
         ];
-        const webVaultUrl = this.environmentService.getWebVaultUrl();
-        if (webVaultUrl == null) {
-            this.sendLinkBaseUrl = 'https://send.bitwarden.com/#';
-        } else {
-            this.sendLinkBaseUrl = webVaultUrl + '/#/send/';
-        }
+        this.sendLinkBaseUrl = this.environmentService.getSendUrl();
     }
 
     get link(): string {

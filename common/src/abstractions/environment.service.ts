@@ -1,14 +1,12 @@
 export abstract class EnvironmentService {
-    baseUrl: string;
-    webVaultUrl: string;
-    apiUrl: string;
-    identityUrl: string;
-    iconsUrl: string;
-    notificationsUrl: string;
-    eventsUrl: string;
-    enterpriseUrl: string;
-
+    getNotificationsUrl: () => string;
+    getEnterpriseUrl: () => string;
     getWebVaultUrl: () => string;
+    getSendUrl: () => string;
+    getIconsUrl: () => string;
+    getApiUrl: () => string;
+    getIdentityUrl: () => string;
+    getEventsUrl: () => string;
     setUrlsFromStorage: () => Promise<void>;
     setUrls: (urls: any) => Promise<any>;
 }

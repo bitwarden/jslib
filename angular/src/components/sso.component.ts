@@ -7,6 +7,7 @@ import {
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { AuthService } from 'jslib-common/abstractions/auth.service';
 import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
+import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
@@ -43,7 +44,7 @@ export class SsoComponent {
         protected i18nService: I18nService, protected route: ActivatedRoute,
         protected storageService: StorageService, protected stateService: StateService,
         protected platformUtilsService: PlatformUtilsService, protected apiService: ApiService,
-        protected cryptoFunctionService: CryptoFunctionService,
+        protected cryptoFunctionService: CryptoFunctionService, protected environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService) { }
 
     async ngOnInit() {
@@ -119,7 +120,7 @@ export class SsoComponent {
         // Save state (regardless of new or existing)
         await this.storageService.save(ConstantsService.ssoStateKey, state);
 
-        let authorizeUrl = this.apiService.identityBaseUrl + '/connect/authorize?' +
+        let authorizeUrl = this.environmentService.getIdentityUrl() + '/connect/authorize?' +
             'client_id=' + this.clientId + '&redirect_uri=' + encodeURIComponent(this.redirectUri) + '&' +
             'response_type=code&scope=api offline_access&' +
             'state=' + state + '&code_challenge=' + codeChallenge + '&' +

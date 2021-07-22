@@ -153,12 +153,6 @@ import { UserKeyResponse } from '../models/response/userKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
 
 export abstract class ApiService {
-    urlsSet: boolean;
-    apiBaseUrl: string;
-    identityBaseUrl: string;
-    eventsBaseUrl: string;
-
-    setUrls: (urls: EnvironmentUrls) => void;
     postIdentityToken: (request: TokenRequest) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse>;
     refreshIdentityToken: () => Promise<any>;
 

@@ -38,14 +38,7 @@ export class IconComponent implements OnChanges {
     private iconsUrl: string;
 
     constructor(environmentService: EnvironmentService, protected stateService: StateService) {
-        this.iconsUrl = environmentService.iconsUrl;
-        if (!this.iconsUrl) {
-            if (environmentService.baseUrl) {
-                this.iconsUrl = environmentService.baseUrl + '/icons';
-            } else {
-                this.iconsUrl = 'https://icons.bitwarden.net';
-            }
-        }
+        this.iconsUrl = environmentService.getIconsUrl();
     }
 
     async ngOnChanges() {

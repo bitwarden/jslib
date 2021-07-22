@@ -5,8 +5,6 @@ import { ApiService as ApiServiceAbstraction } from '../abstractions/api.service
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { TokenService } from '../abstractions/token.service';
 
-import { EnvironmentUrls } from '../models/domain/environmentUrls';
-
 import { AttachmentRequest } from '../models/request/attachmentRequest';
 import { BitPayInvoiceRequest } from '../models/request/bitPayInvoiceRequest';
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
@@ -160,15 +158,11 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
+import { EnvironmentService } from '../abstractions';
 import { IdentityCaptchaResponse } from '../models/response/identityCaptchaResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
 
 export class ApiService implements ApiServiceAbstraction {
-    urlsSet: boolean = false;
-    apiBaseUrl: string;
-    identityBaseUrl: string;
-    eventsBaseUrl: string;
-
     private device: DeviceType;
     private deviceType: string;
     private isWebClient = false;
@@ -176,7 +170,8 @@ export class ApiService implements ApiServiceAbstraction {
     private usingBaseUrl = false;
 
     constructor(private tokenService: TokenService, private platformUtilsService: PlatformUtilsService,
-        private logoutCallback: (expired: boolean) => Promise<void>, private customUserAgent: string = null) {
+        private environmentService: EnvironmentService, private logoutCallback: (expired: boolean) => Promise<void>,
+        private customUserAgent: string = null) {
         this.device = platformUtilsService.getDevice();
         this.deviceType = this.device.toString();
         this.isWebClient = this.device === DeviceType.IEBrowser || this.device === DeviceType.ChromeBrowser ||
@@ -185,33 +180,6 @@ export class ApiService implements ApiServiceAbstraction {
             this.device === DeviceType.UnknownBrowser || this.device === DeviceType.VivaldiBrowser;
         this.isDesktopClient = this.device === DeviceType.WindowsDesktop || this.device === DeviceType.MacOsDesktop ||
             this.device === DeviceType.LinuxDesktop;
-    }
-
-    setUrls(urls: EnvironmentUrls): void {
-        this.urlsSet = true;
-
-        if (urls.base != null) {
-            this.usingBaseUrl = true;
-            this.apiBaseUrl = urls.base + '/api';
-            this.identityBaseUrl = urls.base + '/identity';
-            this.eventsBaseUrl = urls.base + '/events';
-            return;
-        }
-
-        this.apiBaseUrl = urls.api;
-        this.identityBaseUrl = urls.identity;
-        this.eventsBaseUrl = urls.events;
-
-        // Production
-        if (this.apiBaseUrl == null) {
-            this.apiBaseUrl = 'https://api.bitwarden.com';
-        }
-        if (this.identityBaseUrl == null) {
-            this.identityBaseUrl = 'https://identity.bitwarden.com';
-        }
-        if (this.eventsBaseUrl == null) {
-            this.eventsBaseUrl = 'https://events.bitwarden.com';
-        }
     }
 
     // Auth APIs
@@ -226,7 +194,7 @@ export class ApiService implements ApiServiceAbstraction {
             headers.set('User-Agent', this.customUserAgent);
         }
         request.alterIdentityTokenHeaders(headers);
-        const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
+        const response = await this.fetch(new Request(this.environmentService.getIdentityUrl() + '/connect/token', {
             body: this.qsStringify(request.toIdentityToken(request.clientId ?? this.platformUtilsService.identityClientId)),
             credentials: this.getCredentials(),
             cache: 'no-store',
@@ -1399,7 +1367,7 @@ export class ApiService implements ApiServiceAbstraction {
         if (this.customUserAgent != null) {
             headers.set('User-Agent', this.customUserAgent);
         }
-        const response = await this.fetch(new Request(this.eventsBaseUrl + '/collect', {
+        const response = await this.fetch(new Request(this.environmentService.getEventsUrl() + '/collect', {
             cache: 'no-store',
             credentials: this.getCredentials(),
             method: 'POST',
@@ -1473,7 +1441,7 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         const path = `/account/prevalidate?domainHint=${encodeURIComponent(identifier)}`;
-        const response = await this.fetch(new Request(this.identityBaseUrl + path, {
+        const response = await this.fetch(new Request(this.environmentService.getIdentityUrl() + path, {
             cache: 'no-store',
             credentials: this.getCredentials(),
             headers: headers,
@@ -1503,7 +1471,7 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         const decodedToken = this.tokenService.decodeToken();
-        const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
+        const response = await this.fetch(new Request(this.environmentService.getIdentityUrl() + '/connect/token', {
             body: this.qsStringify({
                 grant_type: 'refresh_token',
                 client_id: decodedToken.client_id,
@@ -1528,7 +1496,7 @@ export class ApiService implements ApiServiceAbstraction {
     private async send(method: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string, body: any,
         authed: boolean, hasResponse: boolean, apiUrl?: string,
         alterHeaders?: (headers: Headers) => void): Promise<any> {
-        apiUrl = Utils.isNullOrWhitespace(apiUrl) ? this.apiBaseUrl : apiUrl;
+        apiUrl = Utils.isNullOrWhitespace(apiUrl) ? this.environmentService.getApiUrl() : apiUrl;
         const headers = new Headers({
             'Device-Type': this.deviceType,
         });
