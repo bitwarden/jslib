@@ -8,5 +8,5 @@ export abstract class EnvironmentService {
     getIdentityUrl: () => string;
     getEventsUrl: () => string;
     setUrlsFromStorage: () => Promise<void>;
-    setUrls: (urls: any) => Promise<any>;
+    setUrls: (urls: any, saveSettings?: boolean) => Promise<any>;
 }

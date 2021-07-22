@@ -146,7 +146,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         this.enterpriseUrl = urls.enterprise;
     }
 
-    async setUrls(urls: Urls, webVault: boolean = false): Promise<any> {
+    async setUrls(urls: Urls, saveSettings: boolean = true): Promise<any> {
         urls.base = this.formatUrl(urls.base);
         urls.webVault = this.formatUrl(urls.webVault);
         urls.api = this.formatUrl(urls.api);
@@ -156,7 +156,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         urls.events = this.formatUrl(urls.events);
         urls.enterprise = this.formatUrl(urls.enterprise);
 
-        if (!webVault) {
+        if (saveSettings) {
             await this.storageService.save(ConstantsService.environmentUrlsKey, {
                 base: urls.base,
                 api: urls.api,
