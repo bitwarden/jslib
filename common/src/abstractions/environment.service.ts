@@ -1,3 +1,5 @@
+import { Observable } from 'rxjs';
+
 export type Urls = {
     base?: string;
     webVault?: string;
@@ -10,6 +12,8 @@ export type Urls = {
 };
 
 export abstract class EnvironmentService {
+    urls: Observable<Urls>;
+
     hasBaseUrl: () => boolean;
     getNotificationsUrl: () => string;
     getEnterpriseUrl: () => string;

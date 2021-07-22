@@ -1,3 +1,5 @@
+import { Observable, Subject } from 'rxjs';
+
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
 import { ConstantsService } from './constants.service';
@@ -6,6 +8,10 @@ import { EnvironmentService as EnvironmentServiceAbstraction, Urls } from '../ab
 import { StorageService } from '../abstractions/storage.service';
 
 export class EnvironmentService implements EnvironmentServiceAbstraction {
+
+    private readonly urlsSubject = new Subject<Urls>();
+    urls: Observable<Urls> = this.urlsSubject; // tslint:disable-line
+
     private baseUrl: string;
     private webVaultUrl: string;
     private apiUrl: string;
@@ -15,7 +21,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
     private eventsUrl: string;
     private enterpriseUrl: string;
 
-    constructor(private storageService: StorageService) { }
+    constructor(private storageService: StorageService) {}
 
     hasBaseUrl() {
         return this.baseUrl != null;
@@ -171,7 +177,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         this.eventsUrl = urls.events;
         this.enterpriseUrl = urls.enterprise;
 
-        // TODO: Emit event to notify other services they should change urls?
+        this.urlsSubject.next(urls);
 
         return urls;
     }

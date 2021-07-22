@@ -23,7 +23,7 @@ export class EnvironmentComponent {
     enterpriseUrl: string;
 
     constructor(protected platformUtilsService: PlatformUtilsService, protected environmentService: EnvironmentService,
-        protected i18nService: I18nService, private notificationService: NotificationsService) {
+        protected i18nService: I18nService) {
 
         const urls = this.environmentService.getUrls();
 
@@ -46,8 +46,6 @@ export class EnvironmentComponent {
             notifications: this.notificationsUrl,
             enterprise: this.enterpriseUrl,
         });
-
-        this.notificationService.init();
 
         // re-set urls since service can change them, ex: prefixing https://
         this.baseUrl = resUrls.base;

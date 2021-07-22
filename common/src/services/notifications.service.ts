@@ -31,6 +31,13 @@ export class NotificationsService implements NotificationsServiceAbstraction {
         private appIdService: AppIdService, private apiService: ApiService,
         private vaultTimeoutService: VaultTimeoutService, private environmentService: EnvironmentService,
         private logoutCallback: () => Promise<void>, private logService: LogService) {
+        this.environmentService.urls.subscribe(() => {
+            if (!this.inited) {
+                return;
+            }
+
+            this.init();
+        });
     }
 
     async init(): Promise<void> {
