@@ -143,8 +143,7 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
         await this.storageService.save(ConstantsService.ssoCodeVerifierKey, ssoCodeVerifier);
 
         // Build URI
-        const webUrl = this.environmentService.getWebVaultUrl() == null ? 'https://vault.bitwarden.com' :
-            this.environmentService.getWebVaultUrl();
+        const webUrl = this.environmentService.getWebVaultUrl();
 
         // Launch browser
         this.platformUtilsService.launchUri(webUrl + '/#/sso?clientId=' + clientId +

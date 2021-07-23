@@ -170,11 +170,7 @@ export class SendComponent implements OnInit {
     }
 
     copy(s: SendView) {
-        let sendLinkBaseUrl = 'https://send.bitwarden.com/#';
-        const webVaultUrl = this.environmentService.getWebVaultUrl();
-        if (webVaultUrl != null) {
-            sendLinkBaseUrl = webVaultUrl + '/#/send/';
-        }
+        const sendLinkBaseUrl = this.environmentService.getSendUrl();
         const link = sendLinkBaseUrl + s.accessId + '/' + s.urlB64Key;
         this.platformUtilsService.copyToClipboard(link);
         this.platformUtilsService.showToast('success', null,

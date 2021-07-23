@@ -57,10 +57,9 @@ export class LockComponent implements OnInit {
             (await this.cryptoService.hasKeyStored('biometric') || !this.platformUtilsService.supportsSecureStorage());
         this.biometricText = await this.storageService.get(ConstantsService.biometricText);
         this.email = await this.userService.getEmail();
-        let vaultUrl = this.environmentService.getWebVaultUrl();
-        if (vaultUrl == null) {
-            vaultUrl = 'https://bitwarden.com';
-        }
+
+        const webVaultUrl = this.environmentService.getWebVaultUrl();
+        const vaultUrl = webVaultUrl === 'https://vault.bitwarden.com' ? 'https://bitwarden.com' : webVaultUrl;
         this.webVaultHostname = Utils.getHostname(vaultUrl);
     }
 

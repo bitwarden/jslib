@@ -279,10 +279,7 @@ export class LoginCommand {
                 }
             });
             let foundPort = false;
-            let webUrl = this.environmentService.getWebVaultUrl();
-            if (webUrl == null) {
-                webUrl = 'https://vault.bitwarden.com';
-            }
+            const webUrl = this.environmentService.getWebVaultUrl();
             for (let port = 8065; port <= 8070; port++) {
                 try {
                     this.ssoRedirectUri = 'http://localhost:' + port;
