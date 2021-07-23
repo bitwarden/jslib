@@ -31,7 +31,7 @@ export class ApiActionDirective implements OnChanges {
         }, (e: any) => {
             this.el.nativeElement.loading = false;
 
-            if (e instanceof ErrorResponse && (e as ErrorResponse).captchaRequired) {
+            if ((e instanceof ErrorResponse || e.constructor.name === "ErrorResponse") && (e as ErrorResponse).captchaRequired) {
                 this.logService.error('Captcha required error response: ' + e.getSingleMessage());
                 return;
             }
