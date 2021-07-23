@@ -149,7 +149,6 @@ export class NotificationsService implements NotificationsServiceAbstraction {
                 break;
             case NotificationType.SyncOrgKeys:
                 if (isAuthenticated) {
-                    await this.apiService.refreshIdentityToken();
                     await this.syncService.fullSync(true);
                     // Stop so a reconnect can be made
                     await this.signalrConnection.stop();
