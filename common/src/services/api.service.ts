@@ -835,7 +835,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     async postOrganizationUserBulkConfirm(organizationId: string, request: OrganizationUserBulkConfirmRequest): Promise<ListResponse<OrganizationUserBulkResponse>> {
-        const r = await this.send('POST',  '/organizations/' + organizationId + '/users/confirm', request, true, true);
+        const r = await this.send('POST', '/organizations/' + organizationId + '/users/confirm', request, true, true);
         return new ListResponse(r, OrganizationUserBulkResponse);
     }
 
@@ -1262,7 +1262,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     async postProviderUserBulkConfirm(providerId: string, request: ProviderUserBulkConfirmRequest): Promise<ListResponse<ProviderUserBulkResponse>> {
-        const r = await this.send('POST',  '/providers/' + providerId + '/users/confirm', request, true, true);
+        const r = await this.send('POST', '/providers/' + providerId + '/users/confirm', request, true, true);
         return new ListResponse(r, ProviderUserBulkResponse);
     }
 
