@@ -127,7 +127,7 @@ import { PlanResponse } from '../models/response/planResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
-import { ProviderOrganizationOrganizationDetailsResponse } from '../models/response/provider/providerOrganizationResponse';
+import { ProviderOrganizationOrganizationDetailsResponse, ProviderOrganizationResponse } from '../models/response/provider/providerOrganizationResponse';
 import { ProviderResponse } from '../models/response/provider/providerResponse';
 import { ProviderUserBulkPublicKeyResponse } from '../models/response/provider/providerUserBulkPublicKeyResponse';
 import { ProviderUserBulkResponse } from '../models/response/provider/providerUserBulkResponse';
@@ -407,7 +407,7 @@ export abstract class ApiService {
     deleteManyProviderUsers: (providerId: string, request: ProviderUserBulkRequest) => Promise<ListResponse<ProviderUserBulkResponse>>;
     getProviderClients: (providerId: string) => Promise<ListResponse<ProviderOrganizationOrganizationDetailsResponse>>;
     postProviderAddOrganization: (providerId: string, request: ProviderAddOrganizationRequest) => Promise<any>;
-    postProviderCreateOrganization: (providerId: string, request: OrganizationCreateRequest) => Promise<OrganizationResponse>;
+    postProviderCreateOrganization: (providerId: string, request: OrganizationCreateRequest) => Promise<ProviderOrganizationResponse>;
     deleteProviderOrganization: (providerId: string, organizationId: string) => Promise<any>;
 
     getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
