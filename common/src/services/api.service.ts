@@ -131,7 +131,7 @@ import { PlanResponse } from '../models/response/planResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
-import { ProviderOrganizationOrganizationDetailsResponse } from '../models/response/provider/providerOrganizationResponse';
+import { ProviderOrganizationOrganizationDetailsResponse, ProviderOrganizationResponse } from '../models/response/provider/providerOrganizationResponse';
 import { ProviderResponse } from '../models/response/provider/providerResponse';
 import { ProviderUserBulkPublicKeyResponse } from '../models/response/provider/providerUserBulkPublicKeyResponse';
 import { ProviderUserBulkResponse } from '../models/response/provider/providerUserBulkResponse';
@@ -1305,9 +1305,9 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/providers/' + providerId + '/organizations/add', request, true, false);
     }
 
-    async postProviderCreateOrganization(providerId: string, request: OrganizationCreateRequest): Promise<OrganizationResponse> {
+    async postProviderCreateOrganization(providerId: string, request: OrganizationCreateRequest): Promise<ProviderOrganizationResponse> {
         const r = await this.send('POST', '/providers/' + providerId + '/organizations', request, true, true);
-        return new OrganizationResponse(r);
+        return new ProviderOrganizationResponse(r);
     }
 
     deleteProviderOrganization(providerId: string, id: string): Promise<any> {
