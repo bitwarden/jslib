@@ -54,6 +54,7 @@ import { PaymentRequest } from '../models/request/paymentRequest';
 import { PolicyRequest } from '../models/request/policyRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
 import { ProviderAddOrganizationRequest } from '../models/request/provider/providerAddOrganizationRequest';
+import { ProviderOrganizationCreateRequest } from '../models/request/provider/providerOrganizationCreateRequest';
 import { ProviderSetupRequest } from '../models/request/provider/providerSetupRequest';
 import { ProviderUpdateRequest } from '../models/request/provider/providerUpdateRequest';
 import { ProviderUserAcceptRequest } from '../models/request/provider/providerUserAcceptRequest';
@@ -1305,7 +1306,7 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/providers/' + providerId + '/organizations/add', request, true, false);
     }
 
-    async postProviderCreateOrganization(providerId: string, request: OrganizationCreateRequest): Promise<ProviderOrganizationResponse> {
+    async postProviderCreateOrganization(providerId: string, request: ProviderOrganizationCreateRequest): Promise<ProviderOrganizationResponse> {
         const r = await this.send('POST', '/providers/' + providerId + '/organizations', request, true, true);
         return new ProviderOrganizationResponse(r);
     }
