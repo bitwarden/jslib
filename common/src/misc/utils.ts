@@ -296,6 +296,11 @@ export class Utils {
         return Object.assign(target, source);
     }
 
+    static iterateEnum<O extends object, K extends keyof O = keyof O>(obj: O) {
+        return (Object.keys(obj).filter(k => Number.isNaN(+k)) as K[]).map(k => obj[k]);
+    }
+
+
     static getUrl(uriString: string): URL {
         if (uriString == null) {
             return null;
