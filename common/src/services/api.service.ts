@@ -5,8 +5,6 @@ import { ApiService as ApiServiceAbstraction } from '../abstractions/api.service
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { TokenService } from '../abstractions/token.service';
 
-import { EnvironmentUrls } from '../models/domain/environmentUrls';
-
 import { AttachmentRequest } from '../models/request/attachmentRequest';
 import { BitPayInvoiceRequest } from '../models/request/bitPayInvoiceRequest';
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
@@ -55,6 +53,16 @@ import { PasswordVerificationRequest } from '../models/request/passwordVerificat
 import { PaymentRequest } from '../models/request/paymentRequest';
 import { PolicyRequest } from '../models/request/policyRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
+import { ProviderAddOrganizationRequest } from '../models/request/provider/providerAddOrganizationRequest';
+import { ProviderOrganizationCreateRequest } from '../models/request/provider/providerOrganizationCreateRequest';
+import { ProviderSetupRequest } from '../models/request/provider/providerSetupRequest';
+import { ProviderUpdateRequest } from '../models/request/provider/providerUpdateRequest';
+import { ProviderUserAcceptRequest } from '../models/request/provider/providerUserAcceptRequest';
+import { ProviderUserBulkConfirmRequest } from '../models/request/provider/providerUserBulkConfirmRequest';
+import { ProviderUserBulkRequest } from '../models/request/provider/providerUserBulkRequest';
+import { ProviderUserConfirmRequest } from '../models/request/provider/providerUserConfirmRequest';
+import { ProviderUserInviteRequest } from '../models/request/provider/providerUserInviteRequest';
+import { ProviderUserUpdateRequest } from '../models/request/provider/providerUserUpdateRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
@@ -81,6 +89,7 @@ import { VerifyDeleteRecoverRequest } from '../models/request/verifyDeleteRecove
 import { VerifyEmailRequest } from '../models/request/verifyEmailRequest';
 
 import { Utils } from '../misc/utils';
+
 import { ApiKeyResponse } from '../models/response/apiKeyResponse';
 import { AttachmentResponse } from '../models/response/attachmentResponse';
 import { AttachmentUploadDataResponse } from '../models/response/attachmentUploadDataResponse';
@@ -123,6 +132,14 @@ import { PlanResponse } from '../models/response/planResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
+import { ProviderOrganizationOrganizationDetailsResponse, ProviderOrganizationResponse } from '../models/response/provider/providerOrganizationResponse';
+import { ProviderResponse } from '../models/response/provider/providerResponse';
+import { ProviderUserBulkPublicKeyResponse } from '../models/response/provider/providerUserBulkPublicKeyResponse';
+import { ProviderUserBulkResponse } from '../models/response/provider/providerUserBulkResponse';
+import {
+    ProviderUserResponse,
+    ProviderUserUserDetailsResponse
+} from '../models/response/provider/providerUserResponse';
 import { SelectionReadOnlyResponse } from '../models/response/selectionReadOnlyResponse';
 import { SendAccessResponse } from '../models/response/sendAccessResponse';
 import { SendFileDownloadDataResponse } from '../models/response/sendFileDownloadDataResponse';
@@ -142,22 +159,19 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
+import { EnvironmentService } from '../abstractions';
+import { IdentityCaptchaResponse } from '../models/response/identityCaptchaResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
 
 export class ApiService implements ApiServiceAbstraction {
-    urlsSet: boolean = false;
-    apiBaseUrl: string;
-    identityBaseUrl: string;
-    eventsBaseUrl: string;
-
     private device: DeviceType;
     private deviceType: string;
     private isWebClient = false;
     private isDesktopClient = false;
-    private usingBaseUrl = false;
 
     constructor(private tokenService: TokenService, private platformUtilsService: PlatformUtilsService,
-        private logoutCallback: (expired: boolean) => Promise<void>, private customUserAgent: string = null) {
+        private environmentService: EnvironmentService, private logoutCallback: (expired: boolean) => Promise<void>,
+        private customUserAgent: string = null) {
         this.device = platformUtilsService.getDevice();
         this.deviceType = this.device.toString();
         this.isWebClient = this.device === DeviceType.IEBrowser || this.device === DeviceType.ChromeBrowser ||
@@ -168,36 +182,9 @@ export class ApiService implements ApiServiceAbstraction {
             this.device === DeviceType.LinuxDesktop;
     }
 
-    setUrls(urls: EnvironmentUrls): void {
-        this.urlsSet = true;
-
-        if (urls.base != null) {
-            this.usingBaseUrl = true;
-            this.apiBaseUrl = urls.base + '/api';
-            this.identityBaseUrl = urls.base + '/identity';
-            this.eventsBaseUrl = urls.base + '/events';
-            return;
-        }
-
-        this.apiBaseUrl = urls.api;
-        this.identityBaseUrl = urls.identity;
-        this.eventsBaseUrl = urls.events;
-
-        // Production
-        if (this.apiBaseUrl == null) {
-            this.apiBaseUrl = 'https://api.bitwarden.com';
-        }
-        if (this.identityBaseUrl == null) {
-            this.identityBaseUrl = 'https://identity.bitwarden.com';
-        }
-        if (this.eventsBaseUrl == null) {
-            this.eventsBaseUrl = 'https://events.bitwarden.com';
-        }
-    }
-
     // Auth APIs
 
-    async postIdentityToken(request: TokenRequest): Promise<IdentityTokenResponse | IdentityTwoFactorResponse> {
+    async postIdentityToken(request: TokenRequest): Promise<IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse> {
         const headers = new Headers({
             'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
             'Accept': 'application/json',
@@ -207,7 +194,7 @@ export class ApiService implements ApiServiceAbstraction {
             headers.set('User-Agent', this.customUserAgent);
         }
         request.alterIdentityTokenHeaders(headers);
-        const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
+        const response = await this.fetch(new Request(this.environmentService.getIdentityUrl() + '/connect/token', {
             body: this.qsStringify(request.toIdentityToken(request.clientId ?? this.platformUtilsService.identityClientId)),
             credentials: this.getCredentials(),
             cache: 'no-store',
@@ -227,6 +214,9 @@ export class ApiService implements ApiServiceAbstraction {
                 Object.keys(responseJson.TwoFactorProviders2).length) {
                 await this.tokenService.clearTwoFactorToken(request.email);
                 return new IdentityTwoFactorResponse(responseJson);
+            } else if (response.status === 400 && responseJson.HCaptcha_SiteKey &&
+                Object.keys(responseJson.HCaptcha_SiteKey).length) {
+                return new IdentityCaptchaResponse(responseJson);
             }
         }
 
@@ -846,7 +836,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     async postOrganizationUserBulkConfirm(organizationId: string, request: OrganizationUserBulkConfirmRequest): Promise<ListResponse<OrganizationUserBulkResponse>> {
-        const r = await this.send('POST',  '/organizations/' + organizationId + '/users/confirm', request, true, true);
+        const r = await this.send('POST', '/organizations/' + organizationId + '/users/confirm', request, true, true);
         return new ListResponse(r, OrganizationUserBulkResponse);
     }
 
@@ -1230,6 +1220,101 @@ export class ApiService implements ApiServiceAbstraction {
         return new OrganizationKeysResponse(r);
     }
 
+    // Provider APIs
+
+    async postProviderSetup(id: string, request: ProviderSetupRequest) {
+        const r = await this.send('POST', '/providers/' + id + '/setup', request, true, true);
+        return new ProviderResponse(r);
+    }
+
+    async getProvider(id: string) {
+        const r = await this.send('GET', '/providers/' + id, null, true, true);
+        return new ProviderResponse(r);
+    }
+
+    async putProvider(id: string, request: ProviderUpdateRequest) {
+        const r = await this.send('PUT', '/providers/' + id, request, true, true);
+        return new ProviderResponse(r);
+    }
+
+    // Provider User APIs
+
+    async getProviderUsers(providerId: string): Promise<ListResponse<ProviderUserUserDetailsResponse>> {
+        const r = await this.send('GET', '/providers/' + providerId + '/users', null, true, true);
+        return new ListResponse(r, ProviderUserUserDetailsResponse);
+    }
+
+    async getProviderUser(providerId: string, id: string): Promise<ProviderUserResponse> {
+        const r = await this.send('GET', '/providers/' + providerId + '/users/' + id, null, true, true);
+        return new ProviderUserResponse(r);
+    }
+
+    postProviderUserInvite(providerId: string, request: ProviderUserInviteRequest): Promise<any> {
+        return this.send('POST', '/providers/' + providerId + '/users/invite', request, true, false);
+    }
+
+    postProviderUserReinvite(providerId: string, id: string): Promise<any> {
+        return this.send('POST', '/providers/' + providerId + '/users/' + id + '/reinvite', null, true, false);
+    }
+
+    async postManyProviderUserReinvite(providerId: string, request: ProviderUserBulkRequest): Promise<ListResponse<ProviderUserBulkResponse>> {
+        const r = await this.send('POST', '/providers/' + providerId + '/users/reinvite', request, true, true);
+        return new ListResponse(r, ProviderUserBulkResponse);
+    }
+
+    async postProviderUserBulkConfirm(providerId: string, request: ProviderUserBulkConfirmRequest): Promise<ListResponse<ProviderUserBulkResponse>> {
+        const r = await this.send('POST', '/providers/' + providerId + '/users/confirm', request, true, true);
+        return new ListResponse(r, ProviderUserBulkResponse);
+    }
+
+    async deleteManyProviderUsers(providerId: string, request: ProviderUserBulkRequest): Promise<ListResponse<ProviderUserBulkResponse>> {
+        const r = await this.send('DELETE', '/providers/' + providerId + '/users', request, true, true);
+        return new ListResponse(r, ProviderUserBulkResponse);
+    }
+
+    postProviderUserAccept(providerId: string, id: string, request: ProviderUserAcceptRequest): Promise<any> {
+        return this.send('POST', '/providers/' + providerId + '/users/' + id + '/accept', request, true, false);
+    }
+
+    postProviderUserConfirm(providerId: string, id: string, request: ProviderUserConfirmRequest): Promise<any> {
+        return this.send('POST', '/providers/' + providerId + '/users/' + id + '/confirm',
+            request, true, false);
+    }
+
+    async postProviderUsersPublicKey(providerId: string, request: ProviderUserBulkRequest): Promise<ListResponse<ProviderUserBulkPublicKeyResponse>> {
+        const r = await this.send('POST', '/providers/' + providerId + '/users/public-keys', request, true, true);
+        return new ListResponse(r, ProviderUserBulkPublicKeyResponse);
+    }
+
+
+    putProviderUser(providerId: string, id: string, request: ProviderUserUpdateRequest): Promise<any> {
+        return this.send('PUT', '/providers/' + providerId + '/users/' + id, request, true, false);
+    }
+
+    deleteProviderUser(providerId: string, id: string): Promise<any> {
+        return this.send('DELETE', '/providers/' + providerId + '/users/' + id, null, true, false);
+    }
+
+    // Provider Organization APIs
+
+    async getProviderClients(providerId: string): Promise<ListResponse<ProviderOrganizationOrganizationDetailsResponse>> {
+        const r = await this.send('GET', '/providers/' + providerId + '/organizations', null, true, true);
+        return new ListResponse(r, ProviderOrganizationOrganizationDetailsResponse);
+    }
+
+    postProviderAddOrganization(providerId: string, request: ProviderAddOrganizationRequest): Promise<any> {
+        return this.send('POST', '/providers/' + providerId + '/organizations/add', request, true, false);
+    }
+
+    async postProviderCreateOrganization(providerId: string, request: ProviderOrganizationCreateRequest): Promise<ProviderOrganizationResponse> {
+        const r = await this.send('POST', '/providers/' + providerId + '/organizations', request, true, true);
+        return new ProviderOrganizationResponse(r);
+    }
+
+    deleteProviderOrganization(providerId: string, id: string): Promise<any> {
+        return this.send('DELETE', '/providers/' + providerId + '/organizations/' + id, null, true, false);
+    }
+
     // Event APIs
 
     async getEvents(start: string, end: string, token: string): Promise<ListResponse<EventResponse>> {
@@ -1259,6 +1344,19 @@ export class ApiService implements ApiServiceAbstraction {
         return new ListResponse(r, EventResponse);
     }
 
+    async getEventsProvider(id: string, start: string, end: string, token: string): Promise<ListResponse<EventResponse>> {
+        const r = await this.send('GET', this.addEventParameters('/providers/' + id + '/events', start, end, token), null, true, true);
+        return new ListResponse(r, EventResponse);
+    }
+
+    async getEventsProviderUser(providerId: string, id: string,
+        start: string, end: string, token: string): Promise<ListResponse<EventResponse>> {
+        const r = await this.send('GET',
+            this.addEventParameters('/providers/' + providerId + '/users/' + id + '/events', start, end, token),
+            null, true, true);
+        return new ListResponse(r, EventResponse);
+    }
+
     async postEventsCollect(request: EventRequest[]): Promise<any> {
         const authHeader = await this.getActiveBearerToken();
         const headers = new Headers({
@@ -1269,7 +1367,7 @@ export class ApiService implements ApiServiceAbstraction {
         if (this.customUserAgent != null) {
             headers.set('User-Agent', this.customUserAgent);
         }
-        const response = await this.fetch(new Request(this.eventsBaseUrl + '/collect', {
+        const response = await this.fetch(new Request(this.environmentService.getEventsUrl() + '/collect', {
             cache: 'no-store',
             credentials: this.getCredentials(),
             method: 'POST',
@@ -1343,7 +1441,7 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         const path = `/account/prevalidate?domainHint=${encodeURIComponent(identifier)}`;
-        const response = await this.fetch(new Request(this.identityBaseUrl + path, {
+        const response = await this.fetch(new Request(this.environmentService.getIdentityUrl() + path, {
             cache: 'no-store',
             credentials: this.getCredentials(),
             headers: headers,
@@ -1373,7 +1471,7 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         const decodedToken = this.tokenService.decodeToken();
-        const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
+        const response = await this.fetch(new Request(this.environmentService.getIdentityUrl() + '/connect/token', {
             body: this.qsStringify({
                 grant_type: 'refresh_token',
                 client_id: decodedToken.client_id,
@@ -1398,7 +1496,7 @@ export class ApiService implements ApiServiceAbstraction {
     private async send(method: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string, body: any,
         authed: boolean, hasResponse: boolean, apiUrl?: string,
         alterHeaders?: (headers: Headers) => void): Promise<any> {
-        apiUrl = Utils.isNullOrWhitespace(apiUrl) ? this.apiBaseUrl : apiUrl;
+        apiUrl = Utils.isNullOrWhitespace(apiUrl) ? this.environmentService.getApiUrl() : apiUrl;
         const headers = new Headers({
             'Device-Type': this.deviceType,
         });
@@ -1471,7 +1569,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     private getCredentials(): RequestCredentials {
-        if (!this.isWebClient || this.usingBaseUrl) {
+        if (!this.isWebClient || this.environmentService.hasBaseUrl()) {
             return 'include';
         }
         return undefined;

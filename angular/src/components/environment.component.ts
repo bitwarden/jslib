@@ -6,6 +6,7 @@ import {
 
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { NotificationsService } from 'jslib-common/abstractions/notifications.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 
 @Directive()
@@ -23,13 +24,16 @@ export class EnvironmentComponent {
 
     constructor(protected platformUtilsService: PlatformUtilsService, protected environmentService: EnvironmentService,
         protected i18nService: I18nService) {
-        this.baseUrl = environmentService.baseUrl || '';
-        this.webVaultUrl = environmentService.webVaultUrl || '';
-        this.apiUrl = environmentService.apiUrl || '';
-        this.identityUrl = environmentService.identityUrl || '';
-        this.iconsUrl = environmentService.iconsUrl || '';
-        this.notificationsUrl = environmentService.notificationsUrl || '';
-        this.enterpriseUrl = environmentService.enterpriseUrl || '';
+
+        const urls = this.environmentService.getUrls();
+
+        this.baseUrl = urls.base || '';
+        this.webVaultUrl = urls.webVault || '';
+        this.apiUrl = urls.api || '';
+        this.identityUrl = urls.identity || '';
+        this.iconsUrl = urls.icons || '';
+        this.notificationsUrl = urls.notifications || '';
+        this.enterpriseUrl = urls.enterprise || '';
     }
 
     async submit() {

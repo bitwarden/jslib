@@ -175,6 +175,10 @@ export class LoginCommand {
                 } else {
                     response = await this.authService.logIn(email, password);
                 }
+                if (response.captchaSiteKey) {
+                    return Response.badRequest('Your authentication request appears to be coming from a bot\n' +
+                        'Please log in using your API key (https://bitwarden.com/help/article/cli/#using-an-api-key)');
+                }
                 if (response.twoFactor) {
                     let selectedProvider: any = null;
                     const twoFactorProviders = this.authService.getSupportedTwoFactorProviders(null);
@@ -288,10 +292,7 @@ export class LoginCommand {
                 }
             });
             let foundPort = false;
-            let webUrl = this.environmentService.getWebVaultUrl();
-            if (webUrl == null) {
-                webUrl = 'https://vault.bitwarden.com';
-            }
+            const webUrl = this.environmentService.getWebVaultUrl();
             for (let port = 8065; port <= 8070; port++) {
                 try {
                     this.ssoRedirectUri = 'http://localhost:' + port;

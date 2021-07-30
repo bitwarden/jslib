@@ -26,18 +26,6 @@ import { SendView } from 'jslib-common/models/view/sendView';
 import { EncArrayBuffer } from 'jslib-common/models/domain/encArrayBuffer';
 import { Send } from 'jslib-common/models/domain/send';
 
-// TimeOption is used for the dropdown implementation of custom times
-// Standard = displayed time; Military = stored time
-interface TimeOption {
-    standard: string;
-    military: string;
-}
-
-enum DateField {
-    DeletionDate = 'deletion',
-    ExpriationDate = 'expiration',
-}
-
 @Directive()
 export class AddEditComponent implements OnInit {
     @Input() sendId: string;
@@ -52,11 +40,7 @@ export class AddEditComponent implements OnInit {
     disableHideEmail = false;
     send: SendView;
     deletionDate: string;
-    deletionDateFallback: string;
-    deletionTimeFallback: string;
-    expirationDate: string = null;
-    expirationDateFallback: string;
-    expirationTimeFallback: string;
+    expirationDate: string;
     hasPassword: boolean;
     password: string;
     showPassword = false;
@@ -64,19 +48,10 @@ export class AddEditComponent implements OnInit {
     deletePromise: Promise<any>;
     sendType = SendType;
     typeOptions: any[];
-    deletionDateOptions: any[];
-    expirationDateOptions: any[];
-    deletionDateSelect = 168;
-    expirationDateSelect: number = null;
     canAccessPremium = true;
     emailVerified = true;
     alertShown = false;
     showOptions = false;
-
-    safariDeletionTime: string;
-    safariExpirationTime: string;
-    safariDeletionTimeOptions: TimeOption[];
-    safariExpirationTimeOptions: TimeOption[];
 
     private sendLinkBaseUrl: string;
 
@@ -88,25 +63,7 @@ export class AddEditComponent implements OnInit {
             { name: i18nService.t('sendTypeFile'), value: SendType.File },
             { name: i18nService.t('sendTypeText'), value: SendType.Text },
         ];
-        this.deletionDateOptions = this.expirationDateOptions = [
-            { name: i18nService.t('oneHour'), value: 1 },
-            { name: i18nService.t('oneDay'), value: 24 },
-            { name: i18nService.t('days', '2'), value: 48 },
-            { name: i18nService.t('days', '3'), value: 72 },
-            { name: i18nService.t('days', '7'), value: 168 },
-            { name: i18nService.t('days', '30'), value: 720 },
-            { name: i18nService.t('custom'), value: 0 },
-        ];
-        this.expirationDateOptions = [
-            { name: i18nService.t('never'), value: null },
-        ].concat([...this.deletionDateOptions]);
-
-        const webVaultUrl = this.environmentService.getWebVaultUrl();
-        if (webVaultUrl == null) {
-            this.sendLinkBaseUrl = 'https://send.bitwarden.com/#';
-        } else {
-            this.sendLinkBaseUrl = webVaultUrl + '/#/send/';
-        }
+        this.sendLinkBaseUrl = this.environmentService.getSendUrl();
     }
 
     get link(): string {
@@ -140,16 +97,9 @@ export class AddEditComponent implements OnInit {
         );
     }
 
-    get expirationDateTimeFallback() {
-        return this.nullOrWhiteSpaceCount([this.expirationDateFallback, this.expirationTimeFallback]) > 0 ?
-            null :
-            `${this.formatDateFallbacks(this.expirationDateFallback)}T${this.expirationTimeFallback}`;
-    }
-
-    get deletionDateTimeFallback() {
-        return this.nullOrWhiteSpaceCount([this.deletionDateFallback, this.deletionTimeFallback]) > 0 ?
-            null :
-            `${this.formatDateFallbacks(this.deletionDateFallback)}T${this.deletionTimeFallback}`;
+    setDates(event: {deletionDate: string, expirationDate: string}) {
+        this.deletionDate = event.deletionDate;
+        this.expirationDate = event.expirationDate;
     }
 
     async load() {
@@ -193,64 +143,9 @@ export class AddEditComponent implements OnInit {
         }
 
         this.hasPassword = this.send.password != null && this.send.password.trim() !== '';
-
-        // Parse dates
-        if (!this.isDateTimeLocalSupported) {
-            const deletionDateParts = this.dateToSplitString(this.send.deletionDate);
-            if (deletionDateParts !== undefined && deletionDateParts.length > 0) {
-                this.deletionDateFallback = deletionDateParts[0];
-                this.deletionTimeFallback = deletionDateParts[1];
-                if (this.isSafari) {
-                    this.safariDeletionTime = this.deletionTimeFallback;
-                }
-            }
-
-            const expirationDateParts = this.dateToSplitString(this.send.expirationDate);
-            if (expirationDateParts !== undefined && expirationDateParts.length > 0) {
-                this.expirationDateFallback = expirationDateParts[0];
-                this.expirationTimeFallback = expirationDateParts[1];
-                if (this.isSafari) {
-                    this.safariExpirationTime = this.expirationTimeFallback;
-                }
-            }
-        } else {
-            this.deletionDate = this.dateToString(this.send.deletionDate);
-            this.expirationDate = this.dateToString(this.send.expirationDate);
-        }
-
-        if (this.isSafari) {
-            this.safariDeletionTimeOptions = this.safariTimeOptions(DateField.DeletionDate);
-            this.safariExpirationTimeOptions = this.safariTimeOptions(DateField.ExpriationDate);
-        }
     }
 
     async submit(): Promise<boolean> {
-        if (!this.isDateTimeLocalSupported) {
-            if (this.isSafari) {
-                this.expirationTimeFallback = this.safariExpirationTime ?? this.expirationTimeFallback;
-                this.deletionTimeFallback = this.safariDeletionTime ?? this.deletionTimeFallback;
-            }
-            this.deletionDate = this.deletionDateTimeFallback;
-            if (this.expirationDateTimeFallback != null && isNaN(Date.parse(this.expirationDateTimeFallback))) {
-                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                    this.i18nService.t('expirationDateIsInvalid'));
-                return;
-            }
-            if (isNaN(Date.parse(this.deletionDateTimeFallback))) {
-                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                    this.i18nService.t('deletionDateIsInvalid'));
-                return;
-            }
-            if (this.nullOrWhiteSpaceCount([this.expirationDateFallback, this.expirationTimeFallback]) === 1) {
-                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                    this.i18nService.t('expirationDateAndTimeRequired'));
-                return;
-            }
-            if (this.editMode || this.expirationDateSelect === 0) {
-                this.expirationDate = this.expirationDateTimeFallback;
-            }
-        }
-
         if (this.disableSend) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('sendDisabledWarning'));
@@ -278,20 +173,6 @@ export class AddEditComponent implements OnInit {
                 this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                     this.i18nService.t('maxFileSize'));
                 return;
-            }
-        }
-
-        if (!this.editMode) {
-            const now = new Date();
-            if (this.deletionDateSelect > 0) {
-                const d = new Date();
-                d.setHours(now.getHours() + this.deletionDateSelect);
-                this.deletionDate = this.dateToString(d);
-            }
-            if (this.expirationDateSelect != null && this.expirationDateSelect > 0) {
-                const d = new Date();
-                d.setHours(now.getHours() + this.expirationDateSelect);
-                this.expirationDate = this.dateToString(d);
             }
         }
 
@@ -323,19 +204,11 @@ export class AddEditComponent implements OnInit {
                     }
                 }
             });
-
         try {
             await this.formPromise;
             return true;
         } catch { }
         return false;
-    }
-
-    clearExpiration() {
-        this.expirationDate = null;
-        this.expirationDateFallback = null;
-        this.expirationTimeFallback = null;
-        this.safariExpirationTime = null;
     }
 
     async copyLinkToClipboard(link: string): Promise<void | boolean> {
@@ -367,8 +240,7 @@ export class AddEditComponent implements OnInit {
     }
 
     typeChanged() {
-        if (this.send.type === SendType.File && !this.alertShown)
-        {
+        if (this.send.type === SendType.File && !this.alertShown) {
             if (!this.canAccessPremium) {
                 this.alertShown = true;
                 this.messagingService.send('premiumRequired');
@@ -381,12 +253,6 @@ export class AddEditComponent implements OnInit {
 
     toggleOptions() {
         this.showOptions = !this.showOptions;
-    }
-
-    expirationDateFallbackChanged() {
-        this.isSafari ?
-            this.safariExpirationTime = this.safariExpirationTime ?? '00:00' :
-            this.expirationTimeFallback = this.expirationTimeFallback ?? this.datePipe.transform(new Date(), 'HH:mm');
     }
 
     protected async loadSend(): Promise<Send> {
@@ -411,118 +277,8 @@ export class AddEditComponent implements OnInit {
         return sendData;
     }
 
-    protected dateToString(d: Date) {
-        return d == null ? null : this.datePipe.transform(d, 'yyyy-MM-ddTHH:mm');
-    }
-
-    protected formatDateFallbacks(dateString: string) {
-        try {
-            // The Firefox date picker doesn't supply a time, safari's polyfill does.
-            // Unknown if Safari's native date picker will or not when it releases.
-            if (!this.isSafari) {
-                dateString += ' 00:00';
-            }
-            return this.datePipe.transform(new Date(dateString), 'yyyy-MM-dd');
-        } catch {
-            // this should never happen
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('dateParsingError'));
-        }
-    }
-
-    protected dateToSplitString(d: Date) {
-        if (d != null) {
-            const date = !this.isSafari ?
-                this.datePipe.transform(d, 'yyyy-MM-dd') :
-                this.datePipe.transform(d, 'MM/dd/yyyy');
-            const time = this.datePipe.transform(d, 'HH:mm');
-            return [date, time];
-        }
-    }
-
     protected togglePasswordVisible() {
         this.showPassword = !this.showPassword;
         document.getElementById('password').focus();
-    }
-
-    protected nullOrWhiteSpaceCount(strarray: string[]): number {
-        return strarray.filter(str => str == null || str.trim() === '').length;
-    }
-
-    protected safariTimeOptions(field: DateField): TimeOption[] {
-        // init individual arrays for major sort groups
-        const noon: TimeOption[] = [];
-        const midnight: TimeOption[] = [];
-        const ams: TimeOption[] = [];
-        const pms: TimeOption[] = [];
-
-        // determine minute skip (5 min, 10 min, 15 min, etc.)
-        const minuteIncrementer = 15;
-
-        // loop through each hour on a 12 hour system
-        for (let h = 1; h <= 12; h++) {
-            // loop through each minute in the hour using the skip to incriment
-            for (let m = 0; m < 60; m += minuteIncrementer) {
-                // init the final strings that will be added to the lists
-                let hour = h.toString();
-                let minutes = m.toString();
-
-                // add prepending 0s to single digit hours/minutes
-                if (h < 10) {
-                    hour = '0' + hour;
-                }
-                if (m < 10) {
-                    minutes = '0' + minutes;
-                }
-
-                // build time strings and push to relevant sort groups
-                if (h === 12) {
-                    const midnightOption: TimeOption = {
-                        standard: `${hour}:${minutes} AM`,
-                        military: `00:${minutes}`,
-                    };
-                    midnight.push(midnightOption);
-
-                    const noonOption: TimeOption = {
-                        standard: `${hour}:${minutes} PM`,
-                        military: `${hour}:${minutes}`,
-                    };
-                    noon.push(noonOption);
-                } else {
-                    const amOption: TimeOption = {
-                        standard: `${hour}:${minutes} AM`,
-                        military: `${hour}:${minutes}`,
-                    };
-                    ams.push(amOption);
-
-                    const pmOption: TimeOption = {
-                        standard: `${hour}:${minutes} PM`,
-                        military: `${h + 12}:${minutes}`,
-                    };
-                    pms.push(pmOption);
-                }
-            }
-        }
-
-        // bring all the arrays together in the right order
-        const validTimes = [...midnight, ...ams, ...noon, ...pms];
-
-        // determine if an unsupported value already exists on the send & add that to the top of the option list
-        // example: if the Send was created with a different client
-        if (field === DateField.ExpriationDate && this.expirationDateTimeFallback != null && this.editMode) {
-            const previousValue: TimeOption = {
-                standard: this.datePipe.transform(this.expirationDateTimeFallback, 'hh:mm a'),
-                military: this.datePipe.transform(this.expirationDateTimeFallback, 'HH:mm'),
-            };
-            return [previousValue, { standard: null, military: null }, ...validTimes];
-        } else if (field === DateField.DeletionDate && this.deletionDateTimeFallback != null && this.editMode) {
-            const previousValue: TimeOption = {
-                standard: this.datePipe.transform(this.deletionDateTimeFallback, 'hh:mm a'),
-                military: this.datePipe.transform(this.deletionDateTimeFallback, 'HH:mm'),
-            };
-            return [previousValue, ...validTimes];
-        } else {
-            return [{ standard: null, military: null }, ...validTimes];
-        }
     }
 }

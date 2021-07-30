@@ -8,6 +8,7 @@ export enum Permissions {
     ManageGroups,
     ManageOrganization,
     ManagePolicies,
+    ManageProvider,
     ManageUsers,
     ManageUsersPassword,
 }

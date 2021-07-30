@@ -1,8 +1,9 @@
 import { TwoFactorProviderType } from '../../enums/twoFactorProviderType';
 
+import { CaptchaProtectedRequest } from './captchaProtectedRequest';
 import { DeviceRequest } from './deviceRequest';
 
-export class TokenRequest {
+export class TokenRequest implements CaptchaProtectedRequest {
     email: string;
     masterPasswordHash: string;
     code: string;
@@ -10,13 +11,10 @@ export class TokenRequest {
     redirectUri: string;
     clientId: string;
     clientSecret: string;
-    token: string;
-    provider: TwoFactorProviderType;
-    remember: boolean;
     device?: DeviceRequest;
 
-    constructor(credentials: string[], codes: string[], clientIdClientSecret: string[], provider: TwoFactorProviderType,
-        token: string, remember: boolean, device?: DeviceRequest) {
+    constructor(credentials: string[], codes: string[], clientIdClientSecret: string[], public provider: TwoFactorProviderType,
+        public token: string, public remember: boolean, public captchaResponse: string, device?: DeviceRequest) {
         if (credentials != null && credentials.length > 1) {
             this.email = credentials[0];
             this.masterPasswordHash = credentials[1];
@@ -28,9 +26,6 @@ export class TokenRequest {
             this.clientId = clientIdClientSecret[0];
             this.clientSecret = clientIdClientSecret[1];
         }
-        this.token = token;
-        this.provider = provider;
-        this.remember = remember;
         this.device = device != null ? device : null;
     }
 
@@ -70,6 +65,11 @@ export class TokenRequest {
             obj.twoFactorProvider = this.provider;
             obj.twoFactorRemember = this.remember ? '1' : '0';
         }
+
+        if (this.captchaResponse != null) {
+            obj.captchaResponse = this.captchaResponse;
+        }
+
 
         return obj;
     }
