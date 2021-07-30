@@ -73,6 +73,7 @@
     "@microsoft/signalr": "3.1.13",
     "@microsoft/signalr-protocol-msgpack": "3.1.13",
     "@nodert-win10-rs4/windows.security.credentials.ui": "^0.4.4",
+    "@passcert/pwrules-annotations": "^1.1.0",
     "big-integer": "1.6.48",
     "browser-hrtime": "^1.1.8",
     "chalk": "^4.1.1",
