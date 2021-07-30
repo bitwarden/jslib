@@ -39,9 +39,9 @@ export class LoginCommand {
         protected i18nService: I18nService, protected environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
         protected cryptoFunctionService: CryptoFunctionService, protected platformUtilsService: PlatformUtilsService,
-        clientId: string) {
+        clientId: string, logService: ConsoleLogService) {
         this.clientId = clientId;
-        this.logService = new ConsoleLogService(false);
+        this.logService = logService;
     }
 
     async run(email: string, password: string, options: program.OptionValues) {
