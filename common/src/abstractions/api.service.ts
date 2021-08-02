@@ -76,6 +76,7 @@ import { TwoFactorRecoveryRequest } from '../models/request/twoFactorRecoveryReq
 import { UpdateDomainsRequest } from '../models/request/updateDomainsRequest';
 import { UpdateKeyRequest } from '../models/request/updateKeyRequest';
 import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
+import { UpdateTempPasswordRequest } from '../models/request/updateTempPasswordRequest';
 import { UpdateTwoFactorAuthenticatorRequest } from '../models/request/updateTwoFactorAuthenticatorRequest';
 import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoRequest';
 import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEmailRequest';
@@ -191,6 +192,7 @@ export abstract class ApiService {
     getEnterprisePortalSignInToken: () => Promise<string>;
     postUserApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
     postUserRotateApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
+    putUpdateTempPassword: (request: UpdateTempPasswordRequest) => Promise<any>;
 
     getFolder: (id: string) => Promise<FolderResponse>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;

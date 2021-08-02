@@ -78,6 +78,7 @@ import { TwoFactorRecoveryRequest } from '../models/request/twoFactorRecoveryReq
 import { UpdateDomainsRequest } from '../models/request/updateDomainsRequest';
 import { UpdateKeyRequest } from '../models/request/updateKeyRequest';
 import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
+import { UpdateTempPasswordRequest } from '../models/request/updateTempPasswordRequest';
 import { UpdateTwoFactorAuthenticatorRequest } from '../models/request/updateTwoFactorAuthenticatorRequest';
 import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoRequest';
 import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEmailRequest';
@@ -387,6 +388,10 @@ export class ApiService implements ApiServiceAbstraction {
     async postUserRotateApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
         const r = await this.send('POST', '/accounts/rotate-api-key', request, true, true);
         return new ApiKeyResponse(r);
+    }
+
+    putUpdateTempPassword(request: UpdateTempPasswordRequest): Promise<any> {
+        return this.send('PUT', '/accounts/update-temp-password', request, true, false);
     }
 
     // Folder APIs
