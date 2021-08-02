@@ -82,6 +82,7 @@ export class CiphersComponent {
     isSearching() {
         return !this.searchPending && this.searchService.isSearchable(this.searchText);
     }
+
     protected deletedFilter: (cipher: CipherView) => boolean = c => c.isDeleted === this.deleted;
 
     protected async doSearch(indexedCiphers?: CipherView[]) {
