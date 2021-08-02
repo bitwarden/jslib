@@ -25,7 +25,6 @@ export class CiphersComponent {
     deleted: boolean = false;
 
     protected searchPending = false;
-    protected deletedFilter: (cipher: CipherView) => boolean = c => c.isDeleted === this.deleted;
 
     private searchTimeout: any = null;
 
@@ -64,10 +63,6 @@ export class CiphersComponent {
         }, timeout);
     }
 
-    protected async doSearch(indexedCiphers?: CipherView[]) {
-        this.ciphers = await this.searchService.searchCiphers(this.searchText, [this.filter, this.deletedFilter], indexedCiphers);
-    }
-
     selectCipher(cipher: CipherView) {
         this.onCipherClicked.emit(cipher);
     }
@@ -86,5 +81,10 @@ export class CiphersComponent {
 
     isSearching() {
         return !this.searchPending && this.searchService.isSearchable(this.searchText);
+    }
+    protected deletedFilter: (cipher: CipherView) => boolean = c => c.isDeleted === this.deleted;
+
+    protected async doSearch(indexedCiphers?: CipherView[]) {
+        this.ciphers = await this.searchService.searchCiphers(this.searchText, [this.filter, this.deletedFilter], indexedCiphers);
     }
 }
