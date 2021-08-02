@@ -1,32 +1,119 @@
+import { Observable, Subject } from 'rxjs';
+
 import { EnvironmentUrls } from '../models/domain/environmentUrls';
 
 import { ConstantsService } from './constants.service';
 
-import { ApiService } from '../abstractions/api.service';
-import { EnvironmentService as EnvironmentServiceAbstraction } from '../abstractions/environment.service';
-import { NotificationsService } from '../abstractions/notifications.service';
+import { EnvironmentService as EnvironmentServiceAbstraction, Urls } from '../abstractions/environment.service';
 import { StorageService } from '../abstractions/storage.service';
 
 export class EnvironmentService implements EnvironmentServiceAbstraction {
-    baseUrl: string;
-    webVaultUrl: string;
-    apiUrl: string;
-    identityUrl: string;
-    iconsUrl: string;
-    notificationsUrl: string;
-    eventsUrl: string;
-    enterpriseUrl: string;
 
-    constructor(private apiService: ApiService, private storageService: StorageService,
-        private notificationsService: NotificationsService) { }
+    private readonly urlsSubject = new Subject<Urls>();
+    urls: Observable<Urls> = this.urlsSubject; // tslint:disable-line
 
-    getWebVaultUrl(): string {
+    private baseUrl: string;
+    private webVaultUrl: string;
+    private apiUrl: string;
+    private identityUrl: string;
+    private iconsUrl: string;
+    private notificationsUrl: string;
+    private eventsUrl: string;
+    private enterpriseUrl: string;
+
+    constructor(private storageService: StorageService) {}
+
+    hasBaseUrl() {
+        return this.baseUrl != null;
+    }
+
+    getNotificationsUrl() {
+        if (this.notificationsUrl != null) {
+            return this.notificationsUrl;
+        }
+
+        if (this.baseUrl != null) {
+            return this.baseUrl + '/notifications';
+        }
+
+        return 'https://notifications.bitwarden.com';
+    }
+
+    getEnterpriseUrl() {
+        if (this.enterpriseUrl != null) {
+            return this.enterpriseUrl;
+        }
+
+        if (this.baseUrl != null) {
+            return this.baseUrl + '/portal';
+        }
+
+        return 'https://portal.bitwarden.com';
+    }
+
+    getWebVaultUrl() {
         if (this.webVaultUrl != null) {
             return this.webVaultUrl;
-        } else if (this.baseUrl) {
+        }
+
+        if (this.baseUrl) {
             return this.baseUrl;
         }
-        return null;
+        return 'https://vault.bitwarden.com';
+    }
+
+    getSendUrl() {
+        return this.getWebVaultUrl() === 'https://vault.bitwarden.com'
+            ? 'https://send.bitwarden.com/#'
+            : this.getWebVaultUrl() + '/#/send/';
+    }
+
+    getIconsUrl() {
+        if (this.iconsUrl != null) {
+            return this.iconsUrl;
+        }
+
+        if (this.baseUrl) {
+            return this.baseUrl + '/icons';
+        }
+
+        return 'https://icons.bitwarden.net';
+    }
+
+    getApiUrl() {
+        if (this.apiUrl != null) {
+            return this.apiUrl;
+        }
+
+        if (this.baseUrl) {
+            return this.baseUrl + '/api';
+        }
+
+        return 'https://api.bitwarden.com';
+    }
+
+    getIdentityUrl() {
+        if (this.identityUrl != null) {
+            return this.identityUrl;
+        }
+
+        if (this.baseUrl) {
+            return this.baseUrl + '/identity';
+        }
+
+        return 'https://identity.bitwarden.com';
+    }
+
+    getEventsUrl() {
+        if (this.eventsUrl != null) {
+            return this.eventsUrl;
+        }
+
+        if (this.baseUrl) {
+            return this.baseUrl + '/events';
+        }
+
+        return 'https://events.bitwarden.com';
     }
 
     async setUrlsFromStorage(): Promise<void> {
@@ -46,7 +133,6 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
 
         if (urls.base) {
             this.baseUrl = envUrls.base = urls.base;
-            this.apiService.setUrls(envUrls);
             return;
         }
 
@@ -57,10 +143,9 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         this.notificationsUrl = urls.notifications;
         this.eventsUrl = envUrls.events = urls.events;
         this.enterpriseUrl = urls.enterprise;
-        this.apiService.setUrls(envUrls);
     }
 
-    async setUrls(urls: any): Promise<any> {
+    async setUrls(urls: Urls, saveSettings: boolean = true): Promise<any> {
         urls.base = this.formatUrl(urls.base);
         urls.webVault = this.formatUrl(urls.webVault);
         urls.api = this.formatUrl(urls.api);
@@ -70,16 +155,18 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         urls.events = this.formatUrl(urls.events);
         urls.enterprise = this.formatUrl(urls.enterprise);
 
-        await this.storageService.save(ConstantsService.environmentUrlsKey, {
-            base: urls.base,
-            api: urls.api,
-            identity: urls.identity,
-            webVault: urls.webVault,
-            icons: urls.icons,
-            notifications: urls.notifications,
-            events: urls.events,
-            enterprise: urls.enterprise,
-        });
+        if (saveSettings) {
+            await this.storageService.save(ConstantsService.environmentUrlsKey, {
+                base: urls.base,
+                api: urls.api,
+                identity: urls.identity,
+                webVault: urls.webVault,
+                icons: urls.icons,
+                notifications: urls.notifications,
+                events: urls.events,
+                enterprise: urls.enterprise,
+            });
+        }
 
         this.baseUrl = urls.base;
         this.webVaultUrl = urls.webVault;
@@ -90,20 +177,22 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         this.eventsUrl = urls.events;
         this.enterpriseUrl = urls.enterprise;
 
-        const envUrls = new EnvironmentUrls();
-        if (this.baseUrl) {
-            envUrls.base = this.baseUrl;
-        } else {
-            envUrls.api = this.apiUrl;
-            envUrls.identity = this.identityUrl;
-            envUrls.events = this.eventsUrl;
-        }
+        this.urlsSubject.next(urls);
 
-        this.apiService.setUrls(envUrls);
-        if (this.notificationsService != null) {
-            this.notificationsService.init(this);
-        }
         return urls;
+    }
+
+    getUrls() {
+        return {
+            base: this.baseUrl,
+            webVault: this.webVaultUrl,
+            api: this.apiUrl,
+            identity: this.identityUrl,
+            icons: this.iconsUrl,
+            notifications: this.notificationsUrl,
+            events: this.eventsUrl,
+            enterprise: this.enterpriseUrl,
+        };
     }
 
     private formatUrl(url: string): string {

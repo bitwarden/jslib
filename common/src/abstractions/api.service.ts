@@ -52,6 +52,7 @@ import { PaymentRequest } from '../models/request/paymentRequest';
 import { PolicyRequest } from '../models/request/policyRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
 import { ProviderAddOrganizationRequest } from '../models/request/provider/providerAddOrganizationRequest';
+import { ProviderOrganizationCreateRequest } from '../models/request/provider/providerOrganizationCreateRequest';
 import { ProviderSetupRequest } from '../models/request/provider/providerSetupRequest';
 import { ProviderUpdateRequest } from '../models/request/provider/providerUpdateRequest';
 import { ProviderUserAcceptRequest } from '../models/request/provider/providerUserAcceptRequest';
@@ -127,7 +128,7 @@ import { PlanResponse } from '../models/response/planResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
-import { ProviderOrganizationOrganizationDetailsResponse } from '../models/response/provider/providerOrganizationResponse';
+import { ProviderOrganizationOrganizationDetailsResponse, ProviderOrganizationResponse } from '../models/response/provider/providerOrganizationResponse';
 import { ProviderResponse } from '../models/response/provider/providerResponse';
 import { ProviderUserBulkPublicKeyResponse } from '../models/response/provider/providerUserBulkPublicKeyResponse';
 import { ProviderUserBulkResponse } from '../models/response/provider/providerUserBulkResponse';
@@ -153,12 +154,6 @@ import { UserKeyResponse } from '../models/response/userKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
 
 export abstract class ApiService {
-    urlsSet: boolean;
-    apiBaseUrl: string;
-    identityBaseUrl: string;
-    eventsBaseUrl: string;
-
-    setUrls: (urls: EnvironmentUrls) => void;
     postIdentityToken: (request: TokenRequest) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse>;
     refreshIdentityToken: () => Promise<any>;
 
@@ -413,7 +408,7 @@ export abstract class ApiService {
     deleteManyProviderUsers: (providerId: string, request: ProviderUserBulkRequest) => Promise<ListResponse<ProviderUserBulkResponse>>;
     getProviderClients: (providerId: string) => Promise<ListResponse<ProviderOrganizationOrganizationDetailsResponse>>;
     postProviderAddOrganization: (providerId: string, request: ProviderAddOrganizationRequest) => Promise<any>;
-    postProviderCreateOrganization: (providerId: string, request: OrganizationCreateRequest) => Promise<OrganizationResponse>;
+    postProviderCreateOrganization: (providerId: string, request: ProviderOrganizationCreateRequest) => Promise<ProviderOrganizationResponse>;
     deleteProviderOrganization: (providerId: string, organizationId: string) => Promise<any>;
 
     getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
