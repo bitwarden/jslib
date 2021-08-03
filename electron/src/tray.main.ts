@@ -24,7 +24,11 @@ export class TrayMain {
     private pressedIcon: Electron.NativeImage;
 
     constructor(private windowMain: WindowMain, private i18nService: I18nService,
-        private storageService: StorageService) {
+        private storageService: StorageService) { }
+
+    async init(appName: string, additionalMenuItems: MenuItemConstructorOptions[] = null) {
+        this.appName = appName;
+
         if (process.platform === 'win32') {
             this.icon = path.join(__dirname, '/images/icon.ico');
         } else if (process.platform === 'darwin') {
@@ -33,12 +37,15 @@ export class TrayMain {
             this.icon = nImage;
             this.pressedIcon = nativeImage.createFromPath(path.join(__dirname, '/images/icon-highlight.png'));
         } else {
-            this.icon = path.join(__dirname, '/images/icon.png');
+            const trayIcon = await this.storageService.get<string>(ElectronConstants.trayIconKey);
+            if (trayIcon === 'light') {
+                this.icon = path.join(__dirname, '/images/icon-white.png');
+            } else if (trayIcon === 'dark') {
+                this.icon = path.join(__dirname, '/images/icon-dark.png');
+            } else {
+                this.icon = path.join(__dirname, '/images/icon.png');
+            }
         }
-    }
-
-    async init(appName: string, additionalMenuItems: MenuItemConstructorOptions[] = null) {
-        this.appName = appName;
 
         const menuItemOptions: MenuItemConstructorOptions[] = [{
             label: this.i18nService.t('showHide'),
@@ -122,8 +129,11 @@ export class TrayMain {
         this.tray = new Tray(this.icon);
         this.tray.setToolTip(this.appName);
         this.tray.on('click', () => this.toggleWindow());
-        this.tray.on('right-click', () => this.tray.popUpContextMenu(this.contextMenu));
-
+        // Setting a context menu automatically enables a right-click event on linux
+        // but setting a right-click event overwrites the click event.
+        if (!this.isLinux()) {
+            this.tray.on('right-click', () => this.tray.popUpContextMenu(this.contextMenu));
+        }
         if (this.pressedIcon != null) {
             this.tray.setPressedImage(this.pressedIcon);
         }
