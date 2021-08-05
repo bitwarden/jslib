@@ -37,7 +37,7 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
 
     constructor(i18nService: I18nService, cryptoService: CryptoService, messagingService: MessagingService,
         userService: UserService, passwordGenerationService: PasswordGenerationService,
-        platformUtilsService: PlatformUtilsService, policyService: PolicyService, private router: Router,
+        platformUtilsService: PlatformUtilsService, policyService: PolicyService, protected router: Router,
         private apiService: ApiService, private syncService: SyncService, private route: ActivatedRoute) {
         super(i18nService, cryptoService, messagingService, userService, passwordGenerationService,
             platformUtilsService, policyService);
