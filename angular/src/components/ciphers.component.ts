@@ -53,12 +53,12 @@ export class CiphersComponent {
             clearTimeout(this.searchTimeout);
         }
         if (timeout == null) {
-            this.doSearch(indexedCiphers);
+            await this.doSearch(indexedCiphers);
             return;
         }
         this.searchPending = true;
         this.searchTimeout = setTimeout(async () => {
-            this.doSearch(indexedCiphers);
+            await this.doSearch(indexedCiphers);
             this.searchPending = false;
         }, timeout);
     }
