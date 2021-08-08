@@ -207,8 +207,5 @@ export class PasswordRulesParserService implements PasswordRulesParserServiceAbs
             }
         });
     }
-
-
-
 }
 

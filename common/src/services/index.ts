@@ -18,3 +18,4 @@ export { TokenService } from './token.service';
 export { TotpService } from './totp.service';
 export { UserService } from './user.service';
 export { VaultTimeoutService } from './vaultTimeout.service';
+export { PasswordRulesParser } from './passwordRulesParser.service';
