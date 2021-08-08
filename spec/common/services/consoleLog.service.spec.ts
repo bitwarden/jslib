@@ -1,4 +1,4 @@
-import { ConsoleLogService } from '../../../src/services/consoleLog.service';
+import { ConsoleLogService } from 'jslib-common/services/consoleLog.service';
 
 const originalConsole = console;
 let caughtMessage: any;
