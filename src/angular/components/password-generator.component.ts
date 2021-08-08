@@ -33,8 +33,6 @@ export class PasswordGeneratorComponent implements OnInit {
         const websiteOptionsResponse = await this.passwordGenerationService.getWebsiteOptions();
         this.options = optionsResponse[0];
         this.websitePasswordOptions = websiteOptionsResponse[0];
-        console.log("@ pw generator component PARENT -> ", this.options);
-        console.log("@ pw generator component PARENT website  -> ", websiteOptionsResponse[0]);
         this.enforcedPolicyOptions = optionsResponse[1];
         this.avoidAmbiguous = !this.options.ambiguous;
         this.options.type = this.options.type === 'passphrase' ? 'passphrase' : 'password';
@@ -49,11 +47,7 @@ export class PasswordGeneratorComponent implements OnInit {
 
     async sliderInput() {
         this.normalizeOptions();
-        console.log("component-parent: this are the options -> ", this.options);
-        console.log("component-parent: this are the WEBSITE options -> ", this.websitePasswordOptions);
-
         this.password = await this.passwordGenerationService.generatePassword(this.options);
-
     }
 
     async saveOptions(regenerate: boolean = true) {
@@ -66,7 +60,6 @@ export class PasswordGeneratorComponent implements OnInit {
     }
 
     async regenerate() {
-        console.log("component-parent: regenerate(): options -> ", this.options);
         this.password = await this.passwordGenerationService.generatePassword(this.options);
         await this.passwordGenerationService.addHistory(this.password);
     }

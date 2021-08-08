@@ -41,10 +41,11 @@ const Keys = {
 
 const MaxPasswordsInHistory = 100;
 
+/* tslint:disable:no-string-literal */
 export class PasswordGenerationService implements PasswordGenerationServiceAbstraction {
+    smartPasswordOptions: any = null;
     private optionsCache: any;
     private history: GeneratedPasswordHistory[];
-    smartPasswordOptions: any = null;
 
     constructor(private cryptoService: CryptoService,
         private storageService: StorageService,
@@ -52,14 +53,10 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
 
     async generatePassword(options: any): Promise<string> {
 
-        console.log("WEBSITE PASSWORD CONSTRAINT -> ", this.smartPasswordOptions);
-        console.log("I RECEIVED THIS -> ", options);
 
         let o: any;
         if (options['type'] === 'smartpassword') {
-            console.log("Client wants a smartpassword");
             o = Object.assign({}, DefaultOptions, this.smartPasswordOptions);
-            console.log("these are the default smartpassword -> ", o);
         } else {
             o = Object.assign({}, DefaultOptions, options);
         }
@@ -199,39 +196,31 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     }
 
     async getOptions(): Promise<[any, PasswordGeneratorPolicyOptions]> {
-        console.log("getOptions init -> ", this.optionsCache);
         if (this.optionsCache == null) {
-            console.log("optionsCache is null");
             const options = await this.storageService.get(Keys.options);
             if (options == null) {
                 // the storage doesn't have any user preferences. Use the default options.
                 this.optionsCache = DefaultOptions;
             } else {
                 // the storage has user preferences. use them here.
-                console.log("options is not null from storageService -> ", options);
                 this.optionsCache = Object.assign({}, DefaultOptions, options);
             }
         }
 
         const enforcedOptions = await this.enforcePasswordGeneratorPoliciesOnOptions(this.optionsCache);
-        console.log("enforced => ", enforcedOptions);
         this.optionsCache = enforcedOptions[0];
-        console.log("@ getOptions -> ", this.optionsCache);
         return [this.optionsCache, enforcedOptions[1]];
     }
 
     async getWebsiteOptions(): Promise<[any, PasswordGeneratorPolicyOptions]> {
-        console.log("entered getWebsiteOptions");
 
         const enforcedOptions = await this.enforcePasswordGeneratorPoliciesOnOptions(this.smartPasswordOptions);
-        console.log("enforced => ", enforcedOptions);
         // TODO maybe have a variable to store the value of enforced policies in smartpasswords.
 
         return [enforcedOptions[0], enforcedOptions[1]];
     }
 
     async enforcePasswordGeneratorPoliciesOnOptions(options: any): Promise<[any, PasswordGeneratorPolicyOptions]> {
-        console.log("enforced Password Generator -> ", options);
         let enforcedPolicyOptions = await this.getPasswordGeneratorPolicyOptions();
         if (enforcedPolicyOptions != null) {
             if (options.type === 'smartpassword') {
@@ -496,8 +485,6 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     setWebsitePasswordRules(constraints: any) {
         // check if the options are from a website constraint
         this.smartPasswordOptions = Object.assign({}, constraints);
-        console.log("Set these smartpasswordOptions -> ", this.smartPasswordOptions);
-        console.log("These are the options in cache -> ", this.getOptions());
     }
 
     private capitalize(str: string) {
@@ -608,9 +595,8 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     private compareWebsiteConstraintsWithDefault(siteConstraints: any, defaultOptions: any): any {
 
         let aux = Object.assign({}, siteConstraints['websiteOptions']);
-        console.log("aux => ", aux);
         const defaultKeys = ['length', 'ambiguous', 'number', 'minNumber', 'uppercase', 'minUppercase', 'lowercase', 'minLowercase', 'special', 'minSpecial'];
-        let siteOptions = siteConstraints['websiteOptions'];
+        const siteOptions = siteConstraints['websiteOptions'];
         defaultKeys.forEach((v: string) => {
             if (siteOptions[v] >= defaultOptions[v]) {
                 aux[v] = siteOptions[v];
