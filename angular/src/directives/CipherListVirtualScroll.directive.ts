@@ -1,6 +1,17 @@
-import { coerceNumberProperty, NumberInput } from '@angular/cdk/coercion';
-import { Directive, forwardRef, Input, OnChanges } from '@angular/core';
-import { FixedSizeVirtualScrollStrategy, VIRTUAL_SCROLL_STRATEGY } from '@angular/cdk/scrolling'
+import {
+    coerceNumberProperty,
+    NumberInput,
+} from '@angular/cdk/coercion';
+import {
+    FixedSizeVirtualScrollStrategy,
+    VIRTUAL_SCROLL_STRATEGY,
+} from '@angular/cdk/scrolling'
+import {
+    Directive,
+    forwardRef,
+    Input,
+    OnChanges,
+} from '@angular/core';
 
 // Custom virtual scroll strategy for cdk-virtual-scroll
 // Uses a sample list item to set the itemSize for FixedSizeVirtualScrollStrategy
@@ -19,9 +30,7 @@ export class CipherListVirtualScrollStrategy extends FixedSizeVirtualScrollStrat
 
     onContentRendered() {
         const updateItemSizeIfRequired = (newItemSize: number) => {
-            console.log('updateItemSizeIfRequired');
-            if (newItemSize != null && newItemSize != this.currentItemSize) {
-                console.log('updating');
+            if (newItemSize != null && newItemSize !== this.currentItemSize) {
                 this.updateItemAndBufferSize(newItemSize, this.minBufferPx, this.maxBufferPx);
             }
         }
@@ -57,6 +66,10 @@ export function _cipherListVirtualScrollStrategyFactory(cipherListDir: CipherLis
     }],
 })
 export class CipherListVirtualScroll implements OnChanges {
+    static ngAcceptInputType_defaultItemSize: NumberInput;
+    static ngAcceptInputType_minBufferPx: NumberInput;
+    static ngAcceptInputType_maxBufferPx: NumberInput;
+
     /** The default size of the items in the list (in pixels). */
     @Input()
     get defaultItemSize(): number { return this._defaultItemSize; }
@@ -87,8 +100,4 @@ export class CipherListVirtualScroll implements OnChanges {
     ngOnChanges() {
         this._scrollStrategy.updateItemAndBufferSize(this.defaultItemSize, this.minBufferPx, this.maxBufferPx);
     }
-
-    static ngAcceptInputType_defaultItemSize: NumberInput;
-    static ngAcceptInputType_minBufferPx: NumberInput;
-    static ngAcceptInputType_maxBufferPx: NumberInput;
 }
