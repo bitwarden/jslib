@@ -33,7 +33,7 @@ export class CipherListVirtualScrollStrategy extends FixedSizeVirtualScrollStrat
             if (newItemSize != null && newItemSize !== this.currentItemSize) {
                 this.updateItemAndBufferSize(newItemSize, this.minBufferPx, this.maxBufferPx);
             }
-        }
+        };
 
         if (this.updateTimeout != null) {
             this.updateTimeout = clearTimeout(this.updateTimeout);
@@ -66,9 +66,11 @@ export function _cipherListVirtualScrollStrategyFactory(cipherListDir: CipherLis
     }],
 })
 export class CipherListVirtualScroll implements OnChanges {
+    // tslint:disable
     static ngAcceptInputType_defaultItemSize: NumberInput;
     static ngAcceptInputType_minBufferPx: NumberInput;
     static ngAcceptInputType_maxBufferPx: NumberInput;
+    // tslint:enable
 
     /** The default size of the items in the list (in pixels). */
     @Input()
