@@ -3,6 +3,8 @@ import { TwoFactorProviderType } from '../../enums/twoFactorProviderType';
 import { CaptchaProtectedRequest } from './captchaProtectedRequest';
 import { DeviceRequest } from './deviceRequest';
 
+import { Utils } from '../../misc/utils';
+
 export class TokenRequest implements CaptchaProtectedRequest {
     email: string;
     masterPasswordHash: string;
@@ -76,7 +78,7 @@ export class TokenRequest implements CaptchaProtectedRequest {
 
     alterIdentityTokenHeaders(headers: Headers) {
         if (this.clientSecret == null && this.masterPasswordHash != null && this.email != null) {
-            headers.set('Auth-Email', this.email);
+            headers.set('Auth-Email', Utils.fromUtf8ToUrlB64(this.email));
         }
     }
 }
