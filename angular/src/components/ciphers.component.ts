@@ -42,6 +42,10 @@ export class CiphersComponent {
         await this.load(filter, deleted);
     }
 
+    async refresh() {
+        await this.reload(this.filter, this.deleted);
+    }
+
     async applyFilter(filter: (cipher: CipherView) => boolean = null) {
         this.filter = filter;
         await this.search(null);
