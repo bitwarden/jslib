@@ -5,7 +5,7 @@ import {
 import {
     FixedSizeVirtualScrollStrategy,
     VIRTUAL_SCROLL_STRATEGY,
-} from '@angular/cdk/scrolling'
+} from '@angular/cdk/scrolling';
 import {
     Directive,
     forwardRef,
