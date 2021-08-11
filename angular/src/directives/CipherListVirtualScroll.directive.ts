@@ -34,7 +34,6 @@ export class CipherListVirtualScrollStrategy extends FixedSizeVirtualScrollStrat
     }
 }
 
-// Following code is boilerplate adapted from fixedSizeVirtualScrollStrategy
 export function _cipherListVirtualScrollStrategyFactory(cipherListDir: CipherListVirtualScroll) {
     return cipherListDir._scrollStrategy;
 }
@@ -77,11 +76,10 @@ export class CipherListVirtualScroll implements OnChanges {
     set maxBufferPx(value: number) { this._maxBufferPx = coerceNumberProperty(value); }
     _maxBufferPx = 200;
 
+    /**
+     * The current size of items in the list (in pixels). This property is updated using checkAndUpdateItemSize.
+     */
     itemSize: number = this.defaultItemSize;
-
-    ngOnChanges() {
-        this._scrollStrategy.updateItemAndBufferSize(this.itemSize, this.minBufferPx, this.maxBufferPx);
-    }
 
     checkAndUpdateItemSize = () => {
         const sampleItem = document.querySelector('cdk-virtual-scroll-viewport .virtual-scroll-item') as HTMLElement;
@@ -91,6 +89,10 @@ export class CipherListVirtualScroll implements OnChanges {
             this.itemSize = newItemSize;
             this._scrollStrategy.updateItemAndBufferSize(this.itemSize, this.minBufferPx, this.maxBufferPx);
         }
+    }
+
+    ngOnChanges() {
+        this._scrollStrategy.updateItemAndBufferSize(this.itemSize, this.minBufferPx, this.maxBufferPx);
     }
 
     /** The scroll strategy used by this directive. */
