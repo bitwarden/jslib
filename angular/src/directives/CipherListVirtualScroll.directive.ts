@@ -17,38 +17,20 @@ import {
 // Uses a sample list item to set the itemSize for FixedSizeVirtualScrollStrategy
 // The use case is the same as FixedSizeVirtualScrollStrategy, but it avoids locking in pixel sizes in the template.
 export class CipherListVirtualScrollStrategy extends FixedSizeVirtualScrollStrategy {
-    private updateTimeout: any;
-    private currentItemSize: number;
-    private maxBufferPx: number;
-    private minBufferPx: number;
+    private checkItemSizeCallback: any;
+    private timeout: any;
 
-    constructor(defaultItemSize: number, minBufferPx: number, maxBufferPx: number) {
-        super(defaultItemSize, minBufferPx, maxBufferPx);
-        this.maxBufferPx = maxBufferPx;
-        this.minBufferPx = minBufferPx;
+    constructor(itemSize: number, minBufferPx: number, maxBufferPx: number, checkItemSizeCallback: any) {
+        super(itemSize, minBufferPx, maxBufferPx);
+        this.checkItemSizeCallback = checkItemSizeCallback;
     }
 
     onContentRendered() {
-        const updateItemSizeIfRequired = (newItemSize: number) => {
-            if (newItemSize != null && newItemSize !== this.currentItemSize) {
-                this.updateItemAndBufferSize(newItemSize, this.minBufferPx, this.maxBufferPx);
-            }
-        };
-
-        if (this.updateTimeout != null) {
-            this.updateTimeout = clearTimeout(this.updateTimeout);
+        if (this.timeout != null) {
+            clearTimeout(this.timeout);
         }
-        this.updateTimeout = setTimeout(() => updateItemSizeIfRequired(this.getSampleItemSize()), 500);
-    }
 
-    updateItemAndBufferSize(itemSize: number, minBufferPx: number, maxBufferPx: number) {
-        this.currentItemSize = itemSize;
-        super.updateItemAndBufferSize(itemSize, minBufferPx, maxBufferPx);
-    }
-
-    private getSampleItemSize() {
-        const sampleItem = document.querySelector('cdk-virtual-scroll-viewport .virtual-scroll-item') as HTMLElement;
-        return sampleItem?.offsetHeight;
+        this.timeout = setTimeout(this.checkItemSizeCallback, 500);
     }
 }
 
@@ -95,11 +77,23 @@ export class CipherListVirtualScroll implements OnChanges {
     set maxBufferPx(value: number) { this._maxBufferPx = coerceNumberProperty(value); }
     _maxBufferPx = 200;
 
-    /** The scroll strategy used by this directive. */
-    _scrollStrategy =
-        new CipherListVirtualScrollStrategy(this.defaultItemSize, this.minBufferPx, this.maxBufferPx);
+    itemSize: number = this.defaultItemSize;
 
     ngOnChanges() {
-        this._scrollStrategy.updateItemAndBufferSize(this.defaultItemSize, this.minBufferPx, this.maxBufferPx);
+        this._scrollStrategy.updateItemAndBufferSize(this.itemSize, this.minBufferPx, this.maxBufferPx);
     }
+
+    checkAndUpdateItemSize = () => {
+        const sampleItem = document.querySelector('cdk-virtual-scroll-viewport .virtual-scroll-item') as HTMLElement;
+        const newItemSize = sampleItem?.offsetHeight;
+
+        if (newItemSize != null && newItemSize !== this.itemSize) {
+            this.itemSize = newItemSize;
+            this._scrollStrategy.updateItemAndBufferSize(this.itemSize, this.minBufferPx, this.maxBufferPx);
+        }
+    }
+
+    /** The scroll strategy used by this directive. */
+    _scrollStrategy = new CipherListVirtualScrollStrategy(this.itemSize, this.minBufferPx, this.maxBufferPx,
+        this.checkAndUpdateItemSize);
 }
