@@ -1,6 +1,6 @@
 import {
-    FixedSizeVirtualScrollStrategy,
     CdkFixedSizeVirtualScroll,
+    FixedSizeVirtualScrollStrategy,
     VIRTUAL_SCROLL_STRATEGY,
 } from '@angular/cdk/scrolling';
 import {
@@ -42,6 +42,14 @@ export function _cipherListVirtualScrollStrategyFactory(cipherListDir: CipherLis
     }],
 })
 export class CipherListVirtualScroll extends CdkFixedSizeVirtualScroll {
+    _scrollStrategy: CipherListVirtualScrollStrategy;
+
+    constructor() {
+        super();
+        this._scrollStrategy = new CipherListVirtualScrollStrategy(this.itemSize, this.minBufferPx, this.maxBufferPx,
+            this.checkAndUpdateItemSize);
+    }
+
     checkAndUpdateItemSize = () => {
         const sampleItem = document.querySelector('cdk-virtual-scroll-viewport .virtual-scroll-item') as HTMLElement;
         const newItemSize = sampleItem?.offsetHeight;
@@ -51,8 +59,4 @@ export class CipherListVirtualScroll extends CdkFixedSizeVirtualScroll {
             this._scrollStrategy.updateItemAndBufferSize(this.itemSize, this.minBufferPx, this.maxBufferPx);
         }
     }
-
-    /** The scroll strategy used by this directive. */
-    _scrollStrategy = new CipherListVirtualScrollStrategy(this.itemSize, this.minBufferPx, this.maxBufferPx,
-        this.checkAndUpdateItemSize);
 }
