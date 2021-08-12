@@ -165,6 +165,7 @@ import { IdentityCaptchaResponse } from '../models/response/identityCaptchaRespo
 import { SendAccessView } from '../models/view/sendAccessView';
 
 export class ApiService implements ApiServiceAbstraction {
+    protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
     private device: DeviceType;
     private deviceType: string;
     private isWebClient = false;
@@ -226,7 +227,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async refreshIdentityToken(): Promise<any> {
         try {
-            await this.doRefreshToken();
+            await this.doAuthRefresh();
         } catch (e) {
             return Promise.reject(null);
         }
@@ -1415,7 +1416,7 @@ export class ApiService implements ApiServiceAbstraction {
     async getActiveBearerToken(): Promise<string> {
         let accessToken = await this.tokenService.getToken();
         if (this.tokenService.tokenNeedsRefresh()) {
-            await this.doRefreshToken();
+            await this.doAuthRefresh();
             accessToken = await this.tokenService.getToken();
         }
         return accessToken;
@@ -1461,6 +1462,31 @@ export class ApiService implements ApiServiceAbstraction {
         }
     }
 
+    protected async doAuthRefresh(): Promise<void> {
+        const refreshToken = await this.tokenService.getRefreshToken();
+        if (refreshToken != null && refreshToken !== '') {
+            return this.doRefreshToken();
+        }
+
+        const clientId = await this.tokenService.getClientId();
+        const clientSecret = await this.tokenService.getClientSecret();
+        if (!Utils.isNullOrWhitespace(clientId) && !Utils.isNullOrWhitespace(clientSecret)) {
+            return this.doApiTokenRefresh();
+        }
+
+        throw new Error('Cannot refresh token, no refresh token or api keys are stored');
+    }
+
+    protected async doApiTokenRefresh(): Promise<void> {
+        const clientId = await this.tokenService.getClientId();
+        const clientSecret = await this.tokenService.getClientSecret();
+        if (Utils.isNullOrWhitespace(clientId) || Utils.isNullOrWhitespace(clientSecret) || this.apiKeyRefresh == null) {
+            throw new Error();
+        }
+
+        await this.apiKeyRefresh(clientId, clientSecret);
+    }
+
     protected async doRefreshToken(): Promise<void> {
         const refreshToken = await this.tokenService.getRefreshToken();
         if (refreshToken == null || refreshToken === '') {
@@ -1491,7 +1517,7 @@ export class ApiService implements ApiServiceAbstraction {
         if (response.status === 200) {
             const responseJson = await response.json();
             const tokenResponse = new IdentityTokenResponse(responseJson);
-            await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken);
+            await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken, null);
         } else {
             const error = await this.handleError(response, true, true);
             return Promise.reject(error);

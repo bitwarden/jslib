@@ -280,7 +280,7 @@ export class AuthService implements AuthServiceAbstraction {
 
         let emailPassword: string[] = [];
         let codeCodeVerifier: string[] = [];
-        let clientIdClientSecret: string[] = [];
+        let clientIdClientSecret: [string, string] = [null, null];
 
         if (email != null && hashedPassword != null) {
             emailPassword = [email, hashedPassword];
@@ -344,7 +344,7 @@ export class AuthService implements AuthServiceAbstraction {
             await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken, email);
         }
 
-        await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken);
+        await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken, clientIdClientSecret);
         await this.userService.setInformation(this.tokenService.getUserId(), this.tokenService.getEmail(),
             tokenResponse.kdf, tokenResponse.kdfIterations);
         if (this.setCryptoKeys) {
