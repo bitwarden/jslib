@@ -20,7 +20,7 @@ export abstract class AuthService {
     logInTwoFactor: (twoFactorProvider: TwoFactorProviderType, twoFactorToken: string,
         remember?: boolean) => Promise<AuthResult>;
     logInComplete: (email: string, masterPassword: string, twoFactorProvider: TwoFactorProviderType,
-        twoFactorToken: string, remember?: boolean) => Promise<AuthResult>;
+        twoFactorToken: string, remember?: boolean, captchaToken?: string) => Promise<AuthResult>;
     logInSsoComplete: (code: string, codeVerifier: string, redirectUrl: string,
         twoFactorProvider: TwoFactorProviderType, twoFactorToken: string, remember?: boolean) => Promise<AuthResult>;
     logInApiKeyComplete: (clientId: string, clientSecret: string, twoFactorProvider: TwoFactorProviderType,

@@ -151,14 +151,14 @@ export class AuthService implements AuthServiceAbstraction {
     }
 
     async logInComplete(email: string, masterPassword: string, twoFactorProvider: TwoFactorProviderType,
-        twoFactorToken: string, remember?: boolean): Promise<AuthResult> {
+        twoFactorToken: string, remember?: boolean, captchaToken?: string): Promise<AuthResult> {
         this.selectedTwoFactorProviderType = null;
         const key = await this.makePreloginKey(masterPassword, email);
         const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
         const localHashedPassword = await this.cryptoService.hashPassword(masterPassword, key,
             HashPurpose.LocalAuthorization);
         return await this.logInHelper(email, hashedPassword, localHashedPassword, null, null, null, null, null, key,
-            twoFactorProvider, twoFactorToken, remember);
+            twoFactorProvider, twoFactorToken, remember, captchaToken);
     }
 
     async logInSsoComplete(code: string, codeVerifier: string, redirectUrl: string,
