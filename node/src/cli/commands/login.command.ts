@@ -6,6 +6,7 @@ import { TwoFactorProviderType } from 'jslib-common/enums/twoFactorProviderType'
 
 import { AuthResult } from 'jslib-common/models/domain/authResult';
 import { TwoFactorEmailRequest } from 'jslib-common/models/request/twoFactorEmailRequest';
+import { ErrorResponse } from 'jslib-common/models/response/errorResponse';
 
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { AuthService } from 'jslib-common/abstractions/auth.service';
@@ -21,7 +22,6 @@ import { MessageResponse } from '../models/response/messageResponse';
 
 import { NodeUtils } from 'jslib-common/misc/nodeUtils';
 import { Utils } from 'jslib-common/misc/utils';
-import { ErrorResponse } from 'jslib-common/models/response/errorResponse';
 
 // tslint:disable-next-line
 const open = require('open');
@@ -151,17 +151,17 @@ export class LoginCommand {
                         '(https://bitwarden.com/help/article/cli/#using-an-api-key)');
 
                     try {
-                        const clientSecret = await this.apiClientSecret(true);
-                        if (Utils.isNullOrWhitespace(clientSecret)) {
+                        const captchaClientSecret = await this.apiClientSecret(true);
+                        if (Utils.isNullOrWhitespace(captchaClientSecret)) {
                             return badCaptcha;
                         }
 
                         const secondResponse = await this.authService.logInComplete(email, password, twoFactorMethod,
-                            twoFactorToken, false, clientSecret);
+                            twoFactorToken, false, captchaClientSecret);
                         response = secondResponse;
                     } catch (e) {
                         if ((e instanceof ErrorResponse || e.constructor.name === 'ErrorResponse') &&
-                            (e as ErrorResponse).message.includes("Captcha is invalid")) {
+                            (e as ErrorResponse).message.includes('Captcha is invalid')) {
                             return badCaptcha;
                         } else {
                             throw e;
