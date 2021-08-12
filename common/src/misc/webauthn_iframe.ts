@@ -1,6 +1,8 @@
 import { I18nService } from '../abstractions/i18n.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
+
 import { IFrameComponent } from './iframe_component';
+import { Utils } from './utils';
 
 export class WebAuthnIFrame extends IFrameComponent {
     constructor(win: Window, webVaultUrl: string, private webAuthnNewTab: boolean,
@@ -20,7 +22,9 @@ export class WebAuthnIFrame extends IFrameComponent {
             this.platformUtilsService.launchUri(`${this.webVaultUrl}/webauthn-fallback-connector.html?${params}`);
         } else {
             super.initComponent(params);
-            this.iframe.allow = 'publickey-credentials-get ' + new URL(this.webVaultUrl).origin;
+            if (Utils.isNullOrWhitespace(this.iframe.allow)) {
+                this.iframe.allow = 'publickey-credentials-get ' + new URL(this.webVaultUrl).origin;
+            }
         }
     }
 }
