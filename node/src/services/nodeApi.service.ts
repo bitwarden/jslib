@@ -17,8 +17,9 @@ import { TokenService } from 'jslib-common/abstractions/token.service';
 export class NodeApiService extends ApiService {
     constructor(tokenService: TokenService, platformUtilsService: PlatformUtilsService,
         environmentService: EnvironmentService, logoutCallback: (expired: boolean) => Promise<void>,
-        customUserAgent: string = null) {
+        customUserAgent: string = null, apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>) {
         super(tokenService, platformUtilsService, environmentService, logoutCallback, customUserAgent);
+        this.apiKeyRefresh = apiKeyRefresh;
     }
 
     nativeFetch(request: Request): Promise<Response> {
