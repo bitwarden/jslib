@@ -65,11 +65,11 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
         if (Utils.isBrowser && !Utils.isNode) {
             this.focusInput();
         }
-
-        this.setupCaptcha();
     }
 
     async submit() {
+        await this.setupCaptcha();
+
         if (this.email == null || this.email === '') {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('emailRequired'));

@@ -159,6 +159,10 @@ export class Utils {
         }
     }
 
+    static fromUtf8ToUrlB64(utfStr: string): string {
+        return Utils.fromBufferToUrlB64(Utils.fromUtf8ToArray(utfStr));
+    }
+
     static fromB64ToUtf8(b64Str: string): string {
         if (Utils.isNode || Utils.isNativeScript) {
             return Buffer.from(b64Str, 'base64').toString('utf8');

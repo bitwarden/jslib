@@ -18,6 +18,7 @@ const Keys = {
     organizationsPrefix: 'organizations_',
     providersPrefix: 'providers_',
     emailVerified: 'emailVerified',
+    forcePasswordReset: 'forcePasswordReset',
 };
 
 export class UserService implements UserServiceAbstraction {
@@ -27,6 +28,7 @@ export class UserService implements UserServiceAbstraction {
     private kdf: KdfType;
     private kdfIterations: number;
     private emailVerified: boolean;
+    private forcePasswordReset: boolean;
 
     constructor(private tokenService: TokenService, private storageService: StorageService) { }
 
@@ -50,6 +52,11 @@ export class UserService implements UserServiceAbstraction {
     setEmailVerified(emailVerified: boolean) {
         this.emailVerified = emailVerified;
         return this.storageService.save(Keys.emailVerified, emailVerified);
+    }
+
+    setForcePasswordReset(forcePasswordReset: boolean) {
+        this.forcePasswordReset = forcePasswordReset;
+        return this.storageService.save(Keys.forcePasswordReset, forcePasswordReset);
     }
 
     async getUserId(): Promise<string> {
@@ -94,6 +101,13 @@ export class UserService implements UserServiceAbstraction {
         return this.emailVerified;
     }
 
+    async getForcePasswordReset(): Promise<boolean> {
+        if (this.forcePasswordReset == null) {
+            this.forcePasswordReset = await this.storageService.get<boolean>(Keys.forcePasswordReset);
+        }
+        return this.forcePasswordReset;
+    }
+
     async clear(): Promise<any> {
         const userId = await this.getUserId();
 
@@ -102,6 +116,7 @@ export class UserService implements UserServiceAbstraction {
         await this.storageService.remove(Keys.stamp);
         await this.storageService.remove(Keys.kdf);
         await this.storageService.remove(Keys.kdfIterations);
+        await this.storageService.remove(Keys.forcePasswordReset);
         await this.clearOrganizations(userId);
         await this.clearProviders(userId);
 

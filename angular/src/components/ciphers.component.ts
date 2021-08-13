@@ -42,6 +42,10 @@ export class CiphersComponent {
         await this.load(filter, deleted);
     }
 
+    async refresh() {
+        await this.reload(this.filter, this.deleted);
+    }
+
     async applyFilter(filter: (cipher: CipherView) => boolean = null) {
         this.filter = filter;
         await this.search(null);
@@ -53,12 +57,12 @@ export class CiphersComponent {
             clearTimeout(this.searchTimeout);
         }
         if (timeout == null) {
-            this.doSearch(indexedCiphers);
+            await this.doSearch(indexedCiphers);
             return;
         }
         this.searchPending = true;
         this.searchTimeout = setTimeout(async () => {
-            this.doSearch(indexedCiphers);
+            await this.doSearch(indexedCiphers);
             this.searchPending = false;
         }, timeout);
     }

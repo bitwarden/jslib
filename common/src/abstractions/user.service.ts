@@ -9,12 +9,14 @@ export abstract class UserService {
     setInformation: (userId: string, email: string, kdf: KdfType, kdfIterations: number) => Promise<any>;
     setEmailVerified: (emailVerified: boolean) => Promise<any>;
     setSecurityStamp: (stamp: string) => Promise<any>;
+    setForcePasswordReset: (forcePasswordReset: boolean) => Promise<any>;
     getUserId: () => Promise<string>;
     getEmail: () => Promise<string>;
     getSecurityStamp: () => Promise<string>;
     getKdf: () => Promise<KdfType>;
     getKdfIterations: () => Promise<number>;
     getEmailVerified: () => Promise<boolean>;
+    getForcePasswordReset: () => Promise<boolean>;
     clear: () => Promise<any>;
     isAuthenticated: () => Promise<boolean>;
     canAccessPremium: () => Promise<boolean>;
