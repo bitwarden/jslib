@@ -1,9 +1,9 @@
-import { StorageServiceOptions } from '../models/domain/storageServiceOptions';
+import { SettingStorageOptions } from '../models/domain/settingStorageOptions';
 
 export abstract class StorageService {
-    get: <T>(key: string, options?: StorageServiceOptions) => Promise<T>;
-    has: (key: string, options?: StorageServiceOptions) => Promise<boolean>;
-    save: (key: string, obj: any, options?: StorageServiceOptions) => Promise<any>;
-    remove: (key: string, options?: StorageServiceOptions) => Promise<any>;
+    get: <T>(key: string, options?: SettingStorageOptions) => Promise<T>;
+    has: (key: string, options?: SettingStorageOptions) => Promise<boolean>;
+    save: (key: string, obj: any, options?: SettingStorageOptions) => Promise<any>;
+    remove: (key: string, options?: SettingStorageOptions) => Promise<any>;
 }
 

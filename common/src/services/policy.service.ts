@@ -1,50 +1,46 @@
+import { AccountService } from '../abstractions/account.service';
 import { PolicyService as PolicyServiceAbstraction } from '../abstractions/policy.service';
-import { StorageService } from '../abstractions/storage.service';
-import { UserService } from '../abstractions/user.service';
 
 import { PolicyData } from '../models/data/policyData';
 
 import { MasterPasswordPolicyOptions } from '../models/domain/masterPasswordPolicyOptions';
 import { Policy } from '../models/domain/policy';
 import { ResetPasswordPolicyOptions } from '../models/domain/resetPasswordPolicyOptions';
+import { SettingStorageOptions } from '../models/domain/settingStorageOptions';
 
 import { OrganizationUserStatusType } from '../enums/organizationUserStatusType';
+import { StorageKey } from '../enums/storageKey';
+
 import { PolicyType } from '../enums/policyType';
 
 import { ListResponse } from '../models/response/listResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 
-const Keys = {
-    policiesPrefix: 'policies_',
-};
-
 export class PolicyService implements PolicyServiceAbstraction {
-    policyCache: Policy[];
-
-    constructor(private userService: UserService, private storageService: StorageService) {
+    constructor(private accountService: AccountService) {
     }
 
-    clearCache(): void {
-        this.policyCache = null;
+    async clearCache(): Promise<void> {
+        await this.accountService.removeSetting(StorageKey.Policies, { skipDisk: true } as SettingStorageOptions);
     }
 
     async getAll(type?: PolicyType): Promise<Policy[]> {
-        if (this.policyCache == null) {
-            const userId = await this.userService.getUserId();
-            const policies = await this.storageService.get<{ [id: string]: PolicyData; }>(
-                Keys.policiesPrefix + userId);
+        if (!await this.accountService.hasSetting(StorageKey.Policies, { skipDisk: true } as SettingStorageOptions)) {
+            const policies = await this.accountService.getSetting<{ [id: string]: PolicyData; }>(
+                StorageKey.Policies, { skipMemory: true } as SettingStorageOptions);
             const response: Policy[] = [];
             for (const id in policies) {
                 if (policies.hasOwnProperty(id)) {
                     response.push(new Policy(policies[id]));
                 }
             }
-            this.policyCache = response;
+            await this.accountService.saveSetting(StorageKey.Policies, response, { skipDisk : true } as SettingStorageOptions);
         }
+        const policyCache = await this.accountService.getSetting<Policy[]>(StorageKey.Policies);
         if (type != null) {
-            return this.policyCache.filter(p => p.type === type);
+            return policyCache.filter(policy => policy.type === type);
         } else {
-            return this.policyCache;
+            return policyCache;
         }
     }
 
@@ -54,14 +50,12 @@ export class PolicyService implements PolicyServiceAbstraction {
     }
 
     async replace(policies: { [id: string]: PolicyData; }): Promise<any> {
-        const userId = await this.userService.getUserId();
-        await this.storageService.save(Keys.policiesPrefix + userId, policies);
-        this.policyCache = null;
+        await this.accountService.removeSetting(StorageKey.Policies);
+        await this.accountService.saveSetting(StorageKey.Policies, policies, { skipMemory: true } as SettingStorageOptions);
     }
 
-    async clear(userId: string): Promise<any> {
-        await this.storageService.remove(Keys.policiesPrefix + userId);
-        this.policyCache = null;
+    async clear(): Promise<any> {
+        await this.accountService.removeSetting(StorageKey.Policies);
     }
 
     async getMasterPasswordPolicyOptions(policies?: Policy[]): Promise<MasterPasswordPolicyOptions> {
@@ -173,7 +167,7 @@ export class PolicyService implements PolicyServiceAbstraction {
 
     async policyAppliesToUser(policyType: PolicyType, policyFilter?: (policy: Policy) => boolean) {
         const policies = await this.getAll(policyType);
-        const organizations = await this.userService.getAllOrganizations();
+        const organizations = await this.accountService.getAllOrganizations();
         let filteredPolicies;
 
         if (policyFilter != null) {

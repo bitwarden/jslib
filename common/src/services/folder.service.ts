@@ -1,6 +1,9 @@
+import { StorageKey } from '../enums/storageKey';
+
 import { FolderData } from '../models/data/folderData';
 
 import { Folder } from '../models/domain/folder';
+import { SettingStorageOptions } from '../models/domain/settingStorageOptions';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 import { TreeNode } from '../models/domain/treeNode';
 
@@ -10,33 +13,26 @@ import { FolderResponse } from '../models/response/folderResponse';
 
 import { FolderView } from '../models/view/folderView';
 
+import { AccountService } from '../abstractions/account.service';
 import { ApiService } from '../abstractions/api.service';
 import { CipherService } from '../abstractions/cipher.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { FolderService as FolderServiceAbstraction } from '../abstractions/folder.service';
 import { I18nService } from '../abstractions/i18n.service';
-import { StorageService } from '../abstractions/storage.service';
-import { UserService } from '../abstractions/user.service';
 import { CipherData } from '../models/data/cipherData';
 
 import { ServiceUtils } from '../misc/serviceUtils';
 import { Utils } from '../misc/utils';
 
-const Keys = {
-    foldersPrefix: 'folders_',
-    ciphersPrefix: 'ciphers_',
-};
 const NestingDelimiter = '/';
 
 export class FolderService implements FolderServiceAbstraction {
-    decryptedFolderCache: FolderView[];
+    constructor(private cryptoService: CryptoService, private apiService: ApiService,
+        private i18nService: I18nService, private cipherService: CipherService,
+        private accountService: AccountService) { }
 
-    constructor(private cryptoService: CryptoService, private userService: UserService,
-        private apiService: ApiService, private storageService: StorageService,
-        private i18nService: I18nService, private cipherService: CipherService) { }
-
-    clearCache(): void {
-        this.decryptedFolderCache = null;
+    async clearCache(): Promise<void> {
+        await this.accountService.removeSetting(StorageKey.Folders, { skipDisk: true } as SettingStorageOptions);
     }
 
     async encrypt(model: FolderView, key?: SymmetricCryptoKey): Promise<Folder> {
@@ -47,9 +43,8 @@ export class FolderService implements FolderServiceAbstraction {
     }
 
     async get(id: string): Promise<Folder> {
-        const userId = await this.userService.getUserId();
-        const folders = await this.storageService.get<{ [id: string]: FolderData; }>(
-            Keys.foldersPrefix + userId);
+        const folders = await this.accountService.getSetting<{ [id: string]: FolderData; }>(
+            StorageKey.Folders);
         if (folders == null || !folders.hasOwnProperty(id)) {
             return null;
         }
@@ -58,9 +53,8 @@ export class FolderService implements FolderServiceAbstraction {
     }
 
     async getAll(): Promise<Folder[]> {
-        const userId = await this.userService.getUserId();
-        const folders = await this.storageService.get<{ [id: string]: FolderData; }>(
-            Keys.foldersPrefix + userId);
+        const folders = await this.accountService.getSetting<{ [id: string]: FolderData; }>(
+            StorageKey.Folders);
         const response: Folder[] = [];
         for (const id in folders) {
             if (folders.hasOwnProperty(id)) {
@@ -71,8 +65,8 @@ export class FolderService implements FolderServiceAbstraction {
     }
 
     async getAllDecrypted(): Promise<FolderView[]> {
-        if (this.decryptedFolderCache != null) {
-            return this.decryptedFolderCache;
+        if (await this.accountService.hasSetting(StorageKey.Folders, { skipDisk: true } as SettingStorageOptions)) {
+            return this.accountService.getSetting(StorageKey.Folders, { skipDisk: true } as SettingStorageOptions);
         }
 
         const hasKey = await this.cryptoService.hasKey();
@@ -94,8 +88,8 @@ export class FolderService implements FolderServiceAbstraction {
         noneFolder.name = this.i18nService.t('noneFolder');
         decFolders.push(noneFolder);
 
-        this.decryptedFolderCache = decFolders;
-        return this.decryptedFolderCache;
+        await this.accountService.saveSetting(StorageKey.Folders, decFolders, { skipDisk: true } as SettingStorageOptions);
+        return decFolders;
     }
 
     async getAllNested(): Promise<TreeNode<FolderView>[]> {
@@ -127,15 +121,14 @@ export class FolderService implements FolderServiceAbstraction {
             response = await this.apiService.putFolder(folder.id, request);
         }
 
-        const userId = await this.userService.getUserId();
+        const userId = this.accountService.activeAccount?.userId;
         const data = new FolderData(response, userId);
         await this.upsert(data);
     }
 
     async upsert(folder: FolderData | FolderData[]): Promise<any> {
-        const userId = await this.userService.getUserId();
-        let folders = await this.storageService.get<{ [id: string]: FolderData; }>(
-            Keys.foldersPrefix + userId);
+        let folders = await this.accountService.getSetting<{ [id: string]: FolderData; }>(
+            StorageKey.Folders, { skipMemory: true } as SettingStorageOptions);
         if (folders == null) {
             folders = {};
         }
@@ -149,25 +142,22 @@ export class FolderService implements FolderServiceAbstraction {
             });
         }
 
-        await this.storageService.save(Keys.foldersPrefix + userId, folders);
-        this.decryptedFolderCache = null;
+        await this.accountService.removeSetting(StorageKey.Folders);
+        await this.accountService.saveSetting(StorageKey.Folders, folders, { skipMemory: true } as SettingStorageOptions);
     }
 
     async replace(folders: { [id: string]: FolderData; }): Promise<any> {
-        const userId = await this.userService.getUserId();
-        await this.storageService.save(Keys.foldersPrefix + userId, folders);
-        this.decryptedFolderCache = null;
+        await this.accountService.removeSetting(StorageKey.Folders);
+        await this.accountService.saveSetting(StorageKey.Folders, folders, { skipMemory: true } as SettingStorageOptions);
     }
 
-    async clear(userId: string): Promise<any> {
-        await this.storageService.remove(Keys.foldersPrefix + userId);
-        this.decryptedFolderCache = null;
+    async clear(): Promise<any> {
+        await this.accountService.removeSetting(StorageKey.Folders);
     }
 
     async delete(id: string | string[]): Promise<any> {
-        const userId = await this.userService.getUserId();
-        const folders = await this.storageService.get<{ [id: string]: FolderData; }>(
-            Keys.foldersPrefix + userId);
+        const folders = await this.accountService.getSetting<{ [id: string]: FolderData; }>(
+            StorageKey.Folders, { skipMemory: true } as SettingStorageOptions);
         if (folders == null) {
             return;
         }
@@ -183,11 +173,11 @@ export class FolderService implements FolderServiceAbstraction {
             });
         }
 
-        await this.storageService.save(Keys.foldersPrefix + userId, folders);
-        this.decryptedFolderCache = null;
+        await this.accountService.removeSetting(StorageKey.Folders);
+        await this.accountService.saveSetting(StorageKey.Folders, folders, { skipMemory: true } as SettingStorageOptions);
 
         // Items in a deleted folder are re-assigned to "No Folder"
-        const ciphers = await this.storageService.get<{ [id: string]: CipherData; }>(Keys.ciphersPrefix + userId);
+        const ciphers = await this.accountService.getSetting<{ [id: string]: CipherData; }>(StorageKey.Ciphers, { skipMemory: true } as SettingStorageOptions);
         if (ciphers != null) {
             const updates: CipherData[] = [];
             for (const cId in ciphers) {

@@ -162,6 +162,7 @@ import { UserKeyResponse } from '../models/response/userKeyResponse';
 
 import { EnvironmentService } from '../abstractions';
 import { IdentityCaptchaResponse } from '../models/response/identityCaptchaResponse';
+
 import { SendAccessView } from '../models/view/sendAccessView';
 
 export class ApiService implements ApiServiceAbstraction {
@@ -1501,7 +1502,7 @@ export class ApiService implements ApiServiceAbstraction {
             headers.set('User-Agent', this.customUserAgent);
         }
 
-        const decodedToken = this.tokenService.decodeToken();
+        const decodedToken = await this.tokenService.decodeToken();
         const response = await this.fetch(new Request(this.environmentService.getIdentityUrl() + '/connect/token', {
             body: this.qsStringify({
                 grant_type: 'refresh_token',

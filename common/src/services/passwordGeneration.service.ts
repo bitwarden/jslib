@@ -4,17 +4,19 @@ import { EncString } from '../models/domain/encString';
 import { GeneratedPasswordHistory } from '../models/domain/generatedPasswordHistory';
 import { PasswordGeneratorPolicyOptions } from '../models/domain/passwordGeneratorPolicyOptions';
 import { Policy } from '../models/domain/policy';
+import { SettingStorageOptions } from '../models/domain/settingStorageOptions';
 
+import { AccountService } from '../abstractions/account.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import {
     PasswordGenerationService as PasswordGenerationServiceAbstraction,
 } from '../abstractions/passwordGeneration.service';
 import { PolicyService } from '../abstractions/policy.service';
-import { StorageService } from '../abstractions/storage.service';
 
 import { EEFLongWordList } from '../misc/wordlist';
 
 import { PolicyType } from '../enums/policyType';
+import { StorageKey } from '../enums/storageKey';
 
 const DefaultOptions = {
     length: 14,
@@ -34,19 +36,14 @@ const DefaultOptions = {
     includeNumber: false,
 };
 
-const Keys = {
-    options: 'passwordGenerationOptions',
-    history: 'generatedPasswordHistory',
-};
-
 const MaxPasswordsInHistory = 100;
 
 export class PasswordGenerationService implements PasswordGenerationServiceAbstraction {
     private optionsCache: any;
     private history: GeneratedPasswordHistory[];
 
-    constructor(private cryptoService: CryptoService, private storageService: StorageService,
-        private policyService: PolicyService) { }
+    constructor(private cryptoService: CryptoService, private policyService: PolicyService,
+        private accountService: AccountService) { }
 
     async generatePassword(options: any): Promise<string> {
         // overload defaults with given options
@@ -188,13 +185,11 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     }
 
     async getOptions(): Promise<[any, PasswordGeneratorPolicyOptions]> {
-        if (this.optionsCache == null) {
-            const options = await this.storageService.get(Keys.options);
-            if (options == null) {
-                this.optionsCache = DefaultOptions;
-            } else {
-                this.optionsCache = Object.assign({}, DefaultOptions, options);
-            }
+        const options = await this.accountService.getSetting<any>(StorageKey.PasswordGenerationOptions);
+        if (options == null) {
+            this.optionsCache = DefaultOptions;
+        } else {
+            this.optionsCache = Object.assign({}, DefaultOptions, options);
         }
         const enforcedOptions = await this.enforcePasswordGeneratorPoliciesOnOptions(this.optionsCache);
         this.optionsCache = enforcedOptions[0];
@@ -332,8 +327,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
     }
 
     async saveOptions(options: any) {
-        await this.storageService.save(Keys.options, options);
-        this.optionsCache = options;
+        await this.accountService.saveSetting(StorageKey.PasswordGenerationOptions, options);
     }
 
     async getHistory(): Promise<GeneratedPasswordHistory[]> {
@@ -343,11 +337,14 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         }
 
         if (!this.history) {
-            const encrypted = await this.storageService.get<GeneratedPasswordHistory[]>(Keys.history);
-            this.history = await this.decryptHistory(encrypted);
+            const encrypted = await this.accountService.getSetting<GeneratedPasswordHistory[]>(StorageKey.PasswordGenerationHistory, { skipMemory: true } as SettingStorageOptions);
+            const decrypted = await this.decryptHistory(encrypted);
+            await this.accountService.saveSetting(StorageKey.PasswordGenerationHistory, decrypted, { skipDisk: true } as SettingStorageOptions);
         }
 
-        return this.history || new Array<GeneratedPasswordHistory>();
+        return await this.accountService.hasSetting(StorageKey.PasswordGenerationHistory, { skipDisk: true } as SettingStorageOptions) ?
+            await this.accountService.getSetting(StorageKey.PasswordGenerationHistory, { skipDisk: true } as SettingStorageOptions) :
+            new Array<GeneratedPasswordHistory>();
     }
 
     async addHistory(password: string): Promise<any> {
@@ -372,12 +369,11 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         }
 
         const newHistory = await this.encryptHistory(currentHistory);
-        return await this.storageService.save(Keys.history, newHistory);
+        return await this.accountService.saveSetting(StorageKey.PasswordGenerationHistory, newHistory, { skipMemory: true } as SettingStorageOptions);
     }
 
     async clear(): Promise<any> {
-        this.history = [];
-        return await this.storageService.remove(Keys.history);
+        await this.accountService.removeSetting(StorageKey.PasswordGenerationHistory);
     }
 
     passwordStrength(password: string, userInputs: string[] = null): zxcvbn.ZXCVBNResult {

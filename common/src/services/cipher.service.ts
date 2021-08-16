@@ -1,5 +1,6 @@
 import { CipherType } from '../enums/cipherType';
 import { FieldType } from '../enums/fieldType';
+import { StorageKey } from '../enums/storageKey';
 import { UriMatchType } from '../enums/uriMatchType';
 
 import { CipherData } from '../models/data/cipherData';
@@ -37,8 +38,10 @@ import { FieldView } from '../models/view/fieldView';
 import { PasswordHistoryView } from '../models/view/passwordHistoryView';
 import { View } from '../models/view/view';
 
+import { SettingStorageOptions } from '../models/domain/settingStorageOptions';
 import { SortedCiphersCache } from '../models/domain/sortedCiphersCache';
 
+import { AccountService } from '../abstractions/account.service';
 import { ApiService } from '../abstractions/api.service';
 import { CipherService as CipherServiceAbstraction } from '../abstractions/cipher.service';
 import { CryptoService } from '../abstractions/crypto.service';
@@ -46,41 +49,30 @@ import { FileUploadService } from '../abstractions/fileUpload.service';
 import { I18nService } from '../abstractions/i18n.service';
 import { SearchService } from '../abstractions/search.service';
 import { SettingsService } from '../abstractions/settings.service';
-import { StorageService } from '../abstractions/storage.service';
-import { UserService } from '../abstractions/user.service';
-
-import { ConstantsService } from './constants.service';
 
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
-
-const Keys = {
-    ciphersPrefix: 'ciphers_',
-    localData: 'sitesLocalData',
-    neverDomains: 'neverDomains',
-};
 
 const DomainMatchBlacklist = new Map<string, Set<string>>([
     ['google.com', new Set(['script.google.com'])],
 ]);
 
 export class CipherService implements CipherServiceAbstraction {
-    // tslint:disable-next-line
-    _decryptedCipherCache: CipherView[];
-
     private sortedCiphersCache: SortedCiphersCache = new SortedCiphersCache(this.sortCiphersByLastUsed);
 
-    constructor(private cryptoService: CryptoService, private userService: UserService,
-        private settingsService: SettingsService, private apiService: ApiService,
-        private fileUploadService: FileUploadService, private storageService: StorageService,
-        private i18nService: I18nService, private searchService: () => SearchService) {
+    constructor(private cryptoService: CryptoService, private settingsService: SettingsService,
+        private apiService: ApiService, private fileUploadService: FileUploadService,
+        private i18nService: I18nService, private searchService: () => SearchService,
+        private accountService: AccountService) {
     }
 
-    get decryptedCipherCache() {
-        return this._decryptedCipherCache;
+    async getDecryptedCipherCache(): Promise<CipherView[]> {
+        const decryptedCiphers = await this.accountService.getSetting<CipherView[]>(StorageKey.Ciphers, { skipDisk: true } as SettingStorageOptions);
+        return decryptedCiphers;
     }
-    set decryptedCipherCache(value: CipherView[]) {
-        this._decryptedCipherCache = value;
+
+    async setDecryptedCipherCache(value: CipherView[]) {
+        await this.accountService.saveSetting(StorageKey.Ciphers, value, { skipDisk: true } as SettingStorageOptions);
         if (this.searchService != null) {
             if (value == null) {
                 this.searchService().clearIndex();
@@ -90,8 +82,8 @@ export class CipherService implements CipherServiceAbstraction {
         }
     }
 
-    clearCache(): void {
-        this.decryptedCipherCache = null;
+    async clearCache(): Promise<void> {
+        await this.accountService.removeSetting(StorageKey.Ciphers,  { skipDisk: true } as SettingStorageOptions);
         this.sortedCiphersCache.clear();
     }
 
@@ -210,12 +202,10 @@ export class CipherService implements CipherServiceAbstraction {
 
         const self = this;
         const encFields: Field[] = [];
-        await fieldsModel.reduce((promise, field) => {
-            return promise.then(() => {
-                return self.encryptField(field, key);
-            }).then((encField: Field) => {
-                encFields.push(encField);
-            });
+        await fieldsModel.reduce(async (promise, field) => {
+            await promise;
+            const encField = await self.encryptField(field, key);
+            encFields.push(encField);
         }, Promise.resolve());
 
         return encFields;
@@ -244,12 +234,10 @@ export class CipherService implements CipherServiceAbstraction {
 
         const self = this;
         const encPhs: Password[] = [];
-        await phModels.reduce((promise, ph) => {
-            return promise.then(() => {
-                return self.encryptPasswordHistory(ph, key);
-            }).then((encPh: Password) => {
-                encPhs.push(encPh);
-            });
+        await phModels.reduce(async (promise, ph) => {
+            await promise;
+            const encPh = await self.encryptPasswordHistory(ph, key);
+            encPhs.push(encPh);
         }, Promise.resolve());
 
         return encPhs;
@@ -267,10 +255,9 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async get(id: string): Promise<Cipher> {
-        const userId = await this.userService.getUserId();
-        const localData = await this.storageService.get<any>(Keys.localData);
-        const ciphers = await this.storageService.get<{ [id: string]: CipherData; }>(
-            Keys.ciphersPrefix + userId);
+        const localData = await this.accountService.getSetting<any>(StorageKey.LocalData);
+        const ciphers = await this.accountService.getSetting<{ [id: string]: CipherData; }>(
+            StorageKey.Ciphers,  { skipMemory: true } as SettingStorageOptions);
         if (ciphers == null || !ciphers.hasOwnProperty(id)) {
             return null;
         }
@@ -279,10 +266,9 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async getAll(): Promise<Cipher[]> {
-        const userId = await this.userService.getUserId();
-        const localData = await this.storageService.get<any>(Keys.localData);
-        const ciphers = await this.storageService.get<{ [id: string]: CipherData; }>(
-            Keys.ciphersPrefix + userId);
+        const localData = await this.accountService.getSetting<any>(StorageKey.LocalData);
+        const ciphers = await this.accountService.getSetting<{ [id: string]: CipherData; }>(
+            StorageKey.Ciphers);
         const response: Cipher[] = [];
         for (const id in ciphers) {
             if (ciphers.hasOwnProperty(id)) {
@@ -294,13 +280,13 @@ export class CipherService implements CipherServiceAbstraction {
 
     @sequentialize(() => 'getAllDecrypted')
     async getAllDecrypted(): Promise<CipherView[]> {
-        if (this.decryptedCipherCache != null) {
-            const userId = await this.userService.getUserId();
+        const userId = this.accountService.activeAccount.userId;
+        if (await this.getDecryptedCipherCache() != null) {
             if (this.searchService != null && (this.searchService().indexedEntityId ?? userId) !== userId)
             {
-                await this.searchService().indexCiphers(userId, this.decryptedCipherCache);
+                await this.searchService().indexCiphers(userId, await this.getDecryptedCipherCache());
             }
-            return this.decryptedCipherCache;
+            return await this.getDecryptedCipherCache();
         }
 
         const decCiphers: CipherView[] = [];
@@ -311,14 +297,14 @@ export class CipherService implements CipherServiceAbstraction {
 
         const promises: any[] = [];
         const ciphers = await this.getAll();
-        ciphers.forEach(cipher => {
+        ciphers.forEach(async cipher => {
             promises.push(cipher.decrypt().then(c => decCiphers.push(c)));
         });
 
         await Promise.all(promises);
         decCiphers.sort(this.getLocaleSortingFunction());
-        this.decryptedCipherCache = decCiphers;
-        return this.decryptedCipherCache;
+        await this.accountService.saveSetting(StorageKey.Ciphers, decCiphers,  { skipDisk: true } as SettingStorageOptions);
+        return decCiphers;
     }
 
     async getAllDecryptedForGrouping(groupingId: string, folder: boolean = true): Promise<CipherView[]> {
@@ -366,7 +352,7 @@ export class CipherService implements CipherServiceAbstraction {
         const ciphers = result[1];
 
         if (defaultMatch == null) {
-            defaultMatch = await this.storageService.get<UriMatchType>(ConstantsService.defaultUriMatch);
+            defaultMatch = await this.accountService.getSetting<UriMatchType>(StorageKey.DefaultUriMatch);
             if (defaultMatch == null) {
                 defaultMatch = UriMatchType.Domain;
             }
@@ -471,7 +457,7 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async updateLastUsedDate(id: string): Promise<void> {
-        let ciphersLocalData = await this.storageService.get<any>(Keys.localData);
+        let ciphersLocalData = await this.accountService.getSetting<any>(StorageKey.LocalData);
         if (!ciphersLocalData) {
             ciphersLocalData = {};
         }
@@ -484,23 +470,25 @@ export class CipherService implements CipherServiceAbstraction {
             };
         }
 
-        await this.storageService.save(Keys.localData, ciphersLocalData);
+        await this.accountService.saveSetting(StorageKey.LocalData, ciphersLocalData);
 
-        if (this.decryptedCipherCache == null) {
+        if (!await this.accountService.hasSetting(StorageKey.Ciphers,  { skipDisk: true } as SettingStorageOptions)) {
             return;
         }
 
-        for (let i = 0; i < this.decryptedCipherCache.length; i++) {
-            const cached = this.decryptedCipherCache[i];
+        const decryptedCipherCache = await this.accountService.getSetting<CipherView[]>(StorageKey.Ciphers,  { skipDisk: true } as SettingStorageOptions);
+        for (let i = 0; i < decryptedCipherCache.length; i++) {
+            const cached = decryptedCipherCache[i];
             if (cached.id === id) {
                 cached.localData = ciphersLocalData[id];
                 break;
             }
         }
+        await this.accountService.saveSetting(StorageKey.Ciphers, decryptedCipherCache,  { skipDisk: true } as SettingStorageOptions);
     }
 
     async updateLastLaunchedDate(id: string): Promise<void> {
-        let ciphersLocalData = await this.storageService.get<any>(Keys.localData);
+        let ciphersLocalData = await this.accountService.getSetting<any>(StorageKey.LocalData);
         if (!ciphersLocalData) {
             ciphersLocalData = {};
         }
@@ -513,19 +501,21 @@ export class CipherService implements CipherServiceAbstraction {
             };
         }
 
-        await this.storageService.save(Keys.localData, ciphersLocalData);
+        await this.accountService.saveSetting(StorageKey.LocalData, ciphersLocalData);
 
-        if (this.decryptedCipherCache == null) {
+        if (!await this.accountService.hasSetting(StorageKey.Ciphers,  { skipDisk: true } as SettingStorageOptions)) {
             return;
         }
 
-        for (let i = 0; i < this.decryptedCipherCache.length; i++) {
-            const cached = this.decryptedCipherCache[i];
+        const decryptedCipherCache = await this.accountService.getSetting<CipherView[]>(StorageKey.Ciphers,  { skipDisk: true } as SettingStorageOptions);
+        for (let i = 0; i < decryptedCipherCache.length; i++) {
+            const cached = decryptedCipherCache[i];
             if (cached.id === id) {
                 cached.localData = ciphersLocalData[id];
                 break;
             }
         }
+        await this.accountService.saveSetting(StorageKey.Ciphers, decryptedCipherCache,  { skipDisk: true } as SettingStorageOptions);
     }
 
     async saveNeverDomain(domain: string): Promise<void> {
@@ -533,12 +523,12 @@ export class CipherService implements CipherServiceAbstraction {
             return;
         }
 
-        let domains = await this.storageService.get<{ [id: string]: any; }>(Keys.neverDomains);
+        let domains = await this.accountService.getSetting<{ [id: string]: any; }>(StorageKey.NeverDomains);
         if (!domains) {
             domains = {};
         }
         domains[domain] = null;
-        await this.storageService.save(Keys.neverDomains, domains);
+        await this.accountService.saveSetting(StorageKey.NeverDomains, domains);
     }
 
     async saveWithServer(cipher: Cipher): Promise<any> {
@@ -557,7 +547,7 @@ export class CipherService implements CipherServiceAbstraction {
             response = await this.apiService.putCipher(cipher.id, request);
         }
 
-        const userId = await this.userService.getUserId();
+        const userId = this.accountService.activeAccount.userId;
         const data = new CipherData(response, userId, cipher.collectionIds);
         await this.upsert(data);
     }
@@ -578,7 +568,7 @@ export class CipherService implements CipherServiceAbstraction {
         const encCipher = await this.encrypt(cipher);
         const request = new CipherShareRequest(encCipher);
         const response = await this.apiService.putShareCipher(cipher.id, request);
-        const userId = await this.userService.getUserId();
+        const userId = this.accountService.activeAccount.userId;
         const data = new CipherData(response, userId, collectionIds);
         await this.upsert(data);
     }
@@ -596,7 +586,7 @@ export class CipherService implements CipherServiceAbstraction {
         await Promise.all(promises);
         const request = new CipherBulkShareRequest(encCiphers, collectionIds);
         await this.apiService.putShareCiphers(request);
-        const userId = await this.userService.getUserId();
+        const userId = this.accountService.activeAccount.userId;
         await this.upsert(encCiphers.map(c => c.toCipherData(userId)));
     }
 
@@ -613,7 +603,7 @@ export class CipherService implements CipherServiceAbstraction {
                     reject(e);
                 }
             };
-            reader.onerror = evt => {
+            reader.onerror = _evt => {
                 reject('Error reading file.');
             };
         });
@@ -649,7 +639,7 @@ export class CipherService implements CipherServiceAbstraction {
             }
         }
 
-        const userId = await this.userService.getUserId();
+        const userId = this.accountService.activeAccount.userId;
         const cData = new CipherData(response, userId, cipher.collectionIds);
         if (!admin) {
             await this.upsert(cData);
@@ -697,15 +687,14 @@ export class CipherService implements CipherServiceAbstraction {
     async saveCollectionsWithServer(cipher: Cipher): Promise<any> {
         const request = new CipherCollectionsRequest(cipher.collectionIds);
         await this.apiService.putCipherCollections(cipher.id, request);
-        const userId = await this.userService.getUserId();
+        const userId = this.accountService.activeAccount.userId;
         const data = cipher.toCipherData(userId);
         await this.upsert(data);
     }
 
     async upsert(cipher: CipherData | CipherData[]): Promise<any> {
-        const userId = await this.userService.getUserId();
-        let ciphers = await this.storageService.get<{ [id: string]: CipherData; }>(
-            Keys.ciphersPrefix + userId);
+        let ciphers = await this.accountService.getSetting<{ [id: string]: CipherData; }>(
+            StorageKey.Ciphers,  { skipMemory: true } as SettingStorageOptions);
         if (ciphers == null) {
             ciphers = {};
         }
@@ -719,27 +708,25 @@ export class CipherService implements CipherServiceAbstraction {
             });
         }
 
-        await this.storageService.save(Keys.ciphersPrefix + userId, ciphers);
-        this.decryptedCipherCache = null;
+        await this.accountService.removeSetting(StorageKey.Ciphers);
+        await this.accountService.saveSetting(StorageKey.Ciphers, ciphers,  { skipMemory: true } as SettingStorageOptions);
     }
 
     async replace(ciphers: { [id: string]: CipherData; }): Promise<any> {
-        const userId = await this.userService.getUserId();
-        await this.storageService.save(Keys.ciphersPrefix + userId, ciphers);
-        this.decryptedCipherCache = null;
+        await this.accountService.removeSetting(StorageKey.Ciphers);
+        await this.accountService.saveSetting(StorageKey.Ciphers, ciphers,  { skipMemory: true } as SettingStorageOptions);
     }
 
-    async clear(userId: string): Promise<any> {
-        await this.storageService.remove(Keys.ciphersPrefix + userId);
+    async clear(): Promise<any> {
+        await this.accountService.removeSetting(StorageKey.Ciphers);
         this.clearCache();
     }
 
     async moveManyWithServer(ids: string[], folderId: string): Promise<any> {
         await this.apiService.putMoveCiphers(new CipherBulkMoveRequest(ids, folderId));
 
-        const userId = await this.userService.getUserId();
-        let ciphers = await this.storageService.get<{ [id: string]: CipherData; }>(
-            Keys.ciphersPrefix + userId);
+        let ciphers = await this.accountService.getSetting<{ [id: string]: CipherData; }>(
+            StorageKey.Ciphers,  { skipMemory: true } as SettingStorageOptions);
         if (ciphers == null) {
             ciphers = {};
         }
@@ -750,14 +737,13 @@ export class CipherService implements CipherServiceAbstraction {
             }
         });
 
-        await this.storageService.save(Keys.ciphersPrefix + userId, ciphers);
-        this.decryptedCipherCache = null;
+        await this.accountService.removeSetting(StorageKey.Ciphers);
+        await this.accountService.saveSetting(StorageKey.Ciphers, ciphers,  { skipMemory: true } as SettingStorageOptions);
     }
 
     async delete(id: string | string[]): Promise<any> {
-        const userId = await this.userService.getUserId();
-        const ciphers = await this.storageService.get<{ [id: string]: CipherData; }>(
-            Keys.ciphersPrefix + userId);
+        const ciphers = await this.accountService.getSetting<{ [id: string]: CipherData; }>(
+            StorageKey.Ciphers);
         if (ciphers == null) {
             return;
         }
@@ -773,8 +759,8 @@ export class CipherService implements CipherServiceAbstraction {
             });
         }
 
-        await this.storageService.save(Keys.ciphersPrefix + userId, ciphers);
-        this.decryptedCipherCache = null;
+        await this.accountService.removeSetting(StorageKey.Ciphers);
+        await this.accountService.saveSetting(StorageKey.Ciphers, ciphers,  { skipDisk: true } as SettingStorageOptions);
     }
 
     async deleteWithServer(id: string): Promise<any> {
@@ -788,9 +774,8 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async deleteAttachment(id: string, attachmentId: string): Promise<void> {
-        const userId = await this.userService.getUserId();
-        const ciphers = await this.storageService.get<{ [id: string]: CipherData; }>(
-            Keys.ciphersPrefix + userId);
+        const ciphers = await this.accountService.getSetting<{ [id: string]: CipherData; }>(
+            StorageKey.Ciphers);
 
         if (ciphers == null || !ciphers.hasOwnProperty(id) || ciphers[id].attachments == null) {
             return;
@@ -802,8 +787,8 @@ export class CipherService implements CipherServiceAbstraction {
             }
         }
 
-        await this.storageService.save(Keys.ciphersPrefix + userId, ciphers);
-        this.decryptedCipherCache = null;
+        await this.accountService.removeSetting(StorageKey.Ciphers);
+        await this.accountService.saveSetting(StorageKey.Ciphers, ciphers,  { skipDisk: true } as SettingStorageOptions);
     }
 
     async deleteAttachmentWithServer(id: string, attachmentId: string): Promise<void> {
@@ -882,9 +867,8 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async softDelete(id: string | string[]): Promise<any> {
-        const userId = await this.userService.getUserId();
-        const ciphers = await this.storageService.get<{ [id: string]: CipherData; }>(
-            Keys.ciphersPrefix + userId);
+        const ciphers = await this.accountService.getSetting<{ [id: string]: CipherData; }>(
+            StorageKey.Ciphers);
         if (ciphers == null) {
             return;
         }
@@ -902,8 +886,8 @@ export class CipherService implements CipherServiceAbstraction {
             (id as string[]).forEach(setDeletedDate);
         }
 
-        await this.storageService.save(Keys.ciphersPrefix + userId, ciphers);
-        this.decryptedCipherCache = null;
+        await this.accountService.removeSetting(StorageKey.Ciphers);
+        await this.accountService.saveSetting(StorageKey.Ciphers, ciphers,  { skipDisk: true } as SettingStorageOptions);
     }
 
     async softDeleteWithServer(id: string): Promise<any> {
@@ -917,9 +901,8 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     async restore(cipher: { id: string, revisionDate: string; } | { id: string, revisionDate: string; }[]) {
-        const userId = await this.userService.getUserId();
-        const ciphers = await this.storageService.get<{ [id: string]: CipherData; }>(
-            Keys.ciphersPrefix + userId);
+        const ciphers = await this.accountService.getSetting<{ [id: string]: CipherData; }>(
+            StorageKey.Ciphers,  { skipMemory: true } as SettingStorageOptions);
         if (ciphers == null) {
             return;
         }
@@ -939,8 +922,8 @@ export class CipherService implements CipherServiceAbstraction {
             clearDeletedDate(cipher as { id: string, revisionDate: string; });
         }
 
-        await this.storageService.save(Keys.ciphersPrefix + userId, ciphers);
-        this.decryptedCipherCache = null;
+        await this.accountService.removeSetting(StorageKey.Ciphers);
+        await this.accountService.saveSetting(StorageKey.Ciphers, ciphers,  { skipMemory: true } as SettingStorageOptions);
     }
 
     async restoreWithServer(id: string): Promise<any> {
@@ -1104,7 +1087,7 @@ export class CipherService implements CipherServiceAbstraction {
             }
 
             if (autofillOnPageLoad) {
-                const autofillOnPageLoadDefault = await this.storageService.get(ConstantsService.autoFillOnPageLoadDefaultKey);
+                const autofillOnPageLoadDefault = await this.accountService.getSetting<boolean>(StorageKey.AutoFillOnPageLoadDefault);
                 ciphers = ciphers.filter(cipher => cipher.login.autofillOnPageLoad ||
                     (cipher.login.autofillOnPageLoad == null && autofillOnPageLoadDefault !== false));
                 if (ciphers.length === 0) {

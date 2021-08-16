@@ -1,6 +1,6 @@
 import { AccountService as AccountServiceAbstraction } from '../abstractions/account.service';
 import { StorageService } from '../abstractions/storage.service';
-import { StorageKey } from '../enums/storageKey';
+
 import { OrganizationData } from '../models/data/organizationData';
 import { ProviderData } from '../models/data/providerData';
 
@@ -8,6 +8,8 @@ import { Account } from '../models/domain/account';
 import { Organization } from '../models/domain/organization';
 import { Provider } from '../models/domain/provider';
 import { SettingStorageOptions } from '../models/domain/settingStorageOptions';
+
+import { StorageKey } from '../enums/storageKey';
 
 export class AccountService implements AccountServiceAbstraction {
     private accounts: Record<string, Account> = {};
@@ -26,6 +28,10 @@ export class AccountService implements AccountServiceAbstraction {
         await this.saveAccountToStorage(account);
     }
 
+    findAccount(userId: string): Account {
+        return this.accounts[userId];
+    }
+
     async switchAccount(userId: string): Promise<void> {
         if (!this.accounts[userId]) {
             return;
@@ -35,8 +41,10 @@ export class AccountService implements AccountServiceAbstraction {
         this.activeUserId = userId;
     }
 
-    findAccount(userId: string): Account {
-        return this.accounts[userId];
+    async removeAccount(userId: string): Promise<void> {
+        await this.secureStorageService.remove(userId);
+        await this.storageService.remove(userId);
+        delete this.accounts[userId];
     }
 
     async saveSetting(key: StorageKey | string, obj: any, options?: SettingStorageOptions): Promise<void> {
@@ -95,7 +103,7 @@ export class AccountService implements AccountServiceAbstraction {
 
     async getOrganization(id: string): Promise<Organization> {
         const organizations = await this.getSetting<{ [id: string]: OrganizationData; }>(
-            StorageKey.OrganizationsPrefix);
+            StorageKey.Organizations);
         if (organizations == null || !organizations.hasOwnProperty(id)) {
             return null;
         }
@@ -114,7 +122,7 @@ export class AccountService implements AccountServiceAbstraction {
 
     async getAllOrganizations(): Promise<Organization[]> {
         const organizations = await this.getSetting<{ [id: string]: OrganizationData; }>(
-            StorageKey.OrganizationsPrefix);
+            StorageKey.Organizations);
         const response: Organization[] = [];
         for (const id in organizations) {
             if (organizations.hasOwnProperty(id) && !organizations[id].isProviderUser) {
@@ -126,7 +134,7 @@ export class AccountService implements AccountServiceAbstraction {
 
     async getProvider(id: string): Promise<Provider> {
         const providers = await this.getSetting<{ [id: string]: ProviderData; }>(
-            StorageKey.ProvidersPrefix);
+            StorageKey.Providers);
         if (providers == null || !providers.hasOwnProperty(id)) {
             return null;
         }
@@ -136,7 +144,7 @@ export class AccountService implements AccountServiceAbstraction {
 
     async getAllProviders(): Promise<Provider[]> {
         const providers = await this.getSetting<{ [id: string]: ProviderData; }>(
-            StorageKey.ProvidersPrefix);
+            StorageKey.Providers);
         const response: Provider[] = [];
         for (const id in providers) {
             if (providers.hasOwnProperty(id)) {

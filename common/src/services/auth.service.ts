@@ -1,8 +1,11 @@
 import { HashPurpose } from '../enums/hashPurpose';
 import { KdfType } from '../enums/kdfType';
+import { StorageKey } from '../enums/storageKey';
 import { TwoFactorProviderType } from '../enums/twoFactorProviderType';
 
+import { Account } from '../models/domain/account';
 import { AuthResult } from '../models/domain/authResult';
+import { SettingStorageOptions } from '../models/domain/settingStorageOptions';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
 import { DeviceRequest } from '../models/request/deviceRequest';
@@ -13,6 +16,7 @@ import { TokenRequest } from '../models/request/tokenRequest';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 
+import { AccountService } from '../abstractions/account.service';
 import { ApiService } from '../abstractions/api.service';
 import { AppIdService } from '../abstractions/appId.service';
 import { AuthService as AuthServiceAbstraction } from '../abstractions/auth.service';
@@ -22,7 +26,6 @@ import { LogService } from '../abstractions/log.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { TokenService } from '../abstractions/token.service';
-import { UserService } from '../abstractions/user.service';
 import { VaultTimeoutService } from '../abstractions/vaultTimeout.service';
 
 export const TwoFactorProviders = {
@@ -92,10 +95,10 @@ export class AuthService implements AuthServiceAbstraction {
     private key: SymmetricCryptoKey;
 
     constructor(private cryptoService: CryptoService, protected apiService: ApiService,
-        private userService: UserService, protected tokenService: TokenService,
-        protected appIdService: AppIdService, private i18nService: I18nService,
-        protected platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
-        private vaultTimeoutService: VaultTimeoutService, private logService: LogService,
+        protected tokenService: TokenService, protected appIdService: AppIdService,
+        private i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
+        private messagingService: MessagingService, private vaultTimeoutService: VaultTimeoutService,
+        private logService: LogService, private accountService: AccountService,
         private setCryptoKeys = true) {
     }
 
@@ -226,7 +229,7 @@ export class AuthService implements AuthServiceAbstraction {
 
         let providerType: TwoFactorProviderType = null;
         let providerPriority = -1;
-        this.twoFactorProvidersData.forEach((value, type) => {
+        this.twoFactorProvidersData.forEach((_value, type) => {
             const provider = (TwoFactorProviders as any)[type];
             if (provider != null && provider.priority > providerPriority) {
                 if (type === TwoFactorProviderType.WebAuthn && !webAuthnSupported) {
@@ -340,13 +343,20 @@ export class AuthService implements AuthServiceAbstraction {
 
         const tokenResponse = response as IdentityTokenResponse;
         result.resetMasterPassword = tokenResponse.resetMasterPassword;
+
+        const accountInformation = await this.tokenService.decodeToken(tokenResponse.accessToken);
+        await this.accountService.addAccount(new Account(
+            accountInformation.sub, accountInformation.email,
+            tokenResponse.kdf, tokenResponse.kdfIterations,
+            clientId, clientSecret, tokenResponse.accessToken, tokenResponse.refreshToken));
+
+        await this.accountService.saveSetting(StorageKey.AccessToken,
+            tokenResponse.accessToken, { skipMemory: true } as SettingStorageOptions);
+
         if (tokenResponse.twoFactorToken != null) {
             await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken, email);
         }
 
-        await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken, clientIdClientSecret);
-        await this.userService.setInformation(this.tokenService.getUserId(), this.tokenService.getEmail(),
-            tokenResponse.kdf, tokenResponse.kdfIterations);
         if (this.setCryptoKeys) {
             if (key != null) {
                 await this.cryptoService.setKey(key);

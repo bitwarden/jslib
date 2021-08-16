@@ -1,43 +1,34 @@
+import { AccountService } from '../abstractions/account.service';
 import { SettingsService as SettingsServiceAbstraction } from '../abstractions/settings.service';
-import { StorageService } from '../abstractions/storage.service';
-import { UserService } from '../abstractions/user.service';
 
-const Keys = {
-    settingsPrefix: 'settings_',
-    equivalentDomains: 'equivalentDomains',
-};
+import { StorageKey } from '../enums/storageKey';
+
+import { SettingStorageOptions } from '../models/domain/settingStorageOptions';
 
 export class SettingsService implements SettingsServiceAbstraction {
-    private settingsCache: any;
-
-    constructor(private userService: UserService, private storageService: StorageService) {
+    constructor(private accountService: AccountService) {
     }
 
-    clearCache(): void {
-        this.settingsCache = null;
+    async clearCache(): Promise<void> {
+        await this.accountService.removeSetting(StorageKey.Settings, { skipDisk: true } as SettingStorageOptions);
     }
 
     getEquivalentDomains(): Promise<any> {
-        return this.getSettingsKey(Keys.equivalentDomains);
+        return this.getSettingsKey(StorageKey.EquivalentDomains);
     }
 
     async setEquivalentDomains(equivalentDomains: string[][]): Promise<void> {
-        await this.setSettingsKey(Keys.equivalentDomains, equivalentDomains);
+        await this.setSettingsKey(StorageKey.EquivalentDomains, equivalentDomains);
     }
 
-    async clear(userId: string): Promise<void> {
-        await this.storageService.remove(Keys.settingsPrefix + userId);
-        this.clearCache();
+    async clear(): Promise<void> {
+        await this.accountService.removeSetting(StorageKey.Settings);
     }
 
     // Helpers
 
     private async getSettings(): Promise<any> {
-        if (this.settingsCache == null) {
-            const userId = await this.userService.getUserId();
-            this.settingsCache = this.storageService.get(Keys.settingsPrefix + userId);
-        }
-        return this.settingsCache;
+        return await this.accountService.getSetting(StorageKey.Settings);
     }
 
     private async getSettingsKey(key: string): Promise<any> {
@@ -49,14 +40,12 @@ export class SettingsService implements SettingsServiceAbstraction {
     }
 
     private async setSettingsKey(key: string, value: any): Promise<void> {
-        const userId = await this.userService.getUserId();
         let settings = await this.getSettings();
         if (!settings) {
             settings = {};
         }
 
         settings[key] = value;
-        await this.storageService.save(Keys.settingsPrefix + userId, settings);
-        this.settingsCache = settings;
+        await this.accountService.saveSetting(StorageKey.Settings, settings);
     }
 }

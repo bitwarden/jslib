@@ -3,13 +3,13 @@ import * as signalRMsgPack from '@microsoft/signalr-protocol-msgpack';
 
 import { NotificationType } from '../enums/notificationType';
 
+import { AccountService } from '../abstractions/account.service';
 import { ApiService } from '../abstractions/api.service';
 import { AppIdService } from '../abstractions/appId.service';
 import { EnvironmentService } from '../abstractions/environment.service';
 import { LogService } from '../abstractions/log.service';
 import { NotificationsService as NotificationsServiceAbstraction } from '../abstractions/notifications.service';
 import { SyncService } from '../abstractions/sync.service';
-import { UserService } from '../abstractions/user.service';
 import { VaultTimeoutService } from '../abstractions/vaultTimeout.service';
 
 import {
@@ -27,10 +27,10 @@ export class NotificationsService implements NotificationsServiceAbstraction {
     private inactive = false;
     private reconnectTimer: any = null;
 
-    constructor(private userService: UserService, private syncService: SyncService,
-        private appIdService: AppIdService, private apiService: ApiService,
-        private vaultTimeoutService: VaultTimeoutService, private environmentService: EnvironmentService,
-        private logoutCallback: () => Promise<void>, private logService: LogService) {
+    constructor(private syncService: SyncService, private appIdService: AppIdService,
+        private apiService: ApiService, private vaultTimeoutService: VaultTimeoutService,
+        private environmentService: EnvironmentService, private logoutCallback: () => Promise<void>,
+        private logService: LogService, private accountService: AccountService) {
         this.environmentService.urls.subscribe(() => {
             if (!this.inited) {
                 return;
@@ -117,9 +117,9 @@ export class NotificationsService implements NotificationsServiceAbstraction {
             return;
         }
 
-        const isAuthenticated = await this.userService.isAuthenticated();
+        const isAuthenticated = this.accountService.activeAccount?.isAuthenticated;
         const payloadUserId = notification.payload.userId || notification.payload.UserId;
-        const myUserId = await this.userService.getUserId();
+        const myUserId = this.accountService.activeAccount?.userId;
         if (isAuthenticated && payloadUserId != null && payloadUserId !== myUserId) {
             return;
         }
@@ -200,7 +200,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
     }
 
     private async isAuthedAndUnlocked() {
-        if (await this.userService.isAuthenticated()) {
+        if (this.accountService.activeAccount?.isAuthenticated) {
             const locked = await this.vaultTimeoutService.isLocked();
             return !locked;
         }

@@ -1,22 +1,20 @@
 import { EventType } from '../enums/eventType';
+import { StorageKey } from '../enums/storageKey';
 
 import { EventData } from '../models/data/eventData';
 
 import { EventRequest } from '../models/request/eventRequest';
 
+import { AccountService } from '../abstractions/account.service';
 import { ApiService } from '../abstractions/api.service';
 import { CipherService } from '../abstractions/cipher.service';
 import { EventService as EventServiceAbstraction } from '../abstractions/event.service';
-import { StorageService } from '../abstractions/storage.service';
-import { UserService } from '../abstractions/user.service';
-
-import { ConstantsService } from './constants.service';
 
 export class EventService implements EventServiceAbstraction {
     private inited = false;
 
-    constructor(private storageService: StorageService, private apiService: ApiService,
-        private userService: UserService, private cipherService: CipherService) { }
+    constructor(private apiService: ApiService, private cipherService: CipherService,
+        private accountService: AccountService) { }
 
     init(checkOnInterval: boolean) {
         if (this.inited) {
@@ -31,11 +29,11 @@ export class EventService implements EventServiceAbstraction {
     }
 
     async collect(eventType: EventType, cipherId: string = null, uploadImmediately = false): Promise<any> {
-        const authed = await this.userService.isAuthenticated();
+        const authed = this.accountService.activeAccount?.isAuthenticated;
         if (!authed) {
             return;
         }
-        const organizations = await this.userService.getAllOrganizations();
+        const organizations = await this.accountService.getAllOrganizations();
         if (organizations == null) {
             return;
         }
@@ -49,7 +47,7 @@ export class EventService implements EventServiceAbstraction {
                 return;
             }
         }
-        let eventCollection = await this.storageService.get<EventData[]>(ConstantsService.eventCollectionKey);
+        let eventCollection = await this.accountService.getSetting<EventData[]>(StorageKey.EventCollectionKey);
         if (eventCollection == null) {
             eventCollection = [];
         }
@@ -58,18 +56,18 @@ export class EventService implements EventServiceAbstraction {
         event.cipherId = cipherId;
         event.date = new Date().toISOString();
         eventCollection.push(event);
-        await this.storageService.save(ConstantsService.eventCollectionKey, eventCollection);
+        await this.accountService.saveSetting(StorageKey.EventCollectionKey, eventCollection);
         if (uploadImmediately) {
             await this.uploadEvents();
         }
     }
 
     async uploadEvents(): Promise<any> {
-        const authed = await this.userService.isAuthenticated();
+        const authed = this.accountService.activeAccount?.isAuthenticated;
         if (!authed) {
             return;
         }
-        const eventCollection = await this.storageService.get<EventData[]>(ConstantsService.eventCollectionKey);
+        const eventCollection = await this.accountService.getSetting<EventData[]>(StorageKey.EventCollectionKey);
         if (eventCollection == null || eventCollection.length === 0) {
             return;
         }
@@ -87,6 +85,6 @@ export class EventService implements EventServiceAbstraction {
     }
 
     async clearEvents(): Promise<any> {
-        await this.storageService.remove(ConstantsService.eventCollectionKey);
+        await this.accountService.removeSetting(StorageKey.EventCollectionKey);
     }
 }

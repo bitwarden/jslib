@@ -1,26 +1,14 @@
-import { ConstantsService } from './constants.service';
-
-import { StorageService } from '../abstractions/storage.service';
+import { AccountService } from '../abstractions/account.service';
 import { TokenService as TokenServiceAbstraction } from '../abstractions/token.service';
+
+import { StorageKey } from '../enums/storageKey';
 
 import { Utils } from '../misc/utils';
 
-const Keys = {
-    accessToken: 'accessToken',
-    refreshToken: 'refreshToken',
-    twoFactorTokenPrefix: 'twoFactorToken_',
-    clientId: 'apikey_clientId',
-    clientSecret: 'apikey_clientSecret',
-};
+import { SettingStorageOptions } from '../models/domain/settingStorageOptions';
 
 export class TokenService implements TokenServiceAbstraction {
-    token: string;
-    decodedToken: any;
-    refreshToken: string;
-    clientId: string;
-    clientSecret: string;
-
-    constructor(private storageService: StorageService) {
+    constructor(private accountService: AccountService) {
     }
 
     async setTokens(accessToken: string, refreshToken: string, clientIdClientSecret: [string, string]): Promise<any> {
@@ -33,60 +21,44 @@ export class TokenService implements TokenServiceAbstraction {
     }
 
     async setClientId(clientId: string): Promise<any> {
-        this.clientId = clientId;
-        return this.storeTokenValue(Keys.clientId, clientId);
+        if (await this.skipTokenStorage()) {
+            return;
+        }
+        return this.accountService.saveSetting(StorageKey.ApiKeyClientId, clientId);
     }
 
     async getClientId(): Promise<string> {
-        if (this.clientId != null) {
-            return this.clientId;
-        }
-
-        this.clientId = await this.storageService.get<string>(Keys.clientId);
-        return this.clientId;
+        return await this.accountService.getSetting<string>(StorageKey.ApiKeyClientId);
     }
 
     async setClientSecret(clientSecret: string): Promise<any> {
-        this.clientSecret = clientSecret;
-        return this.storeTokenValue(Keys.clientSecret, clientSecret);
+        if (await this.skipTokenStorage()) {
+            return;
+        }
+        return this.accountService.saveSetting(StorageKey.ApiKeyClientSecret, clientSecret);
     }
 
     async getClientSecret(): Promise<string> {
-        if (this.clientSecret != null) {
-            return this.clientSecret;
-        }
-
-        this.clientSecret = await this.storageService.get<string>(Keys.clientSecret);
-        return this.clientSecret;
+        return await this.accountService.getSetting<string>(StorageKey.ApiKeyClientSecret);
     }
 
     async setToken(token: string): Promise<any> {
-        this.token = token;
-        this.decodedToken = null;
-        return this.storeTokenValue(Keys.accessToken, token);
+        return this.accountService.saveSetting(StorageKey.AccessToken, token, { skipDisk: await this.skipTokenStorage() } as SettingStorageOptions);
     }
 
     async getToken(): Promise<string> {
-        if (this.token != null) {
-            return this.token;
-        }
-
-        this.token = await this.storageService.get<string>(Keys.accessToken);
-        return this.token;
+        return await this.accountService.getSetting<string>(StorageKey.AccessToken);
     }
 
     async setRefreshToken(refreshToken: string): Promise<any> {
-        this.refreshToken = refreshToken;
-        return this.storeTokenValue(Keys.refreshToken, refreshToken);
+        if (await this.skipTokenStorage()) {
+            return;
+        }
+        return this.accountService.saveSetting(StorageKey.RefreshToken, refreshToken);
     }
 
     async getRefreshToken(): Promise<string> {
-        if (this.refreshToken != null) {
-            return this.refreshToken;
-        }
-
-        this.refreshToken = await this.storageService.get<string>(Keys.refreshToken);
-        return this.refreshToken;
+        return await this.accountService.getSetting<string>(StorageKey.RefreshToken);
     }
 
     async toggleTokens(): Promise<any> {
@@ -94,15 +66,12 @@ export class TokenService implements TokenServiceAbstraction {
         const refreshToken = await this.getRefreshToken();
         const clientId = await this.getClientId();
         const clientSecret = await this.getClientSecret();
-        const timeout = await this.storageService.get(ConstantsService.vaultTimeoutKey);
-        const action = await this.storageService.get(ConstantsService.vaultTimeoutActionKey);
+        const timeout = await this.accountService.getSetting<number>(StorageKey.VaultTimeout);
+        const action = await this.accountService.getSetting<string>(StorageKey.VaultTimeoutAction);
+
         if ((timeout != null || timeout === 0) && action === 'logOut') {
             // if we have a vault timeout and the action is log out, reset tokens
             await this.clearToken();
-            this.token = token;
-            this.refreshToken = refreshToken;
-            this.clientId = clientId;
-            this.clientSecret = clientSecret;
             return;
         }
 
@@ -112,44 +81,43 @@ export class TokenService implements TokenServiceAbstraction {
         await this.setClientSecret(clientSecret);
     }
 
-    setTwoFactorToken(token: string, email: string): Promise<any> {
-        return this.storageService.save(Keys.twoFactorTokenPrefix + email, token);
+    setTwoFactorToken(token: string): Promise<any> {
+        return this.accountService.saveSetting(StorageKey.TwoFactorToken, token);
     }
 
-    getTwoFactorToken(email: string): Promise<string> {
-        return this.storageService.get<string>(Keys.twoFactorTokenPrefix + email);
+    getTwoFactorToken(): Promise<string> {
+        return this.accountService.getSetting<string>(StorageKey.TwoFactorToken);
     }
 
-    clearTwoFactorToken(email: string): Promise<any> {
-        return this.storageService.remove(Keys.twoFactorTokenPrefix + email);
+    clearTwoFactorToken(): Promise<any> {
+        return this.accountService.removeSetting(StorageKey.TwoFactorToken);
     }
 
     async clearToken(): Promise<any> {
-        this.token = null;
-        this.decodedToken = null;
-        this.refreshToken = null;
-        this.clientId = null;
-        this.clientSecret = null;
-
-        await this.storageService.remove(Keys.accessToken);
-        await this.storageService.remove(Keys.refreshToken);
-        await this.storageService.remove(Keys.clientId);
-        await this.storageService.remove(Keys.clientSecret);
+        await this.accountService.removeSetting(StorageKey.AccessToken);
+        await this.accountService.removeSetting(StorageKey.RefreshToken);
+        await this.accountService.removeSetting(StorageKey.ClientId);
+        await this.accountService.removeSetting(StorageKey.ClientSecret);
     }
 
     // jwthelper methods
     // ref https://github.com/auth0/angular-jwt/blob/master/src/angularJwt/services/jwt.js
 
-    decodeToken(): any {
-        if (this.decodedToken) {
-            return this.decodedToken;
-        }
+    async decodeToken(token?: string): Promise<any> {
+        if (token === null) {
+            if (await this.accountService.getSetting(StorageKey.AccessToken, { skipDisk: true } as SettingStorageOptions)) {
+                return await this.accountService.getSetting(StorageKey.AccessToken);
+            }
 
-        if (this.token == null) {
             throw new Error('Token not found.');
         }
 
-        const parts = this.token.split('.');
+        const parts = token != null ?
+            token.split('.') : (
+                await this.accountService.getSetting<string>(
+                    StorageKey.AccessToken, { skipMemory: true } as SettingStorageOptions)
+                ).split('.');
+
         if (parts.length !== 3) {
             throw new Error('JWT must have 3 parts');
         }
@@ -159,12 +127,12 @@ export class TokenService implements TokenServiceAbstraction {
             throw new Error('Cannot decode the token');
         }
 
-        this.decodedToken = JSON.parse(decoded);
-        return this.decodedToken;
+        const decodedToken = JSON.parse(decoded);
+        return decodedToken;
     }
 
-    getTokenExpirationDate(): Date {
-        const decoded = this.decodeToken();
+    async getTokenExpirationDate(): Promise<Date> {
+        const decoded = await this.decodeToken();
         if (typeof decoded.exp === 'undefined') {
             return null;
         }
@@ -174,8 +142,8 @@ export class TokenService implements TokenServiceAbstraction {
         return d;
     }
 
-    tokenSecondsRemaining(offsetSeconds: number = 0): number {
-        const d = this.getTokenExpirationDate();
+    async tokenSecondsRemaining(offsetSeconds: number = 0): Promise<number> {
+        const d = await this.getTokenExpirationDate();
         if (d == null) {
             return 0;
         }
@@ -184,13 +152,13 @@ export class TokenService implements TokenServiceAbstraction {
         return Math.round(msRemaining / 1000);
     }
 
-    tokenNeedsRefresh(minutes: number = 5): boolean {
-        const sRemaining = this.tokenSecondsRemaining();
+    async tokenNeedsRefresh(minutes: number = 5): Promise<boolean> {
+        const sRemaining = await this.tokenSecondsRemaining();
         return sRemaining < (60 * minutes);
     }
 
-    getUserId(): string {
-        const decoded = this.decodeToken();
+    async getUserId(): Promise<string> {
+        const decoded = await this.decodeToken();
         if (typeof decoded.sub === 'undefined') {
             throw new Error('No user id found');
         }
@@ -198,8 +166,8 @@ export class TokenService implements TokenServiceAbstraction {
         return decoded.sub as string;
     }
 
-    getEmail(): string {
-        const decoded = this.decodeToken();
+    async getEmail(): Promise<string> {
+        const decoded = await this.decodeToken();
         if (typeof decoded.email === 'undefined') {
             throw new Error('No email found');
         }
@@ -207,8 +175,8 @@ export class TokenService implements TokenServiceAbstraction {
         return decoded.email as string;
     }
 
-    getEmailVerified(): boolean {
-        const decoded = this.decodeToken();
+    async getEmailVerified(): Promise<boolean> {
+        const decoded = await this.decodeToken();
         if (typeof decoded.email_verified === 'undefined') {
             throw new Error('No email verification found');
         }
@@ -216,8 +184,8 @@ export class TokenService implements TokenServiceAbstraction {
         return decoded.email_verified as boolean;
     }
 
-    getName(): string {
-        const decoded = this.decodeToken();
+    async getName(): Promise<string> {
+        const decoded = await this.decodeToken();
         if (typeof decoded.name === 'undefined') {
             return null;
         }
@@ -225,8 +193,8 @@ export class TokenService implements TokenServiceAbstraction {
         return decoded.name as string;
     }
 
-    getPremium(): boolean {
-        const decoded = this.decodeToken();
+    async getPremium(): Promise<boolean> {
+        const decoded = await this.decodeToken();
         if (typeof decoded.premium === 'undefined') {
             return false;
         }
@@ -234,8 +202,8 @@ export class TokenService implements TokenServiceAbstraction {
         return decoded.premium as boolean;
     }
 
-    getIssuer(): string {
-        const decoded = this.decodeToken();
+    async getIssuer(): Promise<string> {
+        const decoded = await this.decodeToken();
         if (typeof decoded.iss === 'undefined') {
             throw new Error('No issuer found');
         }
@@ -243,18 +211,9 @@ export class TokenService implements TokenServiceAbstraction {
         return decoded.iss as string;
     }
 
-    private async storeTokenValue(key: string, value: string) {
-        if (await this.skipTokenStorage()) {
-            // if we have a vault timeout and the action is log out, don't store token
-            return;
-        }
-
-        return this.storageService.save(key, value);
-    }
-
     private async skipTokenStorage(): Promise<boolean> {
-        const timeout = await this.storageService.get<number>(ConstantsService.vaultTimeoutKey);
-        const action = await this.storageService.get<string>(ConstantsService.vaultTimeoutActionKey);
+        const timeout = await this.accountService.getSetting<number>(StorageKey.VaultTimeout);
+        const action = await this.accountService.getSetting<string>(StorageKey.VaultTimeoutAction);
         return timeout != null && action === 'logOut';
     }
 }

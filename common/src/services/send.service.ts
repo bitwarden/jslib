@@ -10,38 +10,31 @@ import { EncString } from '../models/domain/encString';
 import { Send } from '../models/domain/send';
 import { SendFile } from '../models/domain/sendFile';
 import { SendText } from '../models/domain/sendText';
+import { SettingStorageOptions } from '../models/domain/settingStorageOptions';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
-import { FileUploadType } from '../enums/fileUploadType';
 import { SendType } from '../enums/sendType';
+import { StorageKey } from '../enums/storageKey';
 
 import { SendView } from '../models/view/sendView';
 
+import { AccountService } from '../abstractions/account.service';
 import { ApiService } from '../abstractions/api.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 import { FileUploadService } from '../abstractions/fileUpload.service';
 import { I18nService } from '../abstractions/i18n.service';
 import { SendService as SendServiceAbstraction } from '../abstractions/send.service';
-import { StorageService } from '../abstractions/storage.service';
-import { UserService } from '../abstractions/user.service';
 
 import { Utils } from '../misc/utils';
 
-const Keys = {
-    sendsPrefix: 'sends_',
-};
-
 export class SendService implements SendServiceAbstraction {
-    decryptedSendCache: SendView[];
+    constructor(private cryptoService: CryptoService, private apiService: ApiService,
+        private fileUploadService: FileUploadService, private i18nService: I18nService,
+        private cryptoFunctionService: CryptoFunctionService, private accountService: AccountService) { }
 
-    constructor(private cryptoService: CryptoService, private userService: UserService,
-        private apiService: ApiService, private fileUploadService: FileUploadService,
-        private storageService: StorageService, private i18nService: I18nService,
-        private cryptoFunctionService: CryptoFunctionService) { }
-
-    clearCache(): void {
-        this.decryptedSendCache = null;
+    async clearCache(): Promise<void> {
+        await this.accountService.removeSetting(StorageKey.Sends, { skipDisk: true } as SettingStorageOptions);
     }
 
     async encrypt(model: SendView, file: File | ArrayBuffer, password: string,
@@ -85,9 +78,8 @@ export class SendService implements SendServiceAbstraction {
     }
 
     async get(id: string): Promise<Send> {
-        const userId = await this.userService.getUserId();
-        const sends = await this.storageService.get<{ [id: string]: SendData; }>(
-            Keys.sendsPrefix + userId);
+        const sends = await this.accountService.getSetting<{ [id: string]: SendData; }>(
+            StorageKey.Sends, { skipMemory: true } as SettingStorageOptions);
         if (sends == null || !sends.hasOwnProperty(id)) {
             return null;
         }
@@ -96,9 +88,8 @@ export class SendService implements SendServiceAbstraction {
     }
 
     async getAll(): Promise<Send[]> {
-        const userId = await this.userService.getUserId();
-        const sends = await this.storageService.get<{ [id: string]: SendData; }>(
-            Keys.sendsPrefix + userId);
+        const sends = await this.accountService.getSetting<{ [id: string]: SendData; }>(
+            StorageKey.Sends, { skipMemory: true } as SettingStorageOptions);
         const response: Send[] = [];
         for (const id in sends) {
             if (sends.hasOwnProperty(id)) {
@@ -109,8 +100,10 @@ export class SendService implements SendServiceAbstraction {
     }
 
     async getAllDecrypted(): Promise<SendView[]> {
-        if (this.decryptedSendCache != null) {
-            return this.decryptedSendCache;
+        let decSends: SendView[] = [];
+        if (await this.accountService.hasSetting(StorageKey.Sends, { skipDisk: true } as SettingStorageOptions)) {
+            decSends = await this.accountService.getSetting<SendView[]>(StorageKey.Sends);
+            return decSends;
         }
 
         const hasKey = await this.cryptoService.hasKey();
@@ -118,7 +111,6 @@ export class SendService implements SendServiceAbstraction {
             throw new Error('No key.');
         }
 
-        const decSends: SendView[] = [];
         const promises: Promise<any>[] = [];
         const sends = await this.getAll();
         sends.forEach(send => {
@@ -128,8 +120,8 @@ export class SendService implements SendServiceAbstraction {
         await Promise.all(promises);
         decSends.sort(Utils.getSortFunction(this.i18nService, 'name'));
 
-        this.decryptedSendCache = decSends;
-        return this.decryptedSendCache;
+        await this.accountService.saveSetting(StorageKey.Sends, decSends, { skipDisk: true } as SettingStorageOptions);
+        return decSends;
     }
 
     async saveWithServer(sendData: [Send, EncArrayBuffer]): Promise<any> {
@@ -160,7 +152,7 @@ export class SendService implements SendServiceAbstraction {
             response = await this.apiService.putSend(sendData[0].id, request);
         }
 
-        const userId = await this.userService.getUserId();
+        const userId = this.accountService.activeAccount?.userId;
         const data = new SendData(response, userId);
         await this.upsert(data);
     }
@@ -191,9 +183,8 @@ export class SendService implements SendServiceAbstraction {
     }
 
     async upsert(send: SendData | SendData[]): Promise<any> {
-        const userId = await this.userService.getUserId();
-        let sends = await this.storageService.get<{ [id: string]: SendData; }>(
-            Keys.sendsPrefix + userId);
+        let sends = await this.accountService.getSetting<{ [id: string]: SendData; }>(
+            StorageKey.Sends, { skipMemory: true } as SettingStorageOptions);
         if (sends == null) {
             sends = {};
         }
@@ -207,25 +198,22 @@ export class SendService implements SendServiceAbstraction {
             });
         }
 
-        await this.storageService.save(Keys.sendsPrefix + userId, sends);
-        this.decryptedSendCache = null;
+        await this.accountService.removeSetting(StorageKey.Sends);
+        await this.accountService.saveSetting(StorageKey.Sends, sends, { skipMemory: true } as SettingStorageOptions);
     }
 
     async replace(sends: { [id: string]: SendData; }): Promise<any> {
-        const userId = await this.userService.getUserId();
-        await this.storageService.save(Keys.sendsPrefix + userId, sends);
-        this.decryptedSendCache = null;
+        await this.accountService.removeSetting(StorageKey.Sends);
+        await this.accountService.saveSetting(StorageKey.Sends, sends, { skipMemory: true } as SettingStorageOptions);
     }
 
-    async clear(userId: string): Promise<any> {
-        await this.storageService.remove(Keys.sendsPrefix + userId);
-        this.decryptedSendCache = null;
+    async clear(): Promise<any> {
+        await this.accountService.removeSetting(StorageKey.Sends);
     }
 
     async delete(id: string | string[]): Promise<any> {
-        const userId = await this.userService.getUserId();
-        const sends = await this.storageService.get<{ [id: string]: SendData; }>(
-            Keys.sendsPrefix + userId);
+        const sends = await this.accountService.getSetting<{ [id: string]: SendData; }>(
+            StorageKey.Sends, { skipMemory: true } as SettingStorageOptions);
         if (sends == null) {
             return;
         }
@@ -241,8 +229,8 @@ export class SendService implements SendServiceAbstraction {
             });
         }
 
-        await this.storageService.save(Keys.sendsPrefix + userId, sends);
-        this.decryptedSendCache = null;
+        await this.accountService.removeSetting(StorageKey.Sends);
+        await this.accountService.saveSetting(StorageKey.Sends, sends, { skipMemory: true } as SettingStorageOptions);
     }
 
     async deleteWithServer(id: string): Promise<any> {
@@ -252,7 +240,7 @@ export class SendService implements SendServiceAbstraction {
 
     async removePasswordWithServer(id: string): Promise<any> {
         const response = await this.apiService.putSendRemovePassword(id);
-        const userId = await this.userService.getUserId();
+        const userId = this.accountService.activeAccount?.userId;
         const data = new SendData(response, userId);
         await this.upsert(data);
     }
@@ -270,7 +258,7 @@ export class SendService implements SendServiceAbstraction {
                     reject(e);
                 }
             };
-            reader.onerror = evt => {
+            reader.onerror = _evt => {
                 reject('Error reading file.');
             };
         });

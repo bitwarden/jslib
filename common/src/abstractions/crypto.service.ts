@@ -1,5 +1,6 @@
 import { EncArrayBuffer } from '../models/domain/encArrayBuffer';
 import { EncString } from '../models/domain/encString';
+import { KeySuffixOptions } from '../models/domain/settingStorageOptions';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
 import { ProfileOrganizationResponse } from '../models/response/profileOrganizationResponse';
@@ -8,8 +9,6 @@ import { ProfileProviderResponse } from '../models/response/profileProviderRespo
 
 import { HashPurpose } from '../enums/hashPurpose';
 import { KdfType } from '../enums/kdfType';
-
-import { KeySuffixOptions } from './storage.service';
 
 export abstract class CryptoService {
     setKey: (key: SymmetricCryptoKey) => Promise<any>;
@@ -30,7 +29,7 @@ export abstract class CryptoService {
     getOrgKey: (orgId: string) => Promise<SymmetricCryptoKey>;
     getProviderKey: (providerId: string) => Promise<SymmetricCryptoKey>;
     hasKey: () => Promise<boolean>;
-    hasKeyInMemory: () => boolean;
+    hasKeyInMemory: () => Promise<boolean>;
     hasKeyStored: (keySuffix?: KeySuffixOptions) => Promise<boolean>;
     hasEncKey: () => Promise<boolean>;
     clearKey: (clearSecretStorage?: boolean) => Promise<any>;
