@@ -47,7 +47,7 @@ export class AccountService implements AccountServiceAbstraction {
         delete this.accounts[userId];
     }
 
-    async saveSetting(key: StorageKey | string, obj: any, options?: SettingStorageOptions): Promise<void> {
+    async saveSetting(key: StorageKey, obj: any, options?: SettingStorageOptions): Promise<void> {
         if (!options?.skipMemory && this.activeAccount != null) {
             this.activeAccount.settings.set(key, obj);
         }
@@ -57,7 +57,7 @@ export class AccountService implements AccountServiceAbstraction {
         }
     }
 
-    async hasSetting(key: StorageKey | string, options?: SettingStorageOptions) {
+    async hasSetting(key: StorageKey, options?: SettingStorageOptions) {
         if (options?.skipDisk) {
            return this.activeAccount?.settings.has(key);
         }
@@ -68,7 +68,7 @@ export class AccountService implements AccountServiceAbstraction {
         return this.activeAccount?.settings.has(key) || await this.hasInStorage(key, options);
     }
 
-    async getSetting<T>(key: StorageKey | string, options?: SettingStorageOptions): Promise<T> {
+    async getSetting<T>(key: StorageKey, options?: SettingStorageOptions): Promise<T> {
         if (options?.skipDisk) {
             return this.activeAccount?.settings.get(key) as T;
         }
@@ -82,7 +82,7 @@ export class AccountService implements AccountServiceAbstraction {
             await this.getFromStorage<T>(key, options) ?? null;
     }
 
-    async removeSetting(key: StorageKey | string, options?: SettingStorageOptions) {
+    async removeSetting(key: StorageKey, options?: SettingStorageOptions) {
         if (!options?.skipMemory) {
             this.activeAccount.settings.delete(key);
         }
@@ -154,7 +154,7 @@ export class AccountService implements AccountServiceAbstraction {
         return response;
     }
 
-    private async saveToStorage(key: StorageKey | string, obj: any, options?: SettingStorageOptions): Promise<any> {
+    private async saveToStorage(key: StorageKey, obj: any, options?: SettingStorageOptions): Promise<any> {
         if (options?.useSecureStorage) {
             return await this.secureStorageService.save(await this.prefixKey(key), obj, options);
         } else {
@@ -162,7 +162,7 @@ export class AccountService implements AccountServiceAbstraction {
         }
     }
 
-    private async removeFromStorage(key: StorageKey | string, options?: SettingStorageOptions): Promise<any> {
+    private async removeFromStorage(key: StorageKey, options?: SettingStorageOptions): Promise<any> {
         if (options?.useSecureStorage) {
             return await this.secureStorageService.remove(await this.prefixKey(key), options);
         } else {
@@ -170,7 +170,7 @@ export class AccountService implements AccountServiceAbstraction {
         }
     }
 
-    private async getFromStorage<T>(key: StorageKey | string, options?: SettingStorageOptions): Promise<T> {
+    private async getFromStorage<T>(key: StorageKey, options?: SettingStorageOptions): Promise<T> {
         if (options?.useSecureStorage) {
             return await this.secureStorageService.get<T>(await this.prefixKey(key), options);
         } else {
@@ -178,7 +178,7 @@ export class AccountService implements AccountServiceAbstraction {
         }
     }
 
-    private async hasInStorage(key: StorageKey | string, options?: SettingStorageOptions): Promise<boolean> {
+    private async hasInStorage(key: StorageKey, options?: SettingStorageOptions): Promise<boolean> {
         if (options?.useSecureStorage) {
             return await this.secureStorageService.has(await this.prefixKey(key), options);
         } else {
@@ -192,7 +192,7 @@ export class AccountService implements AccountServiceAbstraction {
         });
     }
 
-    private async prefixKey(key: StorageKey | string): Promise<string> {
+    private async prefixKey(key: StorageKey): Promise<string> {
         let prefix = this.activeUserId;
         if (prefix == null) {
             prefix = await this.storageService.get<string>(StorageKey.PreviousUserId);

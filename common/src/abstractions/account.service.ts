@@ -10,10 +10,10 @@ export abstract class AccountService {
     addAccount: (account: Account) => Promise<void>;
     switchAccount: (userId: string) => Promise<void>;
     findAccount: (userId: string) => Account;
-    saveSetting: (key: StorageKey | string, obj: any, options?: SettingStorageOptions) => Promise<any>;
-    removeSetting: (key: StorageKey | string, options?: SettingStorageOptions) => Promise<any>;
-    hasSetting: (key: StorageKey | string, options?: SettingStorageOptions) => Promise<boolean>;
-    getSetting: <T>(key: StorageKey | string, options?: SettingStorageOptions) => Promise<T>;
+    saveSetting: (key: StorageKey, obj: any, options?: SettingStorageOptions) => Promise<any>;
+    removeSetting: (key: StorageKey, options?: SettingStorageOptions) => Promise<any>;
+    hasSetting: (key: StorageKey, options?: SettingStorageOptions) => Promise<boolean>;
+    getSetting: <T>(key: StorageKey, options?: SettingStorageOptions) => Promise<T>;
     getOrganization: (id: string) => Promise<Organization>;
     getOrganizationByIdentifier: (identifier: string) => Promise<Organization>;
     getAllOrganizations: () => Promise<Organization[]>;

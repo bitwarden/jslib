@@ -18,7 +18,7 @@ export enum StorageKey {
 
     // App Info
     InstalledVersion = 'installedVersion',
-    PreviousUserId = '',
+    PreviousUserId = 'previousUserId',
 
     // Crypto
     CryptoMasterKey = 'key',
