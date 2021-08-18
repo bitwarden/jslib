@@ -6,6 +6,8 @@ import {
 
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 
+import { MasterPasswordPolicyOptions } from 'jslib-common/models/domain/masterPasswordPolicyOptions';
+
 @Component({
     selector: 'app-callout',
     templateUrl: 'callout.component.html',
@@ -15,6 +17,8 @@ export class CalloutComponent implements OnInit {
     @Input() icon: string;
     @Input() title: string;
     @Input() clickable: boolean;
+    @Input() enforcedPolicyOptions: MasterPasswordPolicyOptions;
+    @Input() enforcedPolicyMessage: string;
 
     calloutStyle: string;
 
@@ -22,6 +26,10 @@ export class CalloutComponent implements OnInit {
 
     ngOnInit() {
         this.calloutStyle = this.type;
+
+        if (this.enforcedPolicyMessage === undefined) {
+            this.enforcedPolicyMessage = this.i18nService.t('masterPasswordPolicyInEffect');
+        }
 
         if (this.type === 'warning' || this.type === 'danger') {
             if (this.type === 'danger') {
@@ -50,5 +58,25 @@ export class CalloutComponent implements OnInit {
                 this.icon = 'fa-lightbulb-o';
             }
         }
+    }
+
+    getPasswordScoreAlertDisplay() {
+        if (this.enforcedPolicyOptions == null) {
+            return '';
+        }
+
+        let str: string;
+        switch (this.enforcedPolicyOptions.minComplexity) {
+            case 4:
+                str = this.i18nService.t('strong');
+                break;
+            case 3:
+                str = this.i18nService.t('good');
+                break;
+            default:
+                str = this.i18nService.t('weak');
+                break;
+        }
+        return str + ' (' + this.enforcedPolicyOptions.minComplexity + ')';
     }
 }
