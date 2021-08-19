@@ -1,3 +1,5 @@
+import { StorageServiceOptions } from "../models/domain/storageServiceOptions";
+
 export abstract class StorageService {
     get: <T>(key: string, options?: StorageServiceOptions) => Promise<T>;
     has: (key: string, options?: StorageServiceOptions) => Promise<boolean>;
@@ -5,8 +7,3 @@ export abstract class StorageService {
     remove: (key: string, options?: StorageServiceOptions) => Promise<any>;
 }
 
-export interface StorageServiceOptions {
-    keySuffix: KeySuffixOptions;
-}
-
-export type KeySuffixOptions = 'auto' | 'biometric';
