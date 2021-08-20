@@ -46,11 +46,13 @@ export class ElectronStorageService implements StorageService {
     }
 
     save(key: string, obj: any): Promise<any> {
-        if (obj != null) {
-            if (obj instanceof Set) {
-                obj = Array.from(obj);
-            }
-            this.store.set(key, obj);
+        if (obj == null) {
+            return Promise.resolve();
+        }
+        if (obj instanceof Set) {
+        	obj = Array.from(obj);
+        }
+        this.store.set(key, obj);
         }
         return Promise.resolve();
     }
