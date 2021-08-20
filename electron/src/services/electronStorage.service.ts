@@ -50,10 +50,9 @@ export class ElectronStorageService implements StorageService {
             return Promise.resolve();
         }
         if (obj instanceof Set) {
-        	obj = Array.from(obj);
+            obj = Array.from(obj);
         }
         this.store.set(key, obj);
-        }
         return Promise.resolve();
     }
 
