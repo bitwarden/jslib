@@ -46,6 +46,9 @@ export class ElectronStorageService implements StorageService {
     }
 
     save(key: string, obj: any): Promise<any> {
+        if (obj == null) {
+            return Promise.resolve();
+        }
         if (obj instanceof Set) {
             obj = Array.from(obj);
         }
