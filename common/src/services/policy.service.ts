@@ -1,4 +1,4 @@
-import { PolicyService as PolicyServiceAbstraction } from '../abstractions/policy.service';
+import { BasePolicy, PolicyService as PolicyServiceAbstraction } from '../abstractions/policy.service';
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
@@ -17,8 +17,10 @@ const Keys = {
     policiesPrefix: 'policies_',
 };
 
+
 export class PolicyService implements PolicyServiceAbstraction {
     policyCache: Policy[];
+    policies: BasePolicy[] = [];
 
     constructor(private userService: UserService, private storageService: StorageService) {
     }
