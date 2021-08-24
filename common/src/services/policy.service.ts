@@ -172,7 +172,6 @@ export class PolicyService implements PolicyServiceAbstraction {
     }
 
     async policyAppliesToUser(policyType: PolicyType, policyFilter?: (policy: Policy) => boolean) {
-
         if (policyFilter == null) {
             policyFilter = (policy: Policy) => true;
         }
