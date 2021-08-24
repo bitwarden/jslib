@@ -22,6 +22,5 @@ export abstract class PolicyService {
         enforcedPolicyOptions?: MasterPasswordPolicyOptions) => boolean;
     getResetPasswordPolicyOptions: (policies: Policy[], orgId: string) => [ResetPasswordPolicyOptions, boolean];
     mapPoliciesFromToken: (policiesResponse: ListResponse<PolicyResponse>) => Policy[];
-    policyAppliesToUser: (policyType: PolicyType, organizationId?: string,
-        policyFilter?: (policy: Policy) => boolean) => Promise<boolean>;
+    policyAppliesToUser: (policyType: PolicyType, policyFilter?: (policy: Policy) => boolean) => Promise<boolean>;
 }

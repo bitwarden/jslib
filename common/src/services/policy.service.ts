@@ -171,37 +171,29 @@ export class PolicyService implements PolicyServiceAbstraction {
         return policiesData.map(p => new Policy(p));
     }
 
-    async policyAppliesToUser(policyType: PolicyType, organizationId?: string,
-        policyFilter?: (policy: Policy) => boolean) {
+    async policyAppliesToUser(policyType: PolicyType, policyFilter?: (policy: Policy) => boolean) {
 
         if (policyFilter == null) {
             policyFilter = (policy: Policy) => true;
         }
 
-        // Check if any organization's policy applies to user
-        if (organizationId == null) {
-            const policies = await this.getAll(policyType);
-            const organizations = await this.userService.getAllOrganizations();
+        const policies = await this.getAll(policyType);
+        const organizations = await this.userService.getAllOrganizations();
 
-            const filteredPolicies = policies
-                .filter(p =>
-                    p.enabled &&
-                    p.type === policyType &&
-                    policyFilter(p))
-                .map(p => p.organizationId);
+        const filteredPolicies = policies
+            .filter(p =>
+                p.enabled &&
+                p.type === policyType &&
+                policyFilter(p))
+            .map(p => p.organizationId);
 
-            const policySet = new Set(filteredPolicies);
+        const policySet = new Set(filteredPolicies);
 
-            return organizations.some(o =>
-                o.enabled &&
-                o.status === OrganizationUserStatusType.Confirmed &&
-                o.usePolicies &&
-                !o.isExemptFromPolicies &&
-                policySet.has(o.id));
-        }
-
-        // Check if a specific organization's policy applies to user
-
-
+        return organizations.some(o =>
+            o.enabled &&
+            o.status === OrganizationUserStatusType.Confirmed &&
+            o.usePolicies &&
+            !o.isExemptFromPolicies &&
+            policySet.has(o.id));
     }
 }

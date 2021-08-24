@@ -103,7 +103,7 @@ export class AddEditComponent implements OnInit {
 
     async load() {
         this.disableSend = await this.policyService.policyAppliesToUser(PolicyType.DisableSend);
-        this.disableHideEmail = await this.policyService.policyAppliesToUser(PolicyType.SendOptions, null,
+        this.disableHideEmail = await this.policyService.policyAppliesToUser(PolicyType.SendOptions,
             p => p.data.disableHideEmail);
 
         this.canAccessPremium = await this.userService.canAccessPremium();
