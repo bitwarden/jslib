@@ -164,28 +164,20 @@ export class AddEditComponent implements OnInit {
     }
 
     async init() {
-        const policies = await this.policyService.getAll(PolicyType.PersonalOwnership);
         const myEmail = await this.userService.getEmail();
         this.ownershipOptions.push({ name: myEmail, value: null });
         const orgs = await this.userService.getAllOrganizations();
         orgs.sort(Utils.getSortFunction(this.i18nService, 'name')).forEach(o => {
             if (o.enabled && o.status === OrganizationUserStatusType.Confirmed) {
                 this.ownershipOptions.push({ name: o.name, value: o.id });
-                if (policies != null && o.usePolicies && !o.canManagePolicies && this.allowPersonal) {
-                    for (const policy of policies) {
-                        if (policy.organizationId === o.id && policy.enabled) {
-                            this.allowPersonal = false;
-                            this.ownershipOptions.splice(0, 1);
-                            // Default to the organization who owns this policy for now (if necessary)
-                            if (this.organizationId == null) {
-                                this.organizationId = o.id;
-                            }
-                            break;
-                        }
-                    }
-                }
             }
         });
+
+        if (this.allowPersonal && await this.policyService.policyAppliesToUser(PolicyType.PersonalOwnership)) {
+            this.allowPersonal = false;
+            this.ownershipOptions.splice(0, 1);
+        }
+
         this.writeableCollections = await this.loadCollections();
     }
 
