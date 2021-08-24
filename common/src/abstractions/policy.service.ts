@@ -1,7 +1,6 @@
 import { PolicyData } from '../models/data/policyData';
 
 import { MasterPasswordPolicyOptions } from '../models/domain/masterPasswordPolicyOptions';
-import { Organization } from '../models/domain/organization';
 import { Policy } from '../models/domain/policy';
 import { ResetPasswordPolicyOptions } from '../models/domain/resetPasswordPolicyOptions';
 
