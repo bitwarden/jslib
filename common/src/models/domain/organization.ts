@@ -137,6 +137,6 @@ export class Organization {
     }
 
     get isExemptFromPolicies() {
-        return this.canManagePolicies;
+        return this.isAdmin;
     }
 }
