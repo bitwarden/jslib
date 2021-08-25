@@ -62,6 +62,7 @@ import { ProviderUserConfirmRequest } from '../models/request/provider/providerU
 import { ProviderUserInviteRequest } from '../models/request/provider/providerUserInviteRequest';
 import { ProviderUserUpdateRequest } from '../models/request/provider/providerUserUpdateRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
+import { SeatAutoscaleRequest } from '../models/request/seatAutoscaleRequest';
 import { SeatRequest } from '../models/request/seatRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
 import { SendAccessRequest } from '../models/request/sendAccessRequest';
@@ -379,6 +380,7 @@ export abstract class ApiService {
     postOrganizationApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
     postOrganizationRotateApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
     postOrganizationUpgrade: (id: string, request: OrganizationUpgradeRequest) => Promise<PaymentResponse>;
+    postOrganizationAutoscaleSeats: (id: string, request: SeatAutoscaleRequest) => Promise<void>;
     postOrganizationSeat: (id: string, request: SeatRequest) => Promise<PaymentResponse>;
     postOrganizationStorage: (id: string, request: StorageRequest) => Promise<any>;
     postOrganizationPayment: (id: string, request: PaymentRequest) => Promise<any>;
