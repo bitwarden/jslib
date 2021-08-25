@@ -1,37 +1,14 @@
 import { I18nService } from '../abstractions/i18n.service';
-import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 
-export class WebAuthn {
-    private iframe: HTMLIFrameElement = null;
+export abstract class IFrameComponent {
+    iframe: HTMLIFrameElement;
     private connectorLink: HTMLAnchorElement;
     private parseFunction = this.parseMessage.bind(this);
 
-    constructor(private win: Window, private webVaultUrl: string, private webAuthnNewTab: boolean,
-        private platformUtilsService: PlatformUtilsService, private i18nService: I18nService,
-        private successCallback: Function, private errorCallback: Function, private infoCallback: Function) {
+    constructor(private win: Window, protected webVaultUrl: string, private path: string, private iframeId: string,
+        public successCallback?: (message: string) => any,
+        public errorCallback?: (message: string) => any, public infoCallback?: (message: string) => any) {
         this.connectorLink = win.document.createElement('a');
-    }
-
-    init(data: any): void {
-        const params = new URLSearchParams({
-            data: this.base64Encode(JSON.stringify(data)),
-            parent: encodeURIComponent(this.win.document.location.href),
-            btnText: encodeURIComponent(this.i18nService.t('webAuthnAuthenticate')),
-            v: '1',
-        });
-
-        if (this.webAuthnNewTab) {
-            // Firefox fallback which opens the webauthn page in a new tab
-            params.append('locale', this.i18nService.translationLocale);
-            this.platformUtilsService.launchUri(`${this.webVaultUrl}/webauthn-fallback-connector.html?${params}`);
-        } else {
-            this.connectorLink.href = `${this.webVaultUrl}/webauthn-connector.html?${params}`;
-            this.iframe = this.win.document.getElementById('webauthn_iframe') as HTMLIFrameElement;
-            this.iframe.allow = 'publickey-credentials-get ' + new URL(this.webVaultUrl).origin;
-            this.iframe.src = this.connectorLink.href;
-
-            this.win.addEventListener('message', this.parseFunction, false);
-        }
     }
 
     stop() {
@@ -58,6 +35,22 @@ export class WebAuthn {
 
     cleanup() {
         this.win.removeEventListener('message', this.parseFunction, false);
+    }
+
+    protected createParams(data: any, version: number) {
+        return new URLSearchParams({
+            data: this.base64Encode(JSON.stringify(data)),
+            parent: encodeURIComponent(this.win.document.location.href),
+            v: version.toString(),
+        });
+    }
+
+    protected initComponent(params: URLSearchParams): void {
+        this.connectorLink.href = `${this.webVaultUrl}/${this.path}?${params}`;
+        this.iframe = this.win.document.getElementById(this.iframeId) as HTMLIFrameElement;
+        this.iframe.src = this.connectorLink.href;
+
+        this.win.addEventListener('message', this.parseFunction, false);
     }
 
     private parseMessage(event: MessageEvent) {

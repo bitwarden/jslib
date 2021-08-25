@@ -6,6 +6,8 @@ import { OrganizationData } from '../models/data/organizationData';
 import { Organization } from '../models/domain/organization';
 
 import { KdfType } from '../enums/kdfType';
+import { ProviderData } from '../models/data/providerData';
+import { Provider } from '../models/domain/provider';
 
 const Keys = {
     userId: 'userId',
@@ -14,7 +16,9 @@ const Keys = {
     kdf: 'kdf',
     kdfIterations: 'kdfIterations',
     organizationsPrefix: 'organizations_',
+    providersPrefix: 'providers_',
     emailVerified: 'emailVerified',
+    forcePasswordReset: 'forcePasswordReset',
 };
 
 export class UserService implements UserServiceAbstraction {
@@ -24,6 +28,7 @@ export class UserService implements UserServiceAbstraction {
     private kdf: KdfType;
     private kdfIterations: number;
     private emailVerified: boolean;
+    private forcePasswordReset: boolean;
 
     constructor(private tokenService: TokenService, private storageService: StorageService) { }
 
@@ -47,6 +52,11 @@ export class UserService implements UserServiceAbstraction {
     setEmailVerified(emailVerified: boolean) {
         this.emailVerified = emailVerified;
         return this.storageService.save(Keys.emailVerified, emailVerified);
+    }
+
+    setForcePasswordReset(forcePasswordReset: boolean) {
+        this.forcePasswordReset = forcePasswordReset;
+        return this.storageService.save(Keys.forcePasswordReset, forcePasswordReset);
     }
 
     async getUserId(): Promise<string> {
@@ -91,6 +101,13 @@ export class UserService implements UserServiceAbstraction {
         return this.emailVerified;
     }
 
+    async getForcePasswordReset(): Promise<boolean> {
+        if (this.forcePasswordReset == null) {
+            this.forcePasswordReset = await this.storageService.get<boolean>(Keys.forcePasswordReset);
+        }
+        return this.forcePasswordReset;
+    }
+
     async clear(): Promise<any> {
         const userId = await this.getUserId();
 
@@ -99,7 +116,9 @@ export class UserService implements UserServiceAbstraction {
         await this.storageService.remove(Keys.stamp);
         await this.storageService.remove(Keys.kdf);
         await this.storageService.remove(Keys.kdfIterations);
+        await this.storageService.remove(Keys.forcePasswordReset);
         await this.clearOrganizations(userId);
+        await this.clearProviders(userId);
 
         this.userId = this.email = this.stamp = null;
         this.kdf = null;
@@ -153,7 +172,7 @@ export class UserService implements UserServiceAbstraction {
             Keys.organizationsPrefix + userId);
         const response: Organization[] = [];
         for (const id in organizations) {
-            if (organizations.hasOwnProperty(id)) {
+            if (organizations.hasOwnProperty(id) && !organizations[id].isProviderUser) {
                 response.push(new Organization(organizations[id]));
             }
         }
@@ -167,5 +186,38 @@ export class UserService implements UserServiceAbstraction {
 
     async clearOrganizations(userId: string): Promise<any> {
         await this.storageService.remove(Keys.organizationsPrefix + userId);
+    }
+
+    async getProvider(id: string): Promise<Provider> {
+        const userId = await this.getUserId();
+        const providers = await this.storageService.get<{ [id: string]: ProviderData; }>(
+            Keys.providersPrefix + userId);
+        if (providers == null || !providers.hasOwnProperty(id)) {
+            return null;
+        }
+
+        return new Provider(providers[id]);
+    }
+
+    async getAllProviders(): Promise<Provider[]> {
+        const userId = await this.getUserId();
+        const providers = await this.storageService.get<{ [id: string]: ProviderData; }>(
+            Keys.providersPrefix + userId);
+        const response: Provider[] = [];
+        for (const id in providers) {
+            if (providers.hasOwnProperty(id)) {
+                response.push(new Provider(providers[id]));
+            }
+        }
+        return response;
+    }
+
+    async replaceProviders(providers: { [id: string]: ProviderData; }): Promise<any> {
+        const userId = await this.getUserId();
+        await this.storageService.save(Keys.providersPrefix + userId, providers);
+    }
+
+    async clearProviders(userId: string): Promise<any> {
+        await this.storageService.remove(Keys.providersPrefix + userId);
     }
 }

@@ -38,17 +38,14 @@ export class IconComponent implements OnChanges {
     private iconsUrl: string;
 
     constructor(environmentService: EnvironmentService, protected stateService: StateService) {
-        this.iconsUrl = environmentService.iconsUrl;
-        if (!this.iconsUrl) {
-            if (environmentService.baseUrl) {
-                this.iconsUrl = environmentService.baseUrl + '/icons';
-            } else {
-                this.iconsUrl = 'https://icons.bitwarden.net';
-            }
-        }
+        this.iconsUrl = environmentService.getIconsUrl();
     }
 
     async ngOnChanges() {
+        // Components may be re-used when using cdk-virtual-scroll. Which puts the component in a weird state,
+        // to avoid this we reset all state variables.
+        this.image = null;
+        this.fallbackImage = null;
         this.imageEnabled = !(await this.stateService.get<boolean>(ConstantsService.disableFaviconKey));
         this.load();
     }

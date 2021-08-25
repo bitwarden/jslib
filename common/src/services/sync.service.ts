@@ -16,6 +16,7 @@ import { CollectionData } from '../models/data/collectionData';
 import { FolderData } from '../models/data/folderData';
 import { OrganizationData } from '../models/data/organizationData';
 import { PolicyData } from '../models/data/policyData';
+import { ProviderData } from '../models/data/providerData';
 import { SendData } from '../models/data/sendData';
 
 import { CipherResponse } from '../models/response/cipherResponse';
@@ -93,6 +94,7 @@ export class SyncService implements SyncServiceAbstraction {
 
         const userId = await this.userService.getUserId();
         try {
+            await this.apiService.refreshIdentityToken();
             const response = await this.apiService.getSync();
 
             await this.syncProfile(response.profile);
@@ -286,15 +288,32 @@ export class SyncService implements SyncServiceAbstraction {
 
         await this.cryptoService.setEncKey(response.key);
         await this.cryptoService.setEncPrivateKey(response.privateKey);
-        await this.cryptoService.setOrgKeys(response.organizations);
+        await this.cryptoService.setProviderKeys(response.providers);
+        await this.cryptoService.setOrgKeys(response.organizations, response.providerOrganizations);
         await this.userService.setSecurityStamp(response.securityStamp);
         await this.userService.setEmailVerified(response.emailVerified);
+        await this.userService.setForcePasswordReset(response.forcePasswordReset);
 
         const organizations: { [id: string]: OrganizationData; } = {};
         response.organizations.forEach(o => {
             organizations[o.id] = new OrganizationData(o);
         });
-        return await this.userService.replaceOrganizations(organizations);
+
+        const providers: { [id: string]: ProviderData; } = {};
+        response.providers.forEach(p => {
+            providers[p.id] = new ProviderData(p);
+        });
+
+        response.providerOrganizations.forEach(o => {
+            if (organizations[o.id] == null) {
+                organizations[o.id] = new OrganizationData(o);
+                organizations[o.id].isProviderUser = true;
+            }
+        });
+        return Promise.all([
+            this.userService.replaceOrganizations(organizations),
+            this.userService.replaceProviders(providers),
+        ]);
     }
 
     private async syncFolders(userId: string, response: FolderResponse[]) {

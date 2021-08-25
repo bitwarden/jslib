@@ -34,6 +34,7 @@ export class ConstantsService {
     static readonly cryptoKeys = {
         key: 'key', // Master Key
         encOrgKeys: 'encOrgKeys',
+        encProviderKeys: 'encProviderKeys',
         encPrivateKey: 'encPrivateKey',
         encKey: 'encKey', // Generated Symmetric Key
         keyHash: 'keyHash',

@@ -14,13 +14,13 @@ export abstract class AuthService {
     twoFactorProvidersData: Map<TwoFactorProviderType, { [key: string]: string; }>;
     selectedTwoFactorProviderType: TwoFactorProviderType;
 
-    logIn: (email: string, masterPassword: string) => Promise<AuthResult>;
+    logIn: (email: string, masterPassword: string, captchaToken?: string) => Promise<AuthResult>;
     logInSso: (code: string, codeVerifier: string, redirectUrl: string) => Promise<AuthResult>;
     logInApiKey: (clientId: string, clientSecret: string) => Promise<AuthResult>;
     logInTwoFactor: (twoFactorProvider: TwoFactorProviderType, twoFactorToken: string,
         remember?: boolean) => Promise<AuthResult>;
     logInComplete: (email: string, masterPassword: string, twoFactorProvider: TwoFactorProviderType,
-        twoFactorToken: string, remember?: boolean) => Promise<AuthResult>;
+        twoFactorToken: string, remember?: boolean, captchaToken?: string) => Promise<AuthResult>;
     logInSsoComplete: (code: string, codeVerifier: string, redirectUrl: string,
         twoFactorProvider: TwoFactorProviderType, twoFactorToken: string, remember?: boolean) => Promise<AuthResult>;
     logInApiKeyComplete: (clientId: string, clientSecret: string, twoFactorProvider: TwoFactorProviderType,

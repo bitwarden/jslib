@@ -1,5 +1,7 @@
 import { BaseResponse } from './baseResponse';
 import { ProfileOrganizationResponse } from './profileOrganizationResponse';
+import { ProfileProviderOrganizationResponse } from './profileProviderOrganizationResponse';
+import { ProfileProviderResponse } from './profileProviderResponse';
 
 export class ProfileResponse extends BaseResponse {
     id: string;
@@ -13,7 +15,10 @@ export class ProfileResponse extends BaseResponse {
     key: string;
     privateKey: string;
     securityStamp: string;
+    forcePasswordReset: boolean;
     organizations: ProfileOrganizationResponse[] = [];
+    providers: ProfileProviderResponse[] = [];
+    providerOrganizations: ProfileProviderOrganizationResponse[] = [];
 
     constructor(response: any) {
         super(response);
@@ -28,10 +33,19 @@ export class ProfileResponse extends BaseResponse {
         this.key = this.getResponseProperty('Key');
         this.privateKey = this.getResponseProperty('PrivateKey');
         this.securityStamp = this.getResponseProperty('SecurityStamp');
+        this.forcePasswordReset = this.getResponseProperty('ForcePasswordReset') ?? false;
 
         const organizations = this.getResponseProperty('Organizations');
         if (organizations != null) {
             this.organizations = organizations.map((o: any) => new ProfileOrganizationResponse(o));
+        }
+        const providers = this.getResponseProperty('Providers');
+        if (providers != null) {
+            this.providers = providers.map((o: any) => new ProfileProviderResponse(o));
+        }
+        const providerOrganizations = this.getResponseProperty('ProviderOrganizations');
+        if (providerOrganizations != null) {
+            this.providerOrganizations = providerOrganizations.map((o: any) => new ProfileProviderOrganizationResponse(o));
         }
     }
 }

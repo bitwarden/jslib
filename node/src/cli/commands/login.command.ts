@@ -6,6 +6,7 @@ import { TwoFactorProviderType } from 'jslib-common/enums/twoFactorProviderType'
 
 import { AuthResult } from 'jslib-common/models/domain/authResult';
 import { TwoFactorEmailRequest } from 'jslib-common/models/request/twoFactorEmailRequest';
+import { ErrorResponse } from 'jslib-common/models/response/errorResponse';
 
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { AuthService } from 'jslib-common/abstractions/auth.service';
@@ -30,6 +31,7 @@ export class LoginCommand {
     protected success: () => Promise<MessageResponse>;
     protected canInteract: boolean;
     protected clientId: string;
+    protected clientSecret: string;
 
     private ssoRedirectUri: string = null;
 
@@ -51,32 +53,9 @@ export class LoginCommand {
         let clientSecret: string = null;
 
         if (options.apikey != null) {
-            const storedClientId: string = process.env.BW_CLIENTID;
-            const storedClientSecret: string = process.env.BW_CLIENTSECRET;
-            if (storedClientId == null) {
-                if (this.canInteract) {
-                    const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-                        type: 'input',
-                        name: 'clientId',
-                        message: 'client_id:',
-                    });
-                    clientId = answer.clientId;
-                } else {
-                    clientId = null;
-                }
-            } else {
-                clientId = storedClientId;
-            }
-            if (this.canInteract && storedClientSecret == null) {
-                const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-                    type: 'input',
-                    name: 'clientSecret',
-                    message: 'client_secret:',
-                });
-                clientSecret = answer.clientSecret;
-            } else {
-                clientSecret = storedClientSecret;
-            }
+            const apiIdentifiers = await this.apiIdentifiers();
+            clientId = apiIdentifiers.clientId;
+            clientSecret = apiIdentifiers.clientSecret;
         } else if (options.sso != null && this.canInteract) {
             const passwordOptions: any = {
                 type: 'password',
@@ -156,7 +135,7 @@ export class LoginCommand {
                         twoFactorMethod, twoFactorToken, false);
                 } else {
                     response = await this.authService.logInComplete(email, password, twoFactorMethod,
-                        twoFactorToken, false);
+                        twoFactorToken, false, this.clientSecret);
                 }
             } else {
                 if (clientId != null && clientSecret != null) {
@@ -165,6 +144,29 @@ export class LoginCommand {
                     response = await this.authService.logInSso(ssoCode, ssoCodeVerifier, this.ssoRedirectUri);
                 } else {
                     response = await this.authService.logIn(email, password);
+                }
+                if (response.captchaSiteKey) {
+                    const badCaptcha = Response.badRequest('Your authentication request appears to be coming from a bot\n' +
+                        'Please use your API key to validate this request and ensure BW_CLIENTSECRET is correct, if set.\n' +
+                        '(https://bitwarden.com/help/article/cli-auth-challenges)');
+
+                    try {
+                        const captchaClientSecret = await this.apiClientSecret(true);
+                        if (Utils.isNullOrWhitespace(captchaClientSecret)) {
+                            return badCaptcha;
+                        }
+
+                        const secondResponse = await this.authService.logInComplete(email, password, twoFactorMethod,
+                            twoFactorToken, false, captchaClientSecret);
+                        response = secondResponse;
+                    } catch (e) {
+                        if ((e instanceof ErrorResponse || e.constructor.name === 'ErrorResponse') &&
+                            (e as ErrorResponse).message.includes('Captcha is invalid')) {
+                            return badCaptcha;
+                        } else {
+                            throw e;
+                        }
+                    }
                 }
                 if (response.twoFactor) {
                     let selectedProvider: any = null;
@@ -254,6 +256,55 @@ export class LoginCommand {
         }
     }
 
+    private async apiClientId(): Promise<string> {
+        let clientId: string = null;
+
+        const storedClientId: string = process.env.BW_CLIENTID;
+        if (storedClientId == null) {
+            if (this.canInteract) {
+                const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+                    type: 'input',
+                    name: 'clientId',
+                    message: 'client_id:',
+                });
+                clientId = answer.clientId;
+            } else {
+                clientId = null;
+            }
+        } else {
+            clientId = storedClientId;
+        }
+
+        return clientId;
+    }
+
+    private async apiClientSecret(isAdditionalAuthentication: boolean = false): Promise<string> {
+        const additionalAuthenticationMessage = 'Additional authentication required.\nAPI key ';
+        let clientSecret: string = null;
+
+        const storedClientSecret: string = this.clientSecret || process.env.BW_CLIENTSECRET;
+        if (this.canInteract && storedClientSecret == null) {
+            const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+                type: 'input',
+                name: 'clientSecret',
+                message: (isAdditionalAuthentication ? additionalAuthenticationMessage : '') + 'client_secret:',
+
+            });
+            clientSecret = answer.clientSecret;
+        } else {
+            clientSecret = storedClientSecret;
+        }
+
+        return clientSecret;
+    }
+
+    private async apiIdentifiers(): Promise<{ clientId: string, clientSecret: string; }> {
+        return {
+            clientId: await this.apiClientId(),
+            clientSecret: await this.apiClientSecret(),
+        };
+    }
+
     private async getSsoCode(codeChallenge: string, state: string): Promise<string> {
         return new Promise((resolve, reject) => {
             const callbackServer = http.createServer((req, res) => {
@@ -279,10 +330,7 @@ export class LoginCommand {
                 }
             });
             let foundPort = false;
-            let webUrl = this.environmentService.getWebVaultUrl();
-            if (webUrl == null) {
-                webUrl = 'https://vault.bitwarden.com';
-            }
+            const webUrl = this.environmentService.getWebVaultUrl();
             for (let port = 8065; port <= 8070; port++) {
                 try {
                     this.ssoRedirectUri = 'http://localhost:' + port;

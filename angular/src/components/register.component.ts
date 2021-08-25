@@ -1,3 +1,4 @@
+import { Directive, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { KeysRequest } from 'jslib-common/models/request/keysRequest';
@@ -7,6 +8,7 @@ import { RegisterRequest } from 'jslib-common/models/request/registerRequest';
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { AuthService } from 'jslib-common/abstractions/auth.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
+import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
@@ -14,7 +16,10 @@ import { StateService } from 'jslib-common/abstractions/state.service';
 
 import { KdfType } from 'jslib-common/enums/kdfType';
 
-export class RegisterComponent {
+import { CaptchaProtectedComponent } from './captchaProtected.component';
+
+@Directive()
+export class RegisterComponent extends CaptchaProtectedComponent implements OnInit {
     name: string = '';
     email: string = '';
     masterPassword: string = '';
@@ -31,11 +36,16 @@ export class RegisterComponent {
     private masterPasswordStrengthTimeout: any;
 
     constructor(protected authService: AuthService, protected router: Router,
-        protected i18nService: I18nService, protected cryptoService: CryptoService,
+        i18nService: I18nService, protected cryptoService: CryptoService,
         protected apiService: ApiService, protected stateService: StateService,
-        protected platformUtilsService: PlatformUtilsService,
-        protected passwordGenerationService: PasswordGenerationService) {
+        platformUtilsService: PlatformUtilsService,
+        protected passwordGenerationService: PasswordGenerationService, environmentService: EnvironmentService) {
+        super(environmentService, i18nService, platformUtilsService);
         this.showTerms = !platformUtilsService.isSelfHost();
+    }
+
+    async ngOnInit() {
+        this.setupCaptcha();
     }
 
     get masterPasswordScoreWidth() {
@@ -127,7 +137,7 @@ export class RegisterComponent {
         const hashedPassword = await this.cryptoService.hashPassword(this.masterPassword, key);
         const keys = await this.cryptoService.makeKeyPair(encKey[0]);
         const request = new RegisterRequest(this.email, this.name, hashedPassword,
-            this.hint, encKey[1].encryptedString, kdf, kdfIterations, this.referenceData);
+            this.hint, encKey[1].encryptedString, kdf, kdfIterations, this.referenceData, this.captchaToken);
         request.keys = new KeysRequest(keys[0], keys[1].encryptedString);
         const orgInvite = await this.stateService.get<any>('orgInvitation');
         if (orgInvite != null && orgInvite.token != null && orgInvite.organizationUserId != null) {
@@ -137,7 +147,15 @@ export class RegisterComponent {
 
         try {
             this.formPromise = this.apiService.postRegister(request);
-            await this.formPromise;
+            try {
+                await this.formPromise;
+            } catch (e) {
+                if (this.handleCaptchaRequired(e)) {
+                    return;
+                } else {
+                    throw e;
+                }
+            }
             this.platformUtilsService.showToast('success', null, this.i18nService.t('newAccountCreated'));
             this.router.navigate([this.successRoute], { queryParams: { email: this.email } });
         } catch { }
