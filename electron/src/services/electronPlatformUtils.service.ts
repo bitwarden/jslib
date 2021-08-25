@@ -16,7 +16,7 @@ import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { StorageService } from 'jslib-common/abstractions/storage.service';
 
-import { ElectronConstants } from '../electronConstants';
+import { StorageKey } from 'jslib-common/enums/storageKey';
 
 export class ElectronPlatformUtilsService implements PlatformUtilsService {
     identityClientId: string;
@@ -176,7 +176,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     }
 
     supportsBiometric(): Promise<boolean> {
-        return this.storageService.get(ElectronConstants.enableBiometric);
+        return this.storageService.get(StorageKey.EnableBiometric);
     }
 
     authenticateBiometric(): Promise<boolean> {

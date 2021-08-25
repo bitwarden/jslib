@@ -1,16 +1,20 @@
+import { AccountService } from 'jslib-common/abstractions/account.service';
 import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
 import { LogService } from 'jslib-common/abstractions/log.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
-import { KeySuffixOptions, StorageService } from 'jslib-common/abstractions/storage.service';
+
+import { StorageKey } from 'jslib-common/enums/storageKey';
+
+import { KeySuffixOptions, SettingStorageOptions } from 'jslib-common/models/domain/settingStorageOptions';
 import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
-import { CryptoService, Keys } from 'jslib-common/services/crypto.service';
+
+import { CryptoService } from 'jslib-common/services/crypto.service';
 
 export class ElectronCryptoService extends CryptoService {
 
-    constructor(storageService: StorageService, secureStorageService: StorageService,
-        cryptoFunctionService: CryptoFunctionService, platformUtilService: PlatformUtilsService,
-        logService: LogService) {
-        super(storageService, secureStorageService, cryptoFunctionService, platformUtilService, logService);
+    constructor(cryptoFunctionService: CryptoFunctionService, platformUtilService: PlatformUtilsService,
+        logService: LogService, accountService: AccountService) {
+        super(cryptoFunctionService, platformUtilService, logService, accountService);
     }
 
     async hasKeyStored(keySuffix: KeySuffixOptions): Promise<boolean> {
@@ -20,13 +24,13 @@ export class ElectronCryptoService extends CryptoService {
 
     protected async storeKey(key: SymmetricCryptoKey) {
         if (await this.shouldStoreKey('auto')) {
-            await this.secureStorageService.save(Keys.key, key.keyB64, { keySuffix: 'auto' });
+            await this.accountService.saveSetting(StorageKey.CryptoMasterKey, key.keyB64, { keySuffix: 'auto', skipMemory: true, useSecureStorage: true } as SettingStorageOptions);
         } else {
             this.clearStoredKey('auto');
         }
 
         if (await this.shouldStoreKey('biometric')) {
-            await this.secureStorageService.save(Keys.key, key.keyB64, { keySuffix: 'biometric' });
+            await this.accountService.saveSetting(StorageKey.CryptoMasterKey, key.keyB64, { keySuffix: 'biometric', skipMemory: true, useSecureStorage: true } as SettingStorageOptions);
         } else {
             this.clearStoredKey('biometric');
         }
@@ -43,7 +47,7 @@ export class ElectronCryptoService extends CryptoService {
      */
     private async upgradeSecurelyStoredKey() {
         // attempt key upgrade, but if we fail just delete it. Keys will be stored property upon unlock anyway.
-        const key = await this.secureStorageService.get<string>(Keys.key);
+        const key = await this.accountService.getSetting<string>(StorageKey.CryptoMasterKey, { skipMemory: true, useSecureStorage: true } as SettingStorageOptions);
 
         if (key == null) {
             return;
@@ -51,16 +55,16 @@ export class ElectronCryptoService extends CryptoService {
 
         try {
             if (await this.shouldStoreKey('auto')) {
-                await this.secureStorageService.save(Keys.key, key, { keySuffix: 'auto' });
+                await this.accountService.saveSetting(StorageKey.CryptoMasterKey, key, { keySuffix: 'auto', skipMemory: true, useSecureStorage: true } as SettingStorageOptions);
             }
             if (await this.shouldStoreKey('biometric')) {
-                await this.secureStorageService.save(Keys.key, key, { keySuffix: 'biometric' });
+                await this.accountService.saveSetting(StorageKey.CryptoMasterKey, key, { keySuffix: 'biometric', skipMemory: true, useSecureStorage: true } as SettingStorageOptions);
             }
         } catch (e) {
             this.logService.error(`Encountered error while upgrading obsolete Bitwarden secure storage item:`);
             this.logService.error(e);
         }
 
-        await this.secureStorageService.remove(Keys.key);
+        await this.accountService.removeSetting(StorageKey.CryptoMasterKey, { useSecureStorage: true } as SettingStorageOptions);
     }
 }
