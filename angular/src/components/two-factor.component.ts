@@ -7,6 +7,7 @@ import {
 
 import { first } from 'rxjs/operators';
 
+import { StorageKey } from 'jslib-common/enums/storageKey';
 import { TwoFactorProviderType } from 'jslib-common/enums/twoFactorProviderType';
 
 import { TwoFactorEmailRequest } from 'jslib-common/models/request/twoFactorEmailRequest';
@@ -22,7 +23,6 @@ import { StateService } from 'jslib-common/abstractions/state.service';
 import { StorageService } from 'jslib-common/abstractions/storage.service';
 
 import { TwoFactorProviders } from 'jslib-common/services/auth.service';
-import { ConstantsService } from 'jslib-common/services/constants.service';
 
 import * as DuoWebSDK from 'duo_web_sdk';
 import { WebAuthnIFrame } from 'jslib-common/misc/webauthn_iframe';
@@ -177,8 +177,8 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     async doSubmit() {
         this.formPromise = this.authService.logInTwoFactor(this.selectedProviderType, this.token, this.remember);
         const response: AuthResult = await this.formPromise;
-        const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
-        await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
+        const disableFavicon = await this.storageService.get<boolean>(StorageKey.DisableFavicon);
+        await this.stateService.save(StorageKey.DisableFavicon, !!disableFavicon);
         if (this.onSuccessfulLogin != null) {
             this.onSuccessfulLogin();
         }

@@ -13,8 +13,7 @@ import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGen
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { StateService } from 'jslib-common/abstractions/state.service';
 import { StorageService } from 'jslib-common/abstractions/storage.service';
-
-import { ConstantsService } from 'jslib-common/services/constants.service';
+import { StorageKey } from 'jslib-common/enums/storageKey';
 
 import { Utils } from 'jslib-common/misc/utils';
 
@@ -50,10 +49,10 @@ export class SsoComponent {
     async ngOnInit() {
         const queryParamsSub = this.route.queryParams.subscribe(async qParams => {
             if (qParams.code != null && qParams.state != null) {
-                const codeVerifier = await this.storageService.get<string>(ConstantsService.ssoCodeVerifierKey);
-                const state = await this.storageService.get<string>(ConstantsService.ssoStateKey);
-                await this.storageService.remove(ConstantsService.ssoCodeVerifierKey);
-                await this.storageService.remove(ConstantsService.ssoStateKey);
+                const codeVerifier = await this.storageService.get<string>(StorageKey.SsoCodeVerifier);
+                const state = await this.storageService.get<string>(StorageKey.SsoState);
+                await this.storageService.remove(StorageKey.SsoCodeVerifier);
+                await this.storageService.remove(StorageKey.SsoState);
                 if (qParams.code != null && codeVerifier != null && state != null && this.checkState(state, qParams.state)) {
                     await this.logIn(qParams.code, codeVerifier, this.getOrgIdentiferFromState(qParams.state));
                 }
@@ -104,7 +103,7 @@ export class SsoComponent {
             const codeVerifier = await this.passwordGenerationService.generatePassword(passwordOptions);
             const codeVerifierHash = await this.cryptoFunctionService.hash(codeVerifier, 'sha256');
             codeChallenge = Utils.fromBufferToUrlB64(codeVerifierHash);
-            await this.storageService.save(ConstantsService.ssoCodeVerifierKey, codeVerifier);
+            await this.storageService.save(StorageKey.SsoCodeVerifier, codeVerifier);
         }
 
         if (state == null) {
@@ -118,7 +117,7 @@ export class SsoComponent {
         state += `_identifier=${this.identifier}`;
 
         // Save state (regardless of new or existing)
-        await this.storageService.save(ConstantsService.ssoStateKey, state);
+        await this.storageService.save(StorageKey.SsoState, state);
 
         let authorizeUrl = this.environmentService.getIdentityUrl() + '/connect/authorize?' +
             'client_id=' + this.clientId + '&redirect_uri=' + encodeURIComponent(this.redirectUri) + '&' +
@@ -162,8 +161,8 @@ export class SsoComponent {
                     });
                 }
             } else {
-                const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
-                await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
+                const disableFavicon = await this.storageService.get<boolean>(StorageKey.DisableFavicon);
+                await this.stateService.save(StorageKey.DisableFavicon, !!disableFavicon);
                 if (this.onSuccessfulLogin != null) {
                     this.onSuccessfulLogin();
                 }

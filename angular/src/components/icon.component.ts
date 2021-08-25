@@ -5,13 +5,12 @@ import {
 } from '@angular/core';
 
 import { CipherType } from 'jslib-common/enums/cipherType';
+import { StorageKey } from 'jslib-common/enums/storageKey';
 
 import { CipherView } from 'jslib-common/models/view/cipherView';
 
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { StateService } from 'jslib-common/abstractions/state.service';
-
-import { ConstantsService } from 'jslib-common/services/constants.service';
 
 import { Utils } from 'jslib-common/misc/utils';
 
@@ -46,7 +45,7 @@ export class IconComponent implements OnChanges {
         // to avoid this we reset all state variables.
         this.image = null;
         this.fallbackImage = null;
-        this.imageEnabled = !(await this.stateService.get<boolean>(ConstantsService.disableFaviconKey));
+        this.imageEnabled = !(await this.stateService.get<boolean>(StorageKey.DisableFavicon));
         this.load();
     }
 

@@ -4,7 +4,6 @@ import {
     OnInit,
 } from '@angular/core';
 
-import { OrganizationUserStatusType } from 'jslib-common/enums/organizationUserStatusType';
 import { PolicyType } from 'jslib-common/enums/policyType';
 import { SendType } from 'jslib-common/enums/sendType';
 
@@ -16,7 +15,6 @@ import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.se
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
 import { SearchService } from 'jslib-common/abstractions/search.service';
 import { SendService } from 'jslib-common/abstractions/send.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 @Directive()
 export class SendComponent implements OnInit {
@@ -48,7 +46,7 @@ export class SendComponent implements OnInit {
     constructor(protected sendService: SendService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected environmentService: EnvironmentService,
         protected ngZone: NgZone, protected searchService: SearchService,
-        protected policyService: PolicyService, protected userService: UserService) { }
+        protected policyService: PolicyService) { }
 
     async ngOnInit() {
         this.disableSend = await this.policyService.policyAppliesToUser(PolicyType.DisableSend);

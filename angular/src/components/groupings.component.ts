@@ -6,18 +6,16 @@ import {
 } from '@angular/core';
 
 import { CipherType } from 'jslib-common/enums/cipherType';
+import { StorageKey } from 'jslib-common/enums/storageKey';
 
 import { CollectionView } from 'jslib-common/models/view/collectionView';
 import { FolderView } from 'jslib-common/models/view/folderView';
 
 import { TreeNode } from 'jslib-common/models/domain/treeNode';
 
+import { AccountService } from 'jslib-common/abstractions/account.service';
 import { CollectionService } from 'jslib-common/abstractions/collection.service';
 import { FolderService } from 'jslib-common/abstractions/folder.service';
-import { StorageService } from 'jslib-common/abstractions/storage.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
-
-import { ConstantsService } from 'jslib-common/services/constants.service';
 
 @Directive()
 export class GroupingsComponent {
@@ -50,15 +48,12 @@ export class GroupingsComponent {
     selectedCollectionId: string = null;
 
     private collapsedGroupings: Set<string>;
-    private collapsedGroupingsKey: string;
 
     constructor(protected collectionService: CollectionService, protected folderService: FolderService,
-        protected storageService: StorageService, protected userService: UserService) { }
+        private accountService: AccountService) { }
 
     async load(setLoaded = true) {
-        const userId = await this.userService.getUserId();
-        this.collapsedGroupingsKey = ConstantsService.collapsedGroupingsKey + '_' + userId;
-        const collapsedGroupings = await this.storageService.get<string[]>(this.collapsedGroupingsKey);
+        const collapsedGroupings = await this.accountService.getSetting<string[]>(StorageKey.CollapsedGroupings);
         if (collapsedGroupings == null) {
             this.collapsedGroupings = new Set<string>();
         } else {
@@ -149,7 +144,7 @@ export class GroupingsComponent {
         this.selectedCollectionId = null;
     }
 
-    collapse(grouping: FolderView | CollectionView, idPrefix = '') {
+    async collapse(grouping: FolderView | CollectionView, idPrefix = '') {
         if (grouping.id == null) {
             return;
         }
@@ -159,7 +154,7 @@ export class GroupingsComponent {
         } else {
             this.collapsedGroupings.add(id);
         }
-        this.storageService.save(this.collapsedGroupingsKey, this.collapsedGroupings);
+        await this.accountService.saveSetting(StorageKey.CollapsedGroupings, this.collapsedGroupings);
     }
 
     isCollapsed(grouping: FolderView | CollectionView, idPrefix = '') {

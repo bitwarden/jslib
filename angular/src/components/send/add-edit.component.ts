@@ -9,14 +9,15 @@ import {
 
 import { PolicyType } from 'jslib-common/enums/policyType';
 import { SendType } from 'jslib-common/enums/sendType';
+import { StorageKey } from 'jslib-common/enums/storageKey';
 
+import { AccountService } from 'jslib-common/abstractions/account.service';
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
 import { SendService } from 'jslib-common/abstractions/send.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { SendFileView } from 'jslib-common/models/view/sendFileView';
 import { SendTextView } from 'jslib-common/models/view/sendTextView';
@@ -56,8 +57,8 @@ export class AddEditComponent implements OnInit {
 
     constructor(protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected environmentService: EnvironmentService, protected datePipe: DatePipe,
-        protected sendService: SendService, protected userService: UserService,
-        protected messagingService: MessagingService, protected policyService: PolicyService) {
+        protected sendService: SendService, protected messagingService: MessagingService,
+        protected policyService: PolicyService, protected accountService: AccountService) {
         this.typeOptions = [
             { name: i18nService.t('sendTypeFile'), value: SendType.File },
             { name: i18nService.t('sendTypeText'), value: SendType.Text },
@@ -106,8 +107,8 @@ export class AddEditComponent implements OnInit {
         this.disableHideEmail = await this.policyService.policyAppliesToUser(PolicyType.SendOptions,
             p => p.data.disableHideEmail);
 
-        this.canAccessPremium = await this.userService.canAccessPremium();
-        this.emailVerified = await this.userService.getEmailVerified();
+        this.canAccessPremium = this.accountService.activeAccount.canAccessPremium;
+        this.emailVerified = await this.accountService.getSetting<boolean>(StorageKey.EmailVerified);
         if (!this.canAccessPremium || !this.emailVerified) {
             this.type = SendType.Text;
         }

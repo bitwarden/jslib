@@ -1,18 +1,19 @@
 import { Directive, OnInit } from '@angular/core';
 
+import { AccountService } from 'jslib-common/abstractions/account.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { EncString } from 'jslib-common/models/domain/encString';
 import { MasterPasswordPolicyOptions } from 'jslib-common/models/domain/masterPasswordPolicyOptions';
 import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
 
 import { KdfType } from 'jslib-common/enums/kdfType';
+import { StorageKey } from 'jslib-common/enums/storageKey';
 
 @Directive()
 export class ChangePasswordComponent implements OnInit {
@@ -29,12 +30,12 @@ export class ChangePasswordComponent implements OnInit {
     private masterPasswordStrengthTimeout: any;
 
     constructor(protected i18nService: I18nService, protected cryptoService: CryptoService,
-        protected messagingService: MessagingService, protected userService: UserService,
-        protected passwordGenerationService: PasswordGenerationService,
-        protected platformUtilsService: PlatformUtilsService, protected policyService: PolicyService) { }
+        protected messagingService: MessagingService, protected passwordGenerationService: PasswordGenerationService,
+        protected platformUtilsService: PlatformUtilsService, protected policyService: PolicyService,
+        protected accountService: AccountService) { }
 
     async ngOnInit() {
-        this.email = await this.userService.getEmail();
+        this.email = this.accountService.activeAccount.email;
         this.enforcedPolicyOptions = await this.policyService.getMasterPasswordPolicyOptions();
     }
 
@@ -47,12 +48,12 @@ export class ChangePasswordComponent implements OnInit {
             return;
         }
 
-        const email = await this.userService.getEmail();
+        const email = this.accountService.activeAccount.email;
         if (this.kdf == null) {
-            this.kdf = await this.userService.getKdf();
+            this.kdf = await this.accountService.getSetting<KdfType>(StorageKey.KdfType);
         }
         if (this.kdfIterations == null) {
-            this.kdfIterations = await this.userService.getKdfIterations();
+            this.kdfIterations = await this.accountService.getSetting<number>(StorageKey.KdfIterations);
         }
         const key = await this.cryptoService.makeKey(this.masterPassword, email.trim().toLowerCase(),
             this.kdf, this.kdfIterations);

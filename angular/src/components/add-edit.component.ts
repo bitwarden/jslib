@@ -17,8 +17,10 @@ import { FieldType } from 'jslib-common/enums/fieldType';
 import { OrganizationUserStatusType } from 'jslib-common/enums/organizationUserStatusType';
 import { PolicyType } from 'jslib-common/enums/policyType';
 import { SecureNoteType } from 'jslib-common/enums/secureNoteType';
+import { StorageKey } from 'jslib-common/enums/storageKey';
 import { UriMatchType } from 'jslib-common/enums/uriMatchType';
 
+import { AccountService } from 'jslib-common/abstractions/account.service';
 import { AuditService } from 'jslib-common/abstractions/audit.service';
 import { CipherService } from 'jslib-common/abstractions/cipher.service';
 import { CollectionService } from 'jslib-common/abstractions/collection.service';
@@ -29,7 +31,6 @@ import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
 import { StateService } from 'jslib-common/abstractions/state.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { Cipher } from 'jslib-common/models/domain/cipher';
 
@@ -95,9 +96,9 @@ export class AddEditComponent implements OnInit {
     constructor(protected cipherService: CipherService, protected folderService: FolderService,
         protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected auditService: AuditService, protected stateService: StateService,
-        protected userService: UserService, protected collectionService: CollectionService,
-        protected messagingService: MessagingService, protected eventService: EventService,
-        protected policyService: PolicyService) {
+        protected collectionService: CollectionService, protected messagingService: MessagingService,
+        protected eventService: EventService, protected policyService: PolicyService,
+        protected accountService: AccountService) {
         this.typeOptions = [
             { name: i18nService.t('typeLogin'), value: CipherType.Login },
             { name: i18nService.t('typeCard'), value: CipherType.Card },
@@ -164,9 +165,9 @@ export class AddEditComponent implements OnInit {
     }
 
     async init() {
-        const myEmail = await this.userService.getEmail();
+        const myEmail = this.accountService.activeAccount?.email;
         this.ownershipOptions.push({ name: myEmail, value: null });
-        const orgs = await this.userService.getAllOrganizations();
+        const orgs = await this.accountService.getAllOrganizations();
         orgs.sort(Utils.getSortFunction(this.i18nService, 'name')).forEach(o => {
             if (o.enabled && o.status === OrganizationUserStatusType.Confirmed) {
                 this.ownershipOptions.push({ name: o.name, value: o.id });
@@ -468,7 +469,7 @@ export class AddEditComponent implements OnInit {
         }
         if (this.cipher.organizationId != null) {
             this.collections = this.writeableCollections.filter(c => c.organizationId === this.cipher.organizationId);
-            const org = await this.userService.getOrganization(this.cipher.organizationId);
+            const org = await this.accountService.getOrganization(this.cipher.organizationId);
             if (org != null) {
                 this.cipher.organizationUseTotp = org.useTotp;
             }

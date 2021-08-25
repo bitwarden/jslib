@@ -4,6 +4,7 @@ import {
     Router
 } from '@angular/router';
 
+import { AccountService } from 'jslib-common/abstractions/account.service';
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
@@ -12,7 +13,6 @@ import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGen
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
 import { SyncService } from 'jslib-common/abstractions/sync.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { EncString } from 'jslib-common/models/domain/encString';
 import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
@@ -26,6 +26,7 @@ import { ChangePasswordComponent as BaseChangePasswordComponent } from './change
 import { HashPurpose } from 'jslib-common/enums/hashPurpose';
 import { KdfType } from 'jslib-common/enums/kdfType';
 import { PolicyType } from 'jslib-common/enums/policyType';
+import { StorageKey } from 'jslib-common/enums/storageKey';
 
 import { Utils } from 'jslib-common/misc/utils';
 
@@ -41,12 +42,13 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
     onSuccessfulChangePassword: () => Promise<any>;
     successRoute = 'vault';
 
-    constructor(i18nService: I18nService, cryptoService: CryptoService, messagingService: MessagingService,
-        userService: UserService, passwordGenerationService: PasswordGenerationService,
-        platformUtilsService: PlatformUtilsService, policyService: PolicyService, protected router: Router,
-        private apiService: ApiService, private syncService: SyncService, private route: ActivatedRoute) {
-        super(i18nService, cryptoService, messagingService, userService, passwordGenerationService,
-            platformUtilsService, policyService);
+    constructor(i18nService: I18nService, cryptoService: CryptoService,
+        messagingService: MessagingService, passwordGenerationService: PasswordGenerationService,
+        platformUtilsService: PlatformUtilsService, policyService: PolicyService,
+        protected router: Router, private apiService: ApiService,
+        private syncService: SyncService, private route: ActivatedRoute, accountService: AccountService) {
+        super(i18nService, cryptoService, messagingService, passwordGenerationService,
+            platformUtilsService, policyService, accountService);
     }
 
     async ngOnInit() {
@@ -65,7 +67,7 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
 
         // Automatic Enrollment Detection
         if (this.identifier != null) {
-            const org = await this.userService.getOrganizationByIdentifier(this.identifier);
+            const org = await this.accountService.getOrganizationByIdentifier(this.identifier);
             this.orgId = org?.id;
             const policyList = await this.policyService.getAll(PolicyType.ResetPassword);
             const policyResult = this.policyService.getResetPasswordPolicyOptions(policyList, this.orgId);
@@ -103,7 +105,7 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
                     if (response == null) {
                         throw new Error(this.i18nService.t('resetPasswordOrgKeysError'));
                     }
-                    const userId = await this.userService.getUserId();
+                    const userId = this.accountService.activeAccount.userId;
                     const publicKey = Utils.fromB64ToArray(response.publicKey);
 
                     // RSA Encrypt user's encKey.key with organization public key
@@ -139,8 +141,8 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
     }
 
     private async onSetPasswordSuccess(key: SymmetricCryptoKey, encKey: [SymmetricCryptoKey, EncString], keys: [string, EncString]) {
-        await this.userService.setInformation(await this.userService.getUserId(), await this.userService.getEmail(),
-            this.kdf, this.kdfIterations);
+        await this.accountService.saveSetting(StorageKey.KdfType, this.kdf);
+        await this.accountService.saveSetting(StorageKey.KdfIterations, this.kdfIterations);
         await this.cryptoService.setKey(key);
         await this.cryptoService.setEncKey(encKey[1].encryptedString);
         await this.cryptoService.setEncPrivateKey(keys[1].encryptedString);

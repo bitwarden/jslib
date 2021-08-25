@@ -14,6 +14,7 @@ import { CipherType } from 'jslib-common/enums/cipherType';
 import { EventType } from 'jslib-common/enums/eventType';
 import { FieldType } from 'jslib-common/enums/fieldType';
 
+import { AccountService } from 'jslib-common/abstractions/account.service';
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { AuditService } from 'jslib-common/abstractions/audit.service';
 import { BroadcasterService } from 'jslib-common/abstractions/broadcaster.service';
@@ -25,7 +26,6 @@ import { PasswordRepromptService } from 'jslib-common/abstractions/passwordRepro
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { TokenService } from 'jslib-common/abstractions/token.service';
 import { TotpService } from 'jslib-common/abstractions/totp.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { ErrorResponse } from 'jslib-common/models/response/errorResponse';
 
@@ -67,9 +67,9 @@ export class ViewComponent implements OnDestroy, OnInit {
         protected cryptoService: CryptoService, protected platformUtilsService: PlatformUtilsService,
         protected auditService: AuditService, protected win: Window,
         protected broadcasterService: BroadcasterService, protected ngZone: NgZone,
-        protected changeDetectorRef: ChangeDetectorRef, protected userService: UserService,
-        protected eventService: EventService, protected apiService: ApiService,
-        protected passwordRepromptService: PasswordRepromptService) { }
+        protected changeDetectorRef: ChangeDetectorRef, protected eventService: EventService,
+        protected apiService: ApiService, protected passwordRepromptService: PasswordRepromptService,
+        protected accountService: AccountService) { }
 
     ngOnInit() {
         this.broadcasterService.subscribe(BroadcasterSubscriptionId, (message: any) => {
@@ -96,7 +96,7 @@ export class ViewComponent implements OnDestroy, OnInit {
 
         const cipher = await this.cipherService.get(this.cipherId);
         this.cipher = await cipher.decrypt();
-        this.canAccessPremium = await this.userService.canAccessPremium();
+        this.canAccessPremium = this.accountService.activeAccount.canAccessPremium;
 
         if (this.cipher.type === CipherType.Login && this.cipher.login.totp &&
             (cipher.organizationUseTotp || this.canAccessPremium)) {

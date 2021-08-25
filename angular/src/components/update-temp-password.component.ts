@@ -1,5 +1,6 @@
 import { Directive } from '@angular/core';
 
+import { AccountService } from 'jslib-common/abstractions/account.service';
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
@@ -7,13 +8,15 @@ import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { ChangePasswordComponent as BaseChangePasswordComponent } from './change-password.component';
 
 import { EncString } from 'jslib-common/models/domain/encString';
 import { MasterPasswordPolicyOptions } from 'jslib-common/models/domain/masterPasswordPolicyOptions';
 import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
+
+import { KdfType } from 'jslib-common/enums/kdfType';
+import { StorageKey } from 'jslib-common/enums/storageKey';
 
 import { UpdateTempPasswordRequest } from 'jslib-common/models/request/updateTempPasswordRequest';
 
@@ -28,10 +31,10 @@ export class UpdateTempPasswordComponent extends BaseChangePasswordComponent {
 
     constructor(i18nService: I18nService, platformUtilsService: PlatformUtilsService,
         passwordGenerationService: PasswordGenerationService, policyService: PolicyService,
-        cryptoService: CryptoService, userService: UserService,
-        messagingService: MessagingService, private apiService: ApiService) {
-        super(i18nService, cryptoService, messagingService, userService, passwordGenerationService,
-            platformUtilsService, policyService);
+        cryptoService: CryptoService, messagingService: MessagingService,
+        private apiService: ApiService, accountService: AccountService) {
+        super(i18nService, cryptoService, messagingService, passwordGenerationService,
+            platformUtilsService, policyService, accountService);
     }
 
     togglePassword(confirmField: boolean) {
@@ -41,9 +44,9 @@ export class UpdateTempPasswordComponent extends BaseChangePasswordComponent {
 
     async setupSubmitActions(): Promise<boolean> {
         this.enforcedPolicyOptions = await this.policyService.getMasterPasswordPolicyOptions();
-        this.email = await this.userService.getEmail();
-        this.kdf = await this.userService.getKdf();
-        this.kdfIterations = await this.userService.getKdfIterations();
+        this.email = this.accountService.activeAccount.email;
+        this.kdf = await this.accountService.getSetting<KdfType>(StorageKey.KdfType);
+        this.kdfIterations = await this.accountService.getSetting<number>(StorageKey.KdfIterations);
         return true;
     }
 
