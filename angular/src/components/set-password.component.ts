@@ -36,7 +36,7 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
     hint: string = '';
     identifier: string = null;
     orgId: string;
-    resetPassswordAutoEnroll = false;
+    resetPasswordAutoEnroll = false;
 
     onSuccessfulChangePassword: () => Promise<any>;
     successRoute = 'vault';
@@ -68,7 +68,7 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
         this.orgId = org?.id;
         const policyList = await this.policyService.getAll(PolicyType.ResetPassword);
         const policyResult = this.policyService.getResetPasswordPolicyOptions(policyList, this.orgId);
-        this.resetPassswordAutoEnroll = policyResult[1] && policyResult[0].autoEnrollEnabled;
+        this.resetPasswordAutoEnroll = policyResult[1] && policyResult[0].autoEnrollEnabled;
 
         super.ngOnInit();
     }
@@ -96,7 +96,7 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
 
         // Make API call(s)
         try {
-            if (this.resetPassswordAutoEnroll) {
+            if (this.resetPasswordAutoEnroll) {
                 this.formPromise = this.apiService.setPassword(request).then(async () => {
                     await this.onSetPasswordSuccess(key, encKey, keys);
                     return this.apiService.getOrganizationKeys(this.orgId);
