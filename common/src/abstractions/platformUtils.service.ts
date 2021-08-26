@@ -26,7 +26,6 @@ export abstract class PlatformUtilsService {
         options?: any) => void;
     showDialog: (body: string, title?: string, confirmText?: string, cancelText?: string,
         type?: string, bodyIsHtml?: boolean) => Promise<boolean>;
-    showPasswordDialog: (title: string, body: string, passwordValidation: (value: string) => Promise<boolean>) => Promise<boolean>;
     isDev: () => boolean;
     isSelfHost: () => boolean;
     copyToClipboard: (text: string, options?: any) => void | boolean;
