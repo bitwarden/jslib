@@ -14,6 +14,7 @@ export class EventResponse extends BaseResponse {
     policyId: string;
     organizationUserId: string;
     providerUserId: string;
+    providerOrganizationId: string;
     actingUserId: string;
     date: string;
     deviceType: DeviceType;
@@ -31,6 +32,7 @@ export class EventResponse extends BaseResponse {
         this.policyId = this.getResponseProperty('PolicyId');
         this.organizationUserId = this.getResponseProperty('OrganizationUserId');
         this.providerUserId = this.getResponseProperty('ProviderUserId');
+        this.providerOrganizationId = this.getResponseProperty('ProviderOrganizationId');
         this.actingUserId = this.getResponseProperty('ActingUserId');
         this.date = this.getResponseProperty('Date');
         this.deviceType = this.getResponseProperty('DeviceType');

@@ -94,6 +94,7 @@ export class SyncService implements SyncServiceAbstraction {
 
         const userId = await this.userService.getUserId();
         try {
+            await this.apiService.refreshIdentityToken();
             const response = await this.apiService.getSync();
 
             await this.syncProfile(response.profile);
@@ -291,6 +292,7 @@ export class SyncService implements SyncServiceAbstraction {
         await this.cryptoService.setOrgKeys(response.organizations, response.providerOrganizations);
         await this.userService.setSecurityStamp(response.securityStamp);
         await this.userService.setEmailVerified(response.emailVerified);
+        await this.userService.setForcePasswordReset(response.forcePasswordReset);
 
         const organizations: { [id: string]: OrganizationData; } = {};
         response.organizations.forEach(o => {

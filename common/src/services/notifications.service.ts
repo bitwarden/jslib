@@ -29,18 +29,20 @@ export class NotificationsService implements NotificationsServiceAbstraction {
 
     constructor(private userService: UserService, private syncService: SyncService,
         private appIdService: AppIdService, private apiService: ApiService,
-        private vaultTimeoutService: VaultTimeoutService,
+        private vaultTimeoutService: VaultTimeoutService, private environmentService: EnvironmentService,
         private logoutCallback: () => Promise<void>, private logService: LogService) {
+        this.environmentService.urls.subscribe(() => {
+            if (!this.inited) {
+                return;
+            }
+
+            this.init();
+        });
     }
 
-    async init(environmentService: EnvironmentService): Promise<void> {
+    async init(): Promise<void> {
         this.inited = false;
-        this.url = 'https://notifications.bitwarden.com';
-        if (environmentService.notificationsUrl != null) {
-            this.url = environmentService.notificationsUrl;
-        } else if (environmentService.baseUrl != null) {
-            this.url = environmentService.baseUrl + '/notifications';
-        }
+        this.url = this.environmentService.getNotificationsUrl();
 
         // Set notifications server URL to `https://-` to effectively disable communication
         // with the notifications server from the client app
@@ -149,7 +151,6 @@ export class NotificationsService implements NotificationsServiceAbstraction {
                 break;
             case NotificationType.SyncOrgKeys:
                 if (isAuthenticated) {
-                    await this.apiService.refreshIdentityToken();
                     await this.syncService.fullSync(true);
                     // Stop so a reconnect can be made
                     await this.signalrConnection.stop();

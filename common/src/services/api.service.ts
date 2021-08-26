@@ -5,8 +5,6 @@ import { ApiService as ApiServiceAbstraction } from '../abstractions/api.service
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { TokenService } from '../abstractions/token.service';
 
-import { EnvironmentUrls } from '../models/domain/environmentUrls';
-
 import { AttachmentRequest } from '../models/request/attachmentRequest';
 import { BitPayInvoiceRequest } from '../models/request/bitPayInvoiceRequest';
 import { CipherBulkDeleteRequest } from '../models/request/cipherBulkDeleteRequest';
@@ -56,6 +54,7 @@ import { PaymentRequest } from '../models/request/paymentRequest';
 import { PolicyRequest } from '../models/request/policyRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
 import { ProviderAddOrganizationRequest } from '../models/request/provider/providerAddOrganizationRequest';
+import { ProviderOrganizationCreateRequest } from '../models/request/provider/providerOrganizationCreateRequest';
 import { ProviderSetupRequest } from '../models/request/provider/providerSetupRequest';
 import { ProviderUpdateRequest } from '../models/request/provider/providerUpdateRequest';
 import { ProviderUserAcceptRequest } from '../models/request/provider/providerUserAcceptRequest';
@@ -79,6 +78,7 @@ import { TwoFactorRecoveryRequest } from '../models/request/twoFactorRecoveryReq
 import { UpdateDomainsRequest } from '../models/request/updateDomainsRequest';
 import { UpdateKeyRequest } from '../models/request/updateKeyRequest';
 import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
+import { UpdateTempPasswordRequest } from '../models/request/updateTempPasswordRequest';
 import { UpdateTwoFactorAuthenticatorRequest } from '../models/request/updateTwoFactorAuthenticatorRequest';
 import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoRequest';
 import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEmailRequest';
@@ -133,7 +133,7 @@ import { PlanResponse } from '../models/response/planResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
-import { ProviderOrganizationOrganizationDetailsResponse } from '../models/response/provider/providerOrganizationResponse';
+import { ProviderOrganizationOrganizationDetailsResponse, ProviderOrganizationResponse } from '../models/response/provider/providerOrganizationResponse';
 import { ProviderResponse } from '../models/response/provider/providerResponse';
 import { ProviderUserBulkPublicKeyResponse } from '../models/response/provider/providerUserBulkPublicKeyResponse';
 import { ProviderUserBulkResponse } from '../models/response/provider/providerUserBulkResponse';
@@ -160,22 +160,20 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
+import { EnvironmentService } from '../abstractions';
+import { IdentityCaptchaResponse } from '../models/response/identityCaptchaResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
 
 export class ApiService implements ApiServiceAbstraction {
-    urlsSet: boolean = false;
-    apiBaseUrl: string;
-    identityBaseUrl: string;
-    eventsBaseUrl: string;
-
+    protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
     private device: DeviceType;
     private deviceType: string;
     private isWebClient = false;
     private isDesktopClient = false;
-    private usingBaseUrl = false;
 
     constructor(private tokenService: TokenService, private platformUtilsService: PlatformUtilsService,
-        private logoutCallback: (expired: boolean) => Promise<void>, private customUserAgent: string = null) {
+        private environmentService: EnvironmentService, private logoutCallback: (expired: boolean) => Promise<void>,
+        private customUserAgent: string = null) {
         this.device = platformUtilsService.getDevice();
         this.deviceType = this.device.toString();
         this.isWebClient = this.device === DeviceType.IEBrowser || this.device === DeviceType.ChromeBrowser ||
@@ -186,36 +184,9 @@ export class ApiService implements ApiServiceAbstraction {
             this.device === DeviceType.LinuxDesktop;
     }
 
-    setUrls(urls: EnvironmentUrls): void {
-        this.urlsSet = true;
-
-        if (urls.base != null) {
-            this.usingBaseUrl = true;
-            this.apiBaseUrl = urls.base + '/api';
-            this.identityBaseUrl = urls.base + '/identity';
-            this.eventsBaseUrl = urls.base + '/events';
-            return;
-        }
-
-        this.apiBaseUrl = urls.api;
-        this.identityBaseUrl = urls.identity;
-        this.eventsBaseUrl = urls.events;
-
-        // Production
-        if (this.apiBaseUrl == null) {
-            this.apiBaseUrl = 'https://api.bitwarden.com';
-        }
-        if (this.identityBaseUrl == null) {
-            this.identityBaseUrl = 'https://identity.bitwarden.com';
-        }
-        if (this.eventsBaseUrl == null) {
-            this.eventsBaseUrl = 'https://events.bitwarden.com';
-        }
-    }
-
     // Auth APIs
 
-    async postIdentityToken(request: TokenRequest): Promise<IdentityTokenResponse | IdentityTwoFactorResponse> {
+    async postIdentityToken(request: TokenRequest): Promise<IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse> {
         const headers = new Headers({
             'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
             'Accept': 'application/json',
@@ -225,7 +196,7 @@ export class ApiService implements ApiServiceAbstraction {
             headers.set('User-Agent', this.customUserAgent);
         }
         request.alterIdentityTokenHeaders(headers);
-        const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
+        const response = await this.fetch(new Request(this.environmentService.getIdentityUrl() + '/connect/token', {
             body: this.qsStringify(request.toIdentityToken(request.clientId ?? this.platformUtilsService.identityClientId)),
             credentials: this.getCredentials(),
             cache: 'no-store',
@@ -245,6 +216,9 @@ export class ApiService implements ApiServiceAbstraction {
                 Object.keys(responseJson.TwoFactorProviders2).length) {
                 await this.tokenService.clearTwoFactorToken(request.email);
                 return new IdentityTwoFactorResponse(responseJson);
+            } else if (response.status === 400 && responseJson.HCaptcha_SiteKey &&
+                Object.keys(responseJson.HCaptcha_SiteKey).length) {
+                return new IdentityCaptchaResponse(responseJson);
             }
         }
 
@@ -253,7 +227,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async refreshIdentityToken(): Promise<any> {
         try {
-            await this.doRefreshToken();
+            await this.doAuthRefresh();
         } catch (e) {
             return Promise.reject(null);
         }
@@ -415,6 +389,10 @@ export class ApiService implements ApiServiceAbstraction {
     async postUserRotateApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
         const r = await this.send('POST', '/accounts/rotate-api-key', request, true, true);
         return new ApiKeyResponse(r);
+    }
+
+    putUpdateTempPassword(request: UpdateTempPasswordRequest): Promise<any> {
+        return this.send('PUT', '/accounts/update-temp-password', request, true, false);
     }
 
     // Folder APIs
@@ -864,7 +842,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     async postOrganizationUserBulkConfirm(organizationId: string, request: OrganizationUserBulkConfirmRequest): Promise<ListResponse<OrganizationUserBulkResponse>> {
-        const r = await this.send('POST',  '/organizations/' + organizationId + '/users/confirm', request, true, true);
+        const r = await this.send('POST', '/organizations/' + organizationId + '/users/confirm', request, true, true);
         return new ListResponse(r, OrganizationUserBulkResponse);
     }
 
@@ -1291,7 +1269,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     async postProviderUserBulkConfirm(providerId: string, request: ProviderUserBulkConfirmRequest): Promise<ListResponse<ProviderUserBulkResponse>> {
-        const r = await this.send('POST',  '/providers/' + providerId + '/users/confirm', request, true, true);
+        const r = await this.send('POST', '/providers/' + providerId + '/users/confirm', request, true, true);
         return new ListResponse(r, ProviderUserBulkResponse);
     }
 
@@ -1334,9 +1312,9 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/providers/' + providerId + '/organizations/add', request, true, false);
     }
 
-    async postProviderCreateOrganization(providerId: string, request: OrganizationCreateRequest): Promise<OrganizationResponse> {
+    async postProviderCreateOrganization(providerId: string, request: ProviderOrganizationCreateRequest): Promise<ProviderOrganizationResponse> {
         const r = await this.send('POST', '/providers/' + providerId + '/organizations', request, true, true);
-        return new OrganizationResponse(r);
+        return new ProviderOrganizationResponse(r);
     }
 
     deleteProviderOrganization(providerId: string, id: string): Promise<any> {
@@ -1395,7 +1373,7 @@ export class ApiService implements ApiServiceAbstraction {
         if (this.customUserAgent != null) {
             headers.set('User-Agent', this.customUserAgent);
         }
-        const response = await this.fetch(new Request(this.eventsBaseUrl + '/collect', {
+        const response = await this.fetch(new Request(this.environmentService.getEventsUrl() + '/collect', {
             cache: 'no-store',
             credentials: this.getCredentials(),
             method: 'POST',
@@ -1438,7 +1416,7 @@ export class ApiService implements ApiServiceAbstraction {
     async getActiveBearerToken(): Promise<string> {
         let accessToken = await this.tokenService.getToken();
         if (this.tokenService.tokenNeedsRefresh()) {
-            await this.doRefreshToken();
+            await this.doAuthRefresh();
             accessToken = await this.tokenService.getToken();
         }
         return accessToken;
@@ -1469,7 +1447,7 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         const path = `/account/prevalidate?domainHint=${encodeURIComponent(identifier)}`;
-        const response = await this.fetch(new Request(this.identityBaseUrl + path, {
+        const response = await this.fetch(new Request(this.environmentService.getIdentityUrl() + path, {
             cache: 'no-store',
             credentials: this.getCredentials(),
             headers: headers,
@@ -1482,6 +1460,31 @@ export class ApiService implements ApiServiceAbstraction {
             const error = await this.handleError(response, false, true);
             return Promise.reject(error);
         }
+    }
+
+    protected async doAuthRefresh(): Promise<void> {
+        const refreshToken = await this.tokenService.getRefreshToken();
+        if (refreshToken != null && refreshToken !== '') {
+            return this.doRefreshToken();
+        }
+
+        const clientId = await this.tokenService.getClientId();
+        const clientSecret = await this.tokenService.getClientSecret();
+        if (!Utils.isNullOrWhitespace(clientId) && !Utils.isNullOrWhitespace(clientSecret)) {
+            return this.doApiTokenRefresh();
+        }
+
+        throw new Error('Cannot refresh token, no refresh token or api keys are stored');
+    }
+
+    protected async doApiTokenRefresh(): Promise<void> {
+        const clientId = await this.tokenService.getClientId();
+        const clientSecret = await this.tokenService.getClientSecret();
+        if (Utils.isNullOrWhitespace(clientId) || Utils.isNullOrWhitespace(clientSecret) || this.apiKeyRefresh == null) {
+            throw new Error();
+        }
+
+        await this.apiKeyRefresh(clientId, clientSecret);
     }
 
     protected async doRefreshToken(): Promise<void> {
@@ -1499,7 +1502,7 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         const decodedToken = this.tokenService.decodeToken();
-        const response = await this.fetch(new Request(this.identityBaseUrl + '/connect/token', {
+        const response = await this.fetch(new Request(this.environmentService.getIdentityUrl() + '/connect/token', {
             body: this.qsStringify({
                 grant_type: 'refresh_token',
                 client_id: decodedToken.client_id,
@@ -1514,7 +1517,7 @@ export class ApiService implements ApiServiceAbstraction {
         if (response.status === 200) {
             const responseJson = await response.json();
             const tokenResponse = new IdentityTokenResponse(responseJson);
-            await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken);
+            await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken, null);
         } else {
             const error = await this.handleError(response, true, true);
             return Promise.reject(error);
@@ -1524,7 +1527,7 @@ export class ApiService implements ApiServiceAbstraction {
     private async send(method: 'GET' | 'POST' | 'PUT' | 'DELETE', path: string, body: any,
         authed: boolean, hasResponse: boolean, apiUrl?: string,
         alterHeaders?: (headers: Headers) => void): Promise<any> {
-        apiUrl = Utils.isNullOrWhitespace(apiUrl) ? this.apiBaseUrl : apiUrl;
+        apiUrl = Utils.isNullOrWhitespace(apiUrl) ? this.environmentService.getApiUrl() : apiUrl;
         const headers = new Headers({
             'Device-Type': this.deviceType,
         });
@@ -1597,7 +1600,7 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     private getCredentials(): RequestCredentials {
-        if (!this.isWebClient || this.usingBaseUrl) {
+        if (!this.isWebClient || this.environmentService.hasBaseUrl()) {
             return 'include';
         }
         return undefined;

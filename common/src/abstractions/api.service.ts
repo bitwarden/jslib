@@ -52,6 +52,7 @@ import { PaymentRequest } from '../models/request/paymentRequest';
 import { PolicyRequest } from '../models/request/policyRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
 import { ProviderAddOrganizationRequest } from '../models/request/provider/providerAddOrganizationRequest';
+import { ProviderOrganizationCreateRequest } from '../models/request/provider/providerOrganizationCreateRequest';
 import { ProviderSetupRequest } from '../models/request/provider/providerSetupRequest';
 import { ProviderUpdateRequest } from '../models/request/provider/providerUpdateRequest';
 import { ProviderUserAcceptRequest } from '../models/request/provider/providerUserAcceptRequest';
@@ -75,6 +76,7 @@ import { TwoFactorRecoveryRequest } from '../models/request/twoFactorRecoveryReq
 import { UpdateDomainsRequest } from '../models/request/updateDomainsRequest';
 import { UpdateKeyRequest } from '../models/request/updateKeyRequest';
 import { UpdateProfileRequest } from '../models/request/updateProfileRequest';
+import { UpdateTempPasswordRequest } from '../models/request/updateTempPasswordRequest';
 import { UpdateTwoFactorAuthenticatorRequest } from '../models/request/updateTwoFactorAuthenticatorRequest';
 import { UpdateTwoFactorDuoRequest } from '../models/request/updateTwoFactorDuoRequest';
 import { UpdateTwoFactorEmailRequest } from '../models/request/updateTwoFactorEmailRequest';
@@ -108,6 +110,7 @@ import {
     GroupDetailsResponse,
     GroupResponse,
 } from '../models/response/groupResponse';
+import { IdentityCaptchaResponse } from '../models/response/identityCaptchaResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
@@ -126,7 +129,7 @@ import { PlanResponse } from '../models/response/planResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 import { PreloginResponse } from '../models/response/preloginResponse';
 import { ProfileResponse } from '../models/response/profileResponse';
-import { ProviderOrganizationOrganizationDetailsResponse } from '../models/response/provider/providerOrganizationResponse';
+import { ProviderOrganizationOrganizationDetailsResponse, ProviderOrganizationResponse } from '../models/response/provider/providerOrganizationResponse';
 import { ProviderResponse } from '../models/response/provider/providerResponse';
 import { ProviderUserBulkPublicKeyResponse } from '../models/response/provider/providerUserBulkPublicKeyResponse';
 import { ProviderUserBulkResponse } from '../models/response/provider/providerUserBulkResponse';
@@ -152,13 +155,7 @@ import { UserKeyResponse } from '../models/response/userKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
 
 export abstract class ApiService {
-    urlsSet: boolean;
-    apiBaseUrl: string;
-    identityBaseUrl: string;
-    eventsBaseUrl: string;
-
-    setUrls: (urls: EnvironmentUrls) => void;
-    postIdentityToken: (request: TokenRequest) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse>;
+    postIdentityToken: (request: TokenRequest) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse>;
     refreshIdentityToken: () => Promise<any>;
 
     getProfile: () => Promise<ProfileResponse>;
@@ -195,6 +192,7 @@ export abstract class ApiService {
     getEnterprisePortalSignInToken: () => Promise<string>;
     postUserApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
     postUserRotateApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
+    putUpdateTempPassword: (request: UpdateTempPasswordRequest) => Promise<any>;
 
     getFolder: (id: string) => Promise<FolderResponse>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
@@ -412,7 +410,7 @@ export abstract class ApiService {
     deleteManyProviderUsers: (providerId: string, request: ProviderUserBulkRequest) => Promise<ListResponse<ProviderUserBulkResponse>>;
     getProviderClients: (providerId: string) => Promise<ListResponse<ProviderOrganizationOrganizationDetailsResponse>>;
     postProviderAddOrganization: (providerId: string, request: ProviderAddOrganizationRequest) => Promise<any>;
-    postProviderCreateOrganization: (providerId: string, request: OrganizationCreateRequest) => Promise<OrganizationResponse>;
+    postProviderCreateOrganization: (providerId: string, request: ProviderOrganizationCreateRequest) => Promise<ProviderOrganizationResponse>;
     deleteProviderOrganization: (providerId: string, organizationId: string) => Promise<any>;
 
     getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;

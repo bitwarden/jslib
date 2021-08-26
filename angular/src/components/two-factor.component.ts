@@ -23,7 +23,7 @@ import { TwoFactorProviders } from 'jslib-common/services/auth.service';
 import { ConstantsService } from 'jslib-common/services/constants.service';
 
 import * as DuoWebSDK from 'duo_web_sdk';
-import { WebAuthn } from 'jslib-common/misc/webauthn';
+import { WebAuthnIFrame } from 'jslib-common/misc/webauthn_iframe';
 
 @Directive()
 export class TwoFactorComponent implements OnInit, OnDestroy {
@@ -35,7 +35,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     providerType = TwoFactorProviderType;
     selectedProviderType: TwoFactorProviderType = TwoFactorProviderType.Authenticator;
     webAuthnSupported: boolean = false;
-    webAuthn: WebAuthn = null;
+    webAuthn: WebAuthnIFrame = null;
     title: string = '';
     twoFactorEmail: string = null;
     formPromise: Promise<any>;
@@ -43,6 +43,10 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     identifier: string = null;
     onSuccessfulLogin: () => Promise<any>;
     onSuccessfulLoginNavigate: () => Promise<any>;
+
+    get webAuthnAllow(): string {
+        return `publickey-credentials-get ${this.environmentService.getWebVaultUrl()}`;
+    }
 
     protected loginRoute = 'login';
     protected successRoute = 'vault';
@@ -76,11 +80,8 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         }
 
         if (this.win != null && this.webAuthnSupported) {
-            let webVaultUrl = this.environmentService.getWebVaultUrl();
-            if (webVaultUrl == null) {
-                webVaultUrl = 'https://vault.bitwarden.com';
-            }
-            this.webAuthn = new WebAuthn(this.win, webVaultUrl, this.webAuthnNewTab, this.platformUtilsService,
+            const webVaultUrl = this.environmentService.getWebVaultUrl();
+            this.webAuthn = new WebAuthnIFrame(this.win, webVaultUrl, this.webAuthnNewTab, this.platformUtilsService,
                 this.i18nService, (token: string) => {
                     this.token = token;
                     this.submit();

@@ -9,31 +9,61 @@ const Keys = {
     accessToken: 'accessToken',
     refreshToken: 'refreshToken',
     twoFactorTokenPrefix: 'twoFactorToken_',
+    clientId: 'apikey_clientId',
+    clientSecret: 'apikey_clientSecret',
 };
 
 export class TokenService implements TokenServiceAbstraction {
     token: string;
     decodedToken: any;
     refreshToken: string;
+    clientId: string;
+    clientSecret: string;
 
     constructor(private storageService: StorageService) {
     }
 
-    async setTokens(accessToken: string, refreshToken: string): Promise<any> {
+    async setTokens(accessToken: string, refreshToken: string, clientIdClientSecret: [string, string]): Promise<any> {
         await this.setToken(accessToken);
         await this.setRefreshToken(refreshToken);
+        if (clientIdClientSecret != null) {
+            await this.setClientId(clientIdClientSecret[0]);
+            await this.setClientSecret(clientIdClientSecret[1]);
+        }
+    }
+
+    async setClientId(clientId: string): Promise<any> {
+        this.clientId = clientId;
+        return this.storeTokenValue(Keys.clientId, clientId);
+    }
+
+    async getClientId(): Promise<string> {
+        if (this.clientId != null) {
+            return this.clientId;
+        }
+
+        this.clientId = await this.storageService.get<string>(Keys.clientId);
+        return this.clientId;
+    }
+
+    async setClientSecret(clientSecret: string): Promise<any> {
+        this.clientSecret = clientSecret;
+        return this.storeTokenValue(Keys.clientSecret, clientSecret);
+    }
+
+    async getClientSecret(): Promise<string> {
+        if (this.clientSecret != null) {
+            return this.clientSecret;
+        }
+
+        this.clientSecret = await this.storageService.get<string>(Keys.clientSecret);
+        return this.clientSecret;
     }
 
     async setToken(token: string): Promise<any> {
         this.token = token;
         this.decodedToken = null;
-
-        if (await this.skipTokenStorage()) {
-            // if we have a vault timeout and the action is log out, don't store token
-            return;
-        }
-
-        return this.storageService.save(Keys.accessToken, token);
+        return this.storeTokenValue(Keys.accessToken, token);
     }
 
     async getToken(): Promise<string> {
@@ -47,13 +77,7 @@ export class TokenService implements TokenServiceAbstraction {
 
     async setRefreshToken(refreshToken: string): Promise<any> {
         this.refreshToken = refreshToken;
-
-        if (await this.skipTokenStorage()) {
-            // if we have a vault timeout and the action is log out, don't store token
-            return;
-        }
-
-        return this.storageService.save(Keys.refreshToken, refreshToken);
+        return this.storeTokenValue(Keys.refreshToken, refreshToken);
     }
 
     async getRefreshToken(): Promise<string> {
@@ -68,6 +92,8 @@ export class TokenService implements TokenServiceAbstraction {
     async toggleTokens(): Promise<any> {
         const token = await this.getToken();
         const refreshToken = await this.getRefreshToken();
+        const clientId = await this.getClientId();
+        const clientSecret = await this.getClientSecret();
         const timeout = await this.storageService.get(ConstantsService.vaultTimeoutKey);
         const action = await this.storageService.get(ConstantsService.vaultTimeoutActionKey);
         if ((timeout != null || timeout === 0) && action === 'logOut') {
@@ -75,11 +101,15 @@ export class TokenService implements TokenServiceAbstraction {
             await this.clearToken();
             this.token = token;
             this.refreshToken = refreshToken;
+            this.clientId = clientId;
+            this.clientSecret = clientSecret;
             return;
         }
 
         await this.setToken(token);
         await this.setRefreshToken(refreshToken);
+        await this.setClientId(clientId);
+        await this.setClientSecret(clientSecret);
     }
 
     setTwoFactorToken(token: string, email: string): Promise<any> {
@@ -98,9 +128,13 @@ export class TokenService implements TokenServiceAbstraction {
         this.token = null;
         this.decodedToken = null;
         this.refreshToken = null;
+        this.clientId = null;
+        this.clientSecret = null;
 
         await this.storageService.remove(Keys.accessToken);
         await this.storageService.remove(Keys.refreshToken);
+        await this.storageService.remove(Keys.clientId);
+        await this.storageService.remove(Keys.clientSecret);
     }
 
     // jwthelper methods
@@ -207,6 +241,15 @@ export class TokenService implements TokenServiceAbstraction {
         }
 
         return decoded.iss as string;
+    }
+
+    private async storeTokenValue(key: string, value: string) {
+        if (await this.skipTokenStorage()) {
+            // if we have a vault timeout and the action is log out, don't store token
+            return;
+        }
+
+        return this.storageService.save(key, value);
     }
 
     private async skipTokenStorage(): Promise<boolean> {
