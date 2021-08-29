@@ -28,17 +28,19 @@ export class PasswordGeneratorComponent implements OnInit {
     constructor(protected passwordGenerationService: PasswordGenerationService,
         protected platformUtilsService: PlatformUtilsService, protected i18nService: I18nService,
         private win: Window) {
-            this.passTypeOptions = [
-                { name: i18nService.t('password'), value: 'password' },
-                { name: i18nService.t('passphrase'), value: 'passphrase' },
-            ];
-         }
+        this.passTypeOptions = [
+            { name: i18nService.t('password'), value: 'password' },
+            { name: i18nService.t('passphrase'), value: 'passphrase' },
+        ];
+    }
 
     async ngOnInit() {
         const optionsResponse = await this.passwordGenerationService.getOptions();
         const websiteOptionsResponse = await this.passwordGenerationService.getWebsiteOptions();
         this.options = optionsResponse[0];
         this.websitePasswordOptions = websiteOptionsResponse[0];
+        console.log("options => ", this.options);
+        console.log("website options => ", this.websitePasswordOptions);
         this.enforcedPolicyOptions = optionsResponse[1];
         this.avoidAmbiguous = !this.options.ambiguous;
         this.options.type = this.options.type === 'passphrase' ? 'passphrase' : 'password';
