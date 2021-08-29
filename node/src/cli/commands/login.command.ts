@@ -147,8 +147,8 @@ export class LoginCommand {
                 }
                 if (response.captchaSiteKey) {
                     const badCaptcha = Response.badRequest('Your authentication request appears to be coming from a bot\n' +
-                        'Please use your API key to validate this request and ensure BW_CLIENTSECRET is correct, if set\n' +
-                        '(https://bitwarden.com/help/article/cli/#using-an-api-key)');
+                        'Please use your API key to validate this request and ensure BW_CLIENTSECRET is correct, if set.\n' +
+                        '(https://bitwarden.com/help/article/cli-auth-challenges)');
 
                     try {
                         const captchaClientSecret = await this.apiClientSecret(true);

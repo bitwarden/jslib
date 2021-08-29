@@ -33,7 +33,7 @@ export class ProfileResponse extends BaseResponse {
         this.key = this.getResponseProperty('Key');
         this.privateKey = this.getResponseProperty('PrivateKey');
         this.securityStamp = this.getResponseProperty('SecurityStamp');
-        this.forcePasswordReset = this.getResponseProperty('ForcePasswordReset');
+        this.forcePasswordReset = this.getResponseProperty('ForcePasswordReset') ?? false;
 
         const organizations = this.getResponseProperty('Organizations');
         if (organizations != null) {

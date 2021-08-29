@@ -42,6 +42,10 @@ export class IconComponent implements OnChanges {
     }
 
     async ngOnChanges() {
+        // Components may be re-used when using cdk-virtual-scroll. Which puts the component in a weird state,
+        // to avoid this we reset all state variables.
+        this.image = null;
+        this.fallbackImage = null;
         this.imageEnabled = !(await this.stateService.get<boolean>(ConstantsService.disableFaviconKey));
         this.load();
     }
