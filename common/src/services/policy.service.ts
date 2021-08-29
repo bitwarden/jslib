@@ -190,7 +190,7 @@ export class PolicyService implements PolicyServiceAbstraction {
 
         return organizations.some(o =>
             o.enabled &&
-            o.status !== OrganizationUserStatusType.Invited &&
+            o.status >= OrganizationUserStatusType.Accepted &&
             o.usePolicies &&
             !o.isExemptFromPolicies &&
             policySet.has(o.id));
