@@ -7,8 +7,7 @@ export class Account {
 
     constructor(userId: string, userEmail: string,
         kdfType: KdfType, kdfIterations: number,
-        clientId: string, clientSecret: string)
-    {
+        clientId: string, clientSecret: string) {
         this.userId = userId;
         this.settings.set(AccountStorageKey.UserEmail, userEmail);
         this.settings.set(AccountStorageKey.KdfType, kdfType);
