@@ -2,14 +2,14 @@ import { AccountStorageKey } from "../../enums/accountStorageKey";
 import { KdfType } from "../../enums/kdfType";
 
 export class Account {
+    userId: string;
     settings: Map<string, any> = new Map<string, any>();
-    selected: boolean;
 
     constructor(userId: string, userEmail: string,
         kdfType: KdfType, kdfIterations: number,
         clientId: string, clientSecret: string)
     {
-        this.settings.set(AccountStorageKey.UserId, userId);
+        this.userId = userId;
         this.settings.set(AccountStorageKey.UserEmail, userEmail);
         this.settings.set(AccountStorageKey.KdfType, kdfType);
         this.settings.set(AccountStorageKey.KdfIterations, kdfIterations);

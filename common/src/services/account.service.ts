@@ -7,9 +7,10 @@ import { SettingStorageOptions } from '../models/domain/settingStorageOptions';
 
 export class AccountService implements AccountServiceAbstraction {
     private accounts: Account[] = [];
+    private activeUserId: string;
 
     get activeAccount(): Account {
-        return this.accounts.find(account => account.selected);
+        return this.accounts.find(account => account.userId === this.activeUserId);
     }
 
     constructor(private storageService: StorageService, private secureStorageService: StorageService) {
@@ -22,31 +23,27 @@ export class AccountService implements AccountServiceAbstraction {
         
         this.accounts.push(account);
         await this.saveAccountToStorage(account);
-        await this.switchAccount(account);
+        await this.switchAccount(account.userId);
     };
 
-    async switchAccount(account: Account): Promise<void> {
-        if (this.accounts.indexOf(account) === -1) {
-            return
+    async switchAccount(userId: string): Promise<void> {
+        if (this.accounts.find(account => account.userId === userId)) {
+            return;
         }
 
-        return this.accounts.forEach((value: Account, index: number) => {
-           this.accounts[index].selected = value === account ? true : false;  
-        })
+        this.activeUserId = userId;
     }
 
     findAccount(userId: string): Account {
-        return this.accounts.find(account => account.settings.get(AccountStorageKey.UserId) === userId);
+        return this.accounts.find(account => account.userId === userId);
     }
 
     async saveSetting(key: AccountStorageKey | string, obj: any, options?: SettingStorageOptions): Promise<void> {
-        if (!options?.skipMemory)
-        {
+        if (!options?.skipMemory) {
             this.activeAccount.settings.set(key, obj);
         }
 
-        if (!options?.skipDisk)
-        {
+        if (!options?.skipDisk) {
             await this.saveToStorage(key, obj, options);
         }
     }
@@ -125,4 +122,3 @@ export class AccountService implements AccountServiceAbstraction {
         return `${this.activeAccount.settings.get(AccountStorageKey.UserId)}.${key}`;
     }
 }
-
