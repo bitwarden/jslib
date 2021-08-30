@@ -32,8 +32,8 @@ import { Policy } from 'jslib-common/models/domain/policy';
         {
             provide: NG_VALIDATORS,
             multi: true,
-            useExisting: VaultTimeoutInputComponent
-        }
+            useExisting: VaultTimeoutInputComponent,
+        },
     ],
 })
 export class VaultTimeoutInputComponent implements ControlValueAccessor, Validator, OnInit {
@@ -50,7 +50,10 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
     vaultTimeoutPolicyHours: number;
     vaultTimeoutPolicyMinutes: number;
 
-    constructor(private fb: FormBuilder, private i18nService: I18nService,private policyService: PolicyService,
+    private onChange: (vaultTimeout: number) => void;
+    private validatorChange: () => void;
+
+    constructor(private fb: FormBuilder, private i18nService: I18nService, private policyService: PolicyService,
         private platformUtilsService: PlatformUtilsService) {
         this.vaultTimeouts = [
             { name: i18nService.t('oneMinute'), value: 1 },
@@ -68,9 +71,6 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
         }
     }
 
-    private onChange: (vaultTimeout: number) => void;
-    private validatorChange: () => void;
-
     async ngOnInit() {
         const vaultTimeoutPolicy = await this.policyService.getAll(PolicyType.MaximumVaultTimeout);
         if (vaultTimeoutPolicy.length > 0 && vaultTimeoutPolicy[0].enabled) { // TODO: Replace with policyService.policyAppliesToUser
@@ -84,13 +84,13 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
             this.validatorChange();
         }
 
-        this.form.valueChanges.subscribe(async (value) => {
+        this.form.valueChanges.subscribe(async value => {
             this.onChange(this.getVaultTimeout(value));
         });
 
         // Assign the previous value to the custom fields
-        this.form.get('vaultTimeout').valueChanges.subscribe((value) => {
-            if (value != -2) {
+        this.form.get('vaultTimeout').valueChanges.subscribe(value => {
+            if (value !== -2) {
                 return;
             }
 
