@@ -5,6 +5,8 @@ import {
     Router,
 } from '@angular/router';
 
+import { first } from 'rxjs/operators';
+
 import { TwoFactorProviderType } from 'jslib-common/enums/twoFactorProviderType';
 
 import { TwoFactorEmailRequest } from 'jslib-common/models/request/twoFactorEmailRequest';
@@ -65,13 +67,9 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const queryParamsSub = this.route.queryParams.subscribe(async qParams => {
+        this.route.queryParams.pipe(first()).subscribe(qParams => {
             if (qParams.identifier != null) {
                 this.identifier = qParams.identifier;
-            }
-
-            if (queryParamsSub != null) {
-                queryParamsSub.unsubscribe();
             }
         });
 
