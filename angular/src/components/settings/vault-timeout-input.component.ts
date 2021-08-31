@@ -19,6 +19,12 @@ import { Policy } from 'jslib-common/models/domain/policy';
 
 @Directive()
 export class VaultTimeoutInputComponent implements ControlValueAccessor, Validator, OnInit {
+
+    get showCustom() {
+        return this.form.get('vaultTimeout').value === VaultTimeoutInputComponent.CUSTOM_VALUE;
+    }
+
+    static CUSTOM_VALUE = -100;
     form = this.fb.group({
         vaultTimeout: [null],
         custom: this.fb.group({
@@ -35,8 +41,6 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
     private onChange: (vaultTimeout: number) => void;
     private validatorChange: () => void;
 
-    static CUSTOM_VALUE = -100;
-
     constructor(private fb: FormBuilder, private policyService: PolicyService, private i18nService: I18nService) {
     }
 
@@ -47,7 +51,7 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
             this.vaultTimeoutPolicyHours = Math.floor(this.vaultTimeoutPolicy.data.minutes / 60);
             this.vaultTimeoutPolicyMinutes = this.vaultTimeoutPolicy.data.minutes % 60;
 
-            this.vaultTimeouts = this.vaultTimeouts.filter((t) =>
+            this.vaultTimeouts = this.vaultTimeouts.filter(t =>
                 t.value <= this.vaultTimeoutPolicy.data.minutes &&
                 (t.value > 0 || t.value === VaultTimeoutInputComponent.CUSTOM_VALUE) &&
                 t.value != null
@@ -77,10 +81,6 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
 
     ngOnChanges() {
         this.vaultTimeouts.push({ name: this.i18nService.t('custom'), value: -100 });
-    }
-
-    get showCustom() {
-        return this.form.get('vaultTimeout').value === VaultTimeoutInputComponent.CUSTOM_VALUE;
     }
 
     getVaultTimeout(value: any) {
