@@ -135,4 +135,8 @@ export class Organization {
     get canManageUsersPassword() {
         return this.isAdmin || this.permissions.manageResetPassword;
     }
+
+    get isExemptFromPolicies() {
+        return this.canManagePolicies;
+    }
 }

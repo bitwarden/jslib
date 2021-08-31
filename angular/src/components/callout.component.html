@@ -3,7 +3,7 @@
         <i class="fa {{icon}}" *ngIf="icon" aria-hidden="true"></i>
         {{title}}
     </h3>
-    <div *ngIf="enforcedPolicyOptions">
+    <div class="enforced-policy-options" *ngIf="enforcedPolicyOptions">
         {{enforcedPolicyMessage}}
         <ul>
             <li *ngIf="enforcedPolicyOptions?.minComplexity > 0">
