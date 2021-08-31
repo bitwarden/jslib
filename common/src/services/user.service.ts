@@ -168,7 +168,7 @@ export class UserService implements UserServiceAbstraction {
 
     async getOrganizationByIdentifier(identifier: string): Promise<Organization> {
         const organizations = await this.getAllOrganizations();
-        if (organizations == null || organizations.length == 0) {
+        if (organizations == null || organizations.length === 0) {
             return null;
         }
 
