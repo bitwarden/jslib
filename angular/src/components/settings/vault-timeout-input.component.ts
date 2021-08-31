@@ -45,8 +45,9 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
     }
 
     async ngOnInit() {
-        const vaultTimeoutPolicy = await this.policyService.getAll(PolicyType.MaximumVaultTimeout);
-        if (vaultTimeoutPolicy.length > 0 && vaultTimeoutPolicy[0].enabled) { // TODO: Replace with policyService.policyAppliesToUser
+        if (await this.policyService.policyAppliesToUser(PolicyType.MaximumVaultTimeout)) {
+            const vaultTimeoutPolicy = await this.policyService.getAll(PolicyType.MaximumVaultTimeout);
+
             this.vaultTimeoutPolicy = vaultTimeoutPolicy[0];
             this.vaultTimeoutPolicyHours = Math.floor(this.vaultTimeoutPolicy.data.minutes / 60);
             this.vaultTimeoutPolicyMinutes = this.vaultTimeoutPolicy.data.minutes % 60;
