@@ -380,7 +380,6 @@ export abstract class ApiService {
     postOrganizationApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
     postOrganizationRotateApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
     postOrganizationUpgrade: (id: string, request: OrganizationUpgradeRequest) => Promise<PaymentResponse>;
-    postOrganizationAutoscaleSeats: (id: string, request: SeatAutoscaleRequest) => Promise<void>;
     postOrganizationUpdateSubscription: (id: string, request: OrganizationSubscriptionUpdateRequest) => Promise<void>;
     postOrganizationSeat: (id: string, request: SeatRequest) => Promise<PaymentResponse>;
     postOrganizationStorage: (id: string, request: StorageRequest) => Promise<any>;

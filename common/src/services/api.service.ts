@@ -1187,10 +1187,6 @@ export class ApiService implements ApiServiceAbstraction {
         return new PaymentResponse(r);
     }
 
-    async postOrganizationAutoscaleSeats(id: string, request: SeatAutoscaleRequest): Promise<void> {
-        return this.send('POST', '/organizations/' + id + '/autoscale', request, true, false);
-    }
-
     async postOrganizationUpdateSubscription(id: string, request: OrganizationSubscriptionUpdateRequest): Promise<void> {
         return this.send('POST', '/organizations/' + id + '/subscription', request, true, false);
     }
