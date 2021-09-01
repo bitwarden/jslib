@@ -141,8 +141,8 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     async getVaultTimeout(): Promise<number> {
         const vaultTimeout = await this.storageService.get<number>(ConstantsService.vaultTimeoutKey);
 
-        const policy = await this.policyService.getAll(PolicyType.MaximumVaultTimeout);
-        if (policy.length > 0) {
+        if (await this.policyService.policyAppliesToUser(PolicyType.MaximumVaultTimeout)) {
+            const policy = await this.policyService.getAll(PolicyType.MaximumVaultTimeout);
             return Math.min(vaultTimeout, policy[0].data.minutes);
         }
 
