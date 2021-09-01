@@ -144,10 +144,14 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         if (await this.policyService.policyAppliesToUser(PolicyType.MaximumVaultTimeout)) {
             const policy = await this.policyService.getAll(PolicyType.MaximumVaultTimeout);
             // Remove negative values, and ensure it's smaller than maximum allowed value according to policy
-            const timeout = Math.max(0, Math.min(vaultTimeout, policy[0].data.minutes));
+            let timeout = Math.min(vaultTimeout, policy[0].data.minutes);
+
+            if (timeout < 0) {
+                timeout = policy[0].data.minutes;
+            }
 
             // We really shouldn't need to set the value here, but multiple services relies on this value being correct.
-            if (vaultTimeout != timeout) {
+            if (vaultTimeout !== timeout) {
                 await this.storageService.save(ConstantsService.vaultTimeoutKey, timeout);
             }
 
