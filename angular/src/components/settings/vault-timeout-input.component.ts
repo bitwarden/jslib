@@ -25,6 +25,7 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
     }
 
     static CUSTOM_VALUE = -100;
+
     form = this.fb.group({
         vaultTimeout: [null],
         custom: this.fb.group({
@@ -81,7 +82,7 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
     }
 
     ngOnChanges() {
-        this.vaultTimeouts.push({ name: this.i18nService.t('custom'), value: -100 });
+        this.vaultTimeouts.push({ name: this.i18nService.t('custom'), value: VaultTimeoutInputComponent.CUSTOM_VALUE });
     }
 
     getVaultTimeout(value: any) {
