@@ -146,7 +146,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
             // Remove negative values, and ensure it's smaller than maximum allowed value according to policy
             let timeout = Math.min(vaultTimeout, policy[0].data.minutes);
 
-            if (timeout < 0) {
+            if (vaultTimeout == null || timeout < 0) {
                 timeout = policy[0].data.minutes;
             }
 
