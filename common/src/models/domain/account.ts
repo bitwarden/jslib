@@ -1,5 +1,5 @@
-import { AccountStorageKey } from "../../enums/accountStorageKey";
-import { KdfType } from "../../enums/kdfType";
+import { AccountStorageKey } from '../../enums/accountStorageKey';
+import { KdfType } from '../../enums/kdfType';
 
 export class Account {
     userId: string;

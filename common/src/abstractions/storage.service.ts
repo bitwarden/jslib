@@ -1,4 +1,4 @@
-import { StorageServiceOptions } from "../models/domain/storageServiceOptions";
+import { StorageServiceOptions } from '../models/domain/storageServiceOptions';
 
 export abstract class StorageService {
     get: <T>(key: string, options?: StorageServiceOptions) => Promise<T>;

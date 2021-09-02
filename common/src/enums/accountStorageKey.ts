@@ -16,7 +16,7 @@ export enum AccountStorageKey {
     LocalData = 'sitesLocalData',
     NeverDomains = 'neverDomains',
     CollectionsPrefix = 'collections_',
-    CryptoMasterKey = 'key', 
+    CryptoMasterKey = 'key',
     EncOrgKeys = 'encOrgKeys',
     EncProviderKeys = 'encProviderKeys',
     EncPrivateKey = 'encPrivateKey',

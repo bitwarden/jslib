@@ -17,14 +17,14 @@ export class AccountService implements AccountServiceAbstraction {
     }
 
     async addAccount(account: Account): Promise<void> {
-        if (this.accounts.indexOf(account) != -1) {
+        if (this.accounts.indexOf(account) !== -1) {
             return;
         }
-        
+
         this.accounts.push(account);
         await this.saveAccountToStorage(account);
         await this.switchAccount(account.userId);
-    };
+    }
 
     async switchAccount(userId: string): Promise<void> {
         if (this.accounts.find(account => account.userId === userId)) {
@@ -50,7 +50,7 @@ export class AccountService implements AccountServiceAbstraction {
 
     async hasSetting(key: AccountStorageKey | string, options?: SettingStorageOptions) {
         if (options?.skipDisk) {
-           return this.activeAccount.settings.has(key); 
+           return this.activeAccount.settings.has(key);
         }
         if (options?.skipMemory) {
             return await this.hasInStorage(key, options);
@@ -115,7 +115,7 @@ export class AccountService implements AccountServiceAbstraction {
     private async saveAccountToStorage(account: Account): Promise<void> {
         return account.settings.forEach(async (value: string, key: AccountStorageKey) => {
             await this.saveToStorage(key, value);
-        })
+        });
     }
 
     private prefixKey(key: AccountStorageKey | string): string {

@@ -1,7 +1,7 @@
-import { AccountStorageKey } from "../enums/accountStorageKey";
+import { AccountStorageKey } from '../enums/accountStorageKey';
 
-import { Account } from "../models/domain/account";
-import { SettingStorageOptions } from "../models/domain/settingStorageOptions";
+import { Account } from '../models/domain/account';
+import { SettingStorageOptions } from '../models/domain/settingStorageOptions';
 
 export abstract class AccountService {
     activeAccount: Account;
