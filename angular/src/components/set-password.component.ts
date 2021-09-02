@@ -64,11 +64,13 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
         });
 
         // Automatic Enrollment Detection
-        const org = await this.userService.getOrganizationByIdentifier(this.identifier);
-        this.orgId = org?.id;
-        const policyList = await this.policyService.getAll(PolicyType.ResetPassword);
-        const policyResult = this.policyService.getResetPasswordPolicyOptions(policyList, this.orgId);
-        this.resetPasswordAutoEnroll = policyResult[1] && policyResult[0].autoEnrollEnabled;
+        if (this.identifier != null) {
+            const org = await this.userService.getOrganizationByIdentifier(this.identifier);
+            this.orgId = org?.id;
+            const policyList = await this.policyService.getAll(PolicyType.ResetPassword);
+            const policyResult = this.policyService.getResetPasswordPolicyOptions(policyList, this.orgId);
+            this.resetPasswordAutoEnroll = policyResult[1] && policyResult[0].autoEnrollEnabled;
+        }
 
         super.ngOnInit();
     }
@@ -82,19 +84,16 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
 
     async performSubmitActions(masterPasswordHash: string, key: SymmetricCryptoKey,
         encKey: [SymmetricCryptoKey, EncString]) {
-        // Create Set Password Request
-        const request = new SetPasswordRequest();
-        request.masterPasswordHash = masterPasswordHash;
-        request.key = encKey[1].encryptedString;
-        request.masterPasswordHint = this.hint;
-        request.kdf = this.kdf;
-        request.kdfIterations = this.kdfIterations;
-        request.orgIdentifier = this.identifier;
-        // Create Key Pair
         const keys = await this.cryptoService.makeKeyPair(encKey[0]);
-        request.keys = new KeysRequest(keys[0], keys[1].encryptedString);
-
-        // Make API call(s)
+        const request = new SetPasswordRequest(
+            masterPasswordHash,
+            encKey[1].encryptedString,
+            this.hint,
+            this.kdf,
+            this.kdfIterations,
+            this.identifier,
+            new KeysRequest(keys[0], keys[1].encryptedString)
+        );
         try {
             if (this.resetPasswordAutoEnroll) {
                 this.formPromise = this.apiService.setPassword(request).then(async () => {
@@ -104,19 +103,15 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
                     if (response == null) {
                         throw new Error(this.i18nService.t('resetPasswordOrgKeysError'));
                     }
-
+                    const userId = await this.userService.getUserId();
                     const publicKey = Utils.fromB64ToArray(response.publicKey);
 
                     // RSA Encrypt user's encKey.key with organization public key
                     const userEncKey = await this.cryptoService.getEncKey();
                     const encryptedKey = await this.cryptoService.rsaEncrypt(userEncKey.key, publicKey.buffer);
 
-                    // Create request and execute enrollment
                     const resetRequest = new OrganizationUserResetPasswordEnrollmentRequest();
                     resetRequest.resetPasswordKey = encryptedKey.encryptedString;
-
-                    // Get User Id
-                    const userId = await this.userService.getUserId();
 
                     return this.apiService.putOrganizationUserResetPasswordEnrollment(this.orgId, userId, resetRequest);
                 });
@@ -153,6 +148,5 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
         const localKeyHash = await this.cryptoService.hashPassword(this.masterPassword, key,
             HashPurpose.LocalAuthorization);
         await this.cryptoService.setKeyHash(localKeyHash);
-
     }
 }
