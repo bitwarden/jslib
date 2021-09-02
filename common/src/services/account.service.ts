@@ -6,28 +6,28 @@ import { Account } from '../models/domain/account';
 import { SettingStorageOptions } from '../models/domain/settingStorageOptions';
 
 export class AccountService implements AccountServiceAbstraction {
-    private accounts: Account[] = [];
+    private accounts: Record<string, Account> = {};
     private activeUserId: string;
 
     get activeAccount(): Account {
-        return this.accounts.find(account => account.userId === this.activeUserId);
+        return this.accounts[this.activeUserId];
     }
 
     constructor(private storageService: StorageService, private secureStorageService: StorageService) {
     }
 
     async addAccount(account: Account): Promise<void> {
-        if (this.accounts.indexOf(account) !== -1) {
+        if (this.accounts[account.userId]) {
             return;
         }
 
-        this.accounts.push(account);
+        this.accounts[account.userId] = account;
         await this.saveAccountToStorage(account);
         await this.switchAccount(account.userId);
     }
 
     async switchAccount(userId: string): Promise<void> {
-        if (this.accounts.find(account => account.userId === userId)) {
+        if (!this.accounts[userId]) {
             return;
         }
 
@@ -35,7 +35,7 @@ export class AccountService implements AccountServiceAbstraction {
     }
 
     findAccount(userId: string): Account {
-        return this.accounts.find(account => account.userId === userId);
+        return this.accounts[userId];
     }
 
     async saveSetting(key: AccountStorageKey | string, obj: any, options?: SettingStorageOptions): Promise<void> {
