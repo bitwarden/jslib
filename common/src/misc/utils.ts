@@ -159,6 +159,10 @@ export class Utils {
         }
     }
 
+    static fromUtf8ToUrlB64(utfStr: string): string {
+        return Utils.fromBufferToUrlB64(Utils.fromUtf8ToArray(utfStr));
+    }
+
     static fromB64ToUtf8(b64Str: string): string {
         if (Utils.isNode || Utils.isNativeScript) {
             return Buffer.from(b64Str, 'base64').toString('utf8');
@@ -295,6 +299,11 @@ export class Utils {
     static assign<T>(target: T, source: Partial<T>): T {
         return Object.assign(target, source);
     }
+
+    static iterateEnum<O extends object, K extends keyof O = keyof O>(obj: O) {
+        return (Object.keys(obj).filter(k => Number.isNaN(+k)) as K[]).map(k => obj[k]);
+    }
+
 
     static getUrl(uriString: string): URL {
         if (uriString == null) {

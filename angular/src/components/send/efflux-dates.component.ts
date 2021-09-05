@@ -155,7 +155,8 @@ export class EffluxDatesComponent implements OnInit {
                 switch (this.browserPath) {
                     case BrowserPath.Safari:
                     case BrowserPath.Firefox:
-                        if (!this.fallbackExpirationDate.value || !this.fallbackExpirationTime.value) {
+                        if ((!this.fallbackExpirationDate.value || !this.fallbackExpirationTime.value) &&
+                            this.editMode) {
                             return null;
                         }
                         return this.fallbackExpirationDate.value + 'T' + this.fallbackExpirationTime.value;
