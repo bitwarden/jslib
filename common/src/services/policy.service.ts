@@ -183,7 +183,7 @@ export class PolicyService implements PolicyServiceAbstraction {
             filteredPolicies = policies.filter(p => p.enabled);
         }
 
-        var policySet = new Set(filteredPolicies.map(p => p.organizationId));
+        const policySet = new Set(filteredPolicies.map(p => p.organizationId));
 
         return organizations.some(o =>
             o.enabled &&
