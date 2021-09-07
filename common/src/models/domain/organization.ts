@@ -125,7 +125,7 @@ export class Organization {
     }
 
     get canManagePolicies() {
-        return this.isAdmin || this.permissions.managePolicies;
+        return this.isAdmin || this.permissions.managePolicies || this.isProviderUser;
     }
 
     get canManageUsers() {
