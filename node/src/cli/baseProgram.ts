@@ -1,15 +1,17 @@
 import * as chalk from 'chalk';
 
+import { AccountService } from 'jslib-common/abstractions/account.service';
+
+import { StorageKey } from 'jslib-common/enums/storageKey';
+
 import { Response } from './models/response';
 import { ListResponse } from './models/response/listResponse';
 import { MessageResponse } from './models/response/messageResponse';
 import { StringResponse } from './models/response/stringResponse';
 
-import { UserService } from 'jslib-common/abstractions/user.service';
-
 export abstract class BaseProgram {
     constructor(
-        private userService: UserService,
+        private accountService: AccountService,
         private writeLn: (s: string, finalLine: boolean, error: boolean) => void) { }
 
     protected processResponse(response: Response, exitImmediately = false, dataProcessor: () => string = null) {
@@ -92,15 +94,15 @@ export abstract class BaseProgram {
     }
 
     protected async exitIfAuthed() {
-        const authed = await this.userService.isAuthenticated();
+        const authed = this.accountService.activeAccount?.isAuthenticated;
         if (authed) {
-            const email = await this.userService.getEmail();
+            const email = await this.accountService.getSetting<string>(StorageKey.UserEmail);
             this.processResponse(Response.error('You are already logged in as ' + email + '.'), true);
         }
     }
 
     protected async exitIfNotAuthed() {
-        const authed = await this.userService.isAuthenticated();
+        const authed = this.accountService.activeAccount?.isAuthenticated;
         if (!authed) {
             this.processResponse(Response.error('You are not logged in.'), true);
         }
