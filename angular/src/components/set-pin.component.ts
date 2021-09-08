@@ -16,12 +16,12 @@ export class SetPinComponent {
 
     pin = '';
     showPin = false;
-    masterPassOnRestart = false;
+    masterPassOnRestart = true;
 
     constructor(private modalRef: ModalRef, private cryptoService: CryptoService, private userService: UserService,
         private storageService: StorageService, private vaultTimeoutService: VaultTimeoutService) { }
 
-    togglePassword() {
+    toggleVisibility() {
         this.showPin = !this.showPin;
     }
 
