@@ -6,17 +6,17 @@ import {
     RouterStateSnapshot,
 } from '@angular/router';
 
+import { AccountService } from 'jslib-common/abstractions/account.service';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 import { VaultTimeoutService } from 'jslib-common/abstractions/vaultTimeout.service';
 
 @Injectable()
 export class AuthGuardService implements CanActivate {
-    constructor(private vaultTimeoutService: VaultTimeoutService, private userService: UserService,
-        private router: Router, private messagingService: MessagingService) { }
+    constructor(private vaultTimeoutService: VaultTimeoutService, private router: Router,
+        private messagingService: MessagingService, private accountService: AccountService) { }
 
     async canActivate(route: ActivatedRouteSnapshot, routerState: RouterStateSnapshot) {
-        const isAuthed = await this.userService.isAuthenticated();
+        const isAuthed = this.accountService.activeAccount?.isAuthenticated;
         if (!isAuthed) {
             this.messagingService.send('authBlocked');
             return false;
