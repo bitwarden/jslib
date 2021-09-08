@@ -96,7 +96,7 @@ export abstract class BaseProgram {
     protected async exitIfAuthed() {
         const authed = this.accountService.activeAccount?.isAuthenticated;
         if (authed) {
-            const email = await this.accountService.getSetting<string>(StorageKey.UserEmail);
+            const email = this.accountService.activeAccount?.email;
             this.processResponse(Response.error('You are already logged in as ' + email + '.'), true);
         }
     }
