@@ -172,21 +172,18 @@ export class PolicyService implements PolicyServiceAbstraction {
     }
 
     async policyAppliesToUser(policyType: PolicyType, policyFilter?: (policy: Policy) => boolean) {
-        if (policyFilter == null) {
-            policyFilter = (policy: Policy) => true;
-        }
-
         const policies = await this.getAll(policyType);
         const organizations = await this.userService.getAllOrganizations();
+        let filteredPolicies;
 
-        const filteredPolicies = policies
-            .filter(p =>
-                p.enabled &&
-                p.type === policyType &&
-                policyFilter(p))
-            .map(p => p.organizationId);
+        if (policyFilter != null) {
+            filteredPolicies = policies.filter(p => p.enabled && policyFilter(p));
+        }
+        else {
+            filteredPolicies = policies.filter(p => p.enabled);
+        }
 
-        const policySet = new Set(filteredPolicies);
+        const policySet = new Set(filteredPolicies.map(p => p.organizationId));
 
         return organizations.some(o =>
             o.enabled &&
