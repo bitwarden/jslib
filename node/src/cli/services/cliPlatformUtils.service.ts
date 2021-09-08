@@ -76,6 +76,10 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
         return Promise.resolve(false);
     }
 
+    lockTimeout(): number {
+        return null;
+    }
+
     launchUri(uri: string, options?: any): void {
         if (process.platform === 'linux') {
             child_process.spawnSync('xdg-open', [uri]);

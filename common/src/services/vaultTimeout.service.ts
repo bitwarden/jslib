@@ -6,14 +6,12 @@ import { CryptoService } from '../abstractions/crypto.service';
 import { FolderService } from '../abstractions/folder.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
-import { PolicyService } from '../abstractions/policy.service';
 import { SearchService } from '../abstractions/search.service';
 import { StorageService } from '../abstractions/storage.service';
 import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
 import { VaultTimeoutService as VaultTimeoutServiceAbstraction } from '../abstractions/vaultTimeout.service';
 
-import { PolicyType } from '../enums/policyType';
 import { EncString } from '../models/domain/encString';
 
 export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
@@ -27,7 +25,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         private collectionService: CollectionService, private cryptoService: CryptoService,
         protected platformUtilsService: PlatformUtilsService, private storageService: StorageService,
         private messagingService: MessagingService, private searchService: SearchService,
-        private userService: UserService, private tokenService: TokenService, private policyService: PolicyService,
+        private userService: UserService, private tokenService: TokenService,
         private lockedCallback: () => Promise<void> = null, private loggedOutCallback: () => Promise<void> = null) {
     }
 
@@ -73,7 +71,12 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
             return;
         }
 
-        const vaultTimeout = await this.getVaultTimeout();
+        // This has the potential to be removed. Evaluate after all platforms complete with auto-logout
+        let vaultTimeout = this.platformUtilsService.lockTimeout();
+        if (vaultTimeout == null) {
+            vaultTimeout = await this.storageService.get<number>(ConstantsService.vaultTimeoutKey);
+        }
+
         if (vaultTimeout == null || vaultTimeout < 0) {
             return;
         }
@@ -136,29 +139,6 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
 
     async isBiometricLockSet(): Promise<boolean> {
         return await this.storageService.get<boolean>(ConstantsService.biometricUnlockKey);
-    }
-
-    async getVaultTimeout(): Promise<number> {
-        const vaultTimeout = await this.storageService.get<number>(ConstantsService.vaultTimeoutKey);
-
-        if (await this.policyService.policyAppliesToUser(PolicyType.MaximumVaultTimeout)) {
-            const policy = await this.policyService.getAll(PolicyType.MaximumVaultTimeout);
-            // Remove negative values, and ensure it's smaller than maximum allowed value according to policy
-            let timeout = Math.min(vaultTimeout, policy[0].data.minutes);
-
-            if (vaultTimeout == null || timeout < 0) {
-                timeout = policy[0].data.minutes;
-            }
-
-            // We really shouldn't need to set the value here, but multiple services relies on this value being correct.
-            if (vaultTimeout !== timeout) {
-                await this.storageService.save(ConstantsService.vaultTimeoutKey, timeout);
-            }
-
-            return timeout;
-        }
-
-        return vaultTimeout;
     }
 
     clear(): Promise<any> {

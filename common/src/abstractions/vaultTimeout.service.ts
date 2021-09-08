@@ -9,7 +9,6 @@ export abstract class VaultTimeoutService {
     lock: (allowSoftLock?: boolean) => Promise<void>;
     logOut: () => Promise<void>;
     setVaultTimeoutOptions: (vaultTimeout: number, vaultTimeoutAction: string) => Promise<void>;
-    getVaultTimeout: () => Promise<number>;
     isPinLockSet: () => Promise<[boolean, boolean]>;
     isBiometricLockSet: () => Promise<boolean>;
     clear: () => Promise<any>;
