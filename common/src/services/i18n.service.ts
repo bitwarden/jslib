@@ -55,6 +55,7 @@ export class I18nService implements I18nServiceAbstraction {
     protected inited: boolean;
     protected defaultMessages: any = {};
     protected localeMessages: any = {};
+    protected messageRenames = new Map<string, string[]>();
 
     constructor(protected systemLanguage: string, protected localesDirectory: string,
         protected getLocalesJson: (formattedLocale: string) => Promise<any>) {
@@ -89,7 +90,7 @@ export class I18nService implements I18nServiceAbstraction {
         if (this.localesDirectory != null) {
             await this.loadMessages(this.translationLocale, this.localeMessages);
             if (this.translationLocale !== this.supportedTranslationLocales[0]) {
-                await this.loadMessages(this.supportedTranslationLocales[0], this.defaultMessages);
+                await this.loadMessages(this.supportedTranslationLocales[0], this.defaultMessages, true);
             }
         }
     }
@@ -98,14 +99,29 @@ export class I18nService implements I18nServiceAbstraction {
         return this.translate(id, p1, p2, p3);
     }
 
-    translate(id: string, p1?: string, p2?: string, p3?: string): string {
-        let result: string;
+    getMessage(messages: any, id: string): string {
+        var result = '';
+
         if (this.localeMessages.hasOwnProperty(id) && this.localeMessages[id]) {
-            result = this.localeMessages[id];
-        } else if (this.defaultMessages.hasOwnProperty(id) && this.defaultMessages[id]) {
-            result = this.defaultMessages[id];
-        } else {
-            result = '';
+            result = messages[id];
+        } else if (this.messageRenames.has(id)) {
+            for (const rename of this.messageRenames.get(id)) {
+                result = this.getMessage(messages, rename);
+
+                if (result !== '') {
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    translate(id: string, p1?: string, p2?: string, p3?: string): string {
+        let result = this.getMessage(this.localeMessages, id);
+
+        if (result === '') {
+            result = this.getMessage(this.defaultMessages, id);
         }
 
         if (result !== '') {
@@ -123,7 +139,7 @@ export class I18nService implements I18nServiceAbstraction {
         return result;
     }
 
-    private async loadMessages(locale: string, messagesObj: any): Promise<any> {
+    private async loadMessages(locale: string, messagesObj: any, loadRenames: boolean = false): Promise<any> {
         const formattedLocale = locale.replace('-', '_');
         const locales = await this.getLocalesJson(formattedLocale);
         for (const prop in locales) {
@@ -147,7 +163,10 @@ export class I18nService implements I18nServiceAbstraction {
                     messagesObj[prop] = messagesObj[prop].replace(new RegExp(replaceToken, 'g'), replaceContent);
                 }
             }
+
+            if (loadRenames && locales[prop].previousNames) {
+                this.messageRenames.set(prop, locales[prop].previousNames);
+            }
         }
     }
-
 }
