@@ -185,6 +185,9 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         if (response.resetMasterPassword) {
             this.successRoute = 'set-password';
         }
+        if (response.forcePasswordReset) {
+            this.successRoute = 'update-temp-password';
+        }
         if (this.onSuccessfulLoginNavigate != null) {
             this.onSuccessfulLoginNavigate();
         } else {
