@@ -100,7 +100,7 @@ export class I18nService implements I18nServiceAbstraction {
     }
 
     getMessage(messages: any, id: string): string {
-        var result = '';
+        let result = '';
 
         if (this.localeMessages.hasOwnProperty(id) && this.localeMessages[id]) {
             result = messages[id];
