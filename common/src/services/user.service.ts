@@ -166,6 +166,15 @@ export class UserService implements UserServiceAbstraction {
         return new Organization(organizations[id]);
     }
 
+    async getOrganizationByIdentifier(identifier: string): Promise<Organization> {
+        const organizations = await this.getAllOrganizations();
+        if (organizations == null || organizations.length === 0) {
+            return null;
+        }
+
+        return organizations.find(o => o.identifier === identifier);
+    }
+
     async getAllOrganizations(): Promise<Organization[]> {
         const userId = await this.getUserId();
         const organizations = await this.storageService.get<{ [id: string]: OrganizationData; }>(

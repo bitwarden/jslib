@@ -89,7 +89,7 @@ export class Organization {
     }
 
     get isOwner() {
-        return this.type === OrganizationUserType.Owner;
+        return this.type === OrganizationUserType.Owner || this.isProviderUser;
     }
 
     get canAccessBusinessPortal() {
