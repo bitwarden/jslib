@@ -23,7 +23,7 @@ export class ExportComponent implements OnInit {
     masterPassword: string;
     format: 'json' | 'encrypted_json' | 'csv' = 'json';
     showPassword = false;
-    disablePrivateVaultPolicyEnabled: boolean = false;
+    disabledByPolicy: boolean = false;
 
     constructor(protected cryptoService: CryptoService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected exportService: ExportService,
@@ -34,7 +34,7 @@ export class ExportComponent implements OnInit {
     }
 
     async checkExportDisabled() {
-        this.disablePrivateVaultPolicyEnabled = await this.policyService.policyAppliesToUser(PolicyType.DisablePersonalVaultExport);
+        this.disabledByPolicy = await this.policyService.policyAppliesToUser(PolicyType.DisablePersonalVaultExport);
     }
 
     get encryptedFormat() {
@@ -42,7 +42,7 @@ export class ExportComponent implements OnInit {
     }
 
     async submit() {
-        if (this.disablePrivateVaultPolicyEnabled) {
+        if (this.disabledByPolicy) {
             this.platformUtilsService.showToast('error', null, this.i18nService.t('personalVaultExportPolicyInEffect'));
             return;
         }
