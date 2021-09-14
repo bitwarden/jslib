@@ -163,6 +163,7 @@ import { UserKeyResponse } from '../models/response/userKeyResponse';
 import { EnvironmentService } from '../abstractions';
 import { IdentityCaptchaResponse } from '../models/response/identityCaptchaResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
+import { OrganizationAutoEnrollStatusResponse } from '../models/response/organizationAutoEnrollStatusResponse';
 
 export class ApiService implements ApiServiceAbstraction {
     protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
@@ -810,6 +811,11 @@ export class ApiService implements ApiServiceAbstraction {
         const r = await this.send('GET', '/organizations/' + organizationId + '/users/' + id +
             '/reset-password-details', null, true, true);
         return new OrganizationUserResetPasswordDetailsReponse(r);
+    }
+
+    async getOrganizationAutoEnrollStatus(identifier: string): Promise<OrganizationAutoEnrollStatusResponse> {
+        const r = await this.send('GET', '/organizations/' + identifier + '/auto-enroll-status', null, true, true);
+        return new OrganizationAutoEnrollStatusResponse(r);
     }
 
     postOrganizationUserInvite(organizationId: string, request: OrganizationUserInviteRequest): Promise<any> {

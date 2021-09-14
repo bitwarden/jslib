@@ -65,11 +65,13 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
 
         // Automatic Enrollment Detection
         if (this.identifier != null) {
-            const org = await this.userService.getOrganizationByIdentifier(this.identifier);
-            this.orgId = org?.id;
-            const policyList = await this.policyService.getAll(PolicyType.ResetPassword);
-            const policyResult = this.policyService.getResetPasswordPolicyOptions(policyList, this.orgId);
-            this.resetPasswordAutoEnroll = policyResult[1] && policyResult[0].autoEnrollEnabled;
+            try {
+                const response = await this.apiService.getOrganizationAutoEnrollStatus(this.identifier);
+                this.orgId = response.id;
+                this.resetPasswordAutoEnroll = response.autoEnrollEnabled;
+            } catch {
+                this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
+            }
         }
 
         super.ngOnInit();
