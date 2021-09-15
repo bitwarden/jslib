@@ -68,7 +68,7 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
             try {
                 const response = await this.apiService.getOrganizationAutoEnrollStatus(this.identifier);
                 this.orgId = response.id;
-                this.resetPasswordAutoEnroll = response.autoEnrollEnabled;
+                this.resetPasswordAutoEnroll = response.resetPasswordEnabled;
             } catch {
                 this.platformUtilsService.showToast('error', null, this.i18nService.t('errorOccurred'));
             }
