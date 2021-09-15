@@ -118,6 +118,7 @@ import {
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
+import { OrganizationAutoEnrollStatusResponse } from '../models/response/organizationAutoEnrollStatusResponse';
 import { OrganizationKeysResponse } from '../models/response/organizationKeysResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import { OrganizationSubscriptionResponse } from '../models/response/organizationSubscriptionResponse';
@@ -810,6 +811,11 @@ export class ApiService implements ApiServiceAbstraction {
         const r = await this.send('GET', '/organizations/' + organizationId + '/users/' + id +
             '/reset-password-details', null, true, true);
         return new OrganizationUserResetPasswordDetailsReponse(r);
+    }
+
+    async getOrganizationAutoEnrollStatus(identifier: string): Promise<OrganizationAutoEnrollStatusResponse> {
+        const r = await this.send('GET', '/organizations/' + identifier + '/auto-enroll-status', null, true, true);
+        return new OrganizationAutoEnrollStatusResponse(r);
     }
 
     postOrganizationUserInvite(organizationId: string, request: OrganizationUserInviteRequest): Promise<any> {
