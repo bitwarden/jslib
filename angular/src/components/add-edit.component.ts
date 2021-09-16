@@ -1,8 +1,4 @@
 import {
-    CdkDragDrop,
-    moveItemInArray,
-} from '@angular/cdk/drag-drop';
-import {
     Directive,
     EventEmitter,
     Input,
@@ -76,13 +72,10 @@ export class AddEditComponent implements OnInit {
     showCardCode: boolean = false;
     cipherType = CipherType;
     fieldType = FieldType;
-    addFieldType: FieldType = FieldType.Text;
     typeOptions: any[];
     cardBrandOptions: any[];
     cardExpMonthOptions: any[];
     identityTitleOptions: any[];
-    addFieldTypeOptions: any[];
-    linkedFieldOptions: any[] = [];
     uriMatchOptions: any[];
     ownershipOptions: any[] = [];
     autofillOnPageLoadOptions: any[];
@@ -138,11 +131,6 @@ export class AddEditComponent implements OnInit {
             { name: i18nService.t('mrs'), value: i18nService.t('mrs') },
             { name: i18nService.t('ms'), value: i18nService.t('ms') },
             { name: i18nService.t('dr'), value: i18nService.t('dr') },
-        ];
-        this.addFieldTypeOptions = [
-            { name: i18nService.t('cfTypeText'), value: FieldType.Text },
-            { name: i18nService.t('cfTypeHidden'), value: FieldType.Hidden },
-            { name: i18nService.t('cfTypeBoolean'), value: FieldType.Boolean },
         ];
         this.uriMatchOptions = [
             { name: i18nService.t('defaultMatchDetection'), value: null },
@@ -249,7 +237,6 @@ export class AddEditComponent implements OnInit {
         }
         this.previousCipherId = this.cipherId;
         this.reprompt = this.cipher.reprompt !== CipherRepromptType.None;
-        this.setLinkedFieldOptions();
     }
 
     async submit(): Promise<boolean> {
@@ -321,29 +308,6 @@ export class AddEditComponent implements OnInit {
         const i = this.cipher.login.uris.indexOf(uri);
         if (i > -1) {
             this.cipher.login.uris.splice(i, 1);
-        }
-    }
-
-    addField() {
-        if (this.cipher.fields == null) {
-            this.cipher.fields = [];
-        }
-
-        const f = new FieldView();
-        f.type = this.addFieldType;
-        f.newField = true;
-
-        if (f.type === FieldType.Linked) {
-            f.value = this.linkedFieldOptions[0].value;
-        }
-
-        this.cipher.fields.push(f);
-    }
-
-    removeField(field: FieldView) {
-        const i = this.cipher.fields.indexOf(field);
-        if (i > -1) {
-            this.cipher.fields.splice(i, 1);
         }
     }
 
@@ -447,14 +411,6 @@ export class AddEditComponent implements OnInit {
         }
     }
 
-    toggleFieldValue(field: FieldView) {
-        const f = (field as any);
-        f.showValue = !f.showValue;
-        if (this.editMode && f.showValue) {
-            this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible, this.cipherId);
-        }
-    }
-
     toggleUriOptions(uri: LoginUriView) {
         const u = (uri as any);
         u.showOptions = u.showOptions == null && uri.match != null ? false : !u.showOptions;
@@ -463,10 +419,6 @@ export class AddEditComponent implements OnInit {
     loginUriMatchChanged(uri: LoginUriView) {
         const u = (uri as any);
         u.showOptions = u.showOptions == null ? true : u.showOptions;
-    }
-
-    drop(event: CdkDragDrop<string[]>) {
-        moveItemInArray(this.cipher.fields, event.previousIndex, event.currentIndex);
     }
 
     async organizationChanged() {
@@ -514,10 +466,6 @@ export class AddEditComponent implements OnInit {
         }
     }
 
-    cipherTypeChanged() {
-        this.setLinkedFieldOptions();
-    }
-
     protected async loadCollections() {
         const allCollections = await this.collectionService.getAllDecrypted();
         return allCollections.filter(c => !c.readOnly);
@@ -544,21 +492,5 @@ export class AddEditComponent implements OnInit {
         return this.cipherService.restoreWithServer(this.cipher.id);
     }
 
-    private setLinkedFieldOptions() {
-        if (this.cipher.type === CipherType.SecureNote) {
-            if (this.addFieldTypeOptions.length === 4) {
-                this.addFieldTypeOptions.pop();
-            }
-            return;
-        }
 
-        if (this.addFieldTypeOptions.length === 3) {
-            this.addFieldTypeOptions.push({ name: this.i18nService.t('cfTypeLinked'), value: FieldType.Linked });
-        }
-
-        this.linkedFieldOptions = [];
-        for (const [key] of Object.entries(this.cipher.linkedFieldOptions)) {
-            this.linkedFieldOptions.push({ name: this.i18nService.t(this.cipher.getLinkedFieldi18nKey(key)), value: key });
-        }
-    }
 }
