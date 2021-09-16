@@ -13,10 +13,6 @@ export abstract class PlatformUtilsService {
     isIE: () => boolean;
     isMacAppStore: () => boolean;
     isViewOpen: () => Promise<boolean>;
-    /**
-     * @deprecated This only ever returns null. Pull from your platform's storage using ConstantsService.vaultTimeoutKey
-     */
-    lockTimeout: () => number;
     launchUri: (uri: string, options?: any) => void;
     saveFile: (win: Window, blobData: any, blobOptions: any, fileName: string) => void;
     getApplicationVersion: () => Promise<string>;
@@ -26,7 +22,6 @@ export abstract class PlatformUtilsService {
         options?: any) => void;
     showDialog: (body: string, title?: string, confirmText?: string, cancelText?: string,
         type?: string, bodyIsHtml?: boolean) => Promise<boolean>;
-    showPasswordDialog: (title: string, body: string, passwordValidation: (value: string) => Promise<boolean>) => Promise<boolean>;
     isDev: () => boolean;
     isSelfHost: () => boolean;
     copyToClipboard: (text: string, options?: any) => void | boolean;

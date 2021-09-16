@@ -88,10 +88,6 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return Promise.resolve(false);
     }
 
-    lockTimeout(): number {
-        return null;
-    }
-
     launchUri(uri: string, options?: any): void {
         shell.openExternal(uri);
     }
@@ -149,11 +145,6 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         });
 
         return Promise.resolve(result.response === 0);
-    }
-
-    async showPasswordDialog(title: string, body: string, passwordValidation: (value: string) => Promise<boolean>):
-        Promise<boolean> {
-        throw new Error('Not implemented.');
     }
 
     isDev(): boolean {

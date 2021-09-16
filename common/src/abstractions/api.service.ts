@@ -114,6 +114,7 @@ import { IdentityCaptchaResponse } from '../models/response/identityCaptchaRespo
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
+import { OrganizationAutoEnrollStatusResponse } from '../models/response/organizationAutoEnrollStatusResponse';
 import { OrganizationKeysResponse } from '../models/response/organizationKeysResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import { OrganizationSubscriptionResponse } from '../models/response/organizationSubscriptionResponse';
@@ -370,6 +371,7 @@ export abstract class ApiService {
     getOrganizationSubscription: (id: string) => Promise<OrganizationSubscriptionResponse>;
     getOrganizationLicense: (id: string, installationId: string) => Promise<any>;
     getOrganizationTaxInfo: (id: string) => Promise<TaxInfoResponse>;
+    getOrganizationAutoEnrollStatus: (identifier: string) => Promise<OrganizationAutoEnrollStatusResponse>;
     postOrganization: (request: OrganizationCreateRequest) => Promise<OrganizationResponse>;
     putOrganization: (id: string, request: OrganizationUpdateRequest) => Promise<OrganizationResponse>;
     putOrganizationTaxInfo: (id: string, request: OrganizationTaxInfoUpdateRequest) => Promise<any>;

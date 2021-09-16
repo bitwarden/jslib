@@ -11,6 +11,11 @@ export type Urls = {
     enterprise?: string;
 };
 
+export type PayPalConfig = {
+    businessId?: string;
+    buttonAction?: string;
+};
+
 export abstract class EnvironmentService {
     urls: Observable<Urls>;
 

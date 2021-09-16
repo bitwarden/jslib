@@ -76,10 +76,6 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
         return Promise.resolve(false);
     }
 
-    lockTimeout(): number {
-        return null;
-    }
-
     launchUri(uri: string, options?: any): void {
         if (process.platform === 'linux') {
             child_process.spawnSync('xdg-open', [uri]);
@@ -110,11 +106,6 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     }
 
     showDialog(text: string, title?: string, confirmText?: string, cancelText?: string, type?: string):
-        Promise<boolean> {
-        throw new Error('Not implemented.');
-    }
-
-    showPasswordDialog(title: string, body: string, passwordValidation: (value: string) => Promise<boolean>):
         Promise<boolean> {
         throw new Error('Not implemented.');
     }
