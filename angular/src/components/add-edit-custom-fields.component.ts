@@ -19,8 +19,8 @@ import {
 } from 'jslib-common/models/view';
 
 import { CipherType } from 'jslib-common/enums/cipherType';
-import { FieldType } from 'jslib-common/enums/fieldType';
 import { EventType } from 'jslib-common/enums/eventType';
+import { FieldType } from 'jslib-common/enums/fieldType';
 
 @Directive()
 export class AddEditCustomFieldsComponent implements OnChanges {
@@ -36,7 +36,7 @@ export class AddEditCustomFieldsComponent implements OnChanges {
     fieldType = FieldType;
     eventType = EventType;
 
-    constructor(private i18nService: I18nService, private eventService: EventService) { 
+    constructor(private i18nService: I18nService, private eventService: EventService) {
         this.addFieldTypeOptions = [
             { name: i18nService.t('cfTypeText'), value: FieldType.Text },
             { name: i18nService.t('cfTypeHidden'), value: FieldType.Hidden },
