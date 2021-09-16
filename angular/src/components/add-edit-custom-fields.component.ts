@@ -25,6 +25,7 @@ import { FieldType } from 'jslib-common/enums/fieldType';
 @Directive()
 export class AddEditCustomFieldsComponent implements OnChanges {
     @Input() cipher: CipherView;
+    @Input() thisCipherType: CipherType;
     @Input() editMode: boolean;
 
     addFieldType: FieldType = FieldType.Text;
@@ -46,7 +47,7 @@ export class AddEditCustomFieldsComponent implements OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes.cipher.currentValue != changes.cipher.previousValue) {
+        if (changes.thisCipherType.currentValue !== changes.thisCipherType.previousValue) {
             this.setLinkedFieldOptions();
         }
     }
@@ -91,7 +92,13 @@ export class AddEditCustomFieldsComponent implements OnChanges {
     }
 
     private setLinkedFieldOptions() {
+        // Secure notes do not support Linked fields
         if (this.cipher.type === CipherType.SecureNote) {
+            this.cipher.fields.forEach(f => {
+                if (f.type === FieldType.Linked) {
+                    this.removeField(f);
+                }
+            });
             return;
         }
 
