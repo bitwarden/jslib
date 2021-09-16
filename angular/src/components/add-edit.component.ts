@@ -9,7 +9,6 @@ import {
 import { CipherRepromptType } from 'jslib-common/enums/cipherRepromptType';
 import { CipherType } from 'jslib-common/enums/cipherType';
 import { EventType } from 'jslib-common/enums/eventType';
-import { FieldType } from 'jslib-common/enums/fieldType';
 import { OrganizationUserStatusType } from 'jslib-common/enums/organizationUserStatusType';
 import { PolicyType } from 'jslib-common/enums/policyType';
 import { SecureNoteType } from 'jslib-common/enums/secureNoteType';
@@ -32,7 +31,6 @@ import { Cipher } from 'jslib-common/models/domain/cipher';
 import { CardView } from 'jslib-common/models/view/cardView';
 import { CipherView } from 'jslib-common/models/view/cipherView';
 import { CollectionView } from 'jslib-common/models/view/collectionView';
-import { FieldView } from 'jslib-common/models/view/fieldView';
 import { FolderView } from 'jslib-common/models/view/folderView';
 import { IdentityView } from 'jslib-common/models/view/identityView';
 import { LoginUriView } from 'jslib-common/models/view/loginUriView';
@@ -71,7 +69,6 @@ export class AddEditComponent implements OnInit {
     showCardNumber: boolean = false;
     showCardCode: boolean = false;
     cipherType = CipherType;
-    fieldType = FieldType;
     typeOptions: any[];
     cardBrandOptions: any[];
     cardExpMonthOptions: any[];

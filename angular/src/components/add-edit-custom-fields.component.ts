@@ -1,8 +1,6 @@
 import {
     Directive,
     Input,
-    OnChanges,
-    SimpleChanges,
 } from '@angular/core';
 
 import {
@@ -23,14 +21,12 @@ import { EventType } from 'jslib-common/enums/eventType';
 import { FieldType } from 'jslib-common/enums/fieldType';
 
 @Directive()
-export class AddEditCustomFieldsComponent implements OnChanges {
+export class AddEditCustomFieldsComponent {
     @Input() cipher: CipherView;
-    @Input() thisCipherType: CipherType;
     @Input() editMode: boolean;
 
     addFieldType: FieldType = FieldType.Text;
     addFieldTypeOptions: any[];
-    addFieldLinkedTypeOption: any;
     linkedFieldOptions: any[] = [];
 
     cipherType = CipherType;
@@ -43,13 +39,6 @@ export class AddEditCustomFieldsComponent implements OnChanges {
             { name: i18nService.t('cfTypeHidden'), value: FieldType.Hidden },
             { name: i18nService.t('cfTypeBoolean'), value: FieldType.Boolean },
         ];
-        this.addFieldLinkedTypeOption = { name: this.i18nService.t('cfTypeLinked'), value: FieldType.Linked };
-    }
-
-    ngOnChanges(changes: SimpleChanges) {
-        if (changes.thisCipherType.currentValue !== changes.thisCipherType.previousValue) {
-            this.setLinkedFieldOptions();
-        }
     }
 
     addField() {
@@ -60,10 +49,6 @@ export class AddEditCustomFieldsComponent implements OnChanges {
         const f = new FieldView();
         f.type = this.addFieldType;
         f.newField = true;
-
-        if (f.type === FieldType.Linked) {
-            f.value = this.linkedFieldOptions[0].value;
-        }
 
         this.cipher.fields.push(f);
     }
@@ -89,22 +74,5 @@ export class AddEditCustomFieldsComponent implements OnChanges {
 
     drop(event: CdkDragDrop<string[]>) {
         moveItemInArray(this.cipher.fields, event.previousIndex, event.currentIndex);
-    }
-
-    private setLinkedFieldOptions() {
-        // Secure notes do not support Linked fields
-        if (this.cipher.type === CipherType.SecureNote) {
-            this.cipher.fields.forEach(f => {
-                if (f.type === FieldType.Linked) {
-                    this.removeField(f);
-                }
-            });
-            return;
-        }
-
-        this.linkedFieldOptions = [];
-        for (const [key] of Object.entries(this.cipher.linkedFieldOptions)) {
-            this.linkedFieldOptions.push({ name: this.i18nService.t(this.cipher.getLinkedFieldi18nKey(key)), value: key });
-        }
     }
 }
