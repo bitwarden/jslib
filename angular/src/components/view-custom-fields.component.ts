@@ -7,9 +7,6 @@ import { EventType } from 'jslib-common/enums/eventType';
 import { FieldType } from 'jslib-common/enums/fieldType';
 
 import { EventService } from 'jslib-common/abstractions/event.service';
-import { I18nService } from 'jslib-common/abstractions/i18n.service';
-import { PasswordRepromptService } from 'jslib-common/abstractions/passwordReprompt.service';
-import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 
 import { CipherView } from 'jslib-common/models/view/cipherView';
 import { FieldView } from 'jslib-common/models/view/fieldView';
