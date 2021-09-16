@@ -9,8 +9,9 @@ import { SecureNoteView } from '../models/view/secureNoteView';
 import { CipherType } from '../enums/cipherType';
 import { SecureNoteType } from '../enums/secureNoteType';
 
-import { FieldType } from '../enums';
-import { CipherView, FieldView } from '../models/view';
+import { FieldType } from '../enums/fieldType';
+import { CipherView } from '../models/view/cipherView';
+import { FieldView } from '../models/view/fieldView';
 
 export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {

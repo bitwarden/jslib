@@ -2,6 +2,7 @@ import { DeviceType } from '../enums/deviceType';
 import { PolicyType } from '../enums/policyType';
 
 import { ApiService as ApiServiceAbstraction } from '../abstractions/api.service';
+import { EnvironmentService } from '../abstractions/environment.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { TokenService } from '../abstractions/token.service';
 
@@ -161,7 +162,6 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
-import { EnvironmentService } from '../abstractions';
 import { IdentityCaptchaResponse } from '../models/response/identityCaptchaResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
 
