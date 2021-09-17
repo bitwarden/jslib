@@ -340,6 +340,7 @@ export class AuthService implements AuthServiceAbstraction {
 
         const tokenResponse = response as IdentityTokenResponse;
         result.resetMasterPassword = tokenResponse.resetMasterPassword;
+        result.forcePasswordReset = tokenResponse.forcePasswordReset;
         if (tokenResponse.twoFactorToken != null) {
             await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken, email);
         }
