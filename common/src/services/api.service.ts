@@ -36,6 +36,7 @@ import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
 import { OrganizationImportRequest } from '../models/request/organizationImportRequest';
 import { OrganizationKeysRequest } from '../models/request/organizationKeysRequest';
+import { OrganizationSubscriptionUpdateRequest } from '../models/request/organizationSubscriptionUpdateRequest';
 import { OrganizationTaxInfoUpdateRequest } from '../models/request/organizationTaxInfoUpdateRequest';
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
 import { OrganizationUpgradeRequest } from '../models/request/organizationUpgradeRequest';
@@ -1190,6 +1191,10 @@ export class ApiService implements ApiServiceAbstraction {
     async postOrganizationUpgrade(id: string, request: OrganizationUpgradeRequest): Promise<PaymentResponse> {
         const r = await this.send('POST', '/organizations/' + id + '/upgrade', request, true, true);
         return new PaymentResponse(r);
+    }
+
+    async postOrganizationUpdateSubscription(id: string, request: OrganizationSubscriptionUpdateRequest): Promise<void> {
+        return this.send('POST', '/organizations/' + id + '/subscription', request, true, false);
     }
 
     async postOrganizationSeat(id: string, request: SeatRequest): Promise<PaymentResponse> {

@@ -17,6 +17,7 @@ export class OrganizationResponse extends BaseResponse {
     plan: PlanResponse;
     planType: PlanType;
     seats: number;
+    maxAutoscaleSeats: number;
     maxCollections: number;
     maxStorageGb: number;
     useGroups: boolean;
@@ -44,6 +45,7 @@ export class OrganizationResponse extends BaseResponse {
         this.plan = plan == null ? null : new PlanResponse(plan);
         this.planType = this.getResponseProperty('PlanType');
         this.seats = this.getResponseProperty('Seats');
+        this.maxAutoscaleSeats = this.getResponseProperty('MaxAutoscaleSeats');
         this.maxCollections = this.getResponseProperty('MaxCollections');
         this.maxStorageGb = this.getResponseProperty('MaxStorageGb');
         this.useGroups = this.getResponseProperty('UseGroups');
