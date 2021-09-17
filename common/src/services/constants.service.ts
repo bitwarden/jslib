@@ -7,6 +7,7 @@ export class ConstantsService {
     static readonly disableFaviconKey: string = 'disableFavicon';
     static readonly disableBadgeCounterKey: string = 'disableBadgeCounter';
     static readonly disableAutoTotpCopyKey: string = 'disableAutoTotpCopy';
+    static readonly disableAutoBiometricsPromptKey: string = 'noAutoPromptBiometrics';
     static readonly enableAutoFillOnPageLoadKey: string = 'enableAutoFillOnPageLoad';
     static readonly autoFillOnPageLoadDefaultKey: string = 'autoFillOnPageLoadDefault';
     static readonly vaultTimeoutKey: string = 'lockOption';
@@ -39,6 +40,7 @@ export class ConstantsService {
     readonly disableFaviconKey: string = ConstantsService.disableFaviconKey;
     readonly disableBadgeCounterKey: string = ConstantsService.disableBadgeCounterKey;
     readonly disableAutoTotpCopyKey: string = ConstantsService.disableAutoTotpCopyKey;
+    readonly disableAutoBiometricsPromptKey: string = ConstantsService.disableAutoBiometricsPromptKey;
     readonly enableAutoFillOnPageLoadKey: string = ConstantsService.enableAutoFillOnPageLoadKey;
     readonly autoFillOnPageLoadDefaultKey: string = ConstantsService.autoFillOnPageLoadDefaultKey;
     readonly vaultTimeoutKey: string = ConstantsService.vaultTimeoutKey;
