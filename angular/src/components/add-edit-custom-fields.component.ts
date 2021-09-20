@@ -11,8 +11,8 @@ import {
 import { EventService } from 'jslib-common/abstractions/event.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 
-import { CipherView } from 'jslib-common/models/view/CipherView';
-import { FieldView } from 'jslib-common/models/view/FieldView';
+import { CipherView } from 'jslib-common/models/view/cipherView';
+import { FieldView } from 'jslib-common/models/view/fieldView';
 
 import { CipherType } from 'jslib-common/enums/cipherType';
 import { EventType } from 'jslib-common/enums/eventType';
