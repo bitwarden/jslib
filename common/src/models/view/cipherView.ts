@@ -116,11 +116,11 @@ export class CipherView implements View {
         return (this.subView as any).constructor.linkedFieldOptions;
     }
 
-    getLinkedFieldValue(field: string) {
+    linkedFieldValue(field: string) {
         return (this.subView as any)[field];
     }
 
-    getLinkedFieldi18nKey(field: string) {
+    linkedFieldI18nKey(field: string) {
         return this.linkedFieldOptions[field] ?? field;
     }
 }

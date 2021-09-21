@@ -98,7 +98,7 @@ export class AddEditCustomFieldsComponent implements OnChanges {
 
         this.linkedFieldOptions = [];
         for (const [key] of Object.entries(this.cipher.linkedFieldOptions)) {
-            this.linkedFieldOptions.push({ name: this.i18nService.t(this.cipher.getLinkedFieldi18nKey(key)), value: key });
+            this.linkedFieldOptions.push({ name: this.i18nService.t(this.cipher.linkedFieldI18nKey(key)), value: key });
         }
     }
 }
