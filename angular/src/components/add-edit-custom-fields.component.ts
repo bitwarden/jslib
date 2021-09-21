@@ -45,7 +45,7 @@ export class AddEditCustomFieldsComponent implements OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if (changes.thisCipherType.currentValue !== changes.thisCipherType.previousValue) {
+        if (changes.thisCipherType != null) {
             this.setLinkedFieldOptions();
         }
     }
