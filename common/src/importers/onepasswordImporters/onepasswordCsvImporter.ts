@@ -4,7 +4,7 @@ import { Importer } from '../importer';
 
 import { CipherType } from '../../enums/cipherType';
 import { FieldType } from '../../enums/fieldType';
-import { CipherView } from '../../models/view';
+import { CipherView } from '../../models/view/cipherView';
 import { CipherImportContext } from './cipherImportContext';
 
 export const IgnoredProperties = ['ainfo', 'autosubmit', 'notesplain', 'ps', 'scope', 'tags', 'title', 'uuid', 'notes'];

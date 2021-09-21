@@ -14,7 +14,7 @@ import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.se
 import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { Cipher } from 'jslib-common/models/domain/cipher';
-import { ErrorResponse } from 'jslib-common/models/response';
+import { ErrorResponse } from 'jslib-common/models/response/errorResponse';
 
 import { AttachmentView } from 'jslib-common/models/view/attachmentView';
 import { CipherView } from 'jslib-common/models/view/cipherView';

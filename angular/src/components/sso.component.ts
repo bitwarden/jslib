@@ -31,10 +31,12 @@ export class SsoComponent {
     onSuccessfulLoginNavigate: () => Promise<any>;
     onSuccessfulLoginTwoFactorNavigate: () => Promise<any>;
     onSuccessfulLoginChangePasswordNavigate: () => Promise<any>;
+    onSuccessfulLoginForceResetNavigate: () => Promise<any>;
 
     protected twoFactorRoute = '2fa';
     protected successRoute = 'lock';
     protected changePasswordRoute = 'set-password';
+    protected forcePasswordResetRoute = 'update-temp-password';
     protected clientId: string;
     protected redirectUri: string;
     protected state: string;
@@ -160,6 +162,12 @@ export class SsoComponent {
                             identifier: orgIdFromState,
                         },
                     });
+                }
+            } else if (response.forcePasswordReset) {
+                if (this.onSuccessfulLoginForceResetNavigate != null) {
+                    this.onSuccessfulLoginForceResetNavigate();
+                } else {
+                    this.router.navigate([this.forcePasswordResetRoute]);
                 }
             } else {
                 const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
