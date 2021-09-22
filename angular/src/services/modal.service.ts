@@ -1,6 +1,5 @@
 import {
     ApplicationRef,
-    ComponentFactory,
     ComponentFactoryResolver,
     ComponentRef,
     EmbeddedViewRef,
@@ -23,10 +22,6 @@ export class ModalConfig<D = any> {
 @Injectable()
 export class ModalService {
     protected modalCount = 0;
-
-    // Lazy loaded modules are not available in componentFactoryResolver,
-    // therefore modules needs to manually initialize their resolvers.
-    private factoryResolvers: Map<Type<any>, ComponentFactoryResolver> = new Map();
 
     constructor(private componentFactoryResolver: ComponentFactoryResolver, private applicationRef: ApplicationRef,
         private injector: Injector) {}
@@ -54,18 +49,6 @@ export class ModalService {
         const [modalRef, _] = this.openInternal(componentType, config, true);
 
         return modalRef;
-    }
-
-    registerComponentFactoryResolver<T>(componentType: Type<T>, componentFactoryResolver: ComponentFactoryResolver): void {
-        this.factoryResolvers.set(componentType, componentFactoryResolver);
-    }
-
-    resolveComponentFactory<T>(componentType: Type<T>): ComponentFactory<T> {
-        if (this.factoryResolvers.has(componentType)) {
-            return this.factoryResolvers.get(componentType).resolveComponentFactory(componentType);
-        }
-
-        return this.componentFactoryResolver.resolveComponentFactory(componentType);
     }
 
     protected openInternal(componentType: Type<any>, config?: ModalConfig, attachToDom?: boolean):
