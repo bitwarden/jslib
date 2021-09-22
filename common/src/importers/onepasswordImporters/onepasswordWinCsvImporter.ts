@@ -3,7 +3,10 @@ import { CipherImportContext } from './cipherImportContext';
 import { OnePasswordCsvImporter } from './onepasswordCsvImporter';
 
 import { CipherType } from '../../enums/cipherType';
-import { CardView, CipherView, IdentityView, LoginView } from '../../models/view';
+import { CardView } from '../../models/view/cardView';
+import { CipherView } from '../../models/view/cipherView';
+import { IdentityView } from '../../models/view/identityView';
+import { LoginView } from '../../models/view/loginView';
 
 export class OnePasswordWinCsvImporter extends OnePasswordCsvImporter implements Importer {
     constructor() {

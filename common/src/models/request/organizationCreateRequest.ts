@@ -13,6 +13,7 @@ export class OrganizationCreateRequest {
     paymentMethodType: PaymentMethodType;
     paymentToken: string;
     additionalSeats: number;
+    maxAutoscaleSeats: number;
     additionalStorageGb: number;
     premiumAccessAddon: boolean;
     collectionName: string;
