@@ -166,6 +166,8 @@ export class LockComponent implements OnInit {
         if (success) {
             await this.doContinue();
         }
+
+        return success;
     }
 
     togglePassword() {
