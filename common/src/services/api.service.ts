@@ -149,6 +149,7 @@ import { SendAccessResponse } from '../models/response/sendAccessResponse';
 import { SendFileDownloadDataResponse } from '../models/response/sendFileDownloadDataResponse';
 import { SendFileUploadDataResponse } from '../models/response/sendFileUploadDataResponse';
 import { SendResponse } from '../models/response/sendResponse';
+import { SsoConfigResponse } from '../models/response/ssoConfigResponse';
 import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TaxInfoResponse } from '../models/response/taxInfoResponse';
@@ -395,6 +396,11 @@ export class ApiService implements ApiServiceAbstraction {
 
     putUpdateTempPassword(request: UpdateTempPasswordRequest): Promise<any> {
         return this.send('PUT', '/accounts/update-temp-password', request, true, false);
+    }
+
+    async getSsoConfig(identifier: string): Promise<SsoConfigResponse> {
+        const r = await this.send('GET', '/accounts/sso-config?identifier=' + identifier, null, true, true);
+        return new SsoConfigResponse(r);
     }
 
     // Folder APIs

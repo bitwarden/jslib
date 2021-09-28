@@ -141,6 +141,7 @@ import { SendAccessResponse } from '../models/response/sendAccessResponse';
 import { SendFileDownloadDataResponse } from '../models/response/sendFileDownloadDataResponse';
 import { SendFileUploadDataResponse } from '../models/response/sendFileUploadDataResponse';
 import { SendResponse } from '../models/response/sendResponse';
+import { SsoConfigResponse } from '../models/response/ssoConfigResponse';
 import { SubscriptionResponse } from '../models/response/subscriptionResponse';
 import { SyncResponse } from '../models/response/syncResponse';
 import { TaxInfoResponse } from '../models/response/taxInfoResponse';
@@ -195,6 +196,7 @@ export abstract class ApiService {
     postUserApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
     postUserRotateApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
     putUpdateTempPassword: (request: UpdateTempPasswordRequest) => Promise<any>;
+    getSsoConfig: (identifier: string) => Promise<SsoConfigResponse>;
 
     getFolder: (id: string) => Promise<FolderResponse>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
