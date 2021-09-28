@@ -39,9 +39,11 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
     onSuccessfulLogin: () => Promise<any>;
     onSuccessfulLoginNavigate: () => Promise<any>;
     onSuccessfulLoginTwoFactorNavigate: () => Promise<any>;
+    onSuccessfulLoginForceResetNavigate: () => Promise<any>;
 
     protected twoFactorRoute = '2fa';
     protected successRoute = 'vault';
+    protected forcePasswordResetRoute = 'update-temp-password';
 
     constructor(protected authService: AuthService, protected router: Router,
         platformUtilsService: PlatformUtilsService, i18nService: I18nService,
@@ -102,6 +104,12 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
                     this.onSuccessfulLoginTwoFactorNavigate();
                 } else {
                     this.router.navigate([this.twoFactorRoute]);
+                }
+            } else if (response.forcePasswordReset) {
+                if (this.onSuccessfulLoginForceResetNavigate != null) {
+                    this.onSuccessfulLoginForceResetNavigate();
+                } else {
+                    this.router.navigate([this.forcePasswordResetRoute]);
                 }
             } else {
                 const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);

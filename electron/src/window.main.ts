@@ -118,9 +118,8 @@ export class WindowMain {
             alwaysOnTop: this.enableAlwaysOnTop,
             webPreferences: {
                 nodeIntegration: true,
-                webviewTag: true,
                 backgroundThrottling: false,
-                enableRemoteModule: true, // TODO: This needs to be removed prior to Electron 14.
+                contextIsolation: false,
             },
         });
 

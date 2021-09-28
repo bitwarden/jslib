@@ -1,8 +1,4 @@
 import {
-    CdkDragDrop,
-    moveItemInArray,
-} from '@angular/cdk/drag-drop';
-import {
     Directive,
     EventEmitter,
     Input,
@@ -13,7 +9,6 @@ import {
 import { CipherRepromptType } from 'jslib-common/enums/cipherRepromptType';
 import { CipherType } from 'jslib-common/enums/cipherType';
 import { EventType } from 'jslib-common/enums/eventType';
-import { FieldType } from 'jslib-common/enums/fieldType';
 import { OrganizationUserStatusType } from 'jslib-common/enums/organizationUserStatusType';
 import { PolicyType } from 'jslib-common/enums/policyType';
 import { SecureNoteType } from 'jslib-common/enums/secureNoteType';
@@ -36,7 +31,6 @@ import { Cipher } from 'jslib-common/models/domain/cipher';
 import { CardView } from 'jslib-common/models/view/cardView';
 import { CipherView } from 'jslib-common/models/view/cipherView';
 import { CollectionView } from 'jslib-common/models/view/collectionView';
-import { FieldView } from 'jslib-common/models/view/fieldView';
 import { FolderView } from 'jslib-common/models/view/folderView';
 import { IdentityView } from 'jslib-common/models/view/identityView';
 import { LoginUriView } from 'jslib-common/models/view/loginUriView';
@@ -75,13 +69,10 @@ export class AddEditComponent implements OnInit {
     showCardNumber: boolean = false;
     showCardCode: boolean = false;
     cipherType = CipherType;
-    fieldType = FieldType;
-    addFieldType: FieldType = FieldType.Text;
     typeOptions: any[];
     cardBrandOptions: any[];
     cardExpMonthOptions: any[];
     identityTitleOptions: any[];
-    addFieldTypeOptions: any[];
     uriMatchOptions: any[];
     ownershipOptions: any[] = [];
     autofillOnPageLoadOptions: any[];
@@ -138,11 +129,6 @@ export class AddEditComponent implements OnInit {
             { name: i18nService.t('ms'), value: i18nService.t('ms') },
             { name: i18nService.t('dr'), value: i18nService.t('dr') },
         ];
-        this.addFieldTypeOptions = [
-            { name: i18nService.t('cfTypeText'), value: FieldType.Text },
-            { name: i18nService.t('cfTypeHidden'), value: FieldType.Hidden },
-            { name: i18nService.t('cfTypeBoolean'), value: FieldType.Boolean },
-        ];
         this.uriMatchOptions = [
             { name: i18nService.t('defaultMatchDetection'), value: null },
             { name: i18nService.t('baseDomain'), value: UriMatchType.Domain },
@@ -164,28 +150,20 @@ export class AddEditComponent implements OnInit {
     }
 
     async init() {
-        const policies = await this.policyService.getAll(PolicyType.PersonalOwnership);
         const myEmail = await this.userService.getEmail();
         this.ownershipOptions.push({ name: myEmail, value: null });
         const orgs = await this.userService.getAllOrganizations();
         orgs.sort(Utils.getSortFunction(this.i18nService, 'name')).forEach(o => {
             if (o.enabled && o.status === OrganizationUserStatusType.Confirmed) {
                 this.ownershipOptions.push({ name: o.name, value: o.id });
-                if (policies != null && o.usePolicies && !o.canManagePolicies && this.allowPersonal) {
-                    for (const policy of policies) {
-                        if (policy.organizationId === o.id && policy.enabled) {
-                            this.allowPersonal = false;
-                            this.ownershipOptions.splice(0, 1);
-                            // Default to the organization who owns this policy for now (if necessary)
-                            if (this.organizationId == null) {
-                                this.organizationId = o.id;
-                            }
-                            break;
-                        }
-                    }
-                }
             }
         });
+
+        if (this.allowPersonal && await this.policyService.policyAppliesToUser(PolicyType.PersonalOwnership)) {
+            this.allowPersonal = false;
+            this.ownershipOptions.splice(0, 1);
+        }
+
         this.writeableCollections = await this.loadCollections();
     }
 
@@ -330,24 +308,6 @@ export class AddEditComponent implements OnInit {
         }
     }
 
-    addField() {
-        if (this.cipher.fields == null) {
-            this.cipher.fields = [];
-        }
-
-        const f = new FieldView();
-        f.type = this.addFieldType;
-        f.newField = true;
-        this.cipher.fields.push(f);
-    }
-
-    removeField(field: FieldView) {
-        const i = this.cipher.fields.indexOf(field);
-        if (i > -1) {
-            this.cipher.fields.splice(i, 1);
-        }
-    }
-
     trackByFunction(index: number, item: any) {
         return index;
     }
@@ -448,14 +408,6 @@ export class AddEditComponent implements OnInit {
         }
     }
 
-    toggleFieldValue(field: FieldView) {
-        const f = (field as any);
-        f.showValue = !f.showValue;
-        if (this.editMode && f.showValue) {
-            this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible, this.cipherId);
-        }
-    }
-
     toggleUriOptions(uri: LoginUriView) {
         const u = (uri as any);
         u.showOptions = u.showOptions == null && uri.match != null ? false : !u.showOptions;
@@ -464,10 +416,6 @@ export class AddEditComponent implements OnInit {
     loginUriMatchChanged(uri: LoginUriView) {
         const u = (uri as any);
         u.showOptions = u.showOptions == null ? true : u.showOptions;
-    }
-
-    drop(event: CdkDragDrop<string[]>) {
-        moveItemInArray(this.cipher.fields, event.previousIndex, event.currentIndex);
     }
 
     async organizationChanged() {

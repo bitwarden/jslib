@@ -5,11 +5,13 @@ import {
     Router,
 } from '@angular/router';
 
+import { first } from 'rxjs/operators';
+
 import { TwoFactorProviderType } from 'jslib-common/enums/twoFactorProviderType';
 
 import { TwoFactorEmailRequest } from 'jslib-common/models/request/twoFactorEmailRequest';
 
-import { AuthResult } from 'jslib-common/models/domain';
+import { AuthResult } from 'jslib-common/models/domain/authResult';
 
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { AuthService } from 'jslib-common/abstractions/auth.service';
@@ -65,13 +67,9 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const queryParamsSub = this.route.queryParams.subscribe(async qParams => {
+        this.route.queryParams.pipe(first()).subscribe(qParams => {
             if (qParams.identifier != null) {
                 this.identifier = qParams.identifier;
-            }
-
-            if (queryParamsSub != null) {
-                queryParamsSub.unsubscribe();
             }
         });
 
@@ -186,6 +184,9 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         }
         if (response.resetMasterPassword) {
             this.successRoute = 'set-password';
+        }
+        if (response.forcePasswordReset) {
+            this.successRoute = 'update-temp-password';
         }
         if (this.onSuccessfulLoginNavigate != null) {
             this.onSuccessfulLoginNavigate();

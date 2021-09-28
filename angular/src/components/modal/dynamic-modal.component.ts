@@ -2,7 +2,6 @@ import {
     AfterViewInit,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
     ComponentRef,
     ElementRef,
     OnDestroy,
@@ -10,6 +9,8 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
+
+import { ModalService } from '../../services/modal.service';
 
 import { ModalRef } from './modal.ref';
 
@@ -25,7 +26,7 @@ export class DynamicModalComponent implements AfterViewInit, OnDestroy {
     childComponentType: Type<any>;
     setComponentParameters: (component: any) => void;
 
-    constructor(private componentFactoryResolver: ComponentFactoryResolver, private cd: ChangeDetectorRef,
+    constructor(private modalService: ModalService, private cd: ChangeDetectorRef,
         private el: ElementRef<HTMLElement>, public modalRef: ModalRef) {}
 
     ngAfterViewInit() {
@@ -39,7 +40,7 @@ export class DynamicModalComponent implements AfterViewInit, OnDestroy {
     }
 
     loadChildComponent(componentType: Type<any>) {
-        const componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentType);
+        const componentFactory = this.modalService.resolveComponentFactory(componentType);
 
         this.modalContentRef.clear();
         this.componentRef = this.modalContentRef.createComponent(componentFactory);

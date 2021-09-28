@@ -8,6 +8,7 @@ import { MasterPasswordPolicyOptions } from '../models/domain/masterPasswordPoli
 import { Policy } from '../models/domain/policy';
 import { ResetPasswordPolicyOptions } from '../models/domain/resetPasswordPolicyOptions';
 
+import { OrganizationUserStatusType } from '../enums/organizationUserStatusType';
 import { PolicyType } from '../enums/policyType';
 
 import { ListResponse } from '../models/response/listResponse';
@@ -45,6 +46,11 @@ export class PolicyService implements PolicyServiceAbstraction {
         } else {
             return this.policyCache;
         }
+    }
+
+    async getPolicyForOrganization(policyType: PolicyType, organizationId: string): Promise<Policy> {
+        const policies = await this.getAll(policyType);
+        return policies.find(p => p.organizationId === organizationId);
     }
 
     async replace(policies: { [id: string]: PolicyData; }): Promise<any> {
@@ -163,5 +169,27 @@ export class PolicyService implements PolicyServiceAbstraction {
 
         const policiesData = policiesResponse.data.map(p => new PolicyData(p));
         return policiesData.map(p => new Policy(p));
+    }
+
+    async policyAppliesToUser(policyType: PolicyType, policyFilter?: (policy: Policy) => boolean) {
+        const policies = await this.getAll(policyType);
+        const organizations = await this.userService.getAllOrganizations();
+        let filteredPolicies;
+
+        if (policyFilter != null) {
+            filteredPolicies = policies.filter(p => p.enabled && policyFilter(p));
+        }
+        else {
+            filteredPolicies = policies.filter(p => p.enabled);
+        }
+
+        const policySet = new Set(filteredPolicies.map(p => p.organizationId));
+
+        return organizations.some(o =>
+            o.enabled &&
+            o.status >= OrganizationUserStatusType.Accepted &&
+            o.usePolicies &&
+            !o.isExemptFromPolicies &&
+            policySet.has(o.id));
     }
 }

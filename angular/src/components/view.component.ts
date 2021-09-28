@@ -234,18 +234,6 @@ export class ViewComponent implements OnDestroy, OnInit {
         }
     }
 
-    async toggleFieldValue(field: FieldView) {
-        if (!await this.promptPassword()) {
-            return;
-        }
-
-        const f = (field as any);
-        f.showValue = !f.showValue;
-        if (f.showValue) {
-            this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible, this.cipherId);
-        }
-    }
-
     launch(uri: LoginUriView, cipherId?: string) {
         if (!uri.canLaunch) {
             return;

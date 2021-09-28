@@ -33,6 +33,7 @@ import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
 import { OrganizationImportRequest } from '../models/request/organizationImportRequest';
 import { OrganizationKeysRequest } from '../models/request/organizationKeysRequest';
+import { OrganizationSubscriptionUpdateRequest } from '../models/request/organizationSubscriptionUpdateRequest';
 import { OrganizationTaxInfoUpdateRequest } from '../models/request/organizationTaxInfoUpdateRequest';
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
 import { OrganizationUpgradeRequest } from '../models/request/organizationUpgradeRequest';
@@ -114,6 +115,7 @@ import { IdentityCaptchaResponse } from '../models/response/identityCaptchaRespo
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
+import { OrganizationAutoEnrollStatusResponse } from '../models/response/organizationAutoEnrollStatusResponse';
 import { OrganizationKeysResponse } from '../models/response/organizationKeysResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import { OrganizationSubscriptionResponse } from '../models/response/organizationSubscriptionResponse';
@@ -370,6 +372,7 @@ export abstract class ApiService {
     getOrganizationSubscription: (id: string) => Promise<OrganizationSubscriptionResponse>;
     getOrganizationLicense: (id: string, installationId: string) => Promise<any>;
     getOrganizationTaxInfo: (id: string) => Promise<TaxInfoResponse>;
+    getOrganizationAutoEnrollStatus: (identifier: string) => Promise<OrganizationAutoEnrollStatusResponse>;
     postOrganization: (request: OrganizationCreateRequest) => Promise<OrganizationResponse>;
     putOrganization: (id: string, request: OrganizationUpdateRequest) => Promise<OrganizationResponse>;
     putOrganizationTaxInfo: (id: string, request: OrganizationTaxInfoUpdateRequest) => Promise<any>;
@@ -379,6 +382,7 @@ export abstract class ApiService {
     postOrganizationApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
     postOrganizationRotateApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
     postOrganizationUpgrade: (id: string, request: OrganizationUpgradeRequest) => Promise<PaymentResponse>;
+    postOrganizationUpdateSubscription: (id: string, request: OrganizationSubscriptionUpdateRequest) => Promise<void>;
     postOrganizationSeat: (id: string, request: SeatRequest) => Promise<PaymentResponse>;
     postOrganizationStorage: (id: string, request: StorageRequest) => Promise<any>;
     postOrganizationPayment: (id: string, request: PaymentRequest) => Promise<any>;

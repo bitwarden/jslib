@@ -89,7 +89,7 @@ export class Organization {
     }
 
     get isOwner() {
-        return this.type === OrganizationUserType.Owner;
+        return this.type === OrganizationUserType.Owner || this.isProviderUser;
     }
 
     get canAccessBusinessPortal() {
@@ -134,5 +134,9 @@ export class Organization {
 
     get canManageUsersPassword() {
         return this.isAdmin || this.permissions.manageResetPassword;
+    }
+
+    get isExemptFromPolicies() {
+        return this.canManagePolicies;
     }
 }
