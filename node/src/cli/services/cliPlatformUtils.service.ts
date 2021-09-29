@@ -1,6 +1,7 @@
 import * as child_process from 'child_process';
 
 import { DeviceType } from 'jslib-common/enums/deviceType';
+import { ThemeType } from 'jslib-common/enums/themeType';
 
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 
@@ -135,11 +136,15 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     }
 
     getDefaultSystemTheme() {
-        return Promise.resolve('light' as 'light' | 'dark');
+        return Promise.resolve(ThemeType.Light as ThemeType.Light | ThemeType.Dark);
     }
 
     onDefaultSystemThemeChange() {
         /* noop */
+    }
+
+    getEffectiveTheme() {
+        return Promise.resolve(ThemeType.Light);
     }
 
     supportsSecureStorage(): boolean {

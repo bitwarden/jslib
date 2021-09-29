@@ -1,4 +1,5 @@
 import { DeviceType } from '../enums/deviceType';
+import { ThemeType } from '../enums/themeType';
 
 export abstract class PlatformUtilsService {
     identityClientId: string;
@@ -28,7 +29,8 @@ export abstract class PlatformUtilsService {
     readFromClipboard: (options?: any) => Promise<string>;
     supportsBiometric: () => Promise<boolean>;
     authenticateBiometric: () => Promise<boolean>;
-    getDefaultSystemTheme: () => Promise<'light' | 'dark'>;
-    onDefaultSystemThemeChange: (callback: ((theme: 'light' | 'dark') => unknown)) => unknown;
+    getDefaultSystemTheme: () => Promise<ThemeType.Light | ThemeType.Dark>;
+    onDefaultSystemThemeChange: (callback: ((theme: ThemeType.Light | ThemeType.Dark) => unknown)) => unknown;
+    getEffectiveTheme: () => Promise<ThemeType>;
     supportsSecureStorage: () => boolean;
 }
