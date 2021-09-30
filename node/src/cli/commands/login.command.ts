@@ -10,8 +10,8 @@ import { ErrorResponse } from 'jslib-common/models/response/errorResponse';
 
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { AuthService } from 'jslib-common/abstractions/auth.service';
-import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
+import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
@@ -281,7 +281,7 @@ export class LoginCommand {
             return Response.error(new MessageResponse('An organization administrator recently changed your master password. In order to access the vault, you must update your master password now via the web vault. You have been logged out.', null));
         }
 
-        if (this.email == null || this.email == 'undefined') {
+        if (this.email == null || this.email === 'undefined') {
             this.email = await this.userService.getEmail();
         }
 
