@@ -11,12 +11,17 @@ import { ErrorResponse } from 'jslib-common/models/response/errorResponse';
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { AuthService } from 'jslib-common/abstractions/auth.service';
 import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
+import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
+import { PolicyService } from 'jslib-common/abstractions/policy.service';
+import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { Response } from '../models/response';
+
+import { UpdateTempPasswordRequest } from 'jslib-common/models/request/updateTempPasswordRequest';
 
 import { MessageResponse } from '../models/response/messageResponse';
 
@@ -29,9 +34,11 @@ const open = require('open');
 export class LoginCommand {
     protected validatedParams: () => Promise<any>;
     protected success: () => Promise<MessageResponse>;
+    protected logout: () => Promise<void>;
     protected canInteract: boolean;
     protected clientId: string;
     protected clientSecret: string;
+    protected email: string;
 
     private ssoRedirectUri: string = null;
 
@@ -39,7 +46,8 @@ export class LoginCommand {
         protected i18nService: I18nService, protected environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
         protected cryptoFunctionService: CryptoFunctionService, protected platformUtilsService: PlatformUtilsService,
-        clientId: string) {
+        protected userService: UserService, protected cryptoService: CryptoService,
+        protected policyService: PolicyService, clientId: string) {
         this.clientId = clientId;
     }
 
@@ -89,6 +97,7 @@ export class LoginCommand {
             if (email.indexOf('@') === -1) {
                 return Response.badRequest('Email address is invalid.');
             }
+            this.email = email;
 
             if (password == null || password === '') {
                 if (options.passwordfile) {
@@ -244,16 +253,130 @@ export class LoginCommand {
                     ' through the web vault to set your master password.');
             }
 
-            if (this.success != null) {
-                const res = await this.success();
-                return Response.success(res);
-            } else {
-                const res = new MessageResponse('You are logged in!', null);
-                return Response.success(res);
+            if (response.forcePasswordReset) {
+                return await this.updateTempPassword();
             }
+
+            return await this.handleSuccessResponse();
         } catch (e) {
             return Response.error(e);
         }
+    }
+
+    private async handleSuccessResponse(): Promise<Response> {
+        if (this.success != null) {
+            const res = await this.success();
+            return Response.success(res);
+        } else {
+            const res = new MessageResponse('You are logged in!', null);
+            return Response.success(res);
+        }
+    }
+
+    private async updateTempPassword(error?: string): Promise<Response> {
+        // If no interaction available, alert user to use web vault
+        if (!this.canInteract) {
+            await this.logout();
+            this.authService.logOut(() => { /* Do nothing */ });
+            return Response.error(new MessageResponse('An organization administrator recently changed your master password. In order to access the vault, you must update your master password now via the web vault. You have been logged out.', null));
+        }
+
+        if (this.email == null || this.email == 'undefined') {
+            this.email = await this.userService.getEmail();
+        }
+
+        // Get New Master Password
+        const baseMessage = 'An organization administrator recently changed your master password. In order to access the vault, you must update your master password now.\n' + 'Master password: ';
+        const firstMessage = error != null ? error + baseMessage : baseMessage;
+        const mp: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+            type: 'password',
+            name: 'password',
+            message: firstMessage,
+        });
+        const masterPassword = mp.password;
+
+        // Master Password Validation
+        if (masterPassword == null || masterPassword === '') {
+            return this.updateTempPassword('Master password is required.\n');
+        }
+
+        if (masterPassword.length < 8) {
+            return this.updateTempPassword('Master password must be at least 8 characters long.\n');
+        }
+
+        // Get New Master Password Re-type
+        const retype: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+            type: 'password',
+            name: 'password',
+            message: 'Re-type New Master password:',
+        });
+        const masterPasswordRetype = retype.password;
+
+        // Re-type Validation
+        if (masterPassword !== masterPasswordRetype) {
+            return this.updateTempPassword('Master password confirmation does not match.\n');
+        }
+
+        // Get Hint (optional)
+        const hint: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+            type: 'input',
+            name: 'input',
+            message: 'Master Password Hint:',
+        });
+        const masterPasswordHint = hint.input;
+
+        // Retrieve details for key generation
+        const enforcedPolicyOptions = await this.policyService.getMasterPasswordPolicyOptions();
+        const kdf = await this.userService.getKdf();
+        const kdfIterations = await this.userService.getKdfIterations();
+
+        // Strength & Policy Validation
+        const strengthResult = this.passwordGenerationService.passwordStrength(masterPassword,
+            this.getPasswordStrengthUserInput());
+
+        if (enforcedPolicyOptions != null &&
+            !this.policyService.evaluateMasterPassword(
+                strengthResult.score,
+                masterPassword,
+                enforcedPolicyOptions)) {
+            return this.updateTempPassword('Your new master password does not meet the policy requirements.\n');
+        }
+
+        try {
+            // Create new key and hash new password
+            const newKey = await this.cryptoService.makeKey(masterPassword, this.email.trim().toLowerCase(),
+                kdf, kdfIterations);
+            const newPasswordHash = await this.cryptoService.hashPassword(masterPassword, newKey);
+
+            // Grab user's current enc key
+            const userEncKey = await this.cryptoService.getEncKey();
+
+            // Create new encKey for the User
+            const newEncKey = await this.cryptoService.remakeEncKey(newKey, userEncKey);
+
+            // Create request
+            const request = new UpdateTempPasswordRequest();
+            request.key = newEncKey[1].encryptedString;
+            request.newMasterPasswordHash = newPasswordHash;
+            request.masterPasswordHint = masterPasswordHint;
+
+            // Update user's password
+            await this.apiService.putUpdateTempPassword(request);
+            return this.handleSuccessResponse();
+        } catch (e) {
+            await this.logout();
+            this.authService.logOut(() => { /* Do nothing */ });
+            return Response.error(e);
+        }
+    }
+
+    private getPasswordStrengthUserInput() {
+        let userInput: string[] = [];
+        const atPosition = this.email.indexOf('@');
+        if (atPosition > -1) {
+            userInput = userInput.concat(this.email.substr(0, atPosition).trim().toLowerCase().split(/[^A-Za-z0-9]/));
+        }
+        return userInput;
     }
 
     private async apiClientId(): Promise<string> {
