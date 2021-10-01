@@ -1,6 +1,5 @@
 export enum Permissions {
-    AccessBusinessPortal,
-    AccessEventLogs,
+    AccessEventLogs = 1,
     AccessImportExport,
     AccessReports,
     ManageAllCollections,

@@ -1,7 +1,6 @@
 import { BaseResponse } from '../response/baseResponse';
 
 export class PermissionsApi extends BaseResponse {
-    accessBusinessPortal: boolean;
     accessEventLogs: boolean;
     accessImportExport: boolean;
     accessReports: boolean;
@@ -19,7 +18,6 @@ export class PermissionsApi extends BaseResponse {
         if (data == null) {
             return this;
         }
-        this.accessBusinessPortal = this.getResponseProperty('AccessBusinessPortal');
         this.accessEventLogs = this.getResponseProperty('AccessEventLogs');
         this.accessImportExport = this.getResponseProperty('AccessImportExport');
         this.accessReports = this.getResponseProperty('AccessReports');

@@ -92,10 +92,6 @@ export class Organization {
         return this.type === OrganizationUserType.Owner || this.isProviderUser;
     }
 
-    get canAccessBusinessPortal() {
-        return this.isAdmin || this.permissions.accessBusinessPortal;
-    }
-
     get canAccessEventLogs() {
         return this.isAdmin || this.permissions.accessEventLogs;
     }

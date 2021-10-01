@@ -6,7 +6,6 @@ import {
 
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
-import { NotificationsService } from 'jslib-common/abstractions/notifications.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 
 @Directive()
@@ -20,7 +19,6 @@ export class EnvironmentComponent {
     notificationsUrl: string;
     baseUrl: string;
     showCustom = false;
-    enterpriseUrl: string;
 
     constructor(protected platformUtilsService: PlatformUtilsService, protected environmentService: EnvironmentService,
         protected i18nService: I18nService) {
@@ -33,7 +31,6 @@ export class EnvironmentComponent {
         this.identityUrl = urls.identity || '';
         this.iconsUrl = urls.icons || '';
         this.notificationsUrl = urls.notifications || '';
-        this.enterpriseUrl = urls.enterprise || '';
     }
 
     async submit() {
@@ -44,7 +41,6 @@ export class EnvironmentComponent {
             webVault: this.webVaultUrl,
             icons: this.iconsUrl,
             notifications: this.notificationsUrl,
-            enterprise: this.enterpriseUrl,
         });
 
         // re-set urls since service can change them, ex: prefixing https://
@@ -54,7 +50,6 @@ export class EnvironmentComponent {
         this.webVaultUrl = resUrls.webVault;
         this.iconsUrl = resUrls.icons;
         this.notificationsUrl = resUrls.notifications;
-        this.enterpriseUrl = resUrls.enterprise;
 
         this.platformUtilsService.showToast('success', null, this.i18nService.t('environmentSaved'));
         this.saved();
