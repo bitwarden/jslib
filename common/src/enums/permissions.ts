@@ -1,5 +1,5 @@
 export enum Permissions {
-    AccessEventLogs = 1,
+    AccessEventLogs,
     AccessImportExport,
     AccessReports,
     ManageAllCollections,
@@ -10,4 +10,5 @@ export enum Permissions {
     ManageProvider,
     ManageUsers,
     ManageUsersPassword,
+    ManageSso,
 }
