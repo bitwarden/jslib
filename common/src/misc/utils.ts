@@ -325,6 +325,10 @@ export class Utils {
         return url;
     }
 
+    static camelToPascalCase(s: string) {
+        return s.charAt(0).toUpperCase() + s.slice(1);
+    }
+
     private static validIpAddress(ipString: string): boolean {
         // tslint:disable-next-line
         const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
