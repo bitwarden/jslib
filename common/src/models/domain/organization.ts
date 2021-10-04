@@ -102,12 +102,32 @@ export class Organization {
         return this.isAdmin || this.permissions.accessReports;
     }
 
-    get canManageAllCollections() {
-        return this.isAdmin || this.permissions.manageAllCollections;
+    get canCreateNewCollections() {
+        return this.isAdmin || (this.permissions.createNewCollections ?? this.permissions.manageAllCollections);
     }
 
-    get canManageAssignedCollections() {
-        return this.isManager || this.permissions.manageAssignedCollections;
+    get canEditAnyCollection() {
+        return this.isAdmin || (this.permissions.editAnyCollection ?? this.permissions.manageAllCollections);
+    }
+
+    get canDeleteAnyCollection() {
+        return this.isAdmin || (this.permissions.deleteAnyCollection ?? this.permissions.manageAllCollections);
+    }
+
+    get canViewAllCollections() {
+        return this.canEditAnyCollection || this.canDeleteAnyCollection;
+    }
+
+    get canEditAssignedCollections() {
+        return this.isManager || (this.permissions.deleteAssignedCollections ?? this.permissions.manageAssignedCollections);
+    }
+
+    get canDeleteAssignedCollections() {
+        return this.isManager || (this.permissions.deleteAssignedCollections ?? this.permissions.manageAssignedCollections);
+    }
+
+    get canViewAssignedCollections() {
+        return this.canDeleteAssignedCollections || this.canEditAssignedCollections;
     }
 
     get canManageGroups() {
