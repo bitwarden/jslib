@@ -25,6 +25,8 @@ import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
 import { VaultTimeoutService } from '../abstractions/vaultTimeout.service';
 
+import { Utils } from '../misc/utils';
+
 export const TwoFactorProviders = {
     [TwoFactorProviderType.Authenticator]: {
         type: TwoFactorProviderType.Authenticator,
@@ -358,6 +360,32 @@ export class AuthService implements AuthServiceAbstraction {
 
             // Skip this step during SSO new user flow. No key is returned from server.
             if (code == null || tokenResponse.key != null) {
+                let cryptoAgentUrl: string = null;
+                try {
+                    const ssoConfig = await this.apiService.getSsoConfig('entorg3');
+                    cryptoAgentUrl = ssoConfig.cryptoAgentUrl;
+                } catch { }
+
+                if (cryptoAgentUrl != null) {
+                    const requestInit: RequestInit = {
+                        cache: 'no-store',
+                        method: 'GET',
+                    };
+                    const headers = new Headers();
+                    headers.set('Accept', 'application/json');
+                    headers.set('Authorization', 'Bearer ' + tokenResponse.accessToken);
+                    requestInit.headers = headers;
+                    const response = await this.apiService.fetch(
+                        new Request(cryptoAgentUrl + '/user-keys', requestInit));
+
+                    if (response.status === 200) {
+                        const userKeyResponse = await response.json();
+                        const keyArr = Utils.fromB64ToArray(userKeyResponse.key);
+                        const k = new SymmetricCryptoKey(keyArr)
+                        await this.cryptoService.setKey(k);
+                    }
+                }
+
                 await this.cryptoService.setEncKey(tokenResponse.key);
 
                 // User doesn't have a key pair yet (old account), let's generate one for them
