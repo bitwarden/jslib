@@ -3,29 +3,30 @@ import { View } from './view';
 import { Identity } from '../domain/identity';
 
 import { Utils } from '../../misc/utils';
+import { LinkedFieldOption } from './linkedFieldOptionView';
 
 export class IdentityView implements View {
-    static linkedFieldOptions: any = {
-        'firstName': null,
-        'middleName': null,
-        'lastName': null,
-        'fullName': null,
-        'username': null,
-        'company': null,
-        'ssn': null,
-        'passportNumber': null,
-        'licenseNumber': null,
-        'email': null,
-        'phone': null,
-        'address1': null,
-        'address2': null,
-        'address3': null,
-        'city': 'cityTown',
-        'state': 'stateProvince',
-        'postalCode': 'zipPostalCode',
-        'country': null,
-        'fullAddress': null,
-    };
+    static linkedFieldOptions: LinkedFieldOption[] = [
+        new LinkedFieldOption(0, 'firstName'),
+        new LinkedFieldOption(1, 'middleName'),
+        new LinkedFieldOption(2, 'lastName'),
+        new LinkedFieldOption(3, 'fullName'),
+        new LinkedFieldOption(4, 'username'),
+        new LinkedFieldOption(5, 'company'),
+        new LinkedFieldOption(6, 'ssn'),
+        new LinkedFieldOption(7, 'passportNumber'),
+        new LinkedFieldOption(8, 'licenseNumber'),
+        new LinkedFieldOption(9, 'email'),
+        new LinkedFieldOption(10, 'phone'),
+        new LinkedFieldOption(11, 'address1'),
+        new LinkedFieldOption(12, 'address2'),
+        new LinkedFieldOption(13, 'address3'),
+        new LinkedFieldOption(14, 'city', 'cityTown'),
+        new LinkedFieldOption(15, 'state', 'stateProvince'),
+        new LinkedFieldOption(16, 'postalCode', 'zipPostalCode'),
+        new LinkedFieldOption(17, 'country'),
+        new LinkedFieldOption(18, 'fullAddress'),
+    ];
 
     title: string = null;
     middleName: string = null;

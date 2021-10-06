@@ -7,6 +7,7 @@ import { AttachmentView } from './attachmentView';
 import { CardView } from './cardView';
 import { FieldView } from './fieldView';
 import { IdentityView } from './identityView';
+import { LinkedFieldOption } from './linkedFieldOptionView';
 import { LoginView } from './loginView';
 import { PasswordHistoryView } from './passwordHistoryView';
 import { SecureNoteView } from './secureNoteView';
@@ -112,15 +113,16 @@ export class CipherView implements View {
         return this.deletedDate != null;
     }
 
-    get linkedFieldOptions() {
+    get linkedFieldOptions(): LinkedFieldOption[] {
         return (this.subView as any).constructor.linkedFieldOptions;
     }
 
-    linkedFieldValue(field: string) {
-        return (this.subView as any)[field];
+    linkedFieldValue(id: number) {
+        const linkedFieldOption = this.linkedFieldOptions.find(lfo => lfo.id === id);
+        return (this.subView as any)[linkedFieldOption.propertyName];
     }
 
-    linkedFieldI18nKey(field: string) {
-        return this.linkedFieldOptions[field] ?? field;
+    linkedFieldI18nKey(id: number): string {
+        return this.linkedFieldOptions.find(lfo => lfo.id === id).i18nKey;
     }
 }

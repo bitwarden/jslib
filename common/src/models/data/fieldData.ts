@@ -6,6 +6,7 @@ export class FieldData {
     type: FieldType;
     name: string;
     value: string;
+    linkedId: number;
 
     constructor(response?: FieldApi) {
         if (response == null) {
@@ -14,5 +15,6 @@ export class FieldData {
         this.type = response.type;
         this.name = response.name;
         this.value = response.value;
+        this.linkedId = response.linkedId;
     }
 }

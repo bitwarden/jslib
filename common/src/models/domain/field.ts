@@ -12,6 +12,7 @@ export class Field extends Domain {
     name: EncString;
     value: EncString;
     type: FieldType;
+    linkedId: number;
 
     constructor(obj?: FieldData, alreadyEncrypted: boolean = false) {
         super();
@@ -20,6 +21,7 @@ export class Field extends Domain {
         }
 
         this.type = obj.type;
+        this.linkedId = obj.linkedId;
         this.buildDomainModel(this, obj, {
             name: null,
             value: null,
@@ -39,7 +41,8 @@ export class Field extends Domain {
             name: null,
             value: null,
             type: null,
-        }, ['type']);
+            linkedId: null,
+        }, ['type', 'linkedId']);
         return f;
     }
 }

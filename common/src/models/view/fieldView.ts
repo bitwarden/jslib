@@ -1,6 +1,7 @@
 import { FieldType } from '../../enums/fieldType';
 
 import { View } from './view';
+import { CipherView } from './cipherView';
 
 import { Field } from '../domain/field';
 
@@ -10,6 +11,7 @@ export class FieldView implements View {
     type: FieldType = null;
     newField: boolean = false; // Marks if the field is new and hasn't been saved
     showValue: boolean = false;
+    linkedId: number = null;
 
     constructor(f?: Field) {
         if (!f) {
@@ -17,6 +19,7 @@ export class FieldView implements View {
         }
 
         this.type = f.type;
+        this.linkedId = f.linkedId;
     }
 
     get maskedValue(): string {
