@@ -1,15 +1,15 @@
+import { LinkedFieldOptionView } from './linkedFieldOptionView';
 import { LoginUriView } from './loginUriView';
 import { View } from './view';
 
 import { Utils } from '../../misc/utils';
 import { Login } from '../domain/login';
-import { LinkedFieldOptionView } from './linkedFieldOptionView';
 
 export class LoginView implements View {
     static linkedFieldOptions = [
         new LinkedFieldOptionView(0, 'username'),
         new LinkedFieldOptionView(1, 'password'),
-    ]
+    ];
 
     username: string = null;
     password: string = null;

@@ -1,7 +1,7 @@
+import { LinkedFieldOptionView } from './linkedFieldOptionView';
 import { View } from './view';
 
 import { Card } from '../domain/card';
-import { LinkedFieldOptionView } from './linkedFieldOptionView';
 
 export class CardView implements View {
     static linkedFieldOptions: LinkedFieldOptionView[] = [
@@ -11,7 +11,7 @@ export class CardView implements View {
         new LinkedFieldOptionView(3, 'expMonth', 'expirationMonth'),
         new LinkedFieldOptionView(4, 'expYear', 'expirationYear'),
         new LinkedFieldOptionView(5, 'code', 'securityCode'),
-    ]
+    ];
 
     cardholderName: string = null;
     expMonth: string = null;

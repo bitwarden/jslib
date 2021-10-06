@@ -1,9 +1,9 @@
+import { LinkedFieldOptionView } from './linkedFieldOptionView';
 import { View } from './view';
 
 import { Identity } from '../domain/identity';
 
 import { Utils } from '../../misc/utils';
-import { LinkedFieldOptionView } from './linkedFieldOptionView';
 
 export class IdentityView implements View {
     static linkedFieldOptions: LinkedFieldOptionView[] = [

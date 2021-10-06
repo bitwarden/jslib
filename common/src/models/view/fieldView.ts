@@ -1,7 +1,7 @@
 import { FieldType } from '../../enums/fieldType';
 
-import { View } from './view';
 import { CipherView } from './cipherView';
+import { View } from './view';
 
 import { Field } from '../domain/field';
 
