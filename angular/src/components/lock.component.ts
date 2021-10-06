@@ -156,7 +156,7 @@ export class LockComponent implements OnInit {
         }
     }
 
-    async unlockBiometric() {
+    async unlockBiometric(): Promise<boolean> {
         if (!this.biometricLock) {
             return;
         }
@@ -166,6 +166,8 @@ export class LockComponent implements OnInit {
         if (success) {
             await this.doContinue();
         }
+
+        return success;
     }
 
     togglePassword() {
