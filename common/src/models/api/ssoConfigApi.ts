@@ -42,6 +42,8 @@ export class SsoConfigApi extends BaseResponse {
             return;
         }
 
+        this.configType = this.getResponseProperty('ConfigType');
+
         this.authority = this.getResponseProperty('Authority');
         this.clientId = this.getResponseProperty('ClientId');
         this.clientSecret = this.getResponseProperty('ClientSecret');
@@ -54,7 +56,7 @@ export class SsoConfigApi extends BaseResponse {
         this.additionalNameClaimTypes = this.getResponseProperty('AdditionalNameClaimTypes');
         this.acrValues = this.getResponseProperty('AcrValues');
         this.expectedReturnAcrValue = this.getResponseProperty('ExpectedReturnAcrValue');
-        
+
         this.spNameIdFormat = this.getResponseProperty('SpNameIdFormat');
         this.spOutboundSigningAlgorithm = this.getResponseProperty('SpOutboundSigningAlgorithm');
         this.spSigningBehavior = this.getResponseProperty('SpSigningBehavior');

@@ -23,4 +23,5 @@ export enum Permissions {
     DeleteAnyCollection = 14,
     EditAssignedCollections = 15,
     DeleteAssignedCollections = 16,
+    ManageSso = 17,
 }
