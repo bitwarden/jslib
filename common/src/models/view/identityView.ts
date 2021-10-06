@@ -25,7 +25,6 @@ export class IdentityView implements View {
         new LinkedFieldOptionView(15, 'state', 'stateProvince'),
         new LinkedFieldOptionView(16, 'postalCode', 'zipPostalCode'),
         new LinkedFieldOptionView(17, 'country'),
-        new LinkedFieldOptionView(18, 'fullAddress'),
     ];
 
     title: string = null;
