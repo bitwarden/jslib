@@ -1,14 +1,48 @@
 import { BaseResponse } from '../response/baseResponse';
 
+enum SsoType {
+    OpenIdConnect = 1,
+    Saml2 = 2,
+}
+
+enum OpenIdConnectRedirectBehavior {
+    RedirectGet = 0,
+    FormPost = 1,
+}
+
+enum Saml2BindingType {
+    HttpRedirect = 1,
+    HttpPost = 2,
+    Artifact = 4,
+}
+
+enum Saml2NameIdFormat {
+    NotConfigured = 0,
+    Unspecified = 1,
+    EmailAddress = 2,
+    X509SubjectName = 3,
+    WindowsDomainQualifiedName = 4,
+    KerberosPrincipalName = 5,
+    EntityIdentifier = 6,
+    Persistent = 7,
+    Transient = 8,
+}
+
+enum Saml2SigningBehavior {
+    IfIdpWantAuthnRequestsSigned = 0,
+    Always = 1,
+    Never = 3,
+}
+
 export class SsoConfigApi extends BaseResponse {
-    configType: string;
+    configType: SsoType;
 
     // OpenId
     authority: string;
     clientId: string;
     clientSecret: string;
     metadataAddress: string;
-    redirectBehavior: string;
+    redirectBehavior: OpenIdConnectRedirectBehavior;
     getClaimsFromUserInfoEndpoint: boolean;
     additionalScopes: string;
     additionalUserIdClaimTypes: string;
@@ -18,15 +52,15 @@ export class SsoConfigApi extends BaseResponse {
     expectedReturnAcrValue: string;
 
     // SAML
-    spNameIdFormat: string;
+    spNameIdFormat: Saml2NameIdFormat;
     spOutboundSigningAlgorithm: string;
-    spSigningBehavior: string;
+    spSigningBehavior: Saml2SigningBehavior;
     spMinIncomingSigningAlgorithm: boolean;
     spWantAssertionsSigned: boolean;
     spValidateCertificates: boolean;
 
     idpEntityId: string;
-    idpBindingType: string;
+    idpBindingType: Saml2BindingType;
     idpSingleSignOnServiceUrl: string;
     idpSingleLogoutServiceUrl: string;
     idpArtifactResolutionServiceUrl: string;
