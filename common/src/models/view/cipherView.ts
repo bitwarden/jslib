@@ -7,7 +7,7 @@ import { AttachmentView } from './attachmentView';
 import { CardView } from './cardView';
 import { FieldView } from './fieldView';
 import { IdentityView } from './identityView';
-import { LinkedFieldOption } from './linkedFieldOptionView';
+import { LinkedFieldOptionView } from './linkedFieldOptionView';
 import { LoginView } from './loginView';
 import { PasswordHistoryView } from './passwordHistoryView';
 import { SecureNoteView } from './secureNoteView';
@@ -58,23 +58,21 @@ export class CipherView implements View {
         this.reprompt = c.reprompt ?? CipherRepromptType.None;
     }
 
-    private get subView(): (CardView | IdentityView | LoginView | SecureNoteView) {
-        switch (this.type) {
-            case CipherType.Card:
-                return this.card;
-            case CipherType.Identity:
-                return this.identity;
-            case CipherType.Login:
-                return this.login;
-            case CipherType.SecureNote:
-                return this.secureNote;
-            default:
-                return null;
-        }
-    }
-
     get subTitle(): string {
-        return this.subView?.subTitle;
+        switch (this.type) {
+            case CipherType.Login:
+                return this.login.subTitle;
+            case CipherType.SecureNote:
+                return this.secureNote.subTitle;
+            case CipherType.Card:
+                return this.card.subTitle;
+            case CipherType.Identity:
+                return this.identity.subTitle;
+            default:
+                break;
+        }
+
+        return null;
     }
 
     get hasPasswordHistory(): boolean {
@@ -113,13 +111,27 @@ export class CipherView implements View {
         return this.deletedDate != null;
     }
 
-    get linkedFieldOptions(): LinkedFieldOption[] {
-        return (this.subView as any).constructor.linkedFieldOptions;
+    get linkedFieldOptions(): LinkedFieldOptionView[] {
+        switch (this.type) {
+            case CipherType.Card:
+                return CardView.linkedFieldOptions;
+            case CipherType.Identity:
+                return IdentityView.linkedFieldOptions;
+            case CipherType.Login:
+                return LoginView.linkedFieldOptions;
+        }
     }
 
     linkedFieldValue(id: number) {
         const linkedFieldOption = this.linkedFieldOptions.find(lfo => lfo.id === id);
-        return (this.subView as any)[linkedFieldOption.propertyName];
+        switch (this.type) {
+            case CipherType.Card:
+                return this.card[linkedFieldOption.propertyName as keyof CardView];
+            case CipherType.Identity:
+                return this.identity[linkedFieldOption.propertyName as keyof IdentityView];
+            case CipherType.Login:
+                return this.login[linkedFieldOption.propertyName as keyof LoginView];
+        }
     }
 
     linkedFieldI18nKey(id: number): string {
