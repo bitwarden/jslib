@@ -488,6 +488,4 @@ export class AddEditComponent implements OnInit {
     protected restoreCipher() {
         return this.cipherService.restoreWithServer(this.cipher.id);
     }
-
-
 }

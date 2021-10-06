@@ -1,7 +1,7 @@
 export class LinkedFieldOptionView {
     readonly id: number;
-    propertyName: string;
-    private _i18nKey: string;
+    readonly propertyName: string;
+    private readonly _i18nKey: string;
 
     constructor(id: number, propertyName: string, i18nKey: string = null) {
         this.id = id;
