@@ -3,29 +3,29 @@ import { View } from './view';
 import { Identity } from '../domain/identity';
 
 import { Utils } from '../../misc/utils';
-import { LinkedFieldOption } from './linkedFieldOptionView';
+import { LinkedFieldOptionView } from './linkedFieldOptionView';
 
 export class IdentityView implements View {
-    static linkedFieldOptions: LinkedFieldOption[] = [
-        new LinkedFieldOption(0, 'firstName'),
-        new LinkedFieldOption(1, 'middleName'),
-        new LinkedFieldOption(2, 'lastName'),
-        new LinkedFieldOption(3, 'fullName'),
-        new LinkedFieldOption(4, 'username'),
-        new LinkedFieldOption(5, 'company'),
-        new LinkedFieldOption(6, 'ssn'),
-        new LinkedFieldOption(7, 'passportNumber'),
-        new LinkedFieldOption(8, 'licenseNumber'),
-        new LinkedFieldOption(9, 'email'),
-        new LinkedFieldOption(10, 'phone'),
-        new LinkedFieldOption(11, 'address1'),
-        new LinkedFieldOption(12, 'address2'),
-        new LinkedFieldOption(13, 'address3'),
-        new LinkedFieldOption(14, 'city', 'cityTown'),
-        new LinkedFieldOption(15, 'state', 'stateProvince'),
-        new LinkedFieldOption(16, 'postalCode', 'zipPostalCode'),
-        new LinkedFieldOption(17, 'country'),
-        new LinkedFieldOption(18, 'fullAddress'),
+    static linkedFieldOptions: LinkedFieldOptionView[] = [
+        new LinkedFieldOptionView(0, 'firstName'),
+        new LinkedFieldOptionView(1, 'middleName'),
+        new LinkedFieldOptionView(2, 'lastName'),
+        new LinkedFieldOptionView(3, 'fullName'),
+        new LinkedFieldOptionView(4, 'username'),
+        new LinkedFieldOptionView(5, 'company'),
+        new LinkedFieldOptionView(6, 'ssn'),
+        new LinkedFieldOptionView(7, 'passportNumber'),
+        new LinkedFieldOptionView(8, 'licenseNumber'),
+        new LinkedFieldOptionView(9, 'email'),
+        new LinkedFieldOptionView(10, 'phone'),
+        new LinkedFieldOptionView(11, 'address1'),
+        new LinkedFieldOptionView(12, 'address2'),
+        new LinkedFieldOptionView(13, 'address3'),
+        new LinkedFieldOptionView(14, 'city', 'cityTown'),
+        new LinkedFieldOptionView(15, 'state', 'stateProvince'),
+        new LinkedFieldOptionView(16, 'postalCode', 'zipPostalCode'),
+        new LinkedFieldOptionView(17, 'country'),
+        new LinkedFieldOptionView(18, 'fullAddress'),
     ];
 
     title: string = null;

@@ -3,12 +3,12 @@ import { View } from './view';
 
 import { Utils } from '../../misc/utils';
 import { Login } from '../domain/login';
-import { LinkedFieldOption } from './linkedFieldOptionView';
+import { LinkedFieldOptionView } from './linkedFieldOptionView';
 
 export class LoginView implements View {
     static linkedFieldOptions = [
-        new LinkedFieldOption(0, 'username'),
-        new LinkedFieldOption(1, 'password'),
+        new LinkedFieldOptionView(0, 'username'),
+        new LinkedFieldOptionView(1, 'password'),
     ]
 
     username: string = null;

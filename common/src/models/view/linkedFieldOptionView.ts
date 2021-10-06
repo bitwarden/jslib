@@ -1,4 +1,4 @@
-export class LinkedFieldOption {
+export class LinkedFieldOptionView {
     readonly id: number;
     propertyName: string;
     private _i18nKey: string;
