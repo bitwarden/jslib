@@ -111,7 +111,7 @@ export class CipherView implements View {
         return this.deletedDate != null;
     }
 
-    get linkedFieldOptions(): LinkedFieldOptionView[] {
+    get linkedFieldOptions(): Map<number, LinkedFieldOptionView> {
         switch (this.type) {
             case CipherType.Card:
                 return CardView.linkedFieldOptions;
@@ -123,7 +123,11 @@ export class CipherView implements View {
     }
 
     linkedFieldValue(id: number) {
-        const linkedFieldOption = this.linkedFieldOptions.find(lfo => lfo.id === id);
+        const linkedFieldOption = this.linkedFieldOptions.get(id);
+        if (linkedFieldOption == null) {
+            return;
+        }
+
         switch (this.type) {
             case CipherType.Card:
                 return this.card[linkedFieldOption.propertyName as keyof CardView];
@@ -135,6 +139,6 @@ export class CipherView implements View {
     }
 
     linkedFieldI18nKey(id: number): string {
-        return this.linkedFieldOptions.find(lfo => lfo.id === id).i18nKey;
+        return this.linkedFieldOptions.get(id)?.i18nKey;
     }
 }

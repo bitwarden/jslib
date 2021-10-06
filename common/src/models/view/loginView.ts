@@ -6,10 +6,10 @@ import { Utils } from '../../misc/utils';
 import { Login } from '../domain/login';
 
 export class LoginView implements View {
-    static linkedFieldOptions = [
-        new LinkedFieldOptionView(0, 'username'),
-        new LinkedFieldOptionView(1, 'password'),
-    ];
+    static linkedFieldOptions = new Map<number, LinkedFieldOptionView>([
+        [0, new LinkedFieldOptionView('username')],
+        [1, new LinkedFieldOptionView('password')],
+    ]);
 
     username: string = null;
     password: string = null;

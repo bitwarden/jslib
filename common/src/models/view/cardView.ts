@@ -4,14 +4,14 @@ import { View } from './view';
 import { Card } from '../domain/card';
 
 export class CardView implements View {
-    static linkedFieldOptions: LinkedFieldOptionView[] = [
-        new LinkedFieldOptionView(0, 'cardholderName'),
-        new LinkedFieldOptionView(1, 'number'),
-        new LinkedFieldOptionView(2, 'brand'),
-        new LinkedFieldOptionView(3, 'expMonth', 'expirationMonth'),
-        new LinkedFieldOptionView(4, 'expYear', 'expirationYear'),
-        new LinkedFieldOptionView(5, 'code', 'securityCode'),
-    ];
+    static linkedFieldOptions = new Map<number, LinkedFieldOptionView>([
+        [0, new LinkedFieldOptionView('cardholderName')],
+        [1, new LinkedFieldOptionView('number')],
+        [2, new LinkedFieldOptionView('brand')],
+        [3, new LinkedFieldOptionView('expMonth', 'expirationMonth')],
+        [4, new LinkedFieldOptionView('expYear', 'expirationYear')],
+        [5, new LinkedFieldOptionView('code', 'securityCode')],
+    ]);
 
     cardholderName: string = null;
     expMonth: string = null;
