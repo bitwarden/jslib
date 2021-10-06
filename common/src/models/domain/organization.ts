@@ -18,7 +18,6 @@ export class Organization {
     useTotp: boolean;
     use2fa: boolean;
     useApi: boolean;
-    useBusinessPortal: boolean;
     useSso: boolean;
     useResetPassword: boolean;
     selfHost: boolean;
@@ -53,7 +52,6 @@ export class Organization {
         this.useTotp = obj.useTotp;
         this.use2fa = obj.use2fa;
         this.useApi = obj.useApi;
-        this.useBusinessPortal = obj.useBusinessPortal;
         this.useSso = obj.useSso;
         this.useResetPassword = obj.useResetPassword;
         this.selfHost = obj.selfHost;
@@ -90,10 +88,6 @@ export class Organization {
 
     get isOwner() {
         return this.type === OrganizationUserType.Owner || this.isProviderUser;
-    }
-
-    get canAccessBusinessPortal() {
-        return this.isAdmin || this.permissions.accessBusinessPortal;
     }
 
     get canAccessEventLogs() {
