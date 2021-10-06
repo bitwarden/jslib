@@ -60,7 +60,7 @@ export class AddEditCustomFieldsComponent implements OnChanges {
         f.newField = true;
 
         if (f.type === FieldType.Linked) {
-            f.value = this.linkedFieldOptions[0].value;
+            f.linkedId = this.linkedFieldOptions[0].value;
         }
 
         this.cipher.fields.push(f);
@@ -96,7 +96,7 @@ export class AddEditCustomFieldsComponent implements OnChanges {
             return;
         }
 
-        this.cipher.linkedFieldOptions.map(lfo =>
-            this.linkedFieldOptions.push({ name: this.i18nService.t(lfo.i18nKey), value: lfo.id }));
+        this.linkedFieldOptions = this.cipher.linkedFieldOptions.map(lfo =>
+            ({ name: this.i18nService.t(lfo.i18nKey), value: lfo.id }));
     }
 }
