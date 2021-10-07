@@ -17,6 +17,7 @@ import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
+import { SyncService } from 'jslib-common/abstractions/sync.service';
 import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { Response } from '../models/response';
@@ -47,7 +48,7 @@ export class LoginCommand {
         protected passwordGenerationService: PasswordGenerationService,
         protected cryptoFunctionService: CryptoFunctionService, protected platformUtilsService: PlatformUtilsService,
         protected userService: UserService, protected cryptoService: CryptoService,
-        protected policyService: PolicyService, clientId: string) {
+        protected policyService: PolicyService, clientId: string, private syncService: SyncService) {
         this.clientId = clientId;
     }
 
@@ -254,6 +255,7 @@ export class LoginCommand {
             }
 
             if (response.forcePasswordReset) {
+                await this.syncService.fullSync(true);
                 return await this.updateTempPassword();
             }
 
@@ -304,11 +306,16 @@ export class LoginCommand {
             return this.updateTempPassword('Master password must be at least 8 characters long.\n');
         }
 
+        // Strength & Policy Validation
+        const strengthResult = this.passwordGenerationService.passwordStrength(masterPassword,
+            this.getPasswordStrengthUserInput());
+
         // Get New Master Password Re-type
+        const reTypeMessage = 'Re-type New Master password (Strength: ' + strengthResult.score + ')';
         const retype: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
             type: 'password',
             name: 'password',
-            message: 'Re-type New Master password:',
+            message: reTypeMessage,
         });
         const masterPasswordRetype = retype.password;
 
@@ -321,7 +328,7 @@ export class LoginCommand {
         const hint: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
             type: 'input',
             name: 'input',
-            message: 'Master Password Hint:',
+            message: 'Master Password Hint (optional):',
         });
         const masterPasswordHint = hint.input;
 
@@ -329,10 +336,6 @@ export class LoginCommand {
         const enforcedPolicyOptions = await this.policyService.getMasterPasswordPolicyOptions();
         const kdf = await this.userService.getKdf();
         const kdfIterations = await this.userService.getKdfIterations();
-
-        // Strength & Policy Validation
-        const strengthResult = this.passwordGenerationService.passwordStrength(masterPassword,
-            this.getPasswordStrengthUserInput());
 
         if (enforcedPolicyOptions != null &&
             !this.policyService.evaluateMasterPassword(
