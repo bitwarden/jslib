@@ -7,6 +7,7 @@ import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
+import { SyncService } from 'jslib-common/abstractions/sync.service';
 import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { ChangePasswordComponent as BaseChangePasswordComponent } from './change-password.component';
@@ -29,9 +30,15 @@ export class UpdateTempPasswordComponent extends BaseChangePasswordComponent {
     constructor(i18nService: I18nService, platformUtilsService: PlatformUtilsService,
         passwordGenerationService: PasswordGenerationService, policyService: PolicyService,
         cryptoService: CryptoService, userService: UserService,
-        messagingService: MessagingService, private apiService: ApiService) {
+        messagingService: MessagingService, private apiService: ApiService,
+        private syncService: SyncService) {
         super(i18nService, cryptoService, messagingService, userService, passwordGenerationService,
             platformUtilsService, policyService);
+    }
+
+    async ngOnInit() {
+        await this.syncService.fullSync(true);
+        super.ngOnInit();
     }
 
     togglePassword(confirmField: boolean) {
