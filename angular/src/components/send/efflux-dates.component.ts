@@ -183,6 +183,12 @@ export class EffluxDatesComponent implements OnInit {
         return this.safariTimePresetOptions(DateField.ExpriationDate);
     }
 
+    private get tomorrow(): Date {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return tomorrow;
+    }
+
     constructor(protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected datePipe: DatePipe) {
     }
@@ -244,6 +250,15 @@ export class EffluxDatesComponent implements OnInit {
         } else {
             this.selectedDeletionDatePreset.setValue(DatePreset.SevenDays);
             this.selectedExpirationDatePreset.setValue(DatePreset.Never);
+
+            switch (this.browserPath) {
+                case BrowserPath.Safari:
+                    this.fallbackDeletionDate.setValue(this.tomorrow.toISOString().slice(0, 10));
+                    this.fallbackDeletionTime.setValue(this.safariTimePresetOptions(DateField.DeletionDate)[1].twentyFourHour);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
