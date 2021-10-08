@@ -150,18 +150,21 @@ export class AddEditComponent implements OnInit {
     }
 
     async init() {
-        const myEmail = await this.userService.getEmail();
-        this.ownershipOptions.push({ name: myEmail, value: null });
+        if (await this.policyService.policyAppliesToUser(PolicyType.PersonalOwnership)) {
+            this.allowPersonal = false;
+        } else {
+            const myEmail = await this.userService.getEmail();
+            this.ownershipOptions.push({ name: myEmail, value: null });
+        }
+
         const orgs = await this.userService.getAllOrganizations();
         orgs.sort(Utils.getSortFunction(this.i18nService, 'name')).forEach(o => {
             if (o.enabled && o.status === OrganizationUserStatusType.Confirmed) {
                 this.ownershipOptions.push({ name: o.name, value: o.id });
             }
         });
-
-        if (this.allowPersonal && await this.policyService.policyAppliesToUser(PolicyType.PersonalOwnership)) {
-            this.allowPersonal = false;
-            this.ownershipOptions.splice(0, 1);
+        if (!this.allowPersonal) {
+            this.organizationId = this.ownershipOptions[0].value;
         }
 
         this.writeableCollections = await this.loadCollections();
