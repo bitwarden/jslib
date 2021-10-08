@@ -166,6 +166,8 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
+import { CryptoAgentUserKeyRequest } from '../models/request/cryptoAgentUserKeyRequest';
+import { CryptoAgentUserKeyResponse } from '../models/response/cryptoAgentUserKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
 
 export class ApiService implements ApiServiceAbstraction {
@@ -1428,6 +1430,49 @@ export class ApiService implements ApiServiceAbstraction {
         const r = await this.send('POST', '/setup-payment', null, true, true);
         return r as string;
     }
+
+    // Crypto Agent
+
+    async getUserKeyFromCryptoAgent(cryptoAgentUrl: string): Promise<CryptoAgentUserKeyResponse> {
+        const authHeader = await this.getActiveBearerToken();
+
+        const response = await this.fetch(new Request(cryptoAgentUrl + '/user-keys', {
+            cache: 'no-store',
+            method: 'GET',
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + authHeader,
+            }),
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false, true);
+            return Promise.reject(error);
+        }
+
+        return new CryptoAgentUserKeyResponse(await response.json());
+    }
+
+    async postUserKeyToCryptoAgent(cryptoAgentUrl: string, request: CryptoAgentUserKeyRequest): Promise<void> {
+        const authHeader = await this.getActiveBearerToken();
+
+        const response = await this.fetch(new Request(cryptoAgentUrl + '/user-keys', {
+            cache: 'no-store',
+            method: 'POST',
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + authHeader,
+                'Content-Type': 'application/json; charset=utf-8',
+            }),
+            body: JSON.stringify(request),
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false, true);
+            return Promise.reject(error);
+        }
+    }
+
 
     // Helpers
 

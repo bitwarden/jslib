@@ -17,6 +17,7 @@ import { ApiService } from '../abstractions/api.service';
 import { AppIdService } from '../abstractions/appId.service';
 import { AuthService as AuthServiceAbstraction } from '../abstractions/auth.service';
 import { CryptoService } from '../abstractions/crypto.service';
+import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 import { I18nService } from '../abstractions/i18n.service';
 import { LogService } from '../abstractions/log.service';
 import { MessagingService } from '../abstractions/messaging.service';
@@ -24,6 +25,9 @@ import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
 import { VaultTimeoutService } from '../abstractions/vaultTimeout.service';
+import { Utils } from '../misc/utils';
+import { CryptoAgentUserKeyRequest } from '../models/request/cryptoAgentUserKeyRequest';
+import { SetPasswordRequest } from '../models/request/setPasswordRequest';
 
 export const TwoFactorProviders = {
     [TwoFactorProviderType.Authenticator]: {
@@ -96,7 +100,7 @@ export class AuthService implements AuthServiceAbstraction {
         protected appIdService: AppIdService, private i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
         private vaultTimeoutService: VaultTimeoutService, private logService: LogService,
-        private setCryptoKeys = true) {
+        private cryptoFunctionService: CryptoFunctionService, private setCryptoKeys = true) {
     }
 
     init() {
@@ -358,6 +362,19 @@ export class AuthService implements AuthServiceAbstraction {
 
             // Skip this step during SSO new user flow. No key is returned from server.
             if (code == null || tokenResponse.key != null) {
+
+                if (tokenResponse.cryptoAgentUrl != null) {
+                    try {
+                        const userKeyResponse = await this.apiService.getUserKeyFromCryptoAgent(tokenResponse.cryptoAgentUrl);
+                        const keyArr = Utils.fromB64ToArray(userKeyResponse.key);
+                        const k = new SymmetricCryptoKey(keyArr);
+                        await this.cryptoService.setKey(k);
+                    } catch (e) {
+                        this.logService.error(e);
+                        // TODO: Show error message that crypto agent operation failed, or something!
+                    }
+                }
+
                 await this.cryptoService.setEncKey(tokenResponse.key);
 
                 // User doesn't have a key pair yet (old account), let's generate one for them
@@ -373,6 +390,23 @@ export class AuthService implements AuthServiceAbstraction {
                 }
 
                 await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
+            } else {
+                if (tokenResponse.cryptoAgentUrl != null) {
+                    const password = await this.cryptoFunctionService.randomBytes(64);
+
+                    const k = await this.cryptoService.makeKey(Utils.fromBufferToB64(password), this.tokenService.getEmail(), tokenResponse.kdf, tokenResponse.kdfIterations);
+                    const cryptoAgentRequest = new CryptoAgentUserKeyRequest(k.encKeyB64);
+                    await this.apiService.postUserKeyToCryptoAgent(tokenResponse.cryptoAgentUrl, cryptoAgentRequest);
+                    await this.cryptoService.setKey(k);
+
+                    const encKey = await this.cryptoService.makeEncKey(k);
+                    await this.cryptoService.setEncKey(encKey[1].encryptedString);
+
+                    const keyPair = await this.cryptoService.makeKeyPair();
+
+                    const setPasswordRequest = new SetPasswordRequest('0'.repeat(300), encKey[1].encryptedString, null, tokenResponse.kdf, tokenResponse.kdfIterations, null, new KeysRequest(keyPair[0], keyPair[1].encryptedString));
+                    await this.apiService.setPassword(setPasswordRequest);
+                }
             }
         }
 

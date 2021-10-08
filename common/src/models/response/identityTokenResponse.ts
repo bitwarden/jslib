@@ -15,6 +15,7 @@ export class IdentityTokenResponse extends BaseResponse {
     kdf: KdfType;
     kdfIterations: number;
     forcePasswordReset: boolean;
+    cryptoAgentUrl: string;
 
     constructor(response: any) {
         super(response);
@@ -30,5 +31,6 @@ export class IdentityTokenResponse extends BaseResponse {
         this.kdf = this.getResponseProperty('Kdf');
         this.kdfIterations = this.getResponseProperty('KdfIterations');
         this.forcePasswordReset = this.getResponseProperty('ForcePasswordReset');
+        this.cryptoAgentUrl = this.getResponseProperty('CryptoAgentUrl');
     }
 }
