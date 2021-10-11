@@ -5,10 +5,12 @@ import { UserService } from '../abstractions/user.service';
 import { PolicyData } from '../models/data/policyData';
 
 import { MasterPasswordPolicyOptions } from '../models/domain/masterPasswordPolicyOptions';
+import { Organization } from '../models/domain/organization';
 import { Policy } from '../models/domain/policy';
 import { ResetPasswordPolicyOptions } from '../models/domain/resetPasswordPolicyOptions';
 
 import { OrganizationUserStatusType } from '../enums/organizationUserStatusType';
+import { OrganizationUserType } from '../enums/organizationUserType';
 import { PolicyType } from '../enums/policyType';
 
 import { ListResponse } from '../models/response/listResponse';
@@ -189,7 +191,15 @@ export class PolicyService implements PolicyServiceAbstraction {
             o.enabled &&
             o.status >= OrganizationUserStatusType.Accepted &&
             o.usePolicies &&
-            !o.isExemptFromPolicies &&
+            !this.isExcemptFromPolicies(o, policyType) &&
             policySet.has(o.id));
+    }
+
+    private isExcemptFromPolicies(organization: Organization, policyType: PolicyType) {
+        if (policyType === PolicyType.MaximumVaultTimeout) {
+            return organization.type === OrganizationUserType.Owner;
+        }
+
+        return organization.isExemptFromPolicies;
     }
 }
