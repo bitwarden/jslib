@@ -27,7 +27,9 @@ export class AttachmentView implements View {
             if (this.size != null) {
                 return parseInt(this.size, null);
             }
-        } catch { }
+        } catch {
+            // Ignore error
+        }
         return 0;
     }
 }

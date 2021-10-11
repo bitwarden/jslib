@@ -25,7 +25,6 @@ import { ChangePasswordComponent as BaseChangePasswordComponent } from './change
 
 import { HashPurpose } from 'jslib-common/enums/hashPurpose';
 import { KdfType } from 'jslib-common/enums/kdfType';
-import { PolicyType } from 'jslib-common/enums/policyType';
 
 import { Utils } from 'jslib-common/misc/utils';
 

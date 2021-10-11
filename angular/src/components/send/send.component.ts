@@ -4,7 +4,6 @@ import {
     OnInit,
 } from '@angular/core';
 
-import { OrganizationUserStatusType } from 'jslib-common/enums/organizationUserStatusType';
 import { PolicyType } from 'jslib-common/enums/policyType';
 import { SendType } from 'jslib-common/enums/sendType';
 
@@ -12,6 +11,7 @@ import { SendView } from 'jslib-common/models/view/sendView';
 
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
 import { SearchService } from 'jslib-common/abstractions/search.service';
@@ -48,7 +48,8 @@ export class SendComponent implements OnInit {
     constructor(protected sendService: SendService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected environmentService: EnvironmentService,
         protected ngZone: NgZone, protected searchService: SearchService,
-        protected policyService: PolicyService, protected userService: UserService) { }
+        protected policyService: PolicyService, protected userService: UserService,
+        private logService: LogService) { }
 
     async ngOnInit() {
         this.disableSend = await this.policyService.policyAppliesToUser(PolicyType.DisableSend);
@@ -129,7 +130,9 @@ export class SendComponent implements OnInit {
                 this.platformUtilsService.showToast('success', null, this.i18nService.t('removedPassword'));
                 await this.load();
             }
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
         this.actionPromise = null;
     }
 
@@ -156,7 +159,9 @@ export class SendComponent implements OnInit {
                 this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedSend'));
                 await this.refresh();
             }
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
         this.actionPromise = null;
         return true;
     }

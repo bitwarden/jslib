@@ -3,6 +3,7 @@ import { Directive } from '@angular/core';
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
@@ -31,7 +32,7 @@ export class UpdateTempPasswordComponent extends BaseChangePasswordComponent {
         passwordGenerationService: PasswordGenerationService, policyService: PolicyService,
         cryptoService: CryptoService, userService: UserService,
         messagingService: MessagingService, private apiService: ApiService,
-        private syncService: SyncService) {
+        private syncService: SyncService, private logService: LogService) {
         super(i18nService, cryptoService, messagingService, userService, passwordGenerationService,
             platformUtilsService, policyService);
     }
@@ -77,7 +78,9 @@ export class UpdateTempPasswordComponent extends BaseChangePasswordComponent {
             const newEncKey = await this.cryptoService.remakeEncKey(newKey, userEncKey);
 
             await this.performSubmitActions(newPasswordHash, newKey, newEncKey);
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
     }
 
     async performSubmitActions(masterPasswordHash: string, key: SymmetricCryptoKey,
@@ -99,6 +102,8 @@ export class UpdateTempPasswordComponent extends BaseChangePasswordComponent {
             } else {
                 this.messagingService.send('logout');
             }
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
     }
 }

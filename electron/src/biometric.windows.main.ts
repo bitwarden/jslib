@@ -125,8 +125,9 @@ export default class BiometricWindowsMain implements BiometricMain {
         try {
             const version = require('os').release();
             return Number.parseInt(version.split('.')[0], 10);
+        } catch {
+            // Ignore error
         }
-        catch { }
         return -1;
     }
 }

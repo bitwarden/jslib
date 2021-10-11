@@ -341,7 +341,9 @@ export class LoginCommand {
                     });
                     foundPort = true;
                     break;
-                } catch { }
+                } catch {
+                    // Ignore error
+                }
             }
             if (!foundPort) {
                 reject();

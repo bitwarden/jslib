@@ -12,6 +12,7 @@ import { SendType } from 'jslib-common/enums/sendType';
 
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
@@ -57,7 +58,8 @@ export class AddEditComponent implements OnInit {
     constructor(protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         protected environmentService: EnvironmentService, protected datePipe: DatePipe,
         protected sendService: SendService, protected userService: UserService,
-        protected messagingService: MessagingService, protected policyService: PolicyService) {
+        protected messagingService: MessagingService, protected policyService: PolicyService,
+        private logService: LogService) {
         this.typeOptions = [
             { name: i18nService.t('sendTypeFile'), value: SendType.File },
             { name: i18nService.t('sendTypeText'), value: SendType.Text },
@@ -191,7 +193,9 @@ export class AddEditComponent implements OnInit {
         try {
             await this.formPromise;
             return true;
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
         return false;
     }
 
@@ -218,7 +222,9 @@ export class AddEditComponent implements OnInit {
             await this.load();
             this.onDeletedSend.emit(this.send);
             return true;
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
 
         return false;
     }

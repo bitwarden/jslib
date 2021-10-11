@@ -11,6 +11,7 @@ import { OrganizationUserStatusType } from 'jslib-common/enums/organizationUserS
 import { CipherService } from 'jslib-common/abstractions/cipher.service';
 import { CollectionService } from 'jslib-common/abstractions/collection.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { UserService } from 'jslib-common/abstractions/user.service';
 
@@ -35,7 +36,7 @@ export class ShareComponent implements OnInit {
 
     constructor(protected collectionService: CollectionService, protected platformUtilsService: PlatformUtilsService,
         protected i18nService: I18nService, protected userService: UserService,
-        protected cipherService: CipherService) { }
+        protected cipherService: CipherService, private logService: LogService) { }
 
     async ngOnInit() {
         await this.load();
@@ -88,7 +89,9 @@ export class ShareComponent implements OnInit {
                 });
             await this.formPromise;
             return true;
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
         return false;
     }
 

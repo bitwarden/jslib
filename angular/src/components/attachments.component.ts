@@ -10,6 +10,7 @@ import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CipherService } from 'jslib-common/abstractions/cipher.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { UserService } from 'jslib-common/abstractions/user.service';
 
@@ -38,7 +39,7 @@ export class AttachmentsComponent implements OnInit {
     constructor(protected cipherService: CipherService, protected i18nService: I18nService,
         protected cryptoService: CryptoService, protected userService: UserService,
         protected platformUtilsService: PlatformUtilsService, protected apiService: ApiService,
-        protected win: Window) { }
+        protected win: Window, private logService: LogService) { }
 
     async ngOnInit() {
         await this.init();
@@ -71,7 +72,9 @@ export class AttachmentsComponent implements OnInit {
             this.cipher = await this.cipherDomain.decrypt();
             this.platformUtilsService.showToast('success', null, this.i18nService.t('attachmentSaved'));
             this.onUploadedAttachment.emit();
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
 
         // reset file input
         // ref: https://stackoverflow.com/a/20552042
@@ -100,7 +103,9 @@ export class AttachmentsComponent implements OnInit {
             if (i > -1) {
                 this.cipher.attachments.splice(i, 1);
             }
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
 
         this.deletePromises[attachment.id] = null;
         this.onDeletedAttachment.emit();
@@ -226,7 +231,9 @@ export class AttachmentsComponent implements OnInit {
                 a.downloading = false;
             });
             await this.reuploadPromises[attachment.id];
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
     }
 
     protected loadCipher() {

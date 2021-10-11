@@ -32,7 +32,9 @@ export class TotpService implements TotpServiceAbstraction {
                     } else if (digitParams > 0) {
                         digits = digitParams;
                     }
-                } catch { }
+                } catch {
+                    // Ignore error
+                }
             }
             if (params.has('period') && params.get('period') != null) {
                 try {
@@ -40,7 +42,9 @@ export class TotpService implements TotpServiceAbstraction {
                     if (periodParam > 0) {
                         period = periodParam;
                     }
-                } catch { }
+                } catch {
+                    // Ignore error
+                }
             }
             if (params.has('secret') && params.get('secret') != null) {
                 keyB32 = params.get('secret');
@@ -99,7 +103,9 @@ export class TotpService implements TotpServiceAbstraction {
             if (params.has('period') && params.get('period') != null) {
                 try {
                     period = parseInt(params.get('period').trim(), null);
-                } catch { }
+                } catch {
+                    // Ignore error
+                }
             }
         }
         return period;

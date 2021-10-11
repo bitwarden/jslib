@@ -10,13 +10,15 @@ import { EventService as EventServiceAbstraction } from '../abstractions/event.s
 import { StorageService } from '../abstractions/storage.service';
 import { UserService } from '../abstractions/user.service';
 
+import { LogService } from '../abstractions/log.service';
 import { ConstantsService } from './constants.service';
 
 export class EventService implements EventServiceAbstraction {
     private inited = false;
 
     constructor(private storageService: StorageService, private apiService: ApiService,
-        private userService: UserService, private cipherService: CipherService) { }
+        private userService: UserService, private cipherService: CipherService,
+        private logService: LogService) { }
 
     init(checkOnInterval: boolean) {
         if (this.inited) {
@@ -83,7 +85,9 @@ export class EventService implements EventServiceAbstraction {
         try {
             await this.apiService.postEventsCollect(request);
             this.clearEvents();
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
     }
 
     async clearEvents(): Promise<any> {
