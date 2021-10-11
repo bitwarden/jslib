@@ -254,7 +254,8 @@ export class LoginCommand {
                     ' through the web vault to set your master password.');
             }
 
-            if (response.forcePasswordReset) {
+            // Handle Updating Temp Password if NOT using an API Key for authentication
+            if (response.forcePasswordReset && (clientId == null && clientSecret == null)) {
                 await this.syncService.fullSync(true);
                 return await this.updateTempPassword();
             }
