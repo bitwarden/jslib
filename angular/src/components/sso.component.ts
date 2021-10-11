@@ -154,6 +154,16 @@ export class SsoComponent {
                         },
                     });
                 }
+            } else if (response.resetMasterPassword) {
+                if (this.onSuccessfulLoginChangePasswordNavigate != null) {
+                    this.onSuccessfulLoginChangePasswordNavigate();
+                } else {
+                    this.router.navigate([this.changePasswordRoute], {
+                        queryParams: {
+                            identifier: orgIdFromState,
+                        },
+                    });
+                }
             } else if (response.forcePasswordReset) {
                 if (this.onSuccessfulLoginForceResetNavigate != null) {
                     this.onSuccessfulLoginForceResetNavigate();
