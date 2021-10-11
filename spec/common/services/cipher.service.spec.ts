@@ -4,6 +4,7 @@ import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { FileUploadService } from 'jslib-common/abstractions/fileUpload.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { SearchService } from 'jslib-common/abstractions/search.service';
 import { SettingsService } from 'jslib-common/abstractions/settings.service';
 import { StorageService } from 'jslib-common/abstractions/storage.service';
@@ -28,6 +29,7 @@ describe('Cipher Service', () => {
     let storageService: SubstituteOf<StorageService>;
     let i18nService: SubstituteOf<I18nService>;
     let searchService: SubstituteOf<SearchService>;
+    let logService: SubstituteOf<LogService>;
 
     let cipherService: CipherService;
 
@@ -40,12 +42,13 @@ describe('Cipher Service', () => {
         storageService = Substitute.for<StorageService>();
         i18nService = Substitute.for<I18nService>();
         searchService = Substitute.for<SearchService>();
+        logService = Substitute.for<LogService>();
 
         cryptoService.encryptToBytes(Arg.any(), Arg.any()).resolves(ENCRYPTED_BYTES);
         cryptoService.encrypt(Arg.any(), Arg.any()).resolves(new EncString(ENCRYPTED_TEXT));
 
         cipherService = new CipherService(cryptoService, userService, settingsService, apiService, fileUploadService,
-            storageService, i18nService, () => searchService);
+            storageService, i18nService, () => searchService, logService);
     });
 
     it('attachments upload encrypted file contents', async () => {
