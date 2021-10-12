@@ -10,14 +10,23 @@ export class OrganizationSsoResponse extends BaseResponse {
         super(response);
         this.enabled = this.getResponseProperty('Enabled');
         this.data = new SsoConfigApi(this.getResponseProperty('Data'));
-        this.urls = this.getResponseProperty('Urls');
+        this.urls = new SsoUrls(this.getResponseProperty('Urls'));
     }
 }
 
-type SsoUrls = {
+class SsoUrls extends BaseResponse {
     callbackPath: string;
     signedOutCallbackPath: string;
     spEntityId: string;
     spMetadataUrl: string;
     spAcsUrl: string;
-};
+
+    constructor(response: any) {
+        super(response);
+        this.callbackPath = this.getResponseProperty('CallbackPath');
+        this.signedOutCallbackPath = this.getResponseProperty('SignedOutCallbackPath');
+        this.spEntityId = this.getResponseProperty('SpEntityId');
+        this.spMetadataUrl = this.getResponseProperty('SpMetadataUrl');
+        this.spAcsUrl = this.getResponseProperty('SpAcsUrl');
+    }
+}
