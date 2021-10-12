@@ -29,7 +29,6 @@ export class DynamicModalComponent implements AfterViewInit, OnDestroy {
     setComponentParameters: (component: any) => void;
 
     private focusTrap: FocusTrap;
-    private lastFocus: HTMLElement;
 
     constructor(private modalService: ModalService, private cd: ChangeDetectorRef,
         private el: ElementRef<HTMLElement>, private focusTrapFactory: ConfigurableFocusTrapFactory,
@@ -44,10 +43,6 @@ export class DynamicModalComponent implements AfterViewInit, OnDestroy {
 
         this.modalRef.created(this.el.nativeElement);
         this.focusTrap = this.focusTrapFactory.create(this.el.nativeElement);
-        this.triggerFocus();
-
-        this.el.nativeElement.addEventListener('focusin', (event: Event) =>
-            this.lastFocus = event.target as HTMLElement);
     }
 
     loadChildComponent(componentType: Type<any>) {
@@ -68,11 +63,8 @@ export class DynamicModalComponent implements AfterViewInit, OnDestroy {
         this.modalRef.close();
     }
 
-    triggerFocus() {
-        if (this.lastFocus == null) {
-            this.focusTrap.focusFirstTabbableElementWhenReady();
-        } else {
-            this.lastFocus.focus();
-        }
+    getFocus() {
+        const autoFocusEl = this.el.nativeElement.querySelector('[appAutoFocus]') as HTMLElement;
+        autoFocusEl?.focus();
     }
 }

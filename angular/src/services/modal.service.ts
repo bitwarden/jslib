@@ -42,7 +42,7 @@ export class ModalService {
     }
 
     get topModal() {
-        return this.modalList[this.modalList.length - 1];
+        return this.modalList[this.modalCount - 1];
     }
 
     async openViewRef<T>(componentType: Type<T>, viewContainerRef: ViewContainerRef,
@@ -100,7 +100,7 @@ export class ModalService {
 
             this.modalList.pop();
             if (this.modalCount > 0) {
-                this.topModal.instance.triggerFocus();
+                this.topModal.instance.getFocus();
             }
         });
 
