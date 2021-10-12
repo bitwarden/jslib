@@ -10,7 +10,10 @@ import {
     ViewContainerRef
 } from '@angular/core';
 
-import { ConfigurableFocusTrapFactory, FocusTrap } from '@angular/cdk/a11y';
+import {
+    ConfigurableFocusTrap,
+    ConfigurableFocusTrapFactory,
+} from '@angular/cdk/a11y';
 
 import { ModalService } from '../../services/modal.service';
 
@@ -28,7 +31,7 @@ export class DynamicModalComponent implements AfterViewInit, OnDestroy {
     childComponentType: Type<any>;
     setComponentParameters: (component: any) => void;
 
-    private focusTrap: FocusTrap;
+    private focusTrap: ConfigurableFocusTrap;
 
     constructor(private modalService: ModalService, private cd: ChangeDetectorRef,
         private el: ElementRef<HTMLElement>, private focusTrapFactory: ConfigurableFocusTrapFactory,
