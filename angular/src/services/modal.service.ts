@@ -105,7 +105,7 @@ export class ModalService {
             backdrop.style.zIndex = `${this.modalCount}040`;
             document.body.appendChild(backdrop);
 
-            el.querySelector('.modal-dialog').addEventListener('click', (e: Event) => {
+            el.querySelector('.modal-dialog').addEventListener('mousedown', (e: Event) => {
                 e.stopPropagation();
             });
 
@@ -114,7 +114,7 @@ export class ModalService {
 
             const modals = Array.from(el.querySelectorAll('.modal, .modal *[data-dismiss="modal"]'));
             for (const closeElement of modals) {
-                closeElement.addEventListener('click', event => {
+                closeElement.addEventListener('mousedown', event => {
                     modalRef.close();
                 });
             }
