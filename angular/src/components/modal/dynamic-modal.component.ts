@@ -45,7 +45,7 @@ export class DynamicModalComponent implements AfterViewInit, OnDestroy {
         this.cd.detectChanges();
 
         this.modalRef.created(this.el.nativeElement);
-        this.focusTrap = this.focusTrapFactory.create(this.el.nativeElement);
+        this.focusTrap = this.focusTrapFactory.create(this.el.nativeElement.querySelector('.modal-dialog'));
     }
 
     loadChildComponent(componentType: Type<any>) {
