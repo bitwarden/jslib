@@ -13,9 +13,9 @@ import { OrganizationUserStatusType } from '../enums/organizationUserStatusType'
 import { OrganizationUserType } from '../enums/organizationUserType';
 import { PolicyType } from '../enums/policyType';
 
+import { ApiService } from '../abstractions/api.service';
 import { ListResponse } from '../models/response/listResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
-import { ApiService } from '../abstractions/api.service';
 
 const Keys = {
     policiesPrefix: 'policies_',
@@ -55,8 +55,8 @@ export class PolicyService implements PolicyServiceAbstraction {
     async getPolicyForOrganization(policyType: PolicyType, organizationId: string): Promise<Policy> {
         const org = await this.userService.getOrganization(organizationId);
         if (org?.isProviderUser) {
-            const policies = await this.apiService.getPolicies(organizationId);
-            const policy = policies.data.find(p => p.organizationId === organizationId);
+            const orgPolicies = await this.apiService.getPolicies(organizationId);
+            const policy = orgPolicies.data.find(p => p.organizationId === organizationId);
 
             if (policy == null) {
                 return null;
