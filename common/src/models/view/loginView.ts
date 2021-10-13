@@ -1,18 +1,17 @@
-import { LinkedFieldOptionView } from './linkedFieldOptionView';
 import { LoginUriView } from './loginUriView';
 import { View } from './view';
 
+import { linkable } from '../../misc/linkable.decorator';
 import { Utils } from '../../misc/utils';
+
 import { Login } from '../domain/login';
 
 export class LoginView implements View {
-    static linkedFieldOptions = new Map<number, LinkedFieldOptionView>([
-        [0, new LinkedFieldOptionView('username')],
-        [1, new LinkedFieldOptionView('password')],
-    ]);
-
+    @linkable(0)
     username: string = null;
+    @linkable(1)
     password: string = null;
+
     passwordRevisionDate?: Date = null;
     totp: string = null;
     uris: LoginUriView[] = null;

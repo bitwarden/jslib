@@ -1,5 +1,6 @@
 import { CipherRepromptType } from '../../enums/cipherRepromptType';
 import { CipherType } from '../../enums/cipherType';
+import { LinkableMetadata } from '../../misc/linkable.decorator';
 
 import { Cipher } from '../domain/cipher';
 
@@ -7,11 +8,12 @@ import { AttachmentView } from './attachmentView';
 import { CardView } from './cardView';
 import { FieldView } from './fieldView';
 import { IdentityView } from './identityView';
-import { LinkedFieldOptionView } from './linkedFieldOptionView';
 import { LoginView } from './loginView';
 import { PasswordHistoryView } from './passwordHistoryView';
 import { SecureNoteView } from './secureNoteView';
 import { View } from './view';
+
+import { metadataKey as linkedMetadataKey } from '../../misc/linkable.decorator';
 
 export class CipherView implements View {
     id: string = null;
@@ -111,15 +113,16 @@ export class CipherView implements View {
         return this.deletedDate != null;
     }
 
-    get linkedFieldOptions(): Map<number, LinkedFieldOptionView> {
+    get linkedFieldOptions(): Map<number, LinkableMetadata> {
         switch (this.type) {
             case CipherType.Card:
-                return CardView.linkedFieldOptions;
+                return (this.card as any)[linkedMetadataKey];
             case CipherType.Identity:
-                return IdentityView.linkedFieldOptions;
+                return (this.identity as any)[linkedMetadataKey];
             case CipherType.Login:
-                return LoginView.linkedFieldOptions;
+                return (this.login as any)[linkedMetadataKey];
         }
+
     }
 
     linkedFieldValue(id: number) {
@@ -130,11 +133,11 @@ export class CipherView implements View {
 
         switch (this.type) {
             case CipherType.Card:
-                return this.card[linkedFieldOption.propertyName as keyof CardView];
+                return this.card[linkedFieldOption.propertyKey as keyof CardView];
             case CipherType.Identity:
-                return this.identity[linkedFieldOption.propertyName as keyof IdentityView];
+                return this.identity[linkedFieldOption.propertyKey as keyof IdentityView];
             case CipherType.Login:
-                return this.login[linkedFieldOption.propertyName as keyof LoginView];
+                return this.login[linkedFieldOption.propertyKey as keyof LoginView];
         }
     }
 

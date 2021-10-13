@@ -1,21 +1,17 @@
-import { LinkedFieldOptionView } from './linkedFieldOptionView';
 import { View } from './view';
 
 import { Card } from '../domain/card';
 
-export class CardView implements View {
-    static linkedFieldOptions = new Map<number, LinkedFieldOptionView>([
-        [0, new LinkedFieldOptionView('cardholderName')],
-        [1, new LinkedFieldOptionView('number')],
-        [2, new LinkedFieldOptionView('brand')],
-        [3, new LinkedFieldOptionView('expMonth', 'expirationMonth')],
-        [4, new LinkedFieldOptionView('expYear', 'expirationYear')],
-        [5, new LinkedFieldOptionView('code', 'securityCode')],
-    ]);
+import { linkable } from '../../misc/linkable.decorator';
 
+export class CardView implements View {
+    @linkable(0)
     cardholderName: string = null;
+    @linkable(1, 'expirationMonth')
     expMonth: string = null;
+    @linkable(2, 'expirationYear')
     expYear: string = null;
+    @linkable(3, 'securityCode')
     code: string = null;
 
     // tslint:disable

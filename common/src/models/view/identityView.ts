@@ -1,47 +1,42 @@
-import { LinkedFieldOptionView } from './linkedFieldOptionView';
 import { View } from './view';
 
 import { Identity } from '../domain/identity';
 
+import { linkable } from '../../misc/linkable.decorator';
 import { Utils } from '../../misc/utils';
 
 export class IdentityView implements View {
-    static linkedFieldOptions = new Map<number, LinkedFieldOptionView>([
-        [0, new LinkedFieldOptionView('firstName')],
-        [1, new LinkedFieldOptionView('middleName')],
-        [2, new LinkedFieldOptionView('lastName')],
-        [3, new LinkedFieldOptionView('fullName')],
-        [4, new LinkedFieldOptionView('username')],
-        [5, new LinkedFieldOptionView('company')],
-        [6, new LinkedFieldOptionView('ssn')],
-        [7, new LinkedFieldOptionView('passportNumber')],
-        [8, new LinkedFieldOptionView('licenseNumber')],
-        [9, new LinkedFieldOptionView('email')],
-        [10, new LinkedFieldOptionView('phone')],
-        [11, new LinkedFieldOptionView('address1')],
-        [12, new LinkedFieldOptionView('address2')],
-        [13, new LinkedFieldOptionView('address3')],
-        [14, new LinkedFieldOptionView('city', 'cityTown')],
-        [15, new LinkedFieldOptionView('state', 'stateProvince')],
-        [16, new LinkedFieldOptionView('postalCode', 'zipPostalCode')],
-        [17, new LinkedFieldOptionView('country')],
-    ]);
-
+    @linkable(0)
     title: string = null;
+    @linkable(1)
     middleName: string = null;
+    @linkable(2)
     address1: string = null;
+    @linkable(3)
     address2: string = null;
+    @linkable(4)
     address3: string = null;
+    @linkable(5, 'cityTown')
     city: string = null;
+    @linkable(6, 'stateProvince')
     state: string = null;
+    @linkable(7, 'zipPostalCode')
     postalCode: string = null;
+    @linkable(8)
     country: string = null;
+    @linkable(9)
     company: string = null;
+    @linkable(10)
     email: string = null;
+    @linkable(11)
     phone: string = null;
+    @linkable(12)
     ssn: string = null;
+    @linkable(13)
     username: string = null;
+    @linkable(14)
     passportNumber: string = null;
+    @linkable(15)
     licenseNumber: string = null;
 
     // tslint:disable
@@ -54,6 +49,7 @@ export class IdentityView implements View {
         // ctor
     }
 
+    @linkable(16)
     get firstName(): string {
         return this._firstName;
     }
@@ -62,6 +58,7 @@ export class IdentityView implements View {
         this._subTitle = null;
     }
 
+    @linkable(17)
     get lastName(): string {
         return this._lastName;
     }
@@ -87,6 +84,7 @@ export class IdentityView implements View {
         return this._subTitle;
     }
 
+    @linkable(18)
     get fullName(): string {
         if (this.title != null || this.firstName != null || this.middleName != null || this.lastName != null) {
             let name = '';
