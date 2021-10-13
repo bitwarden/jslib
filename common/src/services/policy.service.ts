@@ -15,6 +15,7 @@ import { PolicyType } from '../enums/policyType';
 
 import { ListResponse } from '../models/response/listResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
+import { ApiService } from '../abstractions/api.service';
 
 const Keys = {
     policiesPrefix: 'policies_',
@@ -23,7 +24,8 @@ const Keys = {
 export class PolicyService implements PolicyServiceAbstraction {
     policyCache: Policy[];
 
-    constructor(private userService: UserService, private storageService: StorageService) {
+    constructor(private userService: UserService, private storageService: StorageService,
+        private apiService: ApiService) {
     }
 
     clearCache(): void {
@@ -51,6 +53,18 @@ export class PolicyService implements PolicyServiceAbstraction {
     }
 
     async getPolicyForOrganization(policyType: PolicyType, organizationId: string): Promise<Policy> {
+        const org = await this.userService.getOrganization(organizationId);
+        if (org?.isProviderUser) {
+            const policies = await this.apiService.getPolicies(organizationId);
+            const policy = policies.data.find(p => p.organizationId === organizationId);
+
+            if (policy == null) {
+                return null;
+            }
+
+            return new Policy(new PolicyData(policy));
+        }
+
         const policies = await this.getAll(policyType);
         return policies.find(p => p.organizationId === organizationId);
     }
