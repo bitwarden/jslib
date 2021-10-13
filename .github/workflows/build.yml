@@ -1,10 +1,12 @@
+---
 name: Build
 
 on: push
 
 jobs:
   cloc:
-    runs-on: ubuntu-latest
+    name: CLOC
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout repo
@@ -19,12 +21,12 @@ jobs:
         run: cloc --include-lang TypeScript,JavaScript,HTML,Sass,CSS --vcs git
 
   build:
-
+    name: Build jslib
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [windows-2019, macos-10.15, ubuntu-20.04]
 
     steps:
       - name: Set up Node
