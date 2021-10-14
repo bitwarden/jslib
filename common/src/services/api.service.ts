@@ -166,6 +166,7 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
+import { SetCryptoAgentKeyRequest } from '../models/request/account/setCryptoAgentKeyRequest';
 import { CryptoAgentUserKeyRequest } from '../models/request/cryptoAgentUserKeyRequest';
 import { CryptoAgentUserKeyResponse } from '../models/response/cryptoAgentUserKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
@@ -289,6 +290,10 @@ export class ApiService implements ApiServiceAbstraction {
 
     setPassword(request: SetPasswordRequest): Promise<any> {
         return this.send('POST', '/accounts/set-password', request, true, false);
+    }
+
+    postSetCryptoAgentKey(request: SetCryptoAgentKeyRequest): Promise<any> {
+        return this.send('POST', '/accounts/set-crypto-agent-key', request, true, false);
     }
 
     postSecurityStamp(request: PasswordVerificationRequest): Promise<any> {

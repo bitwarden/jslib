@@ -1,4 +1,5 @@
 import { PolicyType } from '../enums/policyType';
+import { SetCryptoAgentKeyRequest } from '../models/request/account/setCryptoAgentKeyRequest';
 
 import { AttachmentRequest } from '../models/request/attachmentRequest';
 
@@ -174,6 +175,7 @@ export abstract class ApiService {
     postEmail: (request: EmailRequest) => Promise<any>;
     postPassword: (request: PasswordRequest) => Promise<any>;
     setPassword: (request: SetPasswordRequest) => Promise<any>;
+    postSetCryptoAgentKey: (request: SetCryptoAgentKeyRequest) => Promise<any>;
     postSecurityStamp: (request: PasswordVerificationRequest) => Promise<any>;
     deleteAccount: (request: PasswordVerificationRequest) => Promise<any>;
     getAccountRevisionDate: () => Promise<number>;
