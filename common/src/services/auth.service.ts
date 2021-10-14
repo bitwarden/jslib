@@ -5,12 +5,12 @@ import { TwoFactorProviderType } from '../enums/twoFactorProviderType';
 import { AuthResult } from '../models/domain/authResult';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
+import { SetCryptoAgentKeyRequest } from '../models/request/account/setCryptoAgentKeyRequest';
+import { CryptoAgentUserKeyRequest } from '../models/request/cryptoAgentUserKeyRequest';
 import { DeviceRequest } from '../models/request/deviceRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
-import { SetCryptoAgentKeyRequest } from '../models/request/account/setCryptoAgentKeyRequest';
-import { CryptoAgentUserKeyRequest } from '../models/request/cryptoAgentUserKeyRequest';
 
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
@@ -373,7 +373,7 @@ export class AuthService implements AuthServiceAbstraction {
                         await this.cryptoService.setKey(k);
                     } catch (e) {
                         this.logService.error(e);
-                        // TODO: Show error message that crypto agent operation failed, or something!
+                        throw new Error('Unable to reach crypto agent');
                     }
                 }
 
@@ -386,7 +386,6 @@ export class AuthService implements AuthServiceAbstraction {
                         await this.apiService.postAccountKeys(new KeysRequest(keyPair[0], keyPair[1].encryptedString));
                         tokenResponse.privateKey = keyPair[1].encryptedString;
                     } catch (e) {
-                        // tslint:disable-next-line
                         this.logService.error(e);
                     }
                 }
@@ -405,7 +404,11 @@ export class AuthService implements AuthServiceAbstraction {
 
                     const [pubKey, privKey] = await this.cryptoService.makeKeyPair();
 
-                    await this.apiService.postUserKeyToCryptoAgent(tokenResponse.cryptoAgentUrl, cryptoAgentRequest);
+                    try {
+                        await this.apiService.postUserKeyToCryptoAgent(tokenResponse.cryptoAgentUrl, cryptoAgentRequest);
+                    } catch (e) {
+                        throw new Error('Unable to reach crypto agent');
+                    }
 
                     const keys = new KeysRequest(pubKey, privKey.encryptedString);
                     const setPasswordRequest = new SetCryptoAgentKeyRequest(
