@@ -46,6 +46,9 @@ export class DynamicModalComponent implements AfterViewInit, OnDestroy {
 
         this.modalRef.created(this.el.nativeElement);
         this.focusTrap = this.focusTrapFactory.create(this.el.nativeElement.querySelector('.modal-dialog'));
+        if (this.el.nativeElement.querySelector('[appAutoFocus]') == null) {
+            this.focusTrap.focusFirstTabbableElementWhenReady();
+        }
     }
 
     loadChildComponent(componentType: Type<any>) {
