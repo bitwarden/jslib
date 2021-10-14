@@ -41,7 +41,7 @@ export class ModalService {
         return this.modalList.length;
     }
 
-    get topModal() {
+    private get topModal() {
         return this.modalList[this.modalCount - 1];
     }
 
