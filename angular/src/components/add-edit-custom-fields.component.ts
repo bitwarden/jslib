@@ -19,6 +19,7 @@ import { FieldView } from 'jslib-common/models/view/fieldView';
 import { CipherType } from 'jslib-common/enums/cipherType';
 import { EventType } from 'jslib-common/enums/eventType';
 import { FieldType } from 'jslib-common/enums/fieldType';
+import { Utils } from 'jslib-common/misc/utils';
 
 @Directive()
 export class AddEditCustomFieldsComponent implements OnChanges {
@@ -96,8 +97,9 @@ export class AddEditCustomFieldsComponent implements OnChanges {
             return;
         }
 
-        this.linkedFieldOptions = [];
+        const options: any = [];
         this.cipher.linkedFieldOptions.forEach((linkedFieldOption, id) =>
-            this.linkedFieldOptions.push({ name: this.i18nService.t(linkedFieldOption.i18nKey), value: id }));
+            options.push({ name: this.i18nService.t(linkedFieldOption.i18nKey), value: id }));
+        this.linkedFieldOptions = options.sort(Utils.getSortFunction(this.i18nService, 'name'));
     }
 }
