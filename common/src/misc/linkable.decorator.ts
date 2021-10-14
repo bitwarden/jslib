@@ -1,3 +1,7 @@
+// A decorator used to configure "linkable" properties on cipher types.
+// A "linkable" property is made available as an option when configuring a Linked Custom Field.
+// The id must be unique and must not be changed.
+
 export const metadataKey = 'linkedFieldOptions';
 
 export class LinkableMetadata {
@@ -15,13 +19,15 @@ export class LinkableMetadata {
 }
 
 export function linkable(id: number, i18nKey?: string) {
-    return (target: object, propertyKey: string) => {
-        if (!target.hasOwnProperty(metadataKey)) {
-            Object.defineProperty(target, metadataKey, {
+    return (prototype: any, propertyKey: string) => {
+        if (!prototype.hasOwnProperty(metadataKey)) {
+            Object.defineProperty(prototype, metadataKey, {
                 value: new Map<number, LinkableMetadata>(),
             });
+        } else if (prototype[metadataKey].has(id)) {
+            throw new Error('Linkable metadata must use unique ids. Id ' + id + ' has been used more than once.');
         }
 
-        (target as any)[metadataKey].set(id, new LinkableMetadata(propertyKey, i18nKey));
+        prototype[metadataKey].set(id, new LinkableMetadata(propertyKey, i18nKey));
     };
 }
