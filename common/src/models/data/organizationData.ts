@@ -17,7 +17,6 @@ export class OrganizationData {
     useTotp: boolean;
     use2fa: boolean;
     useApi: boolean;
-    useBusinessPortal: boolean;
     useSso: boolean;
     useResetPassword: boolean;
     selfHost: boolean;
@@ -48,7 +47,6 @@ export class OrganizationData {
         this.useTotp = response.useTotp;
         this.use2fa = response.use2fa;
         this.useApi = response.useApi;
-        this.useBusinessPortal = response.useBusinessPortal;
         this.useSso = response.useSso;
         this.useResetPassword = response.useResetPassword;
         this.selfHost = response.selfHost;

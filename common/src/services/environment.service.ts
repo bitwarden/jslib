@@ -19,7 +19,6 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
     private iconsUrl: string;
     private notificationsUrl: string;
     private eventsUrl: string;
-    private enterpriseUrl: string;
 
     constructor(private storageService: StorageService) {}
 
@@ -37,18 +36,6 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         }
 
         return 'https://notifications.bitwarden.com';
-    }
-
-    getEnterpriseUrl() {
-        if (this.enterpriseUrl != null) {
-            return this.enterpriseUrl;
-        }
-
-        if (this.baseUrl != null) {
-            return this.baseUrl + '/portal';
-        }
-
-        return 'https://portal.bitwarden.com';
     }
 
     getWebVaultUrl() {
@@ -126,7 +113,6 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
             notifications: null,
             events: null,
             webVault: null,
-            enterprise: null,
         };
 
         const envUrls = new EnvironmentUrls();
@@ -142,7 +128,6 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         this.iconsUrl = urls.icons;
         this.notificationsUrl = urls.notifications;
         this.eventsUrl = envUrls.events = urls.events;
-        this.enterpriseUrl = urls.enterprise;
     }
 
     async setUrls(urls: Urls, saveSettings: boolean = true): Promise<any> {
@@ -153,7 +138,6 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         urls.icons = this.formatUrl(urls.icons);
         urls.notifications = this.formatUrl(urls.notifications);
         urls.events = this.formatUrl(urls.events);
-        urls.enterprise = this.formatUrl(urls.enterprise);
 
         if (saveSettings) {
             await this.storageService.save(ConstantsService.environmentUrlsKey, {
@@ -164,7 +148,6 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
                 icons: urls.icons,
                 notifications: urls.notifications,
                 events: urls.events,
-                enterprise: urls.enterprise,
             });
         }
 
@@ -175,7 +158,6 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         this.iconsUrl = urls.icons;
         this.notificationsUrl = urls.notifications;
         this.eventsUrl = urls.events;
-        this.enterpriseUrl = urls.enterprise;
 
         this.urlsSubject.next(urls);
 
@@ -191,7 +173,6 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
             icons: this.iconsUrl,
             notifications: this.notificationsUrl,
             events: this.eventsUrl,
-            enterprise: this.enterpriseUrl,
         };
     }
 
