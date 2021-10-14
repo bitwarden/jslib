@@ -130,7 +130,11 @@ export class ModalService {
             const modalEl: HTMLElement = el.querySelector('.modal');
             modalEl.style.zIndex = `${this.modalCount}050`;
 
-            const modals = Array.from(el.querySelectorAll('.modal, .modal *[data-dismiss="modal"]'));
+            const dismissEl = document.createElement('div');
+            dismissEl.classList.add('modal-dismiss');
+            modalEl.prepend(dismissEl);
+
+            const modals = Array.from(el.querySelectorAll('.modal-dismiss, .modal *[data-dismiss="modal"]'));
             for (const closeElement of modals) {
                 closeElement.addEventListener('click', event => {
                     modalRef.close();
