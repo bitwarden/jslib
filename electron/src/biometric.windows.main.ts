@@ -6,9 +6,9 @@ import { WindowMain } from './window.main';
 
 import { BiometricMain } from 'jslib-common/abstractions/biometric.main';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { StorageService } from 'jslib-common/abstractions/storage.service';
 import { ConstantsService } from 'jslib-common/services/constants.service';
-import { LogService } from 'jslib-common/abstractions/log.service';
 
 export default class BiometricWindowsMain implements BiometricMain {
     isError: boolean = false;
@@ -128,7 +128,7 @@ export default class BiometricWindowsMain implements BiometricMain {
             const version = require('os').release();
             return Number.parseInt(version.split('.')[0], 10);
         } catch {
-            this.logService.error("Unable to resolve windows major version number");
+            this.logService.error('Unable to resolve windows major version number');
         }
         return -1;
     }

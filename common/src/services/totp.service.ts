@@ -1,9 +1,9 @@
 import { ConstantsService } from './constants.service';
 
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
+import { LogService } from '../abstractions/log.service';
 import { StorageService } from '../abstractions/storage.service';
 import { TotpService as TotpServiceAbstraction } from '../abstractions/totp.service';
-import { LogService } from '../abstractions/log.service';
 
 import { Utils } from '../misc/utils';
 
@@ -35,7 +35,7 @@ export class TotpService implements TotpServiceAbstraction {
                         digits = digitParams;
                     }
                 } catch {
-                    this.logService.error("Invalid digits param.");
+                    this.logService.error('Invalid digits param.');
                 }
             }
             if (params.has('period') && params.get('period') != null) {
@@ -45,7 +45,7 @@ export class TotpService implements TotpServiceAbstraction {
                         period = periodParam;
                     }
                 } catch {
-                    this.logService.error("Invalid period param.");
+                    this.logService.error('Invalid period param.');
                 }
             }
             if (params.has('secret') && params.get('secret') != null) {
@@ -106,7 +106,7 @@ export class TotpService implements TotpServiceAbstraction {
                 try {
                     period = parseInt(params.get('period').trim(), null);
                 } catch {
-                    this.logService.error("Invalid period param.");
+                    this.logService.error('Invalid period param.');
                 }
             }
         }
