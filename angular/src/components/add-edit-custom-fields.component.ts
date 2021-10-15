@@ -19,6 +19,7 @@ import { FieldView } from 'jslib-common/models/view/fieldView';
 import { CipherType } from 'jslib-common/enums/cipherType';
 import { EventType } from 'jslib-common/enums/eventType';
 import { FieldType } from 'jslib-common/enums/fieldType';
+
 import { Utils } from 'jslib-common/misc/utils';
 
 @Directive()
@@ -91,7 +92,7 @@ export class AddEditCustomFieldsComponent implements OnChanges {
     }
 
     private setLinkedFieldOptions() {
-        // Some item types do not support linked fields
+        // Delete any Linked custom fields if the item type does not support them
         if (this.cipher.linkedFieldOptions == null) {
             this.cipher.fields = this.cipher.fields.filter(f => f.type !== FieldType.Linked);
             return;

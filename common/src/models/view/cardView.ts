@@ -2,7 +2,7 @@ import { ItemView } from './itemView';
 
 import { Card } from '../domain/card';
 
-import { setLinkedMetadata } from '../../misc/setLinkedMetadata';
+import { setLinkedMetadata } from '../../misc/setLinkedMetadata.decorator';
 
 export class CardView extends ItemView {
     @setLinkedMetadata(0)

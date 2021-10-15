@@ -13,7 +13,7 @@ import { PasswordHistoryView } from './passwordHistoryView';
 import { SecureNoteView } from './secureNoteView';
 import { View } from './view';
 
-import { LinkedMetadata } from '../../misc/setLinkedMetadata';
+import { LinkedMetadata } from '../../misc/setLinkedMetadata.decorator';
 
 export class CipherView implements View {
     id: string = null;

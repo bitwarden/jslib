@@ -2,7 +2,7 @@ import { ItemView } from './itemView';
 
 import { Identity } from '../domain/identity';
 
-import { setLinkedMetadata } from '../../misc/setLinkedMetadata';
+import { setLinkedMetadata } from '../../misc/setLinkedMetadata.decorator';
 import { Utils } from '../../misc/utils';
 
 export class IdentityView extends ItemView {

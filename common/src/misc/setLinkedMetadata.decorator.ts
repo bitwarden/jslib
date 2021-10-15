@@ -1,5 +1,5 @@
-// A decorator used to configure "linkable" properties on cipher types.
-// A "linkable" property is made available as an option when configuring a Linked Custom Field.
+// A decorator used to configure property metadata used by Linked custom fields.
+// Apply it to a class property or getter to make it available as a Linked field option.
 // The id must be unique and must not be changed.
 
 import { ItemView } from '../models/view/itemView';

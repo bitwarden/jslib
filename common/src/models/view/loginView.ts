@@ -1,7 +1,7 @@
 import { ItemView } from './itemView';
 import { LoginUriView } from './loginUriView';
 
-import { setLinkedMetadata } from '../../misc/setLinkedMetadata';
+import { setLinkedMetadata } from '../../misc/setLinkedMetadata.decorator';
 import { Utils } from '../../misc/utils';
 
 import { Login } from '../domain/login';
