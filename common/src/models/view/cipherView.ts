@@ -1,6 +1,5 @@
 import { CipherRepromptType } from '../../enums/cipherRepromptType';
 import { CipherType } from '../../enums/cipherType';
-import { LinkableMetadata } from '../../misc/linkable.decorator';
 
 import { Cipher } from '../domain/cipher';
 
@@ -8,12 +7,13 @@ import { AttachmentView } from './attachmentView';
 import { CardView } from './cardView';
 import { FieldView } from './fieldView';
 import { IdentityView } from './identityView';
+import { ItemView } from './itemView';
 import { LoginView } from './loginView';
 import { PasswordHistoryView } from './passwordHistoryView';
 import { SecureNoteView } from './secureNoteView';
 import { View } from './view';
 
-import { metadataKey as linkedMetadataKey } from '../../misc/linkable.decorator';
+import { LinkedMetadata } from '../../misc/setLinkedMetadata';
 
 export class CipherView implements View {
     id: string = null;
@@ -60,21 +60,25 @@ export class CipherView implements View {
         this.reprompt = c.reprompt ?? CipherRepromptType.None;
     }
 
-    get subTitle(): string {
+    private get item(): ItemView {
         switch (this.type) {
             case CipherType.Login:
-                return this.login.subTitle;
+                return this.login;
             case CipherType.SecureNote:
-                return this.secureNote.subTitle;
+                return this.secureNote;
             case CipherType.Card:
-                return this.card.subTitle;
+                return this.card;
             case CipherType.Identity:
-                return this.identity.subTitle;
+                return this.identity;
             default:
                 break;
         }
 
         return null;
+    }
+
+    get subTitle(): string {
+        return this.item.subTitle;
     }
 
     get hasPasswordHistory(): boolean {
@@ -113,32 +117,17 @@ export class CipherView implements View {
         return this.deletedDate != null;
     }
 
-    get linkedFieldOptions(): Map<number, LinkableMetadata> {
-        switch (this.type) {
-            case CipherType.Card:
-                return (this.card as any)[linkedMetadataKey];
-            case CipherType.Identity:
-                return (this.identity as any)[linkedMetadataKey];
-            case CipherType.Login:
-                return (this.login as any)[linkedMetadataKey];
-        }
-
+    get linkedFieldOptions(): Map<number, LinkedMetadata> {
+        return this.item.linkedMetadata;
     }
 
     linkedFieldValue(id: number) {
-        const linkedFieldOption = this.linkedFieldOptions.get(id);
+        const linkedFieldOption = this.linkedFieldOptions?.get(id);
         if (linkedFieldOption == null) {
-            return;
+            return null;
         }
 
-        switch (this.type) {
-            case CipherType.Card:
-                return this.card[linkedFieldOption.propertyKey as keyof CardView];
-            case CipherType.Identity:
-                return this.identity[linkedFieldOption.propertyKey as keyof IdentityView];
-            case CipherType.Login:
-                return this.login[linkedFieldOption.propertyKey as keyof LoginView];
-        }
+        return this.item[linkedFieldOption.propertyKey as keyof ItemView];
     }
 
     linkedFieldI18nKey(id: number): string {

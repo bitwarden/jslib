@@ -91,8 +91,8 @@ export class AddEditCustomFieldsComponent implements OnChanges {
     }
 
     private setLinkedFieldOptions() {
-        // Secure notes do not support Linked fields
-        if (this.cipher.type === CipherType.SecureNote) {
+        // Some item types do not support linked fields
+        if (this.cipher.linkedFieldOptions == null) {
             this.cipher.fields = this.cipher.fields.filter(f => f.type !== FieldType.Linked);
             return;
         }

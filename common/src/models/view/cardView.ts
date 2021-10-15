@@ -1,17 +1,17 @@
-import { View } from './view';
+import { ItemView } from './itemView';
 
 import { Card } from '../domain/card';
 
-import { linkable } from '../../misc/linkable.decorator';
+import { setLinkedMetadata } from '../../misc/setLinkedMetadata';
 
-export class CardView implements View {
-    @linkable(0)
+export class CardView extends ItemView {
+    @setLinkedMetadata(0)
     cardholderName: string = null;
-    @linkable(1, 'expirationMonth')
+    @setLinkedMetadata(1, 'expirationMonth')
     expMonth: string = null;
-    @linkable(2, 'expirationYear')
+    @setLinkedMetadata(2, 'expirationYear')
     expYear: string = null;
-    @linkable(3, 'securityCode')
+    @setLinkedMetadata(3, 'securityCode')
     code: string = null;
 
     // tslint:disable
@@ -21,7 +21,7 @@ export class CardView implements View {
     // tslint:enable
 
     constructor(c?: Card) {
-        // ctor
+        super();
     }
 
     get maskedCode(): string {

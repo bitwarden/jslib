@@ -2,9 +2,9 @@
 // A "linkable" property is made available as an option when configuring a Linked Custom Field.
 // The id must be unique and must not be changed.
 
-export const metadataKey = 'linkedFieldOptions';
+import { ItemView } from '../models/view/itemView';
 
-export class LinkableMetadata {
+export class LinkedMetadata {
     readonly propertyKey: string;
     private readonly _i18nKey: string;
 
@@ -18,16 +18,14 @@ export class LinkableMetadata {
     }
 }
 
-export function linkable(id: number, i18nKey?: string) {
-    return (prototype: any, propertyKey: string) => {
-        if (!prototype.hasOwnProperty(metadataKey)) {
-            Object.defineProperty(prototype, metadataKey, {
-                value: new Map<number, LinkableMetadata>(),
-            });
-        } else if (prototype[metadataKey].has(id)) {
+export function setLinkedMetadata(id: number, i18nKey?: string) {
+    return (prototype: ItemView, propertyKey: string) => {
+        if (prototype.linkedMetadata == null) {
+            prototype.linkedMetadata = new Map<number, LinkedMetadata>();
+        } else if (prototype.linkedMetadata.has(id)) {
             throw new Error('Linkable metadata must use unique ids. Id ' + id + ' has been used more than once.');
         }
 
-        prototype[metadataKey].set(id, new LinkableMetadata(propertyKey, i18nKey));
+        prototype.linkedMetadata.set(id, new LinkedMetadata(propertyKey, i18nKey));
     };
 }

@@ -1,42 +1,42 @@
-import { View } from './view';
+import { ItemView } from './itemView';
 
 import { Identity } from '../domain/identity';
 
-import { linkable } from '../../misc/linkable.decorator';
+import { setLinkedMetadata } from '../../misc/setLinkedMetadata';
 import { Utils } from '../../misc/utils';
 
-export class IdentityView implements View {
-    @linkable(0)
+export class IdentityView extends ItemView {
+    @setLinkedMetadata(0)
     title: string = null;
-    @linkable(1)
+    @setLinkedMetadata(1)
     middleName: string = null;
-    @linkable(2)
+    @setLinkedMetadata(2)
     address1: string = null;
-    @linkable(3)
+    @setLinkedMetadata(3)
     address2: string = null;
-    @linkable(4)
+    @setLinkedMetadata(4)
     address3: string = null;
-    @linkable(5, 'cityTown')
+    @setLinkedMetadata(5, 'cityTown')
     city: string = null;
-    @linkable(6, 'stateProvince')
+    @setLinkedMetadata(6, 'stateProvince')
     state: string = null;
-    @linkable(7, 'zipPostalCode')
+    @setLinkedMetadata(7, 'zipPostalCode')
     postalCode: string = null;
-    @linkable(8)
+    @setLinkedMetadata(8)
     country: string = null;
-    @linkable(9)
+    @setLinkedMetadata(9)
     company: string = null;
-    @linkable(10)
+    @setLinkedMetadata(10)
     email: string = null;
-    @linkable(11)
+    @setLinkedMetadata(11)
     phone: string = null;
-    @linkable(12)
+    @setLinkedMetadata(12)
     ssn: string = null;
-    @linkable(13)
+    @setLinkedMetadata(13)
     username: string = null;
-    @linkable(14)
+    @setLinkedMetadata(14)
     passportNumber: string = null;
-    @linkable(15)
+    @setLinkedMetadata(15)
     licenseNumber: string = null;
 
     // tslint:disable
@@ -46,10 +46,10 @@ export class IdentityView implements View {
     // tslint:enable
 
     constructor(i?: Identity) {
-        // ctor
+        super();
     }
 
-    @linkable(16)
+    @setLinkedMetadata(16)
     get firstName(): string {
         return this._firstName;
     }
@@ -58,7 +58,7 @@ export class IdentityView implements View {
         this._subTitle = null;
     }
 
-    @linkable(17)
+    @setLinkedMetadata(17)
     get lastName(): string {
         return this._lastName;
     }
@@ -84,7 +84,7 @@ export class IdentityView implements View {
         return this._subTitle;
     }
 
-    @linkable(18)
+    @setLinkedMetadata(18)
     get fullName(): string {
         if (this.title != null || this.firstName != null || this.middleName != null || this.lastName != null) {
             let name = '';

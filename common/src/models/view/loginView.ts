@@ -1,15 +1,15 @@
+import { ItemView } from './itemView';
 import { LoginUriView } from './loginUriView';
-import { View } from './view';
 
-import { linkable } from '../../misc/linkable.decorator';
+import { setLinkedMetadata } from '../../misc/setLinkedMetadata';
 import { Utils } from '../../misc/utils';
 
 import { Login } from '../domain/login';
 
-export class LoginView implements View {
-    @linkable(0)
+export class LoginView extends ItemView {
+    @setLinkedMetadata(0)
     username: string = null;
-    @linkable(1)
+    @setLinkedMetadata(1)
     password: string = null;
 
     passwordRevisionDate?: Date = null;
@@ -18,6 +18,7 @@ export class LoginView implements View {
     autofillOnPageLoad: boolean = null;
 
     constructor(l?: Login) {
+        super();
         if (!l) {
             return;
         }
