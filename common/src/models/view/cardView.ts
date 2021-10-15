@@ -32,6 +32,7 @@ export class CardView extends ItemView {
         return this.number != null ? '•'.repeat(this.number.length) : null;
     }
 
+    @setLinkedMetadata(4)
     get brand(): string {
         return this._brand;
     }
@@ -40,6 +41,7 @@ export class CardView extends ItemView {
         this._subTitle = null;
     }
 
+    @setLinkedMetadata(5)
     get number(): string {
         return this._number;
     }
