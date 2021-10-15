@@ -24,7 +24,7 @@ export class SendFileView implements View {
                 return parseInt(this.size, null);
             }
         } catch {
-            // Ignore error
+            // Invalid file size.
         }
         return 0;
     }

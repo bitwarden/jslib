@@ -3,6 +3,7 @@ import { ConstantsService } from './constants.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 import { StorageService } from '../abstractions/storage.service';
 import { TotpService as TotpServiceAbstraction } from '../abstractions/totp.service';
+import { LogService } from '../abstractions/log.service';
 
 import { Utils } from '../misc/utils';
 
@@ -10,7 +11,8 @@ const B32Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 const SteamChars = '23456789BCDFGHJKMNPQRTVWXY';
 
 export class TotpService implements TotpServiceAbstraction {
-    constructor(private storageService: StorageService, private cryptoFunctionService: CryptoFunctionService) { }
+    constructor(private storageService: StorageService, private cryptoFunctionService: CryptoFunctionService,
+    private logService: LogService) { }
 
     async getCode(key: string): Promise<string> {
         if (key == null) {
@@ -33,7 +35,7 @@ export class TotpService implements TotpServiceAbstraction {
                         digits = digitParams;
                     }
                 } catch {
-                    // Ignore error
+                    this.logService.error("Invalid digits param.");
                 }
             }
             if (params.has('period') && params.get('period') != null) {
@@ -43,7 +45,7 @@ export class TotpService implements TotpServiceAbstraction {
                         period = periodParam;
                     }
                 } catch {
-                    // Ignore error
+                    this.logService.error("Invalid period param.");
                 }
             }
             if (params.has('secret') && params.get('secret') != null) {
@@ -104,7 +106,7 @@ export class TotpService implements TotpServiceAbstraction {
                 try {
                     period = parseInt(params.get('period').trim(), null);
                 } catch {
-                    // Ignore error
+                    this.logService.error("Invalid period param.");
                 }
             }
         }

@@ -239,7 +239,7 @@ export class Utils {
                 const urlDomain = tldjs != null && tldjs.getDomain != null ? tldjs.getDomain(url.hostname) : null;
                 return urlDomain != null ? urlDomain : url.hostname;
             } catch (e) {
-                // Ignore error
+                // Invalid domain, try another approach below.
             }
         }
 
