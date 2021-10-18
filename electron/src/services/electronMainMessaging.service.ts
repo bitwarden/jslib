@@ -3,6 +3,8 @@ import { promises as fs } from 'fs';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { RendererMenuItem } from '../utils';
 
+import { ThemeType } from 'jslib-common/enums/themeType';
+
 import { WindowMain } from '../window.main';
 
 export class ElectronMainMessagingService implements MessagingService {
@@ -12,7 +14,7 @@ export class ElectronMainMessagingService implements MessagingService {
         });
 
         ipcMain.handle('systemTheme', () => {
-            return nativeTheme.shouldUseDarkColors ? 'dark' : 'light';
+            return nativeTheme.shouldUseDarkColors ? ThemeType.Dark : ThemeType.Light;
         });
 
         ipcMain.handle('showMessageBox', (event, options) => {
@@ -42,7 +44,7 @@ export class ElectronMainMessagingService implements MessagingService {
         });
 
         nativeTheme.on('updated', () => {
-            windowMain.win?.webContents.send('systemThemeUpdated', nativeTheme.shouldUseDarkColors ? 'dark' : 'light');
+            windowMain.win?.webContents.send('systemThemeUpdated', nativeTheme.shouldUseDarkColors ? ThemeType.Dark : ThemeType.Light);
         });
     }
 

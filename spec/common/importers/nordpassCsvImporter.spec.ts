@@ -1,7 +1,9 @@
 import { NordPassCsvImporter as Importer } from 'jslib-common/importers/nordpassCsvImporter';
 
-import { CipherType, SecureNoteType } from 'jslib-common/enums';
-import { CipherView, IdentityView } from 'jslib-common/models/view';
+import { CipherType } from 'jslib-common/enums/cipherType';
+import { SecureNoteType } from 'jslib-common/enums/secureNoteType';
+import { CipherView } from 'jslib-common/models/view/cipherView';
+import { IdentityView } from 'jslib-common/models/view/identityView';
 
 import { data as creditCardData } from './testData/nordpassCsv/nordpass.card.csv';
 import { data as identityData } from './testData/nordpassCsv/nordpass.identity.csv';

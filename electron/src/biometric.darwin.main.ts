@@ -1,8 +1,10 @@
-import { I18nService, StorageService } from 'jslib-common/abstractions';
-
 import { ipcMain, systemPreferences } from 'electron';
-import { BiometricMain } from 'jslib-common/abstractions/biometric.main';
+
+import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { StorageService } from 'jslib-common/abstractions/storage.service';
 import { ConstantsService } from 'jslib-common/services/constants.service';
+
+import { BiometricMain } from 'jslib-common/abstractions/biometric.main';
 import { ElectronConstants } from './electronConstants';
 
 export default class BiometricDarwinMain implements BiometricMain {

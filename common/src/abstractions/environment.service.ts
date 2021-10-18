@@ -8,7 +8,11 @@ export type Urls = {
     icons?: string;
     notifications?: string;
     events?: string;
-    enterprise?: string;
+};
+
+export type PayPalConfig = {
+    businessId?: string;
+    buttonAction?: string;
 };
 
 export abstract class EnvironmentService {
@@ -16,7 +20,6 @@ export abstract class EnvironmentService {
 
     hasBaseUrl: () => boolean;
     getNotificationsUrl: () => string;
-    getEnterpriseUrl: () => string;
     getWebVaultUrl: () => string;
     getSendUrl: () => string;
     getIconsUrl: () => string;

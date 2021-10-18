@@ -1,6 +1,7 @@
 import * as child_process from 'child_process';
 
 import { DeviceType } from 'jslib-common/enums/deviceType';
+import { ThemeType } from 'jslib-common/enums/themeType';
 
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 
@@ -76,10 +77,6 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
         return Promise.resolve(false);
     }
 
-    lockTimeout(): number {
-        return null;
-    }
-
     launchUri(uri: string, options?: any): void {
         if (process.platform === 'linux') {
             child_process.spawnSync('xdg-open', [uri]);
@@ -118,11 +115,6 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
         throw new Error('Not implemented.');
     }
 
-    showPasswordDialog(title: string, body: string, passwordValidation: (value: string) => Promise<boolean>):
-        Promise<boolean> {
-        throw new Error('Not implemented.');
-    }
-
     isDev(): boolean {
         return process.env.BWCLI_ENV === 'development';
     }
@@ -148,11 +140,15 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     }
 
     getDefaultSystemTheme() {
-        return Promise.resolve('light' as 'light' | 'dark');
+        return Promise.resolve(ThemeType.Light as ThemeType.Light | ThemeType.Dark);
     }
 
     onDefaultSystemThemeChange() {
         /* noop */
+    }
+
+    getEffectiveTheme() {
+        return Promise.resolve(ThemeType.Light);
     }
 
     supportsSecureStorage(): boolean {

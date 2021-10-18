@@ -18,7 +18,6 @@ export class Organization {
     useTotp: boolean;
     use2fa: boolean;
     useApi: boolean;
-    useBusinessPortal: boolean;
     useSso: boolean;
     useResetPassword: boolean;
     selfHost: boolean;
@@ -53,7 +52,6 @@ export class Organization {
         this.useTotp = obj.useTotp;
         this.use2fa = obj.use2fa;
         this.useApi = obj.useApi;
-        this.useBusinessPortal = obj.useBusinessPortal;
         this.useSso = obj.useSso;
         this.useResetPassword = obj.useResetPassword;
         this.selfHost = obj.selfHost;
@@ -89,11 +87,7 @@ export class Organization {
     }
 
     get isOwner() {
-        return this.type === OrganizationUserType.Owner;
-    }
-
-    get canAccessBusinessPortal() {
-        return this.isAdmin || this.permissions.accessBusinessPortal;
+        return this.type === OrganizationUserType.Owner || this.isProviderUser;
     }
 
     get canAccessEventLogs() {
@@ -108,12 +102,32 @@ export class Organization {
         return this.isAdmin || this.permissions.accessReports;
     }
 
-    get canManageAllCollections() {
-        return this.isAdmin || this.permissions.manageAllCollections;
+    get canCreateNewCollections() {
+        return this.isAdmin || (this.permissions.createNewCollections ?? this.permissions.manageAllCollections);
     }
 
-    get canManageAssignedCollections() {
-        return this.isManager || this.permissions.manageAssignedCollections;
+    get canEditAnyCollection() {
+        return this.isAdmin || (this.permissions.editAnyCollection ?? this.permissions.manageAllCollections);
+    }
+
+    get canDeleteAnyCollection() {
+        return this.isAdmin || (this.permissions.deleteAnyCollection ?? this.permissions.manageAllCollections);
+    }
+
+    get canViewAllCollections() {
+        return this.canEditAnyCollection || this.canDeleteAnyCollection;
+    }
+
+    get canEditAssignedCollections() {
+        return this.isManager || (this.permissions.deleteAssignedCollections ?? this.permissions.manageAssignedCollections);
+    }
+
+    get canDeleteAssignedCollections() {
+        return this.isManager || (this.permissions.deleteAssignedCollections ?? this.permissions.manageAssignedCollections);
+    }
+
+    get canViewAssignedCollections() {
+        return this.canDeleteAssignedCollections || this.canEditAssignedCollections;
     }
 
     get canManageGroups() {
@@ -134,5 +148,9 @@ export class Organization {
 
     get canManageUsersPassword() {
         return this.isAdmin || this.permissions.manageResetPassword;
+    }
+
+    get isExemptFromPolicies() {
+        return this.canManagePolicies;
     }
 }

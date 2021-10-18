@@ -10,11 +10,14 @@ import {
 } from '../utils';
 
 import { DeviceType } from 'jslib-common/enums/deviceType';
+import { ThemeType } from 'jslib-common/enums/themeType';
 
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { StorageService } from 'jslib-common/abstractions/storage.service';
+
+import { ConstantsService } from 'jslib-common/services/constants.service';
 
 import { ElectronConstants } from '../electronConstants';
 
@@ -88,10 +91,6 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return Promise.resolve(false);
     }
 
-    lockTimeout(): number {
-        return null;
-    }
-
     launchUri(uri: string, options?: any): void {
         shell.openExternal(uri);
     }
@@ -155,11 +154,6 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return Promise.resolve(result.response === 0);
     }
 
-    async showPasswordDialog(title: string, body: string, passwordValidation: (value: string) => Promise<boolean>):
-        Promise<boolean> {
-        throw new Error('Not implemented.');
-    }
-
     isDev(): boolean {
         return isDev();
     }
@@ -205,8 +199,17 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return ipcRenderer.invoke('systemTheme');
     }
 
-    onDefaultSystemThemeChange(callback: ((theme: 'light' | 'dark') => unknown)) {
-        ipcRenderer.on('systemThemeUpdated', (event, theme: 'light' | 'dark') => callback(theme));
+    onDefaultSystemThemeChange(callback: ((theme: ThemeType.Light | ThemeType.Dark) => unknown)) {
+        ipcRenderer.on('systemThemeUpdated', (event, theme: ThemeType.Light | ThemeType.Dark) => callback(theme));
+    }
+
+    async getEffectiveTheme() {
+        const theme = await this.storageService.get<ThemeType>(ConstantsService.themeKey);
+        if (theme == null || theme === ThemeType.System) {
+            return this.getDefaultSystemTheme();
+        } else {
+            return theme;
+        }
     }
 
     supportsSecureStorage(): boolean {

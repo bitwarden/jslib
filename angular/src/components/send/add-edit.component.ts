@@ -7,7 +7,6 @@ import {
     Output
 } from '@angular/core';
 
-import { OrganizationUserStatusType } from 'jslib-common/enums/organizationUserStatusType';
 import { PolicyType } from 'jslib-common/enums/policyType';
 import { SendType } from 'jslib-common/enums/sendType';
 
@@ -103,24 +102,9 @@ export class AddEditComponent implements OnInit {
     }
 
     async load() {
-        const disableSendPolicies = await this.policyService.getAll(PolicyType.DisableSend);
-        const organizations = await this.userService.getAllOrganizations();
-        this.disableSend = organizations.some(o => {
-            return o.enabled &&
-                o.status === OrganizationUserStatusType.Confirmed &&
-                o.usePolicies &&
-                !o.canManagePolicies &&
-                disableSendPolicies.some(p => p.organizationId === o.id && p.enabled);
-        });
-
-        const sendOptionsPolicies = await this.policyService.getAll(PolicyType.SendOptions);
-        this.disableHideEmail = await organizations.some(o => {
-            return o.enabled &&
-                o.status === OrganizationUserStatusType.Confirmed &&
-                o.usePolicies &&
-                !o.canManagePolicies &&
-                sendOptionsPolicies.some(p => p.organizationId === o.id && p.enabled && p.data.disableHideEmail);
-        });
+        this.disableSend = await this.policyService.policyAppliesToUser(PolicyType.DisableSend);
+        this.disableHideEmail = await this.policyService.policyAppliesToUser(PolicyType.SendOptions,
+            p => p.data.disableHideEmail);
 
         this.canAccessPremium = await this.userService.canAccessPremium();
         this.emailVerified = await this.userService.getEmailVerified();

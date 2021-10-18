@@ -21,6 +21,7 @@ export abstract class UserService {
     isAuthenticated: () => Promise<boolean>;
     canAccessPremium: () => Promise<boolean>;
     getOrganization: (id: string) => Promise<Organization>;
+    getOrganizationByIdentifier: (identifier: string) => Promise<Organization>;
     getAllOrganizations: () => Promise<Organization[]>;
     replaceOrganizations: (organizations: { [id: string]: OrganizationData; }) => Promise<any>;
     clearOrganizations: (userId: string) => Promise<any>;

@@ -2,6 +2,7 @@ import { DeviceType } from '../enums/deviceType';
 import { PolicyType } from '../enums/policyType';
 
 import { ApiService as ApiServiceAbstraction } from '../abstractions/api.service';
+import { EnvironmentService } from '../abstractions/environment.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { TokenService } from '../abstractions/token.service';
 
@@ -32,9 +33,11 @@ import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
 import { KdfRequest } from '../models/request/kdfRequest';
 import { KeysRequest } from '../models/request/keysRequest';
+import { OrganizationSsoRequest } from '../models/request/organization/organizationSsoRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
 import { OrganizationImportRequest } from '../models/request/organizationImportRequest';
 import { OrganizationKeysRequest } from '../models/request/organizationKeysRequest';
+import { OrganizationSubscriptionUpdateRequest } from '../models/request/organizationSubscriptionUpdateRequest';
 import { OrganizationTaxInfoUpdateRequest } from '../models/request/organizationTaxInfoUpdateRequest';
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
 import { OrganizationUpgradeRequest } from '../models/request/organizationUpgradeRequest';
@@ -115,9 +118,12 @@ import {
     GroupDetailsResponse,
     GroupResponse,
 } from '../models/response/groupResponse';
+import { IdentityCaptchaResponse } from '../models/response/identityCaptchaResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
+import { OrganizationSsoResponse } from '../models/response/organization/organizationSsoResponse';
+import { OrganizationAutoEnrollStatusResponse } from '../models/response/organizationAutoEnrollStatusResponse';
 import { OrganizationKeysResponse } from '../models/response/organizationKeysResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
 import { OrganizationSubscriptionResponse } from '../models/response/organizationSubscriptionResponse';
@@ -160,8 +166,6 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
-import { EnvironmentService } from '../abstractions';
-import { IdentityCaptchaResponse } from '../models/response/identityCaptchaResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
 
 export class ApiService implements ApiServiceAbstraction {
@@ -366,11 +370,6 @@ export class ApiService implements ApiServiceAbstraction {
 
     postAccountKdf(request: KdfRequest): Promise<any> {
         return this.send('POST', '/accounts/kdf', request, true, false);
-    }
-
-    async getEnterprisePortalSignInToken(): Promise<string> {
-        const r = await this.send('GET', '/accounts/enterprise-portal-signin-token', null, true, true);
-        return r as string;
     }
 
     async deleteSsoUser(organizationId: string): Promise<any> {
@@ -812,6 +811,11 @@ export class ApiService implements ApiServiceAbstraction {
         return new OrganizationUserResetPasswordDetailsReponse(r);
     }
 
+    async getOrganizationAutoEnrollStatus(identifier: string): Promise<OrganizationAutoEnrollStatusResponse> {
+        const r = await this.send('GET', '/organizations/' + identifier + '/auto-enroll-status', null, true, true);
+        return new OrganizationAutoEnrollStatusResponse(r);
+    }
+
     postOrganizationUserInvite(organizationId: string, request: OrganizationUserInviteRequest): Promise<any> {
         return this.send('POST', '/organizations/' + organizationId + '/users/invite', request, true, false);
     }
@@ -1144,6 +1148,11 @@ export class ApiService implements ApiServiceAbstraction {
         return new TaxInfoResponse(r);
     }
 
+    async getOrganizationSso(id: string): Promise<OrganizationSsoResponse> {
+        const r = await this.send('GET', '/organizations/' + id + '/sso', null, true, true);
+        return new OrganizationSsoResponse(r);
+    }
+
     async postOrganization(request: OrganizationCreateRequest): Promise<OrganizationResponse> {
         const r = await this.send('POST', '/organizations', request, true, true);
         return new OrganizationResponse(r);
@@ -1181,9 +1190,18 @@ export class ApiService implements ApiServiceAbstraction {
         return new ApiKeyResponse(r);
     }
 
+    async postOrganizationSso(id: string, request: OrganizationSsoRequest): Promise<OrganizationSsoResponse> {
+        const r = await this.send('POST', '/organizations/' + id + '/sso', request, true, true);
+        return new OrganizationSsoResponse(r);
+    }
+
     async postOrganizationUpgrade(id: string, request: OrganizationUpgradeRequest): Promise<PaymentResponse> {
         const r = await this.send('POST', '/organizations/' + id + '/upgrade', request, true, true);
         return new PaymentResponse(r);
+    }
+
+    async postOrganizationUpdateSubscription(id: string, request: OrganizationSubscriptionUpdateRequest): Promise<void> {
+        return this.send('POST', '/organizations/' + id + '/subscription', request, true, false);
     }
 
     async postOrganizationSeat(id: string, request: SeatRequest): Promise<PaymentResponse> {

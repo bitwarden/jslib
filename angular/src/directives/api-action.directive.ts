@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { LogService } from 'jslib-common/abstractions/log.service';
 
-import { ErrorResponse } from 'jslib-common/models/response';
+import { ErrorResponse } from 'jslib-common/models/response/errorResponse';
 
 import { ValidationService } from '../services/validation.service';
 
@@ -35,6 +35,7 @@ export class ApiActionDirective implements OnChanges {
                 this.logService.error('Captcha required error response: ' + e.getSingleMessage());
                 return;
             }
+            this.logService?.error(`Received API exception: ${e}`);
             this.validationService.showError(e);
         });
     }

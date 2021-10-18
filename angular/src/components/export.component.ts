@@ -1,6 +1,7 @@
 import {
     Directive,
     EventEmitter,
+    OnInit,
     Output,
 } from '@angular/core';
 
@@ -9,28 +10,43 @@ import { EventService } from 'jslib-common/abstractions/event.service';
 import { ExportService } from 'jslib-common/abstractions/export.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
+import { PolicyService } from 'jslib-common/abstractions/policy.service';
 
 import { EventType } from 'jslib-common/enums/eventType';
-import { HashPurpose } from 'jslib-common/enums/hashPurpose';
+import { PolicyType } from 'jslib-common/enums/policyType';
 
 @Directive()
-export class ExportComponent {
+export class ExportComponent implements OnInit {
     @Output() onSaved = new EventEmitter();
 
     formPromise: Promise<string>;
     masterPassword: string;
     format: 'json' | 'encrypted_json' | 'csv' = 'json';
     showPassword = false;
+    disabledByPolicy: boolean = false;
 
     constructor(protected cryptoService: CryptoService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected exportService: ExportService,
-        protected eventService: EventService, protected win: Window) { }
+        protected eventService: EventService, private policyService: PolicyService, protected win: Window) { }
+
+    async ngOnInit() {
+        await this.checkExportDisabled();
+    }
+
+    async checkExportDisabled() {
+        this.disabledByPolicy = await this.policyService.policyAppliesToUser(PolicyType.DisablePersonalVaultExport);
+    }
 
     get encryptedFormat() {
         return this.format === 'encrypted_json';
     }
 
     async submit() {
+        if (this.disabledByPolicy) {
+            this.platformUtilsService.showToast('error', null, this.i18nService.t('personalVaultExportPolicyInEffect'));
+            return;
+        }
+
         if (this.masterPassword == null || this.masterPassword === '') {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('invalidMasterPassword'));
