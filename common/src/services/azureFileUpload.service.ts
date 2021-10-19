@@ -185,7 +185,9 @@ class Version {
             this.year = parts[0];
             this.month = parts[1];
             this.day = parts[2];
-        } catch { }
+        } catch {
+            // Ignore error
+        }
     }
     /**
      * Compares two Azure Versions against each other

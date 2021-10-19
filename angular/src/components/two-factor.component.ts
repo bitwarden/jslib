@@ -17,6 +17,7 @@ import { ApiService } from 'jslib-common/abstractions/api.service';
 import { AuthService } from 'jslib-common/abstractions/auth.service';
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { StateService } from 'jslib-common/abstractions/state.service';
 import { StorageService } from 'jslib-common/abstractions/storage.service';
@@ -57,7 +58,8 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         protected i18nService: I18nService, protected apiService: ApiService,
         protected platformUtilsService: PlatformUtilsService, protected win: Window,
         protected environmentService: EnvironmentService, protected stateService: StateService,
-        protected storageService: StorageService, protected route: ActivatedRoute) {
+        protected storageService: StorageService, protected route: ActivatedRoute,
+        protected logService: LogService) {
         this.webAuthnSupported = this.platformUtilsService.supportsWebAuthn(win);
     }
 
@@ -216,7 +218,9 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 this.platformUtilsService.showToast('success', null,
                     this.i18nService.t('verificationCodeEmailSent', this.twoFactorEmail));
             }
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
 
         this.emailPromise = null;
     }

@@ -11,6 +11,7 @@ import { AuthService } from 'jslib-common/abstractions/auth.service';
 import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { StateService } from 'jslib-common/abstractions/state.service';
@@ -49,7 +50,7 @@ export class SsoComponent {
         protected storageService: StorageService, protected stateService: StateService,
         protected platformUtilsService: PlatformUtilsService, protected apiService: ApiService,
         protected cryptoFunctionService: CryptoFunctionService, protected environmentService: EnvironmentService,
-        protected passwordGenerationService: PasswordGenerationService) { }
+        protected passwordGenerationService: PasswordGenerationService, protected logService: LogService) { }
 
     async ngOnInit() {
         this.route.queryParams.pipe(first()).subscribe(async qParams => {
@@ -180,7 +181,9 @@ export class SsoComponent {
                     this.router.navigate([this.successRoute]);
                 }
             }
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
         this.loggingIn = false;
     }
 

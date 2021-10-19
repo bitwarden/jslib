@@ -20,6 +20,7 @@ import { CollectionService } from 'jslib-common/abstractions/collection.service'
 import { EventService } from 'jslib-common/abstractions/event.service';
 import { FolderService } from 'jslib-common/abstractions/folder.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
@@ -88,7 +89,7 @@ export class AddEditComponent implements OnInit {
         protected auditService: AuditService, protected stateService: StateService,
         protected userService: UserService, protected collectionService: CollectionService,
         protected messagingService: MessagingService, protected eventService: EventService,
-        protected policyService: PolicyService) {
+        protected policyService: PolicyService, private logService: LogService) {
         this.typeOptions = [
             { name: i18nService.t('typeLogin'), value: CipherType.Login },
             { name: i18nService.t('typeCard'), value: CipherType.Card },
@@ -283,7 +284,9 @@ export class AddEditComponent implements OnInit {
             this.onSavedCipher.emit(this.cipher);
             this.messagingService.send(this.editMode && !this.cloneMode ? 'editedCipher' : 'addedCipher');
             return true;
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
 
         return false;
     }
@@ -346,7 +349,9 @@ export class AddEditComponent implements OnInit {
                 this.i18nService.t(this.cipher.isDeleted ? 'permanentlyDeletedItem' : 'deletedItem'));
             this.onDeletedCipher.emit(this.cipher);
             this.messagingService.send(this.cipher.isDeleted ? 'permanentlyDeletedCipher' : 'deletedCipher');
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
 
         return true;
     }
@@ -369,7 +374,9 @@ export class AddEditComponent implements OnInit {
             this.platformUtilsService.showToast('success', null, this.i18nService.t('restoredItem'));
             this.onRestoredCipher.emit(this.cipher);
             this.messagingService.send('restoredCipher');
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
 
         return true;
     }

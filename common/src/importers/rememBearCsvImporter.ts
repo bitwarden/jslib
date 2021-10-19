@@ -43,7 +43,9 @@ export class RememBearCsvImporter extends BaseImporter implements Importer {
                             cipher.card.expMonth = expMonthNumber.toString();
                         }
                     }
-                } catch { }
+                } catch {
+                    // Ignore error
+                }
                 try {
                     const expYear = this.getValueOrDefault(value.expiryYear);
                     if (expYear != null) {
@@ -52,7 +54,9 @@ export class RememBearCsvImporter extends BaseImporter implements Importer {
                             cipher.card.expYear = expYearNumber.toString();
                         }
                     }
-                } catch { }
+                } catch {
+                    // Ignore error
+                }
 
                 const pin = this.getValueOrDefault(value.pin);
                 if (pin != null) {

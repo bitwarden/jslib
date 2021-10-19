@@ -21,7 +21,9 @@ export class PasspackCsvImporter extends BaseImporter implements Importer {
                     try {
                         const t = JSON.parse(tagJson);
                         return this.getValueOrDefault(t.tag);
-                    } catch { }
+                    } catch {
+                        // Ignore error
+                    }
                     return null;
                 }).filter((t: string) => !this.isNullOrWhitespace(t)) : null;
 
@@ -72,7 +74,9 @@ export class PasspackCsvImporter extends BaseImporter implements Importer {
                 fieldsJson.extraFields.length > 0 ? fieldsJson.extraFields.map((fieldJson: string) => {
                     try {
                         return JSON.parse(fieldJson);
-                    } catch { }
+                    } catch {
+                        // Ignore error
+                    }
                     return null;
                 }) : null;
             if (fields != null) {

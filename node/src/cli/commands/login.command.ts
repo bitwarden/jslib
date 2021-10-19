@@ -468,7 +468,9 @@ export class LoginCommand {
                     });
                     foundPort = true;
                     break;
-                } catch { }
+                } catch {
+                    // Ignore error since we run the same command up to 5 times.
+                }
             }
             if (!foundPort) {
                 reject();

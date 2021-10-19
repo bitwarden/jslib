@@ -5,6 +5,7 @@ import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { StateService } from 'jslib-common/abstractions/state.service';
@@ -47,7 +48,7 @@ export class LockComponent implements OnInit {
         protected userService: UserService, protected cryptoService: CryptoService,
         protected storageService: StorageService, protected vaultTimeoutService: VaultTimeoutService,
         protected environmentService: EnvironmentService, protected stateService: StateService,
-        protected apiService: ApiService) { }
+        protected apiService: ApiService, private logService: LogService) { }
 
     async ngOnInit() {
         this.pinSet = await this.vaultTimeoutService.isPinLockSet();
@@ -129,7 +130,9 @@ export class LockComponent implements OnInit {
                     const localKeyHash = await this.cryptoService.hashPassword(this.masterPassword, key,
                         HashPurpose.LocalAuthorization);
                     await this.cryptoService.setKeyHash(localKeyHash);
-                } catch { }
+                } catch (e) {
+                    this.logService.error(e);
+                }
             }
 
             if (passwordValid) {

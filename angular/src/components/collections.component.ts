@@ -9,6 +9,7 @@ import {
 import { CipherService } from 'jslib-common/abstractions/cipher.service';
 import { CollectionService } from 'jslib-common/abstractions/collection.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 
 import { CipherView } from 'jslib-common/models/view/cipherView';
@@ -30,7 +31,7 @@ export class CollectionsComponent implements OnInit {
     protected cipherDomain: Cipher;
 
     constructor(protected collectionService: CollectionService, protected platformUtilsService: PlatformUtilsService,
-        protected i18nService: I18nService, protected cipherService: CipherService) { }
+        protected i18nService: I18nService, protected cipherService: CipherService, private logService: LogService) { }
 
     async ngOnInit() {
         await this.load();
@@ -65,7 +66,9 @@ export class CollectionsComponent implements OnInit {
             await this.formPromise;
             this.onSavedCollections.emit();
             this.platformUtilsService.showToast('success', null, this.i18nService.t('editedItem'));
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
     }
 
     protected loadCipher() {

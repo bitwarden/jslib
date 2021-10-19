@@ -192,7 +192,9 @@ export class NotificationsService implements NotificationsServiceAbstraction {
             if (sync) {
                 await this.syncService.fullSync(false);
             }
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
 
         if (!this.connected) {
             this.reconnectTimer = setTimeout(() => this.reconnect(sync), this.random(120000, 300000));

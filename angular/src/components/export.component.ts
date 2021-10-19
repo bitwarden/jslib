@@ -9,6 +9,7 @@ import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { EventService } from 'jslib-common/abstractions/event.service';
 import { ExportService } from 'jslib-common/abstractions/export.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
 
@@ -27,7 +28,8 @@ export class ExportComponent implements OnInit {
 
     constructor(protected cryptoService: CryptoService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected exportService: ExportService,
-        protected eventService: EventService, private policyService: PolicyService, protected win: Window) { }
+        protected eventService: EventService, private policyService: PolicyService, protected win: Window,
+        private logService: LogService) { }
 
     async ngOnInit() {
         await this.checkExportDisabled();
@@ -66,7 +68,9 @@ export class ExportComponent implements OnInit {
                 this.downloadFile(data);
                 this.saved();
                 await this.collectEvent();
-            } catch { }
+            } catch (e) {
+                this.logService.error(e);
+            }
         } else {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                 this.i18nService.t('invalidMasterPassword'));
