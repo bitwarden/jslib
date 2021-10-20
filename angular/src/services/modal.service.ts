@@ -118,23 +118,21 @@ export class ModalService {
         modalRef.onCreated.pipe(first()).subscribe(el => {
             document.body.classList.add('modal-open');
 
+            const modalEl: HTMLElement = el.querySelector('.modal');
+
             backdrop = document.createElement('div');
             backdrop.className = 'modal-backdrop fade';
             backdrop.style.zIndex = `${this.modalCount}040`;
-            document.body.appendChild(backdrop);
+            modalEl.prepend(backdrop);
 
-            el.querySelector('.modal-dialog').addEventListener('click', (e: Event) => {
+            modalEl.addEventListener('click', (e: Event) => {
                 e.stopPropagation();
             });
 
-            const modalEl: HTMLElement = el.querySelector('.modal');
-            modalEl.style.zIndex = `${this.modalCount}050`;
+            const dialogEl = modalEl.querySelector('.modal-dialog') as HTMLElement;
+            dialogEl.style.zIndex = `${this.modalCount}050`;
 
-            const dismissEl = document.createElement('div');
-            dismissEl.classList.add('modal-dismiss');
-            modalEl.prepend(dismissEl);
-
-            const modals = Array.from(el.querySelectorAll('.modal-dismiss, .modal *[data-dismiss="modal"]'));
+            const modals = Array.from(el.querySelectorAll('.modal-backdrop, .modal *[data-dismiss="modal"]'));
             for (const closeElement of modals) {
                 closeElement.addEventListener('click', event => {
                     modalRef.close();
@@ -148,10 +146,6 @@ export class ModalService {
 
             if (this.modalCount === 0) {
                 document.body.classList.remove('modal-open');
-            }
-
-            if (backdrop != null) {
-                document.body.removeChild(backdrop);
             }
         });
     }
