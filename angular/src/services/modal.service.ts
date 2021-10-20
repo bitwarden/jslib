@@ -119,17 +119,16 @@ export class ModalService {
             document.body.classList.add('modal-open');
 
             const modalEl: HTMLElement = el.querySelector('.modal');
+            const dialogEl = modalEl.querySelector('.modal-dialog') as HTMLElement;
 
             backdrop = document.createElement('div');
             backdrop.className = 'modal-backdrop fade';
             backdrop.style.zIndex = `${this.modalCount}040`;
             modalEl.prepend(backdrop);
 
-            modalEl.addEventListener('click', (e: Event) => {
+            dialogEl.addEventListener('click', (e: Event) => {
                 e.stopPropagation();
             });
-
-            const dialogEl = modalEl.querySelector('.modal-dialog') as HTMLElement;
             dialogEl.style.zIndex = `${this.modalCount}050`;
 
             const modals = Array.from(el.querySelectorAll('.modal-backdrop, .modal *[data-dismiss="modal"]'));
