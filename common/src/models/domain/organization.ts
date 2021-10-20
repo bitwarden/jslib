@@ -115,11 +115,11 @@ export class Organization {
     }
 
     get canViewAllCollections() {
-        return this.canEditAnyCollection || this.canDeleteAnyCollection;
+        return this.canCreateNewCollections || this.canEditAnyCollection || this.canDeleteAnyCollection;
     }
 
     get canEditAssignedCollections() {
-        return this.isManager || (this.permissions.deleteAssignedCollections ?? this.permissions.manageAssignedCollections);
+        return this.isManager || (this.permissions.editAssignedCollections ?? this.permissions.manageAssignedCollections);
     }
 
     get canDeleteAssignedCollections() {
