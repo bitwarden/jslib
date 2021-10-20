@@ -2,7 +2,10 @@ import {
     Directive,
     ElementRef,
     Input,
+    NgZone,
 } from '@angular/core';
+
+import { take } from 'rxjs/operators';
 
 import { Utils } from 'jslib-common/misc/utils';
 
@@ -16,11 +19,15 @@ export class AutofocusDirective {
 
     private autofocus: boolean;
 
-    constructor(private el: ElementRef) { }
+    constructor(private el: ElementRef, private ngZone: NgZone) { }
 
     ngOnInit() {
         if (!Utils.isMobileBrowser && this.autofocus) {
-            this.el.nativeElement.focus();
+            if (this.ngZone.isStable) {
+                this.el.nativeElement.focus();
+            } else {
+                this.ngZone.onStable.pipe(take(1)).subscribe(() => this.el.nativeElement.focus());
+            }
         }
     }
 }
