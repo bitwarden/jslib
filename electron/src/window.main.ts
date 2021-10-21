@@ -145,7 +145,7 @@ export class WindowMain {
             pathname: path.join(__dirname, '/index.html'),
             slashes: true,
         }), {
-            userAgent: cleanUserAgent(this.win.webContents.userAgent)
+            userAgent: cleanUserAgent(this.win.webContents.userAgent),
             });
 
         // Open the DevTools.
