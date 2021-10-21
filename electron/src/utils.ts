@@ -46,3 +46,19 @@ export function isSnapStore() {
 export function isWindowsPortable() {
     return process.platform === 'win32' && process.env.PORTABLE_EXECUTABLE_DIR != null;
 }
+
+/**
+ * Sanitize user agent so external resources used by the app can't built data on our users.
+ */
+export function cleanUserAgent(userAgent: string): string {
+    const userAgentItem = (startString: string, endString: string) => {
+        const startIndex = userAgent.indexOf(startString);
+        return userAgent.substring(startIndex, userAgent.indexOf(endString, startIndex) + 1);
+    };
+    const systemInformation = '(Windows NT 10.0; Win64; x64)';
+
+    // Set system information, remove bitwarden, and electron information
+    return userAgent.replace(userAgentItem('(', ')'), systemInformation)
+        .replace(userAgentItem('Bitwarden', ' '), '')
+        .replace(userAgentItem('Electron', ' '), '');
+}

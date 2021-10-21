@@ -11,6 +11,7 @@ import { StorageService } from 'jslib-common/abstractions/storage.service';
 
 import { ElectronConstants } from './electronConstants';
 import {
+    cleanUserAgent,
     isDev,
     isMacAppStore,
     isSnapStore,
@@ -144,7 +145,7 @@ export class WindowMain {
             pathname: path.join(__dirname, '/index.html'),
             slashes: true,
         }), {
-            userAgent: this.cleanUserAgent(this.win)
+            userAgent: cleanUserAgent(this.win.webContents.userAgent)
             });
 
         // Open the DevTools.
@@ -282,22 +283,5 @@ export class WindowMain {
     private stateHasBounds(state: any): boolean {
         return state != null && Number.isInteger(state.x) && Number.isInteger(state.y) &&
             Number.isInteger(state.width) && state.width > 0 && Number.isInteger(state.height) && state.height > 0;
-    }
-
-    /**
-     * Sanitize user agent so external resources used by the app can't built data on our users.
-     */
-    private cleanUserAgent(win: BrowserWindow): string {
-        const userAgent = win.webContents.userAgent;
-        const userAgentItem = (startString: string, endString: string) => {
-            const startIndex = userAgent.indexOf(startString);
-            return userAgent.substring(startIndex, userAgent.indexOf(endString, startIndex) + 1);
-        };
-        const systemInformation = '(Windows NT 10.0; Win64; x64)';
-
-        // Set system information, remove bitwarden, and electron information
-        return userAgent.replace(userAgentItem('(', ')'), systemInformation)
-            .replace(userAgentItem('Bitwarden', ' '), '')
-            .replace(userAgentItem('Electron', ' '), '');
     }
 }
