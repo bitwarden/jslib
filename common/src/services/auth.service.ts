@@ -391,31 +391,29 @@ export class AuthService implements AuthServiceAbstraction {
                 }
 
                 await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
-            } else {
-                if (tokenResponse.cryptoAgentUrl != null) {
-                    const password = await this.cryptoFunctionService.randomBytes(64);
+            } else if (tokenResponse.cryptoAgentUrl != null) {
+                const password = await this.cryptoFunctionService.randomBytes(64);
 
-                    const k = await this.cryptoService.makeKey(Utils.fromBufferToB64(password), this.tokenService.getEmail(), tokenResponse.kdf, tokenResponse.kdfIterations);
-                    const cryptoAgentRequest = new CryptoAgentUserKeyRequest(k.encKeyB64);
-                    await this.cryptoService.setKey(k);
+                const k = await this.cryptoService.makeKey(Utils.fromBufferToB64(password), this.tokenService.getEmail(), tokenResponse.kdf, tokenResponse.kdfIterations);
+                const cryptoAgentRequest = new CryptoAgentUserKeyRequest(k.encKeyB64);
+                await this.cryptoService.setKey(k);
 
-                    const encKey = await this.cryptoService.makeEncKey(k);
-                    await this.cryptoService.setEncKey(encKey[1].encryptedString);
+                const encKey = await this.cryptoService.makeEncKey(k);
+                await this.cryptoService.setEncKey(encKey[1].encryptedString);
 
-                    const [pubKey, privKey] = await this.cryptoService.makeKeyPair();
+                const [pubKey, privKey] = await this.cryptoService.makeKeyPair();
 
-                    try {
-                        await this.apiService.postUserKeyToCryptoAgent(tokenResponse.cryptoAgentUrl, cryptoAgentRequest);
-                    } catch (e) {
-                        throw new Error('Unable to reach crypto agent');
-                    }
-
-                    const keys = new KeysRequest(pubKey, privKey.encryptedString);
-                    const setPasswordRequest = new SetCryptoAgentKeyRequest(
-                        encKey[1].encryptedString, tokenResponse.kdf, tokenResponse.kdfIterations, orgId, keys
-                    );
-                    await this.apiService.postSetCryptoAgentKey(setPasswordRequest);
+                try {
+                    await this.apiService.postUserKeyToCryptoAgent(tokenResponse.cryptoAgentUrl, cryptoAgentRequest);
+                } catch (e) {
+                    throw new Error('Unable to reach crypto agent');
                 }
+
+                const keys = new KeysRequest(pubKey, privKey.encryptedString);
+                const setPasswordRequest = new SetCryptoAgentKeyRequest(
+                    encKey[1].encryptedString, tokenResponse.kdf, tokenResponse.kdfIterations, orgId, keys
+                );
+                await this.apiService.postSetCryptoAgentKey(setPasswordRequest);
             }
         }
 
