@@ -4,6 +4,8 @@ import {
     Router,
 } from '@angular/router';
 
+import { first } from 'rxjs/operators';
+
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { AuthService } from 'jslib-common/abstractions/auth.service';
 import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
@@ -48,10 +50,10 @@ export class SsoComponent {
         protected storageService: StorageService, protected stateService: StateService,
         protected platformUtilsService: PlatformUtilsService, protected apiService: ApiService,
         protected cryptoFunctionService: CryptoFunctionService, protected environmentService: EnvironmentService,
-        protected passwordGenerationService: PasswordGenerationService, private logService: LogService) { }
+        protected passwordGenerationService: PasswordGenerationService, protected logService: LogService) { }
 
     async ngOnInit() {
-        const queryParamsSub = this.route.queryParams.subscribe(async qParams => {
+        this.route.queryParams.pipe(first()).subscribe(async qParams => {
             if (qParams.code != null && qParams.state != null) {
                 const codeVerifier = await this.storageService.get<string>(ConstantsService.ssoCodeVerifierKey);
                 const state = await this.storageService.get<string>(ConstantsService.ssoStateKey);
@@ -66,9 +68,6 @@ export class SsoComponent {
                 this.state = qParams.state;
                 this.codeChallenge = qParams.codeChallenge;
                 this.clientId = qParams.clientId;
-            }
-            if (queryParamsSub != null) {
-                queryParamsSub.unsubscribe();
             }
         });
     }

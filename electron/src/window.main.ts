@@ -1,12 +1,20 @@
-import { app, BrowserWindow, screen } from 'electron';
-import { ElectronConstants } from './electronConstants';
-
+import {
+    app,
+    BrowserWindow,
+    screen,
+} from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 
-import { isDev, isMacAppStore, isSnapStore } from './utils';
-
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { StorageService } from 'jslib-common/abstractions/storage.service';
+
+import { ElectronConstants } from './electronConstants';
+import {
+    isDev,
+    isMacAppStore,
+    isSnapStore,
+} from './utils';
 
 const WindowEventHandlingDelay = 100;
 const Keys = {
@@ -21,8 +29,8 @@ export class WindowMain {
     private windowStates: { [key: string]: any; } = {};
     private enableAlwaysOnTop: boolean = false;
 
-    constructor(private storageService: StorageService, private hideTitleBar = false,
-        private defaultWidth = 950, private defaultHeight = 600,
+    constructor(private storageService: StorageService, private logService: LogService,
+        private hideTitleBar = false, private defaultWidth = 950, private defaultHeight = 600,
         private argvCallback: (argv: string[]) => void = null,
         private createWindowCallback: (win: BrowserWindow) => void) { }
 
@@ -224,7 +232,9 @@ export class WindowMain {
             }
 
             await this.storageService.save(configKey, this.windowStates[configKey]);
-        } catch (e) { }
+        } catch (e) {
+            this.logService.error(e);
+        }
     }
 
     private async getWindowState(configKey: string, defaultWidth: number, defaultHeight: number) {

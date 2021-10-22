@@ -238,7 +238,9 @@ export class Utils {
 
                 const urlDomain = tldjs != null && tldjs.getDomain != null ? tldjs.getDomain(url.hostname) : null;
                 return urlDomain != null ? urlDomain : url.hostname;
-            } catch (e) { }
+            } catch (e) {
+                // Invalid domain, try another approach below.
+            }
         }
 
         try {
@@ -367,7 +369,9 @@ export class Utils {
                 anchor.href = uriString;
                 return anchor as any;
             }
-        } catch (e) { }
+        } catch (e) {
+            // Ignore error
+        }
 
         return null;
     }

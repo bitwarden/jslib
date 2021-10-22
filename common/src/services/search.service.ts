@@ -125,7 +125,9 @@ export class SearchService implements SearchServiceAbstraction {
         if (isQueryString) {
             try {
                 searchResults = index.search(query.substr(1).trim());
-            } catch { }
+            } catch (e) {
+                this.logService.error(e);
+            }
         } else {
             // tslint:disable-next-line
             const soWild = lunr.Query.wildcard.LEADING | lunr.Query.wildcard.TRAILING;

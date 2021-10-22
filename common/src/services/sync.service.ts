@@ -3,6 +3,7 @@ import { CipherService } from '../abstractions/cipher.service';
 import { CollectionService } from '../abstractions/collection.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { FolderService } from '../abstractions/folder.service';
+import { LogService } from '../abstractions/log.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { PolicyService } from '../abstractions/policy.service';
 import { SendService } from '../abstractions/send.service';
@@ -44,7 +45,8 @@ export class SyncService implements SyncServiceAbstraction {
         private cipherService: CipherService, private cryptoService: CryptoService,
         private collectionService: CollectionService, private storageService: StorageService,
         private messagingService: MessagingService, private policyService: PolicyService,
-        private sendService: SendService, private logoutCallback: (expired: boolean) => Promise<void>) {
+        private sendService: SendService, private logService: LogService,
+        private logoutCallback: (expired: boolean) => Promise<void>) {
     }
 
     async getLastSync(): Promise<Date> {
@@ -131,7 +133,9 @@ export class SyncService implements SyncServiceAbstraction {
                         return this.syncCompleted(true);
                     }
                 }
-            } catch { }
+            } catch (e) {
+                this.logService.error(e);
+            }
         }
         return this.syncCompleted(false);
     }
@@ -230,7 +234,9 @@ export class SyncService implements SyncServiceAbstraction {
                         return this.syncCompleted(true);
                     }
                 }
-            } catch { }
+            } catch (e) {
+                this.logService.error(e);
+            }
         }
         return this.syncCompleted(false);
     }

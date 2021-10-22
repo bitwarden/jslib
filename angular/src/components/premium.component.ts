@@ -2,8 +2,8 @@ import { Directive, OnInit } from '@angular/core';
 
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
-import { TokenService } from 'jslib-common/abstractions/token.service';
 import { UserService } from 'jslib-common/abstractions/user.service';
 
 @Directive()
@@ -13,7 +13,7 @@ export class PremiumComponent implements OnInit {
     refreshPromise: Promise<any>;
 
     constructor(protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
-        protected apiService: ApiService, protected userService: UserService) { }
+        protected apiService: ApiService, protected userService: UserService, private logService: LogService) { }
 
     async ngOnInit() {
         this.isPremium = await this.userService.canAccessPremium();
@@ -25,7 +25,9 @@ export class PremiumComponent implements OnInit {
             await this.refreshPromise;
             this.platformUtilsService.showToast('success', null, this.i18nService.t('refreshComplete'));
             this.isPremium = await this.userService.canAccessPremium();
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
     }
 
     async purchase() {

@@ -10,6 +10,7 @@ import { AuthService } from 'jslib-common/abstractions/auth.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { StateService } from 'jslib-common/abstractions/state.service';
@@ -39,7 +40,8 @@ export class RegisterComponent extends CaptchaProtectedComponent implements OnIn
         i18nService: I18nService, protected cryptoService: CryptoService,
         protected apiService: ApiService, protected stateService: StateService,
         platformUtilsService: PlatformUtilsService,
-        protected passwordGenerationService: PasswordGenerationService, environmentService: EnvironmentService) {
+        protected passwordGenerationService: PasswordGenerationService, environmentService: EnvironmentService,
+        protected logService: LogService) {
         super(environmentService, i18nService, platformUtilsService);
         this.showTerms = !platformUtilsService.isSelfHost();
     }
@@ -158,7 +160,9 @@ export class RegisterComponent extends CaptchaProtectedComponent implements OnIn
             }
             this.platformUtilsService.showToast('success', null, this.i18nService.t('newAccountCreated'));
             this.router.navigate([this.successRoute], { queryParams: { email: this.email } });
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
     }
 
     togglePassword(confirmField: boolean) {

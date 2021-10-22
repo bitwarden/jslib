@@ -8,6 +8,7 @@ import {
 
 import { FolderService } from 'jslib-common/abstractions/folder.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 
 import { FolderView } from 'jslib-common/models/view/folderView';
@@ -25,7 +26,7 @@ export class FolderAddEditComponent implements OnInit {
     deletePromise: Promise<any>;
 
     constructor(protected folderService: FolderService, protected i18nService: I18nService,
-        protected platformUtilsService: PlatformUtilsService) { }
+        protected platformUtilsService: PlatformUtilsService, private logService: LogService) { }
 
     async ngOnInit() {
         await this.init();
@@ -46,7 +47,9 @@ export class FolderAddEditComponent implements OnInit {
                 this.i18nService.t(this.editMode ? 'editedFolder' : 'addedFolder'));
             this.onSavedFolder.emit(this.folder);
             return true;
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
 
         return false;
     }
@@ -64,7 +67,9 @@ export class FolderAddEditComponent implements OnInit {
             await this.deletePromise;
             this.platformUtilsService.showToast('success', null, this.i18nService.t('deletedFolder'));
             this.onDeletedFolder.emit(this.folder);
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
 
         return true;
     }

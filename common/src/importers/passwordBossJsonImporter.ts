@@ -84,7 +84,9 @@ export class PasswordBossJsonImporter extends BaseImporter implements Importer {
                             const expDate = new Date(val);
                             cipher.card.expYear = expDate.getFullYear().toString();
                             cipher.card.expMonth = (expDate.getMonth() + 1).toString();
-                        } catch { }
+                        } catch {
+                            // Ignore error
+                        }
                         continue;
                     } else if (property === 'cardType') {
                         continue;

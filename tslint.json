@@ -35,7 +35,7 @@
         ]
       }
     ],
-    "no-empty": [ true, "allow-empty-catch" ],
+    "no-empty": [ true ],
     "object-literal-sort-keys": false,
     "object-literal-shorthand": [ true, "never" ],
     "ordered-imports": true,

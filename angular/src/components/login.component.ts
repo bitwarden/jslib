@@ -12,6 +12,7 @@ import { AuthService } from 'jslib-common/abstractions/auth.service';
 import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { StateService } from 'jslib-common/abstractions/state.service';
@@ -49,7 +50,8 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
         platformUtilsService: PlatformUtilsService, i18nService: I18nService,
         protected stateService: StateService, environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
-        protected cryptoFunctionService: CryptoFunctionService, private storageService: StorageService) {
+        protected cryptoFunctionService: CryptoFunctionService, private storageService: StorageService,
+        protected logService: LogService) {
         super(environmentService, i18nService, platformUtilsService);
     }
 
@@ -123,7 +125,9 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
                     this.router.navigate([this.successRoute]);
                 }
             }
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
     }
 
     togglePassword() {
