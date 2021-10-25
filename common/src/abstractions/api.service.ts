@@ -199,6 +199,7 @@ export abstract class ApiService {
     postUserApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
     postUserRotateApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
     putUpdateTempPassword: (request: UpdateTempPasswordRequest) => Promise<any>;
+    postAccountRequestOtp: () => Promise<void>;
 
     getFolder: (id: string) => Promise<FolderResponse>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;

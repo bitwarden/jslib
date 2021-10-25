@@ -19,6 +19,7 @@ const Keys = {
     providersPrefix: 'providers_',
     emailVerified: 'emailVerified',
     forcePasswordReset: 'forcePasswordReset',
+    usesCryptoAgent: 'usesCryptoAgent',
 };
 
 export class UserService implements UserServiceAbstraction {
@@ -29,6 +30,7 @@ export class UserService implements UserServiceAbstraction {
     private kdfIterations: number;
     private emailVerified: boolean;
     private forcePasswordReset: boolean;
+    private usesCryptoAgent: boolean;
 
     constructor(private tokenService: TokenService, private storageService: StorageService) { }
 
@@ -57,6 +59,11 @@ export class UserService implements UserServiceAbstraction {
     setForcePasswordReset(forcePasswordReset: boolean) {
         this.forcePasswordReset = forcePasswordReset;
         return this.storageService.save(Keys.forcePasswordReset, forcePasswordReset);
+    }
+
+    setUsesCryptoAgent(usesCryptoAgent: boolean) {
+        this.usesCryptoAgent = usesCryptoAgent;
+        return this.storageService.save(Keys.usesCryptoAgent, usesCryptoAgent);
     }
 
     async getUserId(): Promise<string> {
@@ -106,6 +113,10 @@ export class UserService implements UserServiceAbstraction {
             this.forcePasswordReset = await this.storageService.get<boolean>(Keys.forcePasswordReset);
         }
         return this.forcePasswordReset;
+    }
+
+    async getUsesCryptoAgent(): Promise<boolean> {
+        return this.usesCryptoAgent ??= await this.storageService.get<boolean>(Keys.usesCryptoAgent);
     }
 
     async clear(): Promise<any> {

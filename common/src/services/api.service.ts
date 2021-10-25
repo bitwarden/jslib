@@ -401,6 +401,10 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('PUT', '/accounts/update-temp-password', request, true, false);
     }
 
+    postAccountRequestOtp(): Promise<void> {
+        return this.send('POST', '/accounts/request-otp', null, true, false);
+    }
+
     // Folder APIs
 
     async getFolder(id: string): Promise<FolderResponse> {
