@@ -1,7 +1,10 @@
 import {
+    AfterViewInit,
     Component,
+    ElementRef,
     Input,
     OnInit,
+    ViewChild,
 } from '@angular/core';
 
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
@@ -12,17 +15,20 @@ import { MasterPasswordPolicyOptions } from 'jslib-common/models/domain/masterPa
     selector: 'app-callout',
     templateUrl: 'callout.component.html',
 })
-export class CalloutComponent implements OnInit {
+export class CalloutComponent implements OnInit, AfterViewInit {
     @Input() type = 'info';
     @Input() icon: string;
     @Input() title: string;
     @Input() clickable: boolean;
     @Input() enforcedPolicyOptions: MasterPasswordPolicyOptions;
     @Input() enforcedPolicyMessage: string;
+    @Input() enforceAlert = false;
+
+    @ViewChild('callout', { read: ElementRef, static: true }) calloutFormRef: ElementRef;
 
     calloutStyle: string;
 
-    constructor(private i18nService: I18nService) { }
+    constructor(private i18nService: I18nService, private element: ElementRef) { }
 
     ngOnInit() {
         this.calloutStyle = this.type;
@@ -57,6 +63,12 @@ export class CalloutComponent implements OnInit {
             if (this.icon === undefined) {
                 this.icon = 'fa-lightbulb-o';
             }
+        }
+    }
+
+    ngAfterViewInit() {
+        if (this.enforceAlert) {
+            this.element.nativeElement.setAttribute('role', 'alert');
         }
     }
 
