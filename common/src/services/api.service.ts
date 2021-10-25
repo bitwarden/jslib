@@ -166,6 +166,9 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
+import { SetCryptoAgentKeyRequest } from '../models/request/account/setCryptoAgentKeyRequest';
+import { CryptoAgentUserKeyRequest } from '../models/request/cryptoAgentUserKeyRequest';
+import { CryptoAgentUserKeyResponse } from '../models/response/cryptoAgentUserKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
 
 export class ApiService implements ApiServiceAbstraction {
@@ -287,6 +290,10 @@ export class ApiService implements ApiServiceAbstraction {
 
     setPassword(request: SetPasswordRequest): Promise<any> {
         return this.send('POST', '/accounts/set-password', request, true, false);
+    }
+
+    postSetCryptoAgentKey(request: SetCryptoAgentKeyRequest): Promise<any> {
+        return this.send('POST', '/accounts/set-crypto-agent-key', request, true, false);
     }
 
     postSecurityStamp(request: PasswordVerificationRequest): Promise<any> {
@@ -1428,6 +1435,49 @@ export class ApiService implements ApiServiceAbstraction {
         const r = await this.send('POST', '/setup-payment', null, true, true);
         return r as string;
     }
+
+    // Crypto Agent
+
+    async getUserKeyFromCryptoAgent(cryptoAgentUrl: string): Promise<CryptoAgentUserKeyResponse> {
+        const authHeader = await this.getActiveBearerToken();
+
+        const response = await this.fetch(new Request(cryptoAgentUrl + '/user-keys', {
+            cache: 'no-store',
+            method: 'GET',
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + authHeader,
+            }),
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false, true);
+            return Promise.reject(error);
+        }
+
+        return new CryptoAgentUserKeyResponse(await response.json());
+    }
+
+    async postUserKeyToCryptoAgent(cryptoAgentUrl: string, request: CryptoAgentUserKeyRequest): Promise<void> {
+        const authHeader = await this.getActiveBearerToken();
+
+        const response = await this.fetch(new Request(cryptoAgentUrl + '/user-keys', {
+            cache: 'no-store',
+            method: 'POST',
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + authHeader,
+                'Content-Type': 'application/json; charset=utf-8',
+            }),
+            body: JSON.stringify(request),
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false, true);
+            return Promise.reject(error);
+        }
+    }
+
 
     // Helpers
 
