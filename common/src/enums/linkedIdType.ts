@@ -1,3 +1,5 @@
+export type LinkedId = LoginLinkedIds | CardLinkedIds | IdentityLinkedIds;
+
 // LoginView
 export enum LoginLinkedIds {
     Username = 100,

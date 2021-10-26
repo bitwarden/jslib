@@ -1,8 +1,6 @@
-// A decorator used to configure property metadata used by Linked custom fields.
-// Apply it to a class property or getter to make it available as a Linked field option.
-// The id must be unique and must not be changed.
-
 import { ItemView } from '../models/view/itemView';
+
+import { LinkedId } from '../enums/linkedIdType';
 
 export class LinkedMetadata {
     readonly propertyKey: string;
@@ -18,12 +16,19 @@ export class LinkedMetadata {
     }
 }
 
-export function setLinkedMetadata(id: number, i18nKey?: string) {
+/**
+ * A decorator used to set metadata used by Linked custom fields. Apply it to a class property or getter to make it 
+ *  available as a Linked custom field option.
+ * @param id - A unique value that is saved by the custom field. It is used to look up the related class property.
+ * @param i18nKey - The i18n key used to describe the class property in the UI. Optional. If it is null, then the
+ *  name of the class property will be used as the i18n key.
+ */
+export function setLinkedMetadata(id: LinkedId, i18nKey?: string) {
     return (prototype: ItemView, propertyKey: string) => {
         if (prototype.linkedMetadata == null) {
             prototype.linkedMetadata = new Map<number, LinkedMetadata>();
         } else if (prototype.linkedMetadata.has(id)) {
-            throw new Error('Linkable metadata must use unique ids. Id ' + id + ' has been used more than once.');
+            throw new Error('Linked metadata must use unique ids. Id ' + id + ' has been used more than once.');
         }
 
         prototype.linkedMetadata.set(id, new LinkedMetadata(propertyKey, i18nKey));
