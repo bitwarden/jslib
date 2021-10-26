@@ -170,6 +170,7 @@ import { SetCryptoAgentKeyRequest } from '../models/request/account/setCryptoAge
 import { CryptoAgentUserKeyRequest } from '../models/request/cryptoAgentUserKeyRequest';
 import { CryptoAgentUserKeyResponse } from '../models/response/cryptoAgentUserKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
+import { VerifyOtpRequest } from '../models/request/account/verifyOtpRequest';
 
 export class ApiService implements ApiServiceAbstraction {
     protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
@@ -403,6 +404,10 @@ export class ApiService implements ApiServiceAbstraction {
 
     postAccountRequestOtp(): Promise<void> {
         return this.send('POST', '/accounts/request-otp', null, true, false);
+    }
+
+    postAccountVerifyOtp(request: VerifyOtpRequest): Promise<void> {
+        return this.send('POST', '/accounts/verify-otp', request, true, false);
     }
 
     // Folder APIs

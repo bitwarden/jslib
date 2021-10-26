@@ -1,5 +1,6 @@
 import { PolicyType } from '../enums/policyType';
 import { SetCryptoAgentKeyRequest } from '../models/request/account/setCryptoAgentKeyRequest';
+import { VerifyOtpRequest } from '../models/request/account/verifyOtpRequest';
 
 import { AttachmentRequest } from '../models/request/attachmentRequest';
 
@@ -200,6 +201,7 @@ export abstract class ApiService {
     postUserRotateApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
     putUpdateTempPassword: (request: UpdateTempPasswordRequest) => Promise<any>;
     postAccountRequestOtp: () => Promise<void>;
+    postAccountVerifyOtp: (request: VerifyOtpRequest) => Promise<void>;
 
     getFolder: (id: string) => Promise<FolderResponse>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
