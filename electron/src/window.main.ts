@@ -140,13 +140,16 @@ export class WindowMain {
         this.win.show();
 
         // and load the index.html of the app.
-        this.win.loadURL(url.format({
-            protocol: 'file:',
-            pathname: path.join(__dirname, '/index.html'),
-            slashes: true,
-        }), {
-            userAgent: cleanUserAgent(this.win.webContents.userAgent),
-            });
+        this.win.loadURL(url.format(
+            {
+                protocol: 'file:',
+                pathname: path.join(__dirname, '/index.html'),
+                slashes: true,
+            }),
+            {
+                userAgent: cleanUserAgent(this.win.webContents.userAgent),
+            }
+        );
 
         // Open the DevTools.
         if (isDev()) {
