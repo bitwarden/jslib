@@ -6,10 +6,12 @@ import { Utils } from '../../misc/utils';
 
 import { Login } from '../domain/login';
 
+import { LoginLinkedIds as LinkedId } from '../../enums/linkedIdType';
+
 export class LoginView extends ItemView {
-    @setLinkedMetadata(0)
+    @setLinkedMetadata(LinkedId.Username)
     username: string = null;
-    @setLinkedMetadata(1)
+    @setLinkedMetadata(LinkedId.Password)
     password: string = null;
 
     passwordRevisionDate?: Date = null;

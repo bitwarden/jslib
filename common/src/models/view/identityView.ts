@@ -5,38 +5,40 @@ import { Identity } from '../domain/identity';
 import { setLinkedMetadata } from '../../misc/setLinkedMetadata.decorator';
 import { Utils } from '../../misc/utils';
 
+import { IdentityLinkedIds as LinkedId } from '../../enums/linkedIdType';
+
 export class IdentityView extends ItemView {
-    @setLinkedMetadata(0)
+    @setLinkedMetadata(LinkedId.Title)
     title: string = null;
-    @setLinkedMetadata(1)
+    @setLinkedMetadata(LinkedId.MiddleName)
     middleName: string = null;
-    @setLinkedMetadata(2)
+    @setLinkedMetadata(LinkedId.Address1)
     address1: string = null;
-    @setLinkedMetadata(3)
+    @setLinkedMetadata(LinkedId.Address2)
     address2: string = null;
-    @setLinkedMetadata(4)
+    @setLinkedMetadata(LinkedId.Address3)
     address3: string = null;
-    @setLinkedMetadata(5, 'cityTown')
+    @setLinkedMetadata(LinkedId.City, 'cityTown')
     city: string = null;
-    @setLinkedMetadata(6, 'stateProvince')
+    @setLinkedMetadata(LinkedId.State, 'stateProvince')
     state: string = null;
-    @setLinkedMetadata(7, 'zipPostalCode')
+    @setLinkedMetadata(LinkedId.PostalCode, 'zipPostalCode')
     postalCode: string = null;
-    @setLinkedMetadata(8)
+    @setLinkedMetadata(LinkedId.Country)
     country: string = null;
-    @setLinkedMetadata(9)
+    @setLinkedMetadata(LinkedId.Company)
     company: string = null;
-    @setLinkedMetadata(10)
+    @setLinkedMetadata(LinkedId.Email)
     email: string = null;
-    @setLinkedMetadata(11)
+    @setLinkedMetadata(LinkedId.Phone)
     phone: string = null;
-    @setLinkedMetadata(12)
+    @setLinkedMetadata(LinkedId.Ssn)
     ssn: string = null;
-    @setLinkedMetadata(13)
+    @setLinkedMetadata(LinkedId.Username)
     username: string = null;
-    @setLinkedMetadata(14)
+    @setLinkedMetadata(LinkedId.PassportNumber)
     passportNumber: string = null;
-    @setLinkedMetadata(15)
+    @setLinkedMetadata(LinkedId.LicenseNumber)
     licenseNumber: string = null;
 
     // tslint:disable
@@ -49,7 +51,7 @@ export class IdentityView extends ItemView {
         super();
     }
 
-    @setLinkedMetadata(16)
+    @setLinkedMetadata(LinkedId.FirstName)
     get firstName(): string {
         return this._firstName;
     }
@@ -58,7 +60,7 @@ export class IdentityView extends ItemView {
         this._subTitle = null;
     }
 
-    @setLinkedMetadata(17)
+    @setLinkedMetadata(LinkedId.LastName)
     get lastName(): string {
         return this._lastName;
     }
@@ -84,7 +86,7 @@ export class IdentityView extends ItemView {
         return this._subTitle;
     }
 
-    @setLinkedMetadata(18)
+    @setLinkedMetadata(LinkedId.FullName)
     get fullName(): string {
         if (this.title != null || this.firstName != null || this.middleName != null || this.lastName != null) {
             let name = '';
