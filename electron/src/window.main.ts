@@ -11,6 +11,7 @@ import { StorageService } from 'jslib-common/abstractions/storage.service';
 
 import { ElectronConstants } from './electronConstants';
 import {
+    cleanUserAgent,
     isDev,
     isMacAppStore,
     isSnapStore,
@@ -139,13 +140,16 @@ export class WindowMain {
         this.win.show();
 
         // and load the index.html of the app.
-        this.win.loadURL(url.format({
-            protocol: 'file:',
-            pathname: path.join(__dirname, '/index.html'),
-            slashes: true,
-        }), {
-                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:74.0) Gecko/20100101 Firefox/74.0',
-            });
+        this.win.loadURL(url.format(
+            {
+                protocol: 'file:',
+                pathname: path.join(__dirname, '/index.html'),
+                slashes: true,
+            }),
+            {
+                userAgent: cleanUserAgent(this.win.webContents.userAgent),
+            }
+        );
 
         // Open the DevTools.
         if (isDev()) {
