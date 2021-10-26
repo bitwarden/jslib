@@ -25,6 +25,7 @@ export type Verification = {
 })
 export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnInit {
     usesCryptoAgent: boolean = false;
+    disableRequestOtp: boolean = false;
 
     secret = new FormControl('');
 
@@ -34,10 +35,6 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
 
     async ngOnInit() {
         this.usesCryptoAgent = await this.userService.getUsesCryptoAgent();
-
-        if (this.usesCryptoAgent) {
-            this.apiService.postAccountRequestOtp();
-        }
 
         this.secret.valueChanges.subscribe(secret => {
             if (this.onChange == null) {
@@ -49,6 +46,13 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
                 secret: secret,
             });
         });
+    }
+
+    async requestOtp() {
+        if (this.usesCryptoAgent) {
+            this.disableRequestOtp = true;
+            await this.apiService.postAccountRequestOtp();
+        }
     }
 
     writeValue(obj: any): void {
