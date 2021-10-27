@@ -27,8 +27,6 @@ export function setLinkedMetadata(id: LinkedId, i18nKey?: string) {
     return (prototype: ItemView, propertyKey: string) => {
         if (prototype.linkedMetadata == null) {
             prototype.linkedMetadata = new Map<number, LinkedMetadata>();
-        } else if (prototype.linkedMetadata.has(id)) {
-            throw new Error('Linked metadata must use unique ids. Id ' + id + ' has been used more than once.');
         }
 
         prototype.linkedMetadata.set(id, new LinkedMetadata(propertyKey, i18nKey));
