@@ -23,12 +23,12 @@ export class LinkedMetadata {
  * @param i18nKey - The i18n key used to describe the decorated class property in the UI. If it is null, then the name 
  *    of the class property will be used as the i18n key.
  */
-export function setLinkedMetadata(id: LinkedId, i18nKey?: string) {
+export function linkedFieldOption(id: LinkedId, i18nKey?: string) {
     return (prototype: ItemView, propertyKey: string) => {
-        if (prototype.linkedMetadata == null) {
-            prototype.linkedMetadata = new Map<number, LinkedMetadata>();
+        if (prototype.linkedFieldOptions == null) {
+            prototype.linkedFieldOptions = new Map<number, LinkedMetadata>();
         }
 
-        prototype.linkedMetadata.set(id, new LinkedMetadata(propertyKey, i18nKey));
+        prototype.linkedFieldOptions.set(id, new LinkedMetadata(propertyKey, i18nKey));
     };
 }

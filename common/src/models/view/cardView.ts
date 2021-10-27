@@ -2,17 +2,18 @@ import { ItemView } from './itemView';
 
 import { Card } from '../domain/card';
 
-import { setLinkedMetadata } from '../../misc/setLinkedMetadata.decorator';
 import { CardLinkedIds as LinkedId } from '../../enums/linkedIdType';
 
+import { linkedFieldOption } from '../../misc/linkedFieldOption.decorator';
+
 export class CardView extends ItemView {
-    @setLinkedMetadata(LinkedId.CardholderName)
+    @linkedFieldOption(LinkedId.CardholderName)
     cardholderName: string = null;
-    @setLinkedMetadata(LinkedId.ExpMonth, 'expirationMonth')
+    @linkedFieldOption(LinkedId.ExpMonth, 'expirationMonth')
     expMonth: string = null;
-    @setLinkedMetadata(LinkedId.ExpYear, 'expirationYear')
+    @linkedFieldOption(LinkedId.ExpYear, 'expirationYear')
     expYear: string = null;
-    @setLinkedMetadata(LinkedId.Code, 'securityCode')
+    @linkedFieldOption(LinkedId.Code, 'securityCode')
     code: string = null;
 
     // tslint:disable
@@ -33,7 +34,7 @@ export class CardView extends ItemView {
         return this.number != null ? '•'.repeat(this.number.length) : null;
     }
 
-    @setLinkedMetadata(LinkedId.Brand)
+    @linkedFieldOption(LinkedId.Brand)
     get brand(): string {
         return this._brand;
     }
@@ -42,7 +43,7 @@ export class CardView extends ItemView {
         this._subTitle = null;
     }
 
-    @setLinkedMetadata(LinkedId.Number)
+    @linkedFieldOption(LinkedId.Number)
     get number(): string {
         return this._number;
     }

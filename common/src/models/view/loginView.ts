@@ -1,17 +1,18 @@
 import { ItemView } from './itemView';
 import { LoginUriView } from './loginUriView';
 
-import { setLinkedMetadata } from '../../misc/setLinkedMetadata.decorator';
 import { Utils } from '../../misc/utils';
 
 import { Login } from '../domain/login';
 
 import { LoginLinkedIds as LinkedId } from '../../enums/linkedIdType';
 
+import { linkedFieldOption } from '../../misc/linkedFieldOption.decorator';
+
 export class LoginView extends ItemView {
-    @setLinkedMetadata(LinkedId.Username)
+    @linkedFieldOption(LinkedId.Username)
     username: string = null;
-    @setLinkedMetadata(LinkedId.Password)
+    @linkedFieldOption(LinkedId.Password)
     password: string = null;
 
     passwordRevisionDate?: Date = null;

@@ -13,8 +13,6 @@ import { PasswordHistoryView } from './passwordHistoryView';
 import { SecureNoteView } from './secureNoteView';
 import { View } from './view';
 
-import { LinkedMetadata } from '../../misc/setLinkedMetadata.decorator';
-
 export class CipherView implements View {
     id: string = null;
     organizationId: string = null;
@@ -117,8 +115,8 @@ export class CipherView implements View {
         return this.deletedDate != null;
     }
 
-    get linkedFieldOptions(): Map<number, LinkedMetadata> {
-        return this.item.linkedMetadata;
+    get linkedFieldOptions() {
+        return this.item.linkedFieldOptions;
     }
 
     linkedFieldValue(id: number) {

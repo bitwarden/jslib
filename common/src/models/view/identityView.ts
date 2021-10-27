@@ -2,43 +2,44 @@ import { ItemView } from './itemView';
 
 import { Identity } from '../domain/identity';
 
-import { setLinkedMetadata } from '../../misc/setLinkedMetadata.decorator';
 import { Utils } from '../../misc/utils';
 
 import { IdentityLinkedIds as LinkedId } from '../../enums/linkedIdType';
 
+import { linkedFieldOption } from '../../misc/linkedFieldOption.decorator';
+
 export class IdentityView extends ItemView {
-    @setLinkedMetadata(LinkedId.Title)
+    @linkedFieldOption(LinkedId.Title)
     title: string = null;
-    @setLinkedMetadata(LinkedId.MiddleName)
+    @linkedFieldOption(LinkedId.MiddleName)
     middleName: string = null;
-    @setLinkedMetadata(LinkedId.Address1)
+    @linkedFieldOption(LinkedId.Address1)
     address1: string = null;
-    @setLinkedMetadata(LinkedId.Address2)
+    @linkedFieldOption(LinkedId.Address2)
     address2: string = null;
-    @setLinkedMetadata(LinkedId.Address3)
+    @linkedFieldOption(LinkedId.Address3)
     address3: string = null;
-    @setLinkedMetadata(LinkedId.City, 'cityTown')
+    @linkedFieldOption(LinkedId.City, 'cityTown')
     city: string = null;
-    @setLinkedMetadata(LinkedId.State, 'stateProvince')
+    @linkedFieldOption(LinkedId.State, 'stateProvince')
     state: string = null;
-    @setLinkedMetadata(LinkedId.PostalCode, 'zipPostalCode')
+    @linkedFieldOption(LinkedId.PostalCode, 'zipPostalCode')
     postalCode: string = null;
-    @setLinkedMetadata(LinkedId.Country)
+    @linkedFieldOption(LinkedId.Country)
     country: string = null;
-    @setLinkedMetadata(LinkedId.Company)
+    @linkedFieldOption(LinkedId.Company)
     company: string = null;
-    @setLinkedMetadata(LinkedId.Email)
+    @linkedFieldOption(LinkedId.Email)
     email: string = null;
-    @setLinkedMetadata(LinkedId.Phone)
+    @linkedFieldOption(LinkedId.Phone)
     phone: string = null;
-    @setLinkedMetadata(LinkedId.Ssn)
+    @linkedFieldOption(LinkedId.Ssn)
     ssn: string = null;
-    @setLinkedMetadata(LinkedId.Username)
+    @linkedFieldOption(LinkedId.Username)
     username: string = null;
-    @setLinkedMetadata(LinkedId.PassportNumber)
+    @linkedFieldOption(LinkedId.PassportNumber)
     passportNumber: string = null;
-    @setLinkedMetadata(LinkedId.LicenseNumber)
+    @linkedFieldOption(LinkedId.LicenseNumber)
     licenseNumber: string = null;
 
     // tslint:disable
@@ -51,7 +52,7 @@ export class IdentityView extends ItemView {
         super();
     }
 
-    @setLinkedMetadata(LinkedId.FirstName)
+    @linkedFieldOption(LinkedId.FirstName)
     get firstName(): string {
         return this._firstName;
     }
@@ -60,7 +61,7 @@ export class IdentityView extends ItemView {
         this._subTitle = null;
     }
 
-    @setLinkedMetadata(LinkedId.LastName)
+    @linkedFieldOption(LinkedId.LastName)
     get lastName(): string {
         return this._lastName;
     }
@@ -86,7 +87,7 @@ export class IdentityView extends ItemView {
         return this._subTitle;
     }
 
-    @setLinkedMetadata(LinkedId.FullName)
+    @linkedFieldOption(LinkedId.FullName)
     get fullName(): string {
         if (this.title != null || this.firstName != null || this.middleName != null || this.lastName != null) {
             let name = '';
