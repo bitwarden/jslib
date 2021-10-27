@@ -5,6 +5,7 @@ import {
     Output,
     ViewChild,
 } from '@angular/core';
+import { FormControl } from '@angular/forms';
 
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { EventService } from 'jslib-common/abstractions/event.service';
@@ -28,6 +29,7 @@ export class ExportComponent implements OnInit {
     format: 'json' | 'encrypted_json' | 'csv' = 'json';
     showPassword = false;
     disabledByPolicy: boolean = false;
+    secret = new FormControl();
 
     constructor(protected cryptoService: CryptoService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected exportService: ExportService,
@@ -40,6 +42,9 @@ export class ExportComponent implements OnInit {
 
     async checkExportDisabled() {
         this.disabledByPolicy = await this.policyService.policyAppliesToUser(PolicyType.DisablePersonalVaultExport);
+        if (this.disabledByPolicy) {
+            this.secret.disable();
+        }
     }
 
     get encryptedFormat() {

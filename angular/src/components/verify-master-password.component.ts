@@ -1,9 +1,12 @@
 import {
     Component,
-    Input,
     OnInit,
 } from '@angular/core';
-import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {
+    ControlValueAccessor,
+    FormControl,
+    NG_VALUE_ACCESSOR,
+} from '@angular/forms';
 
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
@@ -30,12 +33,10 @@ export type Verification = {
     ],
 })
 export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnInit {
-    @Input() disableForm = false;
-
     usesCryptoAgent: boolean = false;
     disableRequestOtp: boolean = false;
 
-    secret = new FormControl({ value: '', disabled: this.disableForm });
+    secret = new FormControl('');
 
     private onChange: (value: Verification) => void;
 
@@ -89,7 +90,7 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
                 return false;
             }
         }
-        
+
         return true;
     }
 
@@ -98,7 +99,7 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
     }
 
     writeValue(obj: any): void {
-        // Not implemented
+        this.secret.setValue(obj);
     }
 
     registerOnChange(fn: any): void {
@@ -110,6 +111,11 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
     }
 
     setDisabledState?(isDisabled: boolean): void {
-        // Not implemented
+        this.disableRequestOtp = isDisabled;
+        if (isDisabled) {
+            this.secret.disable();
+        } else {
+            this.secret.enable();
+        }
     }
 }

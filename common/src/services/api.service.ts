@@ -167,10 +167,10 @@ import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyRes
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
 import { SetCryptoAgentKeyRequest } from '../models/request/account/setCryptoAgentKeyRequest';
+import { VerifyOtpRequest } from '../models/request/account/verifyOtpRequest';
 import { CryptoAgentUserKeyRequest } from '../models/request/cryptoAgentUserKeyRequest';
 import { CryptoAgentUserKeyResponse } from '../models/response/cryptoAgentUserKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
-import { VerifyOtpRequest } from '../models/request/account/verifyOtpRequest';
 
 export class ApiService implements ApiServiceAbstraction {
     protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
