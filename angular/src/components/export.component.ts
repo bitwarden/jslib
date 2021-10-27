@@ -3,6 +3,7 @@ import {
     EventEmitter,
     OnInit,
     Output,
+    ViewChild,
 } from '@angular/core';
 
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
@@ -16,12 +17,14 @@ import { PolicyService } from 'jslib-common/abstractions/policy.service';
 import { EventType } from 'jslib-common/enums/eventType';
 import { PolicyType } from 'jslib-common/enums/policyType';
 
+import { VerifyMasterPasswordComponent } from './verify-master-password.component';
+
 @Directive()
 export class ExportComponent implements OnInit {
     @Output() onSaved = new EventEmitter();
+    @ViewChild('verifyMasterPassword') verifyMasterPassword: VerifyMasterPasswordComponent;
 
     formPromise: Promise<string>;
-    masterPassword: string;
     format: 'json' | 'encrypted_json' | 'csv' = 'json';
     showPassword = false;
     disabledByPolicy: boolean = false;
@@ -49,31 +52,23 @@ export class ExportComponent implements OnInit {
             return;
         }
 
-        if (this.masterPassword == null || this.masterPassword === '') {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('invalidMasterPassword'));
-            return;
-        }
-
         const acceptedWarning = await this.warningDialog();
         if (!acceptedWarning) {
             return;
         }
 
-        const passwordValid = await this.cryptoService.compareAndUpdateKeyHash(this.masterPassword, null);
-        if (passwordValid) {
-            try {
-                this.formPromise = this.getExportData();
-                const data = await this.formPromise;
-                this.downloadFile(data);
-                this.saved();
-                await this.collectEvent();
-            } catch (e) {
-                this.logService.error(e);
-            }
-        } else {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('invalidMasterPassword'));
+        if (!await this.verifyMasterPassword.verifySecret()) {
+            return;
+        }
+
+        try {
+            this.formPromise = this.getExportData();
+            const data = await this.formPromise;
+            this.downloadFile(data);
+            this.saved();
+            await this.collectEvent();
+        } catch (e) {
+            this.logService.error(e);
         }
     }
 
@@ -91,11 +86,6 @@ export class ExportComponent implements OnInit {
                 this.i18nService.t('confirmVaultExport'), this.i18nService.t('exportVault'),
                 this.i18nService.t('cancel'), 'warning');
         }
-    }
-
-    togglePassword() {
-        this.showPassword = !this.showPassword;
-        document.getElementById('masterPassword').focus();
     }
 
     protected saved() {
