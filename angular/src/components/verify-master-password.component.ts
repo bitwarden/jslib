@@ -16,8 +16,10 @@ import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { VerifyOtpRequest } from 'jslib-common/models/request/account/verifyOtpRequest';
 
+import { VerificationType } from 'jslib-common/enums/verificationType';
+
 export type Verification = {
-    type: 'MasterPassword' | 'OTP',
+    type: VerificationType,
     secret: string,
 };
 
@@ -53,7 +55,7 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
             }
 
             this.onChange({
-                type: this.usesCryptoAgent ? 'OTP' : 'MasterPassword',
+                type: this.usesCryptoAgent ? VerificationType.OTP : VerificationType.MasterPassword,
                 secret: secret,
             });
         });
