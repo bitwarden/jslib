@@ -1,4 +1,5 @@
 import { FieldType } from '../../enums/fieldType';
+import { LinkedIdType } from '../../enums/linkedIdType';
 
 import { FieldData } from '../data/fieldData';
 
@@ -12,7 +13,7 @@ export class Field extends Domain {
     name: EncString;
     value: EncString;
     type: FieldType;
-    linkedId: number;
+    linkedId: LinkedIdType;
 
     constructor(obj?: FieldData, alreadyEncrypted: boolean = false) {
         super();

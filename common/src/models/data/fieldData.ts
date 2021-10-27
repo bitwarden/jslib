@@ -1,4 +1,5 @@
 import { FieldType } from '../../enums/fieldType';
+import { LinkedIdType } from '../../enums/linkedIdType';
 
 import { FieldApi } from '../api/fieldApi';
 
@@ -6,7 +7,7 @@ export class FieldData {
     type: FieldType;
     name: string;
     value: string;
-    linkedId: number;
+    linkedId: LinkedIdType;
 
     constructor(response?: FieldApi) {
         if (response == null) {
