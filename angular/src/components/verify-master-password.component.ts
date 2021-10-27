@@ -1,5 +1,6 @@
 import {
     Component,
+    Input,
     OnInit,
 } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -29,10 +30,12 @@ export type Verification = {
     ],
 })
 export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnInit {
+    @Input() disableForm = false;
+
     usesCryptoAgent: boolean = false;
     disableRequestOtp: boolean = false;
 
-    secret = new FormControl('');
+    secret = new FormControl({ value: '', disabled: this.disableForm });
 
     private onChange: (value: Verification) => void;
 
@@ -88,6 +91,10 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
         }
         
         return true;
+    }
+
+    clearSecret() {
+        this.secret.setValue('');
     }
 
     writeValue(obj: any): void {
