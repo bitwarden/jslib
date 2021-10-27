@@ -4,7 +4,7 @@ import { Identity } from '../domain/identity';
 
 import { Utils } from '../../misc/utils';
 
-import { IdentityLinkedIds as LinkedId } from '../../enums/linkedIdType';
+import { IdentityLinkedId as LinkedId } from '../../enums/linkedIdType';
 
 import { linkedFieldOption } from '../../misc/linkedFieldOption.decorator';
 

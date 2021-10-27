@@ -1,6 +1,6 @@
 import { FieldType } from '../../enums/fieldType';
+import { LinkedId } from '../../enums/linkedIdType';
 
-import { CipherView } from './cipherView';
 import { View } from './view';
 
 import { Field } from '../domain/field';
@@ -11,7 +11,7 @@ export class FieldView implements View {
     type: FieldType = null;
     newField: boolean = false; // Marks if the field is new and hasn't been saved
     showValue: boolean = false;
-    linkedId: number = null;
+    linkedId: LinkedId = null;
 
     constructor(f?: Field) {
         if (!f) {

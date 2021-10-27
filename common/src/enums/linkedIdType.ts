@@ -1,13 +1,13 @@
-export type LinkedId = LoginLinkedIds | CardLinkedIds | IdentityLinkedIds;
+export type LinkedIdType = LoginLinkedId | CardLinkedId | IdentityLinkedId;
 
 // LoginView
-export enum LoginLinkedIds {
+export enum LoginLinkedId {
     Username = 100,
     Password = 101,
 }
 
 // CardView
-export enum CardLinkedIds {
+export enum CardLinkedId {
     CardholderName = 300,
     ExpMonth = 301,
     ExpYear = 302,
@@ -17,7 +17,7 @@ export enum CardLinkedIds {
 }
 
 // IdentityView
-export enum IdentityLinkedIds {
+export enum IdentityLinkedId {
     Title = 400,
     MiddleName = 401,
     Address1 = 402,

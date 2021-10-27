@@ -5,7 +5,7 @@ import { Utils } from '../../misc/utils';
 
 import { Login } from '../domain/login';
 
-import { LoginLinkedIds as LinkedId } from '../../enums/linkedIdType';
+import { LoginLinkedId as LinkedId } from '../../enums/linkedIdType';
 
 import { linkedFieldOption } from '../../misc/linkedFieldOption.decorator';
 

@@ -2,7 +2,7 @@ import { ItemView } from './itemView';
 
 import { Card } from '../domain/card';
 
-import { CardLinkedIds as LinkedId } from '../../enums/linkedIdType';
+import { CardLinkedId as LinkedId } from '../../enums/linkedIdType';
 
 import { linkedFieldOption } from '../../misc/linkedFieldOption.decorator';
 
