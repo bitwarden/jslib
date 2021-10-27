@@ -1,5 +1,5 @@
 import { FieldType } from '../../enums/fieldType';
-import { LinkedId } from '../../enums/linkedIdType';
+import { LinkedIdType } from '../../enums/linkedIdType';
 
 import { View } from './view';
 
@@ -11,7 +11,7 @@ export class FieldView implements View {
     type: FieldType = null;
     newField: boolean = false; // Marks if the field is new and hasn't been saved
     showValue: boolean = false;
-    linkedId: LinkedId = null;
+    linkedId: LinkedIdType = null;
 
     constructor(f?: Field) {
         if (!f) {

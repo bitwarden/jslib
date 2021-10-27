@@ -1,5 +1,6 @@
 import { CipherRepromptType } from '../../enums/cipherRepromptType';
 import { CipherType } from '../../enums/cipherType';
+import { LinkedIdType } from '../../enums/linkedIdType';
 
 import { Cipher } from '../domain/cipher';
 
@@ -119,7 +120,7 @@ export class CipherView implements View {
         return this.item.linkedFieldOptions;
     }
 
-    linkedFieldValue(id: number) {
+    linkedFieldValue(id: LinkedIdType) {
         const linkedFieldOption = this.linkedFieldOptions?.get(id);
         if (linkedFieldOption == null) {
             return null;
@@ -128,7 +129,7 @@ export class CipherView implements View {
         return this.item[linkedFieldOption.propertyKey as keyof ItemView];
     }
 
-    linkedFieldI18nKey(id: number): string {
+    linkedFieldI18nKey(id: LinkedIdType): string {
         return this.linkedFieldOptions.get(id)?.i18nKey;
     }
 }

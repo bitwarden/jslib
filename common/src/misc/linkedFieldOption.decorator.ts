@@ -1,6 +1,6 @@
 import { ItemView } from '../models/view/itemView';
 
-import { LinkedId } from '../enums/linkedIdType';
+import { LinkedIdType } from '../enums/linkedIdType';
 
 export class LinkedMetadata {
     readonly propertyKey: string;
@@ -23,10 +23,10 @@ export class LinkedMetadata {
  * @param i18nKey - The i18n key used to describe the decorated class property in the UI. If it is null, then the name
  *    of the class property will be used as the i18n key.
  */
-export function linkedFieldOption(id: LinkedId, i18nKey?: string) {
+export function linkedFieldOption(id: LinkedIdType, i18nKey?: string) {
     return (prototype: ItemView, propertyKey: string) => {
         if (prototype.linkedFieldOptions == null) {
-            prototype.linkedFieldOptions = new Map<number, LinkedMetadata>();
+            prototype.linkedFieldOptions = new Map<LinkedIdType, LinkedMetadata>();
         }
 
         prototype.linkedFieldOptions.set(id, new LinkedMetadata(propertyKey, i18nKey));
