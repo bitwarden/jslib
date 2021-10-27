@@ -103,7 +103,7 @@ export class Organization {
     }
 
     get canCreateNewCollections() {
-        return this.isAdmin || (this.permissions.createNewCollections ?? this.permissions.manageAllCollections);
+        return this.isManager || (this.permissions.createNewCollections ?? this.permissions.manageAllCollections);
     }
 
     get canEditAnyCollection() {
