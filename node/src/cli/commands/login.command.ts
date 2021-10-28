@@ -151,7 +151,7 @@ export class LoginCommand {
                 if (clientId != null && clientSecret != null) {
                     response = await this.authService.logInApiKey(clientId, clientSecret);
                 } else if (ssoCode != null && ssoCodeVerifier != null) {
-                    response = await this.authService.logInSso(ssoCode, ssoCodeVerifier, this.ssoRedirectUri);
+                    response = await this.authService.logInSso(ssoCode, ssoCodeVerifier, this.ssoRedirectUri, null);
                 } else {
                     response = await this.authService.logIn(email, password);
                 }
