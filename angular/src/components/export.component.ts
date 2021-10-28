@@ -3,10 +3,10 @@ import {
     EventEmitter,
     OnInit,
     Output,
-    ViewChild,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
+import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { EventService } from 'jslib-common/abstractions/event.service';
 import { ExportService } from 'jslib-common/abstractions/export.service';
@@ -17,24 +17,26 @@ import { PolicyService } from 'jslib-common/abstractions/policy.service';
 
 import { EventType } from 'jslib-common/enums/eventType';
 import { PolicyType } from 'jslib-common/enums/policyType';
+import { VerificationType } from 'jslib-common/enums/verificationType';
 
-import { VerifyMasterPasswordComponent } from './verify-master-password.component';
+import { VerifyOtpRequest } from 'jslib-common/models/request/account/verifyOtpRequest';
+
+import { Verification } from './verify-master-password.component';
 
 @Directive()
 export class ExportComponent implements OnInit {
     @Output() onSaved = new EventEmitter();
-    @ViewChild('verifyMasterPassword') verifyMasterPassword: VerifyMasterPasswordComponent;
 
     formPromise: Promise<string>;
     format: 'json' | 'encrypted_json' | 'csv' = 'json';
     showPassword = false;
     disabledByPolicy: boolean = false;
-    secret = new FormControl();
+    verificationForm = new FormControl();
 
     constructor(protected cryptoService: CryptoService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected exportService: ExportService,
         protected eventService: EventService, private policyService: PolicyService, protected win: Window,
-        private logService: LogService) { }
+        private logService: LogService, private apiService: ApiService) { }
 
     async ngOnInit() {
         await this.checkExportDisabled();
@@ -43,7 +45,7 @@ export class ExportComponent implements OnInit {
     async checkExportDisabled() {
         this.disabledByPolicy = await this.policyService.policyAppliesToUser(PolicyType.DisablePersonalVaultExport);
         if (this.disabledByPolicy) {
-            this.secret.disable();
+            this.verificationForm.disable();
         }
     }
 
@@ -62,7 +64,7 @@ export class ExportComponent implements OnInit {
             return;
         }
 
-        if (!await this.verifyMasterPassword.verifySecret()) {
+        if (!await this.verifySecret()) {
             return;
         }
 
@@ -116,6 +118,32 @@ export class ExportComponent implements OnInit {
 
     protected async collectEvent(): Promise<any> {
         await this.eventService.collect(EventType.User_ClientExportedVault);
+    }
+
+    protected async verifySecret(): Promise<boolean> {
+        const verification: Verification = this.verificationForm.value;
+        if (verification?.secret == null || verification.secret === '') {
+            return false;
+        }
+
+        if (verification.type === VerificationType.OTP) {
+            const request = new VerifyOtpRequest(verification.secret);
+            try {
+                await this.apiService.postAccountVerifyOtp(request);
+            } catch {
+                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                    this.i18nService.t('invalidVerificationCode'));
+                return false;
+            }
+        } else {
+            const passwordValid = await this.cryptoService.compareAndUpdateKeyHash(verification.secret, null);
+            if (!passwordValid) {
+                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                    this.i18nService.t('invalidMasterPassword'));
+                return false;
+            }
+        }
+        return true;
     }
 
     private downloadFile(csv: string): void {
