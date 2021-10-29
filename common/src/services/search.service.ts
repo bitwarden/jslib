@@ -135,6 +135,7 @@ export class SearchService implements SearchServiceAbstraction {
                 lunr.tokenizer(query).forEach(token => {
                     const t = token.toString();
                     q.term(t, { fields: ['name'], wildcard: soWild });
+                    q.term(t, { fields: ['notes'], wildcard: soWild });
                     q.term(t, { fields: ['subtitle'], wildcard: soWild });
                     q.term(t, { fields: ['login.uris'], wildcard: soWild });
                     q.term(t, {});
