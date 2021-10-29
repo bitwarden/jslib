@@ -4,7 +4,7 @@ import {
     OnInit,
     Output,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
@@ -28,15 +28,23 @@ export class ExportComponent implements OnInit {
     @Output() onSaved = new EventEmitter();
 
     formPromise: Promise<string>;
-    format: 'json' | 'encrypted_json' | 'csv' = 'json';
-    showPassword = false;
     disabledByPolicy: boolean = false;
-    verificationForm = new FormControl();
+
+    exportForm = this.fb.group({
+        format: ['json'],
+        secret: [''],
+    })
+
+    formatOptions = [
+        { name: '.json', value: 'json' },
+        { name: '.csv', value: 'csv' },
+        { name: '.json (Encrypted)', value: 'encrypted_json' },
+    ];
 
     constructor(protected cryptoService: CryptoService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected exportService: ExportService,
         protected eventService: EventService, private policyService: PolicyService, protected win: Window,
-        private logService: LogService, private apiService: ApiService) { }
+        private logService: LogService, private apiService: ApiService, private fb: FormBuilder) { }
 
     async ngOnInit() {
         await this.checkExportDisabled();
@@ -45,7 +53,7 @@ export class ExportComponent implements OnInit {
     async checkExportDisabled() {
         this.disabledByPolicy = await this.policyService.policyAppliesToUser(PolicyType.DisablePersonalVaultExport);
         if (this.disabledByPolicy) {
-            this.verificationForm.disable();
+            this.exportForm.disable();
         }
     }
 
@@ -74,6 +82,7 @@ export class ExportComponent implements OnInit {
             this.downloadFile(data);
             this.saved();
             await this.collectEvent();
+            this.exportForm.get('secret').setValue('');
         } catch (e) {
             this.logService.error(e);
         }
@@ -121,7 +130,7 @@ export class ExportComponent implements OnInit {
     }
 
     protected async verifySecret(): Promise<boolean> {
-        const verification: Verification = this.verificationForm.value;
+        const verification: Verification = this.exportForm.get('secret').value;
         if (verification?.secret == null || verification.secret === '') {
             return false;
         }
@@ -144,6 +153,10 @@ export class ExportComponent implements OnInit {
             }
         }
         return true;
+    }
+
+    get format() {
+        return this.exportForm.get('format').value;
     }
 
     private downloadFile(csv: string): void {
