@@ -33,7 +33,7 @@ export class ExportComponent implements OnInit {
     exportForm = this.fb.group({
         format: ['json'],
         secret: [''],
-    })
+    });
 
     formatOptions = [
         { name: '.json', value: 'json' },
