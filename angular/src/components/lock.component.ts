@@ -23,7 +23,6 @@ import { PasswordVerificationRequest } from 'jslib-common/models/request/passwor
 import { Utils } from 'jslib-common/misc/utils';
 
 import { HashPurpose } from 'jslib-common/enums/hashPurpose';
-import { VerificationType } from 'jslib-common/enums/verificationType';
 
 @Directive()
 export class LockComponent implements OnInit {
@@ -120,13 +119,10 @@ export class LockComponent implements OnInit {
             if (storedKeyHash != null) {
                 passwordValid = await this.cryptoService.compareAndUpdateKeyHash(this.masterPassword, key);
             } else {
+                const request = new PasswordVerificationRequest();
                 const serverKeyHash = await this.cryptoService.hashPassword(this.masterPassword, key,
                     HashPurpose.ServerAuthorization);
-                const request = new PasswordVerificationRequest({
-                    secret: serverKeyHash,
-                    type: VerificationType.MasterPassword,
-                });
-
+                request.masterPasswordHash = serverKeyHash;
                 try {
                     this.formPromise = this.apiService.postAccountVerifyPassword(request);
                     await this.formPromise;

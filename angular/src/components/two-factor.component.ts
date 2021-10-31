@@ -27,7 +27,6 @@ import { ConstantsService } from 'jslib-common/services/constants.service';
 
 import * as DuoWebSDK from 'duo_web_sdk';
 import { WebAuthnIFrame } from 'jslib-common/misc/webauthn_iframe';
-import { VerificationType } from 'jslib-common/enums/verificationType';
 
 @Directive()
 export class TwoFactorComponent implements OnInit, OnDestroy {
@@ -212,12 +211,9 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         }
 
         try {
-            const masterPasswordHash = this.authService.masterPasswordHash;
-            const request = new TwoFactorEmailRequest({
-                secret: masterPasswordHash,
-                type: VerificationType.MasterPassword,
-            });
+            const request = new TwoFactorEmailRequest();
             request.email = this.authService.email;
+            request.masterPasswordHash = this.authService.masterPasswordHash;
             this.emailPromise = this.apiService.postTwoFactorEmail(request);
             await this.emailPromise;
             if (doToast) {

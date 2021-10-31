@@ -9,7 +9,6 @@ import {
 } from '@angular/forms';
 
 import { ApiService } from 'jslib-common/abstractions/api.service';
-import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { VerificationType } from 'jslib-common/enums/verificationType';
@@ -34,23 +33,24 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
     usesCryptoAgent: boolean = false;
     disableRequestOtp: boolean = false;
 
-    secret = new FormControl('', {updateOn: 'blur'});
+    secret = new FormControl('');
 
-    private onChange: (value: Promise<Verification>) => void;
+    private onChange: (value: Verification) => void;
 
-    constructor(private userService: UserService, private apiService: ApiService,
-        private cryptoService: CryptoService) { }
+    constructor(private userService: UserService, private apiService: ApiService) { }
 
     async ngOnInit() {
         this.usesCryptoAgent = await this.userService.getUsesCryptoAgent();
 
-        this.secret.valueChanges.subscribe(async secret => {
+        this.secret.valueChanges.subscribe(secret => {
             if (this.onChange == null) {
                 return;
             }
 
-            const promise = this.processForm(secret);
-            this.onChange(promise);
+            this.onChange({
+                type: this.usesCryptoAgent ? VerificationType.OTP : VerificationType.MasterPassword,
+                secret: secret,
+            });
         });
     }
 
@@ -58,23 +58,6 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
         if (this.usesCryptoAgent) {
             this.disableRequestOtp = true;
             await this.apiService.postAccountRequestOtp();
-        }
-    }
-
-    async processForm(secret: string): Promise<Verification> {
-        if (secret == null || secret === "") {
-            return null;
-        }
-        if (this.usesCryptoAgent) {
-            return {
-                type: VerificationType.OTP,
-                secret: secret,
-            };
-        } else {
-            return {
-                type: VerificationType.MasterPassword,
-                secret: await this.cryptoService.hashPassword(secret, null),
-            };
         }
     }
 
