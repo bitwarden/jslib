@@ -21,7 +21,7 @@ import { VerificationType } from 'jslib-common/enums/verificationType';
 
 import { VerifyOtpRequest } from 'jslib-common/models/request/account/verifyOtpRequest';
 
-import { Verification } from './verify-master-password.component';
+import { Verification } from 'jslib-common/types/verification';
 
 @Directive()
 export class ExportComponent implements OnInit {

@@ -13,10 +13,7 @@ import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { VerificationType } from 'jslib-common/enums/verificationType';
 
-export type Verification = {
-    type: VerificationType,
-    secret: string,
-};
+import { Verification } from 'jslib-common/types/verification';
 
 @Component({
     selector: 'app-verify-master-password',
