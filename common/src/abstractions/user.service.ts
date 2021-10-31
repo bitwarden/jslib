@@ -1,9 +1,14 @@
 import { OrganizationData } from '../models/data/organizationData';
 import { ProviderData } from '../models/data/providerData';
+
 import { Organization } from '../models/domain/organization';
 import { Provider } from '../models/domain/provider';
 
+import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
+
 import { KdfType } from '../enums/kdfType';
+
+import { Verification } from '../types/verification';
 
 export abstract class UserService {
     setInformation: (userId: string, email: string, kdf: KdfType, kdfIterations: number) => Promise<any>;
@@ -31,4 +36,6 @@ export abstract class UserService {
     getAllProviders: () => Promise<Provider[]>;
     replaceProviders: (providers: { [id: string]: ProviderData; }) => Promise<any>;
     clearProviders: (userId: string) => Promise<any>;
+    buildVerificationRequest: <T extends PasswordVerificationRequest> (verification: Verification,
+        requestClass?: new () => T, alreadyEncrypted?: boolean) => Promise<T>;
 }

@@ -1,3 +1,4 @@
+import { CryptoService } from '../abstractions/crypto.service';
 import { StorageService } from '../abstractions/storage.service';
 import { TokenService } from '../abstractions/token.service';
 import { UserService as UserServiceAbstraction } from '../abstractions/user.service';
@@ -6,8 +7,14 @@ import { OrganizationData } from '../models/data/organizationData';
 import { Organization } from '../models/domain/organization';
 
 import { KdfType } from '../enums/kdfType';
+import { VerificationType } from '../enums/verificationType';
+
 import { ProviderData } from '../models/data/providerData';
 import { Provider } from '../models/domain/provider';
+
+import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
+
+import { Verification } from '../types/verification';
 
 const Keys = {
     userId: 'userId',
@@ -32,7 +39,8 @@ export class UserService implements UserServiceAbstraction {
     private forcePasswordReset: boolean;
     private usesCryptoAgent: boolean;
 
-    constructor(private tokenService: TokenService, private storageService: StorageService) { }
+    constructor(private tokenService: TokenService, private storageService: StorageService,
+        private cryptoService: CryptoService) { }
 
     async setInformation(userId: string, email: string, kdf: KdfType, kdfIterations: number): Promise<any> {
         this.email = email;
@@ -239,5 +247,30 @@ export class UserService implements UserServiceAbstraction {
 
     async clearProviders(userId: string): Promise<any> {
         await this.storageService.remove(Keys.providersPrefix + userId);
+    }
+
+    async buildVerificationRequest<T extends PasswordVerificationRequest>
+        (verification: Verification, requestClass?: new () => T, alreadyEncrypted?: boolean) {
+
+        if (verification?.secret == null || verification.secret === '') {
+            return null;
+        }
+
+        let request: T;
+        if (requestClass != null) {
+            request = new requestClass();
+        } else {
+            request = new PasswordVerificationRequest() as T;
+        }
+
+        if (verification.type === VerificationType.MasterPassword) {
+            request.masterPasswordHash = alreadyEncrypted
+                ? verification.secret
+                : await this.cryptoService.hashPassword(verification.secret, null);
+        } else {
+            request.otp = verification.secret;
+        }
+
+        return request;
     }
 }
