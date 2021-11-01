@@ -1,0 +1,44 @@
+import { OrganizationService as OrganizationServiceAbstraction } from '../abstractions/organization.service';
+import { StateService } from '../abstractions/state.service';
+
+import { OrganizationData } from '../models/data/organizationData';
+
+import { Organization } from '../models/domain/organization';
+
+export class OrganizationService implements OrganizationServiceAbstraction {
+    constructor(private stateService: StateService) {
+    }
+
+    async get(id: string): Promise<Organization> {
+        const organizations = await this.stateService.getOrganizations();
+        if (organizations == null || !organizations.hasOwnProperty(id)) {
+            return null;
+        }
+
+        return new Organization(organizations[id]);
+    }
+
+    async getByIdentifier(identifier: string): Promise<Organization> {
+        const organizations = await this.getAll();
+        if (organizations == null || organizations.length === 0) {
+            return null;
+        }
+
+        return organizations.find(o => o.identifier === identifier);
+    }
+
+    async getAll(): Promise<Organization[]> {
+        const organizations = await this.stateService.getOrganizations();
+        const response: Organization[] = [];
+        for (const id in organizations) {
+            if (organizations.hasOwnProperty(id) && !organizations[id].isProviderUser) {
+                response.push(new Organization(organizations[id]));
+            }
+        }
+        return response;
+    }
+
+    async save(organizations: {[id: string]: OrganizationData}) {
+        return await this.stateService.setOrganizations(organizations);
+    }
+}
