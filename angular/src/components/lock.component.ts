@@ -9,11 +9,7 @@ import { LogService } from 'jslib-common/abstractions/log.service';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { StateService } from 'jslib-common/abstractions/state.service';
-import { StorageService } from 'jslib-common/abstractions/storage.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 import { VaultTimeoutService } from 'jslib-common/abstractions/vaultTimeout.service';
-
-import { ConstantsService } from 'jslib-common/services/constants.service';
 
 import { EncString } from 'jslib-common/models/domain/encString';
 import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
@@ -23,6 +19,7 @@ import { PasswordVerificationRequest } from 'jslib-common/models/request/passwor
 import { Utils } from 'jslib-common/misc/utils';
 
 import { HashPurpose } from 'jslib-common/enums/hashPurpose';
+import { KeySuffixOptions } from 'jslib-common/enums/keySuffixOptions';
 
 @Directive()
 export class LockComponent implements OnInit {
@@ -45,19 +42,18 @@ export class LockComponent implements OnInit {
 
     constructor(protected router: Router, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected messagingService: MessagingService,
-        protected userService: UserService, protected cryptoService: CryptoService,
-        protected storageService: StorageService, protected vaultTimeoutService: VaultTimeoutService,
+        protected cryptoService: CryptoService, protected vaultTimeoutService: VaultTimeoutService,
         protected environmentService: EnvironmentService, protected stateService: StateService,
         protected apiService: ApiService, private logService: LogService) { }
 
     async ngOnInit() {
         this.pinSet = await this.vaultTimeoutService.isPinLockSet();
-        this.pinLock = (this.pinSet[0] && this.vaultTimeoutService.pinProtectedKey != null) || this.pinSet[1];
+        this.pinLock = (this.pinSet[0] && (await this.stateService.getEncryptedPinProtected()) != null) || this.pinSet[1];
         this.supportsBiometric = await this.platformUtilsService.supportsBiometric();
         this.biometricLock = await this.vaultTimeoutService.isBiometricLockSet() &&
-            (await this.cryptoService.hasKeyStored('biometric') || !this.platformUtilsService.supportsSecureStorage());
-        this.biometricText = await this.storageService.get(ConstantsService.biometricText);
-        this.email = await this.userService.getEmail();
+            (await this.cryptoService.hasKeyStored(KeySuffixOptions.Biometric) || !this.platformUtilsService.supportsSecureStorage());
+        this.biometricText = await this.stateService.getBiometricText();
+        this.email = await this.stateService.getEmail();
 
         const webVaultUrl = this.environmentService.getWebVaultUrl();
         const vaultUrl = webVaultUrl === 'https://vault.bitwarden.com' ? 'https://bitwarden.com' : webVaultUrl;
@@ -76,17 +72,17 @@ export class LockComponent implements OnInit {
             return;
         }
 
-        const kdf = await this.userService.getKdf();
-        const kdfIterations = await this.userService.getKdfIterations();
+        const kdf = await this.stateService.getKdfType();
+        const kdfIterations = await this.stateService.getKdfIterations();
 
         if (this.pinLock) {
             let failed = true;
             try {
                 if (this.pinSet[0]) {
                     const key = await this.cryptoService.makeKeyFromPin(this.pin, this.email, kdf, kdfIterations,
-                        this.vaultTimeoutService.pinProtectedKey);
+                        await this.stateService.getDecryptedPinProtected());
                     const encKey = await this.cryptoService.getEncKey(key);
-                    const protectedPin = await this.storageService.get<string>(ConstantsService.protectedPin);
+                    const protectedPin = await this.stateService.getProtectedPin();
                     const decPin = await this.cryptoService.decryptToUtf8(new EncString(protectedPin), encKey);
                     failed = decPin !== this.pin;
                     if (!failed) {
@@ -137,11 +133,11 @@ export class LockComponent implements OnInit {
 
             if (passwordValid) {
                 if (this.pinSet[0]) {
-                    const protectedPin = await this.storageService.get<string>(ConstantsService.protectedPin);
+                    const protectedPin = await this.stateService.getProtectedPin();
                     const encKey = await this.cryptoService.getEncKey(key);
                     const decPin = await this.cryptoService.decryptToUtf8(new EncString(protectedPin), encKey);
                     const pinKey = await this.cryptoService.makePinKey(decPin, this.email, kdf, kdfIterations);
-                    this.vaultTimeoutService.pinProtectedKey = await this.cryptoService.encrypt(key.key, pinKey);
+                    await this.stateService.setDecryptedPinProtected(await this.cryptoService.encrypt(key.key, pinKey));
                 }
                 this.setKeyAndContinue(key);
             } else {
@@ -164,7 +160,7 @@ export class LockComponent implements OnInit {
             return;
         }
 
-        const success = (await this.cryptoService.getKey('biometric')) != null;
+        const success = (await this.cryptoService.getKey(KeySuffixOptions.Biometric)) != null;
 
         if (success) {
             await this.doContinue();
@@ -184,10 +180,10 @@ export class LockComponent implements OnInit {
     }
 
     private async doContinue() {
-        this.vaultTimeoutService.biometricLocked = false;
-        this.vaultTimeoutService.everBeenUnlocked = true;
-        const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
-        await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
+        await this.stateService.setBiometricLocked(false);
+        await this.stateService.setEverBeenUnlocked(true);
+        const disableFavicon = await this.stateService.getDisableFavicon();
+        await this.stateService.setDisableFavicon(!!disableFavicon);
         this.messagingService.send('unlocked');
         if (this.onSuccessfulSubmit != null) {
             this.onSuccessfulSubmit();

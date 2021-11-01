@@ -12,8 +12,8 @@ import { CipherService } from 'jslib-common/abstractions/cipher.service';
 import { CollectionService } from 'jslib-common/abstractions/collection.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { LogService } from 'jslib-common/abstractions/log.service';
+import { OrganizationService } from 'jslib-common/abstractions/organization.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { Organization } from 'jslib-common/models/domain/organization';
 import { CipherView } from 'jslib-common/models/view/cipherView';
@@ -35,8 +35,8 @@ export class ShareComponent implements OnInit {
     protected writeableCollections: CollectionView[] = [];
 
     constructor(protected collectionService: CollectionService, protected platformUtilsService: PlatformUtilsService,
-        protected i18nService: I18nService, protected userService: UserService,
-        protected cipherService: CipherService, private logService: LogService) { }
+        protected i18nService: I18nService, protected cipherService: CipherService,
+        private logService: LogService, protected organizationService: OrganizationService) { }
 
     async ngOnInit() {
         await this.load();
@@ -45,7 +45,7 @@ export class ShareComponent implements OnInit {
     async load() {
         const allCollections = await this.collectionService.getAllDecrypted();
         this.writeableCollections = allCollections.map(c => c).filter(c => !c.readOnly);
-        const orgs = await this.userService.getAllOrganizations();
+        const orgs = await this.organizationService.getAll();
         this.organizations = orgs.sort(Utils.getSortFunction(this.i18nService, 'name'))
             .filter(o => o.enabled && o.status === OrganizationUserStatusType.Confirmed);
 

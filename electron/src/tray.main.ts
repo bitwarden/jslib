@@ -2,7 +2,6 @@ import {
     app,
     BrowserWindow,
     Menu,
-    MenuItem,
     MenuItemConstructorOptions,
     nativeImage,
     Tray,
@@ -10,9 +9,8 @@ import {
 import * as path from 'path';
 
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
-import { StorageService } from 'jslib-common/abstractions/storage.service';
+import { StateService } from 'jslib-common/abstractions/state.service';
 
-import { ElectronConstants } from './electronConstants';
 import { WindowMain } from './window.main';
 
 export class TrayMain {
@@ -24,7 +22,7 @@ export class TrayMain {
     private pressedIcon: Electron.NativeImage;
 
     constructor(private windowMain: WindowMain, private i18nService: I18nService,
-        private storageService: StorageService) {
+        private stateService: StateService) {
         if (process.platform === 'win32') {
             this.icon = path.join(__dirname, '/images/icon.ico');
         } else if (process.platform === 'darwin') {
@@ -55,21 +53,21 @@ export class TrayMain {
         }
 
         this.contextMenu = Menu.buildFromTemplate(menuItemOptions);
-        if (await this.storageService.get<boolean>(ElectronConstants.enableTrayKey)) {
+        if (await this.stateService.getEnableTray()) {
             this.showTray();
         }
     }
 
     setupWindowListeners(win: BrowserWindow) {
         win.on('minimize', async (e: Event) => {
-            if (await this.storageService.get<boolean>(ElectronConstants.enableMinimizeToTrayKey)) {
+            if (await this.stateService.getEnableMinimizeToTray()) {
                 e.preventDefault();
                 this.hideToTray();
             }
         });
 
         win.on('close', async (e: Event) => {
-            if (await this.storageService.get<boolean>(ElectronConstants.enableCloseToTrayKey)) {
+            if (await this.stateService.getEnableCloseToTray()) {
                 if (!this.windowMain.isQuitting) {
                     e.preventDefault();
                     this.hideToTray();
@@ -78,7 +76,7 @@ export class TrayMain {
         });
 
         win.on('show', async (e: Event) => {
-            const enableTray = await this.storageService.get<boolean>(ElectronConstants.enableTrayKey);
+            const enableTray = await this.stateService.getEnableTray();
             if (!enableTray) {
                 setTimeout(() =>  this.removeTray(false), 100);
             }
@@ -103,7 +101,7 @@ export class TrayMain {
         if (this.windowMain.win != null) {
             this.windowMain.win.hide();
         }
-        if (this.isDarwin() && !await this.storageService.get<boolean>(ElectronConstants.alwaysShowDock)) {
+        if (this.isDarwin() && !await this.stateService.getAlwaysShowDock()) {
             this.hideDock();
         }
     }
@@ -167,7 +165,7 @@ export class TrayMain {
         }
         if (this.windowMain.win.isVisible()) {
             this.windowMain.win.hide();
-            if (this.isDarwin() && !await this.storageService.get<boolean>(ElectronConstants.alwaysShowDock)) {
+            if (this.isDarwin() && !await this.stateService.getAlwaysShowDock()) {
                 this.hideDock();
             }
         } else {

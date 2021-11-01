@@ -1,15 +1,15 @@
 import * as chalk from 'chalk';
 
+import { StateService } from 'jslib-common/abstractions/state.service';
+
 import { Response } from './models/response';
 import { ListResponse } from './models/response/listResponse';
 import { MessageResponse } from './models/response/messageResponse';
 import { StringResponse } from './models/response/stringResponse';
 
-import { UserService } from 'jslib-common/abstractions/user.service';
-
 export abstract class BaseProgram {
     constructor(
-        private userService: UserService,
+        private stateService: StateService,
         private writeLn: (s: string, finalLine: boolean, error: boolean) => void) { }
 
     protected processResponse(response: Response, exitImmediately = false, dataProcessor: () => string = null) {
@@ -92,15 +92,15 @@ export abstract class BaseProgram {
     }
 
     protected async exitIfAuthed() {
-        const authed = await this.userService.isAuthenticated();
+        const authed = await this.stateService.getIsAuthenticated();
         if (authed) {
-            const email = await this.userService.getEmail();
+            const email = await this.stateService.getEmail();
             this.processResponse(Response.error('You are already logged in as ' + email + '.'), true);
         }
     }
 
     protected async exitIfNotAuthed() {
-        const authed = await this.userService.isAuthenticated();
+        const authed = await this.stateService.getIsAuthenticated();
         if (!authed) {
             this.processResponse(Response.error('You are not logged in.'), true);
         }
