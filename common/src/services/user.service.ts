@@ -1,4 +1,5 @@
 import { CryptoService } from '../abstractions/crypto.service';
+import { I18nService } from '../abstractions/i18n.service';
 import { StorageService } from '../abstractions/storage.service';
 import { TokenService } from '../abstractions/token.service';
 import { UserService as UserServiceAbstraction } from '../abstractions/user.service';
@@ -40,7 +41,7 @@ export class UserService implements UserServiceAbstraction {
     private usesCryptoAgent: boolean;
 
     constructor(private tokenService: TokenService, private storageService: StorageService,
-        private cryptoService: CryptoService) { }
+        private cryptoService: CryptoService, private i18nService: I18nService) { }
 
     async setInformation(userId: string, email: string, kdf: KdfType, kdfIterations: number): Promise<any> {
         this.email = email;
@@ -253,22 +254,22 @@ export class UserService implements UserServiceAbstraction {
         (verification: Verification, requestClass?: new () => T, alreadyEncrypted?: boolean) {
 
         if (verification?.secret == null || verification.secret === '') {
-            return null;
+            const error = verification?.type === VerificationType.OTP
+                ? 'verificationCodeRequired'
+                : 'masterPassRequired'
+            throw new Error(this.i18nService.t(error));
         }
 
-        let request: T;
-        if (requestClass != null) {
-            request = new requestClass();
+        const request = requestClass != null
+            ? new requestClass()
+            : new PasswordVerificationRequest() as T;
+
+        if (verification.type === VerificationType.OTP) {
+            request.otp = verification.secret;
         } else {
-            request = new PasswordVerificationRequest() as T;
-        }
-
-        if (verification.type === VerificationType.MasterPassword) {
             request.masterPasswordHash = alreadyEncrypted
                 ? verification.secret
                 : await this.cryptoService.hashPassword(verification.secret, null);
-        } else {
-            request.otp = verification.secret;
         }
 
         return request;

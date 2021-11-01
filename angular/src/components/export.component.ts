@@ -132,6 +132,8 @@ export class ExportComponent implements OnInit {
     protected async verifySecret(): Promise<boolean> {
         const verification: Verification = this.exportForm.get('secret').value;
         if (verification?.secret == null || verification.secret === '') {
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                this.i18nService.t('verificationCodeRequired'));
             return false;
         }
 
