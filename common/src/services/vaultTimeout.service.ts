@@ -98,6 +98,15 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
             return;
         }
 
+        if (await this.userService.getUsesCryptoAgent()) {
+            const pinSet = await this.isPinLockSet();
+            const pinLock = (pinSet[0] && this.pinProtectedKey != null) || pinSet[1];
+
+            if (!pinLock && !await this.isBiometricLockSet()) {
+                await this.logOut();
+            }
+        }
+
         this.biometricLocked = true;
         this.everBeenUnlocked = true;
         await this.cryptoService.clearKey(false);

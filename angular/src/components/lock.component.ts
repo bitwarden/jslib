@@ -59,6 +59,11 @@ export class LockComponent implements OnInit {
         this.biometricText = await this.storageService.get(ConstantsService.biometricText);
         this.email = await this.userService.getEmail();
 
+        // Users with crypto agent and without biometric or pin has no MP to unlock using
+        if (await this.userService.getUsesCryptoAgent() && !(this.biometricLock || this.pinLock)) {
+            await this.vaultTimeoutService.logOut();
+        }
+
         const webVaultUrl = this.environmentService.getWebVaultUrl();
         const vaultUrl = webVaultUrl === 'https://vault.bitwarden.com' ? 'https://bitwarden.com' : webVaultUrl;
         this.webVaultHostname = Utils.getHostname(vaultUrl);
