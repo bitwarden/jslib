@@ -256,7 +256,7 @@ export class UserService implements UserServiceAbstraction {
         if (verification?.secret == null || verification.secret === '') {
             const error = verification?.type === VerificationType.OTP
                 ? 'verificationCodeRequired'
-                : 'masterPassRequired'
+                : 'masterPassRequired';
             throw new Error(this.i18nService.t(error));
         }
 
