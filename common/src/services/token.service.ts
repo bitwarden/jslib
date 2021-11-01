@@ -40,9 +40,9 @@ export class TokenService implements TokenServiceAbstraction {
     }
 
     async setToken(token: string): Promise<void> {
-        this.stateService.setAccessToken(token, { storageLocation: StorageLocation.Memory });
+        await this.stateService.setAccessToken(token, { storageLocation: StorageLocation.Memory });
         if (!await this.skipTokenStorage()) {
-           this.stateService.setAccessToken(token, { storageLocation: StorageLocation.Disk });
+           await this.stateService.setAccessToken(token, { storageLocation: StorageLocation.Disk });
         }
     }
 
@@ -54,7 +54,7 @@ export class TokenService implements TokenServiceAbstraction {
         if (await this.skipTokenStorage()) {
             return;
         }
-        return this.stateService.setRefreshToken(refreshToken);
+        return await this.stateService.setRefreshToken(refreshToken);
     }
 
     async getRefreshToken(): Promise<string> {
@@ -81,16 +81,16 @@ export class TokenService implements TokenServiceAbstraction {
         await this.setClientSecret(clientSecret);
     }
 
-    setTwoFactorToken(token: string): Promise<any> {
-        return this.stateService.setTwoFactorToken(token);
+    async setTwoFactorToken(token: string): Promise<any> {
+        return await this.stateService.setTwoFactorToken(token);
     }
 
-    getTwoFactorToken(): Promise<string> {
-        return this.stateService.getTwoFactorToken();
+    async getTwoFactorToken(): Promise<string> {
+        return await this.stateService.getTwoFactorToken();
     }
 
-    clearTwoFactorToken(): Promise<any> {
-        return this.stateService.setTwoFactorToken(null);
+    async clearTwoFactorToken(): Promise<any> {
+        return await this.stateService.setTwoFactorToken(null);
     }
 
     async clearToken(): Promise<any> {
