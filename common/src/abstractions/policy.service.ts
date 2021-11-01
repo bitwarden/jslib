@@ -10,8 +10,6 @@ import { PolicyResponse } from '../models/response/policyResponse';
 import { PolicyType } from '../enums/policyType';
 
 export abstract class PolicyService {
-    policyCache: Policy[];
-
     clearCache: () => void;
     getAll: (type?: PolicyType) => Promise<Policy[]>;
     getPolicyForOrganization: (policyType: PolicyType, organizationId: string) => Promise<Policy>;

@@ -16,13 +16,13 @@ export class AppIdService implements AppIdServiceAbstraction {
     }
 
     private async makeAndGetAppId(key: string) {
-        const existingId = await this.storageService.get<string>(key);
+        const existingId = await this.storageService.get<string>('globals.' + key);
         if (existingId != null) {
             return existingId;
         }
 
         const guid = Utils.newGuid();
-        await this.storageService.save(key, guid);
+        await this.storageService.save('globals.' + key, guid);
         return guid;
     }
 }
