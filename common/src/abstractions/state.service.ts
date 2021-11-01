@@ -110,6 +110,7 @@ export abstract class StateService {
     getLegacyEtmKey: (options?: StorageOptions) => Promise<SymmetricCryptoKey>;
     getLocalData: (options?: StorageOptions) => Promise<any>;
     getLocale: (options?: StorageOptions) => Promise<string>;
+    getLoginRedirect: (options?: StorageOptions) => Promise<any>;
     getMainWindowSize: (options?: StorageOptions) => Promise<number>;
     getMinimizeOnCopyToClipboard: (options?: StorageOptions) => Promise<boolean>;
     getNeverDomains: (options?: StorageOptions) => Promise<{ [id: string]: any }>;
@@ -213,6 +214,7 @@ export abstract class StateService {
     setLegacyEtmKey: (value: SymmetricCryptoKey, options?: StorageOptions) => Promise<void>;
     setLocalData: (value: string, options?: StorageOptions) => Promise<void>;
     setLocale: (value: string, options?: StorageOptions) => Promise<void>;
+    setLoginRedirect: (value: any, options?: StorageOptions) => Promise<void>;
     setMainWindowSize: (value: number, options?: StorageOptions) => Promise<void>;
     setMinimizeOnCopyToClipboard: (value: boolean, options?: StorageOptions) => Promise<void>;
     setNeverDomains: (value: { [id: string]: any }, options?: StorageOptions) => Promise<void>;

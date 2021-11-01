@@ -340,6 +340,10 @@ export class StateService implements StateServiceAbstraction {
         return (await this.getAccount(options ?? { storageLocation: StorageLocation.Memory }))?.locale;
     }
 
+    async getLoginRedirect(options?: StorageOptions): Promise<string> {
+        return (await this.getAccount(options ?? { storageLocation: StorageLocation.Memory }))?.loginRedirect;
+    }
+
     async getMainWindowSize(options?: StorageOptions): Promise<number> {
         return (await this.getAccount(options ?? { storageLocation: StorageLocation.Memory }))?.mainWindowSize;
     }
@@ -883,6 +887,12 @@ export class StateService implements StateServiceAbstraction {
     async setLocale(value: string, options?: StorageOptions): Promise<void> {
         const account = await this.getAccount(options ?? { storageLocation: StorageLocation.Memory });
         account.locale = value;
+        await this.saveAccount(account, options ?? { storageLocation: StorageLocation.Memory });
+    }
+
+    async setLoginRedirect(value: any, options?: StorageOptions): Promise<void> {
+        const account = await this.getAccount(options ?? { storageLocation: StorageLocation.Memory });
+        account.loginRedirect = value;
         await this.saveAccount(account, options ?? { storageLocation: StorageLocation.Memory });
     }
 

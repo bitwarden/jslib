@@ -88,6 +88,7 @@ export class Account {
     lastSync: string;
     legacyEtmKey: SymmetricCryptoKey;
     localData: any;
+    loginRedirect: any;
     mainWindowSize: number;
     minimizeOnCopyToClipboard: boolean;
     neverDomains: string[];
