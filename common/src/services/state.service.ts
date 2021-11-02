@@ -459,7 +459,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getTwoFactorToken(options?: StorageOptions): Promise<string> {
-        return (await this.getAccount(options ?? { storageLocation: StorageLocation.Memory }))?.twoFactorToken;
+        return (await this.getGlobals(options ?? { storageLocation: StorageLocation.Memory }))?.twoFactorToken;
     }
 
     async getVaultTimeout(options?: StorageOptions): Promise<number> {
@@ -1081,9 +1081,9 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async setTwoFactorToken(value: string, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(options ?? { storageLocation: StorageLocation.Memory });
-        account.twoFactorToken = value;
-        await this.saveAccount(account, options ?? { storageLocation: StorageLocation.Memory });
+        const globals = await this.getGlobals(options ?? { storageLocation: StorageLocation.Memory });
+        globals.twoFactorToken = value;
+        await this.saveGlobals(globals, options ?? { storageLocation: StorageLocation.Memory });
     }
 
     async setVaultTimeout(value: number, options?: StorageOptions): Promise<void> {

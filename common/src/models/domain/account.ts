@@ -116,7 +116,6 @@ export class Account {
     ssoState: string;
     ssoOrganizationIdentifier: string;
     theme: string;
-    twoFactorToken: string;
     vaultTimeout: number;
     vaultTimeoutAction: string;
     clearClipboard: number;
