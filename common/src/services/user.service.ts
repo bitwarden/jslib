@@ -31,7 +31,7 @@ export class UserService implements UserServiceAbstraction {
     private kdfIterations: number;
     private emailVerified: boolean;
     private forcePasswordReset: boolean;
-    private usesCryptoAgent: boolean;
+    private usesCryptoAgent: boolean = false;
 
     constructor(private tokenService: TokenService, private storageService: StorageService) { }
 
