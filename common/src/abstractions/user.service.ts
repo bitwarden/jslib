@@ -36,6 +36,4 @@ export abstract class UserService {
     getAllProviders: () => Promise<Provider[]>;
     replaceProviders: (providers: { [id: string]: ProviderData; }) => Promise<any>;
     clearProviders: (userId: string) => Promise<any>;
-    buildVerificationRequest: <T extends PasswordVerificationRequest> (verification: Verification,
-        requestClass?: new () => T, alreadyEncrypted?: boolean) => Promise<T>;
 }

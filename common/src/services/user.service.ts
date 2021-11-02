@@ -249,29 +249,4 @@ export class UserService implements UserServiceAbstraction {
     async clearProviders(userId: string): Promise<any> {
         await this.storageService.remove(Keys.providersPrefix + userId);
     }
-
-    async buildVerificationRequest<T extends PasswordVerificationRequest>
-        (verification: Verification, requestClass?: new () => T, alreadyEncrypted?: boolean) {
-
-        if (verification?.secret == null || verification.secret === '') {
-            const error = verification?.type === VerificationType.OTP
-                ? 'verificationCodeRequired'
-                : 'masterPassRequired';
-            throw new Error(this.i18nService.t(error));
-        }
-
-        const request = requestClass != null
-            ? new requestClass()
-            : new PasswordVerificationRequest() as T;
-
-        if (verification.type === VerificationType.OTP) {
-            request.otp = verification.secret;
-        } else {
-            request.masterPasswordHash = alreadyEncrypted
-                ? verification.secret
-                : await this.cryptoService.hashPassword(verification.secret, null);
-        }
-
-        return request;
-    }
 }
