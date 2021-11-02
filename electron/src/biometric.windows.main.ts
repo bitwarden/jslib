@@ -25,9 +25,9 @@ export default class BiometricWindowsMain implements BiometricMain {
             // store error state so we can let the user know on the settings page
             this.isError = true;
         }
-        this.stateService.setEnableBiometric(supportsBiometric);
-        this.stateService.setBiometricText('unlockWithWindowsHello');
-        this.stateService.setNoAutoPromptBiometricsText('noAutoPromptWindowsHello');
+        await this.stateService.setEnableBiometric(supportsBiometric);
+        await this.stateService.setBiometricText('unlockWithWindowsHello');
+        await this.stateService.setNoAutoPromptBiometricsText('noAutoPromptWindowsHello');
 
         ipcMain.on('biometric', async (event: any, message: any) => {
             event.returnValue = await this.authenticateBiometric();

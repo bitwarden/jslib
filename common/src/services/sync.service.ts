@@ -238,7 +238,7 @@ export class SyncService implements SyncServiceAbstraction {
 
     async syncDeleteSend(notification: SyncSendNotification): Promise<boolean> {
         this.syncStarted();
-        if (this.stateService.getIsAuthenticated()) {
+        if (await this.stateService.getIsAuthenticated()) {
             await this.sendService.delete(notification.id);
             this.messagingService.send('syncedDeletedSend', { sendId: notification.id });
             this.syncCompleted(true);

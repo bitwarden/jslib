@@ -65,7 +65,7 @@ export class EventService implements EventServiceAbstraction {
     }
 
     async uploadEvents(): Promise<any> {
-        const authed = this.stateService.getIsAuthenticated();
+        const authed = await this.stateService.getIsAuthenticated();
         if (!authed) {
             return;
         }

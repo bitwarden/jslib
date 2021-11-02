@@ -21,7 +21,7 @@ export class TokenService implements TokenServiceAbstraction {
         if (await this.skipTokenStorage() || clientId == null) {
             return;
         }
-        return this.stateService.setApiKeyClientId(clientId);
+        return await this.stateService.setApiKeyClientId(clientId);
     }
 
     async getClientId(): Promise<string> {
@@ -32,7 +32,7 @@ export class TokenService implements TokenServiceAbstraction {
         if (await this.skipTokenStorage() || clientSecret == null) {
             return;
         }
-        return this.stateService.setApiKeyClientSecret(clientSecret);
+        return await this.stateService.setApiKeyClientSecret(clientSecret);
     }
 
     async getClientSecret(): Promise<string> {

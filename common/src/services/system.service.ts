@@ -49,7 +49,7 @@ export class SystemService implements SystemServiceAbstraction {
         }
     }
 
-    clearClipboard(clipboardValue: string, timeoutMs: number = null): void {
+    async clearClipboard(clipboardValue: string, timeoutMs: number = null): Promise<void> {
         if (this.clearClipboardTimeout != null) {
             clearTimeout(this.clearClipboardTimeout);
             this.clearClipboardTimeout = null;
@@ -57,7 +57,7 @@ export class SystemService implements SystemServiceAbstraction {
         if (Utils.isNullOrWhitespace(clipboardValue)) {
             return;
         }
-        this.stateService.getClearClipboard().then(clearSeconds => {
+        await this.stateService.getClearClipboard().then(clearSeconds => {
             if (clearSeconds == null) {
                 return;
             }

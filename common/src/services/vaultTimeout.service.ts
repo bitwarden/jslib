@@ -44,7 +44,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     // Keys aren't stored for a device that is locked or logged out.
     async isLocked(): Promise<boolean> {
         // Handle never lock startup situation
-        if (await this.cryptoService.hasKeyStored(KeySuffixOptions.Auto) && !this.stateService.getEverBeenUnlocked()) {
+        if (await this.cryptoService.hasKeyStored(KeySuffixOptions.Auto) && !(await this.stateService.getEverBeenUnlocked())) {
             await this.cryptoService.getKey(KeySuffixOptions.Auto);
         }
 
@@ -92,16 +92,16 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
             return;
         }
 
-        this.stateService.setBiometricLocked(true);
-        this.stateService.setEverBeenUnlocked(true);
+        await this.stateService.setBiometricLocked(true);
+        await this.stateService.setEverBeenUnlocked(true);
         await this.cryptoService.clearKey(false);
         await this.cryptoService.clearOrgKeys(true);
         await this.cryptoService.clearKeyPair(true);
         await this.cryptoService.clearEncKey(true);
 
-        this.folderService.clearCache();
-        this.cipherService.clearCache();
-        this.collectionService.clearCache();
+        await this.folderService.clearCache();
+        await this.cipherService.clearCache();
+        await this.collectionService.clearCache();
         this.searchService.clearIndex();
         this.messagingService.send('locked');
         if (this.lockedCallback != null) {

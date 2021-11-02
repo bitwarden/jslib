@@ -364,7 +364,7 @@ export class CryptoService implements CryptoServiceAbstraction {
         }
     }
 
-    clearKeyPair(memoryOnly?: boolean): Promise<any> {
+    async clearKeyPair(memoryOnly?: boolean): Promise<any> {
         const keysToClear: Promise<void>[] = [
             this.stateService.setDecryptedPrivateKey(null),
             this.stateService.setPublicKey(null),
