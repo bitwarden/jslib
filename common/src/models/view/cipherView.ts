@@ -59,7 +59,7 @@ export class CipherView implements View {
         this.reprompt = c.reprompt ?? CipherRepromptType.None;
     }
 
-    private get item(): ItemView {
+    private get item() {
         switch (this.type) {
             case CipherType.Login:
                 return this.login;
@@ -126,7 +126,8 @@ export class CipherView implements View {
             return null;
         }
 
-        return this.item[linkedFieldOption.propertyKey as keyof ItemView];
+        const item = this.item;
+        return this.item[linkedFieldOption.propertyKey as keyof typeof item];
     }
 
     linkedFieldI18nKey(id: LinkedIdType): string {
