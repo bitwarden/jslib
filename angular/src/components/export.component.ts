@@ -6,7 +6,6 @@ import {
 } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 
-import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { EventService } from 'jslib-common/abstractions/event.service';
 import { ExportService } from 'jslib-common/abstractions/export.service';
@@ -14,14 +13,10 @@ import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { LogService } from 'jslib-common/abstractions/log.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
+import { UserVerificationService } from 'jslib-common/abstractions/userVerification.service';
 
 import { EventType } from 'jslib-common/enums/eventType';
 import { PolicyType } from 'jslib-common/enums/policyType';
-import { VerificationType } from 'jslib-common/enums/verificationType';
-
-import { VerifyOtpRequest } from 'jslib-common/models/request/account/verifyOtpRequest';
-
-import { Verification } from 'jslib-common/types/verification';
 
 @Directive()
 export class ExportComponent implements OnInit {
@@ -44,7 +39,8 @@ export class ExportComponent implements OnInit {
     constructor(protected cryptoService: CryptoService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected exportService: ExportService,
         protected eventService: EventService, private policyService: PolicyService, protected win: Window,
-        private logService: LogService, private apiService: ApiService, private fb: FormBuilder) { }
+        private logService: LogService, private userVerificationService: UserVerificationService,
+        private fb: FormBuilder) { }
 
     async ngOnInit() {
         await this.checkExportDisabled();
@@ -72,7 +68,8 @@ export class ExportComponent implements OnInit {
             return;
         }
 
-        if (!await this.verifySecret()) {
+        const secret = this.exportForm.get('secret').value;
+        if (!await this.userVerificationService.verifyUser(secret)) {
             return;
         }
 
@@ -127,34 +124,6 @@ export class ExportComponent implements OnInit {
 
     protected async collectEvent(): Promise<any> {
         await this.eventService.collect(EventType.User_ClientExportedVault);
-    }
-
-    protected async verifySecret(): Promise<boolean> {
-        const verification: Verification = this.exportForm.get('secret').value;
-        if (verification?.secret == null || verification.secret === '') {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('verificationCodeRequired'));
-            return false;
-        }
-
-        if (verification.type === VerificationType.OTP) {
-            const request = new VerifyOtpRequest(verification.secret);
-            try {
-                await this.apiService.postAccountVerifyOtp(request);
-            } catch {
-                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                    this.i18nService.t('invalidVerificationCode'));
-                return false;
-            }
-        } else {
-            const passwordValid = await this.cryptoService.compareAndUpdateKeyHash(verification.secret, null);
-            if (!passwordValid) {
-                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                    this.i18nService.t('invalidMasterPassword'));
-                return false;
-            }
-        }
-        return true;
     }
 
     get format() {

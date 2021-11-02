@@ -1,19 +1,23 @@
+import { UserVerificationService as UserVerificationServiceAbstraction } from '../abstractions/userVerification.service';
+
+import { ApiService } from '../abstractions/api.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { I18nService } from '../abstractions/i18n.service';
-import { UserVerificationService as UserVerificationServiceAbstraction } from '../abstractions/userVerification.service';
+import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 
 import { VerificationType } from '../enums/verificationType';
 
+import { VerifyOtpRequest } from '../models/request/account/verifyOtpRequest';
 import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
 
 import { Verification } from '../types/verification';
 
 export class UserVerificationService implements UserVerificationServiceAbstraction {
-    constructor(private cryptoService: CryptoService) { }
+    constructor(private cryptoService: CryptoService, private i18nService: I18nService,
+        private platformUtilsService: PlatformUtilsService, private apiService: ApiService) { }
 
-    async buildRequest<T extends PasswordVerificationRequest>
-        (verification: Verification, requestClass?: new () => T, alreadyEncrypted?: boolean) {
-
+    async buildRequest<T extends PasswordVerificationRequest>(verification: Verification,
+        requestClass?: new () => T, alreadyEncrypted?: boolean) {
         if (verification?.secret == null || verification.secret === '') {
             throw new Error('No secret provided for verification.');
         }
@@ -31,5 +35,30 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
         }
 
         return request;
+    }
+
+    async verifyUser(verification: Verification): Promise<boolean> {
+        if (verification?.secret == null || verification.secret === '') {
+            throw new Error('No secret provided for verification.');
+        }
+
+        if (verification.type === VerificationType.OTP) {
+            const request = new VerifyOtpRequest(verification.secret);
+            try {
+                await this.apiService.postAccountVerifyOtp(request);
+            } catch {
+                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                    this.i18nService.t('invalidVerificationCode'));
+                return false;
+            }
+        } else {
+            const passwordValid = await this.cryptoService.compareAndUpdateKeyHash(verification.secret, null);
+            if (!passwordValid) {
+                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
+                    this.i18nService.t('invalidMasterPassword'));
+                return false;
+            }
+        }
+        return true;
     }
 }
