@@ -1,5 +1,3 @@
-import { CryptoService } from '../abstractions/crypto.service';
-import { I18nService } from '../abstractions/i18n.service';
 import { StorageService } from '../abstractions/storage.service';
 import { TokenService } from '../abstractions/token.service';
 import { UserService as UserServiceAbstraction } from '../abstractions/user.service';
@@ -8,14 +6,9 @@ import { OrganizationData } from '../models/data/organizationData';
 import { Organization } from '../models/domain/organization';
 
 import { KdfType } from '../enums/kdfType';
-import { VerificationType } from '../enums/verificationType';
 
 import { ProviderData } from '../models/data/providerData';
 import { Provider } from '../models/domain/provider';
-
-import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
-
-import { Verification } from '../types/verification';
 
 const Keys = {
     userId: 'userId',
@@ -40,8 +33,7 @@ export class UserService implements UserServiceAbstraction {
     private forcePasswordReset: boolean;
     private usesCryptoAgent: boolean;
 
-    constructor(private tokenService: TokenService, private storageService: StorageService,
-        private cryptoService: CryptoService, private i18nService: I18nService) { }
+    constructor(private tokenService: TokenService, private storageService: StorageService) { }
 
     async setInformation(userId: string, email: string, kdf: KdfType, kdfIterations: number): Promise<any> {
         this.email = email;
