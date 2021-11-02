@@ -17,8 +17,7 @@ export class PasswordRepromptService implements PasswordRepromptServiceAbstracti
     }
 
     async showPasswordPrompt() {
-        const passwordRepromptDisabled = await this.userService.getUsesCryptoAgent();
-        if (passwordRepromptDisabled) {
+        if (!await this.enabled()) {
             return true;
         }
 
@@ -30,5 +29,9 @@ export class PasswordRepromptService implements PasswordRepromptServiceAbstracti
 
         const result = await ref.onClosedPromise();
         return result === true;
+    }
+
+    async enabled() {
+        return !await this.userService.getUsesCryptoAgent();
     }
 }
