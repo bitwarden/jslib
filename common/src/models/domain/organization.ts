@@ -34,6 +34,7 @@ export class Organization {
     providerId: string;
     providerName: string;
     isProviderUser: boolean;
+    cryptoAgentUrl: string;
 
     constructor(obj?: OrganizationData) {
         if (obj == null) {
@@ -68,6 +69,7 @@ export class Organization {
         this.providerId = obj.providerId;
         this.providerName = obj.providerName;
         this.isProviderUser = obj.isProviderUser;
+        this.cryptoAgentUrl = obj.cryptoAgentUrl;
     }
 
     get canAccess() {

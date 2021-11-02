@@ -243,6 +243,15 @@ export class TokenService implements TokenServiceAbstraction {
         return decoded.iss as string;
     }
 
+    getIsExternal(): boolean {
+        const decoded = this.decodeToken();
+        if (!Array.isArray(decoded.amr)) {
+            throw new Error('No amr found');
+        }
+
+        return decoded.amr.includes('external');
+    }
+
     private async storeTokenValue(key: string, value: string) {
         if (await this.skipTokenStorage()) {
             // if we have a vault timeout and the action is log out, don't store token

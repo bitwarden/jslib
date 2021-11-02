@@ -10,6 +10,7 @@ import { SendService } from '../abstractions/send.service';
 import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
 import { SyncService as SyncServiceAbstraction } from '../abstractions/sync.service';
+import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
 
 import { CipherData } from '../models/data/cipherData';
@@ -46,6 +47,7 @@ export class SyncService implements SyncServiceAbstraction {
         private collectionService: CollectionService, private storageService: StorageService,
         private messagingService: MessagingService, private policyService: PolicyService,
         private sendService: SendService, private logService: LogService,
+        private tokenService: TokenService,
         private logoutCallback: (expired: boolean) => Promise<void>) {
     }
 
@@ -317,6 +319,13 @@ export class SyncService implements SyncServiceAbstraction {
                 organizations[o.id].isProviderUser = true;
             }
         });
+
+        const orgUsesCryptoAgent = response.organizations.some(o => o.usesCryptoAgent);
+        const userIsNotUsingCryptoAgent = !response.usesCryptoAgent;
+        if (this.tokenService.getIsExternal() && orgUsesCryptoAgent && userIsNotUsingCryptoAgent) {
+            this.messagingService.send('convertAccountToCryptoAgent');
+        }
+
         return Promise.all([
             this.userService.replaceOrganizations(organizations),
             this.userService.replaceProviders(providers),
