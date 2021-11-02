@@ -91,6 +91,10 @@ export class StateService implements StateServiceAbstraction {
         return (await this.getAccount(options ?? { storageLocation: StorageLocation.Memory }))?.apiKeyClientSecret;
     }
 
+    async getAutoConfirmFingerPrints(options?: StorageOptions): Promise<boolean> {
+        return (await this.getAccount(options ?? { storageLocation: StorageLocation.Disk})).autoConfirmFingerPrints ?? true;
+    }
+
     async getAutoFillOnPageLoadDefault(options?: StorageOptions): Promise<boolean> {
         return (await this.getAccount(options ?? { storageLocation: StorageLocation.Memory }))?.autoFillOnPageLoadDefault ?? false;
     }
@@ -517,6 +521,12 @@ export class StateService implements StateServiceAbstraction {
         const account = await this.getAccount(options ?? { storageLocation: StorageLocation.Memory });
         account.apiKeyClientSecret = value;
         await this.saveAccount(account, options ?? { storageLocation: StorageLocation.Memory });
+    }
+
+    async setAutoConfirmFingerprints(value: boolean, options?: StorageOptions): Promise<void> {
+        const account = await this.getAccount(options ?? { storageLocation: StorageLocation.Disk });
+        account.autoConfirmFingerPrints = value;
+        await this.saveAccount(account, options ?? { storageLocation: StorageLocation.Disk });
     }
 
     async setAutoFillOnPageLoadDefault(value: boolean, options?: StorageOptions): Promise<void> {

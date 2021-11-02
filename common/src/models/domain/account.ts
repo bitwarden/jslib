@@ -132,6 +132,7 @@ export class Account {
     enableGravitars: boolean;
     addEditCipherInfo: any;
     authenticationStatus: AuthenticationStatus;
+    autoConfirmFingerPrints: boolean;
     private hasPremiumPersonally: boolean;
 
     constructor(userId: string, userEmail: string,

@@ -37,6 +37,7 @@ export abstract class StateService {
     getApiKeyClientId: (options?: StorageOptions) => Promise<string>;
     getApiKeyClientSecret: (options?: StorageOptions) => Promise<string>;
     getAutoFillOnPageLoadDefault: (options?: StorageOptions) => Promise<boolean>;
+    getAutoConfirmFingerPrints: (options?: StorageOptions) => Promise<boolean>;
     getBiometricAwaitingAcceptance: (options?: StorageOptions) => Promise<boolean>;
     getBiometricFingerprintValidated: (options?: StorageOptions) => Promise<boolean>;
     getBiometricLocked: (options?: StorageOptions) => Promise<boolean>;
@@ -142,6 +143,7 @@ export abstract class StateService {
     setAlwaysShowDock: (value: boolean, options?: StorageOptions) => Promise<void>;
     setApiKeyClientId: (value: string, options?: StorageOptions) => Promise<void>;
     setApiKeyClientSecret: (value: string, options?: StorageOptions) => Promise<void>;
+    setAutoConfirmFingerprints: (value: boolean, options?: StorageOptions) => Promise<void>;
     setAutoFillOnPageLoadDefault: (value: boolean, options?: StorageOptions) => Promise<void>;
     setBiometricAwaitingAcceptance: (value: boolean, options?: StorageOptions) => Promise<void>;
     setBiometricFingerprintValidated: (value: boolean, options?: StorageOptions) => Promise<void>;
