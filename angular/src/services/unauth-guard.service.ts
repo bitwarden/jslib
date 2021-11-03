@@ -25,5 +25,6 @@ export class UnauthGuardService implements CanActivate {
             }
             return false;
         }
+        return true;
     }
 }
