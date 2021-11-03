@@ -7,7 +7,7 @@ import { TreeNode } from '../models/domain/treeNode';
 import { FolderView } from '../models/view/folderView';
 
 export abstract class FolderService {
-    clearCache: () => Promise<void>;
+    clearCache: (userId?: string) => Promise<void>;
     encrypt: (model: FolderView, key?: SymmetricCryptoKey) => Promise<Folder>;
     get: (id: string) => Promise<Folder>;
     getAll: () => Promise<Folder[]>;

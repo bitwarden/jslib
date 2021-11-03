@@ -6,7 +6,7 @@ import { TreeNode } from '../models/domain/treeNode';
 import { CollectionView } from '../models/view/collectionView';
 
 export abstract class CollectionService {
-    clearCache: () => Promise<void>;
+    clearCache: (userId?: string) => Promise<void>;
     encrypt: (model: CollectionView) => Promise<Collection>;
     decryptMany: (collections: Collection[]) => Promise<CollectionView[]>;
     get: (id: string) => Promise<Collection>;

@@ -17,7 +17,7 @@ export abstract class CryptoService {
     setEncPrivateKey: (encPrivateKey: string) => Promise<void>;
     setOrgKeys: (orgs: ProfileOrganizationResponse[], providerOrgs: ProfileProviderOrganizationResponse[]) => Promise<void>;
     setProviderKeys: (orgs: ProfileProviderResponse[]) => Promise<void>;
-    getKey: (keySuffix?: KeySuffixOptions) => Promise<SymmetricCryptoKey>;
+    getKey: (keySuffix?: KeySuffixOptions, userId?: string) => Promise<SymmetricCryptoKey>;
     getKeyFromStorage: (keySuffix: KeySuffixOptions) => Promise<SymmetricCryptoKey>;
     getKeyHash: () => Promise<string>;
     compareAndUpdateKeyHash: (masterPassword: string, key: SymmetricCryptoKey) => Promise<boolean>;
@@ -30,13 +30,13 @@ export abstract class CryptoService {
     getProviderKey: (providerId: string) => Promise<SymmetricCryptoKey>;
     hasKey: () => Promise<boolean>;
     hasKeyInMemory: () => Promise<boolean>;
-    hasKeyStored: (keySuffix?: KeySuffixOptions) => Promise<boolean>;
+    hasKeyStored: (keySuffix?: KeySuffixOptions, userId?: string) => Promise<boolean>;
     hasEncKey: () => Promise<boolean>;
-    clearKey: (clearSecretStorage?: boolean) => Promise<any>;
+    clearKey: (clearSecretStorage?: boolean, userId?: string) => Promise<any>;
     clearKeyHash: () => Promise<any>;
-    clearEncKey: (memoryOnly?: boolean) => Promise<any>;
-    clearKeyPair: (memoryOnly?: boolean) => Promise<any>;
-    clearOrgKeys: (memoryOnly?: boolean) => Promise<any>;
+    clearEncKey: (memoryOnly?: boolean, userId?: string) => Promise<any>;
+    clearKeyPair: (memoryOnly?: boolean, userId?: string) => Promise<any>;
+    clearOrgKeys: (memoryOnly?: boolean, userId?: string) => Promise<any>;
     clearProviderKeys: (memoryOnly?: boolean) => Promise<any>;
     clearPinProtectedKey: () => Promise<any>;
     clearKeys: () => Promise<any>;

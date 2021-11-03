@@ -12,6 +12,7 @@ import { VaultTimeoutService as VaultTimeoutServiceAbstraction } from '../abstra
 import { KeySuffixOptions } from '../enums/keySuffixOptions';
 
 import { PolicyType } from '../enums/policyType';
+import { StorageLocation } from '../enums/storageLocation';
 
 
 export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
@@ -42,10 +43,11 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     }
 
     // Keys aren't stored for a device that is locked or logged out.
-    async isLocked(): Promise<boolean> {
-        // Handle never lock startup situation
-        if (await this.cryptoService.hasKeyStored(KeySuffixOptions.Auto) && !(await this.stateService.getEverBeenUnlocked())) {
-            await this.cryptoService.getKey(KeySuffixOptions.Auto);
+    async isLocked(userId?: string): Promise<boolean> {
+        const neverLock = await this.cryptoService.hasKeyStored(KeySuffixOptions.Auto, userId) &&
+            !(await this.stateService.getEverBeenUnlocked(userId ? {userId: userId, storageLocation: StorageLocation.Disk} : null));
+        if (neverLock) {
+            return (await this.cryptoService.getKey(KeySuffixOptions.Auto, userId)) != null;
         }
 
         return !(await this.cryptoService.hasKeyInMemory());
@@ -86,24 +88,24 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         }
     }
 
-    async lock(allowSoftLock = false): Promise<void> {
-        const authed = await this.stateService.getIsAuthenticated();
+    async lock(allowSoftLock = false, userId?: string): Promise<void> {
+        const authed = await this.stateService.getIsAuthenticated({ userId: userId });
         if (!authed) {
             return;
         }
 
-        await this.stateService.setBiometricLocked(true);
-        await this.stateService.setEverBeenUnlocked(true);
-        await this.cryptoService.clearKey(false);
-        await this.cryptoService.clearOrgKeys(true);
-        await this.cryptoService.clearKeyPair(true);
-        await this.cryptoService.clearEncKey(true);
+        await this.stateService.setBiometricLocked(true, { userId: userId });
+        await this.stateService.setEverBeenUnlocked(true, { userId: userId });
+        await this.cryptoService.clearKey(false, userId);
+        await this.cryptoService.clearOrgKeys(true, userId);
+        await this.cryptoService.clearKeyPair(true, userId);
+        await this.cryptoService.clearEncKey(true, userId);
 
-        await this.folderService.clearCache();
-        await this.cipherService.clearCache();
-        await this.collectionService.clearCache();
+        await this.folderService.clearCache(userId);
+        await this.cipherService.clearCache(userId);
+        await this.collectionService.clearCache(userId);
         this.searchService.clearIndex();
-        this.messagingService.send('locked');
+        this.messagingService.send('locked', { userId });
         if (this.lockedCallback != null) {
             await this.lockedCallback();
         }

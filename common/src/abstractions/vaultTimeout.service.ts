@@ -1,7 +1,7 @@
 export abstract class VaultTimeoutService {
-    isLocked: () => Promise<boolean>;
+    isLocked: (userId?: string) => Promise<boolean>;
     checkVaultTimeout: () => Promise<void>;
-    lock: (allowSoftLock?: boolean) => Promise<void>;
+    lock: (allowSoftLock?: boolean, userId?: string) => Promise<void>;
     logOut: () => Promise<void>;
     setVaultTimeoutOptions: (vaultTimeout: number, vaultTimeoutAction: string) => Promise<void>;
     getVaultTimeout: () => Promise<number>;

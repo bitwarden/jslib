@@ -81,8 +81,8 @@ export class CipherService implements CipherServiceAbstraction {
         }
     }
 
-    async clearCache(): Promise<void> {
-        await this.clearDecryptedCiphersState();
+    async clearCache(userId?: string): Promise<void> {
+        await this.clearDecryptedCiphersState(userId);
     }
 
     async encrypt(model: CipherView, key?: SymmetricCryptoKey, originalCipher: Cipher = null): Promise<Cipher> {
@@ -1098,8 +1098,8 @@ export class CipherService implements CipherServiceAbstraction {
         await this.stateService.setEncryptedCiphers(null);
     }
 
-    private async clearDecryptedCiphersState() {
-        await this.stateService.setDecryptedCiphers(null);
+    private async clearDecryptedCiphersState(userId?: string) {
+        await this.stateService.setDecryptedCiphers(null, { userId });
         this.clearSortedCiphers();
     }
 
