@@ -57,6 +57,7 @@ export class LoginCommand {
 
         let ssoCodeVerifier: string = null;
         let ssoCode: string = null;
+        let orgIdentifier: string = null;
 
         let clientId: string = null;
         let clientSecret: string = null;
@@ -79,7 +80,9 @@ export class LoginCommand {
             const codeVerifierHash = await this.cryptoFunctionService.hash(ssoCodeVerifier, 'sha256');
             const codeChallenge = Utils.fromBufferToUrlB64(codeVerifierHash);
             try {
-                ssoCode = await this.getSsoCode(codeChallenge, state);
+                const ssoParams = await this.openSsoPrompt(codeChallenge, state);
+                ssoCode = ssoParams.ssoCode;
+                orgIdentifier = ssoParams.orgIdentifier;
             } catch {
                 return Response.badRequest('Something went wrong. Try again.');
             }
@@ -151,7 +154,8 @@ export class LoginCommand {
                 if (clientId != null && clientSecret != null) {
                     response = await this.authService.logInApiKey(clientId, clientSecret);
                 } else if (ssoCode != null && ssoCodeVerifier != null) {
-                    response = await this.authService.logInSso(ssoCode, ssoCodeVerifier, this.ssoRedirectUri);
+                    response = await this.authService.logInSso(ssoCode, ssoCodeVerifier, this.ssoRedirectUri,
+                        orgIdentifier);
                 } else {
                     response = await this.authService.logIn(email, password);
                 }
@@ -220,8 +224,9 @@ export class LoginCommand {
 
                     if (twoFactorToken == null && response.twoFactorProviders.size > 1 &&
                         selectedProvider.type === TwoFactorProviderType.Email) {
-                        const emailReq = new TwoFactorEmailRequest(this.authService.email,
-                            this.authService.masterPasswordHash);
+                        const emailReq = new TwoFactorEmailRequest();
+                        emailReq.email = this.authService.email;
+                        emailReq.masterPasswordHash = this.authService.masterPasswordHash;
                         await this.apiService.postTwoFactorEmail(emailReq);
                     }
 
@@ -432,13 +437,14 @@ export class LoginCommand {
         };
     }
 
-    private async getSsoCode(codeChallenge: string, state: string): Promise<string> {
+    private async openSsoPrompt(codeChallenge: string, state: string): Promise<{ ssoCode: string, orgIdentifier: string }> {
         return new Promise((resolve, reject) => {
             const callbackServer = http.createServer((req, res) => {
                 const urlString = 'http://localhost' + req.url;
                 const url = new URL(urlString);
                 const code = url.searchParams.get('code');
                 const receivedState = url.searchParams.get('state');
+                const orgIdentifier = this.getOrgIdentifierFromState(receivedState);
                 res.setHeader('Content-Type', 'text/html');
                 if (code != null && receivedState != null && this.checkState(receivedState, state)) {
                     res.writeHead(200);
@@ -446,7 +452,10 @@ export class LoginCommand {
                         '<h1>Successfully authenticated with the Bitwarden CLI</h1>' +
                         '<p>You may now close this tab and return to the terminal.</p>' +
                         '</body></html>');
-                    callbackServer.close(() => resolve(code));
+                    callbackServer.close(() => resolve({
+                        ssoCode: code,
+                        orgIdentifier: orgIdentifier,
+                    }));
                 } else {
                     res.writeHead(400);
                     res.end('<html><head><title>Failed | Bitwarden CLI</title></head><body>' +
@@ -476,6 +485,15 @@ export class LoginCommand {
                 reject();
             }
         });
+    }
+
+    private getOrgIdentifierFromState(state: string): string {
+        if (state === null || state === undefined) {
+            return null;
+        }
+
+        const stateSplit = state.split('_identifier=');
+        return stateSplit.length > 1 ? stateSplit[1] : null;
     }
 
     private checkState(state: string, checkState: string): boolean {
