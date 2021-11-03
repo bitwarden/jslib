@@ -410,6 +410,10 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/verify-otp', request, true, false);
     }
 
+    postConvertToCryptoAgent(): Promise<void> {
+        return this.send('POST', '/accounts/convert-to-crypto-agent', null, true, false);
+    }
+
     // Folder APIs
 
     async getFolder(id: string): Promise<FolderResponse> {

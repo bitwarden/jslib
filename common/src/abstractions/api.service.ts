@@ -202,6 +202,7 @@ export abstract class ApiService {
     putUpdateTempPassword: (request: UpdateTempPasswordRequest) => Promise<any>;
     postAccountRequestOtp: () => Promise<void>;
     postAccountVerifyOtp: (request: VerifyOtpRequest) => Promise<void>;
+    postConvertToCryptoAgent: () => Promise<void>;
 
     getFolder: (id: string) => Promise<FolderResponse>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
