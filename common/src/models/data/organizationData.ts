@@ -33,6 +33,7 @@ export class OrganizationData {
     providerId: string;
     providerName: string;
     isProviderUser: boolean;
+    usesCryptoAgent: boolean;
     cryptoAgentUrl: string;
 
     constructor(response: ProfileOrganizationResponse) {
@@ -63,6 +64,7 @@ export class OrganizationData {
         this.hasPublicAndPrivateKeys = response.hasPublicAndPrivateKeys;
         this.providerId = response.providerId;
         this.providerName = response.providerName;
+        this.usesCryptoAgent = response.usesCryptoAgent;
         this.cryptoAgentUrl = response.cryptoAgentUrl;
     }
 }

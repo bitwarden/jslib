@@ -34,6 +34,7 @@ export class Organization {
     providerId: string;
     providerName: string;
     isProviderUser: boolean;
+    usesCryptoAgent: boolean;
     cryptoAgentUrl: string;
 
     constructor(obj?: OrganizationData) {
@@ -69,6 +70,7 @@ export class Organization {
         this.providerId = obj.providerId;
         this.providerName = obj.providerName;
         this.isProviderUser = obj.isProviderUser;
+        this.usesCryptoAgent = obj.cryptoAgentUrl
         this.cryptoAgentUrl = obj.cryptoAgentUrl;
     }
 
