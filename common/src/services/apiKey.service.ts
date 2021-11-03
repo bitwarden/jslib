@@ -5,8 +5,10 @@ import { TokenService } from '../abstractions/token.service';
 import { Utils } from '../misc/utils';
 
 const Keys = {
-    clientId: 'clientId',
-    clientSecret: 'clientSecret',
+    clientIdOld: 'clientId', // TODO: remove this migration when we are confident existing api keys are all migrated. Probably 1-2 releases.
+    clientId: 'apikey_clientId',
+    clientSecretOld: 'clientSecret', // TODO: remove this migration when we are confident existing api keys are all migrated. Probably 1-2 releases.
+    clientSecret: 'apikey_clientSecret',
     entityType: 'entityType',
     entityId: 'entityId',
 };
@@ -19,6 +21,22 @@ export class ApiKeyService implements ApiKeyServiceAbstraction {
     private entityId: string;
 
     constructor(private tokenService: TokenService, private storageService: StorageService) { }
+
+    // TODO: remove this migration when we are confident existing api keys are all migrated. Probably 1-2 releases.
+    async migrateApiKeyStorage() {
+        const oldClientId = await this.storageService.get<string>(Keys.clientIdOld);
+        const oldClientSecret = await this.storageService.get<string>(Keys.clientSecretOld);
+
+        if (oldClientId != null) {
+            await this.storageService.save(Keys.clientId, oldClientId);
+            await this.storageService.remove(Keys.clientIdOld);
+        }
+
+        if (oldClientSecret != null) {
+            await this.storageService.save(Keys.clientSecret, oldClientSecret);
+            await this.storageService.remove(Keys.clientSecretOld);
+        }
+    }
 
     async setInformation(clientId: string, clientSecret: string) {
         this.clientId = clientId;
