@@ -607,7 +607,6 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async setCryptoMasterKey(value: SymmetricCryptoKey, options?: StorageOptions): Promise<void> {
-        options = this.reconcileOptions(options, this.defaultInMemoryOptions);
         const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
         account.cryptoMasterKey = value;
         await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
@@ -621,7 +620,7 @@ export class StateService implements StateServiceAbstraction {
             const account = await this.getAccount(this.reconcileOptions(options, this.defaultSecureStorageOptions));
             if (account != null) {
                 account.cryptoMasterKeyB64 = value;
-                await this.saveAccount(account, options);
+                await this.saveAccount(account, this.reconcileOptions(options, this.defaultSecureStorageOptions));
             }
         } catch (e) {
             this.logService.error(e);
@@ -1234,7 +1233,9 @@ export class StateService implements StateServiceAbstraction {
     }
 
     private getUserIdFromMemory(options: StorageOptions): string {
-        return this.state.accounts[options.userId ?? this.state.activeUserId]?.userId;
+        return options?.userId != null ?
+            this.state.accounts[options.userId].userId :
+            this.state.activeUserId;
     }
 
     private async getAccountFromDisk(options: StorageOptions): Promise<Account> {
@@ -1273,6 +1274,7 @@ export class StateService implements StateServiceAbstraction {
         } else {
             await this.storageService.save(account.userId, account);
         }
+        await this.pushAccounts();
     }
 
     private async saveAccountToMemory(account: Account): Promise<void> {
@@ -1323,7 +1325,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     private reconcileOptions(requestedOptions: StorageOptions, defaultOptions: StorageOptions): StorageOptions {
-        if (requestedOptions === null) {
+        if (requestedOptions == null) {
             return defaultOptions;
         }
         requestedOptions.userId = requestedOptions?.userId ?? defaultOptions.userId; 

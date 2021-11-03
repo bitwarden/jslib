@@ -94,17 +94,20 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
             return;
         }
 
-        await this.stateService.setBiometricLocked(true, { userId: userId });
+        if (userId == null || userId === await this.stateService.getUserId()) {
+            this.searchService.clearIndex();
+        }
+
+        await this.folderService.clearCache(userId);
+        await this.cipherService.clearCache(userId);
+        await this.collectionService.clearCache(userId);
         await this.stateService.setEverBeenUnlocked(true, { userId: userId });
         await this.cryptoService.clearKey(false, userId);
         await this.cryptoService.clearOrgKeys(true, userId);
         await this.cryptoService.clearKeyPair(true, userId);
         await this.cryptoService.clearEncKey(true, userId);
+        await this.stateService.setBiometricLocked(true, { userId });
 
-        await this.folderService.clearCache(userId);
-        await this.cipherService.clearCache(userId);
-        await this.collectionService.clearCache(userId);
-        this.searchService.clearIndex();
         this.messagingService.send('locked', { userId });
         if (this.lockedCallback != null) {
             await this.lockedCallback();
