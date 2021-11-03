@@ -37,10 +37,6 @@ export class Account {
     apiKeyClientSecret: string;
     alwaysShowDock: boolean;
     autoFillOnPageLoadDefault: boolean;
-    biometricAwaitingAcceptance: boolean;
-    biometricFingerprintValidated: boolean;
-    biometricText: string;
-    biometricUnlock: boolean;
     encryptedCiphers: { [id: string]: CipherData };
     decryptedCiphers: CipherView[];
     cryptoMasterKey: SymmetricCryptoKey;
@@ -49,7 +45,6 @@ export class Account {
     decryptedCryptoSymmetricKey: SymmetricCryptoKey;
     defaultUriMatch: UriMatchType;
     disableAddLoginNotification: boolean;
-    disableAutoBiometricsPrompt: boolean;
     disableAutoTotpCopy: boolean;
     disableBadgeCounter: boolean;
     disableChangedPasswordNotification: boolean;
@@ -61,7 +56,6 @@ export class Account {
     emailVerified: boolean;
     enableAlwaysOnTop: boolean;
     enableAutoFillOnPageLoad: boolean;
-    enableBiometric: boolean;
     enableBrowserIntegration: boolean;
     enableBrowserIntegrationFingerprint: boolean;
     enableCloseToTray: boolean;
@@ -92,8 +86,6 @@ export class Account {
     mainWindowSize: number;
     minimizeOnCopyToClipboard: boolean;
     neverDomains: string[];
-    noAutoPromptBiometrics: boolean;
-    noAutoPromptBiometricsText: string;
     openAtLogin: boolean;
     encryptedPasswordGenerationHistory: GeneratedPasswordHistory[];
     decryptedPasswordGenerationHistory: GeneratedPasswordHistory[];
@@ -127,11 +119,18 @@ export class Account {
     locale: string;
     organizations: { [id: string]: OrganizationData };
     everBeenUnlocked: boolean;
-    biometricLocked: boolean;
     enableGravitars: boolean;
     addEditCipherInfo: any;
     authenticationStatus: AuthenticationStatus;
     autoConfirmFingerPrints: boolean;
+    disableAutoBiometricsPrompt: boolean;
+    noAutoPromptBiometrics: boolean;
+    biometricLocked: boolean;
+    biometricUnlock: boolean;
+    biometricText: string;
+    enableBiometric: boolean;
+    enableBiometrics: boolean;
+    noAutoPromptBiometricsText: string;
     private hasPremiumPersonally: boolean;
 
     constructor(userId: string, userEmail: string,
