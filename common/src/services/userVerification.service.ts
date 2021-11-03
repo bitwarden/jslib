@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+
 import { UserVerificationService as UserVerificationServiceAbstraction } from '../abstractions/userVerification.service';
 
 import { ApiService } from '../abstractions/api.service';
@@ -12,6 +14,7 @@ import { PasswordVerificationRequest } from '../models/request/passwordVerificat
 
 import { Verification } from '../types/verification';
 
+@Injectable()
 export class UserVerificationService implements UserVerificationServiceAbstraction {
     constructor(private cryptoService: CryptoService, private i18nService: I18nService,
         private platformUtilsService: PlatformUtilsService, private apiService: ApiService) { }
@@ -46,7 +49,8 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
             const request = new VerifyOtpRequest(verification.secret);
             try {
                 await this.apiService.postAccountVerifyOtp(request);
-            } catch {
+            } catch (e) {
+                console.log(e);
                 this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                     this.i18nService.t('invalidVerificationCode'));
                 return false;
