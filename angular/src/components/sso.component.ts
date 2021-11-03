@@ -60,7 +60,7 @@ export class SsoComponent {
                 await this.storageService.remove(ConstantsService.ssoCodeVerifierKey);
                 await this.storageService.remove(ConstantsService.ssoStateKey);
                 if (qParams.code != null && codeVerifier != null && state != null && this.checkState(state, qParams.state)) {
-                    await this.logIn(qParams.code, codeVerifier, this.getOrgIdentiferFromState(qParams.state));
+                    await this.logIn(qParams.code, codeVerifier, this.getOrgIdentifierFromState(qParams.state));
                 }
             } else if (qParams.clientId != null && qParams.redirectUri != null && qParams.state != null &&
                 qParams.codeChallenge != null) {
@@ -190,7 +190,7 @@ export class SsoComponent {
         this.loggingIn = false;
     }
 
-    private getOrgIdentiferFromState(state: string): string {
+    private getOrgIdentifierFromState(state: string): string {
         if (state === null || state === undefined) {
             return null;
         }
