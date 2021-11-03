@@ -16,7 +16,7 @@ export class AuthGuardService implements CanActivate {
         private messagingService: MessagingService, private stateService: StateService) { }
 
     async canActivate(route: ActivatedRouteSnapshot, routerState: RouterStateSnapshot) {
-        const isAuthed = this.stateService.getIsAuthenticated();
+        const isAuthed = await this.stateService.getIsAuthenticated();
         if (!isAuthed) {
             this.messagingService.send('authBlocked');
             return false;
