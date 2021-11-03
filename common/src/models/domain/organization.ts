@@ -70,7 +70,7 @@ export class Organization {
         this.providerId = obj.providerId;
         this.providerName = obj.providerName;
         this.isProviderUser = obj.isProviderUser;
-        this.usesCryptoAgent = obj.cryptoAgentUrl
+        this.usesCryptoAgent = obj.usesCryptoAgent
         this.cryptoAgentUrl = obj.cryptoAgentUrl;
     }
 
