@@ -49,6 +49,10 @@ export class AddEditCustomFieldsComponent implements OnChanges {
     ngOnChanges(changes: SimpleChanges) {
         if (changes.thisCipherType != null) {
             this.setLinkedFieldOptions();
+
+            if (!changes.thisCipherType.firstChange) {
+                this.resetCipherLinkedFields();
+            }
         }
     }
 
@@ -92,9 +96,7 @@ export class AddEditCustomFieldsComponent implements OnChanges {
     }
 
     private setLinkedFieldOptions() {
-        // Delete any Linked custom fields if the item type does not support them
         if (this.cipher.linkedFieldOptions == null) {
-            this.cipher.fields = this.cipher.fields.filter(f => f.type !== FieldType.Linked);
             return;
         }
 
@@ -102,11 +104,17 @@ export class AddEditCustomFieldsComponent implements OnChanges {
         this.cipher.linkedFieldOptions.forEach((linkedFieldOption, id) =>
             options.push({ name: this.i18nService.t(linkedFieldOption.i18nKey), value: id }));
         this.linkedFieldOptions = options.sort(Utils.getSortFunction(this.i18nService, 'name'));
+    }
 
-        if (!this.editMode) {
-            this.cipher.fields
-                .filter(f => f.type = FieldType.Linked)
-                .forEach(f => f.linkedId = this.linkedFieldOptions[0].value);
+    private resetCipherLinkedFields() {
+        // Delete any Linked custom fields if the item type does not support them
+        if (this.cipher.linkedFieldOptions == null) {
+            this.cipher.fields = this.cipher.fields.filter(f => f.type !== FieldType.Linked);
+            return;
         }
+
+        this.cipher.fields
+            .filter(f => f.type = FieldType.Linked)
+            .forEach(f => f.linkedId = this.linkedFieldOptions[0].value);
     }
 }
