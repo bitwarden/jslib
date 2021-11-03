@@ -1099,7 +1099,7 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     private async clearDecryptedCiphersState(userId?: string) {
-        await this.stateService.setDecryptedCiphers(null, { userId });
+        await this.stateService.setDecryptedCiphers(null, { userId: userId });
         this.clearSortedCiphers();
     }
 

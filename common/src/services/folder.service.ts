@@ -30,7 +30,7 @@ export class FolderService implements FolderServiceAbstraction {
         private stateService: StateService) { }
 
     async clearCache(userId?: string): Promise<void> {
-        await this.stateService.setDecryptedFolders(null, { userId });
+        await this.stateService.setDecryptedFolders(null, { userId: userId });
     }
 
     async encrypt(model: FolderView, key?: SymmetricCryptoKey): Promise<Folder> {

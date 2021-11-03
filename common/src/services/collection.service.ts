@@ -21,7 +21,7 @@ export class CollectionService implements CollectionServiceAbstraction {
     }
 
     async clearCache(userId?: string): Promise<void> {
-        await this.stateService.setDecryptedCollections(null, { userId });
+        await this.stateService.setDecryptedCollections(null, { userId: userId });
     }
 
     async encrypt(model: CollectionView): Promise<Collection> {

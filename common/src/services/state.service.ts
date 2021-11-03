@@ -1328,7 +1328,7 @@ export class StateService implements StateServiceAbstraction {
         if (requestedOptions == null) {
             return defaultOptions;
         }
-        requestedOptions.userId = requestedOptions?.userId ?? defaultOptions.userId; 
+        requestedOptions.userId = requestedOptions?.userId ?? defaultOptions.userId;
         requestedOptions.storageLocation = requestedOptions?.storageLocation ?? defaultOptions.storageLocation;
         requestedOptions.keySuffix = requestedOptions?.keySuffix ?? defaultOptions.keySuffix;
         requestedOptions.useSecureStorage = requestedOptions?.useSecureStorage ?? defaultOptions.useSecureStorage;
