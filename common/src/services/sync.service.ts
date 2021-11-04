@@ -298,7 +298,7 @@ export class SyncService implements SyncServiceAbstraction {
         await this.cryptoService.setEncPrivateKey(response.privateKey);
         await this.cryptoService.setProviderKeys(response.providers);
         await this.cryptoService.setOrgKeys(response.organizations, response.providerOrganizations);
-        await this.userService.setUsesCryptoAgent(response.usesCryptoAgent);
+        await this.userService.setUsesKeyConnector(response.usesKeyConnector);
         await this.userService.setSecurityStamp(response.securityStamp);
         await this.userService.setEmailVerified(response.emailVerified);
         await this.userService.setForcePasswordReset(response.forcePasswordReset);
@@ -320,10 +320,10 @@ export class SyncService implements SyncServiceAbstraction {
             }
         });
 
-        const orgUsesCryptoAgent = response.organizations.some(o => o.usesCryptoAgent);
-        const userIsNotUsingCryptoAgent = !response.usesCryptoAgent;
-        if (this.tokenService.getIsExternal() && orgUsesCryptoAgent && userIsNotUsingCryptoAgent) {
-            this.messagingService.send('convertAccountToCryptoAgent');
+        const orgUsesKeyConnector = response.organizations.some(o => o.usesKeyConnector);
+        const userIsNotUsingKeyConnector = !response.usesKeyConnector;
+        if (this.tokenService.getIsExternal() && orgUsesKeyConnector && userIsNotUsingKeyConnector) {
+            this.messagingService.send('convertAccountToKeyConnector');
         }
 
         return Promise.all([

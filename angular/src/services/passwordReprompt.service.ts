@@ -32,6 +32,6 @@ export class PasswordRepromptService implements PasswordRepromptServiceAbstracti
     }
 
     async enabled() {
-        return !await this.userService.getUsesCryptoAgent();
+        return !await this.userService.getUsesKeyConnector();
     }
 }

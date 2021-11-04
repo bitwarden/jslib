@@ -1,5 +1,5 @@
 import { PolicyType } from '../enums/policyType';
-import { SetCryptoAgentKeyRequest } from '../models/request/account/setCryptoAgentKeyRequest';
+import { SetKeyConnectorKeyRequest } from '../models/request/account/setKeyConnectorKeyRequest';
 import { VerifyOtpRequest } from '../models/request/account/verifyOtpRequest';
 
 import { AttachmentRequest } from '../models/request/attachmentRequest';
@@ -14,7 +14,6 @@ import { CipherCreateRequest } from '../models/request/cipherCreateRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CipherShareRequest } from '../models/request/cipherShareRequest';
 import { CollectionRequest } from '../models/request/collectionRequest';
-import { CryptoAgentUserKeyRequest } from '../models/request/cryptoAgentUserKeyRequest';
 import { DeleteRecoverRequest } from '../models/request/deleteRecoverRequest';
 import { EmailRequest } from '../models/request/emailRequest';
 import { EmailTokenRequest } from '../models/request/emailTokenRequest';
@@ -31,6 +30,7 @@ import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
 import { KdfRequest } from '../models/request/kdfRequest';
+import { KeyConnectorUserKeyRequest } from '../models/request/keyConnectorUserKeyRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationSsoRequest } from '../models/request/organization/organizationSsoRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
@@ -101,7 +101,6 @@ import {
     CollectionGroupDetailsResponse,
     CollectionResponse,
 } from '../models/response/collectionResponse';
-import { CryptoAgentUserKeyResponse } from '../models/response/cryptoAgentUserKeyResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import {
     EmergencyAccessGranteeDetailsResponse,
@@ -118,6 +117,7 @@ import {
 import { IdentityCaptchaResponse } from '../models/response/identityCaptchaResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
+import { KeyConnectorUserKeyResponse } from '../models/response/keyConnectorUserKeyResponse';
 import { ListResponse } from '../models/response/listResponse';
 import { OrganizationSsoResponse } from '../models/response/organization/organizationSsoResponse';
 import { OrganizationAutoEnrollStatusResponse } from '../models/response/organizationAutoEnrollStatusResponse';
@@ -176,7 +176,7 @@ export abstract class ApiService {
     postEmail: (request: EmailRequest) => Promise<any>;
     postPassword: (request: PasswordRequest) => Promise<any>;
     setPassword: (request: SetPasswordRequest) => Promise<any>;
-    postSetCryptoAgentKey: (request: SetCryptoAgentKeyRequest) => Promise<any>;
+    postSetKeyConnectorKey: (request: SetKeyConnectorKeyRequest) => Promise<any>;
     postSecurityStamp: (request: PasswordVerificationRequest) => Promise<any>;
     deleteAccount: (request: PasswordVerificationRequest) => Promise<any>;
     getAccountRevisionDate: () => Promise<number>;
@@ -202,7 +202,7 @@ export abstract class ApiService {
     putUpdateTempPassword: (request: UpdateTempPasswordRequest) => Promise<any>;
     postAccountRequestOtp: () => Promise<void>;
     postAccountVerifyOtp: (request: VerifyOtpRequest) => Promise<void>;
-    postConvertToCryptoAgent: () => Promise<void>;
+    postConvertToKeyConnector: () => Promise<void>;
 
     getFolder: (id: string) => Promise<FolderResponse>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
@@ -453,6 +453,6 @@ export abstract class ApiService {
 
     preValidateSso: (identifier: string) => Promise<boolean>;
 
-    getUserKeyFromCryptoAgent: (cryptoAgentUrl: string) => Promise<CryptoAgentUserKeyResponse>;
-    postUserKeyToCryptoAgent: (cryptoAgentUrl: string, request: CryptoAgentUserKeyRequest) => Promise<void>;
+    getUserKeyFromKeyConnector: (keyConnectorUrl: string) => Promise<KeyConnectorUserKeyResponse>;
+    postUserKeyToKeyConnector: (keyConnectorUrl: string, request: KeyConnectorUserKeyRequest) => Promise<void>;
 }

@@ -34,8 +34,8 @@ export class Organization {
     providerId: string;
     providerName: string;
     isProviderUser: boolean;
-    usesCryptoAgent: boolean;
-    cryptoAgentUrl: string;
+    usesKeyConnector: boolean;
+    keyConnectorUrl: string;
 
     constructor(obj?: OrganizationData) {
         if (obj == null) {
@@ -70,8 +70,8 @@ export class Organization {
         this.providerId = obj.providerId;
         this.providerName = obj.providerName;
         this.isProviderUser = obj.isProviderUser;
-        this.usesCryptoAgent = obj.usesCryptoAgent;
-        this.cryptoAgentUrl = obj.cryptoAgentUrl;
+        this.usesKeyConnector = obj.usesKeyConnector;
+        this.keyConnectorUrl = obj.keyConnectorUrl;
     }
 
     get canAccess() {

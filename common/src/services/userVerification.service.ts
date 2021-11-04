@@ -5,6 +5,7 @@ import { UserVerificationService as UserVerificationServiceAbstraction } from '.
 import { ApiService } from '../abstractions/api.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { I18nService } from '../abstractions/i18n.service';
+import { LogService } from '../abstractions/log.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 
 import { VerificationType } from '../enums/verificationType';
@@ -17,7 +18,8 @@ import { Verification } from '../types/verification';
 @Injectable()
 export class UserVerificationService implements UserVerificationServiceAbstraction {
     constructor(private cryptoService: CryptoService, private i18nService: I18nService,
-        private platformUtilsService: PlatformUtilsService, private apiService: ApiService) { }
+        private platformUtilsService: PlatformUtilsService, private apiService: ApiService,
+        private logService: LogService) { }
 
     async buildRequest<T extends PasswordVerificationRequest>(verification: Verification,
         requestClass?: new () => T, alreadyEncrypted?: boolean) {
@@ -50,7 +52,7 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
             try {
                 await this.apiService.postAccountVerifyOtp(request);
             } catch (e) {
-                console.log(e);
+                this.logService.error(e);
                 this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                     this.i18nService.t('invalidVerificationCode'));
                 return false;

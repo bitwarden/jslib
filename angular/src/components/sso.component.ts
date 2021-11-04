@@ -183,8 +183,8 @@ export class SsoComponent {
             }
         } catch (e) {
             this.logService.error(e);
-            if (e.message === 'Unable to reach crypto agent') {
-                this.platformUtilsService.showToast('error', null, this.i18nService.t('ssoCryptoAgentUnavailable'));
+            if (e.message === 'Unable to reach key connector') {
+                this.platformUtilsService.showToast('error', null, this.i18nService.t('ssoKeyConnectorUnavailable'));
             }
         }
         this.loggingIn = false;

@@ -98,7 +98,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
             return;
         }
 
-        if (await this.userService.getUsesCryptoAgent()) {
+        if (await this.userService.getUsesKeyConnector()) {
             const pinSet = await this.isPinLockSet();
             const pinLock = (pinSet[0] && this.pinProtectedKey != null) || pinSet[1];
 

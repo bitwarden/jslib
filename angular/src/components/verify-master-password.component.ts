@@ -27,7 +27,7 @@ import { Verification } from 'jslib-common/types/verification';
     ],
 })
 export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnInit {
-    usesCryptoAgent: boolean = false;
+    usesKeyConnector: boolean = false;
     disableRequestOtp: boolean = false;
 
     secret = new FormControl('');
@@ -37,7 +37,7 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
     constructor(private userService: UserService, private apiService: ApiService) { }
 
     async ngOnInit() {
-        this.usesCryptoAgent = await this.userService.getUsesCryptoAgent();
+        this.usesKeyConnector = await this.userService.getUsesKeyConnector();
 
         this.secret.valueChanges.subscribe(secret => {
             if (this.onChange == null) {
@@ -45,14 +45,14 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
             }
 
             this.onChange({
-                type: this.usesCryptoAgent ? VerificationType.OTP : VerificationType.MasterPassword,
+                type: this.usesKeyConnector ? VerificationType.OTP : VerificationType.MasterPassword,
                 secret: secret,
             });
         });
     }
 
     async requestOtp() {
-        if (this.usesCryptoAgent) {
+        if (this.usesKeyConnector) {
             this.disableRequestOtp = true;
             await this.apiService.postAccountRequestOtp();
         }

@@ -59,8 +59,8 @@ export class LockComponent implements OnInit {
         this.biometricText = await this.storageService.get(ConstantsService.biometricText);
         this.email = await this.userService.getEmail();
 
-        // Users with crypto agent and without biometric or pin has no MP to unlock using
-        if (await this.userService.getUsesCryptoAgent() && !(this.biometricLock || this.pinLock)) {
+        // Users with key connector and without biometric or pin has no MP to unlock using
+        if (await this.userService.getUsesKeyConnector() && !(this.biometricLock || this.pinLock)) {
             await this.vaultTimeoutService.logOut();
         }
 

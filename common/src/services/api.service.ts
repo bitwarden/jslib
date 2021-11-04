@@ -166,10 +166,10 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
-import { SetCryptoAgentKeyRequest } from '../models/request/account/setCryptoAgentKeyRequest';
+import { SetKeyConnectorKeyRequest } from '../models/request/account/setKeyConnectorKeyRequest';
 import { VerifyOtpRequest } from '../models/request/account/verifyOtpRequest';
-import { CryptoAgentUserKeyRequest } from '../models/request/cryptoAgentUserKeyRequest';
-import { CryptoAgentUserKeyResponse } from '../models/response/cryptoAgentUserKeyResponse';
+import { KeyConnectorUserKeyRequest } from '../models/request/keyConnectorUserKeyRequest';
+import { KeyConnectorUserKeyResponse } from '../models/response/keyConnectorUserKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
 
 export class ApiService implements ApiServiceAbstraction {
@@ -293,8 +293,8 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/set-password', request, true, false);
     }
 
-    postSetCryptoAgentKey(request: SetCryptoAgentKeyRequest): Promise<any> {
-        return this.send('POST', '/accounts/set-crypto-agent-key', request, true, false);
+    postSetKeyConnectorKey(request: SetKeyConnectorKeyRequest): Promise<any> {
+        return this.send('POST', '/accounts/set-key-connector-key', request, true, false);
     }
 
     postSecurityStamp(request: PasswordVerificationRequest): Promise<any> {
@@ -410,8 +410,8 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/verify-otp', request, true, false);
     }
 
-    postConvertToCryptoAgent(): Promise<void> {
-        return this.send('POST', '/accounts/convert-to-crypto-agent', null, true, false);
+    postConvertToKeyConnector(): Promise<void> {
+        return this.send('POST', '/accounts/convert-to-key-connector', null, true, false);
     }
 
     // Folder APIs
@@ -1449,12 +1449,12 @@ export class ApiService implements ApiServiceAbstraction {
         return r as string;
     }
 
-    // Crypto Agent
+    // Key Connector
 
-    async getUserKeyFromCryptoAgent(cryptoAgentUrl: string): Promise<CryptoAgentUserKeyResponse> {
+    async getUserKeyFromKeyConnector(keyConnectorUrl: string): Promise<KeyConnectorUserKeyResponse> {
         const authHeader = await this.getActiveBearerToken();
 
-        const response = await this.fetch(new Request(cryptoAgentUrl + '/user-keys', {
+        const response = await this.fetch(new Request(keyConnectorUrl + '/user-keys', {
             cache: 'no-store',
             method: 'GET',
             headers: new Headers({
@@ -1468,13 +1468,13 @@ export class ApiService implements ApiServiceAbstraction {
             return Promise.reject(error);
         }
 
-        return new CryptoAgentUserKeyResponse(await response.json());
+        return new KeyConnectorUserKeyResponse(await response.json());
     }
 
-    async postUserKeyToCryptoAgent(cryptoAgentUrl: string, request: CryptoAgentUserKeyRequest): Promise<void> {
+    async postUserKeyToKeyConnector(keyConnectorUrl: string, request: KeyConnectorUserKeyRequest): Promise<void> {
         const authHeader = await this.getActiveBearerToken();
 
-        const response = await this.fetch(new Request(cryptoAgentUrl + '/user-keys', {
+        const response = await this.fetch(new Request(keyConnectorUrl + '/user-keys', {
             cache: 'no-store',
             method: 'POST',
             headers: new Headers({
