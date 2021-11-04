@@ -49,7 +49,6 @@ export class Account {
     disableBadgeCounter: boolean;
     disableChangedPasswordNotification: boolean;
     disableContextMenuItem: boolean;
-    disableFavicon: boolean;
     disableGa: boolean;
     dontShowCardsCurrentTab: boolean;
     dontShowIdentitiesCurrentTab: boolean;

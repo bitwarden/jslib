@@ -204,7 +204,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getDisableFavicon(options?: StorageOptions): Promise<boolean> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.disableFavicon ?? false;
+        return (await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.disableFavicon ?? false;
     }
 
     async getDisableGa(options?: StorageOptions): Promise<boolean> {
@@ -682,9 +682,9 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async setDisableFavicon(value: boolean, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions));
-        account.disableFavicon = value;
-        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskOptions));
+        const globals = await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskOptions));
+        globals.disableFavicon = value;
+        await this.saveGlobals(globals, this.reconcileOptions(options, this.defaultOnDiskOptions));
     }
 
     async setDisableGa(value: boolean, options?: StorageOptions): Promise<void> {

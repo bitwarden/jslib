@@ -11,6 +11,7 @@ export class Globals {
     theme: string;
     window: Map<string, any> = new Map<string, any>();
     twoFactorToken: string;
+    disableFavicon: boolean;
 
     biometricAwaitingAcceptance: boolean;
     biometricFingerprintValidated: boolean;
