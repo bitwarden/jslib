@@ -45,7 +45,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     // Keys aren't stored for a device that is locked or logged out.
     async isLocked(userId?: string): Promise<boolean> {
         const neverLock = await this.cryptoService.hasKeyStored(KeySuffixOptions.Auto, userId) &&
-            !(await this.stateService.getEverBeenUnlocked(userId ? {userId: userId, storageLocation: StorageLocation.Disk} : null));
+            !(await this.stateService.getEverBeenUnlocked({ userId: userId }));
         if (neverLock) {
             return (await this.cryptoService.getKey(KeySuffixOptions.Auto, userId)) != null;
         }
