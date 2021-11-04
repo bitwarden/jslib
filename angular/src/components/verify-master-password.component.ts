@@ -58,10 +58,6 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
         }
     }
 
-    clearSecret() {
-        this.secret.setValue('');
-    }
-
     writeValue(obj: any): void {
         this.secret.setValue(obj);
     }
