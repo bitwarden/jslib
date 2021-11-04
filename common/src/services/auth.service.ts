@@ -20,6 +20,7 @@ import { AppIdService } from '../abstractions/appId.service';
 import { AuthService as AuthServiceAbstraction } from '../abstractions/auth.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
+import { EnvironmentService } from '../abstractions/environment.service';
 import { I18nService } from '../abstractions/i18n.service';
 import { LogService } from '../abstractions/log.service';
 import { MessagingService } from '../abstractions/messaging.service';
@@ -101,7 +102,8 @@ export class AuthService implements AuthServiceAbstraction {
         protected appIdService: AppIdService, private i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
         private vaultTimeoutService: VaultTimeoutService, private logService: LogService,
-        private cryptoFunctionService: CryptoFunctionService, private setCryptoKeys = true) {
+        private cryptoFunctionService: CryptoFunctionService, private environmentService: EnvironmentService,
+        private setCryptoKeys = true) {
     }
 
     init() {
@@ -366,14 +368,11 @@ export class AuthService implements AuthServiceAbstraction {
             if (code == null || tokenResponse.key != null) {
 
                 if (tokenResponse.keyConnectorUrl != null) {
-                    try {
-                        const userKeyResponse = await this.apiService.getUserKeyFromKeyConnector(tokenResponse.keyConnectorUrl);
-                        const keyArr = Utils.fromB64ToArray(userKeyResponse.key);
-                        const k = new SymmetricCryptoKey(keyArr);
-                        await this.cryptoService.setKey(k);
-                    } catch (e) {
-                        this.logService.error(e);
-                        throw new Error('Unable to reach key connector');
+                    await this.setKeysFromKeyConnector(tokenResponse.keyConnectorUrl);
+                } else {
+                    const keyConnectorUrl = this.environmentService.getKeyConnectorUrl();
+                    if (keyConnectorUrl != null) {
+                        await this.setKeysFromKeyConnector(keyConnectorUrl);
                     }
                 }
 
@@ -422,6 +421,18 @@ export class AuthService implements AuthServiceAbstraction {
         }
         this.messagingService.send('loggedIn');
         return result;
+    }
+
+    private async setKeysFromKeyConnector(keyConnectorUrl: string) {
+        try {
+            const userKeyResponse = await this.apiService.getUserKeyFromKeyConnector(keyConnectorUrl);
+            const keyArr = Utils.fromB64ToArray(userKeyResponse.key);
+            const k = new SymmetricCryptoKey(keyArr);
+            await this.cryptoService.setKey(k);
+        } catch (e) {
+            this.logService.error(e);
+            throw new Error('Unable to reach key connector');
+        }
     }
 
     private clearState(): void {
