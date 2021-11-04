@@ -322,7 +322,7 @@ export class SyncService implements SyncServiceAbstraction {
         });
 
         const orgWithCryptoAgent = response.organizations.find(o => o.usesKeyConnector);
-        const orgUsesKeyConnector = orgWithCryptoAgent?.type != OrganizationUserType.Owner && orgWithCryptoAgent?.type != OrganizationUserType.Admin;
+        const orgUsesKeyConnector = orgWithCryptoAgent?.type !== OrganizationUserType.Owner && orgWithCryptoAgent?.type !== OrganizationUserType.Admin;
         const userIsNotUsingKeyConnector = !response.usesKeyConnector;
         if (this.tokenService.getIsExternal() && orgUsesKeyConnector && userIsNotUsingKeyConnector) {
             this.messagingService.send('convertAccountToKeyConnector');
