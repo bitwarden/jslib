@@ -48,9 +48,11 @@ export class AddEditCustomFieldsComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.thisCipherType != null) {
+            console.log('setLinkedField');
             this.setLinkedFieldOptions();
 
             if (!changes.thisCipherType.firstChange) {
+                console.log('resetCipherLinkedFields');
                 this.resetCipherLinkedFields();
             }
         }
@@ -107,6 +109,10 @@ export class AddEditCustomFieldsComponent implements OnChanges {
     }
 
     private resetCipherLinkedFields() {
+        if (this.cipher.fields == null || this.cipher.fields.length === 0) {
+            return;
+        }
+
         // Delete any Linked custom fields if the item type does not support them
         if (this.cipher.linkedFieldOptions == null) {
             this.cipher.fields = this.cipher.fields.filter(f => f.type !== FieldType.Linked);
