@@ -119,6 +119,7 @@ export class CipherRequest {
                 field.type = f.type;
                 field.name = f.name ? f.name.encryptedString : null;
                 field.value = f.value ? f.value.encryptedString : null;
+                field.linkedId = f.linkedId;
                 return field;
             });
         }
