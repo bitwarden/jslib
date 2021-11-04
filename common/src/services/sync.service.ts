@@ -12,6 +12,7 @@ import { StorageService } from '../abstractions/storage.service';
 import { SyncService as SyncServiceAbstraction } from '../abstractions/sync.service';
 import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
+import { OrganizationUserType } from '../enums/organizationUserType';
 
 import { CipherData } from '../models/data/cipherData';
 import { CollectionData } from '../models/data/collectionData';
@@ -320,7 +321,8 @@ export class SyncService implements SyncServiceAbstraction {
             }
         });
 
-        const orgUsesKeyConnector = response.organizations.some(o => o.usesKeyConnector);
+        const orgWithCryptoAgent = response.organizations.find(o => o.usesKeyConnector);
+        const orgUsesKeyConnector = orgWithCryptoAgent?.type != OrganizationUserType.Owner && orgWithCryptoAgent?.type != OrganizationUserType.Admin;
         const userIsNotUsingKeyConnector = !response.usesKeyConnector;
         if (this.tokenService.getIsExternal() && orgUsesKeyConnector && userIsNotUsingKeyConnector) {
             this.messagingService.send('convertAccountToKeyConnector');
