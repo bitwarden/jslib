@@ -1,3 +1,4 @@
+import { HtmlStorageLocation } from '../../enums/htmlStorageLocation';
 import { KeySuffixOptions } from '../../enums/keySuffixOptions';
 import { StorageLocation } from '../../enums/storageLocation';
 
@@ -6,4 +7,5 @@ export type StorageOptions = {
     storageLocation?: StorageLocation;
     useSecureStorage?: boolean;
     userId?: string;
+    htmlStorageLocation?: HtmlStorageLocation;
 };

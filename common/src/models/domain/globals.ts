@@ -12,7 +12,8 @@ export class Globals {
     window: Map<string, any> = new Map<string, any>();
     twoFactorToken: string;
     disableFavicon: boolean;
-
     biometricAwaitingAcceptance: boolean;
     biometricFingerprintValidated: boolean;
+    vaultTimeout: number;
+    vaultTimeoutAction: string;
 }

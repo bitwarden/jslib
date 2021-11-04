@@ -5,6 +5,7 @@ import { Account, AuthenticationStatus } from '../models/domain/account';
 import { LogService } from '../abstractions/log.service';
 import { StorageService } from '../abstractions/storage.service';
 
+import { HtmlStorageLocation } from '../enums/htmlStorageLocation';
 import { KdfType } from '../enums/kdfType';
 import { StorageLocation } from '../enums/storageLocation';
 import { UriMatchType } from '../enums/uriMatchType';
@@ -42,7 +43,15 @@ export class StateService implements StateServiceAbstraction {
     }
 
     private get defaultOnDiskOptions(): StorageOptions {
-        return { storageLocation: StorageLocation.Disk, userId: this.state.activeUserId };
+        return { storageLocation: StorageLocation.Disk, htmlStorageLocation: HtmlStorageLocation.Session, userId: this.state.activeUserId };
+    }
+
+    private get defaultOnDiskLocalOptions(): StorageOptions {
+        return { storageLocation: StorageLocation.Disk, htmlStorageLocation: HtmlStorageLocation.Local, userId: this.state.activeUserId };
+    }
+
+    private get defaultOnDiskMemoryOptions(): StorageOptions {
+        return { storageLocation: StorageLocation.Disk, htmlStorageLocation: HtmlStorageLocation.Memory, userId: this.state.activeUserId };
     }
 
     private get defaultSecureStorageOptions(): StorageOptions {
@@ -60,7 +69,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getEnableGravitars(options?: StorageOptions): Promise<boolean> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions))).enableGravitars ?? true;
+        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskLocalOptions))).enableGravitars ?? true;
     }
 
     async getAddEditCipherInfo(options?: StorageOptions): Promise<any> {
@@ -128,7 +137,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getEncryptedCiphers(options?: StorageOptions): Promise<{ [id: string]: CipherData }> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.encryptedCiphers;
+        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskMemoryOptions)))?.encryptedCiphers;
     }
 
     async getDecryptedCiphers(options?: StorageOptions): Promise<CipherView[]> {
@@ -144,7 +153,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getEncryptedCollections(options?: StorageOptions): Promise<{ [id: string]: CollectionData }> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.encryptedCollections;
+        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskMemoryOptions)))?.encryptedCollections;
     }
 
     async getDecryptedCollections(options?: StorageOptions): Promise<CollectionView[]> {
@@ -204,7 +213,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getDisableFavicon(options?: StorageOptions): Promise<boolean> {
-        return (await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.disableFavicon ?? false;
+        return (await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskLocalOptions)))?.disableFavicon ?? false;
     }
 
     async getDisableGa(options?: StorageOptions): Promise<boolean> {
@@ -307,7 +316,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getEncryptedFolders(options?: StorageOptions): Promise<{ [id: string]: FolderData }> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.encryptedFolders;
+        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskMemoryOptions)))?.encryptedFolders;
     }
 
     async getDecryptedFolders(options?: StorageOptions): Promise<FolderView[]> {
@@ -335,7 +344,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getLastSync(options?: StorageOptions): Promise<string> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.lastSync;
+        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskMemoryOptions)))?.lastSync;
     }
 
     async getLastActive(options?: StorageOptions): Promise<number> {
@@ -428,11 +437,11 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getRememberEmail(options?: StorageOptions): Promise<boolean> {
-        return (await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.rememberEmail ?? false;
+        return (await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskLocalOptions)))?.rememberEmail ?? false;
     }
 
     async getRememberedEmail(options?: StorageOptions): Promise<string> {
-        return (await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.rememberedEmail;
+        return (await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskLocalOptions)))?.rememberedEmail;
     }
 
     async getSecurityStamp(options?: StorageOptions): Promise<string> {
@@ -440,7 +449,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getEncryptedSends(options?: StorageOptions): Promise<{ [id: string]: SendData }> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.encryptedSends;
+        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskMemoryOptions)))?.encryptedSends;
     }
 
     async getDecryptedSends(options?: StorageOptions): Promise<SendView[]> {
@@ -448,7 +457,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getSettings(options?: StorageOptions): Promise<any> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.settings;
+        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskMemoryOptions)))?.settings;
     }
 
     async getSsoCodeVerifier(options?: StorageOptions): Promise<string> {
@@ -456,7 +465,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getSsoOrgIdentifier(options?: StorageOptions): Promise<string> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.ssoOrganizationIdentifier;
+        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskLocalOptions)))?.ssoOrganizationIdentifier;
     }
 
     async getSsoState(options?: StorageOptions): Promise<string> {
@@ -464,21 +473,25 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getTheme(options?: StorageOptions): Promise<string> {
-        let theme = (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.theme;
-        theme = theme ?? (await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.theme;
-        return theme;
+        const accountTheme = (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskLocalOptions)))?.theme;
+        const globalTheme = (await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskLocalOptions)))?.theme;
+        return accountTheme ?? globalTheme;
     }
 
     async getTwoFactorToken(options?: StorageOptions): Promise<string> {
-        return (await this.getGlobals(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.twoFactorToken;
+        return (await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskLocalOptions)))?.twoFactorToken;
     }
 
     async getVaultTimeout(options?: StorageOptions): Promise<number> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.vaultTimeout;
+        const accountVaultTimeout = (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.vaultTimeout;
+        const globalVaultTimeout = (await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.vaultTimeout;
+        return accountVaultTimeout ?? globalVaultTimeout;
     }
 
     async getVaultTimeoutAction(options?: StorageOptions): Promise<string> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.vaultTimeoutAction;
+        const accountVaultTimeoutAction = (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.vaultTimeoutAction;
+        const globalVaultTimeoutAction = (await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.vaultTimeoutAction;
+        return accountVaultTimeoutAction ?? globalVaultTimeoutAction;
     }
 
     async getOrganizations(options?: StorageOptions): Promise<{ [id: string]: OrganizationData }> {
@@ -571,9 +584,9 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async setEncryptedCiphers(value: { [id: string]: CipherData }, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions));
+        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskMemoryOptions));
         account.encryptedCiphers = value;
-        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskOptions));
+        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskMemoryOptions));
     }
 
     async setDecryptedCiphers(value: CipherView[], options?: StorageOptions): Promise<void> {
@@ -595,9 +608,9 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async setEncryptedCollections(value: { [id: string]: CollectionData }, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions));
+        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskMemoryOptions));
         account.encryptedCollections = value;
-        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskOptions));
+        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskMemoryOptions));
     }
 
     async setDecryptedCollections(value: CollectionView[], options?: StorageOptions): Promise<void> {
@@ -830,9 +843,9 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async setEncryptedFolders(value: { [id: string]: FolderData }, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions));
+        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskMemoryOptions));
         account.encryptedFolders = value;
-        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskOptions));
+        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskMemoryOptions));
     }
 
     async setDecryptedFolders(value: FolderView[], options?: StorageOptions): Promise<void> {
@@ -872,9 +885,9 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async setLastSync(value: string, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
+        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskMemoryOptions));
         account.lastSync = value;
-        await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
+        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskMemoryOptions));
     }
 
     async setLastActive(value: number, options?: StorageOptions): Promise<void> {
@@ -1040,9 +1053,9 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async setEncryptedSends(value: { [id: string]: SendData }, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions));
+        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskMemoryOptions));
         account.encryptedSends = value;
-        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskOptions));
+        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskMemoryOptions));
     }
 
     async setDecryptedSends(value: SendView[], options?: StorageOptions): Promise<void> {
@@ -1052,9 +1065,9 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async setSettings(value: any, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions));
+        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskMemoryOptions));
         account.settings = value;
-        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskOptions));
+        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskMemoryOptions));
     }
 
     async setSsoCodeVerifier(value: string, options?: StorageOptions): Promise<void> {
@@ -1064,9 +1077,9 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async setSsoOrganizationIdentifier(value: string, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
+        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
         account.ssoOrganizationIdentifier = value;
-        await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
+        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
     }
 
     async setSsoState(value: string, options?: StorageOptions): Promise<void> {
@@ -1076,21 +1089,21 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async setTheme(value: string, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions));
+        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
         if (account != null) {
             account.theme = value;
-            await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskOptions));
+            await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
         }
 
-        const globals = await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskOptions));
+        const globals = await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
         globals.theme = value;
-        await this.saveGlobals(globals, this.reconcileOptions(options, this.defaultOnDiskOptions));
+        await this.saveGlobals(globals, this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
     }
 
     async setTwoFactorToken(value: string, options?: StorageOptions): Promise<void> {
-        const globals = await this.getGlobals(this.reconcileOptions(options, this.defaultInMemoryOptions));
+        const globals = await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
         globals.twoFactorToken = value;
-        await this.saveGlobals(globals, this.reconcileOptions(options, this.defaultInMemoryOptions));
+        await this.saveGlobals(globals, this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
     }
 
     async setVaultTimeout(value: number, options?: StorageOptions): Promise<void> {
@@ -1118,9 +1131,9 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async setEnableGravitars(value: boolean, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
+        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
         account.enableGravitars = value;
-        await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
+        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
     }
 
     async setAddEditCipherInfo(value: any, options?: StorageOptions): Promise<void> {
@@ -1130,9 +1143,9 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async setRememberedEmail(value: string, options?: StorageOptions): Promise<void> {
-        const globals = await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskOptions));
+        const globals = await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
         globals.rememberedEmail = value;
-        await this.saveGlobals(globals, this.reconcileOptions(options, this.defaultOnDiskOptions));
+        await this.saveGlobals(globals, this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
     }
 
     async setOrganizationInvitation(value: any, options?: StorageOptions): Promise<void> {
@@ -1149,10 +1162,10 @@ export class StateService implements StateServiceAbstraction {
         await this.pushAccounts();
     }
 
-    async setWindow(value: Map<string, any>): Promise<void> {
-        const globals = await this.getGlobals({ storageLocation: StorageLocation.Disk });
+    async setWindow(value: Map<string, any>, options?: StorageOptions): Promise<void> {
+        const globals = await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskOptions));
         globals.window = value;
-        return await this.saveGlobals(globals, { storageLocation: StorageLocation.Disk });
+        return await this.saveGlobals(globals, this.reconcileOptions(options, this.defaultOnDiskOptions));
     }
 
     async purge(options?: StorageOptions): Promise<void> {
@@ -1198,9 +1211,9 @@ export class StateService implements StateServiceAbstraction {
 
     private async saveGlobalsToDisk(globals: Globals, options: StorageOptions): Promise<void> {
         if (options.useSecureStorage) {
-            await this.secureStorageService.save('globals', globals);
+            await this.secureStorageService.save('globals', globals, options);
         } else {
-            await this.storageService.save('globals', globals);
+            await this.storageService.save('globals', globals, options);
         }
     }
 
@@ -1270,9 +1283,9 @@ export class StateService implements StateServiceAbstraction {
 
     private async saveAccountToDisk(account: Account, options: StorageOptions): Promise<void> {
         if (options.useSecureStorage) {
-            await this.secureStorageService.save(account.userId, account);
+            await this.secureStorageService.save(account.userId, account, options);
         } else {
-            await this.storageService.save(account.userId, account);
+            await this.storageService.save(account.userId, account, options);
         }
         await this.pushAccounts();
     }
@@ -1332,6 +1345,7 @@ export class StateService implements StateServiceAbstraction {
         requestedOptions.storageLocation = requestedOptions?.storageLocation ?? defaultOptions.storageLocation;
         requestedOptions.keySuffix = requestedOptions?.keySuffix ?? defaultOptions.keySuffix;
         requestedOptions.useSecureStorage = requestedOptions?.useSecureStorage ?? defaultOptions.useSecureStorage;
+        requestedOptions.htmlStorageLocation = requestedOptions?.htmlStorageLocation ?? defaultOptions.htmlStorageLocation;
         return requestedOptions;
     }
 }
