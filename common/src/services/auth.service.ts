@@ -142,10 +142,10 @@ export class AuthService implements AuthServiceAbstraction {
             null, null, null, null, null, orgId);
     }
 
-    async logInApiKey(clientId: string, clientSecret: string): Promise<AuthResult> {
+    async logInApiKey(clientId: string, clientSecret: string, orgIdentifier?: string): Promise<AuthResult> {
         this.selectedTwoFactorProviderType = null;
         return await this.logInHelper(null, null, null, null, null, null, clientId, clientSecret,
-            null, null, null, null, null, null);
+            null, null, null, null, null, orgIdentifier);
     }
 
     async logInTwoFactor(twoFactorProvider: TwoFactorProviderType, twoFactorToken: string,
@@ -307,13 +307,13 @@ export class AuthService implements AuthServiceAbstraction {
         let request: TokenRequest;
         if (twoFactorToken != null && twoFactorProvider != null) {
             request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, twoFactorProvider,
-                twoFactorToken, remember, captchaToken, deviceRequest);
+                twoFactorToken, remember, captchaToken, deviceRequest, orgId);
         } else if (storedTwoFactorToken != null) {
             request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret,
-                TwoFactorProviderType.Remember, storedTwoFactorToken, false, captchaToken, deviceRequest);
+                TwoFactorProviderType.Remember, storedTwoFactorToken, false, captchaToken, deviceRequest, orgId);
         } else {
             request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, null,
-                null, false, captchaToken, deviceRequest);
+                null, false, captchaToken, deviceRequest, orgId);
         }
 
         const response = await this.apiService.postIdentityToken(request);

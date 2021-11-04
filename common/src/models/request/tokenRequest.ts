@@ -14,9 +14,11 @@ export class TokenRequest implements CaptchaProtectedRequest {
     clientId: string;
     clientSecret: string;
     device?: DeviceRequest;
+    orgIdentifier?: string;
 
     constructor(credentials: string[], codes: string[], clientIdClientSecret: string[], public provider: TwoFactorProviderType,
-        public token: string, public remember: boolean, public captchaResponse: string, device?: DeviceRequest) {
+        public token: string, public remember: boolean, public captchaResponse: string, device?: DeviceRequest,
+        orgIdentifier?: string) {
         if (credentials != null && credentials.length > 1) {
             this.email = credentials[0];
             this.masterPasswordHash = credentials[1];
@@ -27,6 +29,7 @@ export class TokenRequest implements CaptchaProtectedRequest {
         } else if (clientIdClientSecret != null && clientIdClientSecret.length > 1) {
             this.clientId = clientIdClientSecret[0];
             this.clientSecret = clientIdClientSecret[1];
+            this.orgIdentifier = orgIdentifier;
         }
         this.device = device != null ? device : null;
     }
@@ -41,6 +44,7 @@ export class TokenRequest implements CaptchaProtectedRequest {
             obj.scope = clientId.startsWith('organization') ? 'api.organization' : 'api';
             obj.grant_type = 'client_credentials';
             obj.client_secret = this.clientSecret;
+            obj.org_identifier = this.orgIdentifier;
         } else if (this.masterPasswordHash != null && this.email != null) {
             obj.grant_type = 'password';
             obj.username = this.email;
