@@ -173,7 +173,7 @@ import { KeyConnectorUserKeyResponse } from '../models/response/keyConnectorUser
 import { SendAccessView } from '../models/view/sendAccessView';
 
 export class ApiService implements ApiServiceAbstraction {
-    protected apiKeyRefresh: (clientId: string, clientSecret: string, orgIdentifier?: string) => Promise<any>;
+    protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
     private device: DeviceType;
     private deviceType: string;
     private isWebClient = false;
@@ -1561,13 +1561,11 @@ export class ApiService implements ApiServiceAbstraction {
     protected async doApiTokenRefresh(): Promise<void> {
         const clientId = await this.tokenService.getClientId();
         const clientSecret = await this.tokenService.getClientSecret();
-        const orgIdentifier = await this.tokenService.getClientSecret();
         if (Utils.isNullOrWhitespace(clientId) || Utils.isNullOrWhitespace(clientSecret) || this.apiKeyRefresh == null) {
             throw new Error();
         }
 
-        // TODO retrieve this properly
-        await this.apiKeyRefresh(clientId, clientSecret, 'entorg');
+        await this.apiKeyRefresh(clientId, clientSecret);
     }
 
     protected async doRefreshToken(): Promise<void> {

@@ -16,7 +16,7 @@ export abstract class AuthService {
 
     logIn: (email: string, masterPassword: string, captchaToken?: string) => Promise<AuthResult>;
     logInSso: (code: string, codeVerifier: string, redirectUrl: string, orgId: string) => Promise<AuthResult>;
-    logInApiKey: (clientId: string, clientSecret: string, orgIdentifier?: string) => Promise<AuthResult>;
+    logInApiKey: (clientId: string, clientSecret: string) => Promise<AuthResult>;
     logInTwoFactor: (twoFactorProvider: TwoFactorProviderType, twoFactorToken: string,
         remember?: boolean) => Promise<AuthResult>;
     logInComplete: (email: string, masterPassword: string, twoFactorProvider: TwoFactorProviderType,

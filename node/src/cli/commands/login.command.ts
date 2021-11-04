@@ -66,7 +66,6 @@ export class LoginCommand {
             const apiIdentifiers = await this.apiIdentifiers();
             clientId = apiIdentifiers.clientId;
             clientSecret = apiIdentifiers.clientSecret;
-            orgIdentifier = apiIdentifiers.orgIdentifier;
         } else if (options.sso != null && this.canInteract) {
             const passwordOptions: any = {
                 type: 'password',
@@ -153,7 +152,7 @@ export class LoginCommand {
                 }
             } else {
                 if (clientId != null && clientSecret != null) {
-                    response = await this.authService.logInApiKey(clientId, clientSecret, orgIdentifier);
+                    response = await this.authService.logInApiKey(clientId, clientSecret);
                 } else if (ssoCode != null && ssoCodeVerifier != null) {
                     response = await this.authService.logInSso(ssoCode, ssoCodeVerifier, this.ssoRedirectUri,
                         orgIdentifier);
@@ -431,33 +430,10 @@ export class LoginCommand {
         return clientSecret;
     }
 
-    private async apiOrgIdentifier(): Promise<string> {
-        let orgIdentifier: string = null;
-
-        const storedOrgIdentifier: string = process.env.BW_ORGIDENTIFIER;
-        if (storedOrgIdentifier == null) {
-            if (this.canInteract) {
-                const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-                    type: 'input',
-                    name: 'orgIdentifier',
-                    message: 'Organization identifier',
-                });
-                orgIdentifier = answer.orgIdentifier;
-            } else {
-                orgIdentifier = null;
-            }
-        } else {
-            orgIdentifier = storedOrgIdentifier;
-        }
-
-        return orgIdentifier;
-    }
-
-    private async apiIdentifiers(): Promise<{ clientId: string, clientSecret: string, orgIdentifier?: string; }> {
+    private async apiIdentifiers(): Promise<{ clientId: string, clientSecret: string; }> {
         return {
             clientId: await this.apiClientId(),
             clientSecret: await this.apiClientSecret(),
-            orgIdentifier: await this.apiOrgIdentifier(),
         };
     }
 
