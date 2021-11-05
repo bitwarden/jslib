@@ -437,6 +437,11 @@ export class LoginCommand {
             }
 
             await this.apiService.postConvertToKeyConnector();
+
+            const urls = this.environmentService.getUrls();
+            urls.keyConnector = organization.keyConnectorUrl;
+            await this.environmentService.setUrls(urls, true);
+
             return await this.handleSuccessResponse();
         } else if (answer.convert === 'leave') {
             await this.apiService.postLeaveOrganization(organization.id);
