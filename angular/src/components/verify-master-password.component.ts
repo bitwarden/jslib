@@ -9,7 +9,7 @@ import {
 } from '@angular/forms';
 
 import { ApiService } from 'jslib-common/abstractions/api.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
+import { KeyConnectorService } from 'jslib-common/abstractions/keyConnector.service';
 
 import { VerificationType } from 'jslib-common/enums/verificationType';
 
@@ -34,10 +34,10 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
 
     private onChange: (value: Verification) => void;
 
-    constructor(private userService: UserService, private apiService: ApiService) { }
+    constructor(private keyConnectorService: KeyConnectorService, private apiService: ApiService) { }
 
     async ngOnInit() {
-        this.usesKeyConnector = await this.userService.getUsesKeyConnector();
+        this.usesKeyConnector = await this.keyConnectorService.getUsesKeyConnector();
 
         this.secret.valueChanges.subscribe(secret => {
             if (this.onChange == null) {

@@ -10,8 +10,6 @@ import { KdfType } from '../enums/kdfType';
 import { ProviderData } from '../models/data/providerData';
 import { Provider } from '../models/domain/provider';
 
-import { OrganizationUserType } from '../enums/organizationUserType';
-
 const Keys = {
     userId: 'userId',
     userEmail: 'userEmail',
@@ -22,7 +20,6 @@ const Keys = {
     providersPrefix: 'providers_',
     emailVerified: 'emailVerified',
     forcePasswordReset: 'forcePasswordReset',
-    usesKeyConnector: 'usesKeyConnector',
 };
 
 export class UserService implements UserServiceAbstraction {
@@ -33,7 +30,6 @@ export class UserService implements UserServiceAbstraction {
     private kdfIterations: number;
     private emailVerified: boolean;
     private forcePasswordReset: boolean;
-    private usesKeyConnector: boolean = false;
 
     constructor(private tokenService: TokenService, private storageService: StorageService) { }
 
@@ -62,11 +58,6 @@ export class UserService implements UserServiceAbstraction {
     setForcePasswordReset(forcePasswordReset: boolean) {
         this.forcePasswordReset = forcePasswordReset;
         return this.storageService.save(Keys.forcePasswordReset, forcePasswordReset);
-    }
-
-    setUsesKeyConnector(usesKeyConnector: boolean) {
-        this.usesKeyConnector = usesKeyConnector;
-        return this.storageService.save(Keys.usesKeyConnector, usesKeyConnector);
     }
 
     async getUserId(): Promise<string> {
@@ -116,10 +107,6 @@ export class UserService implements UserServiceAbstraction {
             this.forcePasswordReset = await this.storageService.get<boolean>(Keys.forcePasswordReset);
         }
         return this.forcePasswordReset;
-    }
-
-    async getUsesKeyConnector(): Promise<boolean> {
-        return this.usesKeyConnector ??= await this.storageService.get<boolean>(Keys.usesKeyConnector);
     }
 
     async clear(): Promise<any> {
@@ -242,15 +229,5 @@ export class UserService implements UserServiceAbstraction {
 
     async clearProviders(userId: string): Promise<any> {
         await this.storageService.remove(Keys.providersPrefix + userId);
-    }
-
-    async mustConvertToKeyConnector(): Promise<boolean> {
-        const orgs = await this.getAllOrganizations();
-        const orgWithCryptoAgent = orgs.find(o => o.usesKeyConnector);
-        const orgUsesKeyConnector = orgWithCryptoAgent?.type !== OrganizationUserType.Owner
-            && orgWithCryptoAgent?.type !== OrganizationUserType.Admin;
-        const userIsNotUsingKeyConnector = !await this.getUsesKeyConnector();
-
-        return orgUsesKeyConnector && userIsNotUsingKeyConnector;
     }
 }

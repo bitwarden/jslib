@@ -22,6 +22,7 @@ import { CryptoService } from '../abstractions/crypto.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 import { EnvironmentService } from '../abstractions/environment.service';
 import { I18nService } from '../abstractions/i18n.service';
+import { KeyConnectorService } from '../abstractions/keyConnector.service';
 import { LogService } from '../abstractions/log.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
@@ -103,7 +104,7 @@ export class AuthService implements AuthServiceAbstraction {
         protected platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
         private vaultTimeoutService: VaultTimeoutService, private logService: LogService,
         private cryptoFunctionService: CryptoFunctionService, private environmentService: EnvironmentService,
-        private setCryptoKeys = true) {
+        private keyConnectorService: KeyConnectorService, private setCryptoKeys = true) {
     }
 
     init() {
@@ -368,12 +369,9 @@ export class AuthService implements AuthServiceAbstraction {
             if (code == null || tokenResponse.key != null) {
 
                 if (tokenResponse.keyConnectorUrl != null) {
-                    await this.setKeysFromKeyConnector(tokenResponse.keyConnectorUrl);
-                } else {
-                    const keyConnectorUrl = this.environmentService.getKeyConnectorUrl();
-                    if (keyConnectorUrl != null) {
-                        await this.setKeysFromKeyConnector(keyConnectorUrl);
-                    }
+                    await this.keyConnectorService.getAndSetKey(tokenResponse.keyConnectorUrl);
+                } else if (this.environmentService.getKeyConnectorUrl() != null) {
+                    await this.keyConnectorService.getAndSetKey();
                 }
 
                 await this.cryptoService.setEncKey(tokenResponse.key);
@@ -421,18 +419,6 @@ export class AuthService implements AuthServiceAbstraction {
         }
         this.messagingService.send('loggedIn');
         return result;
-    }
-
-    private async setKeysFromKeyConnector(keyConnectorUrl: string) {
-        try {
-            const userKeyResponse = await this.apiService.getUserKeyFromKeyConnector(keyConnectorUrl);
-            const keyArr = Utils.fromB64ToArray(userKeyResponse.key);
-            const k = new SymmetricCryptoKey(keyArr);
-            await this.cryptoService.setKey(k);
-        } catch (e) {
-            this.logService.error(e);
-            throw new Error('Unable to reach key connector');
-        }
     }
 
     private clearState(): void {

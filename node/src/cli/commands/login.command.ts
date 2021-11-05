@@ -14,6 +14,7 @@ import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { KeyConnectorService } from 'jslib-common/abstractions/keyConnector.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
@@ -49,7 +50,8 @@ export class LoginCommand {
         protected passwordGenerationService: PasswordGenerationService,
         protected cryptoFunctionService: CryptoFunctionService, protected platformUtilsService: PlatformUtilsService,
         protected userService: UserService, protected cryptoService: CryptoService,
-        protected policyService: PolicyService, clientId: string, private syncService: SyncService) {
+        protected policyService: PolicyService, clientId: string, private syncService: SyncService,
+        protected keyConnectorService: KeyConnectorService) {
         this.clientId = clientId;
     }
 
@@ -264,8 +266,8 @@ export class LoginCommand {
             await this.syncService.fullSync(true);
 
             // Handle converting to Key Connector if required
-            if (await this.userService.mustConvertToKeyConnector()) {
-                return await this.convertToKeyConnector();
+            if (await this.keyConnectorService.userNeedsMigration()) {
+                return await this.migrateToKeyConnector();
             }
 
             // Handle Updating Temp Password if NOT using an API Key for authentication
@@ -396,7 +398,7 @@ export class LoginCommand {
         return userInput;
     }
 
-    private async convertToKeyConnector() {
+    private async migrateToKeyConnector() {
         // If no interaction available, alert user to use web vault
         if (!this.canInteract) {
             await this.logout();
@@ -405,7 +407,7 @@ export class LoginCommand {
                 'In order to access the vault, you must opt-in to Key Connector now via the web vault. You have been logged out.', null));
         }
 
-        const organization = (await this.userService.getAllOrganizations()).find(o => o.usesKeyConnector);
+        const organization = await this.keyConnectorService.getManagingOrganization();
 
         const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
             type: 'list',
@@ -428,16 +430,9 @@ export class LoginCommand {
         });
 
         if (answer.convert === 'remove') {
-            const key = await this.cryptoService.getKey();
-            try {
-                const keyConnectorRequest = new KeyConnectorUserKeyRequest(key.encKeyB64);
-                await this.apiService.postUserKeyToKeyConnector(organization.keyConnectorUrl, keyConnectorRequest);
-            } catch (e) {
-                throw new Error('Unable to reach key connector');
-            }
+            await this.keyConnectorService.migrateUser();
 
-            await this.apiService.postConvertToKeyConnector();
-
+            // Update environment URL - required for api key login
             const urls = this.environmentService.getUrls();
             urls.keyConnector = organization.keyConnectorUrl;
             await this.environmentService.setUrls(urls, true);

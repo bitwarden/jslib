@@ -1,20 +1,17 @@
 import {
-    Component,
     Directive,
     OnInit,
 } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { ApiService } from 'jslib-common/abstractions/api.service';
-import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { KeyConnectorService } from 'jslib-common/abstractions/keyConnector.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { SyncService } from 'jslib-common/abstractions/sync.service';
 import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { Organization } from 'jslib-common/models/domain/organization';
-
-import { KeyConnectorUserKeyRequest } from 'jslib-common/models/request/keyConnectorUserKeyRequest';
 
 @Directive()
 export class RemovePasswordComponent implements OnInit {
@@ -28,12 +25,12 @@ export class RemovePasswordComponent implements OnInit {
     email: string;
 
     constructor(private router: Router, private userService: UserService,
-        private apiService: ApiService, private cryptoService: CryptoService,
-        private syncService: SyncService, private platformUtilsService: PlatformUtilsService,
-        private i18nService: I18nService) { }
+        private apiService: ApiService, private syncService: SyncService,
+        private platformUtilsService: PlatformUtilsService, private i18nService: I18nService,
+        private keyConnectorService: KeyConnectorService) { }
 
     async ngOnInit() {
-        this.organization = (await this.userService.getAllOrganizations())[0];
+        this.organization = await this.keyConnectorService.getManagingOrganization();
         this.email = await this.userService.getEmail();
         await this.syncService.fullSync(false);
         this.loading = false;
@@ -41,7 +38,7 @@ export class RemovePasswordComponent implements OnInit {
 
     async convert() {
         this.continuing = true;
-        this.actionPromise = this.convertAccount();
+        this.actionPromise = this.keyConnectorService.migrateUser();
 
         try {
             await this.actionPromise;
@@ -71,17 +68,5 @@ export class RemovePasswordComponent implements OnInit {
         } catch (e) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), e);
         }
-    }
-
-    private async convertAccount() {
-        const key = await this.cryptoService.getKey();
-        try {
-            const keyConnectorRequest = new KeyConnectorUserKeyRequest(key.encKeyB64);
-            await this.apiService.postUserKeyToKeyConnector(this.organization.keyConnectorUrl, keyConnectorRequest);
-        } catch (e) {
-            throw new Error('Unable to reach key connector');
-        }
-
-        await this.apiService.postConvertToKeyConnector();
     }
 }

@@ -4,18 +4,13 @@ import { ProviderData } from '../models/data/providerData';
 import { Organization } from '../models/domain/organization';
 import { Provider } from '../models/domain/provider';
 
-import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
-
 import { KdfType } from '../enums/kdfType';
-
-import { Verification } from '../types/verification';
 
 export abstract class UserService {
     setInformation: (userId: string, email: string, kdf: KdfType, kdfIterations: number) => Promise<any>;
     setEmailVerified: (emailVerified: boolean) => Promise<any>;
     setSecurityStamp: (stamp: string) => Promise<any>;
     setForcePasswordReset: (forcePasswordReset: boolean) => Promise<any>;
-    setUsesKeyConnector: (usesKeyConnector: boolean) => Promise<void>;
     getUserId: () => Promise<string>;
     getEmail: () => Promise<string>;
     getSecurityStamp: () => Promise<string>;
@@ -23,7 +18,6 @@ export abstract class UserService {
     getKdfIterations: () => Promise<number>;
     getEmailVerified: () => Promise<boolean>;
     getForcePasswordReset: () => Promise<boolean>;
-    getUsesKeyConnector: () => Promise<boolean>;
     clear: () => Promise<any>;
     isAuthenticated: () => Promise<boolean>;
     canAccessPremium: () => Promise<boolean>;
@@ -36,5 +30,4 @@ export abstract class UserService {
     getAllProviders: () => Promise<Provider[]>;
     replaceProviders: (providers: { [id: string]: ProviderData; }) => Promise<any>;
     clearProviders: (userId: string) => Promise<any>;
-    mustConvertToKeyConnector: () => Promise<boolean>;
 }

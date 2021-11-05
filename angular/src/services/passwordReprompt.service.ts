@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
+import { KeyConnectorService } from 'jslib-common/abstractions/keyConnector.service';
 import { PasswordRepromptService as PasswordRepromptServiceAbstraction } from 'jslib-common/abstractions/passwordReprompt.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { PasswordRepromptComponent } from '../components/password-reprompt.component';
 import { ModalService } from './modal.service';
@@ -10,7 +10,7 @@ import { ModalService } from './modal.service';
 export class PasswordRepromptService implements PasswordRepromptServiceAbstraction {
     protected component = PasswordRepromptComponent;
 
-    constructor(private modalService: ModalService, private userService: UserService) { }
+    constructor(private modalService: ModalService, private keyConnectorService: KeyConnectorService) { }
 
     protectedFields() {
         return ['TOTP', 'Password', 'H_Field', 'Card Number', 'Security Code'];
@@ -32,6 +32,6 @@ export class PasswordRepromptService implements PasswordRepromptServiceAbstracti
     }
 
     async enabled() {
-        return !await this.userService.getUsesKeyConnector();
+        return !await this.keyConnectorService.getUsesKeyConnector();
     }
 }
