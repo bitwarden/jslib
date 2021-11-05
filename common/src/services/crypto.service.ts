@@ -328,8 +328,8 @@ export class CryptoService implements CryptoServiceAbstraction {
         return await this.hasKeyInMemory() || await this.hasKeyStored(KeySuffixOptions.Auto) || await this.hasKeyStored(KeySuffixOptions.Biometric);
     }
 
-    async hasKeyInMemory(): Promise<boolean> {
-        return await this.stateService.getCryptoMasterKey() != null;
+    async hasKeyInMemory(userId?: string): Promise<boolean> {
+        return await this.stateService.getCryptoMasterKey({ userId: userId }) != null;
     }
 
     async hasKeyStored(keySuffix: KeySuffixOptions, userId?: string): Promise<boolean> {

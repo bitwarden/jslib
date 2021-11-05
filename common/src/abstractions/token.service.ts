@@ -12,7 +12,7 @@ export abstract class TokenService {
     setTwoFactorToken: (token: string, email: string) => Promise<any>;
     getTwoFactorToken: (email: string) => Promise<string>;
     clearTwoFactorToken: (email: string) => Promise<any>;
-    clearToken: () => Promise<any>;
+    clearToken: (userId?: string) => Promise<any>;
     decodeToken: (token?: string) => any;
     getTokenExpirationDate: () => Promise<Date>;
     tokenSecondsRemaining: (offsetSeconds?: number) => Promise<number>;

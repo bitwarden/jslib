@@ -369,9 +369,9 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         return await this.stateService.setEncryptedPasswordGenerationHistory(newHistory);
     }
 
-    async clear(): Promise<any> {
-        await this.stateService.setEncryptedPasswordGenerationHistory(null);
-        await this.stateService.setDecryptedPasswordGenerationHistory(null);
+    async clear(userId?: string): Promise<any> {
+        await this.stateService.setEncryptedPasswordGenerationHistory(null, { userId: userId });
+        await this.stateService.setDecryptedPasswordGenerationHistory(null, { userId: userId });
     }
 
     passwordStrength(password: string, userInputs: string[] = null): zxcvbn.ZXCVBNResult {

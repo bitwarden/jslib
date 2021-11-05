@@ -27,8 +27,8 @@ export class OrganizationService implements OrganizationServiceAbstraction {
         return organizations.find(o => o.identifier === identifier);
     }
 
-    async getAll(): Promise<Organization[]> {
-        const organizations = await this.stateService.getOrganizations();
+    async getAll(userId?: string): Promise<Organization[]> {
+        const organizations = await this.stateService.getOrganizations({ userId: userId });
         const response: Organization[] = [];
         for (const id in organizations) {
             if (organizations.hasOwnProperty(id) && !organizations[id].isProviderUser) {

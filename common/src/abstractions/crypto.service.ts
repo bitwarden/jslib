@@ -29,7 +29,7 @@ export abstract class CryptoService {
     getOrgKey: (orgId: string) => Promise<SymmetricCryptoKey>;
     getProviderKey: (providerId: string) => Promise<SymmetricCryptoKey>;
     hasKey: () => Promise<boolean>;
-    hasKeyInMemory: () => Promise<boolean>;
+    hasKeyInMemory: (userId?: string) => Promise<boolean>;
     hasKeyStored: (keySuffix?: KeySuffixOptions, userId?: string) => Promise<boolean>;
     hasEncKey: () => Promise<boolean>;
     clearKey: (clearSecretStorage?: boolean, userId?: string) => Promise<any>;
@@ -39,7 +39,7 @@ export abstract class CryptoService {
     clearOrgKeys: (memoryOnly?: boolean, userId?: string) => Promise<any>;
     clearProviderKeys: (memoryOnly?: boolean) => Promise<any>;
     clearPinProtectedKey: () => Promise<any>;
-    clearKeys: () => Promise<any>;
+    clearKeys: (userId?: string) => Promise<any>;
     toggleKey: () => Promise<any>;
     makeKey: (password: string, salt: string, kdf: KdfType, kdfIterations: number) => Promise<SymmetricCryptoKey>;
     makeKeyFromPin: (pin: string, salt: string, kdf: KdfType, kdfIterations: number,

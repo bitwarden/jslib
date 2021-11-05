@@ -133,9 +133,9 @@ export class CollectionService implements CollectionServiceAbstraction {
         await this.stateService.setEncryptedCollections(collections);
     }
 
-    async clear(): Promise<any> {
-        await this.clearCache();
-        await this.stateService.setEncryptedCollections(null);
+    async clear(userId?: string): Promise<any> {
+        await this.clearCache(userId);
+        await this.stateService.setEncryptedCollections(null, { userId: userId });
     }
 
     async delete(id: string | string[]): Promise<any> {

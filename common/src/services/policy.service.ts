@@ -28,19 +28,19 @@ export class PolicyService implements PolicyServiceAbstraction {
         await this.stateService.setDecryptedPolicies(null);
     }
 
-    async getAll(type?: PolicyType): Promise<Policy[]> {
+    async getAll(type?: PolicyType, userId?: string): Promise<Policy[]> {
         let response: Policy[] = [];
-        const decryptedPolicies = await this.stateService.getDecryptedPolicies();
+        const decryptedPolicies = await this.stateService.getDecryptedPolicies({ userId: userId });
         if (decryptedPolicies != null) {
             response = decryptedPolicies;
         } else {
-            const diskPolicies = await this.stateService.getEncryptedPolicies();
+            const diskPolicies = await this.stateService.getEncryptedPolicies({ userId: userId });
             for (const id in diskPolicies) {
                 if (diskPolicies.hasOwnProperty(id)) {
                     response.push(new Policy(diskPolicies[id]));
                 }
             }
-            await this.stateService.setDecryptedPolicies(response);
+            await this.stateService.setDecryptedPolicies(response, { userId: userId });
         }
         if (type != null) {
             return response.filter(policy => policy.type === type);
@@ -71,9 +71,9 @@ export class PolicyService implements PolicyServiceAbstraction {
         await this.stateService.setEncryptedPolicies(policies);
     }
 
-    async clear(): Promise<any> {
-        await this.stateService.setDecryptedPolicies(null);
-        await this.stateService.setEncryptedPolicies(null);
+    async clear(userId?: string): Promise<any> {
+        await this.stateService.setDecryptedPolicies(null, { userId: userId });
+        await this.stateService.setEncryptedPolicies(null, { userId: userId });
     }
 
     async getMasterPasswordPolicyOptions(policies?: Policy[]): Promise<MasterPasswordPolicyOptions> {
@@ -183,9 +183,9 @@ export class PolicyService implements PolicyServiceAbstraction {
         return policiesData.map(p => new Policy(p));
     }
 
-    async policyAppliesToUser(policyType: PolicyType, policyFilter?: (policy: Policy) => boolean) {
-        const policies = await this.getAll(policyType);
-        const organizations = await this.organizationService.getAll();
+    async policyAppliesToUser(policyType: PolicyType, policyFilter?: (policy: Policy) => boolean, userId?: string) {
+        const policies = await this.getAll(policyType, userId);
+        const organizations = await this.organizationService.getAll(userId);
         let filteredPolicies;
 
         if (policyFilter != null) {

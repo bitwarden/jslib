@@ -59,12 +59,8 @@ export class SyncService implements SyncServiceAbstraction {
         return null;
     }
 
-    async setLastSync(date: Date): Promise<any> {
-        if (await this.stateService.getUserId()) {
-            return;
-        }
-
-        await this.stateService.setLastSync(date.toJSON());
+    async setLastSync(date: Date, userId?: string): Promise<any> {
+        await this.stateService.setLastSync(date.toJSON(), { userId: userId });
     }
 
     async fullSync(forceSync: boolean, allowThrowOnError = false): Promise<boolean> {

@@ -24,8 +24,8 @@ export class SettingsService implements SettingsServiceAbstraction {
         await this.setSettingsKey(Keys.equivalentDomains, equivalentDomains);
     }
 
-    async clear(): Promise<void> {
-        await this.stateService.setSettings(null);
+    async clear(userId?: string): Promise<void> {
+        await this.stateService.setSettings(null, { userId: userId });
     }
 
     // Helpers

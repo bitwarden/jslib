@@ -709,9 +709,9 @@ export class CipherService implements CipherServiceAbstraction {
         await this.stateService.setEncryptedCiphers(ciphers);
     }
 
-    async clear(): Promise<any> {
-        await this.clearEncryptedCiphersState();
-        await this.clearCache();
+    async clear(userId?: string): Promise<any> {
+        await this.clearEncryptedCiphersState(userId);
+        await this.clearCache(userId);
     }
 
     async moveManyWithServer(ids: string[], folderId: string): Promise<any> {
@@ -1094,8 +1094,8 @@ export class CipherService implements CipherServiceAbstraction {
         }
     }
 
-    private async clearEncryptedCiphersState() {
-        await this.stateService.setEncryptedCiphers(null);
+    private async clearEncryptedCiphersState(userId?: string) {
+        await this.stateService.setEncryptedCiphers(null, { userId: userId });
     }
 
     private async clearDecryptedCiphersState(userId?: string) {

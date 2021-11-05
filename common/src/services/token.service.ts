@@ -93,11 +93,11 @@ export class TokenService implements TokenServiceAbstraction {
         return await this.stateService.setTwoFactorToken(null);
     }
 
-    async clearToken(): Promise<any> {
-        await this.stateService.setAccessToken(null);
-        await this.stateService.setRefreshToken(null);
-        await this.stateService.setApiKeyClientId(null);
-        await this.stateService.setApiKeyClientSecret(null);
+    async clearToken(userId?: string): Promise<any> {
+        await this.stateService.setAccessToken(null, { userId: userId });
+        await this.stateService.setRefreshToken(null, { userId: userId });
+        await this.stateService.setApiKeyClientId(null, { userId: userId });
+        await this.stateService.setApiKeyClientSecret(null, { userId: userId });
     }
 
     // jwthelper methods

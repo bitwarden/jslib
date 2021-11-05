@@ -147,9 +147,9 @@ export class FolderService implements FolderServiceAbstraction {
         await this.stateService.setEncryptedFolders(folders);
     }
 
-    async clear(): Promise<any> {
-        await this.stateService.setDecryptedFolders(null);
-        await this.stateService.setEncryptedFolders(null);
+    async clear(userId?: string): Promise<any> {
+        await this.stateService.setDecryptedFolders(null, { userId: userId });
+        await this.stateService.setEncryptedFolders(null, { userId: userId });
     }
 
     async delete(id: string | string[]): Promise<any> {

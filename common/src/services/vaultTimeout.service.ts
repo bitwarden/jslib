@@ -12,8 +12,6 @@ import { VaultTimeoutService as VaultTimeoutServiceAbstraction } from '../abstra
 import { KeySuffixOptions } from '../enums/keySuffixOptions';
 
 import { PolicyType } from '../enums/policyType';
-import { StorageLocation } from '../enums/storageLocation';
-
 
 export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     private inited = false;
@@ -23,7 +21,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         protected platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
         private searchService: SearchService, private tokenService: TokenService,
         private policyService: PolicyService, private stateService: StateService,
-        private lockedCallback: () => Promise<void> = null, private loggedOutCallback: () => Promise<void> = null) {
+        private lockedCallback: () => Promise<void> = null, private loggedOutCallback: (userId?: string) => Promise<void> = null) {
     }
 
     init(checkOnInterval: boolean) {
@@ -50,7 +48,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
             return (await this.cryptoService.getKey(KeySuffixOptions.Auto, userId)) != null;
         }
 
-        return !(await this.cryptoService.hasKeyInMemory());
+        return !(await this.cryptoService.hasKeyInMemory(userId));
     }
 
     async checkVaultTimeout(): Promise<void> {
@@ -59,32 +57,34 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
             return;
         }
 
-        // "is logged out check" - similar to isLocked, below
-        const authed = await this.stateService.getIsAuthenticated();
-        if (!authed) {
-            return;
-        }
+        for (const userId in this.stateService.accounts.getValue()) {
+            if (userId != null) {
+                if (await this.isLoggedOut(userId)) {
+                    return;
+                }
 
-        if (await this.isLocked()) {
-            return;
-        }
+                if (await this.isLocked(userId)) {
+                    return;
+                }
 
-        const vaultTimeout = await this.getVaultTimeout();
-        if (vaultTimeout == null || vaultTimeout < 0) {
-            return;
-        }
+                const vaultTimeout = await this.getVaultTimeout(userId);
+                if (vaultTimeout == null || vaultTimeout < 0) {
+                    return;
+                }
 
-        const lastActive = await this.stateService.getLastActive();
-        if (lastActive == null) {
-            return;
-        }
+                const lastActive = await this.stateService.getLastActive({ userId: userId });
+                if (lastActive == null) {
+                    return;
+                }
 
-        const vaultTimeoutSeconds = vaultTimeout * 60;
-        const diffSeconds = ((new Date()).getTime() - lastActive) / 1000;
-        if (diffSeconds >= vaultTimeoutSeconds) {
-            // Pivot based on the saved vault timeout action
-            const timeoutAction = await this.stateService.getVaultTimeoutAction();
-            timeoutAction === 'logOut' ? await this.logOut() : await this.lock(true);
+                const vaultTimeoutSeconds = vaultTimeout * 60;
+                const diffSeconds = ((new Date()).getTime() - lastActive) / 1000;
+                if (diffSeconds >= vaultTimeoutSeconds) {
+                    // Pivot based on the saved vault timeout action
+                    const timeoutAction = await this.stateService.getVaultTimeoutAction({ userId: userId });
+                    timeoutAction === 'logOut' ? await this.logOut() : await this.lock(true, userId);
+                }
+            }
         }
     }
 
@@ -114,9 +114,9 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         }
     }
 
-    async logOut(): Promise<void> {
+    async logOut(userId?: string): Promise<void> {
         if (this.loggedOutCallback != null) {
-            await this.loggedOutCallback();
+            await this.loggedOutCallback(userId);
         }
     }
 
@@ -137,11 +137,11 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         return await this.stateService.getBiometricUnlock();
     }
 
-    async getVaultTimeout(): Promise<number> {
-        const vaultTimeout = await this.stateService.getVaultTimeout();
+    async getVaultTimeout(userId?: string): Promise<number> {
+        const vaultTimeout = await this.stateService.getVaultTimeout( { userId: userId } );
 
-        if (await this.policyService.policyAppliesToUser(PolicyType.MaximumVaultTimeout)) {
-            const policy = await this.policyService.getAll(PolicyType.MaximumVaultTimeout);
+        if (await this.policyService.policyAppliesToUser(PolicyType.MaximumVaultTimeout, null, userId)) {
+            const policy = await this.policyService.getAll(PolicyType.MaximumVaultTimeout, userId);
             // Remove negative values, and ensure it's smaller than maximum allowed value according to policy
             let timeout = Math.min(vaultTimeout, policy[0].data.minutes);
 
@@ -151,7 +151,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
 
             // We really shouldn't need to set the value here, but multiple services relies on this value being correct.
             if (vaultTimeout !== timeout) {
-                await this.stateService.setVaultTimeout(timeout);
+                await this.stateService.setVaultTimeout(timeout, { userId: userId });
             }
 
             return timeout;
@@ -160,9 +160,13 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         return vaultTimeout;
     }
 
-    async clear(): Promise<void> {
-        await this.stateService.setEverBeenUnlocked(false);
-        await this.stateService.setDecryptedPinProtected(null);
-        await this.stateService.setProtectedPin(null);
+    async clear(userId?: string): Promise<void> {
+        await this.stateService.setEverBeenUnlocked(false, { userId: userId });
+        await this.stateService.setDecryptedPinProtected(null, { userId: userId });
+        await this.stateService.setProtectedPin(null, { userId: userId });
+    }
+
+    private async isLoggedOut(userId?: string): Promise<boolean> {
+        return !(await this.stateService.getIsAuthenticated({ userId: userId }));
     }
 }

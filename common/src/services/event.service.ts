@@ -64,12 +64,12 @@ export class EventService implements EventServiceAbstraction {
         }
     }
 
-    async uploadEvents(): Promise<any> {
-        const authed = await this.stateService.getIsAuthenticated();
+    async uploadEvents(userId?: string): Promise<any> {
+        const authed = await this.stateService.getIsAuthenticated({ userId: userId });
         if (!authed) {
             return;
         }
-        const eventCollection = await this.stateService.getEventCollection();
+        const eventCollection = await this.stateService.getEventCollection({ userId: userId });
         if (eventCollection == null || eventCollection.length === 0) {
             return;
         }
@@ -82,13 +82,13 @@ export class EventService implements EventServiceAbstraction {
         });
         try {
             await this.apiService.postEventsCollect(request);
-            this.clearEvents();
+            this.clearEvents(userId);
         } catch (e) {
             this.logService.error(e);
         }
     }
 
-    async clearEvents(): Promise<any> {
-        await this.stateService.setEventCollection(null);
+    async clearEvents(userId?: string): Promise<any> {
+        await this.stateService.setEventCollection(null, { userId: userId });
     }
 }
