@@ -43,15 +43,15 @@ export class StateService implements StateServiceAbstraction {
     }
 
     private get defaultOnDiskOptions(): StorageOptions {
-        return { storageLocation: StorageLocation.Disk, htmlStorageLocation: HtmlStorageLocation.Session, userId: this.state.activeUserId };
+        return { storageLocation: StorageLocation.Disk, htmlStorageLocation: HtmlStorageLocation.Session, userId: this.state.activeUserId, useSecureStorage: true };
     }
 
     private get defaultOnDiskLocalOptions(): StorageOptions {
-        return { storageLocation: StorageLocation.Disk, htmlStorageLocation: HtmlStorageLocation.Local, userId: this.state.activeUserId };
+        return { storageLocation: StorageLocation.Disk, htmlStorageLocation: HtmlStorageLocation.Local, userId: this.state.activeUserId, useSecureStorage: true };
     }
 
     private get defaultOnDiskMemoryOptions(): StorageOptions {
-        return { storageLocation: StorageLocation.Disk, htmlStorageLocation: HtmlStorageLocation.Memory, userId: this.state.activeUserId };
+        return { storageLocation: StorageLocation.Disk, htmlStorageLocation: HtmlStorageLocation.Memory, userId: this.state.activeUserId, useSecureStorage: true };
     }
 
     private get defaultSecureStorageOptions(): StorageOptions {
@@ -69,7 +69,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getEnableGravitars(options?: StorageOptions): Promise<boolean> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskLocalOptions))).enableGravitars ?? true;
+        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskLocalOptions)))?.enableGravitars ?? true;
     }
 
     async getAddEditCipherInfo(options?: StorageOptions): Promise<any> {
@@ -1291,7 +1291,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     private async saveAccountToMemory(account: Account): Promise<void> {
-        if (this.getAccountFromMemory({userId: account.userId}) !== null) {
+        if (this.getAccountFromMemory({ userId: account.userId }) !== null) {
             this.state.accounts[account.userId] = account;
         }
         await this.pushAccounts();
@@ -1317,7 +1317,7 @@ export class StateService implements StateServiceAbstraction {
         }
 
         for (const i in this.state.accounts) {
-            if (this.state.accounts[i].userId === this.state.activeUserId ) {
+            if (this.state.accounts[i].userId === this.state.activeUserId) {
                 this.state.accounts[i].authenticationStatus = AuthenticationStatus.Active;
             } else {
                 const vaultTimeout = await this.getVaultTimeout({
