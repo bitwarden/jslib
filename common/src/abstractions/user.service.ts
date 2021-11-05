@@ -36,4 +36,5 @@ export abstract class UserService {
     getAllProviders: () => Promise<Provider[]>;
     replaceProviders: (providers: { [id: string]: ProviderData; }) => Promise<any>;
     clearProviders: (userId: string) => Promise<any>;
+    mustConvertToKeyConnector: () => Promise<boolean>;
 }

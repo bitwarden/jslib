@@ -10,6 +10,8 @@ import { KdfType } from '../enums/kdfType';
 import { ProviderData } from '../models/data/providerData';
 import { Provider } from '../models/domain/provider';
 
+import { OrganizationUserType } from '../enums/organizationUserType';
+
 const Keys = {
     userId: 'userId',
     userEmail: 'userEmail',
@@ -240,5 +242,15 @@ export class UserService implements UserServiceAbstraction {
 
     async clearProviders(userId: string): Promise<any> {
         await this.storageService.remove(Keys.providersPrefix + userId);
+    }
+
+    async mustConvertToKeyConnector(): Promise<boolean> {
+        const orgs = await this.getAllOrganizations();
+        const orgWithCryptoAgent = orgs.find(o => o.usesKeyConnector);
+        const orgUsesKeyConnector = orgWithCryptoAgent?.type !== OrganizationUserType.Owner
+            && orgWithCryptoAgent?.type !== OrganizationUserType.Admin;
+        const userIsNotUsingKeyConnector = !await this.getUsesKeyConnector();
+
+        return orgUsesKeyConnector && userIsNotUsingKeyConnector;
     }
 }

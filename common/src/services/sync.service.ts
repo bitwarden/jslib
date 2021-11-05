@@ -110,6 +110,10 @@ export class SyncService implements SyncServiceAbstraction {
             await this.syncSettings(userId, response.domains);
             await this.syncPolicies(response.policies);
 
+            if (await this.userService.mustConvertToKeyConnector()) {
+                this.messagingService.send('convertAccountToKeyConnector');
+            }
+
             await this.setLastSync(now);
             return this.syncCompleted(true);
         } catch (e) {
@@ -320,13 +324,6 @@ export class SyncService implements SyncServiceAbstraction {
                 organizations[o.id].isProviderUser = true;
             }
         });
-
-        const orgWithCryptoAgent = response.organizations.find(o => o.usesKeyConnector);
-        const orgUsesKeyConnector = orgWithCryptoAgent?.type !== OrganizationUserType.Owner && orgWithCryptoAgent?.type !== OrganizationUserType.Admin;
-        const userIsNotUsingKeyConnector = !response.usesKeyConnector;
-        if (this.tokenService.getIsExternal() && orgUsesKeyConnector && userIsNotUsingKeyConnector) {
-            this.messagingService.send('convertAccountToKeyConnector');
-        }
 
         return Promise.all([
             this.userService.replaceOrganizations(organizations),
