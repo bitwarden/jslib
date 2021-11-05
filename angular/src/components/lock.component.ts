@@ -47,17 +47,19 @@ export class LockComponent implements OnInit {
         protected apiService: ApiService, private logService: LogService) { }
 
     async ngOnInit() {
-        this.pinSet = await this.vaultTimeoutService.isPinLockSet();
-        this.pinLock = (this.pinSet[0] && (await this.stateService.getEncryptedPinProtected()) != null) || this.pinSet[1];
-        this.supportsBiometric = await this.platformUtilsService.supportsBiometric();
-        this.biometricLock = await this.vaultTimeoutService.isBiometricLockSet() &&
-            (await this.cryptoService.hasKeyStored(KeySuffixOptions.Biometric) || !this.platformUtilsService.supportsSecureStorage());
-        this.biometricText = await this.stateService.getBiometricText();
-        this.email = await this.stateService.getEmail();
+        this.stateService.accounts.subscribe(async _accounts => {
+            this.pinSet = await this.vaultTimeoutService.isPinLockSet();
+            this.pinLock = (this.pinSet[0] && (await this.stateService.getEncryptedPinProtected()) != null) || this.pinSet[1];
+            this.supportsBiometric = await this.platformUtilsService.supportsBiometric();
+            this.biometricLock = await this.vaultTimeoutService.isBiometricLockSet() &&
+                (await this.cryptoService.hasKeyStored(KeySuffixOptions.Biometric) || !this.platformUtilsService.supportsSecureStorage());
+            this.biometricText = await this.stateService.getBiometricText();
+            this.email = await this.stateService.getEmail();
 
-        const webVaultUrl = this.environmentService.getWebVaultUrl();
-        const vaultUrl = webVaultUrl === 'https://vault.bitwarden.com' ? 'https://bitwarden.com' : webVaultUrl;
-        this.webVaultHostname = Utils.getHostname(vaultUrl);
+            const webVaultUrl = this.environmentService.getWebVaultUrl();
+            const vaultUrl = webVaultUrl === 'https://vault.bitwarden.com' ? 'https://bitwarden.com' : webVaultUrl;
+            this.webVaultHostname = Utils.getHostname(vaultUrl);
+        });
     }
 
     async submit() {
