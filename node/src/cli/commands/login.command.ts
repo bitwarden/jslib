@@ -22,6 +22,7 @@ import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { Response } from '../models/response';
 
+import { KeyConnectorUserKeyRequest } from 'jslib-common/models/request/keyConnectorUserKeyRequest';
 import { UpdateTempPasswordRequest } from 'jslib-common/models/request/updateTempPasswordRequest';
 
 import { MessageResponse } from '../models/response/messageResponse';
@@ -259,9 +260,16 @@ export class LoginCommand {
                     ' through the web vault to set your master password.');
             }
 
+            // Full sync required for the reset password and key connector checks
+            await this.syncService.fullSync(true);
+
+            // Handle converting to Key Connector if required
+            if (await this.userService.mustConvertToKeyConnector()) {
+                return await this.convertToKeyConnector();
+            }
+
             // Handle Updating Temp Password if NOT using an API Key for authentication
             if (response.forcePasswordReset && (clientId == null && clientSecret == null)) {
-                await this.syncService.fullSync(true);
                 return await this.updateTempPassword();
             }
 
@@ -386,6 +394,59 @@ export class LoginCommand {
             userInput = userInput.concat(this.email.substr(0, atPosition).trim().toLowerCase().split(/[^A-Za-z0-9]/));
         }
         return userInput;
+    }
+
+    private async convertToKeyConnector() {
+        // If no interaction available, alert user to use web vault
+        if (!this.canInteract) {
+            await this.logout();
+            this.authService.logOut(() => { /* Do nothing */ });
+            return Response.error(new MessageResponse('An organization you are a member of is using Key Connector. ' +
+                'In order to access the vault, you must opt-in to Key Connector now via the web vault. You have been logged out.', null));
+        }
+
+        const organization = (await this.userService.getAllOrganizations()).find(o => o.usesKeyConnector);
+
+        const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+            type: 'list',
+            name: 'convert',
+            message: organization.name + ' is using a self-hosted key server. A master password is no longer required to log in for members of this organization. ',
+            choices: [
+                {
+                    name: 'Remove master password and log in',
+                    value: 'remove',
+                },
+                {
+                    name: 'Leave organization and log in',
+                    value: 'leave',
+                },
+                {
+                    name: 'Exit',
+                    value: 'exit',
+                },
+            ],
+        });
+
+        if (answer.convert === 'remove') {
+            const key = await this.cryptoService.getKey();
+            try {
+                const keyConnectorRequest = new KeyConnectorUserKeyRequest(key.encKeyB64);
+                await this.apiService.postUserKeyToKeyConnector(organization.keyConnectorUrl, keyConnectorRequest);
+            } catch (e) {
+                throw new Error('Unable to reach key connector');
+            }
+
+            await this.apiService.postConvertToKeyConnector();
+            return await this.handleSuccessResponse();
+        } else if (answer.convert === 'leave') {
+            await this.apiService.postLeaveOrganization(organization.id);
+            await this.syncService.fullSync(true);
+            return await this.handleSuccessResponse();
+        } else {
+            await this.logout();
+            this.authService.logOut(() => { /* Do nothing */ });
+            return Response.error('You have been logged out.');
+        }
     }
 
     private async apiClientId(): Promise<string> {
