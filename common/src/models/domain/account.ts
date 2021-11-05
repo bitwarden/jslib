@@ -182,14 +182,5 @@ export class Account {
 
         return false;
     }
-
-    private get hasMasterKey(): boolean {
-        return this.cryptoMasterKey != null;
-    }
-
-    private get isActive(): boolean {
-        const diffSeconds = ((new Date()).getTime() - this.lastActive) / 1000;
-        return diffSeconds < (this.vaultTimeout * 60);
-    }
 }
 
