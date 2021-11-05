@@ -8,8 +8,11 @@ import { ApiService } from 'jslib-common/abstractions/api.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { KeyConnectorService } from 'jslib-common/abstractions/keyConnector.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
+import { StorageService } from 'jslib-common/abstractions/storage.service';
 import { SyncService } from 'jslib-common/abstractions/sync.service';
 import { UserService } from 'jslib-common/abstractions/user.service';
+
+import { ConstantsService } from 'jslib-common/services/constants.service';
 
 import { Organization } from 'jslib-common/models/domain/organization';
 
@@ -27,7 +30,7 @@ export class RemovePasswordComponent implements OnInit {
     constructor(private router: Router, private userService: UserService,
         private apiService: ApiService, private syncService: SyncService,
         private platformUtilsService: PlatformUtilsService, private i18nService: I18nService,
-        private keyConnectorService: KeyConnectorService) { }
+        private keyConnectorService: KeyConnectorService, private storageService: StorageService) { }
 
     async ngOnInit() {
         this.organization = await this.keyConnectorService.getManagingOrganization();
@@ -43,6 +46,7 @@ export class RemovePasswordComponent implements OnInit {
         try {
             await this.actionPromise;
             this.platformUtilsService.showToast('success', null, this.i18nService.t('removedMasterPassword'));
+            await this.storageService.remove(ConstantsService.convertAccountToKeyConnector);
             this.router.navigate(['']);
         } catch (e) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), e.message);
@@ -64,6 +68,7 @@ export class RemovePasswordComponent implements OnInit {
             });
             await this.actionPromise;
             this.platformUtilsService.showToast('success', null, this.i18nService.t('leftOrganization'));
+            await this.storageService.remove(ConstantsService.convertAccountToKeyConnector);
             this.router.navigate(['']);
         } catch (e) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), e);
