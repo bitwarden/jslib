@@ -164,6 +164,10 @@ export class Account {
         return this.hasPremiumPersonally || this.hasPremiumThroughOrganization;
     }
 
+    get serverUrl(): string {
+        return this.environmentUrls?.base ?? 'bitwarden.com';
+    }
+
     private get hasPremiumThroughOrganization(): boolean {
         if (this.organizations == null) {
             return false;
