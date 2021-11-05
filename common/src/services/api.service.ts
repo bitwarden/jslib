@@ -433,6 +433,7 @@ export class ApiService implements ApiServiceAbstraction {
         const addSendIdHeader = (headers: Headers) => {
             headers.set('Send-Id', id);
         };
+        id = this.sanitizeBase64UrlEncoded(id);
         const r = await this.send('POST', '/sends/access/' + id, request, false, true, apiUrl, addSendIdHeader);
         return new SendAccessResponse(r);
     }
@@ -1697,5 +1698,9 @@ export class ApiService implements ApiServiceAbstraction {
     private isTextResponse(response: Response): boolean {
         const typeHeader = response.headers.get('content-type');
         return typeHeader != null && typeHeader.indexOf('text') > -1;
+    }
+
+    private sanitizeBase64UrlEncoded(input: string) {
+        return input.replace(/[^0-9a-z-_]/gi, '');
     }
 }
