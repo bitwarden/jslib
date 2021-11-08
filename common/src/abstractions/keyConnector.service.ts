@@ -7,4 +7,8 @@ export abstract class KeyConnectorService {
     migrateUser: () => Promise<void>;
     userNeedsMigration: () => Promise<boolean>;
     setUsesKeyConnector: (enabled: boolean) => Promise<void>;
+    setConvertAccountRequired: (status: boolean) => Promise<void>;
+    getConvertAccountRequired: () => Promise<boolean>;
+    removeConvertAccountRequired: () => Promise<void>;
+    clear: () => Promise<void>
 }

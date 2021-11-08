@@ -46,7 +46,7 @@ export class RemovePasswordComponent implements OnInit {
         try {
             await this.actionPromise;
             this.platformUtilsService.showToast('success', null, this.i18nService.t('removedMasterPassword'));
-            await this.storageService.remove(ConstantsService.convertAccountToKeyConnector);
+            await this.keyConnectorService.removeConvertAccountRequired();
             this.router.navigate(['']);
         } catch (e) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), e.message);
@@ -68,7 +68,7 @@ export class RemovePasswordComponent implements OnInit {
             });
             await this.actionPromise;
             this.platformUtilsService.showToast('success', null, this.i18nService.t('leftOrganization'));
-            await this.storageService.remove(ConstantsService.convertAccountToKeyConnector);
+            await this.keyConnectorService.removeConvertAccountRequired();
             this.router.navigate(['']);
         } catch (e) {
             this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), e);

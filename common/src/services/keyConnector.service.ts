@@ -17,6 +17,7 @@ import { KeyConnectorUserKeyRequest } from '../models/request/keyConnectorUserKe
 
 const Keys = {
     usesKeyConnector: 'usesKeyConnector',
+    convertAccountToKeyConnector: 'convertAccountToKeyConnector',
 };
 
 export class KeyConnectorService implements KeyConnectorServiceAbstraction {
@@ -85,5 +86,21 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
             o.type !== OrganizationUserType.Admin &&
             o.type !== OrganizationUserType.Owner &&
             !o.isProviderUser);
+    }
+
+    async setConvertAccountRequired(status: boolean) {
+        await this.storageService.save(Keys.convertAccountToKeyConnector, status);
+    }
+
+    async getConvertAccountRequired(): Promise<boolean> {
+        return await this.storageService.get(Keys.convertAccountToKeyConnector);
+    }
+
+    async removeConvertAccountRequired() {
+        await this.storageService.remove(Keys.convertAccountToKeyConnector);
+    }
+
+    async clear() {
+        await this.removeConvertAccountRequired();
     }
 }

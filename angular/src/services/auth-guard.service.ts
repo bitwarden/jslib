@@ -6,17 +6,15 @@ import {
     RouterStateSnapshot,
 } from '@angular/router';
 
+import { KeyConnectorService } from 'jslib-common/abstractions/keyConnector.service';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
-import { StorageService } from 'jslib-common/abstractions/storage.service';
 import { UserService } from 'jslib-common/abstractions/user.service';
 import { VaultTimeoutService } from 'jslib-common/abstractions/vaultTimeout.service';
-
-import { ConstantsService } from 'jslib-common/services/constants.service';
 
 @Injectable()
 export class AuthGuardService implements CanActivate {
     constructor(private vaultTimeoutService: VaultTimeoutService, private userService: UserService,
-        private router: Router, private messagingService: MessagingService, private storageService: StorageService) { }
+        private router: Router, private messagingService: MessagingService, private keyConnectorService: KeyConnectorService) { }
 
     async canActivate(route: ActivatedRouteSnapshot, routerState: RouterStateSnapshot) {
         const isAuthed = await this.userService.isAuthenticated();
@@ -34,7 +32,7 @@ export class AuthGuardService implements CanActivate {
             return false;
         }
 
-        if (await this.storageService.get(ConstantsService.convertAccountToKeyConnector)) {
+        if (await this.keyConnectorService.getConvertAccountRequired()) {
             this.router.navigate(['/remove-password']);
             return false;
         }
