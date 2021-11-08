@@ -167,6 +167,7 @@ import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyRes
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
 import { SendAccessView } from '../models/view/sendAccessView';
+import { OrganizationSponsorshipCreateRequest } from '../models/request/organization/organizationSponsorshipCreateRequest';
 
 export class ApiService implements ApiServiceAbstraction {
     protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
@@ -1478,6 +1479,12 @@ export class ApiService implements ApiServiceAbstraction {
             const error = await this.handleError(response, false, true);
             return Promise.reject(error);
         }
+    }
+
+    async postCreateSponsorship(sponsoredOrgId: string, request: OrganizationSponsorshipCreateRequest): Promise<void> {
+        return await this.send('POST', 
+            '/organization/sponsorship/' + sponsoredOrgId + '/families-for-enterprise', 
+            request, true, false);
     }
 
     protected async doAuthRefresh(): Promise<void> {
