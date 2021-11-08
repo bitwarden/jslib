@@ -321,7 +321,7 @@ export class SyncService implements SyncServiceAbstraction {
             }
         });
 
-        if (this.tokenService.getIsExternal() && await this.keyConnectorService.userNeedsMigration()) {
+        if (await this.keyConnectorService.userNeedsMigration()) {
             this.messagingService.send('convertAccountToKeyConnector');
         }
 

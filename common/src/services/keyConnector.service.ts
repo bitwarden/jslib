@@ -4,6 +4,7 @@ import { EnvironmentService } from '../abstractions/environment.service';
 import { KeyConnectorService as KeyConnectorServiceAbstraction } from '../abstractions/keyConnector.service';
 import { LogService } from '../abstractions/log.service';
 import { StorageService } from '../abstractions/storage.service';
+import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
 
 import { OrganizationUserType } from '../enums/organizationUserType';
@@ -23,7 +24,8 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
 
     constructor(private storageService: StorageService, private userService: UserService,
         private cryptoService: CryptoService, private apiService: ApiService,
-        private environmentService: EnvironmentService, private logService: LogService) { }
+        private environmentService: EnvironmentService, private tokenService: TokenService,
+        private logService: LogService) { }
 
     setUsesKeyConnector(usesKeyConnector: boolean) {
         this.usesKeyConnector = usesKeyConnector;
@@ -35,10 +37,11 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
     }
 
     async userNeedsMigration() {
+        const loggedInUsingSso = this.tokenService.getIsExternal();
         const requiredByOrganization = await this.getManagingOrganization() != null;
         const userIsNotUsingKeyConnector = !await this.getUsesKeyConnector();
 
-        return requiredByOrganization && userIsNotUsingKeyConnector;
+        return loggedInUsingSso && requiredByOrganization && userIsNotUsingKeyConnector;
     }
 
     async migrateUser() {
