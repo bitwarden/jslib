@@ -452,6 +452,6 @@ export abstract class ApiService {
 
     getUserKeyFromCryptoAgent: (cryptoAgentUrl: string) => Promise<CryptoAgentUserKeyResponse>;
     postUserKeyToCryptoAgent: (cryptoAgentUrl: string, request: CryptoAgentUserKeyRequest) => Promise<void>;
-    
+
     postCreateSponsorship: (sponsorshipOrgId: string, request: OrganizationSponsorshipCreateRequest) => Promise<void>;
 }
