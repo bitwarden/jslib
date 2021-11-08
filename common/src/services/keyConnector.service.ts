@@ -35,12 +35,10 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
     }
 
     async userNeedsMigration() {
-        const managingOrganization = await this.getManagingOrganization();
-        const userIsNotExempt = managingOrganization?.type !== OrganizationUserType.Owner
-            && managingOrganization?.type !== OrganizationUserType.Admin;
+        const requiredByOrganization = await this.getManagingOrganization() != null;
         const userIsNotUsingKeyConnector = !await this.getUsesKeyConnector();
 
-        return userIsNotExempt && userIsNotUsingKeyConnector;
+        return requiredByOrganization && userIsNotUsingKeyConnector;
     }
 
     async migrateUser() {
@@ -79,6 +77,10 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
 
     async getManagingOrganization() {
         const orgs = await this.userService.getAllOrganizations();
-        return orgs.find(o => o.usesKeyConnector);
+        return orgs.find(o =>
+            o.usesKeyConnector &&
+            o.type !== OrganizationUserType.Admin &&
+            o.type !== OrganizationUserType.Owner &&
+            !o.isProviderUser);
     }
 }
