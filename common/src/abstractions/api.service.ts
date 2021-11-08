@@ -31,6 +31,7 @@ import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
 import { KdfRequest } from '../models/request/kdfRequest';
 import { KeysRequest } from '../models/request/keysRequest';
+import { OrganizationSponsorshipCreateRequest } from '../models/request/organization/organizationSponsorshipCreateRequest';
 import { OrganizationSsoRequest } from '../models/request/organization/organizationSsoRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
 import { OrganizationImportRequest } from '../models/request/organizationImportRequest';
@@ -451,4 +452,6 @@ export abstract class ApiService {
 
     getUserKeyFromCryptoAgent: (cryptoAgentUrl: string) => Promise<CryptoAgentUserKeyResponse>;
     postUserKeyToCryptoAgent: (cryptoAgentUrl: string, request: CryptoAgentUserKeyRequest) => Promise<void>;
+    
+    postCreateSponsorship: (sponsorshipOrgId: string, request: OrganizationSponsorshipCreateRequest) => Promise<void>;
 }
