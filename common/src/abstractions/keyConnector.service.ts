@@ -10,5 +10,5 @@ export abstract class KeyConnectorService {
     setConvertAccountRequired: (status: boolean) => Promise<void>;
     getConvertAccountRequired: () => Promise<boolean>;
     removeConvertAccountRequired: () => Promise<void>;
-    clear: () => Promise<void>
+    clear: () => Promise<void>;
 }
