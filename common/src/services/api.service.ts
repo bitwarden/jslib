@@ -170,6 +170,7 @@ import { SetCryptoAgentKeyRequest } from '../models/request/account/setCryptoAge
 import { CryptoAgentUserKeyRequest } from '../models/request/cryptoAgentUserKeyRequest';
 import { CryptoAgentUserKeyResponse } from '../models/response/cryptoAgentUserKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
+
 import { OrganizationSponsorshipCreateRequest } from '../models/request/organization/organizationSponsorshipCreateRequest';
 
 export class ApiService implements ApiServiceAbstraction {
@@ -1532,8 +1533,8 @@ export class ApiService implements ApiServiceAbstraction {
     }
 
     async postCreateSponsorship(sponsoredOrgId: string, request: OrganizationSponsorshipCreateRequest): Promise<void> {
-        return await this.send('POST', 
-            '/organization/sponsorship/' + sponsoredOrgId + '/families-for-enterprise', 
+        return await this.send('POST',
+            '/organization/sponsorship/' + sponsoredOrgId + '/families-for-enterprise',
             request, true, false);
     }
 
