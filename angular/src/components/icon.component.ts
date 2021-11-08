@@ -65,6 +65,7 @@ export class IconComponent implements OnChanges {
                 break;
             case CipherType.Card:
                 this.icon = 'fa-credit-card';
+                this.setCardIcon();
                 break;
             case CipherType.Identity:
                 this.icon = 'fa-id-card-o';
@@ -73,6 +74,7 @@ export class IconComponent implements OnChanges {
                 break;
         }
     }
+
 
     private setLoginIcon() {
         if (this.cipher.login.uri) {
@@ -102,6 +104,18 @@ export class IconComponent implements OnChanges {
             }
         } else {
             this.image = null;
+        }
+    }
+
+
+    private setCardIcon() {
+        if (this.imageEnabled) {
+            try {
+                this.image = 'images/cards/' + this.cipher.card.brand + '.png';
+                this.fallbackImage = 'images/cards/Other.png';
+            } catch (e) {
+                // Ignore error since the fallback icon will be shown if image is null.
+            }
         }
     }
 }
