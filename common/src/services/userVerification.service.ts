@@ -22,7 +22,7 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
         private logService: LogService) { }
 
     async buildRequest<T extends PasswordVerificationRequest>(verification: Verification,
-        requestClass?: new () => T, alreadyEncrypted?: boolean) {
+        requestClass?: new () => T, alreadyHashed?: boolean) {
         if (verification?.secret == null || verification.secret === '') {
             throw new Error('No secret provided for verification.');
         }
@@ -34,7 +34,7 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
         if (verification.type === VerificationType.OTP) {
             request.otp = verification.secret;
         } else {
-            request.masterPasswordHash = alreadyEncrypted
+            request.masterPasswordHash = alreadyHashed
                 ? verification.secret
                 : await this.cryptoService.hashPassword(verification.secret, null);
         }
