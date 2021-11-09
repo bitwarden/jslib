@@ -57,7 +57,7 @@ export class SsoComponent {
                 await this.stateService.setSsoCodeVerifier(null);
                 await this.stateService.setSsoState(null);
                 if (qParams.code != null && codeVerifier != null && state != null && this.checkState(state, qParams.state)) {
-                    await this.logIn(qParams.code, codeVerifier, this.getOrgIdentiferFromState(qParams.state));
+                    await this.logIn(qParams.code, codeVerifier, this.getOrgIdentifierFromState(qParams.state));
                 }
             } else if (qParams.clientId != null && qParams.redirectUri != null && qParams.state != null &&
                 qParams.codeChallenge != null) {
@@ -180,14 +180,14 @@ export class SsoComponent {
             }
         } catch (e) {
             this.logService.error(e);
-            if (e.message === 'Unable to reach crypto agent') {
-                this.platformUtilsService.showToast('error', null, this.i18nService.t('ssoCryptoAgentUnavailable'));
+            if (e.message === 'Unable to reach key connector') {
+                this.platformUtilsService.showToast('error', null, this.i18nService.t('ssoKeyConnectorUnavailable'));
             }
         }
         this.loggingIn = false;
     }
 
-    private getOrgIdentiferFromState(state: string): string {
+    private getOrgIdentifierFromState(state: string): string {
         if (state === null || state === undefined) {
             return null;
         }

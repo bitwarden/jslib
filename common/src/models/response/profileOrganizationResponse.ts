@@ -33,6 +33,8 @@ export class ProfileOrganizationResponse extends BaseResponse {
     userId: string;
     providerId: string;
     providerName: string;
+    usesKeyConnector: boolean;
+    keyConnectorUrl: string;
 
     constructor(response: any) {
         super(response);
@@ -64,5 +66,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
         this.userId = this.getResponseProperty('UserId');
         this.providerId = this.getResponseProperty('ProviderId');
         this.providerName = this.getResponseProperty('ProviderName');
+        this.usesKeyConnector = this.getResponseProperty('UsesKeyConnector') ?? false;
+        this.keyConnectorUrl = this.getResponseProperty('KeyConnectorUrl');
     }
 }

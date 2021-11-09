@@ -17,6 +17,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
     private iconsUrl: string;
     private notificationsUrl: string;
     private eventsUrl: string;
+    private keyConnectorUrl: string;
 
     constructor(private stateService: StateService) {}
 
@@ -101,6 +102,10 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         return 'https://events.bitwarden.com';
     }
 
+    getKeyConnectorUrl() {
+        return this.keyConnectorUrl;
+    }
+
     async setUrlsFromStorage(): Promise<void> {
         const urlsObj: any = await this.stateService.getEnvironmentUrls();
         const urls = urlsObj || {
@@ -111,6 +116,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
             notifications: null,
             events: null,
             webVault: null,
+            keyConnector: null,
         };
 
         const envUrls = new EnvironmentUrls();
@@ -126,6 +132,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         this.iconsUrl = urls.icons;
         this.notificationsUrl = urls.notifications;
         this.eventsUrl = envUrls.events = urls.events;
+        this.keyConnectorUrl = urls.keyConnector;
     }
 
     async setUrls(urls: Urls, saveSettings: boolean = true): Promise<any> {
@@ -136,6 +143,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         urls.icons = this.formatUrl(urls.icons);
         urls.notifications = this.formatUrl(urls.notifications);
         urls.events = this.formatUrl(urls.events);
+        urls.keyConnector = this.formatUrl(urls.keyConnector);
 
         if (saveSettings) {
             await this.stateService.setEnvironmentUrls({
@@ -146,6 +154,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
                 icons: urls.icons,
                 notifications: urls.notifications,
                 events: urls.events,
+                keyConnector: urls.keyConnector,
             });
         }
 
@@ -156,6 +165,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         this.iconsUrl = urls.icons;
         this.notificationsUrl = urls.notifications;
         this.eventsUrl = urls.events;
+        this.keyConnectorUrl = urls.keyConnector;
 
         this.urlsSubject.next(urls);
 
@@ -171,6 +181,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
             icons: this.iconsUrl,
             notifications: this.notificationsUrl,
             events: this.eventsUrl,
+            keyConnector: this.keyConnectorUrl,
         };
     }
 

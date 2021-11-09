@@ -2,7 +2,7 @@ import { KeysRequest } from '../keysRequest';
 
 import { KdfType } from '../../../enums/kdfType';
 
-export class SetCryptoAgentKeyRequest {
+export class SetKeyConnectorKeyRequest {
     key: string;
     keys: KeysRequest;
     kdf: KdfType;

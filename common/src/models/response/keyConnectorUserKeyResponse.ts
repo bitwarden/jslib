@@ -1,6 +1,6 @@
 import { BaseResponse } from './baseResponse';
 
-export class CryptoAgentUserKeyResponse extends BaseResponse {
+export class KeyConnectorUserKeyResponse extends BaseResponse {
     key: string;
 
     constructor(response: any) {

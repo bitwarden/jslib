@@ -6,9 +6,9 @@ import { Account } from '../models/domain/account';
 import { AuthResult } from '../models/domain/authResult';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
-import { SetCryptoAgentKeyRequest } from '../models/request/account/setCryptoAgentKeyRequest';
-import { CryptoAgentUserKeyRequest } from '../models/request/cryptoAgentUserKeyRequest';
+import { SetKeyConnectorKeyRequest } from '../models/request/account/setKeyConnectorKeyRequest';
 import { DeviceRequest } from '../models/request/deviceRequest';
+import { KeyConnectorUserKeyRequest } from '../models/request/keyConnectorUserKeyRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
@@ -21,7 +21,9 @@ import { AppIdService } from '../abstractions/appId.service';
 import { AuthService as AuthServiceAbstraction } from '../abstractions/auth.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
+import { EnvironmentService } from '../abstractions/environment.service';
 import { I18nService } from '../abstractions/i18n.service';
+import { KeyConnectorService } from '../abstractions/keyConnector.service';
 import { LogService } from '../abstractions/log.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
@@ -102,6 +104,7 @@ export class AuthService implements AuthServiceAbstraction {
         private i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         private messagingService: MessagingService, private vaultTimeoutService: VaultTimeoutService,
         private logService: LogService, protected cryptoFunctionService: CryptoFunctionService,
+        private keyConnectorService: KeyConnectorService,
         protected stateService: StateService, private setCryptoKeys = true) {
     }
 
@@ -371,16 +374,10 @@ export class AuthService implements AuthServiceAbstraction {
             // Skip this step during SSO new user flow. No key is returned from server.
             if (code == null || tokenResponse.key != null) {
 
-                if (tokenResponse.cryptoAgentUrl != null) {
-                    try {
-                        const userKeyResponse = await this.apiService.getUserKeyFromCryptoAgent(tokenResponse.cryptoAgentUrl);
-                        const keyArr = Utils.fromB64ToArray(userKeyResponse.key);
-                        const k = new SymmetricCryptoKey(keyArr);
-                        await this.cryptoService.setKey(k);
-                    } catch (e) {
-                        this.logService.error(e);
-                        throw new Error('Unable to reach crypto agent');
-                    }
+                if (tokenResponse.keyConnectorUrl != null) {
+                    await this.keyConnectorService.getAndSetKey(tokenResponse.keyConnectorUrl);
+                } else if (this.environmentService.getKeyConnectorUrl() != null) {
+                    await this.keyConnectorService.getAndSetKey();
                 }
 
                 await this.cryptoService.setEncKey(tokenResponse.key);
@@ -397,11 +394,11 @@ export class AuthService implements AuthServiceAbstraction {
                 }
 
                 await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
-            } else if (tokenResponse.cryptoAgentUrl != null) {
+            } else if (tokenResponse.keyConnectorUrl != null) {
                 const password = await this.cryptoFunctionService.randomBytes(64);
 
                 const k = await this.cryptoService.makeKey(Utils.fromBufferToB64(password), await this.tokenService.getEmail(), tokenResponse.kdf, tokenResponse.kdfIterations);
-                const cryptoAgentRequest = new CryptoAgentUserKeyRequest(k.encKeyB64);
+                const keyConnectorRequest = new KeyConnectorUserKeyRequest(k.encKeyB64);
                 await this.cryptoService.setKey(k);
 
                 const encKey = await this.cryptoService.makeEncKey(k);
@@ -410,16 +407,16 @@ export class AuthService implements AuthServiceAbstraction {
                 const [pubKey, privKey] = await this.cryptoService.makeKeyPair();
 
                 try {
-                    await this.apiService.postUserKeyToCryptoAgent(tokenResponse.cryptoAgentUrl, cryptoAgentRequest);
+                    await this.apiService.postUserKeyToKeyConnector(tokenResponse.keyConnectorUrl, keyConnectorRequest);
                 } catch (e) {
-                    throw new Error('Unable to reach crypto agent');
+                    throw new Error('Unable to reach key connector');
                 }
 
                 const keys = new KeysRequest(pubKey, privKey.encryptedString);
-                const setPasswordRequest = new SetCryptoAgentKeyRequest(
+                const setPasswordRequest = new SetKeyConnectorKeyRequest(
                     encKey[1].encryptedString, tokenResponse.kdf, tokenResponse.kdfIterations, orgId, keys
                 );
-                await this.apiService.postSetCryptoAgentKey(setPasswordRequest);
+                await this.apiService.postSetKeyConnectorKey(setPasswordRequest);
             }
         }
 

@@ -1,11 +1,19 @@
-import { View } from './view';
+import { ItemView } from './itemView';
 
 import { Card } from '../domain/card';
 
-export class CardView implements View {
+import { CardLinkedId as LinkedId } from '../../enums/linkedIdType';
+
+import { linkedFieldOption } from '../../misc/linkedFieldOption.decorator';
+
+export class CardView extends ItemView {
+    @linkedFieldOption(LinkedId.CardholderName)
     cardholderName: string = null;
+    @linkedFieldOption(LinkedId.ExpMonth, 'expirationMonth')
     expMonth: string = null;
+    @linkedFieldOption(LinkedId.ExpYear, 'expirationYear')
     expYear: string = null;
+    @linkedFieldOption(LinkedId.Code, 'securityCode')
     code: string = null;
 
     // tslint:disable
@@ -15,7 +23,7 @@ export class CardView implements View {
     // tslint:enable
 
     constructor(c?: Card) {
-        // ctor
+        super();
     }
 
     get maskedCode(): string {
@@ -26,6 +34,7 @@ export class CardView implements View {
         return this.number != null ? '•'.repeat(this.number.length) : null;
     }
 
+    @linkedFieldOption(LinkedId.Brand)
     get brand(): string {
         return this._brand;
     }
@@ -34,6 +43,7 @@ export class CardView implements View {
         this._subTitle = null;
     }
 
+    @linkedFieldOption(LinkedId.Number)
     get number(): string {
         return this._number;
     }

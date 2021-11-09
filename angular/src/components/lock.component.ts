@@ -5,6 +5,7 @@ import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { KeyConnectorService } from 'jslib-common/abstractions/keyConnector.service';
 import { LogService } from 'jslib-common/abstractions/log.service';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
@@ -14,7 +15,7 @@ import { VaultTimeoutService } from 'jslib-common/abstractions/vaultTimeout.serv
 import { EncString } from 'jslib-common/models/domain/encString';
 import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
 
-import { PasswordVerificationRequest } from 'jslib-common/models/request/passwordVerificationRequest';
+import { SecretVerificationRequest } from 'jslib-common/models/request/secretVerificationRequest';
 
 import { Utils } from 'jslib-common/misc/utils';
 
@@ -44,7 +45,8 @@ export class LockComponent implements OnInit {
         protected platformUtilsService: PlatformUtilsService, protected messagingService: MessagingService,
         protected cryptoService: CryptoService, protected vaultTimeoutService: VaultTimeoutService,
         protected environmentService: EnvironmentService, protected stateService: StateService,
-        protected apiService: ApiService, private logService: LogService) { }
+        protected apiService: ApiService, private logService: LogService,
+        private keyConnectorService: KeyConnectorService) { }
 
     async ngOnInit() {
         this.stateService.accounts.subscribe(async _accounts => {
@@ -55,6 +57,11 @@ export class LockComponent implements OnInit {
                 (await this.cryptoService.hasKeyStored(KeySuffixOptions.Biometric) || !this.platformUtilsService.supportsSecureStorage());
             this.biometricText = await this.stateService.getBiometricText();
             this.email = await this.stateService.getEmail();
+
+            // Users with key connector and without biometric or pin has no MP to unlock using
+            if (await this.keyConnectorService.getUsesKeyConnector() && !(this.biometricLock || this.pinLock)) {
+                await this.vaultTimeoutService.logOut();
+            }
 
             const webVaultUrl = this.environmentService.getWebVaultUrl();
             const vaultUrl = webVaultUrl === 'https://vault.bitwarden.com' ? 'https://bitwarden.com' : webVaultUrl;
@@ -117,7 +124,7 @@ export class LockComponent implements OnInit {
             if (storedKeyHash != null) {
                 passwordValid = await this.cryptoService.compareAndUpdateKeyHash(this.masterPassword, key);
             } else {
-                const request = new PasswordVerificationRequest();
+                const request = new SecretVerificationRequest();
                 const serverKeyHash = await this.cryptoService.hashPassword(this.masterPassword, key,
                     HashPurpose.ServerAuthorization);
                 request.masterPasswordHash = serverKeyHash;

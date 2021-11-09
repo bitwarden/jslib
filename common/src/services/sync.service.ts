@@ -3,6 +3,7 @@ import { CipherService } from '../abstractions/cipher.service';
 import { CollectionService } from '../abstractions/collection.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { FolderService } from '../abstractions/folder.service';
+import { KeyConnectorService } from '../abstractions/keyConnector.service';
 import { LogService } from '../abstractions/log.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { OrganizationService } from '../abstractions/organization.service';
@@ -12,6 +13,11 @@ import { SendService } from '../abstractions/send.service';
 import { SettingsService } from '../abstractions/settings.service';
 import { StateService } from '../abstractions/state.service';
 import { SyncService as SyncServiceAbstraction } from '../abstractions/sync.service';
+<<<<<<< HEAD
+=======
+import { TokenService } from '../abstractions/token.service';
+import { UserService } from '../abstractions/user.service';
+>>>>>>> master
 
 import { CipherData } from '../models/data/cipherData';
 import { CollectionData } from '../models/data/collectionData';
@@ -42,8 +48,13 @@ export class SyncService implements SyncServiceAbstraction {
         private cryptoService: CryptoService, private collectionService: CollectionService,
         private messagingService: MessagingService,  private policyService: PolicyService,
         private sendService: SendService, private logService: LogService,
+<<<<<<< HEAD
         private logoutCallback: (expired: boolean) => Promise<void>, private stateService: StateService,
         private organizationService: OrganizationService, private providerService: ProviderService) {
+=======
+        private tokenService: TokenService, private keyConnectorService: KeyConnectorService,
+        private logoutCallback: (expired: boolean) => Promise<void>) {
+>>>>>>> master
     }
 
     async getLastSync(): Promise<Date> {
@@ -287,9 +298,16 @@ export class SyncService implements SyncServiceAbstraction {
         await this.cryptoService.setEncPrivateKey(response.privateKey);
         await this.cryptoService.setProviderKeys(response.providers);
         await this.cryptoService.setOrgKeys(response.organizations, response.providerOrganizations);
+<<<<<<< HEAD
         await this.stateService.setSecurityStamp(response.securityStamp);
         await this.stateService.setEmailVerified(response.emailVerified);
         await this.stateService.setForcePasswordReset(response.forcePasswordReset);
+=======
+        await this.userService.setSecurityStamp(response.securityStamp);
+        await this.userService.setEmailVerified(response.emailVerified);
+        await this.userService.setForcePasswordReset(response.forcePasswordReset);
+        await this.keyConnectorService.setUsesKeyConnector(response.usesKeyConnector);
+>>>>>>> master
 
         const organizations: { [id: string]: OrganizationData; } = {};
         response.organizations.forEach(o => {
@@ -307,6 +325,13 @@ export class SyncService implements SyncServiceAbstraction {
                 organizations[o.id].isProviderUser = true;
             }
         });
+
+        if (await this.keyConnectorService.userNeedsMigration()) {
+            this.messagingService.send('convertAccountToKeyConnector');
+        } else {
+            this.keyConnectorService.removeConvertAccountRequired();
+        }
+
         return Promise.all([
             this.organizationService.save(organizations),
             this.providerService.save(providers),
