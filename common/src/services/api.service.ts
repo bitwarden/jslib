@@ -167,7 +167,7 @@ import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyRes
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
 import { SetKeyConnectorKeyRequest } from '../models/request/account/setKeyConnectorKeyRequest';
-import { VerifyOtpRequest } from '../models/request/account/verifyOtpRequest';
+import { VerifyOTPRequest } from '../models/request/account/verifyOTPRequest';
 import { KeyConnectorUserKeyRequest } from '../models/request/keyConnectorUserKeyRequest';
 import { KeyConnectorUserKeyResponse } from '../models/response/keyConnectorUserKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
@@ -402,11 +402,11 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('PUT', '/accounts/update-temp-password', request, true, false);
     }
 
-    postAccountRequestOtp(): Promise<void> {
+    postAccountRequestOTP(): Promise<void> {
         return this.send('POST', '/accounts/request-otp', null, true, false);
     }
 
-    postAccountVerifyOtp(request: VerifyOtpRequest): Promise<void> {
+    postAccountVerifyOTP(request: VerifyOTPRequest): Promise<void> {
         return this.send('POST', '/accounts/verify-otp', request, true, false);
     }
 

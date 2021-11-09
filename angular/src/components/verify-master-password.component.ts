@@ -28,7 +28,7 @@ import { Verification } from 'jslib-common/types/verification';
 })
 export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnInit {
     usesKeyConnector: boolean = false;
-    disableRequestOtp: boolean = false;
+    disableRequestOTP: boolean = false;
 
     secret = new FormControl('');
 
@@ -51,10 +51,10 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
         });
     }
 
-    async requestOtp() {
+    async requestOTP() {
         if (this.usesKeyConnector) {
-            this.disableRequestOtp = true;
-            await this.apiService.postAccountRequestOtp();
+            this.disableRequestOTP = true;
+            await this.apiService.postAccountRequestOTP();
         }
     }
 
@@ -71,7 +71,7 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
     }
 
     setDisabledState?(isDisabled: boolean): void {
-        this.disableRequestOtp = isDisabled;
+        this.disableRequestOTP = isDisabled;
         if (isDisabled) {
             this.secret.disable();
         } else {

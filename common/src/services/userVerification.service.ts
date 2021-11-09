@@ -10,7 +10,7 @@ import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 
 import { VerificationType } from '../enums/verificationType';
 
-import { VerifyOtpRequest } from '../models/request/account/verifyOtpRequest';
+import { VerifyOTPRequest } from '../models/request/account/verifyOTPRequest';
 import { SecretVerificationRequest } from '../models/request/secretVerificationRequest';
 
 import { Verification } from '../types/verification';
@@ -48,7 +48,7 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
         }
 
         if (verification.type === VerificationType.OTP) {
-            const request = new VerifyOtpRequest(verification.secret);
+            const request = new VerifyOTPRequest(verification.secret);
             try {
                 await this.apiService.postAccountVerifyOtp(request);
             } catch (e) {

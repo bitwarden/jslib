@@ -1,6 +1,6 @@
 import { PolicyType } from '../enums/policyType';
 import { SetKeyConnectorKeyRequest } from '../models/request/account/setKeyConnectorKeyRequest';
-import { VerifyOtpRequest } from '../models/request/account/verifyOtpRequest';
+import { VerifyOTPRequest } from '../models/request/account/verifyOTPRequest';
 
 import { AttachmentRequest } from '../models/request/attachmentRequest';
 
@@ -201,7 +201,7 @@ export abstract class ApiService {
     postUserRotateApiKey: (id: string, request: SecretVerificationRequest) => Promise<ApiKeyResponse>;
     putUpdateTempPassword: (request: UpdateTempPasswordRequest) => Promise<any>;
     postAccountRequestOtp: () => Promise<void>;
-    postAccountVerifyOtp: (request: VerifyOtpRequest) => Promise<void>;
+    postAccountVerifyOtp: (request: VerifyOTPRequest) => Promise<void>;
     postConvertToKeyConnector: () => Promise<void>;
 
     getFolder: (id: string) => Promise<FolderResponse>;
