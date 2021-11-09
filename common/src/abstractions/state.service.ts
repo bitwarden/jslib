@@ -46,6 +46,7 @@ export abstract class StateService {
     getCanAccessPremium: (options?: StorageOptions) => Promise<boolean>;
     getClearClipboard: (options?: StorageOptions) => Promise<number>;
     getCollapsedGroupings: (options?: StorageOptions) => Promise<Set<string>>;
+    getConvertAccountToKeyConnector: (options?: StorageOptions) => Promise<boolean>;
     getCryptoMasterKey: (options?: StorageOptions) => Promise<SymmetricCryptoKey>;
     getCryptoMasterKeyB64: (options: StorageOptions) => Promise<string>;
     getDecodedToken: (options?: StorageOptions) => Promise<any>;
@@ -135,6 +136,7 @@ export abstract class StateService {
     getTheme: (options?: StorageOptions) => Promise<string>;
     getTwoFactorToken: (options?: StorageOptions) => Promise<string>;
     getUserId: (options?: StorageOptions) => Promise<string>;
+    getUsesKeyConnector: (options?: StorageOptions) => Promise<boolean>;
     getVaultTimeout: (options?: StorageOptions) => Promise<number>;
     getVaultTimeoutAction: (options?: StorageOptions) => Promise<string>;
     getWindow: () => Promise<Map<string, any>>;
@@ -152,6 +154,7 @@ export abstract class StateService {
     setBiometricUnlock: (value: boolean, options?: StorageOptions) => Promise<void>;
     setClearClipboard: (value: number, options?: StorageOptions) => Promise<void>;
     setCollapsedGroupings: (value: Set<string>, options?: StorageOptions) => Promise<void>;
+    setConvertAccountToKeyConnector: (value: boolean, options?: StorageOptions) => Promise<void>;
     setCryptoMasterKey: (value: SymmetricCryptoKey, options?: StorageOptions) => Promise<void>;
     setCryptoMasterKeyB64: (value: string, options: StorageOptions) => Promise<void>;
     setDecodedToken: (value: any, options?: StorageOptions) => Promise<void>;
@@ -238,6 +241,7 @@ export abstract class StateService {
     setSsoState: (value: string, options?: StorageOptions) => Promise<void>;
     setTheme: (value: string, options?: StorageOptions) => Promise<void>;
     setTwoFactorToken: (value: string, options?: StorageOptions) => Promise<void>;
+    setUsesKeyConnector: (vaule: boolean, options?: StorageOptions) => Promise<void>;
     setVaultTimeout: (value: number, options?: StorageOptions) => Promise<void>;
     setVaultTimeoutAction: (value: string, options?: StorageOptions) => Promise<void>;
     setWindow: (value: Map<string, any>) => Promise<void>;

@@ -19,18 +19,11 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
 
     constructor(private cipherService: CipherService, private folderService: FolderService,
         private collectionService: CollectionService, private cryptoService: CryptoService,
-<<<<<<< HEAD
         protected platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
         private searchService: SearchService, private tokenService: TokenService,
-        private policyService: PolicyService, private stateService: StateService,
-        private lockedCallback: () => Promise<void> = null, private loggedOutCallback: (userId?: string) => Promise<void> = null) {
-=======
-        protected platformUtilsService: PlatformUtilsService, private storageService: StorageService,
-        private messagingService: MessagingService, private searchService: SearchService,
-        private userService: UserService, private tokenService: TokenService, private policyService: PolicyService,
-        private keyConnectorService: KeyConnectorService,
-        private lockedCallback: () => Promise<void> = null, private loggedOutCallback: () => Promise<void> = null) {
->>>>>>> master
+        private policyService: PolicyService, private keyConnectorService: KeyConnectorService,
+        private stateService: StateService, private lockedCallback: () => Promise<void> = null,
+        private loggedOutCallback: (userId?: string) => Promise<void> = null) {
     }
 
     init(checkOnInterval: boolean) {
@@ -103,7 +96,15 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
             return;
         }
 
-<<<<<<< HEAD
+        if (await this.keyConnectorService.getUsesKeyConnector()) {
+            const pinSet = await this.isPinLockSet();
+            const pinLock = (pinSet[0] && await this.stateService.getDecryptedPinProtected() != null) || pinSet[1];
+
+            if (!pinLock && !await this.isBiometricLockSet()) {
+                await this.logOut();
+            }
+        }
+
         if (userId == null || userId === await this.stateService.getUserId()) {
             this.searchService.clearIndex();
         }
@@ -119,29 +120,6 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         await this.stateService.setBiometricLocked(true, { userId: userId });
 
         this.messagingService.send('locked', { userId: userId });
-=======
-        if (await this.keyConnectorService.getUsesKeyConnector()) {
-            const pinSet = await this.isPinLockSet();
-            const pinLock = (pinSet[0] && this.pinProtectedKey != null) || pinSet[1];
-
-            if (!pinLock && !await this.isBiometricLockSet()) {
-                await this.logOut();
-            }
-        }
-
-        this.biometricLocked = true;
-        this.everBeenUnlocked = true;
-        await this.cryptoService.clearKey(false);
-        await this.cryptoService.clearOrgKeys(true);
-        await this.cryptoService.clearKeyPair(true);
-        await this.cryptoService.clearEncKey(true);
-
-        this.folderService.clearCache();
-        this.cipherService.clearCache();
-        this.collectionService.clearCache();
-        this.searchService.clearIndex();
-        this.messagingService.send('locked');
->>>>>>> master
         if (this.lockedCallback != null) {
             await this.lockedCallback();
         }

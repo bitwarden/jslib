@@ -517,6 +517,14 @@ export class StateService implements StateServiceAbstraction {
         return (await this.getGlobals(this.reconcileOptions(options, this.defaultInMemoryOptions))).organizationInvitation;
     }
 
+    async getConvertAccountToKeyConnector(options?: StorageOptions): Promise<boolean> {
+        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.convertAccountToKeyConnector;
+    };
+
+    async getUsesKeyConnector(options?: StorageOptions): Promise<boolean> {
+        return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.usesKeyConnector;
+    };
+
     async setAccessToken(value: string, options?: StorageOptions): Promise<void> {
         const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
         account.accessToken = value;
@@ -1152,6 +1160,18 @@ export class StateService implements StateServiceAbstraction {
         const globals = await this.getGlobals(this.reconcileOptions(options, this.defaultInMemoryOptions));
         globals.organizationInvitation = value;
         await this.saveGlobals(globals, this.reconcileOptions(options, this.defaultInMemoryOptions));
+    }
+
+    async setConvertAccountToKeyConnector(value: boolean, options?: StorageOptions): Promise<void> {
+        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions));
+        account.convertAccountToKeyConnector = value;
+        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskOptions));
+    }
+
+    async setUsesKeyConnector(value: boolean, options?: StorageOptions): Promise<void> {
+        const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
+        account.usesKeyConnector = value;
+        await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
     }
 
     async setActiveUser(userId: string): Promise<void> {

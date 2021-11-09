@@ -130,6 +130,8 @@ export class Account {
     enableBiometric: boolean;
     enableBiometrics: boolean;
     noAutoPromptBiometricsText: string;
+    convertAccountToKeyConnector: boolean;
+    usesKeyConnector: boolean;
     private hasPremiumPersonally: boolean;
 
     constructor(userId: string, userEmail: string,

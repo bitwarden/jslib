@@ -49,14 +49,9 @@ export class LoginCommand {
         protected i18nService: I18nService, protected environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
         protected cryptoFunctionService: CryptoFunctionService, protected platformUtilsService: PlatformUtilsService,
-<<<<<<< HEAD
         protected stateService: StateService, protected cryptoService: CryptoService,
-        protected policyService: PolicyService, clientId: string, private syncService: SyncService) {
-=======
-        protected userService: UserService, protected cryptoService: CryptoService,
         protected policyService: PolicyService, clientId: string, private syncService: SyncService,
         protected keyConnectorService: KeyConnectorService) {
->>>>>>> master
         this.clientId = clientId;
     }
 
