@@ -519,11 +519,11 @@ export class StateService implements StateServiceAbstraction {
 
     async getConvertAccountToKeyConnector(options?: StorageOptions): Promise<boolean> {
         return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions)))?.convertAccountToKeyConnector;
-    };
+    }
 
     async getUsesKeyConnector(options?: StorageOptions): Promise<boolean> {
         return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.usesKeyConnector;
-    };
+    }
 
     async setAccessToken(value: string, options?: StorageOptions): Promise<void> {
         const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
