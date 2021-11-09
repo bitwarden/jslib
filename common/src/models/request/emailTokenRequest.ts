@@ -1,6 +1,6 @@
-import { PasswordVerificationRequest } from './passwordVerificationRequest';
+import { SecretVerificationRequest } from './secretVerificationRequest';
 
-export class EmailTokenRequest extends PasswordVerificationRequest {
+export class EmailTokenRequest extends SecretVerificationRequest {
     newEmail: string;
     masterPasswordHash: string;
 }

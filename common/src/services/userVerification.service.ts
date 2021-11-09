@@ -11,7 +11,7 @@ import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { VerificationType } from '../enums/verificationType';
 
 import { VerifyOtpRequest } from '../models/request/account/verifyOtpRequest';
-import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
+import { SecretVerificationRequest } from '../models/request/secretVerificationRequest';
 
 import { Verification } from '../types/verification';
 
@@ -21,7 +21,7 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
         private platformUtilsService: PlatformUtilsService, private apiService: ApiService,
         private logService: LogService) { }
 
-    async buildRequest<T extends PasswordVerificationRequest>(verification: Verification,
+    async buildRequest<T extends SecretVerificationRequest>(verification: Verification,
         requestClass?: new () => T, alreadyHashed?: boolean) {
         if (verification?.secret == null || verification.secret === '') {
             throw new Error('No secret provided for verification.');
@@ -29,7 +29,7 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
 
         const request = requestClass != null
             ? new requestClass()
-            : new PasswordVerificationRequest() as T;
+            : new SecretVerificationRequest() as T;
 
         if (verification.type === VerificationType.OTP) {
             request.otp = verification.secret;

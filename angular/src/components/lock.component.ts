@@ -19,7 +19,7 @@ import { ConstantsService } from 'jslib-common/services/constants.service';
 import { EncString } from 'jslib-common/models/domain/encString';
 import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
 
-import { PasswordVerificationRequest } from 'jslib-common/models/request/passwordVerificationRequest';
+import { SecretVerificationRequest } from 'jslib-common/models/request/secretVerificationRequest';
 
 import { Utils } from 'jslib-common/misc/utils';
 
@@ -126,7 +126,7 @@ export class LockComponent implements OnInit {
             if (storedKeyHash != null) {
                 passwordValid = await this.cryptoService.compareAndUpdateKeyHash(this.masterPassword, key);
             } else {
-                const request = new PasswordVerificationRequest();
+                const request = new SecretVerificationRequest();
                 const serverKeyHash = await this.cryptoService.hashPassword(this.masterPassword, key,
                     HashPurpose.ServerAuthorization);
                 request.masterPasswordHash = serverKeyHash;
