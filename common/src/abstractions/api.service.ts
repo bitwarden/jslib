@@ -200,8 +200,8 @@ export abstract class ApiService {
     postUserApiKey: (id: string, request: SecretVerificationRequest) => Promise<ApiKeyResponse>;
     postUserRotateApiKey: (id: string, request: SecretVerificationRequest) => Promise<ApiKeyResponse>;
     putUpdateTempPassword: (request: UpdateTempPasswordRequest) => Promise<any>;
-    postAccountRequestOtp: () => Promise<void>;
-    postAccountVerifyOtp: (request: VerifyOTPRequest) => Promise<void>;
+    postAccountRequestOTP: () => Promise<void>;
+    postAccountVerifyOTP: (request: VerifyOTPRequest) => Promise<void>;
     postConvertToKeyConnector: () => Promise<void>;
 
     getFolder: (id: string) => Promise<FolderResponse>;

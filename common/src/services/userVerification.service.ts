@@ -50,7 +50,7 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
         if (verification.type === VerificationType.OTP) {
             const request = new VerifyOTPRequest(verification.secret);
             try {
-                await this.apiService.postAccountVerifyOtp(request);
+                await this.apiService.postAccountVerifyOTP(request);
             } catch (e) {
                 this.logService.error(e);
                 this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
