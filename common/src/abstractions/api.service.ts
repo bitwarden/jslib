@@ -1,5 +1,6 @@
 import { PolicyType } from '../enums/policyType';
-import { SetCryptoAgentKeyRequest } from '../models/request/account/setCryptoAgentKeyRequest';
+import { SetKeyConnectorKeyRequest } from '../models/request/account/setKeyConnectorKeyRequest';
+import { VerifyOTPRequest } from '../models/request/account/verifyOTPRequest';
 
 import { AttachmentRequest } from '../models/request/attachmentRequest';
 
@@ -13,7 +14,6 @@ import { CipherCreateRequest } from '../models/request/cipherCreateRequest';
 import { CipherRequest } from '../models/request/cipherRequest';
 import { CipherShareRequest } from '../models/request/cipherShareRequest';
 import { CollectionRequest } from '../models/request/collectionRequest';
-import { CryptoAgentUserKeyRequest } from '../models/request/cryptoAgentUserKeyRequest';
 import { DeleteRecoverRequest } from '../models/request/deleteRecoverRequest';
 import { EmailRequest } from '../models/request/emailRequest';
 import { EmailTokenRequest } from '../models/request/emailTokenRequest';
@@ -30,6 +30,7 @@ import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
 import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest';
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
 import { KdfRequest } from '../models/request/kdfRequest';
+import { KeyConnectorUserKeyRequest } from '../models/request/keyConnectorUserKeyRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { OrganizationSsoRequest } from '../models/request/organization/organizationSsoRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
@@ -50,7 +51,6 @@ import { OrganizationUserUpdateGroupsRequest } from '../models/request/organizat
 import { OrganizationUserUpdateRequest } from '../models/request/organizationUserUpdateRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
-import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
 import { PaymentRequest } from '../models/request/paymentRequest';
 import { PolicyRequest } from '../models/request/policyRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
@@ -66,6 +66,7 @@ import { ProviderUserInviteRequest } from '../models/request/provider/providerUs
 import { ProviderUserUpdateRequest } from '../models/request/provider/providerUserUpdateRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
+import { SecretVerificationRequest } from '../models/request/secretVerificationRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
 import { SendAccessRequest } from '../models/request/sendAccessRequest';
 import { SendRequest } from '../models/request/sendRequest';
@@ -100,7 +101,6 @@ import {
     CollectionGroupDetailsResponse,
     CollectionResponse,
 } from '../models/response/collectionResponse';
-import { CryptoAgentUserKeyResponse } from '../models/response/cryptoAgentUserKeyResponse';
 import { DomainsResponse } from '../models/response/domainsResponse';
 import {
     EmergencyAccessGranteeDetailsResponse,
@@ -117,6 +117,7 @@ import {
 import { IdentityCaptchaResponse } from '../models/response/identityCaptchaResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
+import { KeyConnectorUserKeyResponse } from '../models/response/keyConnectorUserKeyResponse';
 import { ListResponse } from '../models/response/listResponse';
 import { OrganizationSsoResponse } from '../models/response/organization/organizationSsoResponse';
 import { OrganizationAutoEnrollStatusResponse } from '../models/response/organizationAutoEnrollStatusResponse';
@@ -175,9 +176,9 @@ export abstract class ApiService {
     postEmail: (request: EmailRequest) => Promise<any>;
     postPassword: (request: PasswordRequest) => Promise<any>;
     setPassword: (request: SetPasswordRequest) => Promise<any>;
-    postSetCryptoAgentKey: (request: SetCryptoAgentKeyRequest) => Promise<any>;
-    postSecurityStamp: (request: PasswordVerificationRequest) => Promise<any>;
-    deleteAccount: (request: PasswordVerificationRequest) => Promise<any>;
+    postSetKeyConnectorKey: (request: SetKeyConnectorKeyRequest) => Promise<any>;
+    postSecurityStamp: (request: SecretVerificationRequest) => Promise<any>;
+    deleteAccount: (request: SecretVerificationRequest) => Promise<any>;
     getAccountRevisionDate: () => Promise<number>;
     postPasswordHint: (request: PasswordHintRequest) => Promise<any>;
     postRegister: (request: RegisterRequest) => Promise<any>;
@@ -192,13 +193,16 @@ export abstract class ApiService {
     postAccountKeys: (request: KeysRequest) => Promise<any>;
     postAccountVerifyEmail: () => Promise<any>;
     postAccountVerifyEmailToken: (request: VerifyEmailRequest) => Promise<any>;
-    postAccountVerifyPassword: (request: PasswordVerificationRequest) => Promise<any>;
+    postAccountVerifyPassword: (request: SecretVerificationRequest) => Promise<any>;
     postAccountRecoverDelete: (request: DeleteRecoverRequest) => Promise<any>;
     postAccountRecoverDeleteToken: (request: VerifyDeleteRecoverRequest) => Promise<any>;
     postAccountKdf: (request: KdfRequest) => Promise<any>;
-    postUserApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
-    postUserRotateApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
+    postUserApiKey: (id: string, request: SecretVerificationRequest) => Promise<ApiKeyResponse>;
+    postUserRotateApiKey: (id: string, request: SecretVerificationRequest) => Promise<ApiKeyResponse>;
     putUpdateTempPassword: (request: UpdateTempPasswordRequest) => Promise<any>;
+    postAccountRequestOTP: () => Promise<void>;
+    postAccountVerifyOTP: (request: VerifyOTPRequest) => Promise<void>;
+    postConvertToKeyConnector: () => Promise<void>;
 
     getFolder: (id: string) => Promise<FolderResponse>;
     postFolder: (request: FolderRequest) => Promise<FolderResponse>;
@@ -240,7 +244,7 @@ export abstract class ApiService {
     putShareCiphers: (request: CipherBulkShareRequest) => Promise<any>;
     putCipherCollections: (id: string, request: CipherCollectionsRequest) => Promise<any>;
     putCipherCollectionsAdmin: (id: string, request: CipherCollectionsRequest) => Promise<any>;
-    postPurgeCiphers: (request: PasswordVerificationRequest, organizationId?: string) => Promise<any>;
+    postPurgeCiphers: (request: SecretVerificationRequest, organizationId?: string) => Promise<any>;
     postImportCiphers: (request: ImportCiphersRequest) => Promise<any>;
     postImportOrganizationCiphers: (organizationId: string, request: ImportOrganizationCiphersRequest) => Promise<any>;
     putDeleteCipher: (id: string) => Promise<any>;
@@ -329,15 +333,15 @@ export abstract class ApiService {
 
     getTwoFactorProviders: () => Promise<ListResponse<TwoFactorProviderResponse>>;
     getTwoFactorOrganizationProviders: (organizationId: string) => Promise<ListResponse<TwoFactorProviderResponse>>;
-    getTwoFactorAuthenticator: (request: PasswordVerificationRequest) => Promise<TwoFactorAuthenticatorResponse>;
-    getTwoFactorEmail: (request: PasswordVerificationRequest) => Promise<TwoFactorEmailResponse>;
-    getTwoFactorDuo: (request: PasswordVerificationRequest) => Promise<TwoFactorDuoResponse>;
+    getTwoFactorAuthenticator: (request: SecretVerificationRequest) => Promise<TwoFactorAuthenticatorResponse>;
+    getTwoFactorEmail: (request: SecretVerificationRequest) => Promise<TwoFactorEmailResponse>;
+    getTwoFactorDuo: (request: SecretVerificationRequest) => Promise<TwoFactorDuoResponse>;
     getTwoFactorOrganizationDuo: (organizationId: string,
-        request: PasswordVerificationRequest) => Promise<TwoFactorDuoResponse>;
-    getTwoFactorYubiKey: (request: PasswordVerificationRequest) => Promise<TwoFactorYubiKeyResponse>;
-    getTwoFactorWebAuthn: (request: PasswordVerificationRequest) => Promise<TwoFactorWebAuthnResponse>;
-    getTwoFactorWebAuthnChallenge: (request: PasswordVerificationRequest) => Promise<ChallengeResponse>;
-    getTwoFactorRecover: (request: PasswordVerificationRequest) => Promise<TwoFactorRecoverResponse>;
+        request: SecretVerificationRequest) => Promise<TwoFactorDuoResponse>;
+    getTwoFactorYubiKey: (request: SecretVerificationRequest) => Promise<TwoFactorYubiKeyResponse>;
+    getTwoFactorWebAuthn: (request: SecretVerificationRequest) => Promise<TwoFactorWebAuthnResponse>;
+    getTwoFactorWebAuthnChallenge: (request: SecretVerificationRequest) => Promise<ChallengeResponse>;
+    getTwoFactorRecover: (request: SecretVerificationRequest) => Promise<TwoFactorRecoverResponse>;
     putTwoFactorAuthenticator: (
         request: UpdateTwoFactorAuthenticatorRequest) => Promise<TwoFactorAuthenticatorResponse>;
     putTwoFactorEmail: (request: UpdateTwoFactorEmailRequest) => Promise<TwoFactorEmailResponse>;
@@ -384,8 +388,8 @@ export abstract class ApiService {
     postLeaveOrganization: (id: string) => Promise<any>;
     postOrganizationLicense: (data: FormData) => Promise<OrganizationResponse>;
     postOrganizationLicenseUpdate: (id: string, data: FormData) => Promise<any>;
-    postOrganizationApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
-    postOrganizationRotateApiKey: (id: string, request: PasswordVerificationRequest) => Promise<ApiKeyResponse>;
+    postOrganizationApiKey: (id: string, request: SecretVerificationRequest) => Promise<ApiKeyResponse>;
+    postOrganizationRotateApiKey: (id: string, request: SecretVerificationRequest) => Promise<ApiKeyResponse>;
     postOrganizationSso: (id: string, request: OrganizationSsoRequest) => Promise<OrganizationSsoResponse>;
     postOrganizationUpgrade: (id: string, request: OrganizationUpgradeRequest) => Promise<PaymentResponse>;
     postOrganizationUpdateSubscription: (id: string, request: OrganizationSubscriptionUpdateRequest) => Promise<void>;
@@ -395,7 +399,7 @@ export abstract class ApiService {
     postOrganizationVerifyBank: (id: string, request: VerifyBankRequest) => Promise<any>;
     postOrganizationCancel: (id: string) => Promise<any>;
     postOrganizationReinstate: (id: string) => Promise<any>;
-    deleteOrganization: (id: string, request: PasswordVerificationRequest) => Promise<any>;
+    deleteOrganization: (id: string, request: SecretVerificationRequest) => Promise<any>;
     getPlans: () => Promise<ListResponse<PlanResponse>>;
     getTaxRates: () => Promise<ListResponse<TaxRateResponse>>;
     getOrganizationKeys: (id: string) => Promise<OrganizationKeysResponse>;
@@ -449,6 +453,6 @@ export abstract class ApiService {
 
     preValidateSso: (identifier: string) => Promise<boolean>;
 
-    getUserKeyFromCryptoAgent: (cryptoAgentUrl: string) => Promise<CryptoAgentUserKeyResponse>;
-    postUserKeyToCryptoAgent: (cryptoAgentUrl: string, request: CryptoAgentUserKeyRequest) => Promise<void>;
+    getUserKeyFromKeyConnector: (keyConnectorUrl: string) => Promise<KeyConnectorUserKeyResponse>;
+    postUserKeyToKeyConnector: (keyConnectorUrl: string, request: KeyConnectorUserKeyRequest) => Promise<void>;
 }

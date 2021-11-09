@@ -1,11 +1,5 @@
-import { PasswordVerificationRequest } from './passwordVerificationRequest';
+import { SecretVerificationRequest } from './secretVerificationRequest';
 
-export class TwoFactorEmailRequest extends PasswordVerificationRequest {
+export class TwoFactorEmailRequest extends SecretVerificationRequest {
     email: string;
-
-    constructor(email: string, masterPasswordHash: string) {
-        super();
-        this.masterPasswordHash = masterPasswordHash;
-        this.email = email;
-    }
 }

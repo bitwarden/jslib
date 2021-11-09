@@ -1,6 +1,6 @@
-import { PasswordVerificationRequest } from './passwordVerificationRequest';
+import { SecretVerificationRequest } from './secretVerificationRequest';
 
-export class UpdateTwoFactorWebAuthnRequest extends PasswordVerificationRequest {
+export class UpdateTwoFactorWebAuthnRequest extends SecretVerificationRequest {
     deviceResponse: PublicKeyCredential;
     name: string;
     id: number;
