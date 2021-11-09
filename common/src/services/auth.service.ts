@@ -104,7 +104,7 @@ export class AuthService implements AuthServiceAbstraction {
         private i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
         private messagingService: MessagingService, private vaultTimeoutService: VaultTimeoutService,
         private logService: LogService, protected cryptoFunctionService: CryptoFunctionService,
-        private keyConnectorService: KeyConnectorService,
+        private keyConnectorService: KeyConnectorService, protected environmentService: EnvironmentService,
         protected stateService: StateService, private setCryptoKeys = true) {
     }
 
