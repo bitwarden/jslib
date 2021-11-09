@@ -8,6 +8,7 @@ export enum EventType {
     User_FailedLogIn2fa = 1006,
     User_ClientExportedVault = 1007,
     User_UpdatedTempPassword = 1008,
+    User_MigratedKeyToKeyConnector = 1009,
 
     Cipher_Created = 1100,
     Cipher_Updated = 1101,
