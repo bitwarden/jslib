@@ -32,7 +32,7 @@ export class AuthGuardService implements CanActivate {
             return false;
         }
 
-        if (await this.keyConnectorService.getConvertAccountRequired()) {
+        if (!routerState.url.includes("remove-password") && await this.keyConnectorService.getConvertAccountRequired()) {
             this.router.navigate(['/remove-password']);
             return false;
         }
