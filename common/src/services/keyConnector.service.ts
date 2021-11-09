@@ -21,7 +21,7 @@ const Keys = {
 };
 
 export class KeyConnectorService implements KeyConnectorServiceAbstraction {
-    private usesKeyConnector: boolean = false;
+    private usesKeyConnector?: boolean = null;
 
     constructor(private storageService: StorageService, private userService: UserService,
         private cryptoService: CryptoService, private apiService: ApiService,
