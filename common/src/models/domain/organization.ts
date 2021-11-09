@@ -34,6 +34,8 @@ export class Organization {
     providerId: string;
     providerName: string;
     isProviderUser: boolean;
+    familySponsorshipFriendlyName: string;
+    familySponsorshipAvailable: boolean;
 
     constructor(obj?: OrganizationData) {
         if (obj == null) {
@@ -68,6 +70,8 @@ export class Organization {
         this.providerId = obj.providerId;
         this.providerName = obj.providerName;
         this.isProviderUser = obj.isProviderUser;
+        this.familySponsorshipFriendlyName = obj.familySponsorshipFriendlyName;
+        this.familySponsorshipAvailable = obj.familySponsorshipAvailable;
     }
 
     get canAccess() {

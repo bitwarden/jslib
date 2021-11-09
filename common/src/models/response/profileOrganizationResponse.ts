@@ -33,6 +33,8 @@ export class ProfileOrganizationResponse extends BaseResponse {
     userId: string;
     providerId: string;
     providerName: string;
+    familySponsorshipFriendlyName: string;
+    familySponsorshipAvailable: boolean;
 
     constructor(response: any) {
         super(response);
@@ -64,5 +66,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
         this.userId = this.getResponseProperty('UserId');
         this.providerId = this.getResponseProperty('ProviderId');
         this.providerName = this.getResponseProperty('ProviderName');
+        this.familySponsorshipFriendlyName = this.getResponseProperty('FamilySponsorshipFriendlyName');
+        this.familySponsorshipAvailable = this.getResponseProperty('FamilySponsorshipAvailable');
     }
 }
