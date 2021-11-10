@@ -454,4 +454,6 @@ export abstract class ApiService {
     postUserKeyToCryptoAgent: (cryptoAgentUrl: string, request: CryptoAgentUserKeyRequest) => Promise<void>;
 
     postCreateSponsorship: (sponsorshipOrgId: string, request: OrganizationSponsorshipCreateRequest) => Promise<void>;
+    deleteRevokeSponsorship: (sponsoringOrgUserId: string) => Promise<void>;
+    deleteRemoveSponsorship: (sponsoringOrgId: string) => Promise<void>;
 }

@@ -1538,6 +1538,18 @@ export class ApiService implements ApiServiceAbstraction {
             request, true, false);
     }
 
+    async deleteRevokeSponsorship(sponsoringOrgUserId: string): Promise<void> {
+        return await this.send('DELETE',
+            '/organization/sponsorship/' + sponsoringOrgUserId,
+            null, true, false);
+    }
+
+    async deleteRemoveSponsorship(sponsoringOrgId: string): Promise<void> {
+        return await this.send('DELETE',
+            '/organization/sponsorship/sponsored/' + sponsoringOrgId,
+            null, true, false);
+    }
+
     protected async doAuthRefresh(): Promise<void> {
         const refreshToken = await this.tokenService.getRefreshToken();
         if (refreshToken != null && refreshToken !== '') {
