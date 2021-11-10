@@ -80,6 +80,7 @@ export abstract class StateService {
     getEnableBrowserIntegration: (options?: StorageOptions) => Promise<boolean>;
     getEnableBrowserIntegrationFingerprint: (options?: StorageOptions) => Promise<boolean>;
     getEnableCloseToTray: (options?: StorageOptions) => Promise<boolean>;
+    getEnableFullWidth: (options?: StorageOptions) => Promise<boolean>;
     getEnableGravitars: (options?: StorageOptions) => Promise<boolean>;
     getEnableMinimizeToTray: (options?: StorageOptions) => Promise<boolean>;
     getEnableStartToTray: (options?: StorageOptions) => Promise<boolean>;
@@ -188,6 +189,7 @@ export abstract class StateService {
     setEnableBrowserIntegration: (value: boolean, options?: StorageOptions) => Promise<void>;
     setEnableBrowserIntegrationFingerprint: (value: boolean, options?: StorageOptions) => Promise<void>;
     setEnableCloseToTray: (value: boolean, options?: StorageOptions) => Promise<void>;
+    setEnableFullWidth: (value: boolean, options?: StorageOptions) => Promise<void>;
     setEnableGravitars: (value: boolean, options?: StorageOptions) => Promise<void>;
     setEnableMinimizeToTray: (value: boolean, options?: StorageOptions) => Promise<void>;
     setEnableStartToTray: (value: boolean, options?: StorageOptions) => Promise<void>;

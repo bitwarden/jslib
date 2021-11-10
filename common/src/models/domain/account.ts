@@ -132,6 +132,8 @@ export class Account {
     noAutoPromptBiometricsText: string;
     convertAccountToKeyConnector: boolean;
     usesKeyConnector: boolean;
+    enableFullWidth: boolean;
+
     private hasPremiumPersonally: boolean;
 
     constructor(userId: string, userEmail: string,

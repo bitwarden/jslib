@@ -525,6 +525,10 @@ export class StateService implements StateServiceAbstraction {
         return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.usesKeyConnector;
     }
 
+    async getEnableFullWidth(options?: StorageOptions): Promise<boolean> {
+        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskLocalOptions)))?.enableFullWidth ?? false;
+    }
+
     async setAccessToken(value: string, options?: StorageOptions): Promise<void> {
         const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
         account.accessToken = value;
@@ -1173,6 +1177,12 @@ export class StateService implements StateServiceAbstraction {
         const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
         account.usesKeyConnector = value;
         await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
+    }
+
+    async setEnableFullWidth(value: boolean, options?: StorageOptions): Promise<void> {
+        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
+        account.enableFullWidth = value;
+        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
     }
 
     async setActiveUser(userId: string): Promise<void> {
