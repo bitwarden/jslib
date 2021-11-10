@@ -43,11 +43,11 @@ export class StateService implements StateServiceAbstraction {
     }
 
     private get defaultOnDiskOptions(): StorageOptions {
-        return { storageLocation: StorageLocation.Disk, htmlStorageLocation: HtmlStorageLocation.Session, userId: this.state.activeUserId, useSecureStorage: true };
+        return { storageLocation: StorageLocation.Disk, htmlStorageLocation: HtmlStorageLocation.Session, userId: this.state.activeUserId, useSecureStorage: false };
     }
 
     private get defaultOnDiskLocalOptions(): StorageOptions {
-        return { storageLocation: StorageLocation.Disk, htmlStorageLocation: HtmlStorageLocation.Local, userId: this.state.activeUserId, useSecureStorage: true };
+        return { storageLocation: StorageLocation.Disk, htmlStorageLocation: HtmlStorageLocation.Local, userId: this.state.activeUserId, useSecureStorage: false };
     }
 
     private get defaultOnDiskMemoryOptions(): StorageOptions {
@@ -1103,6 +1103,7 @@ export class StateService implements StateServiceAbstraction {
             await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
         }
 
+        console.debug('saving global theme');
         const globals = await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
         globals.theme = value;
         await this.saveGlobals(globals, this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
@@ -1202,7 +1203,7 @@ export class StateService implements StateServiceAbstraction {
         }
 
         if (this.useDisk && globals == null) {
-            globals = await this.getGlobalsFromDisk();
+            globals = await this.getGlobalsFromDisk(options);
         }
 
         return globals ?? new Globals();
@@ -1221,8 +1222,8 @@ export class StateService implements StateServiceAbstraction {
         return this.state.globals;
     }
 
-    private async getGlobalsFromDisk(): Promise<Globals> {
-        return await this.storageService.get<Globals>('globals');
+    private async getGlobalsFromDisk(options: StorageOptions): Promise<Globals> {
+        return await this.storageService.get<Globals>('globals', options);
     }
 
     private saveGlobalsToMemory(globals: Globals): void {
@@ -1318,12 +1319,14 @@ export class StateService implements StateServiceAbstraction {
     }
 
     private async scaffoldNewAccountStorage(account: Account): Promise<void> {
-        const storageAccount = await this.storageService.get<Account>(account.userId);
+        const storageAccount = await this.storageService.get<Account>(account.userId, this.defaultOnDiskLocalOptions);
         if (storageAccount != null) {
             storageAccount.accessToken = account.accessToken;
             storageAccount.refreshToken = account.refreshToken;
             account = storageAccount;
         }
+        await this.storageService.save(account.userId, account, this.defaultOnDiskLocalOptions);
+        await this.storageService.save(account.userId, account, this.defaultOnDiskMemoryOptions);
         await this.storageService.save(account.userId, account);
 
         if (await this.secureStorageService.get<Account>(account.userId) == null) {
