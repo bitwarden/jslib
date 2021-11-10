@@ -337,7 +337,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     async hasEncKey(): Promise<boolean> {
-        return await this.stateService.getDecryptedCryptoSymmetricKey() != null;
+        return await this.stateService.getEncryptedCryptoSymmetricKey() != null;
     }
 
     async clearKey(clearSecretStorage: boolean = true, userId?: string): Promise<any> {
