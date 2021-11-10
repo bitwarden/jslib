@@ -1491,6 +1491,21 @@ export class ApiService implements ApiServiceAbstraction {
         }
     }
 
+    async getKeyConnectorAlive(keyConnectorUrl: string) {
+        const response = await this.fetch(new Request(keyConnectorUrl + '/alive', {
+            cache: 'no-store',
+            method: 'GET',
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
+            }),
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false, true);
+            return Promise.reject(error);
+        }
+    }
 
     // Helpers
 
