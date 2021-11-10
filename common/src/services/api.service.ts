@@ -1616,9 +1616,6 @@ export class ApiService implements ApiServiceAbstraction {
             headers.set('User-Agent', this.customUserAgent);
         }
 
-        // Clean path from directory traversal
-        path = path.split('../').join('');
-
         const requestInit: RequestInit = {
             cache: 'no-store',
             credentials: this.getCredentials(),
