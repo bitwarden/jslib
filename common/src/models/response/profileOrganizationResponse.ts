@@ -2,6 +2,7 @@ import { BaseResponse } from './baseResponse';
 
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
+import { ProductType } from '../../enums/productType';
 import { PermissionsApi } from '../api/permissionsApi';
 
 export class ProfileOrganizationResponse extends BaseResponse {
@@ -35,6 +36,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
     providerName: string;
     familySponsorshipFriendlyName: string;
     familySponsorshipAvailable: boolean;
+    planProductType: ProductType;
 
     constructor(response: any) {
         super(response);
@@ -68,5 +70,6 @@ export class ProfileOrganizationResponse extends BaseResponse {
         this.providerName = this.getResponseProperty('ProviderName');
         this.familySponsorshipFriendlyName = this.getResponseProperty('FamilySponsorshipFriendlyName');
         this.familySponsorshipAvailable = this.getResponseProperty('FamilySponsorshipAvailable');
+        this.planProductType = this.getResponseProperty('PlanProductType');
     }
 }

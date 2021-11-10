@@ -172,6 +172,7 @@ import { CryptoAgentUserKeyResponse } from '../models/response/cryptoAgentUserKe
 import { SendAccessView } from '../models/view/sendAccessView';
 
 import { OrganizationSponsorshipCreateRequest } from '../models/request/organization/organizationSponsorshipCreateRequest';
+import { OrganizationSponsorshipRedeemRequest } from '../models/request/organization/organizationSponsorshipRedeemRequest';
 
 export class ApiService implements ApiServiceAbstraction {
     protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
@@ -1549,6 +1550,11 @@ export class ApiService implements ApiServiceAbstraction {
             '/organization/sponsorship/sponsored/' + sponsoringOrgId,
             null, true, false);
     }
+    async postRedeemSponsorship(sponsorshipToken: string, request: OrganizationSponsorshipRedeemRequest): Promise<void> {
+        return await this.send('POST', '/organization/sponsorship/redeem?sponsorshipToken=' + encodeURIComponent(sponsorshipToken),
+            request, true, false);
+    }
+
 
     protected async doAuthRefresh(): Promise<void> {
         const refreshToken = await this.tokenService.getRefreshToken();
