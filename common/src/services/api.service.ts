@@ -1539,9 +1539,9 @@ export class ApiService implements ApiServiceAbstraction {
             request, true, false);
     }
 
-    async deleteRevokeSponsorship(sponsoringOrgUserId: string): Promise<void> {
+    async deleteRevokeSponsorship(sponsoringOrganizationId: string): Promise<void> {
         return await this.send('DELETE',
-            '/organization/sponsorship/' + sponsoringOrgUserId,
+            '/organization/sponsorship/' + sponsoringOrganizationId,
             null, true, false);
     }
 
