@@ -62,21 +62,21 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         for (const userId in this.stateService.accounts.getValue()) {
             if (userId != null) {
                 if (await this.isLoggedOut(userId)) {
-                    return;
+                    continue;
                 }
 
                 if (await this.isLocked(userId)) {
-                    return;
+                    continue;
                 }
 
                 const vaultTimeout = await this.getVaultTimeout(userId);
                 if (vaultTimeout == null || vaultTimeout < 0) {
-                    return;
+                    continue;
                 }
 
                 const lastActive = await this.stateService.getLastActive({ userId: userId });
                 if (lastActive == null) {
-                    return;
+                    continue;
                 }
 
                 const vaultTimeoutSeconds = vaultTimeout * 60;
