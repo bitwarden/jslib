@@ -97,7 +97,6 @@ export class Account {
     providers: { [id: string]: ProviderData };
     publicKey: ArrayBuffer;
     refreshToken: string;
-    rememberEmail: boolean;
     rememberedEmail: string;
     securityStamp: string;
     encryptedSends: { [id: string]: SendData };

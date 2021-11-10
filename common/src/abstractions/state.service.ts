@@ -127,7 +127,6 @@ export abstract class StateService {
     getProviders: (options?: StorageOptions) => Promise<{ [id: string]: ProviderData }>;
     getPublicKey: (options?: StorageOptions) => Promise<ArrayBuffer>;
     getRefreshToken: (options?: StorageOptions) => Promise<string>;
-    getRememberEmail: (options?: StorageOptions) => Promise<boolean>;
     getRememberedEmail: (options?: StorageOptions) => Promise<string>;
     getSecurityStamp: (options?: StorageOptions) => Promise<string>;
     getSettings: (options?: StorageOptions) => Promise<any>;

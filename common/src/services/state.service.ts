@@ -436,10 +436,6 @@ export class StateService implements StateServiceAbstraction {
         return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.refreshToken;
     }
 
-    async getRememberEmail(options?: StorageOptions): Promise<boolean> {
-        return (await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskLocalOptions)))?.rememberEmail ?? false;
-    }
-
     async getRememberedEmail(options?: StorageOptions): Promise<string> {
         return (await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskLocalOptions)))?.rememberedEmail;
     }
