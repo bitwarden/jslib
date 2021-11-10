@@ -1654,7 +1654,7 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         requestInit.headers = headers;
-        const response = await this.fetch(new Request(apiUrl + path, requestInit));
+        const response = await this.fetch(new Request(requestUrl, requestInit));
 
         if (hasResponse && response.status === 200) {
             const responseJson = await response.json();
