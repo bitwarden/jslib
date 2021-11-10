@@ -1107,7 +1107,6 @@ export class StateService implements StateServiceAbstraction {
             await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
         }
 
-        console.debug('saving global theme');
         const globals = await this.getGlobals(this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
         globals.theme = value;
         await this.saveGlobals(globals, this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
