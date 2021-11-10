@@ -1,18 +1,27 @@
+import { ItemView } from './itemView';
 import { LoginUriView } from './loginUriView';
-import { View } from './view';
 
 import { Utils } from '../../misc/utils';
+
 import { Login } from '../domain/login';
 
-export class LoginView implements View {
+import { LoginLinkedId as LinkedId } from '../../enums/linkedIdType';
+
+import { linkedFieldOption } from '../../misc/linkedFieldOption.decorator';
+
+export class LoginView extends ItemView {
+    @linkedFieldOption(LinkedId.Username)
     username: string = null;
+    @linkedFieldOption(LinkedId.Password)
     password: string = null;
+
     passwordRevisionDate?: Date = null;
     totp: string = null;
     uris: LoginUriView[] = null;
     autofillOnPageLoad: boolean = null;
 
     constructor(l?: Login) {
+        super();
         if (!l) {
             return;
         }

@@ -166,7 +166,13 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
+import { SetCryptoAgentKeyRequest } from '../models/request/account/setCryptoAgentKeyRequest';
+import { CryptoAgentUserKeyRequest } from '../models/request/cryptoAgentUserKeyRequest';
+import { CryptoAgentUserKeyResponse } from '../models/response/cryptoAgentUserKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
+
+import { OrganizationSponsorshipCreateRequest } from '../models/request/organization/organizationSponsorshipCreateRequest';
+import { OrganizationSponsorshipRedeemRequest } from '../models/request/organization/organizationSponsorshipRedeemRequest';
 
 export class ApiService implements ApiServiceAbstraction {
     protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
@@ -287,6 +293,10 @@ export class ApiService implements ApiServiceAbstraction {
 
     setPassword(request: SetPasswordRequest): Promise<any> {
         return this.send('POST', '/accounts/set-password', request, true, false);
+    }
+
+    postSetCryptoAgentKey(request: SetCryptoAgentKeyRequest): Promise<any> {
+        return this.send('POST', '/accounts/set-crypto-agent-key', request, true, false);
     }
 
     postSecurityStamp(request: PasswordVerificationRequest): Promise<any> {
@@ -1429,6 +1439,49 @@ export class ApiService implements ApiServiceAbstraction {
         return r as string;
     }
 
+    // Crypto Agent
+
+    async getUserKeyFromCryptoAgent(cryptoAgentUrl: string): Promise<CryptoAgentUserKeyResponse> {
+        const authHeader = await this.getActiveBearerToken();
+
+        const response = await this.fetch(new Request(cryptoAgentUrl + '/user-keys', {
+            cache: 'no-store',
+            method: 'GET',
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + authHeader,
+            }),
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false, true);
+            return Promise.reject(error);
+        }
+
+        return new CryptoAgentUserKeyResponse(await response.json());
+    }
+
+    async postUserKeyToCryptoAgent(cryptoAgentUrl: string, request: CryptoAgentUserKeyRequest): Promise<void> {
+        const authHeader = await this.getActiveBearerToken();
+
+        const response = await this.fetch(new Request(cryptoAgentUrl + '/user-keys', {
+            cache: 'no-store',
+            method: 'POST',
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + authHeader,
+                'Content-Type': 'application/json; charset=utf-8',
+            }),
+            body: JSON.stringify(request),
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false, true);
+            return Promise.reject(error);
+        }
+    }
+
+
     // Helpers
 
     async getActiveBearerToken(): Promise<string> {
@@ -1479,6 +1532,29 @@ export class ApiService implements ApiServiceAbstraction {
             return Promise.reject(error);
         }
     }
+
+    async postCreateSponsorship(sponsoredOrgId: string, request: OrganizationSponsorshipCreateRequest): Promise<void> {
+        return await this.send('POST',
+            '/organization/sponsorship/' + sponsoredOrgId + '/families-for-enterprise',
+            request, true, false);
+    }
+
+    async deleteRevokeSponsorship(sponsoringOrgUserId: string): Promise<void> {
+        return await this.send('DELETE',
+            '/organization/sponsorship/' + sponsoringOrgUserId,
+            null, true, false);
+    }
+
+    async deleteRemoveSponsorship(sponsoringOrgId: string): Promise<void> {
+        return await this.send('DELETE',
+            '/organization/sponsorship/sponsored/' + sponsoringOrgId,
+            null, true, false);
+    }
+    async postRedeemSponsorship(sponsorshipToken: string, request: OrganizationSponsorshipRedeemRequest): Promise<void> {
+        return await this.send('POST', '/organization/sponsorship/redeem?sponsorshipToken=' + encodeURIComponent(sponsorshipToken),
+            request, true, false);
+    }
+
 
     protected async doAuthRefresh(): Promise<void> {
         const refreshToken = await this.tokenService.getRefreshToken();

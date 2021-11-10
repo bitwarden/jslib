@@ -140,7 +140,7 @@ export class SsoComponent {
     private async logIn(code: string, codeVerifier: string, orgIdFromState: string) {
         this.loggingIn = true;
         try {
-            this.formPromise = this.authService.logInSso(code, codeVerifier, this.redirectUri);
+            this.formPromise = this.authService.logInSso(code, codeVerifier, this.redirectUri, orgIdFromState);
             const response = await this.formPromise;
             if (response.twoFactor) {
                 if (this.onSuccessfulLoginTwoFactorNavigate != null) {
@@ -183,6 +183,9 @@ export class SsoComponent {
             }
         } catch (e) {
             this.logService.error(e);
+            if (e.message === 'Unable to reach crypto agent') {
+                this.platformUtilsService.showToast('error', null, this.i18nService.t('ssoCryptoAgentUnavailable'));
+            }
         }
         this.loggingIn = false;
     }

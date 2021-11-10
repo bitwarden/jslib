@@ -37,6 +37,9 @@ enum Saml2SigningBehavior {
 export class SsoConfigApi extends BaseResponse {
     configType: SsoType;
 
+    useCryptoAgent: boolean;
+    cryptoAgentUrl: string;
+
     // OpenId
     authority: string;
     clientId: string;
@@ -77,6 +80,9 @@ export class SsoConfigApi extends BaseResponse {
         }
 
         this.configType = this.getResponseProperty('ConfigType');
+
+        this.useCryptoAgent = this.getResponseProperty('UseCryptoAgent');
+        this.cryptoAgentUrl = this.getResponseProperty('CryptoAgentUrl');
 
         this.authority = this.getResponseProperty('Authority');
         this.clientId = this.getResponseProperty('ClientId');

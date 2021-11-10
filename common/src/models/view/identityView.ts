@@ -1,25 +1,45 @@
-import { View } from './view';
+import { ItemView } from './itemView';
 
 import { Identity } from '../domain/identity';
 
 import { Utils } from '../../misc/utils';
 
-export class IdentityView implements View {
+import { IdentityLinkedId as LinkedId } from '../../enums/linkedIdType';
+
+import { linkedFieldOption } from '../../misc/linkedFieldOption.decorator';
+
+export class IdentityView extends ItemView {
+    @linkedFieldOption(LinkedId.Title)
     title: string = null;
+    @linkedFieldOption(LinkedId.MiddleName)
     middleName: string = null;
+    @linkedFieldOption(LinkedId.Address1)
     address1: string = null;
+    @linkedFieldOption(LinkedId.Address2)
     address2: string = null;
+    @linkedFieldOption(LinkedId.Address3)
     address3: string = null;
+    @linkedFieldOption(LinkedId.City, 'cityTown')
     city: string = null;
+    @linkedFieldOption(LinkedId.State, 'stateProvince')
     state: string = null;
+    @linkedFieldOption(LinkedId.PostalCode, 'zipPostalCode')
     postalCode: string = null;
+    @linkedFieldOption(LinkedId.Country)
     country: string = null;
+    @linkedFieldOption(LinkedId.Company)
     company: string = null;
+    @linkedFieldOption(LinkedId.Email)
     email: string = null;
+    @linkedFieldOption(LinkedId.Phone)
     phone: string = null;
+    @linkedFieldOption(LinkedId.Ssn)
     ssn: string = null;
+    @linkedFieldOption(LinkedId.Username)
     username: string = null;
+    @linkedFieldOption(LinkedId.PassportNumber)
     passportNumber: string = null;
+    @linkedFieldOption(LinkedId.LicenseNumber)
     licenseNumber: string = null;
 
     // tslint:disable
@@ -29,9 +49,10 @@ export class IdentityView implements View {
     // tslint:enable
 
     constructor(i?: Identity) {
-        // ctor
+        super();
     }
 
+    @linkedFieldOption(LinkedId.FirstName)
     get firstName(): string {
         return this._firstName;
     }
@@ -40,6 +61,7 @@ export class IdentityView implements View {
         this._subTitle = null;
     }
 
+    @linkedFieldOption(LinkedId.LastName)
     get lastName(): string {
         return this._lastName;
     }
@@ -65,6 +87,7 @@ export class IdentityView implements View {
         return this._subTitle;
     }
 
+    @linkedFieldOption(LinkedId.FullName)
     get fullName(): string {
         if (this.title != null || this.firstName != null || this.middleName != null || this.lastName != null) {
             let name = '';

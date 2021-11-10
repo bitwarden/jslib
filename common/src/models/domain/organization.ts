@@ -2,6 +2,7 @@ import { OrganizationData } from '../data/organizationData';
 
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
+import { ProductType } from '../../enums/productType';
 import { PermissionsApi } from '../api/permissionsApi';
 
 
@@ -34,6 +35,9 @@ export class Organization {
     providerId: string;
     providerName: string;
     isProviderUser: boolean;
+    familySponsorshipFriendlyName: string;
+    familySponsorshipAvailable: boolean;
+    planProductType: ProductType;
 
     constructor(obj?: OrganizationData) {
         if (obj == null) {
@@ -68,6 +72,9 @@ export class Organization {
         this.providerId = obj.providerId;
         this.providerName = obj.providerName;
         this.isProviderUser = obj.isProviderUser;
+        this.familySponsorshipFriendlyName = obj.familySponsorshipFriendlyName;
+        this.familySponsorshipAvailable = obj.familySponsorshipAvailable;
+        this.planProductType = obj.planProductType;
     }
 
     get canAccess() {
@@ -103,7 +110,7 @@ export class Organization {
     }
 
     get canCreateNewCollections() {
-        return this.isAdmin || (this.permissions.createNewCollections ?? this.permissions.manageAllCollections);
+        return this.isManager || (this.permissions.createNewCollections ?? this.permissions.manageAllCollections);
     }
 
     get canEditAnyCollection() {
