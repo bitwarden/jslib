@@ -1,9 +1,9 @@
 import { Account } from './account';
-import { Globals } from './globals';
+import { GlobalState } from './globalState';
 
 export class State {
    accounts: { [userId: string]: Account } = {};
-   globals: Globals;
+   globals: GlobalState;
    activeUserId: string;
 }
 

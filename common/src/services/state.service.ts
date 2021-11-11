@@ -18,7 +18,7 @@ import { SendView } from '../models/view/sendView';
 
 import { EncString } from '../models/domain/encString';
 import { GeneratedPasswordHistory } from '../models/domain/generatedPasswordHistory';
-import { Globals } from '../models/domain/globals';
+import { GlobalState } from '../models/domain/globalState';
 import { Policy } from '../models/domain/policy';
 import { State } from '../models/domain/state';
 import { StorageOptions } from '../models/domain/storageOptions';
@@ -1137,8 +1137,8 @@ export class StateService implements StateServiceAbstraction {
         return await this.saveGlobals(globals, this.reconcileOptions(options, this.defaultOnDiskOptions));
     }
 
-    private async getGlobals(options: StorageOptions): Promise<Globals> {
-        let globals: Globals;
+    private async getGlobals(options: StorageOptions): Promise<GlobalState> {
+        let globals: GlobalState;
         if (this.useMemory(options.storageLocation)) {
             globals = this.getGlobalsFromMemory();
         }
@@ -1147,10 +1147,10 @@ export class StateService implements StateServiceAbstraction {
             globals = await this.getGlobalsFromDisk(options);
         }
 
-        return globals ?? new Globals();
+        return globals ?? new GlobalState();
     }
 
-    private async saveGlobals(globals: Globals, options: StorageOptions = {
+    private async saveGlobals(globals: GlobalState, options: StorageOptions = {
         storageLocation: StorageLocation.Memory,
         useSecureStorage: false,
     }) {
@@ -1159,19 +1159,19 @@ export class StateService implements StateServiceAbstraction {
             this.saveGlobalsToDisk(globals, options);
     }
 
-    private getGlobalsFromMemory(): Globals {
+    private getGlobalsFromMemory(): GlobalState {
         return this.state.globals;
     }
 
-    private async getGlobalsFromDisk(options: StorageOptions): Promise<Globals> {
-        return await this.storageService.get<Globals>('globals', options);
+    private async getGlobalsFromDisk(options: StorageOptions): Promise<GlobalState> {
+        return await this.storageService.get<GlobalState>('globals', options);
     }
 
-    private saveGlobalsToMemory(globals: Globals): void {
+    private saveGlobalsToMemory(globals: GlobalState): void {
         this.state.globals = globals;
     }
 
-    private async saveGlobalsToDisk(globals: Globals, options: StorageOptions): Promise<void> {
+    private async saveGlobalsToDisk(globals: GlobalState, options: StorageOptions): Promise<void> {
         if (options.useSecureStorage) {
             await this.secureStorageService.save('globals', globals, options);
         } else {

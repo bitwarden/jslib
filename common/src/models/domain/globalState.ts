@@ -1,4 +1,4 @@
-export class Globals {
+export class GlobalState {
     decodedToken: any;
     enableAlwaysOnTop: boolean;
     installedVersion: string;
