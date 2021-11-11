@@ -63,6 +63,17 @@ export class StateService implements StateServiceAbstraction {
         private logService: LogService) {
     }
 
+    async init(): Promise<void> {
+        if (this.state.activeUserId == null) {
+            await this.loadStateFromDisk();
+        }
+    }
+
+    async loadStateFromDisk() {
+        const diskState = await this.storageService.get<State>('state', this.defaultOnDiskLocalOptions);
+        this.state = diskState;
+    }
+
     async addAccount(account: Account) {
         this.state.accounts[account.userId] = account;
         await this.scaffoldNewAccountStorage(account);
@@ -70,10 +81,10 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async setActiveUser(userId: string): Promise<void> {
-        if (!this.state.accounts[userId]) {
-            return;
-        }
         this.state.activeUserId = userId;
+        const storedState = await this.storageService.get<State>('state', this.defaultOnDiskLocalOptions);
+        storedState.activeUserId = userId;
+        await this.storageService.save('state', storedState, this.defaultOnDiskLocalOptions);
         await this.pushAccounts();
     }
 
@@ -85,13 +96,13 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getAccessToken(options?: StorageOptions): Promise<string> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.accessToken;
+        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskLocalOptions)))?.accessToken;
     }
 
     async setAccessToken(value: string, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
+        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
         account.accessToken = value;
-        await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
+        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
     }
 
     async getAddEditCipherInfo(options?: StorageOptions): Promise<any> {
@@ -205,7 +216,28 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getCanAccessPremium(options?: StorageOptions): Promise<boolean> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.canAccessPremium ?? false;
+        if (!await this.getIsAuthenticated(options)) {
+            return false;
+        }
+
+        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskLocalOptions));
+        if (account.hasPremiumPersonally) {
+            return true;
+        }
+
+        const organizations = await this.getOrganizations(options);
+        if (organizations == null) {
+            return false;
+        }
+
+        for (const id  of Object.keys(organizations)) {
+            const o = organizations[id];
+            if (o.enabled && o.usersGetPremium && !o.isProviderUser) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     async getClearClipboard(options?: StorageOptions): Promise<number> {
@@ -800,7 +832,8 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getIsAuthenticated(options?: StorageOptions): Promise<boolean> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.isAuthenticated ?? false;
+        const account = (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskLocalOptions)));
+        return account != null && account?.accessToken != null && account?.userId != null;
     }
 
     async getKdfIterations(options?: StorageOptions): Promise<number> {
@@ -1164,7 +1197,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     private async getGlobalsFromDisk(options: StorageOptions): Promise<GlobalState> {
-        return await this.storageService.get<GlobalState>('globals', options);
+        return (await this.storageService.get<State>('state', options))?.globals;
     }
 
     private saveGlobalsToMemory(globals: GlobalState): void {
@@ -1173,16 +1206,17 @@ export class StateService implements StateServiceAbstraction {
 
     private async saveGlobalsToDisk(globals: GlobalState, options: StorageOptions): Promise<void> {
         if (options.useSecureStorage) {
-            await this.secureStorageService.save('globals', globals, options);
+            const state = await this.secureStorageService.get<State>('state', options) ?? new State();
+            state.globals = globals;
+            await this.secureStorageService.save('state', state, options);
         } else {
-            await this.storageService.save('globals', globals, options);
+            const state = await this.storageService.get<State>('state', options) ?? new State();
+            state.globals = globals;
+            await this.storageService.save('state', state, options);
         }
     }
 
-    private async getAccount(options: StorageOptions = {
-        storageLocation: StorageLocation.Both,
-        useSecureStorage: false,
-    }): Promise<Account> {
+    private async getAccount(options: StorageOptions): Promise<Account> {
         try {
             let account: Account;
             if (this.useMemory(options.storageLocation)) {
@@ -1218,10 +1252,11 @@ export class StateService implements StateServiceAbstraction {
             return null;
         }
 
-        const account = options?.useSecureStorage ?
-            await this.secureStorageService.get<Account>(options.userId ?? this.state.activeUserId, options) :
-            await this.storageService.get<Account>(options.userId ?? this.state.activeUserId, options);
-        return account;
+        const state = options?.useSecureStorage ?
+            await this.secureStorageService.get<State>('state', options) :
+            await this.storageService.get<State>('state', options);
+
+        return state.accounts[options?.userId ?? this.state.activeUserId]
     }
 
     private useMemory(storageLocation: StorageLocation) {
@@ -1244,11 +1279,14 @@ export class StateService implements StateServiceAbstraction {
     }
 
     private async saveAccountToDisk(account: Account, options: StorageOptions): Promise<void> {
-        if (options.useSecureStorage) {
-            await this.secureStorageService.save(account.userId, account, options);
-        } else {
-            await this.storageService.save(account.userId, account, options);
-        }
+        const storageLocation = options.useSecureStorage ?
+            this.secureStorageService :
+            this.storageService;
+
+        const state = await storageLocation.get<State>('state', options);
+        state.accounts[account.userId] = account;
+
+        await storageLocation.save('state', state, options)
         await this.pushAccounts();
     }
 
@@ -1260,18 +1298,20 @@ export class StateService implements StateServiceAbstraction {
     }
 
     private async scaffoldNewAccountStorage(account: Account): Promise<void> {
-        const storageAccount = await this.storageService.get<Account>(account.userId, this.defaultOnDiskLocalOptions);
-        if (storageAccount != null) {
-            storageAccount.accessToken = account.accessToken;
-            storageAccount.refreshToken = account.refreshToken;
-            account = storageAccount;
+        const storedState = await this.storageService.get<State>('state', this.defaultOnDiskLocalOptions) ?? new State();
+        const storedAccount = storedState.accounts[account.userId];
+        if (storedAccount != null) {
+            storedAccount.accessToken = account.accessToken;
+            storedAccount.refreshToken = account.refreshToken;
+            account = storedAccount;
         }
-        await this.storageService.save(account.userId, account, this.defaultOnDiskLocalOptions);
-        await this.storageService.save(account.userId, account, this.defaultOnDiskMemoryOptions);
-        await this.storageService.save(account.userId, account);
+        storedState.accounts[account.userId] = account;
+        await this.storageService.save('state', storedState, this.defaultOnDiskLocalOptions);
+        await this.storageService.save('state', storedState, this.defaultOnDiskMemoryOptions);
+        await this.storageService.save('state', storedState);
 
-        if (await this.secureStorageService.get<Account>(account.userId) == null) {
-            await this.secureStorageService.save(account.userId, account);
+        if (await this.secureStorageService.get<State>('state') == null) {
+            await this.secureStorageService.save('state', storedState);
         }
     }
 
