@@ -50,23 +50,27 @@ export class LockComponent implements OnInit {
 
     async ngOnInit() {
         this.stateService.accounts.subscribe(async _accounts => {
-            this.pinSet = await this.vaultTimeoutService.isPinLockSet();
-            this.pinLock = (this.pinSet[0] && (await this.stateService.getEncryptedPinProtected()) != null) || this.pinSet[1];
-            this.supportsBiometric = await this.platformUtilsService.supportsBiometric();
-            this.biometricLock = await this.vaultTimeoutService.isBiometricLockSet() &&
-                (await this.cryptoService.hasKeyStored(KeySuffixOptions.Biometric) || !this.platformUtilsService.supportsSecureStorage());
-            this.biometricText = await this.stateService.getBiometricText();
-            this.email = await this.stateService.getEmail();
-
-            // Users with key connector and without biometric or pin has no MP to unlock using
-            if (await this.keyConnectorService.getUsesKeyConnector() && !(this.biometricLock || this.pinLock)) {
-                await this.vaultTimeoutService.logOut();
-            }
-
-            const webVaultUrl = this.environmentService.getWebVaultUrl();
-            const vaultUrl = webVaultUrl === 'https://vault.bitwarden.com' ? 'https://bitwarden.com' : webVaultUrl;
-            this.webVaultHostname = Utils.getHostname(vaultUrl);
+            await this.load();
         });
+    }
+
+    private async load() {
+        this.pinSet = await this.vaultTimeoutService.isPinLockSet();
+        this.pinLock = (this.pinSet[0] && (await this.stateService.getEncryptedPinProtected()) != null) || this.pinSet[1];
+        this.supportsBiometric = await this.platformUtilsService.supportsBiometric();
+        this.biometricLock = await this.vaultTimeoutService.isBiometricLockSet() &&
+            (await this.cryptoService.hasKeyStored(KeySuffixOptions.Biometric) || !this.platformUtilsService.supportsSecureStorage());
+        this.biometricText = await this.stateService.getBiometricText();
+        this.email = await this.stateService.getEmail();
+
+        // Users with key connector and without biometric or pin has no MP to unlock using
+        if (await this.keyConnectorService.getUsesKeyConnector() && !(this.biometricLock || this.pinLock)) {
+            await this.vaultTimeoutService.logOut();
+        }
+
+        const webVaultUrl = this.environmentService.getWebVaultUrl();
+        const vaultUrl = webVaultUrl === 'https://vault.bitwarden.com' ? 'https://bitwarden.com' : webVaultUrl;
+        this.webVaultHostname = Utils.getHostname(vaultUrl);
     }
 
     async submit() {
