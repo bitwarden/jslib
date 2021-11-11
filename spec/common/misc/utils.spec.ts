@@ -48,6 +48,12 @@ describe('Utils Service', () => {
             expect(Utils.getDomain('https://bitwarden.unknown')).toBe('bitwarden.unknown');
         });
 
+        it('should handle valid urls with an underscore in subdomain', () => {
+            expect(Utils.getDomain('my_vault.bitwarden.com/')).toBe('bitwarden.com');
+            expect(Utils.getDomain('http://my_vault.bitwarden.com/')).toBe('bitwarden.com');
+            expect(Utils.getDomain('https://my_vault.bitwarden.com/')).toBe('bitwarden.com');
+        });
+
         it('should support localhost', () => {
             expect(Utils.getDomain('localhost')).toBe('localhost');
             expect(Utils.getDomain('http://localhost')).toBe('localhost');
@@ -110,6 +116,10 @@ describe('Utils Service', () => {
             expect(Utils.getHostname('https://bitwarden.unknown')).toBe('bitwarden.unknown');
         });
 
+        it('should handle valid urls with an underscore in subdomain', () => {
+            expect(Utils.getHostname('my_vault.bitwarden.com/')).toBe('my_vault.bitwarden.com');
+            expect(Utils.getHostname('http://my_vault.bitwarden.com/')).toBe('my_vault.bitwarden.com');
+            expect(Utils.getHostname('https://my_vault.bitwarden.com/')).toBe('my_vault.bitwarden.com');
         });
 
         it('should support localhost', () => {
