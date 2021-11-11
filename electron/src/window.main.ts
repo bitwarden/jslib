@@ -103,97 +103,93 @@ export class WindowMain {
     }
 
     async createWindow(): Promise<void> {
-        try {
-            this.windowStates[mainWindowSizeKey] = await this.getWindowState(mainWindowSizeKey, this.defaultWidth,
-                this.defaultHeight);
-            this.enableAlwaysOnTop = await this.stateService.getEnableAlwaysOnTop();
+        this.windowStates[mainWindowSizeKey] = await this.getWindowState(mainWindowSizeKey, this.defaultWidth,
+            this.defaultHeight);
+        this.enableAlwaysOnTop = await this.stateService.getEnableAlwaysOnTop();
 
-            // Create the browser window.
-            this.win = new BrowserWindow({
-                width: this.windowStates[mainWindowSizeKey].width,
-                height: this.windowStates[mainWindowSizeKey].height,
-                minWidth: 680,
-                minHeight: 500,
-                x: this.windowStates[mainWindowSizeKey].x,
-                y: this.windowStates[mainWindowSizeKey].y,
-                title: app.name,
-                icon: process.platform === 'linux' ? path.join(__dirname, '/images/icon.png') : undefined,
-                titleBarStyle: this.hideTitleBar && process.platform === 'darwin' ? 'hiddenInset' : undefined,
-                show: false,
-                backgroundColor: '#fff',
-                alwaysOnTop: this.enableAlwaysOnTop,
-                webPreferences: {
-                    nodeIntegration: true,
-                    backgroundThrottling: false,
-                    contextIsolation: false,
-                },
-            });
+        // Create the browser window.
+        this.win = new BrowserWindow({
+            width: this.windowStates[mainWindowSizeKey].width,
+            height: this.windowStates[mainWindowSizeKey].height,
+            minWidth: 680,
+            minHeight: 500,
+            x: this.windowStates[mainWindowSizeKey].x,
+            y: this.windowStates[mainWindowSizeKey].y,
+            title: app.name,
+            icon: process.platform === 'linux' ? path.join(__dirname, '/images/icon.png') : undefined,
+            titleBarStyle: this.hideTitleBar && process.platform === 'darwin' ? 'hiddenInset' : undefined,
+            show: false,
+            backgroundColor: '#fff',
+            alwaysOnTop: this.enableAlwaysOnTop,
+            webPreferences: {
+                nodeIntegration: true,
+                backgroundThrottling: false,
+                contextIsolation: false,
+            },
+        });
 
-            if (this.windowStates[mainWindowSizeKey].isMaximized) {
-                this.win.maximize();
+        if (this.windowStates[mainWindowSizeKey].isMaximized) {
+            this.win.maximize();
+        }
+
+        // Show it later since it might need to be maximized.
+        this.win.show();
+
+        // and load the index.html of the app.
+        this.win.loadURL(url.format(
+            {
+                protocol: 'file:',
+                pathname: path.join(__dirname, '/index.html'),
+                slashes: true,
+            }),
+            {
+                userAgent: cleanUserAgent(this.win.webContents.userAgent),
             }
+        );
 
-            // Show it later since it might need to be maximized.
-            this.win.show();
+        // Open the DevTools.
+        if (isDev()) {
+            this.win.webContents.openDevTools();
+        }
 
-            // and load the index.html of the app.
-            this.win.loadURL(url.format(
-                {
-                    protocol: 'file:',
-                    pathname: path.join(__dirname, '/index.html'),
-                    slashes: true,
-                }),
-                {
-                    userAgent: cleanUserAgent(this.win.webContents.userAgent),
-                }
-            );
+        // Emitted when the window is closed.
+        this.win.on('closed', async () => {
+            await this.updateWindowState(mainWindowSizeKey, this.win);
 
-            // Open the DevTools.
-            if (isDev()) {
-                this.win.webContents.openDevTools();
-            }
+            // Dereference the window object, usually you would store window
+            // in an array if your app supports multi windows, this is the time
+            // when you should delete the corresponding element.
+            this.win = null;
+        });
 
-            // Emitted when the window is closed.
-            this.win.on('closed', async () => {
-                await this.updateWindowState(mainWindowSizeKey, this.win);
+        this.win.on('close', async () => {
+            await this.updateWindowState(mainWindowSizeKey, this.win);
+        });
 
-                // Dereference the window object, usually you would store window
-                // in an array if your app supports multi windows, this is the time
-                // when you should delete the corresponding element.
-                this.win = null;
+        this.win.on('maximize', async () => {
+            await this.updateWindowState(mainWindowSizeKey, this.win);
+        });
+
+        this.win.on('unmaximize', async () => {
+            await this.updateWindowState(mainWindowSizeKey, this.win);
+        });
+
+        this.win.on('resize', () => {
+            this.windowStateChangeHandler(mainWindowSizeKey, this.win);
+        });
+
+        this.win.on('move', () => {
+            this.windowStateChangeHandler(mainWindowSizeKey, this.win);
+        });
+        this.win.on('focus', () => {
+            this.win.webContents.send('messagingService', {
+                command: 'windowIsFocused',
+                windowIsFocused: true,
             });
+        });
 
-            this.win.on('close', async () => {
-                await this.updateWindowState(mainWindowSizeKey, this.win);
-            });
-
-            this.win.on('maximize', async () => {
-                await this.updateWindowState(mainWindowSizeKey, this.win);
-            });
-
-            this.win.on('unmaximize', async () => {
-                await this.updateWindowState(mainWindowSizeKey, this.win);
-            });
-
-            this.win.on('resize', () => {
-                this.windowStateChangeHandler(mainWindowSizeKey, this.win);
-            });
-
-            this.win.on('move', () => {
-                this.windowStateChangeHandler(mainWindowSizeKey, this.win);
-            });
-            this.win.on('focus', () => {
-                this.win.webContents.send('messagingService', {
-                    command: 'windowIsFocused',
-                    windowIsFocused: true,
-                });
-            });
-
-            if (this.createWindowCallback) {
-                this.createWindowCallback(this.win);
-            }
-        } catch (e) {
-            this.logService.error(e);
+        if (this.createWindowCallback) {
+            this.createWindowCallback(this.win);
         }
     }
 
