@@ -1555,6 +1555,12 @@ export class ApiService implements ApiServiceAbstraction {
             request, true, false);
     }
 
+    async postResendSponsorshipOffer(sponsoringOrgId: string): Promise<void> {
+        return await this.send('POST',
+            '/organization/sponsorship/' + sponsoringOrgId + '/families-for-enterprise/resend',
+            null, true, false);
+    }
+
 
     protected async doAuthRefresh(): Promise<void> {
         const refreshToken = await this.tokenService.getRefreshToken();
