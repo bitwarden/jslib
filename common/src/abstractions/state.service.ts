@@ -29,7 +29,7 @@ export abstract class StateService {
 
     addAccount: (account: Account) => Promise<void>;
     setActiveUser: (userId: string) => Promise<void>;
-    purge: (options?: StorageOptions) => Promise<void>;
+    clean: (options?: StorageOptions) => Promise<void>;
 
     getAccessToken: (options?: StorageOptions) => Promise<string>;
     setAccessToken: (value: string, options?: StorageOptions) => Promise<void>;

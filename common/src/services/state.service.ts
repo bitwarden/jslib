@@ -76,7 +76,7 @@ export class StateService implements StateServiceAbstraction {
         await this.pushAccounts();
     }
 
-    async purge(options?: StorageOptions): Promise<void> {
+    async clean(options?: StorageOptions): Promise<void> {
         await this.secureStorageService.remove(options?.userId ?? this.state.activeUserId);
         await this.storageService.remove(options?.userId ?? this.state.activeUserId);
         delete this.state.accounts[options?.userId ?? this.state.activeUserId];
