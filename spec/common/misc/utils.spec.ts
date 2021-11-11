@@ -54,6 +54,16 @@ describe('Utils Service', () => {
             expect(Utils.getDomain('https://my_vault.bitwarden.com/')).toBe('bitwarden.com');
         });
 
+        it('should support urls containing umlauts', () => {
+            expect(Utils.getDomain('bütwarden.com')).toBe('bütwarden.com');
+            expect(Utils.getDomain('http://bütwarden.com')).toBe('bütwarden.com');
+            expect(Utils.getDomain('https://bütwarden.com')).toBe('bütwarden.com');
+
+            expect(Utils.getDomain('subdomain.bütwarden.com')).toBe('bütwarden.com');
+            expect(Utils.getDomain('http://subdomain.bütwarden.com')).toBe('bütwarden.com');
+            expect(Utils.getDomain('https://subdomain.bütwarden.com')).toBe('bütwarden.com');
+        });
+
         it('should support localhost', () => {
             expect(Utils.getDomain('localhost')).toBe('localhost');
             expect(Utils.getDomain('http://localhost')).toBe('localhost');
@@ -124,6 +134,16 @@ describe('Utils Service', () => {
             expect(Utils.getHostname('my_vault.bitwarden.com/')).toBe('my_vault.bitwarden.com');
             expect(Utils.getHostname('http://my_vault.bitwarden.com/')).toBe('my_vault.bitwarden.com');
             expect(Utils.getHostname('https://my_vault.bitwarden.com/')).toBe('my_vault.bitwarden.com');
+        });
+
+        it('should support urls containing umlauts', () => {
+            expect(Utils.getHostname('bütwarden.com')).toBe('bütwarden.com');
+            expect(Utils.getHostname('http://bütwarden.com')).toBe('bütwarden.com');
+            expect(Utils.getHostname('https://bütwarden.com')).toBe('bütwarden.com');
+
+            expect(Utils.getHostname('subdomain.bütwarden.com')).toBe('subdomain.bütwarden.com');
+            expect(Utils.getHostname('http://subdomain.bütwarden.com')).toBe('subdomain.bütwarden.com');
+            expect(Utils.getHostname('https://subdomain.bütwarden.com')).toBe('subdomain.bütwarden.com');
         });
 
         it('should support localhost', () => {
