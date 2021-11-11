@@ -59,7 +59,7 @@ export class BillingSubscriptionItemResponse extends BaseResponse {
     amount: number;
     quantity: number;
     interval: string;
-    sponsoredSubscriptionItem: boolean
+    sponsoredSubscriptionItem: boolean;
 
     constructor(response: any) {
         super(response);
