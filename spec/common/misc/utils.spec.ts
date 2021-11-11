@@ -64,6 +64,16 @@ describe('Utils Service', () => {
             expect(Utils.getDomain('https://subdomain.bütwarden.com')).toBe('bütwarden.com');
         });
 
+        it('should support punycode urls', () => {
+            expect(Utils.getDomain('xn--btwarden-65a.com')).toBe('xn--btwarden-65a.com');
+            expect(Utils.getDomain('xn--btwarden-65a.com')).toBe('xn--btwarden-65a.com');
+            expect(Utils.getDomain('xn--btwarden-65a.com')).toBe('xn--btwarden-65a.com');
+
+            expect(Utils.getDomain('subdomain.xn--btwarden-65a.com')).toBe('xn--btwarden-65a.com');
+            expect(Utils.getDomain('http://subdomain.xn--btwarden-65a.com')).toBe('xn--btwarden-65a.com');
+            expect(Utils.getDomain('https://subdomain.xn--btwarden-65a.com')).toBe('xn--btwarden-65a.com');
+        });
+
         it('should support localhost', () => {
             expect(Utils.getDomain('localhost')).toBe('localhost');
             expect(Utils.getDomain('http://localhost')).toBe('localhost');
@@ -144,6 +154,16 @@ describe('Utils Service', () => {
             expect(Utils.getHostname('subdomain.bütwarden.com')).toBe('subdomain.bütwarden.com');
             expect(Utils.getHostname('http://subdomain.bütwarden.com')).toBe('subdomain.bütwarden.com');
             expect(Utils.getHostname('https://subdomain.bütwarden.com')).toBe('subdomain.bütwarden.com');
+        });
+
+        it('should support punycode urls', () => {
+            expect(Utils.getHostname('xn--btwarden-65a.com')).toBe('xn--btwarden-65a.com');
+            expect(Utils.getHostname('xn--btwarden-65a.com')).toBe('xn--btwarden-65a.com');
+            expect(Utils.getHostname('xn--btwarden-65a.com')).toBe('xn--btwarden-65a.com');
+
+            expect(Utils.getHostname('subdomain.xn--btwarden-65a.com')).toBe('subdomain.xn--btwarden-65a.com');
+            expect(Utils.getHostname('http://subdomain.xn--btwarden-65a.com')).toBe('subdomain.xn--btwarden-65a.com');
+            expect(Utils.getHostname('https://subdomain.xn--btwarden-65a.com')).toBe('subdomain.xn--btwarden-65a.com');
         });
 
         it('should support localhost', () => {
