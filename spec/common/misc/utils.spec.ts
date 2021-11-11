@@ -20,12 +20,31 @@ describe('Utils Service', () => {
         });
 
         it('should handle valid urls', () => {
-            expect(Utils.getDomain('https://bitwarden')).toBe('bitwarden');
-            expect(Utils.getDomain('https://bitwarden.com')).toBe('bitwarden.com');
+            expect(Utils.getDomain('bitwarden.com')).toBe('bitwarden.com');
             expect(Utils.getDomain('http://bitwarden.com')).toBe('bitwarden.com');
+            expect(Utils.getDomain('https://bitwarden.com')).toBe('bitwarden.com');
+
+            expect(Utils.getDomain('www.bitwarden.com')).toBe('bitwarden.com');
+            expect(Utils.getDomain('http://www.bitwarden.com')).toBe('bitwarden.com');
+            expect(Utils.getDomain('https://www.bitwarden.com')).toBe('bitwarden.com');
+
+            expect(Utils.getDomain('vault.bitwarden.com')).toBe('bitwarden.com');
             expect(Utils.getDomain('http://vault.bitwarden.com')).toBe('bitwarden.com');
+            expect(Utils.getDomain('https://vault.bitwarden.com')).toBe('bitwarden.com');
+
+            expect(Utils.getDomain('www.vault.bitwarden.com')).toBe('bitwarden.com');
+            expect(Utils.getDomain('http://www.vault.bitwarden.com')).toBe('bitwarden.com');
+            expect(Utils.getDomain('https://www.vault.bitwarden.com')).toBe('bitwarden.com');
+
+            expect(Utils.getDomain('user:password@bitwarden.com:8080/password/sites?and&query#hash'))
+                .toBe('bitwarden.com');
+            expect(Utils.getDomain('http://user:password@bitwarden.com:8080/password/sites?and&query#hash'))
+                .toBe('bitwarden.com');
             expect(Utils.getDomain('https://user:password@bitwarden.com:8080/password/sites?and&query#hash'))
                 .toBe('bitwarden.com');
+
+            expect(Utils.getDomain('bitwarden.unknown')).toBe('bitwarden.unknown');
+            expect(Utils.getDomain('http://bitwarden.unknown')).toBe('bitwarden.unknown');
             expect(Utils.getDomain('https://bitwarden.unknown')).toBe('bitwarden.unknown');
         });
 
@@ -64,10 +83,33 @@ describe('Utils Service', () => {
         });
 
         it('should handle valid urls', () => {
+            expect(Utils.getHostname('bitwarden')).toBe('bitwarden');
+            expect(Utils.getHostname('http://bitwarden')).toBe('bitwarden');
+            expect(Utils.getHostname('https://bitwarden')).toBe('bitwarden');
+
             expect(Utils.getHostname('bitwarden.com')).toBe('bitwarden.com');
-            expect(Utils.getHostname('https://bitwarden.com')).toBe('bitwarden.com');
             expect(Utils.getHostname('http://bitwarden.com')).toBe('bitwarden.com');
+            expect(Utils.getHostname('https://bitwarden.com')).toBe('bitwarden.com');
+
+            expect(Utils.getHostname('www.bitwarden.com')).toBe('www.bitwarden.com');
+            expect(Utils.getHostname('http://www.bitwarden.com')).toBe('www.bitwarden.com');
+            expect(Utils.getHostname('https://www.bitwarden.com')).toBe('www.bitwarden.com');
+
+            expect(Utils.getHostname('vault.bitwarden.com')).toBe('vault.bitwarden.com');
             expect(Utils.getHostname('http://vault.bitwarden.com')).toBe('vault.bitwarden.com');
+            expect(Utils.getHostname('https://vault.bitwarden.com')).toBe('vault.bitwarden.com');
+
+            expect(Utils.getHostname('www.vault.bitwarden.com')).toBe('www.vault.bitwarden.com');
+            expect(Utils.getHostname('http://www.vault.bitwarden.com')).toBe('www.vault.bitwarden.com');
+            expect(Utils.getHostname('https://www.vault.bitwarden.com')).toBe('www.vault.bitwarden.com');
+
+            expect(Utils.getHostname('user:password@bitwarden.com:8080/password/sites?and&query#hash'))
+                .toBe('bitwarden.com');
+            expect(Utils.getHostname('https://user:password@bitwarden.com:8080/password/sites?and&query#hash'))
+                .toBe('bitwarden.com');
+            expect(Utils.getHostname('https://bitwarden.unknown')).toBe('bitwarden.unknown');
+        });
+
         });
 
         it('should support localhost', () => {
