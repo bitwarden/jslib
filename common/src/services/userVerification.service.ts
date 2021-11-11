@@ -1,11 +1,8 @@
-import { Injectable } from '@angular/core';
-
 import { UserVerificationService as UserVerificationServiceAbstraction } from '../abstractions/userVerification.service';
 
 import { ApiService } from '../abstractions/api.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { I18nService } from '../abstractions/i18n.service';
-import { LogService } from '../abstractions/log.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 
 import { VerificationType } from '../enums/verificationType';
@@ -15,11 +12,9 @@ import { SecretVerificationRequest } from '../models/request/secretVerificationR
 
 import { Verification } from '../types/verification';
 
-@Injectable()
 export class UserVerificationService implements UserVerificationServiceAbstraction {
     constructor(private cryptoService: CryptoService, private i18nService: I18nService,
-        private platformUtilsService: PlatformUtilsService, private apiService: ApiService,
-        private logService: LogService) { }
+        private platformUtilsService: PlatformUtilsService, private apiService: ApiService) { }
 
     async buildRequest<T extends SecretVerificationRequest>(verification: Verification,
         requestClass?: new () => T, alreadyHashed?: boolean) {
@@ -44,7 +39,11 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
 
     async verifyUser(verification: Verification): Promise<boolean> {
         if (verification?.secret == null || verification.secret === '') {
-            throw new Error('No secret provided for verification.');
+            if (verification.type === VerificationType.OTP) {
+                this.showError(this.i18nService.t('verificationCodeRequired'));
+            } else {
+                this.showError(this.i18nService.t('masterPasswordRequired'));
+            }
         }
 
         if (verification.type === VerificationType.OTP) {
@@ -52,19 +51,24 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
             try {
                 await this.apiService.postAccountVerifyOTP(request);
             } catch (e) {
-                this.logService.error(e);
-                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                    this.i18nService.t('invalidVerificationCode'));
+                this.showError(this.i18nService.t('invalidVerificationCode'));
                 return false;
             }
         } else {
             const passwordValid = await this.cryptoService.compareAndUpdateKeyHash(verification.secret, null);
             if (!passwordValid) {
-                this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                    this.i18nService.t('invalidMasterPassword'));
+                this.showError(this.i18nService.t('invalidMasterPassword'));
                 return false;
             }
         }
         return true;
+    }
+
+    async requestOTP() {
+        await this.apiService.postAccountRequestOTP();
+    }
+
+    protected showError(message: string) {
+        this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), message);
     }
 }
