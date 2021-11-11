@@ -158,7 +158,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
 
     private async shouldLock(userId: string): Promise<boolean> {
         if (await this.isLoggedOut(userId)) {
-            return false;;
+            return false;
         }
 
         if (await this.isLocked(userId)) {
