@@ -155,6 +155,11 @@ export class UserService implements UserServiceAbstraction {
         return false;
     }
 
+    async canManageSponsorships(): Promise<boolean> {
+        const orgs = await this.getAllOrganizations();
+        return orgs.some(o => o.familySponsorshipAvailable || o.familySponsorshipFriendlyName !== null);
+    }
+
     async getOrganization(id: string): Promise<Organization> {
         const userId = await this.getUserId();
         const organizations = await this.storageService.get<{ [id: string]: OrganizationData; }>(

@@ -20,6 +20,7 @@ export abstract class UserService {
     clear: () => Promise<any>;
     isAuthenticated: () => Promise<boolean>;
     canAccessPremium: () => Promise<boolean>;
+    canManageSponsorships: () => Promise<boolean>;
     getOrganization: (id: string) => Promise<Organization>;
     getOrganizationByIdentifier: (identifier: string) => Promise<Organization>;
     getAllOrganizations: () => Promise<Organization[]>;
