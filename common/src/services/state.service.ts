@@ -1256,7 +1256,7 @@ export class StateService implements StateServiceAbstraction {
             await this.secureStorageService.get<State>('state', options) :
             await this.storageService.get<State>('state', options);
 
-        return state.accounts[options?.userId ?? this.state.activeUserId]
+        return state.accounts[options?.userId ?? this.state.activeUserId];
     }
 
     private useMemory(storageLocation: StorageLocation) {
@@ -1286,7 +1286,7 @@ export class StateService implements StateServiceAbstraction {
         const state = await storageLocation.get<State>('state', options);
         state.accounts[account.userId] = account;
 
-        await storageLocation.save('state', state, options)
+        await storageLocation.save('state', state, options);
         await this.pushAccounts();
     }
 
