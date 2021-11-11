@@ -59,7 +59,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         }
 
         for (const userId in this.stateService.accounts.getValue()) {
-            if (userId != null || await this.shouldLock(userId)) {
+            if (userId != null && await this.shouldLock(userId)) {
                 this.executeTimeoutAction(userId);
             }
         }
