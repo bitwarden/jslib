@@ -85,7 +85,6 @@ describe('Utils Service', () => {
             expect(Utils.getHostname(undefined)).toBeNull();
             expect(Utils.getHostname(' ')).toBeNull();
             expect(Utils.getHostname('https://bit!:"_&ward.com')).toBeNull();
-            expect(Utils.getHostname('bitwarden')).toBeNull();
         });
 
         it('should handle valid urls', () => {
