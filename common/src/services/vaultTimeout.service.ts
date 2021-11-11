@@ -55,37 +55,12 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
 
     async checkVaultTimeout(): Promise<void> {
         if (await this.platformUtilsService.isViewOpen()) {
-            // Do not lock
             return;
         }
 
         for (const userId in this.stateService.accounts.getValue()) {
-            if (userId != null) {
-                if (await this.isLoggedOut(userId)) {
-                    continue;
-                }
-
-                if (await this.isLocked(userId)) {
-                    continue;
-                }
-
-                const vaultTimeout = await this.getVaultTimeout(userId);
-                if (vaultTimeout == null || vaultTimeout < 0) {
-                    continue;
-                }
-
-                const lastActive = await this.stateService.getLastActive({ userId: userId });
-                if (lastActive == null) {
-                    continue;
-                }
-
-                const vaultTimeoutSeconds = vaultTimeout * 60;
-                const diffSeconds = ((new Date()).getTime() - lastActive) / 1000;
-                if (diffSeconds >= vaultTimeoutSeconds) {
-                    // Pivot based on the saved vault timeout action
-                    const timeoutAction = await this.stateService.getVaultTimeoutAction({ userId: userId });
-                    timeoutAction === 'logOut' ? await this.logOut() : await this.lock(true, userId);
-                }
+            if (userId != null || await this.shouldLock(userId)) {
+                this.executeTimeoutAction(userId);
             }
         }
     }
@@ -179,5 +154,34 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
 
     private async isLoggedOut(userId?: string): Promise<boolean> {
         return !(await this.stateService.getIsAuthenticated({ userId: userId }));
+    }
+
+    private async shouldLock(userId: string): Promise<boolean> {
+        if (await this.isLoggedOut(userId)) {
+            return false;;
+        }
+
+        if (await this.isLocked(userId)) {
+            return false;
+        }
+
+        const vaultTimeout = await this.getVaultTimeout(userId);
+        if (vaultTimeout == null || vaultTimeout < 0) {
+            return false;
+        }
+
+        const lastActive = await this.stateService.getLastActive({ userId: userId });
+        if (lastActive == null) {
+            return false;
+        }
+
+        const vaultTimeoutSeconds = vaultTimeout * 60;
+        const diffSeconds = ((new Date()).getTime() - lastActive) / 1000;
+        return diffSeconds >= vaultTimeoutSeconds;
+    }
+
+    private async executeTimeoutAction(userId: string): Promise<void> {
+        const timeoutAction = await this.stateService.getVaultTimeoutAction({ userId: userId });
+        timeoutAction === 'logOut' ? await this.logOut() : await this.lock(true, userId);
     }
 }
