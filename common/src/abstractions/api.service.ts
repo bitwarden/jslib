@@ -458,4 +458,5 @@ export abstract class ApiService {
     deleteRevokeSponsorship: (sponsoringOrganizationId: string) => Promise<void>;
     deleteRemoveSponsorship: (sponsoringOrgId: string) => Promise<void>;
     postRedeemSponsorship: (sponsorshipToken: string, request: OrganizationSponsorshipRedeemRequest) => Promise<void>;
+    postResendSponsorshipOffer: (sponsoringOrgId: string) => Promise<void>;
 }
