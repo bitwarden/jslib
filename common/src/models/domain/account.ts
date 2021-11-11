@@ -84,7 +84,7 @@ export class Account {
     loginRedirect: any;
     mainWindowSize: number;
     minimizeOnCopyToClipboard: boolean;
-    neverDomains: string[];
+    neverDomains: { [id: string]: any };
     openAtLogin: boolean;
     encryptedPasswordGenerationHistory: GeneratedPasswordHistory[];
     decryptedPasswordGenerationHistory: GeneratedPasswordHistory[];
