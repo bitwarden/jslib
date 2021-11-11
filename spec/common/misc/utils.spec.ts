@@ -29,9 +29,23 @@ describe('Utils Service', () => {
             expect(Utils.getDomain('https://bitwarden.unknown')).toBe('bitwarden.unknown');
         });
 
-        it('should support localhost and IP', () => {
+        it('should support localhost', () => {
+            expect(Utils.getDomain('localhost')).toBe('localhost');
+            expect(Utils.getDomain('http://localhost')).toBe('localhost');
             expect(Utils.getDomain('https://localhost')).toBe('localhost');
+
+        });
+
+        it('should support IPv4', () => {
+            expect(Utils.getDomain('192.168.1.1')).toBe('192.168.1.1');
+            expect(Utils.getDomain('http://192.168.1.1')).toBe('192.168.1.1');
             expect(Utils.getDomain('https://192.168.1.1')).toBe('192.168.1.1');
+        });
+
+        it('should support IPv6', () => {
+            expect(Utils.getDomain('[2620:fe::fe]')).toBe('2620:fe::fe');
+            expect(Utils.getDomain('http://[2620:fe::fe]')).toBe('2620:fe::fe');
+            expect(Utils.getDomain('https://[2620:fe::fe]')).toBe('2620:fe::fe');
         });
 
         it('should reject invalid hostnames', () => {
@@ -56,9 +70,22 @@ describe('Utils Service', () => {
             expect(Utils.getHostname('http://vault.bitwarden.com')).toBe('vault.bitwarden.com');
         });
 
-        it('should support localhost and IP', () => {
+        it('should support localhost', () => {
+            expect(Utils.getHostname('localhost')).toBe('localhost');
+            expect(Utils.getHostname('http://localhost')).toBe('localhost');
             expect(Utils.getHostname('https://localhost')).toBe('localhost');
+        });
+
+        it('should support IPv4', () => {
+            expect(Utils.getHostname('192.168.1.1')).toBe('192.168.1.1');
+            expect(Utils.getHostname('http://192.168.1.1')).toBe('192.168.1.1');
             expect(Utils.getHostname('https://192.168.1.1')).toBe('192.168.1.1');
+        });
+
+        it('should support IPv6', () => {
+            expect(Utils.getHostname('[2620:fe::fe]')).toBe('2620:fe::fe');
+            expect(Utils.getHostname('http://[2620:fe::fe]')).toBe('2620:fe::fe');
+            expect(Utils.getHostname('https://[2620:fe::fe]')).toBe('2620:fe::fe');
         });
     });
 
