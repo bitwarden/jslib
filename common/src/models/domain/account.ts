@@ -1,5 +1,6 @@
 import { OrganizationData } from '../data/organizationData';
 
+import { AuthenticationStatus } from '../../enums/authenticationStatus';
 import { KdfType } from '../../enums/kdfType';
 import { UriMatchType } from '../../enums/uriMatchType';
 
@@ -20,13 +21,6 @@ import { FolderData } from '../data/folderData';
 import { PolicyData } from '../data/policyData';
 import { ProviderData } from '../data/providerData';
 import { SendData } from '../data/sendData';
-
-export enum AuthenticationStatus {
-    Locked = 'locked',
-    Unlocked = 'unlocked',
-    LoggedOut = 'loggedOut',
-    Active = 'active',
-}
 
 export class Account {
     userId: string;
