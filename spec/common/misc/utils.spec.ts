@@ -58,7 +58,12 @@ describe('Utils Service', () => {
             expect(Utils.getDomain('localhost')).toBe('localhost');
             expect(Utils.getDomain('http://localhost')).toBe('localhost');
             expect(Utils.getDomain('https://localhost')).toBe('localhost');
+        });
 
+        it('should support localhost with subdomain', () => {
+            expect(Utils.getDomain('subdomain.localhost')).toBe('localhost');
+            expect(Utils.getDomain('http://subdomain.localhost')).toBe('localhost');
+            expect(Utils.getDomain('https://subdomain.localhost')).toBe('localhost');
         });
 
         it('should support IPv4', () => {
@@ -125,6 +130,12 @@ describe('Utils Service', () => {
             expect(Utils.getHostname('localhost')).toBe('localhost');
             expect(Utils.getHostname('http://localhost')).toBe('localhost');
             expect(Utils.getHostname('https://localhost')).toBe('localhost');
+        });
+
+        it('should support localhost with subdomain', () => {
+            expect(Utils.getHostname('subdomain.localhost')).toBe('subdomain.localhost');
+            expect(Utils.getHostname('http://subdomain.localhost')).toBe('subdomain.localhost');
+            expect(Utils.getHostname('https://subdomain.localhost')).toBe('subdomain.localhost');
         });
 
         it('should support IPv4', () => {
