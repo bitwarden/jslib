@@ -946,12 +946,12 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getOrganizationInvitation(options?: StorageOptions): Promise<any> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions))).organizationInvitation;
+        return (await this.getGlobals(this.reconcileOptions(options, this.defaultInMemoryOptions))).organizationInvitation;
     }
     async setOrganizationInvitation(value: any, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, this.defaultOnDiskOptions));
-        account.organizationInvitation = value;
-        await this.saveAccount(account, this.reconcileOptions(options, this.defaultOnDiskOptions));
+        const globals = await this.getGlobals(this.reconcileOptions(options, this.defaultInMemoryOptions));
+        globals.organizationInvitation = value;
+        await this.saveGlobals(globals, this.reconcileOptions(options, this.defaultInMemoryOptions));
     }
 
     async getOrganizations(options?: StorageOptions): Promise<{ [id: string]: OrganizationData; }> {

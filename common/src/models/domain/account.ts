@@ -126,7 +126,6 @@ export class Account {
     convertAccountToKeyConnector: boolean;
     usesKeyConnector: boolean;
     enableFullWidth: boolean;
-    organizationInvitation: any;
 
     private hasPremiumPersonally: boolean;
 

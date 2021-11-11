@@ -4,6 +4,7 @@ export class GlobalState {
     lastActive: number;
     locale: string;
     openAtLogin: boolean;
+    organizationInvitation: any;
     rememberEmail: boolean;
     rememberedEmail: string;
     theme: string;
