@@ -15,6 +15,7 @@ export class IdentityTokenResponse extends BaseResponse {
     kdf: KdfType;
     kdfIterations: number;
     forcePasswordReset: boolean;
+    apiUseKeyConnector: boolean;
     keyConnectorUrl: string;
 
     constructor(response: any) {
@@ -31,6 +32,7 @@ export class IdentityTokenResponse extends BaseResponse {
         this.kdf = this.getResponseProperty('Kdf');
         this.kdfIterations = this.getResponseProperty('KdfIterations');
         this.forcePasswordReset = this.getResponseProperty('ForcePasswordReset');
+        this.apiUseKeyConnector = this.getResponseProperty('ApiUseKeyConnector');
         this.keyConnectorUrl = this.getResponseProperty('KeyConnectorUrl');
     }
 }
