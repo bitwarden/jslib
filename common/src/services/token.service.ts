@@ -1,6 +1,5 @@
 import { StateService } from '../abstractions/state.service';
 import { TokenService as TokenServiceAbstraction } from '../abstractions/token.service';
-import { StorageLocation } from '../enums/storageLocation';
 
 import { Utils } from '../misc/utils';
 
@@ -40,10 +39,7 @@ export class TokenService implements TokenServiceAbstraction {
     }
 
     async setToken(token: string): Promise<void> {
-        await this.stateService.setAccessToken(token, { storageLocation: StorageLocation.Memory });
-        if (!await this.skipTokenStorage()) {
-           await this.stateService.setAccessToken(token, { storageLocation: StorageLocation.Disk });
-        }
+        await this.stateService.setAccessToken(token);
     }
 
     async getToken(): Promise<string> {
