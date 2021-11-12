@@ -22,7 +22,7 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
             if (verification.type === VerificationType.OTP) {
                 this.handleError(this.i18nService.t('verificationCodeRequired'));
             } else {
-                this.handleError(this.i18nService.t('masterPasswordRequired'));
+                this.handleError(this.i18nService.t('masterPassRequired'));
             }
             return null;
         }
@@ -47,7 +47,7 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
             if (verification.type === VerificationType.OTP) {
                 this.handleError(this.i18nService.t('verificationCodeRequired'));
             } else {
-                this.handleError(this.i18nService.t('masterPasswordRequired'));
+                this.handleError(this.i18nService.t('masterPassRequired'));
             }
             return false;
         }
