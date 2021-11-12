@@ -1,8 +1,6 @@
 import { SettingsService as SettingsServiceAbstraction } from '../abstractions/settings.service';
 import { StateService } from '../abstractions/state.service';
 
-import { StorageLocation } from '../enums/storageLocation';
-
 const Keys = {
     settingsPrefix: 'settings_',
     equivalentDomains: 'equivalentDomains',
@@ -13,7 +11,7 @@ export class SettingsService implements SettingsServiceAbstraction {
     }
 
     async clearCache(): Promise<void> {
-        await this.stateService.setSettings(null, { storageLocation: StorageLocation.Memory });
+        await this.stateService.setSettings(null);
     }
 
     getEquivalentDomains(): Promise<any> {
@@ -32,7 +30,6 @@ export class SettingsService implements SettingsServiceAbstraction {
 
     private async getSettings(): Promise<any> {
         await this.clearCache();
-        await this.stateService.setSettings(null, { storageLocation: StorageLocation.Disk });
     }
 
     private async getSettingsKey(key: string): Promise<any> {
