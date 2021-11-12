@@ -3,7 +3,7 @@ import { GlobalState } from './globalState';
 
 export class State {
    accounts: { [userId: string]: Account } = {};
-   globals: GlobalState = new GlobalState();
+   globals: GlobalState;
    activeUserId: string;
 }
 

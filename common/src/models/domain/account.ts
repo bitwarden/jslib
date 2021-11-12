@@ -126,7 +126,8 @@ export class Account {
     convertAccountToKeyConnector: boolean;
     usesKeyConnector: boolean;
     enableFullWidth: boolean;
-    hasPremiumPersonally: boolean;
+
+    private hasPremiumPersonally: boolean;
 
     constructor(userId: string, userEmail: string,
         kdfType: KdfType, kdfIterations: number,
@@ -144,8 +145,39 @@ export class Account {
         this.hasPremiumPersonally = hasPremium;
     }
 
+    get isAuthenticated(): boolean {
+        if (!this.accessToken) {
+            return false;
+        }
+
+        return this.userId != null;
+    }
+
+    get canAccessPremium(): boolean {
+        if (!this.isAuthenticated) {
+            return false;
+        }
+
+        return this.hasPremiumPersonally || this.hasPremiumThroughOrganization;
+    }
+
     get serverUrl(): string {
         return this.environmentUrls?.base ?? 'bitwarden.com';
+    }
+
+    private get hasPremiumThroughOrganization(): boolean {
+        if (this.organizations == null) {
+            return false;
+        }
+
+        for (const id  of Object.keys(this.organizations)) {
+            const o = this.organizations[id];
+            if (o.enabled && o.usersGetPremium && !o.isProviderUser) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 
