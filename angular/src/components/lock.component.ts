@@ -36,7 +36,7 @@ export class LockComponent implements OnInit {
     biometricText: string;
 
     protected successRoute: string = 'vault';
-    protected onSuccessfulSubmit: () => void;
+    protected onSuccessfulSubmit: () => Promise<void>;
 
     private invalidPinAttempts = 0;
     private pinSet: [boolean, boolean];
@@ -180,7 +180,7 @@ export class LockComponent implements OnInit {
         await this.stateService.setDisableFavicon(!!disableFavicon);
         this.messagingService.send('unlocked');
         if (this.onSuccessfulSubmit != null) {
-            this.onSuccessfulSubmit();
+            await this.onSuccessfulSubmit();
         } else if (this.router != null) {
             this.router.navigate([this.successRoute]);
         }
