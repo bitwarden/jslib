@@ -39,52 +39,12 @@ export class StateService implements StateServiceAbstraction {
     accounts = new BehaviorSubject<{ [userId: string]: Account }>({});
     private state: State = new State();
 
-    private get defaultInMemoryOptions(): StorageOptions {
-        return { storageLocation: StorageLocation.Memory, userId: this.state.activeUserId };
-    }
-
-    private async defaultOnDiskOptions(): Promise<StorageOptions> {
-        return { 
-            storageLocation: StorageLocation.Disk,
-            htmlStorageLocation: HtmlStorageLocation.Session,
-            userId: await this.storageService.get('activeUserId'),
-            useSecureStorage: false 
-        };
-    }
-
-    private async defaultOnDiskLocalOptions(): Promise<StorageOptions> {
-        return {
-            storageLocation: StorageLocation.Disk,
-            htmlStorageLocation: HtmlStorageLocation.Local,
-            userId: await this.storageService.get('activeUserId'),
-            useSecureStorage: false 
-        };
-    }
-
-    private async defaultOnDiskMemoryOptions(): Promise<StorageOptions> {
-        return {
-            storageLocation: StorageLocation.Disk,
-            htmlStorageLocation: HtmlStorageLocation.Memory,
-            userId: await this.storageService.get('activeUserId'),
-            useSecureStorage: false 
-        };
-    }
-
-    private async defaultSecureStorageOptions(): Promise<StorageOptions> {
-        return {
-            storageLocation: StorageLocation.Disk,
-            useSecureStorage: true,
-            userId: await this.storageService.get('activeUserId')
-        };
-    }
-
     constructor(private storageService: StorageService, private secureStorageService: StorageService,
         private logService: LogService) {
     }
 
     async init(): Promise<void> {
         if (this.state.activeUserId == null) {
-            console.log('initing');
             await this.loadStateFromDisk();
         }
     }
@@ -95,11 +55,6 @@ export class StateService implements StateServiceAbstraction {
             this.state = diskState;
             await this.storageService.save('state', diskState, await this.defaultOnDiskMemoryOptions());
         }
-    }
-
-    private async getActiveUserIdFromStorage(): Promise<string> {
-        const state = await this.storageService.get<State>('state', await this.defaultOnDiskOptions());
-        return state?.activeUserId;
     }
 
     async addAccount(account: Account) {
@@ -299,12 +254,12 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getCryptoMasterKey(options?: StorageOptions): Promise<SymmetricCryptoKey> {
-        options = this.reconcileOptions(options, { userId: await this.getActiveUserIdFromStorage()})
+        options = this.reconcileOptions(options, { userId: await this.getActiveUserIdFromStorage()});
         return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.cryptoMasterKey;
     }
 
     async setCryptoMasterKey(value: SymmetricCryptoKey, options?: StorageOptions): Promise<void> {
-        options = this.reconcileOptions(options, { userId: await this.getActiveUserIdFromStorage()})
+        options = this.reconcileOptions(options, { userId: await this.getActiveUserIdFromStorage()});
         const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
         account.cryptoMasterKey = value;
         await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
@@ -1316,7 +1271,7 @@ export class StateService implements StateServiceAbstraction {
         const state = await storageLocation.get<State>('state', options);
         state.accounts[account.userId] = account;
 
-        await storageLocation.save('state', state, options)
+        await storageLocation.save('state', state, options);
         await this.pushAccounts();
     }
 
@@ -1381,6 +1336,50 @@ export class StateService implements StateServiceAbstraction {
         requestedOptions.useSecureStorage = requestedOptions?.useSecureStorage ?? defaultOptions.useSecureStorage;
         requestedOptions.htmlStorageLocation = requestedOptions?.htmlStorageLocation ?? defaultOptions.htmlStorageLocation;
         return requestedOptions;
+    }
+
+    private get defaultInMemoryOptions(): StorageOptions {
+        return { storageLocation: StorageLocation.Memory, userId: this.state.activeUserId };
+    }
+
+    private async defaultOnDiskOptions(): Promise<StorageOptions> {
+        return {
+            storageLocation: StorageLocation.Disk,
+            htmlStorageLocation: HtmlStorageLocation.Session,
+            userId: await this.storageService.get('activeUserId'),
+            useSecureStorage: false,
+        };
+    }
+
+    private async defaultOnDiskLocalOptions(): Promise<StorageOptions> {
+        return {
+            storageLocation: StorageLocation.Disk,
+            htmlStorageLocation: HtmlStorageLocation.Local,
+            userId: await this.storageService.get('activeUserId'),
+            useSecureStorage: false,
+        };
+    }
+
+    private async defaultOnDiskMemoryOptions(): Promise<StorageOptions> {
+        return {
+            storageLocation: StorageLocation.Disk,
+            htmlStorageLocation: HtmlStorageLocation.Memory,
+            userId: await this.storageService.get('activeUserId'),
+            useSecureStorage: false,
+        };
+    }
+
+    private async defaultSecureStorageOptions(): Promise<StorageOptions> {
+        return {
+            storageLocation: StorageLocation.Disk,
+            useSecureStorage: true,
+            userId: await this.storageService.get('activeUserId'),
+        };
+    }
+
+    private async getActiveUserIdFromStorage(): Promise<string> {
+        const state = await this.storageService.get<State>('state', await this.defaultOnDiskOptions());
+        return state?.activeUserId;
     }
 }
 
