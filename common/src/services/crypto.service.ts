@@ -4,7 +4,6 @@ import { EncryptionType } from '../enums/encryptionType';
 import { HashPurpose } from '../enums/hashPurpose';
 import { KdfType } from '../enums/kdfType';
 import { KeySuffixOptions } from '../enums/keySuffixOptions';
-import { StorageLocation } from '../enums/storageLocation';
 
 import { EncArrayBuffer } from '../models/domain/encArrayBuffer';
 import { EncryptedObject } from '../models/domain/encryptedObject';
@@ -121,16 +120,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     async getKeyHash(): Promise<string> {
-        let keyHash =  await this.stateService.getKeyHash({ storageLocation: StorageLocation.Memory });
-        if (keyHash != null) {
-            return keyHash;
-        }
-
-        keyHash =  await this.stateService.getKeyHash({ storageLocation: StorageLocation.Disk });
-        if (keyHash != null) {
-            await this.stateService.setKeyHash(keyHash, { storageLocation: StorageLocation.Memory });
-        }
-        return keyHash;
+        return  await this.stateService.getKeyHash();
     }
 
     async compareAndUpdateKeyHash(masterPassword: string, key: SymmetricCryptoKey): Promise<boolean> {
