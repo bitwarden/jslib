@@ -6,7 +6,6 @@ import { StateService } from 'jslib-common/abstractions/state.service';
 import { CryptoService } from 'jslib-common/services/crypto.service';
 
 import { KeySuffixOptions } from 'jslib-common/enums/keySuffixOptions';
-import { StorageLocation } from 'jslib-common/enums/storageLocation';
 
 export class ElectronCryptoService extends CryptoService {
 
@@ -31,7 +30,7 @@ export class ElectronCryptoService extends CryptoService {
      */
     private async upgradeSecurelyStoredKey() {
         // attempt key upgrade, but if we fail just delete it. Keys will be stored property upon unlock anyway.
-        const key = await this.stateService.getCryptoMasterKey({ storageLocation: StorageLocation.Disk, useSecureStorage: true });
+        const key = await this.stateService.getCryptoMasterKey();
 
         if (key == null) {
             return;
@@ -49,6 +48,6 @@ export class ElectronCryptoService extends CryptoService {
             this.logService.error(e);
         }
 
-        await this.stateService.setCryptoMasterKey(null, { storageLocation: StorageLocation.Disk, useSecureStorage: true });
+        await this.stateService.setCryptoMasterKey(null);
     }
 }
