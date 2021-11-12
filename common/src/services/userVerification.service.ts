@@ -19,7 +19,12 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
     async buildRequest<T extends SecretVerificationRequest>(verification: Verification,
         requestClass?: new () => T, alreadyHashed?: boolean) {
         if (verification?.secret == null || verification.secret === '') {
-            throw new Error('No secret provided for verification.');
+            if (verification.type === VerificationType.OTP) {
+                this.handleError(this.i18nService.t('verificationCodeRequired'));
+            } else {
+                this.handleError(this.i18nService.t('masterPasswordRequired'));
+            }
+            return null;
         }
 
         const request = requestClass != null
@@ -40,10 +45,11 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
     async verifyUser(verification: Verification): Promise<boolean> {
         if (verification?.secret == null || verification.secret === '') {
             if (verification.type === VerificationType.OTP) {
-                this.showError(this.i18nService.t('verificationCodeRequired'));
+                this.handleError(this.i18nService.t('verificationCodeRequired'));
             } else {
-                this.showError(this.i18nService.t('masterPasswordRequired'));
+                this.handleError(this.i18nService.t('masterPasswordRequired'));
             }
+            return false;
         }
 
         if (verification.type === VerificationType.OTP) {
@@ -51,13 +57,13 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
             try {
                 await this.apiService.postAccountVerifyOTP(request);
             } catch (e) {
-                this.showError(this.i18nService.t('invalidVerificationCode'));
+                this.handleError(this.i18nService.t('invalidVerificationCode'));
                 return false;
             }
         } else {
             const passwordValid = await this.cryptoService.compareAndUpdateKeyHash(verification.secret, null);
             if (!passwordValid) {
-                this.showError(this.i18nService.t('invalidMasterPassword'));
+                this.handleError(this.i18nService.t('invalidMasterPassword'));
                 return false;
             }
         }
@@ -68,7 +74,7 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
         await this.apiService.postAccountRequestOTP();
     }
 
-    protected showError(message: string) {
+    protected handleError(message: string) {
         this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), message);
     }
 }
