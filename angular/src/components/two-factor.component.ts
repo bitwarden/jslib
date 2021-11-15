@@ -211,7 +211,9 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         }
 
         try {
-            const request = new TwoFactorEmailRequest(this.authService.email, this.authService.masterPasswordHash);
+            const request = new TwoFactorEmailRequest();
+            request.email = this.authService.email;
+            request.masterPasswordHash = this.authService.masterPasswordHash;
             this.emailPromise = this.apiService.postTwoFactorEmail(request);
             await this.emailPromise;
             if (doToast) {

@@ -8,6 +8,7 @@ export type Urls = {
     icons?: string;
     notifications?: string;
     events?: string;
+    keyConnector?: string;
 };
 
 export type PayPalConfig = {
@@ -26,6 +27,7 @@ export abstract class EnvironmentService {
     getApiUrl: () => string;
     getIdentityUrl: () => string;
     getEventsUrl: () => string;
+    getKeyConnectorUrl: () => string;
     setUrlsFromStorage: () => Promise<void>;
     setUrls: (urls: any, saveSettings?: boolean) => Promise<Urls>;
     getUrls: () => Urls;

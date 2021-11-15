@@ -52,7 +52,6 @@ import { OrganizationUserUpdateGroupsRequest } from '../models/request/organizat
 import { OrganizationUserUpdateRequest } from '../models/request/organizationUserUpdateRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
-import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
 import { PaymentRequest } from '../models/request/paymentRequest';
 import { PolicyRequest } from '../models/request/policyRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
@@ -68,6 +67,7 @@ import { ProviderUserInviteRequest } from '../models/request/provider/providerUs
 import { ProviderUserUpdateRequest } from '../models/request/provider/providerUserUpdateRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
+import { SecretVerificationRequest } from '../models/request/secretVerificationRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
 import { SendAccessRequest } from '../models/request/sendAccessRequest';
 import { SendRequest } from '../models/request/sendRequest';
@@ -166,9 +166,10 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
-import { SetCryptoAgentKeyRequest } from '../models/request/account/setCryptoAgentKeyRequest';
-import { CryptoAgentUserKeyRequest } from '../models/request/cryptoAgentUserKeyRequest';
-import { CryptoAgentUserKeyResponse } from '../models/response/cryptoAgentUserKeyResponse';
+import { SetKeyConnectorKeyRequest } from '../models/request/account/setKeyConnectorKeyRequest';
+import { VerifyOTPRequest } from '../models/request/account/verifyOTPRequest';
+import { KeyConnectorUserKeyRequest } from '../models/request/keyConnectorUserKeyRequest';
+import { KeyConnectorUserKeyResponse } from '../models/response/keyConnectorUserKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
 
 import { OrganizationSponsorshipCreateRequest } from '../models/request/organization/organizationSponsorshipCreateRequest';
@@ -295,15 +296,15 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/set-password', request, true, false);
     }
 
-    postSetCryptoAgentKey(request: SetCryptoAgentKeyRequest): Promise<any> {
-        return this.send('POST', '/accounts/set-crypto-agent-key', request, true, false);
+    postSetKeyConnectorKey(request: SetKeyConnectorKeyRequest): Promise<any> {
+        return this.send('POST', '/accounts/set-key-connector-key', request, true, false);
     }
 
-    postSecurityStamp(request: PasswordVerificationRequest): Promise<any> {
+    postSecurityStamp(request: SecretVerificationRequest): Promise<any> {
         return this.send('POST', '/accounts/security-stamp', request, true, false);
     }
 
-    deleteAccount(request: PasswordVerificationRequest): Promise<any> {
+    deleteAccount(request: SecretVerificationRequest): Promise<any> {
         return this.send('DELETE', '/accounts', request, true, false);
     }
 
@@ -366,7 +367,7 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/verify-email-token', request, false, false);
     }
 
-    postAccountVerifyPassword(request: PasswordVerificationRequest): Promise<any> {
+    postAccountVerifyPassword(request: SecretVerificationRequest): Promise<any> {
         return this.send('POST', '/accounts/verify-password', request, true, false);
     }
 
@@ -390,18 +391,30 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('GET', '/accounts/sso/user-identifier', null, true, true);
     }
 
-    async postUserApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+    async postUserApiKey(id: string, request: SecretVerificationRequest): Promise<ApiKeyResponse> {
         const r = await this.send('POST', '/accounts/api-key', request, true, true);
         return new ApiKeyResponse(r);
     }
 
-    async postUserRotateApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+    async postUserRotateApiKey(id: string, request: SecretVerificationRequest): Promise<ApiKeyResponse> {
         const r = await this.send('POST', '/accounts/rotate-api-key', request, true, true);
         return new ApiKeyResponse(r);
     }
 
     putUpdateTempPassword(request: UpdateTempPasswordRequest): Promise<any> {
         return this.send('PUT', '/accounts/update-temp-password', request, true, false);
+    }
+
+    postAccountRequestOTP(): Promise<void> {
+        return this.send('POST', '/accounts/request-otp', null, true, false);
+    }
+
+    postAccountVerifyOTP(request: VerifyOTPRequest): Promise<void> {
+        return this.send('POST', '/accounts/verify-otp', request, true, false);
+    }
+
+    postConvertToKeyConnector(): Promise<void> {
+        return this.send('POST', '/accounts/convert-to-key-connector', null, true, false);
     }
 
     // Folder APIs
@@ -576,7 +589,7 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('PUT', '/ciphers/' + id + '/collections-admin', request, true, false);
     }
 
-    postPurgeCiphers(request: PasswordVerificationRequest, organizationId: string = null): Promise<any> {
+    postPurgeCiphers(request: SecretVerificationRequest, organizationId: string = null): Promise<any> {
         let path = '/ciphers/purge';
         if (organizationId != null) {
             path += '?organizationId=' + organizationId;
@@ -942,44 +955,44 @@ export class ApiService implements ApiServiceAbstraction {
         return new ListResponse(r, TwoFactorProviderResponse);
     }
 
-    async getTwoFactorAuthenticator(request: PasswordVerificationRequest): Promise<TwoFactorAuthenticatorResponse> {
+    async getTwoFactorAuthenticator(request: SecretVerificationRequest): Promise<TwoFactorAuthenticatorResponse> {
         const r = await this.send('POST', '/two-factor/get-authenticator', request, true, true);
         return new TwoFactorAuthenticatorResponse(r);
     }
 
-    async getTwoFactorEmail(request: PasswordVerificationRequest): Promise<TwoFactorEmailResponse> {
+    async getTwoFactorEmail(request: SecretVerificationRequest): Promise<TwoFactorEmailResponse> {
         const r = await this.send('POST', '/two-factor/get-email', request, true, true);
         return new TwoFactorEmailResponse(r);
     }
 
-    async getTwoFactorDuo(request: PasswordVerificationRequest): Promise<TwoFactorDuoResponse> {
+    async getTwoFactorDuo(request: SecretVerificationRequest): Promise<TwoFactorDuoResponse> {
         const r = await this.send('POST', '/two-factor/get-duo', request, true, true);
         return new TwoFactorDuoResponse(r);
     }
 
     async getTwoFactorOrganizationDuo(organizationId: string,
-        request: PasswordVerificationRequest): Promise<TwoFactorDuoResponse> {
+        request: SecretVerificationRequest): Promise<TwoFactorDuoResponse> {
         const r = await this.send('POST', '/organizations/' + organizationId + '/two-factor/get-duo',
             request, true, true);
         return new TwoFactorDuoResponse(r);
     }
 
-    async getTwoFactorYubiKey(request: PasswordVerificationRequest): Promise<TwoFactorYubiKeyResponse> {
+    async getTwoFactorYubiKey(request: SecretVerificationRequest): Promise<TwoFactorYubiKeyResponse> {
         const r = await this.send('POST', '/two-factor/get-yubikey', request, true, true);
         return new TwoFactorYubiKeyResponse(r);
     }
 
-    async getTwoFactorWebAuthn(request: PasswordVerificationRequest): Promise<TwoFactorWebAuthnResponse> {
+    async getTwoFactorWebAuthn(request: SecretVerificationRequest): Promise<TwoFactorWebAuthnResponse> {
         const r = await this.send('POST', '/two-factor/get-webauthn', request, true, true);
         return new TwoFactorWebAuthnResponse(r);
     }
 
-    async getTwoFactorWebAuthnChallenge(request: PasswordVerificationRequest): Promise<ChallengeResponse> {
+    async getTwoFactorWebAuthnChallenge(request: SecretVerificationRequest): Promise<ChallengeResponse> {
         const r = await this.send('POST', '/two-factor/get-webauthn-challenge', request, true, true);
         return new ChallengeResponse(r);
     }
 
-    async getTwoFactorRecover(request: PasswordVerificationRequest): Promise<TwoFactorRecoverResponse> {
+    async getTwoFactorRecover(request: SecretVerificationRequest): Promise<TwoFactorRecoverResponse> {
         const r = await this.send('POST', '/two-factor/get-recover', request, true, true);
         return new TwoFactorRecoverResponse(r);
     }
@@ -1190,12 +1203,12 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/organizations/' + id + '/license', data, true, false);
     }
 
-    async postOrganizationApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+    async postOrganizationApiKey(id: string, request: SecretVerificationRequest): Promise<ApiKeyResponse> {
         const r = await this.send('POST', '/organizations/' + id + '/api-key', request, true, true);
         return new ApiKeyResponse(r);
     }
 
-    async postOrganizationRotateApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+    async postOrganizationRotateApiKey(id: string, request: SecretVerificationRequest): Promise<ApiKeyResponse> {
         const r = await this.send('POST', '/organizations/' + id + '/rotate-api-key', request, true, true);
         return new ApiKeyResponse(r);
     }
@@ -1240,7 +1253,7 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/organizations/' + id + '/reinstate', null, true, false);
     }
 
-    deleteOrganization(id: string, request: PasswordVerificationRequest): Promise<any> {
+    deleteOrganization(id: string, request: SecretVerificationRequest): Promise<any> {
         return this.send('DELETE', '/organizations/' + id, request, true, false);
     }
 
@@ -1439,12 +1452,12 @@ export class ApiService implements ApiServiceAbstraction {
         return r as string;
     }
 
-    // Crypto Agent
+    // Key Connector
 
-    async getUserKeyFromCryptoAgent(cryptoAgentUrl: string): Promise<CryptoAgentUserKeyResponse> {
+    async getUserKeyFromKeyConnector(keyConnectorUrl: string): Promise<KeyConnectorUserKeyResponse> {
         const authHeader = await this.getActiveBearerToken();
 
-        const response = await this.fetch(new Request(cryptoAgentUrl + '/user-keys', {
+        const response = await this.fetch(new Request(keyConnectorUrl + '/user-keys', {
             cache: 'no-store',
             method: 'GET',
             headers: new Headers({
@@ -1458,13 +1471,13 @@ export class ApiService implements ApiServiceAbstraction {
             return Promise.reject(error);
         }
 
-        return new CryptoAgentUserKeyResponse(await response.json());
+        return new KeyConnectorUserKeyResponse(await response.json());
     }
 
-    async postUserKeyToCryptoAgent(cryptoAgentUrl: string, request: CryptoAgentUserKeyRequest): Promise<void> {
+    async postUserKeyToKeyConnector(keyConnectorUrl: string, request: KeyConnectorUserKeyRequest): Promise<void> {
         const authHeader = await this.getActiveBearerToken();
 
-        const response = await this.fetch(new Request(cryptoAgentUrl + '/user-keys', {
+        const response = await this.fetch(new Request(keyConnectorUrl + '/user-keys', {
             cache: 'no-store',
             method: 'POST',
             headers: new Headers({
@@ -1628,6 +1641,13 @@ export class ApiService implements ApiServiceAbstraction {
         authed: boolean, hasResponse: boolean, apiUrl?: string,
         alterHeaders?: (headers: Headers) => void): Promise<any> {
         apiUrl = Utils.isNullOrWhitespace(apiUrl) ? this.environmentService.getApiUrl() : apiUrl;
+
+        const requestUrl = apiUrl + path;
+        // Prevent directory traversal from malicious paths
+        if (new URL(requestUrl).href !== requestUrl) {
+            return Promise.reject('Invalid request url path.');
+        }
+
         const headers = new Headers({
             'Device-Type': this.deviceType,
         });
@@ -1666,7 +1686,7 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         requestInit.headers = headers;
-        const response = await this.fetch(new Request(apiUrl + path, requestInit));
+        const response = await this.fetch(new Request(requestUrl, requestInit));
 
         if (hasResponse && response.status === 200) {
             const responseJson = await response.json();

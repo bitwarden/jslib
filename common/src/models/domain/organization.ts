@@ -38,6 +38,8 @@ export class Organization {
     familySponsorshipFriendlyName: string;
     familySponsorshipAvailable: boolean;
     planProductType: ProductType;
+    usesKeyConnector: boolean;
+    keyConnectorUrl: string;
 
     constructor(obj?: OrganizationData) {
         if (obj == null) {
@@ -75,6 +77,8 @@ export class Organization {
         this.familySponsorshipFriendlyName = obj.familySponsorshipFriendlyName;
         this.familySponsorshipAvailable = obj.familySponsorshipAvailable;
         this.planProductType = obj.planProductType;
+        this.usesKeyConnector = obj.usesKeyConnector;
+        this.keyConnectorUrl = obj.keyConnectorUrl;
     }
 
     get canAccess() {

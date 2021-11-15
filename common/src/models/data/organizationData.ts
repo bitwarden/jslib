@@ -38,6 +38,8 @@ export class OrganizationData {
     familySponsorshipFriendlyName: string;
     familySponsorshipAvailable: boolean;
     planProductType: ProductType;
+    usesKeyConnector: boolean;
+    keyConnectorUrl: string;
 
     constructor(response: ProfileOrganizationResponse) {
         this.id = response.id;
@@ -70,5 +72,7 @@ export class OrganizationData {
         this.familySponsorshipFriendlyName = response.familySponsorshipFriendlyName;
         this.familySponsorshipAvailable = response.familySponsorshipAvailable;
         this.planProductType = response.planProductType;
+        this.usesKeyConnector = response.usesKeyConnector;
+        this.keyConnectorUrl = response.keyConnectorUrl;
     }
 }

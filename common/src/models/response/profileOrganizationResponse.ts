@@ -37,6 +37,8 @@ export class ProfileOrganizationResponse extends BaseResponse {
     familySponsorshipFriendlyName: string;
     familySponsorshipAvailable: boolean;
     planProductType: ProductType;
+    usesKeyConnector: boolean;
+    keyConnectorUrl: string;
 
     constructor(response: any) {
         super(response);
@@ -71,5 +73,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
         this.familySponsorshipFriendlyName = this.getResponseProperty('FamilySponsorshipFriendlyName');
         this.familySponsorshipAvailable = this.getResponseProperty('FamilySponsorshipAvailable');
         this.planProductType = this.getResponseProperty('PlanProductType');
+        this.usesKeyConnector = this.getResponseProperty('UsesKeyConnector') ?? false;
+        this.keyConnectorUrl = this.getResponseProperty('KeyConnectorUrl');
     }
 }

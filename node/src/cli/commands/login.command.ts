@@ -14,6 +14,7 @@ import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { KeyConnectorService } from 'jslib-common/abstractions/keyConnector.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
@@ -22,6 +23,7 @@ import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { Response } from '../models/response';
 
+import { KeyConnectorUserKeyRequest } from 'jslib-common/models/request/keyConnectorUserKeyRequest';
 import { UpdateTempPasswordRequest } from 'jslib-common/models/request/updateTempPasswordRequest';
 
 import { MessageResponse } from '../models/response/messageResponse';
@@ -48,7 +50,8 @@ export class LoginCommand {
         protected passwordGenerationService: PasswordGenerationService,
         protected cryptoFunctionService: CryptoFunctionService, protected platformUtilsService: PlatformUtilsService,
         protected userService: UserService, protected cryptoService: CryptoService,
-        protected policyService: PolicyService, clientId: string, private syncService: SyncService) {
+        protected policyService: PolicyService, clientId: string, private syncService: SyncService,
+        protected keyConnectorService: KeyConnectorService) {
         this.clientId = clientId;
     }
 
@@ -57,6 +60,7 @@ export class LoginCommand {
 
         let ssoCodeVerifier: string = null;
         let ssoCode: string = null;
+        let orgIdentifier: string = null;
 
         let clientId: string = null;
         let clientSecret: string = null;
@@ -79,7 +83,9 @@ export class LoginCommand {
             const codeVerifierHash = await this.cryptoFunctionService.hash(ssoCodeVerifier, 'sha256');
             const codeChallenge = Utils.fromBufferToUrlB64(codeVerifierHash);
             try {
-                ssoCode = await this.getSsoCode(codeChallenge, state);
+                const ssoParams = await this.openSsoPrompt(codeChallenge, state);
+                ssoCode = ssoParams.ssoCode;
+                orgIdentifier = ssoParams.orgIdentifier;
             } catch {
                 return Response.badRequest('Something went wrong. Try again.');
             }
@@ -151,7 +157,8 @@ export class LoginCommand {
                 if (clientId != null && clientSecret != null) {
                     response = await this.authService.logInApiKey(clientId, clientSecret);
                 } else if (ssoCode != null && ssoCodeVerifier != null) {
-                    response = await this.authService.logInSso(ssoCode, ssoCodeVerifier, this.ssoRedirectUri, null);
+                    response = await this.authService.logInSso(ssoCode, ssoCodeVerifier, this.ssoRedirectUri,
+                        orgIdentifier);
                 } else {
                     response = await this.authService.logIn(email, password);
                 }
@@ -220,8 +227,9 @@ export class LoginCommand {
 
                     if (twoFactorToken == null && response.twoFactorProviders.size > 1 &&
                         selectedProvider.type === TwoFactorProviderType.Email) {
-                        const emailReq = new TwoFactorEmailRequest(this.authService.email,
-                            this.authService.masterPasswordHash);
+                        const emailReq = new TwoFactorEmailRequest();
+                        emailReq.email = this.authService.email;
+                        emailReq.masterPasswordHash = this.authService.masterPasswordHash;
                         await this.apiService.postTwoFactorEmail(emailReq);
                     }
 
@@ -254,9 +262,16 @@ export class LoginCommand {
                     ' through the web vault to set your master password.');
             }
 
+            // Full sync required for the reset password and key connector checks
+            await this.syncService.fullSync(true);
+
+            // Handle converting to Key Connector if required
+            if (await this.keyConnectorService.userNeedsMigration()) {
+                return await this.migrateToKeyConnector();
+            }
+
             // Handle Updating Temp Password if NOT using an API Key for authentication
             if (response.forcePasswordReset && (clientId == null && clientSecret == null)) {
-                await this.syncService.fullSync(true);
                 return await this.updateTempPassword();
             }
 
@@ -383,6 +398,57 @@ export class LoginCommand {
         return userInput;
     }
 
+    private async migrateToKeyConnector() {
+        // If no interaction available, alert user to use web vault
+        if (!this.canInteract) {
+            await this.logout();
+            this.authService.logOut(() => { /* Do nothing */ });
+            return Response.error(new MessageResponse('An organization you are a member of is using Key Connector. ' +
+                'In order to access the vault, you must opt-in to Key Connector now via the web vault. You have been logged out.', null));
+        }
+
+        const organization = await this.keyConnectorService.getManagingOrganization();
+
+        const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
+            type: 'list',
+            name: 'convert',
+            message: organization.name + ' is using a self-hosted key server. A master password is no longer required to log in for members of this organization. ',
+            choices: [
+                {
+                    name: 'Remove master password and log in',
+                    value: 'remove',
+                },
+                {
+                    name: 'Leave organization and log in',
+                    value: 'leave',
+                },
+                {
+                    name: 'Exit',
+                    value: 'exit',
+                },
+            ],
+        });
+
+        if (answer.convert === 'remove') {
+            await this.keyConnectorService.migrateUser();
+
+            // Update environment URL - required for api key login
+            const urls = this.environmentService.getUrls();
+            urls.keyConnector = organization.keyConnectorUrl;
+            await this.environmentService.setUrls(urls, true);
+
+            return await this.handleSuccessResponse();
+        } else if (answer.convert === 'leave') {
+            await this.apiService.postLeaveOrganization(organization.id);
+            await this.syncService.fullSync(true);
+            return await this.handleSuccessResponse();
+        } else {
+            await this.logout();
+            this.authService.logOut(() => { /* Do nothing */ });
+            return Response.error('You have been logged out.');
+        }
+    }
+
     private async apiClientId(): Promise<string> {
         let clientId: string = null;
 
@@ -432,13 +498,14 @@ export class LoginCommand {
         };
     }
 
-    private async getSsoCode(codeChallenge: string, state: string): Promise<string> {
+    private async openSsoPrompt(codeChallenge: string, state: string): Promise<{ ssoCode: string, orgIdentifier: string }> {
         return new Promise((resolve, reject) => {
             const callbackServer = http.createServer((req, res) => {
                 const urlString = 'http://localhost' + req.url;
                 const url = new URL(urlString);
                 const code = url.searchParams.get('code');
                 const receivedState = url.searchParams.get('state');
+                const orgIdentifier = this.getOrgIdentifierFromState(receivedState);
                 res.setHeader('Content-Type', 'text/html');
                 if (code != null && receivedState != null && this.checkState(receivedState, state)) {
                     res.writeHead(200);
@@ -446,7 +513,10 @@ export class LoginCommand {
                         '<h1>Successfully authenticated with the Bitwarden CLI</h1>' +
                         '<p>You may now close this tab and return to the terminal.</p>' +
                         '</body></html>');
-                    callbackServer.close(() => resolve(code));
+                    callbackServer.close(() => resolve({
+                        ssoCode: code,
+                        orgIdentifier: orgIdentifier,
+                    }));
                 } else {
                     res.writeHead(400);
                     res.end('<html><head><title>Failed | Bitwarden CLI</title></head><body>' +
@@ -476,6 +546,15 @@ export class LoginCommand {
                 reject();
             }
         });
+    }
+
+    private getOrgIdentifierFromState(state: string): string {
+        if (state === null || state === undefined) {
+            return null;
+        }
+
+        const stateSplit = state.split('_identifier=');
+        return stateSplit.length > 1 ? stateSplit[1] : null;
     }
 
     private checkState(state: string, checkState: string): boolean {

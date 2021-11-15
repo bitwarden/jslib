@@ -26,4 +26,5 @@ export abstract class TokenService {
     getName: () => string;
     getPremium: () => boolean;
     getIssuer: () => string;
+    getIsExternal: () => boolean;
 }

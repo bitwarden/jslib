@@ -219,7 +219,8 @@ export class Utils {
         }
 
         let httpUrl = uriString.startsWith('http://') || uriString.startsWith('https://');
-        if (!httpUrl && uriString.indexOf('://') < 0 && Utils.tldEndingRegex.test(uriString)) {
+        if (!httpUrl && uriString.indexOf('://') < 0 && Utils.tldEndingRegex.test(uriString) &&
+            uriString.indexOf('@') < 0) {
             uriString = 'http://' + uriString;
             httpUrl = true;
         }
