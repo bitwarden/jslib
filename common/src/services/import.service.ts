@@ -88,7 +88,7 @@ export class ImportService implements ImportServiceAbstraction {
         { id: 'lastpasscsv', name: 'LastPass (csv)' },
         { id: 'chromecsv', name: 'Chrome (csv)' },
         { id: 'firefoxcsv', name: 'Firefox (csv)' },
-        { id: 'safaricsv', name: 'Safari (csv)' },
+        { id: 'safaricsv', name: 'Safari and macOS (csv)' },
         { id: 'keepass2xml', name: 'KeePass 2 (xml)' },
         { id: '1password1pif', name: '1Password (1pif)' },
         { id: 'dashlanejson', name: 'Dashlane (json)' },
