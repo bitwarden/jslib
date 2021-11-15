@@ -19,6 +19,7 @@ export class Organization {
     use2fa: boolean;
     useApi: boolean;
     useSso: boolean;
+    useKeyConnector: boolean;
     useResetPassword: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
@@ -55,6 +56,7 @@ export class Organization {
         this.use2fa = obj.use2fa;
         this.useApi = obj.useApi;
         this.useSso = obj.useSso;
+        this.useKeyConnector = obj.useKeyConnector;
         this.useResetPassword = obj.useResetPassword;
         this.selfHost = obj.selfHost;
         this.usersGetPremium = obj.usersGetPremium;

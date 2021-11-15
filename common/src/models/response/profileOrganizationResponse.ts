@@ -15,6 +15,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
     use2fa: boolean;
     useApi: boolean;
     useSso: boolean;
+    useKeyConnector: boolean;
     useResetPassword: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
@@ -48,6 +49,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
         this.use2fa = this.getResponseProperty('Use2fa');
         this.useApi = this.getResponseProperty('UseApi');
         this.useSso = this.getResponseProperty('UseSso');
+        this.useKeyConnector = this.getResponseProperty('UseKeyConnector') ?? false;
         this.useResetPassword = this.getResponseProperty('UseResetPassword');
         this.selfHost = this.getResponseProperty('SelfHost');
         this.usersGetPremium = this.getResponseProperty('UsersGetPremium');
