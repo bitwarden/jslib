@@ -60,7 +60,7 @@ export class UserVerificationService implements UserVerificationServiceAbstracti
     private validateInput(verification: Verification) {
         if (verification?.secret == null || verification.secret === '') {
             if (verification.type === VerificationType.OTP) {
-                throw new Error(this.i18nService.t('verificationCodeRequired'))
+                throw new Error(this.i18nService.t('verificationCodeRequired'));
             } else {
                 throw new Error(this.i18nService.t('masterPassRequired'));
             }
