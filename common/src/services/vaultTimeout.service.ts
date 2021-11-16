@@ -47,7 +47,9 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         const neverLock = await this.cryptoService.hasKeyStored(KeySuffixOptions.Auto, userId) &&
             !(await this.stateService.getEverBeenUnlocked({ userId: userId }));
         if (neverLock) {
-            return (await this.cryptoService.getKey(KeySuffixOptions.Auto, userId)) != null;
+            // TODO: This also sets the key so when we check memory in the next line it finds a key.
+            // We should refactor here.
+            await this.cryptoService.getKey(KeySuffixOptions.Auto, userId);
         }
 
         return !(await this.cryptoService.hasKeyInMemory(userId));
@@ -60,7 +62,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
 
         for (const userId in this.stateService.accounts.getValue()) {
             if (userId != null && await this.shouldLock(userId)) {
-                this.executeTimeoutAction(userId);
+                await this.executeTimeoutAction(userId);
             }
         }
     }
