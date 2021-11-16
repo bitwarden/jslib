@@ -34,6 +34,8 @@ export class Account {
     encryptedCiphers: { [id: string]: CipherData };
     decryptedCiphers: CipherView[];
     cryptoMasterKey: SymmetricCryptoKey;
+    cryptoMasterKeyBiometric: SymmetricCryptoKey;
+    cryptoMasterKeyAuto: SymmetricCryptoKey;
     cryptoMasterKeyB64: string;
     encryptedCryptoSymmetricKey: string;
     decryptedCryptoSymmetricKey: SymmetricCryptoKey;

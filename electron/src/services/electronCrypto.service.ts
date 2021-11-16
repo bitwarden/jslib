@@ -6,6 +6,7 @@ import { StateService } from 'jslib-common/abstractions/state.service';
 import { CryptoService } from 'jslib-common/services/crypto.service';
 
 import { KeySuffixOptions } from 'jslib-common/enums/keySuffixOptions';
+import { StorageLocation } from 'jslib-common/enums/storageLocation';
 
 export class ElectronCryptoService extends CryptoService {
 
@@ -30,7 +31,7 @@ export class ElectronCryptoService extends CryptoService {
      */
     private async upgradeSecurelyStoredKey() {
         // attempt key upgrade, but if we fail just delete it. Keys will be stored property upon unlock anyway.
-        const key = await this.stateService.getCryptoMasterKey();
+        const key = await this.stateService.getCryptoMasterKey({ storageLocation: StorageLocation.Disk, useSecureStorage: true });
 
         if (key == null) {
             return;
@@ -38,16 +39,16 @@ export class ElectronCryptoService extends CryptoService {
 
         try {
             if (await this.shouldStoreKey(KeySuffixOptions.Auto)) {
-                await this.stateService.getCryptoMasterKeyB64({ keySuffix: KeySuffixOptions.Auto });
+                await this.stateService.setCryptoMasterKeyAuto(key);
             }
             if (await this.shouldStoreKey(KeySuffixOptions.Biometric)) {
-                await this.stateService.getCryptoMasterKey({ keySuffix: KeySuffixOptions.Biometric });
+                await this.stateService.setCryptoMasterKeyBiometric(key);
             }
         } catch (e) {
             this.logService.error(`Encountered error while upgrading obsolete Bitwarden secure storage item:`);
             this.logService.error(e);
         }
 
-        await this.stateService.setCryptoMasterKey(null);
+        await this.stateService.setCryptoMasterKey(null, { storageLocation: StorageLocation.Disk, useSecureStorage: true });
     }
 }

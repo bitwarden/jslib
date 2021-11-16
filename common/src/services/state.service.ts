@@ -254,34 +254,32 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getCryptoMasterKey(options?: StorageOptions): Promise<SymmetricCryptoKey> {
-        options = this.reconcileOptions(options, { userId: await this.getActiveUserIdFromStorage()});
         return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.cryptoMasterKey;
     }
 
     async setCryptoMasterKey(value: SymmetricCryptoKey, options?: StorageOptions): Promise<void> {
-        options = this.reconcileOptions(options, { userId: await this.getActiveUserIdFromStorage()});
         const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
         account.cryptoMasterKey = value;
         await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
     }
 
+    async getCryptoMasterKeyAuto(options?: StorageOptions): Promise<SymmetricCryptoKey> {
+        return (await this.getAccount(this.reconcileOptions(options, await this.defaultSecureStorageOptions())))?.cryptoMasterKeyAuto;
+    }
+
+    async setCryptoMasterKeyAuto(value: SymmetricCryptoKey, options?: StorageOptions): Promise<void> {
+        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultSecureStorageOptions()));
+        account.cryptoMasterKeyAuto = value;
+        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultSecureStorageOptions()));
+    }
+
     async getCryptoMasterKeyB64(options: StorageOptions): Promise<string> {
-        try {
-            if (options?.keySuffix == null) {
-                throw new RequiredSuffixError();
-            }
-            const value = (await this.getAccount(this.reconcileOptions(options, await this.defaultSecureStorageOptions())))?.cryptoMasterKeyB64;
-            return value;
-        } catch (e) {
-            this.logService.error(e);
-        }
+        const value = (await this.getAccount(this.reconcileOptions(options, await this.defaultSecureStorageOptions())))?.cryptoMasterKeyB64;
+        return value;
     }
 
     async setCryptoMasterKeyB64(value: string, options: StorageOptions): Promise<void> {
         try {
-            if (value != null && options?.keySuffix == null) {
-                throw new RequiredSuffixError();
-            }
             const account = await this.getAccount(this.reconcileOptions(options, await this.defaultSecureStorageOptions()));
             if (account != null) {
                 account.cryptoMasterKeyB64 = value;
@@ -290,6 +288,16 @@ export class StateService implements StateServiceAbstraction {
         } catch (e) {
             this.logService.error(e);
         }
+    }
+
+    async getCryptoMasterKeyBiometric(options?: StorageOptions): Promise<SymmetricCryptoKey> {
+        return (await this.getAccount(this.reconcileOptions(options, await this.defaultSecureStorageOptions())))?.cryptoMasterKeyBiometric;
+    }
+
+    async setCryptoMasterKeyBiometric(value: SymmetricCryptoKey, options?: StorageOptions): Promise<void> {
+        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultSecureStorageOptions()));
+        account.cryptoMasterKeyBiometric = value;
+        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultSecureStorageOptions()));
     }
 
     async getDecodedToken(options?: StorageOptions): Promise<any> {
@@ -1332,7 +1340,6 @@ export class StateService implements StateServiceAbstraction {
         }
         requestedOptions.userId = requestedOptions?.userId ?? defaultOptions.userId;
         requestedOptions.storageLocation = requestedOptions?.storageLocation ?? defaultOptions.storageLocation;
-        requestedOptions.keySuffix = requestedOptions?.keySuffix ?? defaultOptions.keySuffix;
         requestedOptions.useSecureStorage = requestedOptions?.useSecureStorage ?? defaultOptions.useSecureStorage;
         requestedOptions.htmlStorageLocation = requestedOptions?.htmlStorageLocation ?? defaultOptions.htmlStorageLocation;
         return requestedOptions;
@@ -1380,11 +1387,5 @@ export class StateService implements StateServiceAbstraction {
     private async getActiveUserIdFromStorage(): Promise<string> {
         const state = await this.storageService.get<State>('state', await this.defaultOnDiskOptions());
         return state?.activeUserId;
-    }
-}
-
-class RequiredSuffixError extends Error {
-    constructor(public message: string = 'The suffix option is required to get/set this key.') {
-        super(message);
     }
 }

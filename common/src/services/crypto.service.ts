@@ -84,10 +84,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     async getKey(keySuffix?: KeySuffixOptions, userId?: string): Promise<SymmetricCryptoKey> {
-        const inMemoryKey = await this.stateService.getCryptoMasterKey(
-            userId ? { userId: userId } :
-            null
-        );
+        const inMemoryKey = await this.stateService.getCryptoMasterKey({ userId: userId });
 
         if (inMemoryKey != null) {
             return inMemoryKey;
@@ -106,7 +103,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     async getKeyFromStorage(keySuffix: KeySuffixOptions, userId?: string): Promise<SymmetricCryptoKey> {
         const key = await this.retrieveKeyFromStorage(keySuffix, userId);
         if (key != null) {
-            const symmetricKey = new SymmetricCryptoKey(Utils.fromB64ToArray(key).buffer);
+            const symmetricKey = new SymmetricCryptoKey(Utils.fromB64ToArray(key.keyB64).buffer);
 
             if (!await this.validateKey(symmetricKey)) {
                 this.logService.warning('Wrong key, throwing away stored key');
@@ -323,7 +320,11 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     async hasKeyStored(keySuffix: KeySuffixOptions, userId?: string): Promise<boolean> {
-        return await this.stateService.getCryptoMasterKeyB64({ keySuffix: keySuffix, userId: userId }) != null;
+        const key = keySuffix === KeySuffixOptions.Auto ?
+            await this.stateService.getCryptoMasterKeyAuto({ userId: userId }) :
+            await this.stateService.getCryptoMasterKeyBiometric({ userId: userId });
+
+        return key != null;
     }
 
     async hasEncKey(): Promise<boolean> {
@@ -339,7 +340,9 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     async clearStoredKey(keySuffix: KeySuffixOptions) {
-        await this.stateService.setCryptoMasterKeyB64(null, { keySuffix: keySuffix });
+        keySuffix === KeySuffixOptions.Auto ?
+            await this.stateService.setCryptoMasterKeyAuto(null) :
+            await this.stateService.setCryptoMasterKeyBiometric(null);
     }
 
     async clearKeyHash(): Promise<any> {
@@ -706,7 +709,9 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     protected async retrieveKeyFromStorage(keySuffix: KeySuffixOptions, userId?: string) {
-        return await this.stateService.getCryptoMasterKeyB64({ keySuffix: keySuffix, userId: userId });
+        return keySuffix === KeySuffixOptions.Auto ?
+            await this.stateService.getCryptoMasterKeyAuto({ userId: userId }) :
+            await this.stateService.getCryptoMasterKeyBiometric({ userId: userId });
     }
 
     private async aesEncrypt(data: ArrayBuffer, key: SymmetricCryptoKey): Promise<EncryptedObject> {
@@ -866,16 +871,16 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     private async clearSecretKeyStore(userId?: string): Promise<void> {
-        await this.stateService.setCryptoMasterKeyB64(null, { keySuffix: KeySuffixOptions.Auto, userId: userId });
-        await this.stateService.setCryptoMasterKeyB64(null, { keySuffix: KeySuffixOptions.Biometric, userId: userId });
+        await this.stateService.setCryptoMasterKeyAuto(null, { userId: userId });
+        await this.stateService.setCryptoMasterKeyBiometric(null, { userId: userId });
     }
 
     private async storeKey(key: SymmetricCryptoKey, userId?: string) {
         const shouldStoreAuto = await this.shouldStoreKey(KeySuffixOptions.Auto, userId);
-        await this.stateService.setCryptoMasterKeyB64(shouldStoreAuto ? key.keyB64 : null, { userId: userId, keySuffix: KeySuffixOptions.Auto});
+        await this.stateService.setCryptoMasterKeyAuto(shouldStoreAuto ? key : null, { userId: userId });
 
         const shouldStoreBiometric = await this.shouldStoreKey(KeySuffixOptions.Biometric, userId);
-        await this.stateService.setCryptoMasterKeyB64(shouldStoreBiometric ? key.keyB64 : null, { userId: userId, keySuffix: KeySuffixOptions.Biometric });
+        await this.stateService.setCryptoMasterKeyBiometric(shouldStoreBiometric ? key : null, { userId: userId });
     }
 
 }
