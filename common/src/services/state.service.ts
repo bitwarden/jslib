@@ -798,12 +798,13 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getEverBeenUnlocked(options?: StorageOptions): Promise<boolean> {
-        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.everBeenUnlocked ?? false;
+        return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.everBeenUnlocked ?? false;
     }
+
     async setEverBeenUnlocked(value: boolean, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
         account.everBeenUnlocked = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
     }
 
     async getForcePasswordReset(options?: StorageOptions): Promise<boolean> {
