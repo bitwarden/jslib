@@ -1129,25 +1129,25 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getVaultTimeout(options?: StorageOptions): Promise<number> {
-        const accountVaultTimeout = (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.vaultTimeout;
-        const globalVaultTimeout = (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.vaultTimeout;
+        const accountVaultTimeout = (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.vaultTimeout;
+        const globalVaultTimeout = (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.vaultTimeout;
         return accountVaultTimeout ?? globalVaultTimeout;
     }
     async setVaultTimeout(value: number, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
         account.vaultTimeout = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
     }
 
     async getVaultTimeoutAction(options?: StorageOptions): Promise<string> {
-        const accountVaultTimeoutAction = (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.vaultTimeoutAction;
-        const globalVaultTimeoutAction = (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.vaultTimeoutAction;
+        const accountVaultTimeoutAction = (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.vaultTimeoutAction;
+        const globalVaultTimeoutAction = (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.vaultTimeoutAction;
         return accountVaultTimeoutAction ?? globalVaultTimeoutAction;
     }
     async setVaultTimeoutAction(value: string, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
         account.vaultTimeoutAction = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
     }
 
     async getWindow(): Promise<Map<string, any>> {
