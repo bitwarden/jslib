@@ -8,7 +8,6 @@ import {
     NG_VALUE_ACCESSOR,
 } from '@angular/forms';
 
-import { ApiService } from 'jslib-common/abstractions/api.service';
 import { KeyConnectorService } from 'jslib-common/abstractions/keyConnector.service';
 import { UserVerificationService } from 'jslib-common/abstractions/userVerification.service';
 
@@ -40,17 +39,9 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
 
     async ngOnInit() {
         this.usesKeyConnector = await this.keyConnectorService.getUsesKeyConnector();
+        this.processChanges(this.secret.value);
 
-        this.secret.valueChanges.subscribe(secret => {
-            if (this.onChange == null) {
-                return;
-            }
-
-            this.onChange({
-                type: this.usesKeyConnector ? VerificationType.OTP : VerificationType.MasterPassword,
-                secret: secret,
-            });
-        });
+        this.secret.valueChanges.subscribe(secret => this.processChanges(secret));
     }
 
     async requestOTP() {
@@ -79,5 +70,16 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
         } else {
             this.secret.enable();
         }
+    }
+
+    private processChanges(secret: string) {
+        if (this.onChange == null) {
+            return;
+        }
+
+        this.onChange({
+            type: this.usesKeyConnector ? VerificationType.OTP : VerificationType.MasterPassword,
+            secret: secret,
+        });
     }
 }
