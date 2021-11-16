@@ -1274,7 +1274,7 @@ export class StateService implements StateServiceAbstraction {
             this.secureStorageService :
             this.storageService;
 
-        const state = await storageLocation.get<State>('state', options);
+        const state = await storageLocation.get<State>('state', options) ?? new State();
         state.accounts[account.userId] = account;
 
         await storageLocation.save('state', state, options);
