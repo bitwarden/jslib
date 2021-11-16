@@ -1397,7 +1397,7 @@ export class StateService implements StateServiceAbstraction {
         if (state?.accounts[userId ?? this.state.activeUserId] == null) {
             return;
         }
-        delete state.accounts[userId ?? this.state.activeUserId]
+        delete state.accounts[userId ?? this.state.activeUserId];
         await this.storageService.save('state', state, { htmlStorageLocation: HtmlStorageLocation.Local });
     }
 
@@ -1406,7 +1406,7 @@ export class StateService implements StateServiceAbstraction {
         if (state?.accounts[userId ?? this.state.activeUserId] == null) {
             return;
         }
-        delete state.accounts[userId ?? this.state.activeUserId]
+        delete state.accounts[userId ?? this.state.activeUserId];
         await this.storageService.save('state', state, { htmlStorageLocation: HtmlStorageLocation.Session });
     }
 
@@ -1415,7 +1415,7 @@ export class StateService implements StateServiceAbstraction {
         if (state?.accounts[userId ?? this.state.activeUserId] == null) {
             return;
         }
-        delete state.accounts[userId ?? this.state.activeUserId]
+        delete state.accounts[userId ?? this.state.activeUserId];
         await this.secureStorageService.save('state', state);
     }
 
