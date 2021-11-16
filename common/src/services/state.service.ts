@@ -1151,8 +1151,8 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getWindow(): Promise<Map<string, any>> {
-        const globals = await this.getGlobals({ storageLocation: StorageLocation.Disk });
-        return Object.keys(globals.window).length > 0 ?
+        const globals = await this.getGlobals(await this.defaultOnDiskOptions());
+        return globals?.window != null && Object.keys(globals.window).length > 0 ?
             globals.window :
             new Map<string, any>();
     }
