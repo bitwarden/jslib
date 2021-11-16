@@ -376,8 +376,9 @@ export class AuthService implements AuthServiceAbstraction {
 
                 if (tokenResponse.keyConnectorUrl != null) {
                     await this.keyConnectorService.getAndSetKey(tokenResponse.keyConnectorUrl);
-                } else if (this.environmentService.getKeyConnectorUrl() != null) {
-                    await this.keyConnectorService.getAndSetKey();
+                } else if (tokenResponse.apiUseKeyConnector) {
+                    const keyConnectorUrl = this.environmentService.getKeyConnectorUrl();
+                    await this.keyConnectorService.getAndSetKey(keyConnectorUrl);
                 }
 
                 await this.cryptoService.setEncKey(tokenResponse.key);
