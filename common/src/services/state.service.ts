@@ -1233,7 +1233,7 @@ export class StateService implements StateServiceAbstraction {
 
     private getUserIdFromMemory(options: StorageOptions): string {
         return options?.userId != null ?
-            this.state.accounts[options.userId].userId :
+            this.state.accounts[options.userId]?.userId :
             this.state.activeUserId;
     }
 
