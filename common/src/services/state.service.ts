@@ -78,9 +78,10 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async clean(options?: StorageOptions): Promise<void> {
-        await this.secureStorageService.remove(options?.userId ?? this.state.activeUserId);
-        await this.storageService.remove(options?.userId ?? this.state.activeUserId);
-        delete this.state.accounts[options?.userId ?? this.state.activeUserId];
+        await this.removeAccountFromSessionStorage(options?.userId);
+        await this.removeAccountFromLocalStorage(options?.userId);
+        await this.removeAccountFromSecureStorage(options?.userId);
+        this.removeAccountFromMemory(options?.userId);
         await this.pushAccounts();
     }
 
@@ -1389,5 +1390,39 @@ export class StateService implements StateServiceAbstraction {
     private async getActiveUserIdFromStorage(): Promise<string> {
         const state = await this.storageService.get<State>('state', await this.defaultOnDiskOptions());
         return state?.activeUserId;
+    }
+
+    private async removeAccountFromLocalStorage(userId: string): Promise<void> {
+        const state = await this.secureStorageService.get<State>('state', { htmlStorageLocation: HtmlStorageLocation.Local });
+        if (state?.accounts[userId ?? this.state.activeUserId] == null) {
+            return;
+        }
+        delete state.accounts[userId ?? this.state.activeUserId]
+        await this.storageService.save('state', state, { htmlStorageLocation: HtmlStorageLocation.Local });
+    }
+
+    private async removeAccountFromSessionStorage(userId: string): Promise<void> {
+        const state = await this.secureStorageService.get<State>('state', { htmlStorageLocation: HtmlStorageLocation.Session });
+        if (state?.accounts[userId ?? this.state.activeUserId] == null) {
+            return;
+        }
+        delete state.accounts[userId ?? this.state.activeUserId]
+        await this.storageService.save('state', state, { htmlStorageLocation: HtmlStorageLocation.Session });
+    }
+
+    private async removeAccountFromSecureStorage(userId: string): Promise<void> {
+        const state = await this.secureStorageService.get<State>('state');
+        if (state?.accounts[userId ?? this.state.activeUserId] == null) {
+            return;
+        }
+        delete state.accounts[userId ?? this.state.activeUserId]
+        await this.secureStorageService.save('state', state);
+    }
+
+    private removeAccountFromMemory(userId: string): void {
+        if (this.state?.accounts[userId ?? this.state.activeUserId] == null) {
+            return;
+        }
+        delete this.state.accounts[userId ?? this.state.activeUserId];
     }
 }
