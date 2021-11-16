@@ -52,12 +52,6 @@ export class StateService implements StateServiceAbstraction {
     async loadStateFromDisk() {
         if (await this.getActiveUserIdFromStorage() != null) {
             const diskState = await this.storageService.get<State>('state', await this.defaultOnDiskOptions());
-            for (const userId in diskState?.accounts) {
-                if (userId == null) {
-                    continue;
-                }
-                diskState.accounts[userId].accessToken = null;
-            }
             this.state = diskState;
             await this.storageService.save('state', diskState, await this.defaultOnDiskMemoryOptions());
         }
