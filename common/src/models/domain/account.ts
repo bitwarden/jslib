@@ -101,7 +101,6 @@ export class Account {
     ssoCodeVerifier: string;
     ssoState: string;
     ssoOrganizationIdentifier: string;
-    theme: string;
     vaultTimeout: number;
     vaultTimeoutAction: string;
     clearClipboard: number;
@@ -144,6 +143,8 @@ export class Account {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.hasPremiumPersonally = hasPremium;
+        this.vaultTimeoutAction = 'lock';
+        this.vaultTimeout = 15;
     }
 
     get serverUrl(): string {
