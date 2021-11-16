@@ -1176,13 +1176,10 @@ export class StateService implements StateServiceAbstraction {
         return globals ?? new GlobalState();
     }
 
-    private async saveGlobals(globals: GlobalState, options: StorageOptions = {
-        storageLocation: StorageLocation.Memory,
-        useSecureStorage: false,
-    }) {
+    private async saveGlobals(globals: GlobalState, options: StorageOptions) {
         return this.useMemory(options.storageLocation) ?
             this.saveGlobalsToMemory(globals) :
-            this.saveGlobalsToDisk(globals, options);
+            await this.saveGlobalsToDisk(globals, options);
     }
 
     private getGlobalsFromMemory(): GlobalState {
@@ -1190,7 +1187,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     private async getGlobalsFromDisk(options: StorageOptions): Promise<GlobalState> {
-        return await this.storageService.get<GlobalState>('globals', options);
+        return (await this.storageService.get<State>('state', options))?.globals;
     }
 
     private saveGlobalsToMemory(globals: GlobalState): void {
