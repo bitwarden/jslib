@@ -1298,11 +1298,15 @@ export class StateService implements StateServiceAbstraction {
         storedState.accounts[account.userId] = account;
         await this.storageService.save('state', storedState, await this.defaultOnDiskLocalOptions());
         await this.storageService.save('state', storedState, await this.defaultOnDiskMemoryOptions());
-        await this.storageService.save('state', storedState);
+        await this.storageService.save('state', storedState, await this.defaultOnDiskOptions());
 
-        if (await this.secureStorageService.get<State>('state') == null) {
-            await this.secureStorageService.save('state', storedState);
-        }
+        await this.scaffoldNewAccountSecureStorage(account);
+    }
+
+    private async scaffoldNewAccountSecureStorage(account: Account): Promise<void> {
+        const storedState = await this.secureStorageService.get<State>('state', await this.defaultSecureStorageOptions()) ?? new State();
+        storedState.accounts[account.userId] = account;
+        await this.secureStorageService.save('state', storedState);
     }
 
     private async pushAccounts(): Promise<void> {
