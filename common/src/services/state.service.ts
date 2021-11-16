@@ -1096,17 +1096,10 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getTheme(options?: StorageOptions): Promise<string> {
-        const accountTheme = (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.theme;
-        const globalTheme = (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.theme;
-        return accountTheme ?? globalTheme;
+        return (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.theme;
     }
-    async setTheme(value: string, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
-        if (account != null) {
-            account.theme = value;
-            await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
-        }
 
+    async setTheme(value: string, options?: StorageOptions): Promise<void> {
         const globals = await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
         globals.theme = value;
         await this.saveGlobals(globals, this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
