@@ -35,7 +35,7 @@ export class Organization {
     providerId: string;
     providerName: string;
     isProviderUser: boolean;
-    usesKeyConnector: boolean;
+    keyConnectorEnabled: boolean;
     keyConnectorUrl: string;
 
     constructor(obj?: OrganizationData) {
@@ -72,7 +72,7 @@ export class Organization {
         this.providerId = obj.providerId;
         this.providerName = obj.providerName;
         this.isProviderUser = obj.isProviderUser;
-        this.usesKeyConnector = obj.usesKeyConnector;
+        this.keyConnectorEnabled = obj.keyConnectorEnabled;
         this.keyConnectorUrl = obj.keyConnectorUrl;
     }
 

@@ -34,7 +34,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
     userId: string;
     providerId: string;
     providerName: string;
-    usesKeyConnector: boolean;
+    keyConnectorEnabled: boolean;
     keyConnectorUrl: string;
 
     constructor(response: any) {
@@ -68,7 +68,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
         this.userId = this.getResponseProperty('UserId');
         this.providerId = this.getResponseProperty('ProviderId');
         this.providerName = this.getResponseProperty('ProviderName');
-        this.usesKeyConnector = this.getResponseProperty('UsesKeyConnector') ?? false;
+        this.keyConnectorEnabled = this.getResponseProperty('KeyConnectorEnabled') ?? false;
         this.keyConnectorUrl = this.getResponseProperty('KeyConnectorUrl');
     }
 }
