@@ -1243,7 +1243,8 @@ export class StateService implements StateServiceAbstraction {
         }
 
         const state = options?.useSecureStorage ?
-            await this.secureStorageService.get<State>('state', options) :
+            await this.secureStorageService.get<State>('state', options) ??
+                await this.storageService.get<State>('state', this.reconcileOptions(options, { htmlStorageLocation: HtmlStorageLocation.Local })) :
             await this.storageService.get<State>('state', options);
 
         return state?.accounts[options?.userId ?? this.state.activeUserId];
