@@ -795,12 +795,12 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getEventCollection(options?: StorageOptions): Promise<EventData[]> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.eventCollection;
+        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.eventCollection;
     }
     async setEventCollection(value: EventData[], options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
+        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
         account.eventCollection = value;
-        await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
+        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
     }
 
     async getEverBeenUnlocked(options?: StorageOptions): Promise<boolean> {
