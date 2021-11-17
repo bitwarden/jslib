@@ -68,7 +68,6 @@ export class TokenService implements TokenServiceAbstraction {
         if ((timeout != null || timeout === 0) && action === 'logOut') {
             // if we have a vault timeout and the action is log out, reset tokens
             await this.clearToken();
-            return;
         }
 
         await this.setToken(token);
