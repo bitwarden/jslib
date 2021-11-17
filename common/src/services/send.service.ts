@@ -96,11 +96,12 @@ export class SendService implements SendServiceAbstraction {
     }
 
     async getAllDecrypted(): Promise<SendView[]> {
-        const decSends = await this.stateService.getDecryptedSends() ?? [];
+        let decSends = await this.stateService.getDecryptedSends();
         if (decSends != null) {
             return decSends;
         }
 
+        decSends = [];
         const hasKey = await this.cryptoService.hasKey();
         if (!hasKey) {
             throw new Error('No key.');
