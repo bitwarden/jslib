@@ -29,7 +29,11 @@ export class SettingsService implements SettingsServiceAbstraction {
     // Helpers
 
     private async getSettings(): Promise<any> {
-        await this.clearCache();
+        let settings = await this.stateService.getSettings();
+        if (settings == null) {
+            const userId = await this.stateService.getUserId();
+        }
+        return settings;
     }
 
     private async getSettingsKey(key: string): Promise<any> {
