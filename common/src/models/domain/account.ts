@@ -130,7 +130,7 @@ export class AccountSettings {
     vaultTimeoutAction?: string;
 
     get serverUrl(): string {
-        return this.settings.environmentUrls?.base ?? 'bitwarden.com';
+        return this.environmentUrls?.base ?? 'bitwarden.com';
     }
 }
 
