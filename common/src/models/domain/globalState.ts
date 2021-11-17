@@ -5,7 +5,6 @@ export class GlobalState {
     locale: string;
     openAtLogin: boolean;
     organizationInvitation: any;
-    rememberEmail: boolean;
     rememberedEmail: string;
     theme: string;
     window: Map<string, any> = new Map<string, any>();
@@ -15,4 +14,6 @@ export class GlobalState {
     biometricFingerprintValidated: boolean;
     vaultTimeout: number;
     vaultTimeoutAction: string;
+    loginRedirect: any;
+    mainWindowSize: number;
 }

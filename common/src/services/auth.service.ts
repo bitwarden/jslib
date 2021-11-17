@@ -353,11 +353,23 @@ export class AuthService implements AuthServiceAbstraction {
         result.forcePasswordReset = tokenResponse.forcePasswordReset;
 
         const accountInformation = await this.tokenService.decodeToken(tokenResponse.accessToken);
-        await this.stateService.addAccount(new Account(
-            accountInformation.sub, accountInformation.email,
-            tokenResponse.kdf, tokenResponse.kdfIterations,
-            clientId, clientSecret, tokenResponse.accessToken, tokenResponse.refreshToken,
-            accountInformation.premium));
+        await this.stateService.addAccount({
+            profile: {
+                userId: accountInformation.sub,
+                email: accountInformation.email,
+                apiKeyClientId: clientId,
+                apiKeyClientSecret: clientSecret,
+                hasPremiumPersonally: accountInformation.premium,
+            },
+            data: {
+                kdfIterations: tokenResponse.kdfIterations,
+                kdfType: tokenResponse.kdf,
+            },
+            tokens: {
+                accessToken: tokenResponse.accessToken,
+                refreshToken: tokenResponse.refreshToken,
+            },
+        });
 
         if (tokenResponse.twoFactorToken != null) {
             await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken, email);
