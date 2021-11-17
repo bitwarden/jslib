@@ -18,6 +18,7 @@ export class OrganizationData {
     use2fa: boolean;
     useApi: boolean;
     useSso: boolean;
+    useKeyConnector: boolean;
     useResetPassword: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
@@ -33,7 +34,7 @@ export class OrganizationData {
     providerId: string;
     providerName: string;
     isProviderUser: boolean;
-    usesKeyConnector: boolean;
+    keyConnectorEnabled: boolean;
     keyConnectorUrl: string;
 
     constructor(response: ProfileOrganizationResponse) {
@@ -50,6 +51,7 @@ export class OrganizationData {
         this.use2fa = response.use2fa;
         this.useApi = response.useApi;
         this.useSso = response.useSso;
+        this.useKeyConnector = response.useKeyConnector;
         this.useResetPassword = response.useResetPassword;
         this.selfHost = response.selfHost;
         this.usersGetPremium = response.usersGetPremium;
@@ -64,7 +66,7 @@ export class OrganizationData {
         this.hasPublicAndPrivateKeys = response.hasPublicAndPrivateKeys;
         this.providerId = response.providerId;
         this.providerName = response.providerName;
-        this.usesKeyConnector = response.usesKeyConnector;
+        this.keyConnectorEnabled = response.keyConnectorEnabled;
         this.keyConnectorUrl = response.keyConnectorUrl;
     }
 }
