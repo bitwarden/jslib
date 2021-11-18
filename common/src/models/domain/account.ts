@@ -33,101 +33,101 @@ export class DataEncryptionPair<TEncrypted, TDecrypted> {
 }
 
 export class AccountData {
-    ciphers?: DataEncryptionPair<CipherData, CipherView> = new DataEncryptionPair<CipherData, CipherView>();
-    folders?: DataEncryptionPair<FolderData, FolderView> = new DataEncryptionPair<FolderData, FolderView>();
-    localData?: any;
-    sends?: DataEncryptionPair<SendData, SendView> = new DataEncryptionPair<SendData, SendView>();
-    collections?: DataEncryptionPair<CollectionData, CollectionView> = new DataEncryptionPair<CollectionData, CollectionView>();
-    kdfIterations?: number;
-    kdfType?: KdfType;
-    policies?: DataEncryptionPair<PolicyData, Policy> = new DataEncryptionPair<PolicyData, Policy>();
-    passwordGenerationHistory?: EncryptionPair<GeneratedPasswordHistory[], GeneratedPasswordHistory[]> = new EncryptionPair<GeneratedPasswordHistory[], GeneratedPasswordHistory[]>();
-    addEditCipherInfo?: any;
-    collapsedGroupings?: Set<string>;
-    eventCollection?: EventData[];
-    organizations?: { [id: string]: OrganizationData };
-    providers?: { [id: string]: ProviderData };
+    ciphers: DataEncryptionPair<CipherData, CipherView> = new DataEncryptionPair<CipherData, CipherView>();
+    folders: DataEncryptionPair<FolderData, FolderView> = new DataEncryptionPair<FolderData, FolderView>();
+    localData: any;
+    sends: DataEncryptionPair<SendData, SendView> = new DataEncryptionPair<SendData, SendView>();
+    collections: DataEncryptionPair<CollectionData, CollectionView> = new DataEncryptionPair<CollectionData, CollectionView>();
+    policies: DataEncryptionPair<PolicyData, Policy> = new DataEncryptionPair<PolicyData, Policy>();
+    passwordGenerationHistory: EncryptionPair<GeneratedPasswordHistory[], GeneratedPasswordHistory[]> = new EncryptionPair<GeneratedPasswordHistory[], GeneratedPasswordHistory[]>();
+    addEditCipherInfo: any;
+    collapsedGroupings: Set<string>;
+    eventCollection: EventData[];
+    organizations: { [id: string]: OrganizationData };
+    providers: { [id: string]: ProviderData };
 }
 
 export class AccountKeys {
-    cryptoMasterKey?: SymmetricCryptoKey;
-    cryptoMasterKeyAuto?: SymmetricCryptoKey;
-    cryptoMasterKeyB64?: string;
-    cryptoMasterKeyBiometric?: SymmetricCryptoKey;
-    cryptoSymmetricKey?: EncryptionPair<string, SymmetricCryptoKey> = new EncryptionPair<string, SymmetricCryptoKey>();
-    organizationKeys?: EncryptionPair<any, Map<string, SymmetricCryptoKey>> = new EncryptionPair<any, Map<string, SymmetricCryptoKey>>();
-    privateKey?: EncryptionPair<string, ArrayBuffer> = new EncryptionPair<string, ArrayBuffer>();
-    providerKeys?: EncryptionPair<any, Map<string, SymmetricCryptoKey>> = new EncryptionPair<any, Map<string, SymmetricCryptoKey>>();
-    keyHash?: string;
-    legacyEtmKey?: SymmetricCryptoKey;
-    publicKey?: ArrayBuffer;
+    cryptoMasterKey: SymmetricCryptoKey;
+    cryptoMasterKeyAuto: SymmetricCryptoKey;
+    cryptoMasterKeyB64: string;
+    cryptoMasterKeyBiometric: SymmetricCryptoKey;
+    cryptoSymmetricKey: EncryptionPair<string, SymmetricCryptoKey> = new EncryptionPair<string, SymmetricCryptoKey>();
+    organizationKeys: EncryptionPair<any, Map<string, SymmetricCryptoKey>> = new EncryptionPair<any, Map<string, SymmetricCryptoKey>>();
+    providerKeys: EncryptionPair<any, Map<string, SymmetricCryptoKey>> = new EncryptionPair<any, Map<string, SymmetricCryptoKey>>();
+    privateKey: EncryptionPair<string, ArrayBuffer> = new EncryptionPair<string, ArrayBuffer>();
+    legacyEtmKey: SymmetricCryptoKey;
+    publicKey: ArrayBuffer;
+    apiKeyClientSecret: string;
 }
 
 export class AccountProfile {
-    apiKeyClientId?: string;
-    apiKeyClientSecret?: string;
-    authenticationStatus?: AuthenticationStatus;
-    convertAccountToKeyConnector?: boolean;
-    email?: string;
-    emailVerified?: boolean;
-    entityId?: string;
-    entityType?: string;
-    everBeenUnlocked?: boolean;
-    forcePasswordReset?: boolean;
-    hasPremiumPersonally?: boolean;
-    lastActive?: number;
-    lastSync?: string;
-    ssoCodeVerifier?: string;
-    ssoOrganizationIdentifier?: string;
-    ssoState?: string;
-    userId?: string;
-    usesKeyConnector?: boolean;
+    apiKeyClientId: string;
+    authenticationStatus: AuthenticationStatus;
+    convertAccountToKeyConnector: boolean;
+    email: string;
+    emailVerified: boolean;
+    entityId: string;
+    entityType: string;
+    everBeenUnlocked: boolean;
+    forcePasswordReset: boolean;
+    hasPremiumPersonally: boolean;
+    lastActive: number;
+    lastSync: string;
+    ssoCodeVerifier: string;
+    ssoOrganizationIdentifier: string;
+    ssoState: string;
+    userId: string;
+    usesKeyConnector: boolean;
+    keyHash: string;
+    kdfIterations: number;
+    kdfType: KdfType;
 }
 
 export class AccountSettings {
-    alwaysShowDock?: boolean;
-    autoConfirmFingerPrints?: boolean;
-    autoFillOnPageLoadDefault?: boolean;
-    biometricLocked?: boolean;
-    biometricText?: string;
-    biometricUnlock?: boolean;
-    clearClipboard?: number;
-    defaultUriMatch?: UriMatchType;
-    disableAddLoginNotification?: boolean;
-    disableAutoBiometricsPrompt?: boolean;
-    disableAutoTotpCopy?: boolean;
-    disableBadgeCounter?: boolean;
-    disableChangedPasswordNotification?: boolean;
-    disableContextMenuItem?: boolean;
-    disableGa?: boolean;
-    dontShowCardsCurrentTab?: boolean;
-    dontShowIdentitiesCurrentTab?: boolean;
-    enableAlwaysOnTop?: boolean;
-    enableAutoFillOnPageLoad?: boolean;
-    enableBiometric?: boolean;
-    enableBiometrics?: boolean;
-    enableBrowserIntegration?: boolean;
-    enableBrowserIntegrationFingerprint?: boolean;
-    enableCloseToTray?: boolean;
-    enableFullWidth?: boolean;
-    enableGravitars?: boolean;
-    enableMinimizeToTray?: boolean;
-    enableStartToTray?: boolean;
-    enableTray?: boolean;
-    environmentUrls?: any;
+    alwaysShowDock: boolean;
+    autoConfirmFingerPrints: boolean;
+    autoFillOnPageLoadDefault: boolean;
+    biometricLocked: boolean;
+    biometricText: string;
+    biometricUnlock: boolean;
+    clearClipboard: number;
+    defaultUriMatch: UriMatchType;
+    disableAddLoginNotification: boolean;
+    disableAutoBiometricsPrompt: boolean;
+    disableAutoTotpCopy: boolean;
+    disableBadgeCounter: boolean;
+    disableChangedPasswordNotification: boolean;
+    disableContextMenuItem: boolean;
+    disableGa: boolean;
+    dontShowCardsCurrentTab: boolean;
+    dontShowIdentitiesCurrentTab: boolean;
+    enableAlwaysOnTop: boolean;
+    enableAutoFillOnPageLoad: boolean;
+    enableBiometric: boolean;
+    enableBiometrics: boolean;
+    enableBrowserIntegration: boolean;
+    enableBrowserIntegrationFingerprint: boolean;
+    enableCloseToTray: boolean;
+    enableFullWidth: boolean;
+    enableGravitars: boolean;
+    enableMinimizeToTray: boolean;
+    enableStartToTray: boolean;
+    enableTray: boolean;
+    environmentUrls: any;
     equivalentDomains?: any;
-    locale?: string;
-    minimizeOnCopyToClipboard?: boolean;
-    neverDomains?: { [id: string]: any };
-    noAutoPromptBiometrics?: boolean;
-    noAutoPromptBiometricsText?: string;
-    openAtLogin?: boolean;
-    passwordGenerationOptions?: any;
-    pinProtected?: EncryptionPair<string, EncString> = new EncryptionPair<string, EncString>();
-    protectedPin?: string;
-    settings?: any; // TODO: Merge whatever is going on here into the AccountSettings model properly
-    vaultTimeout?: number;
-    vaultTimeoutAction?: string;
+    locale: string;
+    minimizeOnCopyToClipboard: boolean;
+    neverDomains: { [id: string]: any };
+    noAutoPromptBiometrics: boolean;
+    noAutoPromptBiometricsText: string;
+    openAtLogin: boolean;
+    passwordGenerationOptions: any;
+    pinProtected: EncryptionPair<string, EncString> = new EncryptionPair<string, EncString>();
+    protectedPin: string;
+    settings: any; // TODO: Merge whatever is going on here into the AccountSettings model properly
+    vaultTimeout: number;
+    vaultTimeoutAction: string;
 
     get serverUrl(): string {
         return this.environmentUrls?.base ?? 'bitwarden.com';
@@ -152,23 +152,23 @@ export class Account {
         Object.assign(this, {
             data: {
                 ...new AccountData(),
-                ...init.data,
+                ...init?.data,
             },
             keys: {
                 ...new AccountKeys(),
-                ...init.keys,
+                ...init?.keys,
             },
             profile: {
                 ...new AccountProfile(),
-                ...init.profile,
+                ...init?.profile,
             },
             settings: {
                 ...new AccountSettings(),
-                ...init.settings,
+                ...init?.settings,
             },
             tokens: {
                 ...new AccountTokens(),
-                ...init.tokens,
+                ...init?.tokens,
             },
         });
     }

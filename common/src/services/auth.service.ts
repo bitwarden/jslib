@@ -2,7 +2,7 @@ import { HashPurpose } from '../enums/hashPurpose';
 import { KdfType } from '../enums/kdfType';
 import { TwoFactorProviderType } from '../enums/twoFactorProviderType';
 
-import { Account } from '../models/domain/account';
+import { Account, AccountData, AccountProfile, AccountTokens } from '../models/domain/account';
 import { AuthResult } from '../models/domain/authResult';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
@@ -355,19 +355,23 @@ export class AuthService implements AuthServiceAbstraction {
         const accountInformation = await this.tokenService.decodeToken(tokenResponse.accessToken);
         await this.stateService.addAccount({
             profile: {
-                userId: accountInformation.sub,
-                email: accountInformation.email,
-                apiKeyClientId: clientId,
-                apiKeyClientSecret: clientSecret,
-                hasPremiumPersonally: accountInformation.premium,
-            },
-            data: {
-                kdfIterations: tokenResponse.kdfIterations,
-                kdfType: tokenResponse.kdf,
+                ...new AccountProfile(),
+                ...{
+                    userId: accountInformation.sub,
+                    email: accountInformation.email,
+                    apiKeyClientId: clientId,
+                    apiKeyClientSecret: clientSecret,
+                    hasPremiumPersonally: accountInformation.premium,
+                    kdfIterations: tokenResponse.kdfIterations,
+                    kdfType: tokenResponse.kdf,
+                },
             },
             tokens: {
-                accessToken: tokenResponse.accessToken,
-                refreshToken: tokenResponse.refreshToken,
+                ...new AccountTokens(),
+                ...{
+                    accessToken: tokenResponse.accessToken,
+                    refreshToken: tokenResponse.refreshToken,
+                },
             },
         });
 
