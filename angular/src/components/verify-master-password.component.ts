@@ -10,6 +10,7 @@ import {
 
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { KeyConnectorService } from 'jslib-common/abstractions/keyConnector.service';
+import { UserVerificationService } from 'jslib-common/abstractions/userVerification.service';
 
 import { VerificationType } from 'jslib-common/enums/verificationType';
 
@@ -34,7 +35,8 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
 
     private onChange: (value: Verification) => void;
 
-    constructor(private keyConnectorService: KeyConnectorService, private apiService: ApiService) { }
+    constructor(private keyConnectorService: KeyConnectorService,
+        private userVerificationService: UserVerificationService) { }
 
     async ngOnInit() {
         this.usesKeyConnector = await this.keyConnectorService.getUsesKeyConnector();
@@ -54,7 +56,7 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
     async requestOTP() {
         if (this.usesKeyConnector) {
             this.disableRequestOTP = true;
-            await this.apiService.postAccountRequestOTP();
+            await this.userVerificationService.requestOTP();
         }
     }
 

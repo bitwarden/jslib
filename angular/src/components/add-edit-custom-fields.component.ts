@@ -118,7 +118,7 @@ export class AddEditCustomFieldsComponent implements OnChanges {
         }
 
         this.cipher.fields
-            .filter(f => f.type = FieldType.Linked)
+            .filter(f => f.type === FieldType.Linked)
             .forEach(f => f.linkedId = this.linkedFieldOptions[0].value);
     }
 }

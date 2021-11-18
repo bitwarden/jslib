@@ -1624,6 +1624,13 @@ export class ApiService implements ApiServiceAbstraction {
         authed: boolean, hasResponse: boolean, apiUrl?: string,
         alterHeaders?: (headers: Headers) => void): Promise<any> {
         apiUrl = Utils.isNullOrWhitespace(apiUrl) ? this.environmentService.getApiUrl() : apiUrl;
+
+        const requestUrl = apiUrl + path;
+        // Prevent directory traversal from malicious paths
+        if (new URL(requestUrl).href !== requestUrl) {
+            return Promise.reject('Invalid request url path.');
+        }
+
         const headers = new Headers({
             'Device-Type': this.deviceType,
         });
@@ -1662,7 +1669,7 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         requestInit.headers = headers;
-        const response = await this.fetch(new Request(apiUrl + path, requestInit));
+        const response = await this.fetch(new Request(requestUrl, requestInit));
 
         if (hasResponse && response.status === 200) {
             const responseJson = await response.json();

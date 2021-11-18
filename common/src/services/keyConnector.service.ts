@@ -1,6 +1,5 @@
 import { ApiService } from '../abstractions/api.service';
 import { CryptoService } from '../abstractions/crypto.service';
-import { EnvironmentService } from '../abstractions/environment.service';
 import { KeyConnectorService as KeyConnectorServiceAbstraction } from '../abstractions/keyConnector.service';
 import { LogService } from '../abstractions/log.service';
 import { StorageService } from '../abstractions/storage.service';
@@ -25,8 +24,7 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
 
     constructor(private storageService: StorageService, private userService: UserService,
         private cryptoService: CryptoService, private apiService: ApiService,
-        private environmentService: EnvironmentService, private tokenService: TokenService,
-        private logService: LogService) { }
+        private tokenService: TokenService, private logService: LogService) { }
 
     setUsesKeyConnector(usesKeyConnector: boolean) {
         this.usesKeyConnector = usesKeyConnector;
@@ -59,15 +57,7 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
         await this.apiService.postConvertToKeyConnector();
     }
 
-    async getAndSetKey(url?: string) {
-        if (url == null) {
-            url = this.environmentService.getKeyConnectorUrl();
-        }
-
-        if (url == null) {
-            throw new Error('No Key Connector URL found.');
-        }
-
+    async getAndSetKey(url: string) {
         try {
             const userKeyResponse = await this.apiService.getUserKeyFromKeyConnector(url);
             const keyArr = Utils.fromB64ToArray(userKeyResponse.key);

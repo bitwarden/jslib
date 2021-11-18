@@ -1,4 +1,5 @@
 import { FieldType } from '../../enums/fieldType';
+import { LinkedIdType } from '../../enums/linkedIdType';
 
 import { FieldView } from '../view/fieldView';
 
@@ -18,6 +19,7 @@ export class Field {
         view.type = req.type;
         view.value = req.value;
         view.name = req.name;
+        view.linkedId = req.linkedId;
         return view;
     }
 
@@ -25,12 +27,14 @@ export class Field {
         domain.type = req.type;
         domain.value = req.value != null ? new EncString(req.value) : null;
         domain.name = req.name != null ? new EncString(req.name) : null;
+        domain.linkedId = req.linkedId;
         return domain;
     }
 
     name: string;
     value: string;
     type: FieldType;
+    linkedId: LinkedIdType;
 
     constructor(o?: FieldView | FieldDomain) {
         if (o == null) {
@@ -45,5 +49,6 @@ export class Field {
             this.value = o.value?.encryptedString;
         }
         this.type = o.type;
+        this.linkedId = o.linkedId;
     }
 }
