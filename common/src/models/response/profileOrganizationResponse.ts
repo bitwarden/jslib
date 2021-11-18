@@ -16,6 +16,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
     use2fa: boolean;
     useApi: boolean;
     useSso: boolean;
+    useKeyConnector: boolean;
     useResetPassword: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
@@ -37,7 +38,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
     familySponsorshipFriendlyName: string;
     familySponsorshipAvailable: boolean;
     planProductType: ProductType;
-    usesKeyConnector: boolean;
+    keyConnectorEnabled: boolean;
     keyConnectorUrl: string;
 
     constructor(response: any) {
@@ -52,6 +53,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
         this.use2fa = this.getResponseProperty('Use2fa');
         this.useApi = this.getResponseProperty('UseApi');
         this.useSso = this.getResponseProperty('UseSso');
+        this.useKeyConnector = this.getResponseProperty('UseKeyConnector') ?? false;
         this.useResetPassword = this.getResponseProperty('UseResetPassword');
         this.selfHost = this.getResponseProperty('SelfHost');
         this.usersGetPremium = this.getResponseProperty('UsersGetPremium');
@@ -73,7 +75,7 @@ export class ProfileOrganizationResponse extends BaseResponse {
         this.familySponsorshipFriendlyName = this.getResponseProperty('FamilySponsorshipFriendlyName');
         this.familySponsorshipAvailable = this.getResponseProperty('FamilySponsorshipAvailable');
         this.planProductType = this.getResponseProperty('PlanProductType');
-        this.usesKeyConnector = this.getResponseProperty('UsesKeyConnector') ?? false;
+        this.keyConnectorEnabled = this.getResponseProperty('KeyConnectorEnabled') ?? false;
         this.keyConnectorUrl = this.getResponseProperty('KeyConnectorUrl');
     }
 }

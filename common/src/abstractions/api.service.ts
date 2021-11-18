@@ -465,4 +465,5 @@ export abstract class ApiService {
 
     getUserKeyFromKeyConnector: (keyConnectorUrl: string) => Promise<KeyConnectorUserKeyResponse>;
     postUserKeyToKeyConnector: (keyConnectorUrl: string, request: KeyConnectorUserKeyRequest) => Promise<void>;
+    getKeyConnectorAlive: (keyConnectorUrl: string) => Promise<void>;
 }

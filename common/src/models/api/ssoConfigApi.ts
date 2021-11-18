@@ -37,7 +37,7 @@ enum Saml2SigningBehavior {
 export class SsoConfigApi extends BaseResponse {
     configType: SsoType;
 
-    useKeyConnector: boolean;
+    keyConnectorEnabled: boolean;
     keyConnectorUrl: string;
 
     // OpenId
@@ -81,7 +81,7 @@ export class SsoConfigApi extends BaseResponse {
 
         this.configType = this.getResponseProperty('ConfigType');
 
-        this.useKeyConnector = this.getResponseProperty('UseKeyConnector');
+        this.keyConnectorEnabled = this.getResponseProperty('KeyConnectorEnabled');
         this.keyConnectorUrl = this.getResponseProperty('KeyConnectorUrl');
 
         this.authority = this.getResponseProperty('Authority');

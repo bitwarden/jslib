@@ -69,7 +69,10 @@ export class ExportComponent implements OnInit {
         }
 
         const secret = this.exportForm.get('secret').value;
-        if (!await this.userVerificationService.verifyUser(secret)) {
+        try {
+            await this.userVerificationService.verifyUser(secret);
+        } catch (e) {
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), e.message);
             return;
         }
 
