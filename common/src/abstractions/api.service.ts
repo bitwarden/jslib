@@ -32,6 +32,8 @@ import { ImportOrganizationCiphersRequest } from '../models/request/importOrgani
 import { KdfRequest } from '../models/request/kdfRequest';
 import { KeyConnectorUserKeyRequest } from '../models/request/keyConnectorUserKeyRequest';
 import { KeysRequest } from '../models/request/keysRequest';
+import { OrganizationSponsorshipCreateRequest } from '../models/request/organization/organizationSponsorshipCreateRequest';
+import { OrganizationSponsorshipRedeemRequest } from '../models/request/organization/organizationSponsorshipRedeemRequest';
 import { OrganizationSsoRequest } from '../models/request/organization/organizationSsoRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
 import { OrganizationImportRequest } from '../models/request/organizationImportRequest';
@@ -452,6 +454,12 @@ export abstract class ApiService {
     nativeFetch: (request: Request) => Promise<Response>;
 
     preValidateSso: (identifier: string) => Promise<boolean>;
+
+    postCreateSponsorship: (sponsorshipOrgId: string, request: OrganizationSponsorshipCreateRequest) => Promise<void>;
+    deleteRevokeSponsorship: (sponsoringOrganizationId: string) => Promise<void>;
+    deleteRemoveSponsorship: (sponsoringOrgId: string) => Promise<void>;
+    postRedeemSponsorship: (sponsorshipToken: string, request: OrganizationSponsorshipRedeemRequest) => Promise<void>;
+    postResendSponsorshipOffer: (sponsoringOrgId: string) => Promise<void>;
 
     getUserKeyFromKeyConnector: (keyConnectorUrl: string) => Promise<KeyConnectorUserKeyResponse>;
     postUserKeyToKeyConnector: (keyConnectorUrl: string, request: KeyConnectorUserKeyRequest) => Promise<void>;

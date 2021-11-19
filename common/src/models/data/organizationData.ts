@@ -2,6 +2,8 @@ import { ProfileOrganizationResponse } from '../response/profileOrganizationResp
 
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
+import { ProductType } from '../../enums/productType';
+
 import { PermissionsApi } from '../api/permissionsApi';
 
 export class OrganizationData {
@@ -34,6 +36,9 @@ export class OrganizationData {
     providerId: string;
     providerName: string;
     isProviderUser: boolean;
+    familySponsorshipFriendlyName: string;
+    familySponsorshipAvailable: boolean;
+    planProductType: ProductType;
     keyConnectorEnabled: boolean;
     keyConnectorUrl: string;
 
@@ -66,6 +71,9 @@ export class OrganizationData {
         this.hasPublicAndPrivateKeys = response.hasPublicAndPrivateKeys;
         this.providerId = response.providerId;
         this.providerName = response.providerName;
+        this.familySponsorshipFriendlyName = response.familySponsorshipFriendlyName;
+        this.familySponsorshipAvailable = response.familySponsorshipAvailable;
+        this.planProductType = response.planProductType;
         this.keyConnectorEnabled = response.keyConnectorEnabled;
         this.keyConnectorUrl = response.keyConnectorUrl;
     }

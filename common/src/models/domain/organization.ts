@@ -2,6 +2,7 @@ import { OrganizationData } from '../data/organizationData';
 
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
+import { ProductType } from '../../enums/productType';
 import { PermissionsApi } from '../api/permissionsApi';
 
 
@@ -35,6 +36,9 @@ export class Organization {
     providerId: string;
     providerName: string;
     isProviderUser: boolean;
+    familySponsorshipFriendlyName: string;
+    familySponsorshipAvailable: boolean;
+    planProductType: ProductType;
     keyConnectorEnabled: boolean;
     keyConnectorUrl: string;
 
@@ -72,6 +76,9 @@ export class Organization {
         this.providerId = obj.providerId;
         this.providerName = obj.providerName;
         this.isProviderUser = obj.isProviderUser;
+        this.familySponsorshipFriendlyName = obj.familySponsorshipFriendlyName;
+        this.familySponsorshipAvailable = obj.familySponsorshipAvailable;
+        this.planProductType = obj.planProductType;
         this.keyConnectorEnabled = obj.keyConnectorEnabled;
         this.keyConnectorUrl = obj.keyConnectorUrl;
     }

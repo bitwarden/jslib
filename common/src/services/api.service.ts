@@ -33,6 +33,8 @@ import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
 import { KdfRequest } from '../models/request/kdfRequest';
 import { KeysRequest } from '../models/request/keysRequest';
+import { OrganizationSponsorshipCreateRequest } from '../models/request/organization/organizationSponsorshipCreateRequest';
+import { OrganizationSponsorshipRedeemRequest } from '../models/request/organization/organizationSponsorshipRedeemRequest';
 import { OrganizationSsoRequest } from '../models/request/organization/organizationSsoRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
 import { OrganizationImportRequest } from '../models/request/organizationImportRequest';
@@ -171,6 +173,8 @@ import { VerifyOTPRequest } from '../models/request/account/verifyOTPRequest';
 import { KeyConnectorUserKeyRequest } from '../models/request/keyConnectorUserKeyRequest';
 import { KeyConnectorUserKeyResponse } from '../models/response/keyConnectorUserKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
+
+
 
 export class ApiService implements ApiServiceAbstraction {
     protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
@@ -1557,6 +1561,35 @@ export class ApiService implements ApiServiceAbstraction {
             return Promise.reject(error);
         }
     }
+
+    async postCreateSponsorship(sponsoredOrgId: string, request: OrganizationSponsorshipCreateRequest): Promise<void> {
+        return await this.send('POST',
+            '/organization/sponsorship/' + sponsoredOrgId + '/families-for-enterprise',
+            request, true, false);
+    }
+
+    async deleteRevokeSponsorship(sponsoringOrganizationId: string): Promise<void> {
+        return await this.send('DELETE',
+            '/organization/sponsorship/' + sponsoringOrganizationId,
+            null, true, false);
+    }
+
+    async deleteRemoveSponsorship(sponsoringOrgId: string): Promise<void> {
+        return await this.send('DELETE',
+            '/organization/sponsorship/sponsored/' + sponsoringOrgId,
+            null, true, false);
+    }
+    async postRedeemSponsorship(sponsorshipToken: string, request: OrganizationSponsorshipRedeemRequest): Promise<void> {
+        return await this.send('POST', '/organization/sponsorship/redeem?sponsorshipToken=' + encodeURIComponent(sponsorshipToken),
+            request, true, false);
+    }
+
+    async postResendSponsorshipOffer(sponsoringOrgId: string): Promise<void> {
+        return await this.send('POST',
+            '/organization/sponsorship/' + sponsoringOrgId + '/families-for-enterprise/resend',
+            null, true, false);
+    }
+
 
     protected async doAuthRefresh(): Promise<void> {
         const refreshToken = await this.tokenService.getRefreshToken();
