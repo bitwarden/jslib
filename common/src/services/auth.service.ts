@@ -20,7 +20,6 @@ import { AppIdService } from '../abstractions/appId.service';
 import { AuthService as AuthServiceAbstraction } from '../abstractions/auth.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
-
 import { EnvironmentService } from '../abstractions/environment.service';
 import { I18nService } from '../abstractions/i18n.service';
 import { KeyConnectorService } from '../abstractions/keyConnector.service';
