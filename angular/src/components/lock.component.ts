@@ -37,6 +37,7 @@ export class LockComponent implements OnInit {
     supportsBiometric: boolean;
     biometricLock: boolean;
     biometricText: string;
+    hideInput: boolean;
 
     protected successRoute: string = 'vault';
     protected onSuccessfulSubmit: () => void;
@@ -60,9 +61,11 @@ export class LockComponent implements OnInit {
             (await this.cryptoService.hasKeyStored('biometric') || !this.platformUtilsService.supportsSecureStorage());
         this.biometricText = await this.storageService.get(ConstantsService.biometricText);
         this.email = await this.userService.getEmail();
+        const usesKeyConnector = await this.keyConnectorService.getUsesKeyConnector();
+        this.hideInput = usesKeyConnector && !this.pinLock;
 
         // Users with key connector and without biometric or pin has no MP to unlock using
-        if (await this.keyConnectorService.getUsesKeyConnector() && !(this.biometricLock || this.pinLock)) {
+        if (usesKeyConnector && !(this.biometricLock || this.pinLock)) {
             await this.vaultTimeoutService.logOut();
         }
 
