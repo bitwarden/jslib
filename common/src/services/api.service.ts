@@ -37,6 +37,8 @@ import { OrganizationSsoRequest } from '../models/request/organization/organizat
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
 import { OrganizationImportRequest } from '../models/request/organizationImportRequest';
 import { OrganizationKeysRequest } from '../models/request/organizationKeysRequest';
+import { OrganizationSponsorshipCreateRequest } from '../models/request/organization/organizationSponsorshipCreateRequest';
+import { OrganizationSponsorshipRedeemRequest } from '../models/request/organization/organizationSponsorshipRedeemRequest';
 import { OrganizationSubscriptionUpdateRequest } from '../models/request/organizationSubscriptionUpdateRequest';
 import { OrganizationTaxInfoUpdateRequest } from '../models/request/organizationTaxInfoUpdateRequest';
 import { OrganizationUpdateRequest } from '../models/request/organizationUpdateRequest';
@@ -172,8 +174,7 @@ import { KeyConnectorUserKeyRequest } from '../models/request/keyConnectorUserKe
 import { KeyConnectorUserKeyResponse } from '../models/response/keyConnectorUserKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
 
-import { OrganizationSponsorshipCreateRequest } from '../models/request/organization/organizationSponsorshipCreateRequest';
-import { OrganizationSponsorshipRedeemRequest } from '../models/request/organization/organizationSponsorshipRedeemRequest';
+
 
 export class ApiService implements ApiServiceAbstraction {
     protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
