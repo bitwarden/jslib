@@ -132,7 +132,12 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
 
     togglePassword() {
         this.showPassword = !this.showPassword;
-        document.getElementById('masterPassword').focus();
+        const masterPassword: HTMLInputElement = <HTMLInputElement>document.getElementById('masterPassword');
+        const masterPasswordCursorLocation = masterPassword.selectionStart;
+        setTimeout(function(){ 
+            masterPassword.focus();
+            masterPassword.setSelectionRange(masterPasswordCursorLocation, masterPasswordCursorLocation);
+        }, 0);
     }
 
     async launchSsoBrowser(clientId: string, ssoRedirectUri: string) {
