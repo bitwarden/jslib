@@ -75,7 +75,6 @@ export class IconComponent implements OnChanges {
         }
     }
 
-
     private setLoginIcon() {
         if (this.cipher.login.uri) {
             let hostnameUri = this.cipher.login.uri;
@@ -107,15 +106,10 @@ export class IconComponent implements OnChanges {
         }
     }
 
-
     private setCardIcon() {
         if (this.imageEnabled) {
-            try {
                 this.image = 'images/cards/' + this.cipher.card.brand + '.png';
                 this.fallbackImage = 'images/cards/Other.png';
-            } catch (e) {
-                // Ignore error since the fallback icon will be shown if image is null.
-            }
         }
     }
 }
