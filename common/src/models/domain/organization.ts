@@ -2,6 +2,7 @@ import { OrganizationData } from '../data/organizationData';
 
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
+import { ProductType } from '../../enums/productType';
 import { PermissionsApi } from '../api/permissionsApi';
 
 
@@ -19,6 +20,7 @@ export class Organization {
     use2fa: boolean;
     useApi: boolean;
     useSso: boolean;
+    useKeyConnector: boolean;
     useResetPassword: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
@@ -34,6 +36,11 @@ export class Organization {
     providerId: string;
     providerName: string;
     isProviderUser: boolean;
+    familySponsorshipFriendlyName: string;
+    familySponsorshipAvailable: boolean;
+    planProductType: ProductType;
+    keyConnectorEnabled: boolean;
+    keyConnectorUrl: string;
 
     constructor(obj?: OrganizationData) {
         if (obj == null) {
@@ -53,6 +60,7 @@ export class Organization {
         this.use2fa = obj.use2fa;
         this.useApi = obj.useApi;
         this.useSso = obj.useSso;
+        this.useKeyConnector = obj.useKeyConnector;
         this.useResetPassword = obj.useResetPassword;
         this.selfHost = obj.selfHost;
         this.usersGetPremium = obj.usersGetPremium;
@@ -68,6 +76,11 @@ export class Organization {
         this.providerId = obj.providerId;
         this.providerName = obj.providerName;
         this.isProviderUser = obj.isProviderUser;
+        this.familySponsorshipFriendlyName = obj.familySponsorshipFriendlyName;
+        this.familySponsorshipAvailable = obj.familySponsorshipAvailable;
+        this.planProductType = obj.planProductType;
+        this.keyConnectorEnabled = obj.keyConnectorEnabled;
+        this.keyConnectorUrl = obj.keyConnectorUrl;
     }
 
     get canAccess() {

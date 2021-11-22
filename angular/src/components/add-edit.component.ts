@@ -22,6 +22,7 @@ import { FolderService } from 'jslib-common/abstractions/folder.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { LogService } from 'jslib-common/abstractions/log.service';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
+import { PasswordRepromptService } from 'jslib-common/abstractions/passwordReprompt.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
 import { StateService } from 'jslib-common/abstractions/state.service';
@@ -80,6 +81,7 @@ export class AddEditComponent implements OnInit {
     currentDate = new Date();
     allowPersonal = true;
     reprompt: boolean = false;
+    canUseReprompt: boolean = true;
 
     protected writeableCollections: CollectionView[];
     private previousCipherId: string;
@@ -89,7 +91,8 @@ export class AddEditComponent implements OnInit {
         protected auditService: AuditService, protected stateService: StateService,
         protected userService: UserService, protected collectionService: CollectionService,
         protected messagingService: MessagingService, protected eventService: EventService,
-        protected policyService: PolicyService, private logService: LogService) {
+        protected policyService: PolicyService, protected passwordRepromptService: PasswordRepromptService,
+        private logService: LogService) {
         this.typeOptions = [
             { name: i18nService.t('typeLogin'), value: CipherType.Login },
             { name: i18nService.t('typeCard'), value: CipherType.Card },
@@ -169,6 +172,8 @@ export class AddEditComponent implements OnInit {
         }
 
         this.writeableCollections = await this.loadCollections();
+
+        this.canUseReprompt = await this.passwordRepromptService.enabled();
     }
 
     async load() {

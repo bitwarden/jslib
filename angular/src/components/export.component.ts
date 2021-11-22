@@ -4,6 +4,7 @@ import {
     OnInit,
     Output,
 } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { EventService } from 'jslib-common/abstractions/event.service';
@@ -12,6 +13,7 @@ import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { LogService } from 'jslib-common/abstractions/log.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
+import { UserVerificationService } from 'jslib-common/abstractions/userVerification.service';
 
 import { EventType } from 'jslib-common/enums/eventType';
 import { PolicyType } from 'jslib-common/enums/policyType';
@@ -21,15 +23,24 @@ export class ExportComponent implements OnInit {
     @Output() onSaved = new EventEmitter();
 
     formPromise: Promise<string>;
-    masterPassword: string;
-    format: 'json' | 'encrypted_json' | 'csv' = 'json';
-    showPassword = false;
     disabledByPolicy: boolean = false;
+
+    exportForm = this.fb.group({
+        format: ['json'],
+        secret: [''],
+    });
+
+    formatOptions = [
+        { name: '.json', value: 'json' },
+        { name: '.csv', value: 'csv' },
+        { name: '.json (Encrypted)', value: 'encrypted_json' },
+    ];
 
     constructor(protected cryptoService: CryptoService, protected i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, protected exportService: ExportService,
         protected eventService: EventService, private policyService: PolicyService, protected win: Window,
-        private logService: LogService) { }
+        private logService: LogService, private userVerificationService: UserVerificationService,
+        private fb: FormBuilder) { }
 
     async ngOnInit() {
         await this.checkExportDisabled();
@@ -37,6 +48,9 @@ export class ExportComponent implements OnInit {
 
     async checkExportDisabled() {
         this.disabledByPolicy = await this.policyService.policyAppliesToUser(PolicyType.DisablePersonalVaultExport);
+        if (this.disabledByPolicy) {
+            this.exportForm.disable();
+        }
     }
 
     get encryptedFormat() {
@@ -49,31 +63,28 @@ export class ExportComponent implements OnInit {
             return;
         }
 
-        if (this.masterPassword == null || this.masterPassword === '') {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('invalidMasterPassword'));
-            return;
-        }
-
         const acceptedWarning = await this.warningDialog();
         if (!acceptedWarning) {
             return;
         }
 
-        const passwordValid = await this.cryptoService.compareAndUpdateKeyHash(this.masterPassword, null);
-        if (passwordValid) {
-            try {
-                this.formPromise = this.getExportData();
-                const data = await this.formPromise;
-                this.downloadFile(data);
-                this.saved();
-                await this.collectEvent();
-            } catch (e) {
-                this.logService.error(e);
-            }
-        } else {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('invalidMasterPassword'));
+        const secret = this.exportForm.get('secret').value;
+        try {
+            await this.userVerificationService.verifyUser(secret);
+        } catch (e) {
+            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), e.message);
+            return;
+        }
+
+        try {
+            this.formPromise = this.getExportData();
+            const data = await this.formPromise;
+            this.downloadFile(data);
+            this.saved();
+            await this.collectEvent();
+            this.exportForm.get('secret').setValue('');
+        } catch (e) {
+            this.logService.error(e);
         }
     }
 
@@ -91,11 +102,6 @@ export class ExportComponent implements OnInit {
                 this.i18nService.t('confirmVaultExport'), this.i18nService.t('exportVault'),
                 this.i18nService.t('cancel'), 'warning');
         }
-    }
-
-    togglePassword() {
-        this.showPassword = !this.showPassword;
-        document.getElementById('masterPassword').focus();
     }
 
     protected saved() {
@@ -121,6 +127,10 @@ export class ExportComponent implements OnInit {
 
     protected async collectEvent(): Promise<any> {
         await this.eventService.collect(EventType.User_ClientExportedVault);
+    }
+
+    get format() {
+        return this.exportForm.get('format').value;
     }
 
     private downloadFile(csv: string): void {

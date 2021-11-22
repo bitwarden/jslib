@@ -3,6 +3,7 @@ import { CipherService } from '../abstractions/cipher.service';
 import { CollectionService } from '../abstractions/collection.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { FolderService } from '../abstractions/folder.service';
+import { KeyConnectorService } from '../abstractions/keyConnector.service';
 import { LogService } from '../abstractions/log.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { PolicyService } from '../abstractions/policy.service';
@@ -10,6 +11,7 @@ import { SendService } from '../abstractions/send.service';
 import { SettingsService } from '../abstractions/settings.service';
 import { StorageService } from '../abstractions/storage.service';
 import { SyncService as SyncServiceAbstraction } from '../abstractions/sync.service';
+import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
 
 import { CipherData } from '../models/data/cipherData';
@@ -46,6 +48,7 @@ export class SyncService implements SyncServiceAbstraction {
         private collectionService: CollectionService, private storageService: StorageService,
         private messagingService: MessagingService, private policyService: PolicyService,
         private sendService: SendService, private logService: LogService,
+        private tokenService: TokenService, private keyConnectorService: KeyConnectorService,
         private logoutCallback: (expired: boolean) => Promise<void>) {
     }
 
@@ -299,6 +302,7 @@ export class SyncService implements SyncServiceAbstraction {
         await this.userService.setSecurityStamp(response.securityStamp);
         await this.userService.setEmailVerified(response.emailVerified);
         await this.userService.setForcePasswordReset(response.forcePasswordReset);
+        await this.keyConnectorService.setUsesKeyConnector(response.usesKeyConnector);
 
         const organizations: { [id: string]: OrganizationData; } = {};
         response.organizations.forEach(o => {
@@ -316,10 +320,17 @@ export class SyncService implements SyncServiceAbstraction {
                 organizations[o.id].isProviderUser = true;
             }
         });
-        return Promise.all([
+
+        await Promise.all([
             this.userService.replaceOrganizations(organizations),
             this.userService.replaceProviders(providers),
         ]);
+
+        if (await this.keyConnectorService.userNeedsMigration()) {
+            this.messagingService.send('convertAccountToKeyConnector');
+        } else {
+            this.keyConnectorService.removeConvertAccountRequired();
+        }
     }
 
     private async syncFolders(userId: string, response: FolderResponse[]) {

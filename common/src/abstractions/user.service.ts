@@ -1,5 +1,6 @@
 import { OrganizationData } from '../models/data/organizationData';
 import { ProviderData } from '../models/data/providerData';
+
 import { Organization } from '../models/domain/organization';
 import { Provider } from '../models/domain/provider';
 
@@ -20,6 +21,7 @@ export abstract class UserService {
     clear: () => Promise<any>;
     isAuthenticated: () => Promise<boolean>;
     canAccessPremium: () => Promise<boolean>;
+    canManageSponsorships: () => Promise<boolean>;
     getOrganization: (id: string) => Promise<Organization>;
     getOrganizationByIdentifier: (identifier: string) => Promise<Organization>;
     getAllOrganizations: () => Promise<Organization[]>;

@@ -4,6 +4,7 @@ import { CipherService } from '../abstractions/cipher.service';
 import { CollectionService } from '../abstractions/collection.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { FolderService } from '../abstractions/folder.service';
+import { KeyConnectorService } from '../abstractions/keyConnector.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { PolicyService } from '../abstractions/policy.service';
@@ -28,6 +29,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         protected platformUtilsService: PlatformUtilsService, private storageService: StorageService,
         private messagingService: MessagingService, private searchService: SearchService,
         private userService: UserService, private tokenService: TokenService, private policyService: PolicyService,
+        private keyConnectorService: KeyConnectorService,
         private lockedCallback: () => Promise<void> = null, private loggedOutCallback: () => Promise<void> = null) {
     }
 
@@ -96,6 +98,15 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         const authed = await this.userService.isAuthenticated();
         if (!authed) {
             return;
+        }
+
+        if (await this.keyConnectorService.getUsesKeyConnector()) {
+            const pinSet = await this.isPinLockSet();
+            const pinLock = (pinSet[0] && this.pinProtectedKey != null) || pinSet[1];
+
+            if (!pinLock && !await this.isBiometricLockSet()) {
+                await this.logOut();
+            }
         }
 
         this.biometricLocked = true;
