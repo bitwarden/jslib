@@ -53,7 +53,7 @@ export class StateService implements StateServiceAbstraction {
         if (await this.getActiveUserIdFromStorage() != null) {
             const diskState = await this.storageService.get<State>('state', await this.defaultOnDiskOptions());
             this.state = diskState;
-            await this.storageService.save('state', diskState, await this.defaultOnDiskMemoryOptions());
+            await this.saveStateToStorage(diskState, await this.defaultOnDiskMemoryOptions());
         }
     }
 
@@ -70,7 +70,7 @@ export class StateService implements StateServiceAbstraction {
         this.state.activeUserId = userId;
         const storedState = await this.storageService.get<State>('state', await this.defaultOnDiskOptions());
         storedState.activeUserId = userId;
-        await this.storageService.save('state', storedState, await this.defaultOnDiskOptions());
+        await this.saveStateToStorage(storedState, await this.defaultOnDiskOptions());
         await this.pushAccounts();
     }
 
@@ -1200,7 +1200,7 @@ export class StateService implements StateServiceAbstraction {
         } else {
             const state = await this.storageService.get<State>('state', options) ?? new State();
             state.globals = globals;
-            await this.storageService.save('state', state, options);
+            await this.saveStateToStorage(state, options);
         }
     }
 
@@ -1304,7 +1304,7 @@ export class StateService implements StateServiceAbstraction {
             account = storedAccount;
         }
         storedState.accounts[account.profile.userId] = account;
-        await this.storageService.save('state', storedState, await this.defaultOnDiskLocalOptions());
+        await this.saveStateToStorage(storedState, await this.defaultOnDiskLocalOptions());
     }
 
     private async scaffoldNewAccountMemoryStorage(account: Account): Promise<void> {
@@ -1316,7 +1316,7 @@ export class StateService implements StateServiceAbstraction {
             account = storedAccount;
         }
         storedState.accounts[account.profile.userId] = account;
-        await this.storageService.save('state', storedState, await this.defaultOnDiskMemoryOptions());
+        await this.saveStateToStorage(storedState, await this.defaultOnDiskMemoryOptions());
     }
 
     private async scaffoldNewAccountSessionStorage(account: Account): Promise<void> {
@@ -1328,7 +1328,7 @@ export class StateService implements StateServiceAbstraction {
             account = storedAccount;
         }
         storedState.accounts[account.profile.userId] = account;
-        await this.storageService.save('state', storedState, await this.defaultOnDiskOptions());
+        await this.saveStateToStorage(storedState, await this.defaultOnDiskOptions());
     }
 
     private async scaffoldNewAccountSecureStorage(account: Account): Promise<void> {
@@ -1422,7 +1422,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     private async removeAccountFromLocalStorage(userId: string = this.state.activeUserId): Promise<void> {
-        const state = await this.secureStorageService.get<State>('state', { htmlStorageLocation: HtmlStorageLocation.Local });
+        const state = await this.storageService.get<State>('state', { htmlStorageLocation: HtmlStorageLocation.Local });
         if (state?.accounts[userId] == null) {
             return;
         }
@@ -1433,11 +1433,11 @@ export class StateService implements StateServiceAbstraction {
             data: state.accounts[userId].data,
         });
 
-        await this.storageService.save('state', state, { htmlStorageLocation: HtmlStorageLocation.Local });
+        await this.saveStateToStorage(state, await this.defaultOnDiskLocalOptions());
     }
 
     private async removeAccountFromSessionStorage(userId: string = this.state.activeUserId): Promise<void> {
-        const state = await this.secureStorageService.get<State>('state', { htmlStorageLocation: HtmlStorageLocation.Session });
+        const state = await this.storageService.get<State>('state', { htmlStorageLocation: HtmlStorageLocation.Session });
         if (state?.accounts[userId] == null) {
             return;
         }
@@ -1448,7 +1448,7 @@ export class StateService implements StateServiceAbstraction {
             data: state.accounts[userId].data,
         });
 
-        await this.storageService.save('state', state, { htmlStorageLocation: HtmlStorageLocation.Session });
+        await this.saveStateToStorage(state, await this.defaultOnDiskOptions());
     }
 
     private async removeAccountFromSecureStorage(userId: string = this.state.activeUserId): Promise<void> {
@@ -1465,5 +1465,9 @@ export class StateService implements StateServiceAbstraction {
             return;
         }
         delete this.state.accounts[userId ?? this.state.activeUserId];
+    }
+
+    private async saveStateToStorage(state: State, options: StorageOptions): Promise<void> {
+        await this.storageService.save('state', state, options);
     }
 }
