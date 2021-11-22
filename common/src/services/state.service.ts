@@ -58,6 +58,9 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async addAccount(account: Account) {
+        if (account?.profile?.userId == null) {
+            return;
+        }
         this.state.accounts[account.profile.userId] = account;
         await this.scaffoldNewAccountStorage(account);
         await this.setActiveUser(account.profile.userId);
@@ -1212,7 +1215,9 @@ export class StateService implements StateServiceAbstraction {
                 account = await this.getAccountFromDisk(options);
             }
 
-            return new Account(account) ?? null;
+            return account != null ?
+                new Account(account) :
+                null;
         }
         catch (e) {
             this.logService.error(e);
@@ -1338,6 +1343,9 @@ export class StateService implements StateServiceAbstraction {
         }
 
         for (const i in this.state.accounts) {
+            if (this.state.accounts[i]?.profile?.userId == null) {
+                continue;
+            }
             if (this.state.accounts[i].profile.userId === this.state.activeUserId) {
                 this.state.accounts[i].profile.authenticationStatus = AuthenticationStatus.Active;
             } else {
