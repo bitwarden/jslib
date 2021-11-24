@@ -7,6 +7,8 @@ import {
 
 import { Router } from '@angular/router';
 
+import { take } from 'rxjs/operators';
+
 import { AuthResult } from 'jslib-common/models/domain/authResult';
 
 import { AuthService } from 'jslib-common/abstractions/auth.service';
@@ -24,7 +26,6 @@ import { ConstantsService } from 'jslib-common/services/constants.service';
 import { Utils } from 'jslib-common/misc/utils';
 
 import { CaptchaProtectedComponent } from './captchaProtected.component';
-import { take } from 'rxjs/operators';
 
 const Keys = {
     rememberedEmail: 'rememberedEmail',
