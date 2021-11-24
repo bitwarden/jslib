@@ -1,6 +1,7 @@
 import {
     Directive,
     Input,
+    NgZone,
     OnInit,
 } from '@angular/core';
 
@@ -23,6 +24,7 @@ import { ConstantsService } from 'jslib-common/services/constants.service';
 import { Utils } from 'jslib-common/misc/utils';
 
 import { CaptchaProtectedComponent } from './captchaProtected.component';
+import { take } from 'rxjs/operators';
 
 const Keys = {
     rememberedEmail: 'rememberedEmail',
@@ -51,7 +53,7 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
         protected stateService: StateService, environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
         protected cryptoFunctionService: CryptoFunctionService, private storageService: StorageService,
-        protected logService: LogService) {
+        protected logService: LogService, private ngZone: NgZone) {
         super(environmentService, i18nService, platformUtilsService);
     }
 
@@ -132,12 +134,11 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
 
     togglePassword() {
         this.showPassword = !this.showPassword;
-        const masterPassword: HTMLInputElement = <HTMLInputElement>document.getElementById('masterPassword');
-        const masterPasswordCursorLocation = masterPassword.selectionStart;
-        setTimeout(function(){ 
-            masterPassword.focus();
-            masterPassword.setSelectionRange(masterPasswordCursorLocation, masterPasswordCursorLocation);
-        }, 0);
+        if (this.ngZone.isStable) {
+            document.getElementById('masterPassword').focus();
+        } else {
+            this.ngZone.onStable.pipe(take(1)).subscribe(() => document.getElementById('masterPassword').focus());
+        }
     }
 
     async launchSsoBrowser(clientId: string, ssoRedirectUri: string) {
