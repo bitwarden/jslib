@@ -1579,6 +1579,13 @@ export class ApiService implements ApiServiceAbstraction {
             '/organization/sponsorship/sponsored/' + sponsoringOrgId,
             null, true, false);
     }
+
+    async postPreValidateSponsorshipToken(sponsorshipToken: string): Promise<boolean> {
+        const r = await this.send('POST', '/organization/sponsorship/validate-token?sponsorshipToken=' + encodeURIComponent(sponsorshipToken),
+            null, true, true);
+        return r as boolean;
+    }
+
     async postRedeemSponsorship(sponsorshipToken: string, request: OrganizationSponsorshipRedeemRequest): Promise<void> {
         return await this.send('POST', '/organization/sponsorship/redeem?sponsorshipToken=' + encodeURIComponent(sponsorshipToken),
             request, true, false);
