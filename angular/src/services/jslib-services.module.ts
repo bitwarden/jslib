@@ -185,13 +185,7 @@ import { ValidationService } from './validation.service';
         { provide: TokenServiceAbstraction, useClass: TokenService, deps: [StorageServiceAbstraction] },
         {
             provide: CryptoServiceAbstraction,
-            useFactory: (storageService: StorageServiceAbstraction, secureStorageService: StorageServiceAbstraction,
-                cryptoFunctionService: CryptoFunctionServiceAbstraction,
-                platformUtilsService: PlatformUtilsServiceAbstraction, logService: LogService) => {
-                const storageImplementation = platformUtilsService.isDev() ? storageService : secureStorageService;
-                return new CryptoService(storageService, storageImplementation, cryptoFunctionService,
-                    platformUtilsService, logService);
-            },
+            useClass: CryptoService,
             deps: [
                 StorageServiceAbstraction,
                 'SECURE_STORAGE',
