@@ -14,7 +14,7 @@ import { CollectionService } from 'jslib-common/services/collection.service';
 import { ConsoleLogService } from 'jslib-common/services/consoleLog.service';
 import { CryptoService } from 'jslib-common/services/crypto.service';
 import { EnvironmentService } from 'jslib-common/services/environment.service';
-import { EventService as EventLoggingService } from 'jslib-common/services/event.service';
+import { EventService } from 'jslib-common/services/event.service';
 import { ExportService } from 'jslib-common/services/export.service';
 import { FileUploadService } from 'jslib-common/services/fileUpload.service';
 import { FolderService } from 'jslib-common/services/folder.service';
@@ -44,7 +44,7 @@ import { CollectionService as CollectionServiceAbstraction } from 'jslib-common/
 import { CryptoService as CryptoServiceAbstraction } from 'jslib-common/abstractions/crypto.service';
 import { CryptoFunctionService as CryptoFunctionServiceAbstraction } from 'jslib-common/abstractions/cryptoFunction.service';
 import { EnvironmentService as EnvironmentServiceAbstraction, Urls } from 'jslib-common/abstractions/environment.service';
-import { EventService as EventLoggingServiceAbstraction } from 'jslib-common/abstractions/event.service';
+import { EventService as EventServiceAbstraction } from 'jslib-common/abstractions/event.service';
 import { ExportService as ExportServiceAbstraction } from 'jslib-common/abstractions/export.service';
 import { FileUploadService as FileUploadServiceAbstraction }  from 'jslib-common/abstractions/fileUpload.service';
 import { FolderService as FolderServiceAbstraction } from 'jslib-common/abstractions/folder.service';
@@ -341,8 +341,8 @@ import { ValidationService } from './validation.service';
             deps: ['WINDOW', PlatformUtilsServiceAbstraction],
         },
         {
-            provide: EventLoggingServiceAbstraction,
-            useClass: EventLoggingService,
+            provide: EventServiceAbstraction,
+            useClass: EventService,
             deps: [
                 StorageServiceAbstraction,
                 ApiServiceAbstraction,
