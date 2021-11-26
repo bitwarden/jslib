@@ -18,7 +18,6 @@ import { EventService as EventLoggingService } from 'jslib-common/services/event
 import { ExportService } from 'jslib-common/services/export.service';
 import { FileUploadService } from 'jslib-common/services/fileUpload.service';
 import { FolderService } from 'jslib-common/services/folder.service';
-import { ImportService } from 'jslib-common/services/import.service';
 import { KeyConnectorService } from 'jslib-common/services/keyConnector.service';
 import { NotificationsService } from 'jslib-common/services/notifications.service';
 import { PasswordGenerationService } from 'jslib-common/services/passwordGeneration.service';
@@ -50,7 +49,6 @@ import { ExportService as ExportServiceAbstraction } from 'jslib-common/abstract
 import { FileUploadService as FileUploadServiceAbstraction }  from 'jslib-common/abstractions/fileUpload.service';
 import { FolderService as FolderServiceAbstraction } from 'jslib-common/abstractions/folder.service';
 import { I18nService as I18nServiceAbstraction } from 'jslib-common/abstractions/i18n.service';
-import { ImportService as ImportServiceAbstraction } from 'jslib-common/abstractions/import.service';
 import { KeyConnectorService as KeyConnectorServiceAbstraction } from 'jslib-common/abstractions/keyConnector.service';
 import { LogService } from 'jslib-common/abstractions/log.service';
 import { MessagingService as MessagingServiceAbstraction } from 'jslib-common/abstractions/messaging.service';
@@ -316,19 +314,6 @@ import { ValidationService } from './validation.service';
                 CipherServiceAbstraction,
                 LogService,
                 I18nServiceAbstraction,
-            ],
-        },
-        {
-            provide: ImportServiceAbstraction,
-            useClass: ImportService,
-            deps: [
-                CipherServiceAbstraction,
-                FolderServiceAbstraction,
-                ApiServiceAbstraction,
-                I18nServiceAbstraction,
-                CollectionServiceAbstraction,
-                PlatformUtilsServiceAbstraction,
-                CryptoServiceAbstraction,
             ],
         },
         {
