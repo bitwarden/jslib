@@ -7,15 +7,14 @@ const nodeURL = typeof window === 'undefined' ? require('url') : null;
 
 export class Utils {
     static inited = false;
-    static isNativeScript = false;
     static isNode = false;
     static isBrowser = true;
     static isMobileBrowser = false;
     static isAppleMobileBrowser = false;
-    static global: any = null;
+    static global: NodeJS.Global | Window = null;
     static tldEndingRegex = /.*\.(com|net|org|edu|uk|gov|ca|de|jp|fr|au|ru|ch|io|es|us|co|xyz|info|ly|mil)$/;
     // Transpiled version of /\p{Emoji_Presentation}/gu using https://mothereff.in/regexpu. Used for compatability in older browsers.
-    static regexpEmojiPresentation =  /(?:[\u231A\u231B\u23E9-\u23EC\u23F0\u23F3\u25FD\u25FE\u2614\u2615\u2648-\u2653\u267F\u2693\u26A1\u26AA\u26AB\u26BD\u26BE\u26C4\u26C5\u26CE\u26D4\u26EA\u26F2\u26F3\u26F5\u26FA\u26FD\u2705\u270A\u270B\u2728\u274C\u274E\u2753-\u2755\u2757\u2795-\u2797\u27B0\u27BF\u2B1B\u2B1C\u2B50\u2B55]|\uD83C[\uDC04\uDCCF\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE1A\uDE2F\uDE32-\uDE36\uDE38-\uDE3A\uDE50\uDE51\uDF00-\uDF20\uDF2D-\uDF35\uDF37-\uDF7C\uDF7E-\uDF93\uDFA0-\uDFCA\uDFCF-\uDFD3\uDFE0-\uDFF0\uDFF4\uDFF8-\uDFFF]|\uD83D[\uDC00-\uDC3E\uDC40\uDC42-\uDCFC\uDCFF-\uDD3D\uDD4B-\uDD4E\uDD50-\uDD67\uDD7A\uDD95\uDD96\uDDA4\uDDFB-\uDE4F\uDE80-\uDEC5\uDECC\uDED0-\uDED2\uDED5-\uDED7\uDEEB\uDEEC\uDEF4-\uDEFC\uDFE0-\uDFEB]|\uD83E[\uDD0C-\uDD3A\uDD3C-\uDD45\uDD47-\uDD78\uDD7A-\uDDCB\uDDCD-\uDDFF\uDE70-\uDE74\uDE78-\uDE7A\uDE80-\uDE86\uDE90-\uDEA8\uDEB0-\uDEB6\uDEC0-\uDEC2\uDED0-\uDED6])/g;
+    static regexpEmojiPresentation = /(?:[\u231A\u231B\u23E9-\u23EC\u23F0\u23F3\u25FD\u25FE\u2614\u2615\u2648-\u2653\u267F\u2693\u26A1\u26AA\u26AB\u26BD\u26BE\u26C4\u26C5\u26CE\u26D4\u26EA\u26F2\u26F3\u26F5\u26FA\u26FD\u2705\u270A\u270B\u2728\u274C\u274E\u2753-\u2755\u2757\u2795-\u2797\u27B0\u27BF\u2B1B\u2B1C\u2B50\u2B55]|\uD83C[\uDC04\uDCCF\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE1A\uDE2F\uDE32-\uDE36\uDE38-\uDE3A\uDE50\uDE51\uDF00-\uDF20\uDF2D-\uDF35\uDF37-\uDF7C\uDF7E-\uDF93\uDFA0-\uDFCA\uDFCF-\uDFD3\uDFE0-\uDFF0\uDFF4\uDFF8-\uDFFF]|\uD83D[\uDC00-\uDC3E\uDC40\uDC42-\uDCFC\uDCFF-\uDD3D\uDD4B-\uDD4E\uDD50-\uDD67\uDD7A\uDD95\uDD96\uDDA4\uDDFB-\uDE4F\uDE80-\uDEC5\uDECC\uDED0-\uDED2\uDED5-\uDED7\uDEEB\uDEEC\uDEF4-\uDEFC\uDFE0-\uDFEB]|\uD83E[\uDD0C-\uDD3A\uDD3C-\uDD45\uDD47-\uDD78\uDD7A-\uDDCB\uDDCD-\uDDFF\uDE70-\uDE74\uDE78-\uDE7A\uDE80-\uDE86\uDE90-\uDEA8\uDEB0-\uDEB6\uDEC0-\uDEC2\uDED0-\uDED6])/g;
 
     static init() {
         if (Utils.inited) {
@@ -26,14 +25,13 @@ export class Utils {
         Utils.isNode = typeof process !== 'undefined' && (process as any).release != null &&
             (process as any).release.name === 'node';
         Utils.isBrowser = typeof window !== 'undefined';
-        Utils.isNativeScript = !Utils.isNode && !Utils.isBrowser;
         Utils.isMobileBrowser = Utils.isBrowser && this.isMobile(window);
         Utils.isAppleMobileBrowser = Utils.isBrowser && this.isAppleMobile(window);
-        Utils.global = Utils.isNativeScript ? global : (Utils.isNode && !Utils.isBrowser ? global : window);
+        Utils.global = Utils.isNode && !Utils.isBrowser ? global : window;
     }
 
     static fromB64ToArray(str: string): Uint8Array {
-        if (Utils.isNode || Utils.isNativeScript) {
+        if (Utils.isNode) {
             return new Uint8Array(Buffer.from(str, 'base64'));
         } else {
             const binaryString = window.atob(str);
@@ -50,7 +48,7 @@ export class Utils {
     }
 
     static fromHexToArray(str: string): Uint8Array {
-        if (Utils.isNode || Utils.isNativeScript) {
+        if (Utils.isNode) {
             return new Uint8Array(Buffer.from(str, 'hex'));
         } else {
             const bytes = new Uint8Array(str.length / 2);
@@ -62,7 +60,7 @@ export class Utils {
     }
 
     static fromUtf8ToArray(str: string): Uint8Array {
-        if (Utils.isNode || Utils.isNativeScript) {
+        if (Utils.isNode) {
             return new Uint8Array(Buffer.from(str, 'utf8'));
         } else {
             const strUtf8 = unescape(encodeURIComponent(str));
@@ -83,7 +81,7 @@ export class Utils {
     }
 
     static fromBufferToB64(buffer: ArrayBuffer): string {
-        if (Utils.isNode || Utils.isNativeScript) {
+        if (Utils.isNode) {
             return Buffer.from(buffer).toString('base64');
         } else {
             let binary = '';
@@ -106,7 +104,7 @@ export class Utils {
     }
 
     static fromBufferToUtf8(buffer: ArrayBuffer): string {
-        if (Utils.isNode || Utils.isNativeScript) {
+        if (Utils.isNode) {
             return Buffer.from(buffer).toString('utf8');
         } else {
             const bytes = new Uint8Array(buffer);
@@ -121,7 +119,7 @@ export class Utils {
 
     // ref: https://stackoverflow.com/a/40031979/1090359
     static fromBufferToHex(buffer: ArrayBuffer): string {
-        if (Utils.isNode || Utils.isNativeScript) {
+        if (Utils.isNode) {
             return Buffer.from(buffer).toString('hex');
         } else {
             const bytes = new Uint8Array(buffer);
@@ -152,7 +150,7 @@ export class Utils {
     }
 
     static fromUtf8ToB64(utfStr: string): string {
-        if (Utils.isNode || Utils.isNativeScript) {
+        if (Utils.isNode) {
             return Buffer.from(utfStr, 'utf8').toString('base64');
         } else {
             return decodeURIComponent(escape(window.btoa(utfStr)));
@@ -164,7 +162,7 @@ export class Utils {
     }
 
     static fromB64ToUtf8(b64Str: string): string {
-        if (Utils.isNode || Utils.isNativeScript) {
+        if (Utils.isNode) {
             return Buffer.from(b64Str, 'base64').toString('utf8');
         } else {
             return decodeURIComponent(escape(window.atob(b64Str)));
@@ -356,7 +354,7 @@ export class Utils {
     private static getUrlObject(uriString: string): URL {
         try {
             if (nodeURL != null) {
-                return nodeURL.URL ? new nodeURL.URL(uriString) : nodeURL.parse(uriString);
+                return new nodeURL.URL(uriString);
             } else if (typeof URL === 'function') {
                 return new URL(uriString);
             } else if (window != null) {
