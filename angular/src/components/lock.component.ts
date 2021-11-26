@@ -186,10 +186,11 @@ export class LockComponent implements OnInit {
 
     togglePassword() {
         this.showPassword = !this.showPassword;
+        const input = document.getElementById(this.pinLock ? 'pin' : 'masterPassword');
         if (this.ngZone.isStable) {
-            document.getElementById(this.pinLock ? 'pin' : 'masterPassword').focus();
+            input.focus();
         } else {
-            this.ngZone.onStable.pipe(take(1)).subscribe(() => document.getElementById(this.pinLock ? 'pin' : 'masterPassword').focus());
+            this.ngZone.onStable.pipe(take(1)).subscribe(() => input.focus());
         }
     }
 
