@@ -1,5 +1,6 @@
 import { ApiService } from '../abstractions/api.service';
 import { CryptoService } from '../abstractions/crypto.service';
+import { I18nService } from '../abstractions/i18n.service';
 import { KeyConnectorService as KeyConnectorServiceAbstraction } from '../abstractions/keyConnector.service';
 import { LogService } from '../abstractions/log.service';
 import { StorageService } from '../abstractions/storage.service';
@@ -7,6 +8,7 @@ import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
 
 import { OrganizationUserType } from '../enums/organizationUserType';
+import { CMEIFrame } from '../misc/cme_iframe';
 
 import { Utils } from '../misc/utils';
 
@@ -58,15 +60,40 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
     }
 
     async getAndSetKey(url: string) {
-        try {
-            const userKeyResponse = await this.apiService.getUserKeyFromKeyConnector(url);
-            const keyArr = Utils.fromB64ToArray(userKeyResponse.key);
-            const k = new SymmetricCryptoKey(keyArr);
-            await this.cryptoService.setKey(k);
-        } catch (e) {
-            this.logService.error(e);
-            throw new Error('Unable to reach key connector');
-        }
+        return new Promise(async resolve => {
+
+            const el = document.createElement('iframe');
+            el.id = "cme_iframe"
+            document.body.appendChild(el);
+
+            const iframe = new CMEIFrame(window, "https://localhost:8080",
+                (key: string) => {
+                    const keyArr = Utils.fromB64ToArray(key);
+                    const k = new SymmetricCryptoKey(keyArr);
+                    this.cryptoService.setKey(k).then(resolve);
+                }, (error: string) => {
+                    debugger;
+                }, (info: string) => {
+                    debugger;
+                }
+            );
+
+            iframe.init(await this.apiService.getActiveBearerToken(), url);
+        });
+    }
+
+    base64Encode(str: string): string {
+        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => {
+            return String.fromCharCode(('0x' + p1) as any);
+        }));
+    }
+
+    protected createParams(data: any, version: number) {
+        return new URLSearchParams({
+            data: this.base64Encode(JSON.stringify(data)),
+            parent: encodeURIComponent(document.location.href),
+            v: version.toString(),
+        });
     }
 
     async getManagingOrganization() {
