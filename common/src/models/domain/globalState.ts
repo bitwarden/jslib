@@ -16,4 +16,8 @@ export class GlobalState {
     vaultTimeoutAction: string;
     loginRedirect: any;
     mainWindowSize: number;
+    enableBiometrics: boolean;
+    biometricText: string;
+    noAutoPromptBiometrics: boolean;
+    noAutoPromptBiometricsText: string;
 }

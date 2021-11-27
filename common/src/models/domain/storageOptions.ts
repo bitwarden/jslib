@@ -6,4 +6,5 @@ export type StorageOptions = {
     useSecureStorage?: boolean;
     userId?: string;
     htmlStorageLocation?: HtmlStorageLocation;
+    keySuffix?: string,
 };

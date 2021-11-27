@@ -155,6 +155,7 @@ export class LockComponent implements OnInit {
         }
 
         const success = (await this.cryptoService.getKey(KeySuffixOptions.Biometric)) != null;
+        console.debug('unlockBiometric', success)
 
         if (success) {
             await this.doContinue();

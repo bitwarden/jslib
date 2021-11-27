@@ -17,6 +17,7 @@ export class KeytarStorageListener {
     init() {
         ipcMain.on('keytar', async (event: any, message: any) => {
             try {
+                console.debug('recieved message', message);
                 let serviceName = this.serviceName;
                 message.keySuffix = '_' + (message.keySuffix ?? '');
                 if (message.keySuffix !== '_') {

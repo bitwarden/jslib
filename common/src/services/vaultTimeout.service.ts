@@ -47,7 +47,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         const neverLock = await this.cryptoService.hasKeyStored(KeySuffixOptions.Auto, userId) &&
             !(await this.stateService.getEverBeenUnlocked({ userId: userId }));
         if (neverLock) {
-            // TODO: This also sets the key so when we check memory in the next line it finds a key.
+            // TODO: This also _sets_ the key so when we check memory in the next line it finds a key.
             // We should refactor here.
             await this.cryptoService.getKey(KeySuffixOptions.Auto, userId);
         }
@@ -86,17 +86,20 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
             this.searchService.clearIndex();
         }
 
-        await this.folderService.clearCache(userId);
-        await this.cipherService.clearCache(userId);
-        await this.collectionService.clearCache(userId);
         await this.stateService.setEverBeenUnlocked(true, { userId: userId });
+        await this.stateService.setBiometricLocked(true, { userId: userId });
+
         await this.cryptoService.clearKey(false, userId);
         await this.cryptoService.clearOrgKeys(true, userId);
         await this.cryptoService.clearKeyPair(true, userId);
         await this.cryptoService.clearEncKey(true, userId);
-        await this.stateService.setBiometricLocked(true, { userId: userId });
+
+        await this.folderService.clearCache(userId);
+        await this.cipherService.clearCache(userId);
+        await this.collectionService.clearCache(userId);
 
         this.messagingService.send('locked', { userId: userId });
+
         if (this.lockedCallback != null) {
             await this.lockedCallback();
         }

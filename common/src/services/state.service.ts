@@ -53,7 +53,16 @@ export class StateService implements StateServiceAbstraction {
         if (await this.getActiveUserIdFromStorage() != null) {
             const diskState = await this.storageService.get<State>('state', await this.defaultOnDiskOptions());
             this.state = diskState;
-            await this.saveStateToStorage(diskState, await this.defaultOnDiskMemoryOptions());
+
+            // if (this.state.accounts != null && Object.keys(this.state.accounts).length > 0) {
+            //     // Long term storage mechanisms may return undefined for nested account objects that we always want initilized
+            //     // Reconstruct them here to ensure things like serverUrl are always accessible for all accounts
+            //     for (const userId in this.state.accounts) {
+            //         this.state.accounts[userId] = new Account(this.state.accounts[userId]);
+            //     }
+            // }
+
+            await this.saveStateToStorage(this.state, await this.defaultOnDiskMemoryOptions());
         }
     }
 
@@ -177,19 +186,19 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async setBiometricLocked(value: boolean, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
         account.settings.biometricLocked = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
     }
 
     async getBiometricText(options?: StorageOptions): Promise<string> {
-        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.settings?.biometricText;
+        return (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.biometricText;
     }
 
     async setBiometricText(value: string, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
-        account.settings.biometricText = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        const globals = await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        globals.biometricText = value;
+        await this.saveGlobals(globals, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
     }
 
     async getBiometricUnlock(options?: StorageOptions): Promise<boolean> {
@@ -263,44 +272,47 @@ export class StateService implements StateServiceAbstraction {
 
     async setCryptoMasterKey(value: SymmetricCryptoKey, options?: StorageOptions): Promise<void> {
         const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
+        console.debug('setting crypto master key', {
+            email: account.profile.email,
+            requestedUserId: options?.userId,
+            requestedUserEmail: await this.getEmail({ userId: options?.userId }),
+            account: account,
+            vaule: value,
+        })
         account.keys.cryptoMasterKey = value;
         await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
     }
 
-    async getCryptoMasterKeyAuto(options?: StorageOptions): Promise<SymmetricCryptoKey> {
+    async getCryptoMasterKeyAuto(options?: StorageOptions): Promise<string> {
         return (await this.getAccount(this.reconcileOptions(options, await this.defaultSecureStorageOptions())))?.keys?.cryptoMasterKeyAuto;
     }
 
-    async setCryptoMasterKeyAuto(value: SymmetricCryptoKey, options?: StorageOptions): Promise<void> {
+    async setCryptoMasterKeyAuto(value: string, options?: StorageOptions): Promise<void> {
         const account = await this.getAccount(this.reconcileOptions(options, await this.defaultSecureStorageOptions()));
         account.keys.cryptoMasterKeyAuto = value;
         await this.saveAccount(account, this.reconcileOptions(options, await this.defaultSecureStorageOptions()));
     }
 
-    async getCryptoMasterKeyB64(options: StorageOptions): Promise<string> {
+    async getCryptoMasterKeyB64(options?: StorageOptions): Promise<string> {
         const value = (await this.getAccount(this.reconcileOptions(options, await this.defaultSecureStorageOptions())))?.keys?.cryptoMasterKeyB64;
         return value;
     }
 
-    async setCryptoMasterKeyB64(value: string, options: StorageOptions): Promise<void> {
-        try {
-            const account = await this.getAccount(this.reconcileOptions(options, await this.defaultSecureStorageOptions()));
-            if (account != null) {
-                account.keys.cryptoMasterKeyB64 = value;
-                await this.saveAccount(account, this.reconcileOptions(options, await this.defaultSecureStorageOptions()));
-            }
-        } catch (e) {
-            this.logService.error(e);
-        }
+    async setCryptoMasterKeyB64(value: string, options?: StorageOptions): Promise<void> {
+        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultSecureStorageOptions()));
+        account.keys.cryptoMasterKeyB64 = value;
+        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultSecureStorageOptions()));
     }
 
-    async getCryptoMasterKeyBiometric(options?: StorageOptions): Promise<SymmetricCryptoKey> {
+    async getCryptoMasterKeyBiometric(options?: StorageOptions): Promise<string> {
+        options = this.reconcileOptions(options, { keySuffix: 'biometric' })
         return (await this.getAccount(this.reconcileOptions(options, await this.defaultSecureStorageOptions())))?.keys?.cryptoMasterKeyBiometric;
     }
 
-    async setCryptoMasterKeyBiometric(value: SymmetricCryptoKey, options?: StorageOptions): Promise<void> {
+    async setCryptoMasterKeyBiometric(value: string, options?: StorageOptions): Promise<void> {
         const account = await this.getAccount(this.reconcileOptions(options, await this.defaultSecureStorageOptions()));
         account.keys.cryptoMasterKeyBiometric = value;
+        console.debug('saving biometric key', value);
         await this.saveAccount(account, this.reconcileOptions(options, await this.defaultSecureStorageOptions()));
     }
 
@@ -577,12 +589,12 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getEnableBiometric(options?: StorageOptions): Promise<boolean> {
-        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.settings?.enableBiometrics ?? false;
+        return (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.enableBiometrics ?? false;
     }
     async setEnableBiometric(value: boolean, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
-        account.settings.enableBiometrics = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        const globals = await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        globals.enableBiometrics = value;
+        await this.saveGlobals(globals, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
     }
 
     async getEnableBrowserIntegration(options?: StorageOptions): Promise<boolean> {
@@ -950,21 +962,21 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getNoAutoPromptBiometrics(options?: StorageOptions): Promise<boolean> {
-        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.settings?.noAutoPromptBiometrics ?? false;
+        return (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.noAutoPromptBiometrics ?? false;
     }
     async setNoAutoPromptBiometrics(value: boolean, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
-        account.settings.noAutoPromptBiometrics = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        const globals = await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        globals.noAutoPromptBiometrics = value;
+        await this.saveGlobals(globals, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
     }
 
     async getNoAutoPromptBiometricsText(options?: StorageOptions): Promise<string> {
-        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.settings?.noAutoPromptBiometricsText;
+        return (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.noAutoPromptBiometricsText;
     }
     async setNoAutoPromptBiometricsText(value: string, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
-        account.settings.noAutoPromptBiometricsText = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        const globals = await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        globals.noAutoPromptBiometricsText = value;
+        await this.saveGlobals(globals, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
     }
 
     async getOpenAtLogin(options?: StorageOptions): Promise<boolean> {
@@ -1339,29 +1351,8 @@ export class StateService implements StateServiceAbstraction {
 
     private async pushAccounts(): Promise<void> {
         if (this.state?.accounts == null || Object.keys(this.state.accounts).length < 1) {
+            this.accounts.next(null);
             return;
-        }
-
-        for (const i in this.state.accounts) {
-            if (this.state.accounts[i]?.profile?.userId == null) {
-                continue;
-            }
-            if (this.state.accounts[i].profile.userId === this.state.activeUserId) {
-                this.state.accounts[i].profile.authenticationStatus = AuthenticationStatus.Active;
-            } else {
-                const vaultTimeout = await this.getVaultTimeout({
-                    storageLocation: StorageLocation.Disk,
-                    userId: this.state.accounts[i].profile.userId,
-                });
-                const lastActive = await this.getLastActive({
-                    storageLocation: StorageLocation.Disk,
-                    userId: this.state.accounts[i].profile.userId,
-                });
-                const diffSeconds = ((new Date()).getTime() - lastActive) / 1000;
-                this.state.accounts[i].profile.authenticationStatus = diffSeconds < (vaultTimeout * 60) ?
-                    AuthenticationStatus.Unlocked :
-                    AuthenticationStatus.Locked;
-            }
         }
         this.accounts.next(this.state.accounts);
     }
@@ -1374,6 +1365,7 @@ export class StateService implements StateServiceAbstraction {
         requestedOptions.storageLocation = requestedOptions?.storageLocation ?? defaultOptions.storageLocation;
         requestedOptions.useSecureStorage = requestedOptions?.useSecureStorage ?? defaultOptions.useSecureStorage;
         requestedOptions.htmlStorageLocation = requestedOptions?.htmlStorageLocation ?? defaultOptions.htmlStorageLocation;
+        requestedOptions.keySuffix = requestedOptions?.keySuffix ?? defaultOptions.keySuffix;
         return requestedOptions;
     }
 
@@ -1427,12 +1419,7 @@ export class StateService implements StateServiceAbstraction {
             return;
         }
 
-        state.accounts[userId] = new Account({
-            profile: state.accounts[userId].profile,
-            settings: state.accounts[userId].settings,
-            data: state.accounts[userId].data,
-        });
-
+        delete state.accounts[userId];
         await this.saveStateToStorage(state, await this.defaultOnDiskLocalOptions());
     }
 
@@ -1442,12 +1429,7 @@ export class StateService implements StateServiceAbstraction {
             return;
         }
 
-        state.accounts[userId] = new Account({
-            profile: state.accounts[userId].profile,
-            settings: state.accounts[userId].settings,
-            data: state.accounts[userId].data,
-        });
-
+        delete state.accounts[userId];
         await this.saveStateToStorage(state, await this.defaultOnDiskOptions());
     }
 
@@ -1456,15 +1438,13 @@ export class StateService implements StateServiceAbstraction {
         if (state?.accounts[userId] == null) {
             return;
         }
-        state.accounts[userId] = null;
+
+        delete state.accounts[userId];
         await this.secureStorageService.save('state', state);
     }
 
     private removeAccountFromMemory(userId: string = this.state.activeUserId): void {
-        if (this.state?.accounts[userId] == null) {
-            return;
-        }
-        delete this.state.accounts[userId ?? this.state.activeUserId];
+        delete this.state.accounts[userId];
     }
 
     private async saveStateToStorage(state: State, options: StorageOptions): Promise<void> {

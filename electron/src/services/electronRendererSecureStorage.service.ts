@@ -9,6 +9,7 @@ export class ElectronRendererSecureStorageService implements StorageService {
         const val = ipcRenderer.sendSync('keytar', {
             action: 'getPassword',
             key: key,
+            keySuffix: options?.keySuffix ?? '',
         });
         return Promise.resolve(val != null ? JSON.parse(val) as T : null);
     }
@@ -17,6 +18,7 @@ export class ElectronRendererSecureStorageService implements StorageService {
         const val = ipcRenderer.sendSync('keytar', {
             action: 'hasPassword',
             key: key,
+            keySuffix: options?.keySuffix ?? '',
         });
         return Promise.resolve(!!val);
     }
@@ -25,6 +27,7 @@ export class ElectronRendererSecureStorageService implements StorageService {
         ipcRenderer.sendSync('keytar', {
             action: 'setPassword',
             key: key,
+            keySuffix: options?.keySuffix ?? '',
             value: JSON.stringify(obj),
         });
         return Promise.resolve();
@@ -34,6 +37,7 @@ export class ElectronRendererSecureStorageService implements StorageService {
         ipcRenderer.sendSync('keytar', {
             action: 'deletePassword',
             key: key,
+            keySuffix: options?.keySuffix ?? '',
         });
         return Promise.resolve();
     }
