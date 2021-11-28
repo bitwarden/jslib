@@ -52,7 +52,7 @@ export class LockComponent implements OnInit {
         protected storageService: StorageService, protected vaultTimeoutService: VaultTimeoutService,
         protected environmentService: EnvironmentService, protected stateService: StateService,
         protected apiService: ApiService, private logService: LogService,
-        private keyConnectorService: KeyConnectorService, private ngZone: NgZone) { }
+        private keyConnectorService: KeyConnectorService, protected ngZone: NgZone) { }
 
     async ngOnInit() {
         this.pinSet = await this.vaultTimeoutService.isPinLockSet();
