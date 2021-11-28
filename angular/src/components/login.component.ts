@@ -54,7 +54,7 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
         protected stateService: StateService, environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
         protected cryptoFunctionService: CryptoFunctionService, private storageService: StorageService,
-        protected logService: LogService, private ngZone: NgZone) {
+        protected logService: LogService, protected ngZone: NgZone) {
         super(environmentService, i18nService, platformUtilsService);
     }
 
