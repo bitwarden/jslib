@@ -1,5 +1,6 @@
-import { Directive, OnInit } from '@angular/core';
+import { Directive, NgZone, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { take } from 'rxjs/operators';
 
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
@@ -51,7 +52,7 @@ export class LockComponent implements OnInit {
         protected storageService: StorageService, protected vaultTimeoutService: VaultTimeoutService,
         protected environmentService: EnvironmentService, protected stateService: StateService,
         protected apiService: ApiService, private logService: LogService,
-        private keyConnectorService: KeyConnectorService) { }
+        private keyConnectorService: KeyConnectorService, private ngZone: NgZone) { }
 
     async ngOnInit() {
         this.pinSet = await this.vaultTimeoutService.isPinLockSet();
@@ -185,7 +186,12 @@ export class LockComponent implements OnInit {
 
     togglePassword() {
         this.showPassword = !this.showPassword;
-        document.getElementById(this.pinLock ? 'pin' : 'masterPassword').focus();
+        const input = document.getElementById(this.pinLock ? 'pin' : 'masterPassword');
+        if (this.ngZone.isStable) {
+            input.focus();
+        } else {
+            this.ngZone.onStable.pipe(take(1)).subscribe(() => input.focus());
+        }
     }
 
     private async setKeyAndContinue(key: SymmetricCryptoKey) {
