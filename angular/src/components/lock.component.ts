@@ -133,7 +133,7 @@ export class LockComponent implements OnInit {
                     const pinKey = await this.cryptoService.makePinKey(decPin, this.email, kdf, kdfIterations);
                     await this.stateService.setDecryptedPinProtected(await this.cryptoService.encrypt(key.key, pinKey));
                 }
-                this.setKeyAndContinue(key);
+                await this.setKeyAndContinue(key);
             } else {
                 this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
                     this.i18nService.t('invalidMasterPassword'));
@@ -170,7 +170,7 @@ export class LockComponent implements OnInit {
 
     private async setKeyAndContinue(key: SymmetricCryptoKey) {
         await this.cryptoService.setKey(key);
-        this.doContinue();
+        await this.doContinue();
     }
 
     private async doContinue() {
@@ -204,5 +204,4 @@ export class LockComponent implements OnInit {
         const vaultUrl = webVaultUrl === 'https://vault.bitwarden.com' ? 'https://bitwarden.com' : webVaultUrl;
         this.webVaultHostname = Utils.getHostname(vaultUrl);
     }
-
 }
