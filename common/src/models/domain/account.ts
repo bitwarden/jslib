@@ -49,9 +49,9 @@ export class AccountData {
 
 export class AccountKeys {
     cryptoMasterKey: SymmetricCryptoKey;
-    cryptoMasterKeyAuto: SymmetricCryptoKey;
+    cryptoMasterKeyAuto: string;
     cryptoMasterKeyB64: string;
-    cryptoMasterKeyBiometric: SymmetricCryptoKey;
+    cryptoMasterKeyBiometric: string;
     cryptoSymmetricKey: EncryptionPair<string, SymmetricCryptoKey> = new EncryptionPair<string, SymmetricCryptoKey>();
     organizationKeys: EncryptionPair<any, Map<string, SymmetricCryptoKey>> = new EncryptionPair<any, Map<string, SymmetricCryptoKey>>();
     providerKeys: EncryptionPair<any, Map<string, SymmetricCryptoKey>> = new EncryptionPair<any, Map<string, SymmetricCryptoKey>>();

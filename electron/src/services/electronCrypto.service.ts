@@ -7,6 +7,7 @@ import { CryptoService } from 'jslib-common/services/crypto.service';
 
 import { KeySuffixOptions } from 'jslib-common/enums/keySuffixOptions';
 import { StorageLocation } from 'jslib-common/enums/storageLocation';
+import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
 
 export class ElectronCryptoService extends CryptoService {
 
@@ -20,6 +21,20 @@ export class ElectronCryptoService extends CryptoService {
         return super.hasKeyStored(keySuffix);
     }
 
+    protected async storeKey(key: SymmetricCryptoKey, userId?: string) {
+        if (await this.shouldStoreKey(KeySuffixOptions.Auto, userId)) {
+            await this.stateService.setCryptoMasterKeyAuto(key.keyB64, { userId: userId });
+        } else {
+            this.clearStoredKey(KeySuffixOptions.Auto);
+        }
+
+        if (await this.shouldStoreKey(KeySuffixOptions.Biometric, userId)) {
+            await this.stateService.setCryptoMasterKeyBiometric(key.keyB64, { userId: userId });
+        } else {
+            this.clearStoredKey(KeySuffixOptions.Biometric);
+        }
+    }
+
     protected async retrieveKeyFromStorage(keySuffix: KeySuffixOptions) {
         await this.upgradeSecurelyStoredKey();
         return super.retrieveKeyFromStorage(keySuffix);
@@ -31,7 +46,7 @@ export class ElectronCryptoService extends CryptoService {
      */
     private async upgradeSecurelyStoredKey() {
         // attempt key upgrade, but if we fail just delete it. Keys will be stored property upon unlock anyway.
-        const key = await this.stateService.getCryptoMasterKey({ storageLocation: StorageLocation.Disk, useSecureStorage: true });
+        const key = await this.stateService.getCryptoMasterKeyB64();
 
         if (key == null) {
             return;
@@ -49,6 +64,6 @@ export class ElectronCryptoService extends CryptoService {
             this.logService.error(e);
         }
 
-        await this.stateService.setCryptoMasterKey(null, { storageLocation: StorageLocation.Disk, useSecureStorage: true });
+        await this.stateService.setCryptoMasterKeyB64(null);
     }
 }
