@@ -1357,28 +1357,6 @@ export class StateService implements StateServiceAbstraction {
             this.accounts.next(null);
             return;
         }
-
-        for (const i in this.state.accounts) {
-            if (this.state.accounts[i]?.profile?.userId == null) {
-                continue;
-            }
-            if (this.state.accounts[i].profile.userId === this.state.activeUserId) {
-                this.state.accounts[i].profile.authenticationStatus = AuthenticationStatus.Active;
-            } else {
-                const vaultTimeout = await this.getVaultTimeout({
-                    storageLocation: StorageLocation.Disk,
-                    userId: this.state.accounts[i].profile.userId,
-                });
-                const lastActive = await this.getLastActive({
-                    storageLocation: StorageLocation.Disk,
-                    userId: this.state.accounts[i].profile.userId,
-                });
-                const diffSeconds = ((new Date()).getTime() - lastActive) / 1000;
-                this.state.accounts[i].profile.authenticationStatus = diffSeconds < (vaultTimeout * 60) ?
-                    AuthenticationStatus.Unlocked :
-                    AuthenticationStatus.Locked;
-            }
-        }
         this.accounts.next(this.state.accounts);
     }
 
