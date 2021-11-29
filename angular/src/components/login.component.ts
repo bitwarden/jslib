@@ -1,10 +1,13 @@
 import {
     Directive,
     Input,
+    NgZone,
     OnInit,
 } from '@angular/core';
 
 import { Router } from '@angular/router';
+
+import { take } from 'rxjs/operators';
 
 import { AuthResult } from 'jslib-common/models/domain/authResult';
 
@@ -42,7 +45,8 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
         platformUtilsService: PlatformUtilsService, i18nService: I18nService,
         protected stateService: StateService, environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
-        protected cryptoFunctionService: CryptoFunctionService, protected logService: LogService) {
+        protected cryptoFunctionService: CryptoFunctionService, protected logService: LogService,
+        protected ngZone: NgZone) {
         super(environmentService, i18nService, platformUtilsService);
     }
 
@@ -119,7 +123,11 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
 
     togglePassword() {
         this.showPassword = !this.showPassword;
-        document.getElementById('masterPassword').focus();
+        if (this.ngZone.isStable) {
+            document.getElementById('masterPassword').focus();
+        } else {
+            this.ngZone.onStable.pipe(take(1)).subscribe(() => document.getElementById('masterPassword').focus());
+        }
     }
 
     async launchSsoBrowser(clientId: string, ssoRedirectUri: string) {

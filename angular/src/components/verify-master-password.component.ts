@@ -1,4 +1,10 @@
 import {
+    animate,
+    style,
+    transition,
+    trigger,
+} from '@angular/animations';
+import {
     Component,
     OnInit,
 } from '@angular/core';
@@ -25,10 +31,19 @@ import { Verification } from 'jslib-common/types/verification';
             useExisting: VerifyMasterPasswordComponent,
         },
     ],
+    animations: [
+        trigger('sent', [
+            transition(':enter', [
+                style({ opacity: 0 }),
+                animate('100ms', style({ opacity: 1 })),
+            ]),
+        ]),
+    ],
 })
 export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnInit {
     usesKeyConnector: boolean = false;
     disableRequestOTP: boolean = false;
+    sentCode: boolean = false;
 
     secret = new FormControl('');
 
@@ -47,7 +62,12 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
     async requestOTP() {
         if (this.usesKeyConnector) {
             this.disableRequestOTP = true;
-            await this.userVerificationService.requestOTP();
+            try {
+                await this.userVerificationService.requestOTP();
+                this.sentCode = true;
+            } finally {
+                this.disableRequestOTP = false;
+            }
         }
     }
 

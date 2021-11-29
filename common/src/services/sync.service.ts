@@ -310,16 +310,16 @@ export class SyncService implements SyncServiceAbstraction {
             }
         });
 
+        await Promise.all([
+            this.organizationService.save(organizations),
+            this.providerService.save(providers),
+        ]);
+
         if (await this.keyConnectorService.userNeedsMigration()) {
             this.messagingService.send('convertAccountToKeyConnector');
         } else {
             this.keyConnectorService.removeConvertAccountRequired();
         }
-
-        return Promise.all([
-            this.organizationService.save(organizations),
-            this.providerService.save(providers),
-        ]);
     }
 
     private async syncFolders(userId: string, response: FolderResponse[]) {

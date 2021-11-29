@@ -64,7 +64,7 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
     async getManagingOrganization() {
         const orgs = await this.organizationService.getAll();
         return orgs.find(o =>
-            o.usesKeyConnector &&
+            o.keyConnectorEnabled &&
             o.type !== OrganizationUserType.Admin &&
             o.type !== OrganizationUserType.Owner &&
             !o.isProviderUser);

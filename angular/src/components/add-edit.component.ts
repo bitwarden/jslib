@@ -154,6 +154,9 @@ export class AddEditComponent implements OnInit {
     }
 
     async init() {
+        if (this.ownershipOptions.length) {
+            this.ownershipOptions = [];
+        }
         if (await this.policyService.policyAppliesToUser(PolicyType.PersonalOwnership)) {
             this.allowPersonal = false;
         } else {
