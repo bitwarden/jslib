@@ -54,7 +54,7 @@ export class StateService implements StateServiceAbstraction {
         if (await this.getActiveUserIdFromStorage() != null) {
             const diskState = await this.storageService.get<State>('state', await this.defaultOnDiskOptions());
             this.state = diskState;
-            await this.saveStateToStorage(diskState, await this.defaultOnDiskMemoryOptions());
+            await this.saveStateToStorage(this.state, await this.defaultOnDiskMemoryOptions());
         }
     }
 
@@ -1422,12 +1422,7 @@ export class StateService implements StateServiceAbstraction {
             return;
         }
 
-        state.accounts[userId] = new Account({
-            profile: state.accounts[userId].profile,
-            settings: state.accounts[userId].settings,
-            data: state.accounts[userId].data,
-        });
-
+        delete state.accounts[userId];
         await this.saveStateToStorage(state, await this.defaultOnDiskLocalOptions());
     }
 
@@ -1437,12 +1432,7 @@ export class StateService implements StateServiceAbstraction {
             return;
         }
 
-        state.accounts[userId] = new Account({
-            profile: state.accounts[userId].profile,
-            settings: state.accounts[userId].settings,
-            data: state.accounts[userId].data,
-        });
-
+        delete state.accounts[userId];
         await this.saveStateToStorage(state, await this.defaultOnDiskOptions());
     }
 
@@ -1453,10 +1443,7 @@ export class StateService implements StateServiceAbstraction {
     }
 
     private removeAccountFromMemory(userId: string = this.state.activeUserId): void {
-        if (this.state?.accounts[userId] == null) {
-            return;
-        }
-        delete this.state.accounts[userId ?? this.state.activeUserId];
+        delete this.state.accounts[userId];
     }
 
     private async saveStateToStorage(state: State, options: StorageOptions): Promise<void> {
