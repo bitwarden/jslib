@@ -275,7 +275,7 @@ export class StateService implements StateServiceAbstraction {
         if (options?.userId == null) {
             return null;
         }
-        return await this.secureStorageService.get(`${options.userId}_masterkey_auto`, options,);
+        return await this.secureStorageService.get(`${options.userId}_masterkey_auto`, options);
     }
 
     async setCryptoMasterKeyAuto(value: string, options?: StorageOptions): Promise<void> {
@@ -291,7 +291,7 @@ export class StateService implements StateServiceAbstraction {
         if (options?.userId == null) {
             return null;
         }
-        return await this.secureStorageService.get(`${options?.userId}_masterkey`, options,);
+        return await this.secureStorageService.get(`${options?.userId}_masterkey`, options);
     }
 
     async setCryptoMasterKeyB64(value: string, options?: StorageOptions): Promise<void> {
