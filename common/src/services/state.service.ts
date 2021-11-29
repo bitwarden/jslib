@@ -5,7 +5,6 @@ import { Account } from '../models/domain/account';
 import { LogService } from '../abstractions/log.service';
 import { StorageService } from '../abstractions/storage.service';
 
-import { AuthenticationStatus } from '../enums/authenticationStatus';
 import { HtmlStorageLocation } from '../enums/htmlStorageLocation';
 import { KdfType } from '../enums/kdfType';
 import { StorageLocation } from '../enums/storageLocation';
