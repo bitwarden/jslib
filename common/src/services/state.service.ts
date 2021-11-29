@@ -177,23 +177,23 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getBiometricLocked(options?: StorageOptions): Promise<boolean> {
-        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.settings?.biometricLocked ?? false;
+        return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.settings?.biometricLocked ?? false;
     }
 
     async setBiometricLocked(value: boolean, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
         account.settings.biometricLocked = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
     }
 
     async getBiometricText(options?: StorageOptions): Promise<string> {
-        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.settings?.biometricText;
+        return (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.biometricText;
     }
 
     async setBiometricText(value: string, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
-        account.settings.biometricText = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        const globals = await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        globals.biometricText = value;
+        await this.saveGlobals(globals, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
     }
 
     async getBiometricUnlock(options?: StorageOptions): Promise<boolean> {
@@ -600,12 +600,12 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getEnableBiometric(options?: StorageOptions): Promise<boolean> {
-        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.settings?.enableBiometrics ?? false;
+        return (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.enableBiometrics ?? false;
     }
     async setEnableBiometric(value: boolean, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
-        account.settings.enableBiometrics = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        const globals = await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        globals.enableBiometrics = value;
+        await this.saveGlobals(globals, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
     }
 
     async getEnableBrowserIntegration(options?: StorageOptions): Promise<boolean> {
@@ -973,21 +973,21 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getNoAutoPromptBiometrics(options?: StorageOptions): Promise<boolean> {
-        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.settings?.noAutoPromptBiometrics ?? false;
+        return (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.noAutoPromptBiometrics ?? false;
     }
     async setNoAutoPromptBiometrics(value: boolean, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
-        account.settings.noAutoPromptBiometrics = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        const globals = await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        globals.noAutoPromptBiometrics = value;
+        await this.saveGlobals(globals, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
     }
 
     async getNoAutoPromptBiometricsText(options?: StorageOptions): Promise<string> {
-        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.settings?.noAutoPromptBiometricsText;
+        return (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.noAutoPromptBiometricsText;
     }
     async setNoAutoPromptBiometricsText(value: string, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
-        account.settings.noAutoPromptBiometricsText = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        const globals = await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        globals.noAutoPromptBiometricsText = value;
+        await this.saveGlobals(globals, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
     }
 
     async getOpenAtLogin(options?: StorageOptions): Promise<boolean> {

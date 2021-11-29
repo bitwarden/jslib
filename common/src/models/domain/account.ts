@@ -89,7 +89,6 @@ export class AccountSettings {
     autoConfirmFingerPrints: boolean;
     autoFillOnPageLoadDefault: boolean;
     biometricLocked: boolean;
-    biometricText: string;
     biometricUnlock: boolean;
     clearClipboard: number;
     defaultUriMatch: UriMatchType;
@@ -105,7 +104,6 @@ export class AccountSettings {
     enableAlwaysOnTop: boolean;
     enableAutoFillOnPageLoad: boolean;
     enableBiometric: boolean;
-    enableBiometrics: boolean;
     enableBrowserIntegration: boolean;
     enableBrowserIntegrationFingerprint: boolean;
     enableCloseToTray: boolean;
@@ -119,8 +117,6 @@ export class AccountSettings {
     locale: string;
     minimizeOnCopyToClipboard: boolean;
     neverDomains: { [id: string]: any };
-    noAutoPromptBiometrics: boolean;
-    noAutoPromptBiometricsText: string;
     openAtLogin: boolean;
     passwordGenerationOptions: any;
     pinProtected: EncryptionPair<string, EncString> = new EncryptionPair<string, EncString>();
