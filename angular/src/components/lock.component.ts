@@ -49,7 +49,7 @@ export class LockComponent implements OnInit {
         private keyConnectorService: KeyConnectorService) { }
 
     async ngOnInit() {
-        this.stateService.accounts.subscribe(async _accounts => {
+        this.stateService.activeAccount.subscribe(async _userId => {
             await this.load();
         });
     }

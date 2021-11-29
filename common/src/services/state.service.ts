@@ -37,6 +37,8 @@ import { BehaviorSubject } from 'rxjs';
 
 export class StateService implements StateServiceAbstraction {
     accounts = new BehaviorSubject<{ [userId: string]: Account }>({});
+    activeAccount = new BehaviorSubject<string>(null);
+
     private state: State = new State();
 
     constructor(private storageService: StorageService, private secureStorageService: StorageService,
@@ -64,6 +66,7 @@ export class StateService implements StateServiceAbstraction {
         this.state.accounts[account.profile.userId] = account;
         await this.scaffoldNewAccountStorage(account);
         await this.setActiveUser(account.profile.userId);
+        this.activeAccount.next(account.profile.userId);
     }
 
     async setActiveUser(userId: string): Promise<void> {
@@ -72,6 +75,7 @@ export class StateService implements StateServiceAbstraction {
         storedState.activeUserId = userId;
         await this.saveStateToStorage(storedState, await this.defaultOnDiskOptions());
         await this.pushAccounts();
+        this.activeAccount.next(this.state.activeUserId);
     }
 
     async clean(options?: StorageOptions): Promise<void> {

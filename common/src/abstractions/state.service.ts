@@ -26,6 +26,7 @@ import { SendView } from '../models/view/sendView';
 
 export abstract class StateService {
     accounts: BehaviorSubject<{ [userId: string]: Account }>;
+    activeAccount: BehaviorSubject<string>;
 
     addAccount: (account: Account) => Promise<void>;
     setActiveUser: (userId: string) => Promise<void>;
