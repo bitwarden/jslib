@@ -736,6 +736,7 @@ export class StateService implements StateServiceAbstraction {
     async getEncryptedPinProtected(options?: StorageOptions): Promise<string> {
         return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.settings?.pinProtected?.encrypted;
     }
+
     async setEncryptedPinProtected(value: string, options?: StorageOptions): Promise<void> {
         const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
         account.settings.pinProtected.encrypted = value;
@@ -1019,6 +1020,7 @@ export class StateService implements StateServiceAbstraction {
     async getPasswordGenerationOptions(options?: StorageOptions): Promise<any> {
         return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.settings?.passwordGenerationOptions;
     }
+
     async setPasswordGenerationOptions(value: any, options?: StorageOptions): Promise<void> {
         const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
         account.settings.passwordGenerationOptions = value;
@@ -1026,8 +1028,9 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getProtectedPin(options?: StorageOptions): Promise<string> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.settings?.protectedPin;
+        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.settings?.protectedPin;
     }
+
     async setProtectedPin(value: string, options?: StorageOptions): Promise<void> {
         const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
         account.settings.protectedPin = value;

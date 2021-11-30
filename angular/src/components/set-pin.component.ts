@@ -13,7 +13,6 @@ import { ModalRef } from './modal/modal.ref';
 
 @Directive()
 export class SetPinComponent implements OnInit {
-
     pin = '';
     showPin = false;
     masterPassOnRestart = true;

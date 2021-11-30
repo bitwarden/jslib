@@ -15,7 +15,7 @@ export class SystemService implements SystemServiceAbstraction {
     }
 
     async startProcessReload(): Promise<void> {
-        if (await this.stateService.getEncryptedPinProtected() != null ||
+        if (await this.stateService.getDecryptedPinProtected() != null ||
             await this.stateService.getBiometricLocked() ||
             this.reloadInterval != null) {
             return;

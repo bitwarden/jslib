@@ -195,7 +195,7 @@ export class LockComponent implements OnInit {
 
     private async load() {
         this.pinSet = await this.vaultTimeoutService.isPinLockSet();
-        this.pinLock = (this.pinSet[0] && (await this.stateService.getEncryptedPinProtected()) != null) || this.pinSet[1];
+        this.pinLock = (this.pinSet[0] && (await this.stateService.getDecryptedPinProtected()) != null) || this.pinSet[1];
         this.supportsBiometric = await this.platformUtilsService.supportsBiometric();
         this.biometricLock = await this.vaultTimeoutService.isBiometricLockSet() &&
             (await this.cryptoService.hasKeyStored(KeySuffixOptions.Biometric) || !this.platformUtilsService.supportsSecureStorage());

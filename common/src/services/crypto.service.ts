@@ -383,7 +383,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     async clearPinProtectedKey(userId?: string): Promise<any> {
-        return await this.stateService.setDecryptedPinProtected(null, { userId: userId });
+        return await this.stateService.setEncryptedPinProtected(null, { userId: userId });
     }
 
     async clearKeys(userId?: string): Promise<any> {
