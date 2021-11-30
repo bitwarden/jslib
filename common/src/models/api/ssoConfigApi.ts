@@ -1,38 +1,12 @@
 import { BaseResponse } from '../response/baseResponse';
 
-enum SsoType {
-    OpenIdConnect = 1,
-    Saml2 = 2,
-}
-
-enum OpenIdConnectRedirectBehavior {
-    RedirectGet = 0,
-    FormPost = 1,
-}
-
-enum Saml2BindingType {
-    HttpRedirect = 1,
-    HttpPost = 2,
-    Artifact = 4,
-}
-
-enum Saml2NameIdFormat {
-    NotConfigured = 0,
-    Unspecified = 1,
-    EmailAddress = 2,
-    X509SubjectName = 3,
-    WindowsDomainQualifiedName = 4,
-    KerberosPrincipalName = 5,
-    EntityIdentifier = 6,
-    Persistent = 7,
-    Transient = 8,
-}
-
-enum Saml2SigningBehavior {
-    IfIdpWantAuthnRequestsSigned = 0,
-    Always = 1,
-    Never = 3,
-}
+import {
+    OpenIdConnectRedirectBehavior,
+    Saml2BindingType,
+    Saml2NameIdFormat,
+    Saml2SigningBehavior,
+    SsoType,
+} from '../../enums/ssoEnums';
 
 export class SsoConfigApi extends BaseResponse {
     configType: SsoType;
