@@ -33,6 +33,9 @@ import { ProviderData } from '../models/data/providerData';
 import { SendData } from '../models/data/sendData';
 
 import { BehaviorSubject } from 'rxjs';
+import { BrowserGroupingsComponentState } from '../models/domain/browserGroupingsComponentState';
+import { BrowserComponentState } from '../models/domain/browserComponentState';
+import { BrowserSendComponentState } from '../models/domain/browserSendComponentState';
 
 export class StateService implements StateServiceAbstraction {
     accounts = new BehaviorSubject<{ [userId: string]: Account }>({});
@@ -205,6 +208,45 @@ export class StateService implements StateServiceAbstraction {
         await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
     }
 
+    async getBrowserGroupingComponentState(options?: StorageOptions): Promise<BrowserGroupingsComponentState> {
+        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.browser?.groupings;
+    }
+
+    async setBrowserGroupingComponentState(value: BrowserGroupingsComponentState, options?: StorageOptions): Promise<void> {
+        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
+        account.browser.groupings = value;
+        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
+    }
+
+    async getBrowserCipherComponentState(options?: StorageOptions): Promise<BrowserComponentState> {
+        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.browser?.ciphers;
+    }
+
+    async setBrowserCipherComponentState(value: BrowserComponentState, options?: StorageOptions): Promise<void> {
+        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
+        account.browser.ciphers = value;
+        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
+    }
+
+    async getBrowserSendComponentState(options?: StorageOptions): Promise<BrowserSendComponentState> {
+        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.browser?.send;
+    }
+
+    async setBrowserSendComponentState(value: BrowserSendComponentState, options?: StorageOptions): Promise<void> {
+        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
+        account.browser.send = value;
+        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
+    }
+    async getBrowserSendTypeComponentState(options?: StorageOptions): Promise<BrowserComponentState> {
+        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.browser?.sendType;
+    }
+
+    async setBrowserSendTypeComponentState(value: BrowserComponentState, options?: StorageOptions): Promise<void> {
+        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
+        account.browser.sendType = value;
+        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
+    }
+
     async getCanAccessPremium(options?: StorageOptions): Promise<boolean> {
         if (!await this.getIsAuthenticated(options)) {
             return false;
@@ -220,7 +262,7 @@ export class StateService implements StateServiceAbstraction {
             return false;
         }
 
-        for (const id  of Object.keys(organizations)) {
+        for (const id of Object.keys(organizations)) {
             const o = organizations[id];
             if (o.enabled && o.usersGetPremium && !o.isProviderUser) {
                 return true;
@@ -1269,7 +1311,7 @@ export class StateService implements StateServiceAbstraction {
 
         const state = options?.useSecureStorage ?
             await this.secureStorageService.get<State>('state', options) ??
-                await this.storageService.get<State>('state', this.reconcileOptions(options, { htmlStorageLocation: HtmlStorageLocation.Local })) :
+            await this.storageService.get<State>('state', this.reconcileOptions(options, { htmlStorageLocation: HtmlStorageLocation.Local })) :
             await this.storageService.get<State>('state', options);
 
         return state?.accounts[options?.userId ?? this.state.activeUserId];

@@ -49,7 +49,7 @@ export class GroupingsComponent {
     private collapsedGroupings: Set<string>;
 
     constructor(protected collectionService: CollectionService, protected folderService: FolderService,
-        private stateService: StateService) { }
+        protected stateService: StateService) { }
 
     async load(setLoaded = true) {
         const collapsedGroupings = await this.stateService.getCollapsedGroupings();
