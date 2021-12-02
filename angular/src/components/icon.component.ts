@@ -29,15 +29,14 @@ const IconMap: any = {
  * the filenames of icon that should be present in images/cards folder of clients.
  */
 const cardIcons : Record<string, string> = {
-    Visa : 'visa.png',
-    Mastercard : 'mastercard.png',
-    Amex : 'amex.png',
-    Discover : 'discover.png',
-    'Diners Club' : 'diners_club.png',
-    JCB : 'jcb.png',
-    Maestro : 'maestro.png',
-    UnionPay : 'unionPay.png',
-    Other : 'other.png',
+    Visa : 'card-visa',
+    Mastercard : 'card-mastercard',
+    Amex : 'card-amex',
+    Discover : 'card-discover',
+    'Diners Club' : 'card-diners-club',
+    JCB : 'card-jcb',
+    Maestro : 'card-maestro',
+    UnionPay : 'card-union-pay',
 };
 
 @Component({
@@ -123,9 +122,9 @@ export class IconComponent implements OnChanges {
     }
 
     private setCardIcon() {
-        if (this.imageEnabled) {
-            const brand = this.cipher.card.brand;
-            this.image = brand in cardIcons ? 'images/cards/' + cardIcons[brand] : 'images/cards/other.png';
+        const brand = this.cipher.card.brand;
+        if (this.imageEnabled && brand in cardIcons) {
+            this.icon = 'credit-card-icon ' + cardIcons[brand];
         }
     }
 }
