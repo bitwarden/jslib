@@ -124,7 +124,6 @@ export class AccountSettings {
     enableTray: boolean;
     environmentUrls: any;
     equivalentDomains?: any;
-    locale: string;
     minimizeOnCopyToClipboard: boolean;
     neverDomains: { [id: string]: any };
     openAtLogin: boolean;

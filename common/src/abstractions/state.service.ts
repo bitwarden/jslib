@@ -262,6 +262,8 @@ export abstract class StateService {
     setVaultTimeout: (value: number, options?: StorageOptions) => Promise<void>;
     getVaultTimeoutAction: (options?: StorageOptions) => Promise<string>;
     setVaultTimeoutAction: (value: string, options?: StorageOptions) => Promise<void>;
+    getStateVersion: () => Promise<number>;
+    setStateVersion: (value: number) => Promise<void>;
     getWindow: () => Promise<Map<string, any>>;
     setWindow: (value: Map<string, any>) => Promise<void>;
 }
