@@ -14,7 +14,7 @@ export class OrganizationSsoResponse extends BaseResponse {
     }
 }
 
-class SsoUrls extends BaseResponse {
+export class SsoUrls extends BaseResponse {
     callbackPath: string;
     signedOutCallbackPath: string;
     spEntityId: string;
