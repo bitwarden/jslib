@@ -22,8 +22,8 @@ import { PolicyData } from '../data/policyData';
 import { ProviderData } from '../data/providerData';
 import { SendData } from '../data/sendData';
 import { BrowserComponentState } from './browserComponentState';
-import { BrowserSendComponentState } from './browserSendComponentState';
 import { BrowserGroupingsComponentState } from './browserGroupingsComponentState';
+import { BrowserSendComponentState } from './browserSendComponentState';
 
 export class EncryptionPair<TEncrypted, TDecrypted> {
     encrypted: TEncrypted;

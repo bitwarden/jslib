@@ -33,8 +33,8 @@ import { ProviderData } from '../models/data/providerData';
 import { SendData } from '../models/data/sendData';
 
 import { BehaviorSubject } from 'rxjs';
-import { BrowserGroupingsComponentState } from '../models/domain/browserGroupingsComponentState';
 import { BrowserComponentState } from '../models/domain/browserComponentState';
+import { BrowserGroupingsComponentState } from '../models/domain/browserGroupingsComponentState';
 import { BrowserSendComponentState } from '../models/domain/browserSendComponentState';
 
 export class StateService implements StateServiceAbstraction {

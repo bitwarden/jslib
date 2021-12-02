@@ -1,8 +1,8 @@
-import { CipherType } from "../../enums/cipherType";
-import { CipherView } from "../view/cipherView";
-import { CollectionView } from "../view/collectionView";
-import { FolderView } from "../view/folderView";
-import { BrowserComponentState } from "./browserComponentState";
+import { CipherType } from '../../enums/cipherType';
+import { CipherView } from '../view/cipherView';
+import { CollectionView } from '../view/collectionView';
+import { FolderView } from '../view/folderView';
+import { BrowserComponentState } from './browserComponentState';
 
 export class BrowserGroupingsComponentState extends BrowserComponentState {
     favoriteCiphers: CipherView[];
