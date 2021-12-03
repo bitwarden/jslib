@@ -1,20 +1,23 @@
-import { StorageService } from "../abstractions/storage.service";
-import { State } from "../models/domain/state";
-import { Account } from '../models/domain/account';
-import { CipherData } from "../models/data/cipherData";
-import { FolderData } from "../models/data/folderData";
-import { SendData } from "../models/data/sendData";
-import { CollectionData } from "../models/data/collectionData";
-import { PolicyData } from "../models/data/policyData";
-import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
-import { EventData } from "../models/data/eventData";
-import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
-import { StorageOptions } from "../models/domain/storageOptions";
-import { KdfType } from "../enums/kdfType";
-import { OrganizationData } from "../models/data/organizationData";
-import { ProviderData } from "../models/data/providerData";
+import { StorageService } from '../abstractions/storage.service';
 
-// Originally (before January 2022) storage was handled as a flat key/value pair store. 
+import { Account } from '../models/domain/account';
+import { GeneratedPasswordHistory } from '../models/domain/generatedPasswordHistory';
+import { State } from '../models/domain/state';
+import { StorageOptions } from '../models/domain/storageOptions';
+
+import { CipherData } from '../models/data/cipherData';
+import { CollectionData } from '../models/data/collectionData';
+import { EventData } from '../models/data/eventData';
+import { FolderData } from '../models/data/folderData';
+import { OrganizationData } from '../models/data/organizationData';
+import { PolicyData } from '../models/data/policyData';
+import { ProviderData } from '../models/data/providerData';
+import { SendData } from '../models/data/sendData';
+
+import { HtmlStorageLocation } from '../enums/htmlStorageLocation';
+import { KdfType } from '../enums/kdfType';
+
+// Originally (before January 2022) storage was handled as a flat key/value pair store.
 // With the move to a typed object for state storage these keys should no longer be in use anywhere outside of this migration.
 const v1Keys = {
     accessToken: 'accessToken',
@@ -92,7 +95,7 @@ const v1Keys = {
     vaultTimeoutAction: 'vaultTimeoutAction',
     vaultTimeout: 'lockOption',
     rememberedEmail: 'rememberedEmail',
-}
+};
 
 const v1KeyPrefixes = {
     ciphers: 'ciphers_',
@@ -105,14 +108,14 @@ const v1KeyPrefixes = {
     providers: 'providers_',
     sends: 'sends_',
     settings: 'settings_',
-}
+};
 
 
 export class StateMigrationService {
     readonly latestVersion: number = 2;
 
     constructor(
-        private storageService: StorageService, 
+        private storageService: StorageService,
         private secureStorageService: StorageService
     ) {}
 
@@ -129,7 +132,7 @@ export class StateMigrationService {
                 await this.migrateStateFrom1To2();
                 break;
             }
-                    
+
             currentStateVersion += 1;
         }
     }
@@ -145,7 +148,7 @@ export class StateMigrationService {
                 accounts: {},
                 activeUserId: null,
             } :
-           {
+            {
                 activeUserId: userId,
                 globals: {
                     biometricAwaitingAcceptance: await this.storageService.get<boolean>(v1Keys.biometricAwaitingAcceptance, options),
@@ -171,7 +174,7 @@ export class StateMigrationService {
                     vaultTimeoutAction: await this.storageService.get<string>(v1Keys.vaultTimeoutAction, options),
                     window: null,
                 },
-                accounts: { 
+                accounts: {
                     [userId]: new Account({
                         data: {
                             addEditCipherInfo: null,
@@ -180,7 +183,7 @@ export class StateMigrationService {
                                 encrypted: await this.storageService.get<{ [id: string]: CipherData }>(v1KeyPrefixes.ciphers + userId, options),
                             },
                             collapsedGroupings: null,
-                            collections: { 
+                            collections: {
                                 decrypted: null,
                                 encrypted: await this.storageService.get<{ [id: string]: CollectionData }>(v1KeyPrefixes.collections + userId, options),
                             },
@@ -302,9 +305,9 @@ export class StateMigrationService {
                             refreshToken: await this.storageService.get<string>(v1Keys.refreshToken, options),
                             securityStamp: null,
                         },
-                    }) 
-                } 
-            }
+                    }),
+                },
+            };
 
         await this.storageService.save('state', initialState, options);
 
