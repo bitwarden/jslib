@@ -1541,7 +1541,10 @@ export class StateService implements StateServiceAbstraction {
             return;
         }
 
-        delete state.accounts[userId];
+        state.accounts[userId] = new Account({
+            settings: state.accounts[userId].settings,
+        });
+
         await this.saveStateToStorage(state, await this.defaultOnDiskLocalOptions());
     }
 
@@ -1550,6 +1553,11 @@ export class StateService implements StateServiceAbstraction {
         if (state?.accounts[userId] == null) {
             return;
         }
+
+
+        state.accounts[userId] = new Account({
+            settings: state.accounts[userId].settings,
+        });
 
         delete state.accounts[userId];
         await this.saveStateToStorage(state, await this.defaultOnDiskOptions());
