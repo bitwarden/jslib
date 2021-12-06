@@ -1,4 +1,3 @@
-import * as tldjs from 'tldjs';
 import * as tldts from 'tldts';
 
 import { I18nService } from '../abstractions/i18n.service';
@@ -197,26 +196,18 @@ export class Utils {
         if (uriString === '') {
             return null;
         }
-
-        if (tldts.getHostname != null) {
-            // Does uriString contain invalid characters
-            // TODO Needs to possibly be extended, although '!' is a reserved character
-            if (uriString.indexOf('!') > 0) {
-                return null;
-            }
-
-            const hostname = tldts.getHostname(uriString, { validHosts: this.validHosts });
-            if (hostname != null) {
-                return hostname;
-            }
-        }
-
-        const url = Utils.getUrl(uriString);
-        try {
-            return url != null && url.hostname !== '' ? url.hostname : null;
-        } catch {
+        // Does uriString contain invalid characters
+        // TODO Needs to possibly be extended, although '!' is a reserved character
+        if (uriString.indexOf('!') > 0) {
             return null;
         }
+
+        const hostname = tldts.getHostname(uriString, { validHosts: this.validHosts });
+        if (hostname != null) {
+            return hostname;
+        }
+
+        return null;
     }
 
     static getHost(uriString: string): string {
@@ -249,7 +240,8 @@ export class Utils {
             httpUrl = true;
         }
 
-        const parseResult = tldts.parse != null ? tldts.parse(uriString, { validHosts: this.validHosts }) : null;
+
+        const parseResult = tldts.parse(uriString, { validHosts: this.validHosts });
         if (parseResult != null && parseResult.hostname != null) {
             if (parseResult.hostname === 'localhost' || parseResult.isIp) {
                 return parseResult.hostname;
@@ -258,35 +250,6 @@ export class Utils {
             if (parseResult.domain != null) {
                 return parseResult.domain;
             }
-            return null;
-        }
-
-        if (httpUrl) {
-            try {
-                const url = Utils.getUrlObject(uriString);
-                const validHostname = tldjs?.isValid != null ? tldjs.isValid(url.hostname) : true;
-                if (!validHostname) {
-                    return null;
-                }
-
-                if (url.hostname === 'localhost' || Utils.validIpAddress(url.hostname)) {
-                    return url.hostname;
-                }
-
-                const urlDomain = tldjs != null && tldjs.getDomain != null ? tldjs.getDomain(url.hostname) : null;
-                return urlDomain != null ? urlDomain : url.hostname;
-            } catch (e) {
-                // Invalid domain, try another approach below.
-            }
-        }
-
-        try {
-            const domain = tldjs != null && tldjs.getDomain != null ? tldjs.getDomain(uriString) : null;
-
-            if (domain != null) {
-                return domain;
-            }
-        } catch {
             return null;
         }
 
