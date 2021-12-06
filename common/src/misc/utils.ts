@@ -200,11 +200,14 @@ export class Utils {
             return null;
         }
 
-        const hostname = tldts.getHostname(uriString, { validHosts: this.validHosts });
-        if (hostname != null) {
-            return hostname;
+        try {
+            const hostname = tldts.getHostname(uriString, { validHosts: this.validHosts });
+            if (hostname != null) {
+                return hostname;
+            }
+        } catch {
+            return null;
         }
-
         return null;
     }
 
@@ -235,19 +238,21 @@ export class Utils {
             httpUrl = true;
         }
 
+        try {
+            const parseResult = tldts.parse(uriString, { validHosts: this.validHosts });
+            if (parseResult != null && parseResult.hostname != null) {
+                if (parseResult.hostname === 'localhost' || parseResult.isIp) {
+                    return parseResult.hostname;
+                }
 
-        const parseResult = tldts.parse(uriString, { validHosts: this.validHosts });
-        if (parseResult != null && parseResult.hostname != null) {
-            if (parseResult.hostname === 'localhost' || parseResult.isIp) {
-                return parseResult.hostname;
+                if (parseResult.domain != null) {
+                    return parseResult.domain;
+                }
+                return null;
             }
-
-            if (parseResult.domain != null) {
-                return parseResult.domain;
-            }
+        } catch {
             return null;
         }
-
         return null;
     }
 
