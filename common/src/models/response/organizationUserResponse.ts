@@ -32,12 +32,14 @@ export class OrganizationUserUserDetailsResponse extends OrganizationUserRespons
     name: string;
     email: string;
     twoFactorEnabled: boolean;
+    usesKeyConnector: boolean;
 
     constructor(response: any) {
         super(response);
         this.name = this.getResponseProperty('Name');
         this.email = this.getResponseProperty('Email');
         this.twoFactorEnabled = this.getResponseProperty('TwoFactorEnabled');
+        this.usesKeyConnector = this.getResponseProperty('UsesKeyConnector') ?? false;
     }
 }
 

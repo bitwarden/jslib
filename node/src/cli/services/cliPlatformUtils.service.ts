@@ -93,6 +93,10 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
         return Promise.resolve(this.packageJson.version);
     }
 
+    getApplicationVersionSync(): string {
+        return this.packageJson.version;
+    }
+
     supportsWebAuthn(win: Window) {
         return false;
     }

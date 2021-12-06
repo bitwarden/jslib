@@ -1,5 +1,6 @@
-import { Directive, OnInit } from '@angular/core';
+import { Directive, NgZone, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { take } from 'rxjs/operators';
 
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
@@ -37,6 +38,7 @@ export class LockComponent implements OnInit {
     supportsBiometric: boolean;
     biometricLock: boolean;
     biometricText: string;
+    hideInput: boolean;
 
     protected successRoute: string = 'vault';
     protected onSuccessfulSubmit: () => void;
@@ -50,7 +52,7 @@ export class LockComponent implements OnInit {
         protected storageService: StorageService, protected vaultTimeoutService: VaultTimeoutService,
         protected environmentService: EnvironmentService, protected stateService: StateService,
         protected apiService: ApiService, private logService: LogService,
-        private keyConnectorService: KeyConnectorService) { }
+        private keyConnectorService: KeyConnectorService, protected ngZone: NgZone) { }
 
     async ngOnInit() {
         this.pinSet = await this.vaultTimeoutService.isPinLockSet();
@@ -60,9 +62,11 @@ export class LockComponent implements OnInit {
             (await this.cryptoService.hasKeyStored('biometric') || !this.platformUtilsService.supportsSecureStorage());
         this.biometricText = await this.storageService.get(ConstantsService.biometricText);
         this.email = await this.userService.getEmail();
+        const usesKeyConnector = await this.keyConnectorService.getUsesKeyConnector();
+        this.hideInput = usesKeyConnector && !this.pinLock;
 
         // Users with key connector and without biometric or pin has no MP to unlock using
-        if (await this.keyConnectorService.getUsesKeyConnector() && !(this.biometricLock || this.pinLock)) {
+        if (usesKeyConnector && !(this.biometricLock || this.pinLock)) {
             await this.vaultTimeoutService.logOut();
         }
 
@@ -182,7 +186,12 @@ export class LockComponent implements OnInit {
 
     togglePassword() {
         this.showPassword = !this.showPassword;
-        document.getElementById(this.pinLock ? 'pin' : 'masterPassword').focus();
+        const input = document.getElementById(this.pinLock ? 'pin' : 'masterPassword');
+        if (this.ngZone.isStable) {
+            input.focus();
+        } else {
+            this.ngZone.onStable.pipe(take(1)).subscribe(() => input.focus());
+        }
     }
 
     private async setKeyAndContinue(key: SymmetricCryptoKey) {

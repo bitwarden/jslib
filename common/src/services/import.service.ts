@@ -85,13 +85,13 @@ export class ImportService implements ImportServiceAbstraction {
     featuredImportOptions = [
         { id: 'bitwardenjson', name: 'Bitwarden (json)' },
         { id: 'bitwardencsv', name: 'Bitwarden (csv)' },
-        { id: 'lastpasscsv', name: 'LastPass (csv)' },
         { id: 'chromecsv', name: 'Chrome (csv)' },
-        { id: 'firefoxcsv', name: 'Firefox (csv)' },
-        { id: 'safaricsv', name: 'Safari (csv)' },
-        { id: 'keepass2xml', name: 'KeePass 2 (xml)' },
-        { id: '1password1pif', name: '1Password (1pif)' },
         { id: 'dashlanejson', name: 'Dashlane (json)' },
+        { id: 'firefoxcsv', name: 'Firefox (csv)' },
+        { id: 'keepass2xml', name: 'KeePass 2 (xml)' },
+        { id: 'lastpasscsv', name: 'LastPass (csv)' },
+        { id: 'safaricsv', name: 'Safari and macOS (csv)' },
+        { id: '1password1pif', name: '1Password (1pif)' },
     ];
 
     regularImportOptions: ImportOption[] = [
