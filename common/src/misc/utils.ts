@@ -188,14 +188,12 @@ export class Utils {
     }
 
     static getHostname(uriString: string): string {
-        if (uriString == null) {
+        if (Utils.isNullOrWhitespace(uriString)) {
             return null;
         }
 
         uriString = uriString.trim();
-        if (uriString === '') {
-            return null;
-        }
+
         // Does uriString contain invalid characters
         // TODO Needs to possibly be extended, although '!' is a reserved character
         if (uriString.indexOf('!') > 0) {
@@ -220,14 +218,11 @@ export class Utils {
     }
 
     static getDomain(uriString: string): string {
-        if (uriString == null) {
+        if (Utils.isNullOrWhitespace(uriString)) {
             return null;
         }
 
         uriString = uriString.trim();
-        if (uriString === '') {
-            return null;
-        }
 
         if (uriString.startsWith('data:')) {
             return null;
@@ -308,14 +303,11 @@ export class Utils {
 
 
     static getUrl(uriString: string): URL {
-        if (uriString == null) {
+        if (this.isNullOrWhitespace(uriString)) {
             return null;
         }
 
         uriString = uriString.trim();
-        if (uriString === '') {
-            return null;
-        }
 
         let url = Utils.getUrlObject(uriString);
         if (url == null) {
