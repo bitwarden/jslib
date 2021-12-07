@@ -7,10 +7,10 @@ import {
 @Directive({
     selector: 'input[appChangeStripSpaces]',
 })
-export class ChangeStripSpacesDirective {
+export class InputStripSpacesDirective {
     constructor(private el: ElementRef<HTMLInputElement>) { }
 
-    @HostListener('change') onChange() {
+    @HostListener('input') onInput() {
         this.el.nativeElement.value = this.el.nativeElement.value.replace(/ /g, '');
     }
 }
