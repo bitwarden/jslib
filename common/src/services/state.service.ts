@@ -62,7 +62,9 @@ export class StateService implements StateServiceAbstraction {
         if (await this.getActiveUserIdFromStorage() != null) {
             const diskState = await this.storageService.get<State>('state', await this.defaultOnDiskOptions());
             this.state = diskState;
+            await this.pruneInMemoryAccounts();
             await this.saveStateToStorage(this.state, await this.defaultOnDiskMemoryOptions());
+            await this.pushAccounts();
         }
     }
 
@@ -86,6 +88,20 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async clean(options?: StorageOptions): Promise<void> {
+        // Find and set the next active user if any exists
+        if (options?.userId == null || options.userId === await this.getUserId()) {
+            for (const userId in this.state.accounts) {
+                if (userId == null) {
+                    continue;
+                }
+                if (await this.getIsAuthenticated({ userId: userId })) {
+                    await this.setActiveUser(userId);
+                    break;
+                }
+                await this.setActiveUser(null);
+            }
+        }
+
         await this.removeAccountFromSessionStorage(options?.userId);
         await this.removeAccountFromLocalStorage(options?.userId);
         await this.removeAccountFromSecureStorage(options?.userId);
@@ -871,7 +887,9 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getEnvironmentUrls(options?: StorageOptions): Promise<any> {
-        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.settings?.environmentUrls;
+        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.settings?.environmentUrls ?? {
+            server: 'bitwarden.com',
+        };
     }
 
     async setEnvironmentUrls(value: any, options?: StorageOptions): Promise<void> {
@@ -1439,9 +1457,11 @@ export class StateService implements StateServiceAbstraction {
         const storedState = await this.storageService.get<State>('state', await this.defaultOnDiskLocalOptions()) ?? new State();
         const storedAccount = storedState.accounts[account.profile.userId];
         if (storedAccount != null) {
-            storedAccount.tokens.accessToken = account.tokens.accessToken;
-            storedAccount.tokens.refreshToken = account.tokens.refreshToken;
-            account = storedAccount;
+            account = {
+                settings: storedAccount.settings,
+                profile: account.profile,
+                tokens: account.tokens,
+            };
         }
         storedState.accounts[account.profile.userId] = account;
         await this.saveStateToStorage(storedState, await this.defaultOnDiskLocalOptions());
@@ -1472,10 +1492,12 @@ export class StateService implements StateServiceAbstraction {
     }
 
     private async pushAccounts(): Promise<void> {
+        await this.pruneInMemoryAccounts();
         if (this.state?.accounts == null || Object.keys(this.state.accounts).length < 1) {
             this.accounts.next(null);
             return;
         }
+
         this.accounts.next(this.state.accounts);
     }
 
@@ -1559,7 +1581,6 @@ export class StateService implements StateServiceAbstraction {
             settings: state.accounts[userId].settings,
         });
 
-        delete state.accounts[userId];
         await this.saveStateToStorage(state, await this.defaultOnDiskOptions());
     }
 
@@ -1576,4 +1597,14 @@ export class StateService implements StateServiceAbstraction {
     private async saveStateToStorage(state: State, options: StorageOptions): Promise<void> {
         await this.storageService.save('state', state, options);
     }
+
+    private async pruneInMemoryAccounts() {
+        // We preserve settings for logged out accounts, but we don't want to consider them when thinking about active account state
+        for (const userId in this.state.accounts) {
+            if (!await this.getIsAuthenticated({ userId: userId })) {
+                delete this.state.accounts[userId];
+            }
+        }
+    }
+
 }

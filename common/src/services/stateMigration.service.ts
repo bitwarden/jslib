@@ -294,7 +294,6 @@ export class StateMigrationService {
                                 encrypted: await this.storageService.get<string>(v1Keys.pinProtected, options),
                             },
                             protectedPin: await this.storageService.get<string>(v1Keys.protectedPin, options),
-                            serverUrl: null,
                             settings: await this.storageService.get<any>(v1KeyPrefixes.settings + userId, options),
                             vaultTimeout: await this.storageService.get<number>(v1Keys.vaultTimeout, options),
                             vaultTimeoutAction: await this.storageService.get<string>(v1Keys.vaultTimeoutAction, options),
