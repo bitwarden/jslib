@@ -6,14 +6,8 @@ import {
     NgZone,
     OnDestroy,
     OnInit,
-    Output,
+    Output
 } from '@angular/core';
-
-import { CipherRepromptType } from 'jslib-common/enums/cipherRepromptType';
-import { CipherType } from 'jslib-common/enums/cipherType';
-import { EventType } from 'jslib-common/enums/eventType';
-import { FieldType } from 'jslib-common/enums/fieldType';
-
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { AuditService } from 'jslib-common/abstractions/audit.service';
 import { BroadcasterService } from 'jslib-common/abstractions/broadcaster.service';
@@ -27,12 +21,18 @@ import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.se
 import { TokenService } from 'jslib-common/abstractions/token.service';
 import { TotpService } from 'jslib-common/abstractions/totp.service';
 import { UserService } from 'jslib-common/abstractions/user.service';
-
+import { CipherRepromptType } from 'jslib-common/enums/cipherRepromptType';
+import { CipherType } from 'jslib-common/enums/cipherType';
+import { DeviceType } from 'jslib-common/enums/deviceType';
+import { EventType } from 'jslib-common/enums/eventType';
+import { FieldType } from 'jslib-common/enums/fieldType';
 import { ErrorResponse } from 'jslib-common/models/response/errorResponse';
-
 import { AttachmentView } from 'jslib-common/models/view/attachmentView';
 import { CipherView } from 'jslib-common/models/view/cipherView';
 import { LoginUriView } from 'jslib-common/models/view/loginUriView';
+
+
+
 
 const BroadcasterSubscriptionId = 'ViewComponent';
 
@@ -61,6 +61,7 @@ export class ViewComponent implements OnDestroy, OnInit {
     private totpInterval: any;
     private previousCipherId: string;
     private passwordReprompted: boolean = false;
+    private autoTypeLib: any;
 
     constructor(protected cipherService: CipherService, protected totpService: TotpService,
         protected tokenService: TokenService, protected i18nService: I18nService,
@@ -122,6 +123,21 @@ export class ViewComponent implements OnDestroy, OnInit {
         }
 
         return false;
+    }
+
+    async autoType() {
+        if (await this.promptPassword() && await this.autoTypeAvailable()) {
+            console.log("autotype on view component")
+            await this.platformUtilsService.autoType(this.cipher.login.username, this.cipher.login.password)
+            return true;
+        }
+
+        return false;
+    }
+
+    async autoTypeAvailable() {
+        //PoC only done for macOS
+        return this.platformUtilsService.getDevice() === DeviceType.MacOsDesktop
     }
 
     async clone() {

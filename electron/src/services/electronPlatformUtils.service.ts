@@ -1,25 +1,25 @@
 import {
     clipboard,
     ipcRenderer,
-    shell,
+    shell
 } from 'electron';
-
-import {
-    isDev,
-    isMacAppStore,
-} from '../utils';
-
-import { DeviceType } from 'jslib-common/enums/deviceType';
-import { ThemeType } from 'jslib-common/enums/themeType';
-
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { StorageService } from 'jslib-common/abstractions/storage.service';
-
+import { DeviceType } from 'jslib-common/enums/deviceType';
+import { ThemeType } from 'jslib-common/enums/themeType';
 import { ConstantsService } from 'jslib-common/services/constants.service';
-
 import { ElectronConstants } from '../electronConstants';
+import {
+    isDev,
+    isMacAppStore
+} from '../utils';
+
+
+
+
+
 
 export class ElectronPlatformUtilsService implements PlatformUtilsService {
     identityClientId: string;
@@ -148,6 +148,10 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         });
 
         return Promise.resolve(result.response === 0);
+    }
+
+    async autoType(username: string, password: string): Promise<boolean> {
+        return ipcRenderer.invoke('autoType', username, password);
     }
 
     isDev(): boolean {

@@ -23,6 +23,7 @@ export abstract class PlatformUtilsService {
         options?: any) => void;
     showDialog: (body: string, title?: string, confirmText?: string, cancelText?: string,
         type?: string, bodyIsHtml?: boolean) => Promise<boolean>;
+    autoType: (username: string, password: string) => void;
     isDev: () => boolean;
     isSelfHost: () => boolean;
     copyToClipboard: (text: string, options?: any) => void | boolean;

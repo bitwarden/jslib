@@ -1,13 +1,15 @@
 import { app, dialog, ipcMain, Menu, MenuItem, nativeTheme } from 'electron';
-import { promises as fs } from 'fs';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
-import { RendererMenuItem } from '../utils';
-
 import { ThemeType } from 'jslib-common/enums/themeType';
-
+import * as path from 'path';
+import { RendererMenuItem } from '../utils';
 import { WindowMain } from '../window.main';
 
+
+
 export class ElectronMainMessagingService implements MessagingService {
+    private autoTypeLib: any;
+
     constructor(private windowMain: WindowMain, private onMessage: (message: any) => void) {
         ipcMain.handle('appVersion', () => {
             return app.getVersion();
@@ -21,7 +23,7 @@ export class ElectronMainMessagingService implements MessagingService {
             return dialog.showMessageBox(options);
         });
 
-        ipcMain.handle('openContextMenu', (event, options: {menu: RendererMenuItem[]}) => {
+        ipcMain.handle('openContextMenu', (event, options: { menu: RendererMenuItem[] }) => {
             return new Promise(resolve => {
                 const menu = new Menu();
                 options.menu.forEach((m, index) => {
@@ -33,9 +35,37 @@ export class ElectronMainMessagingService implements MessagingService {
                         },
                     }));
                 });
-                menu.popup({ window: windowMain.win, callback: () => {
-                    resolve(-1);
-                }});
+                menu.popup({
+                    window: windowMain.win, callback: () => {
+                        resolve(-1);
+                    }
+                });
+            });
+        });
+
+        ipcMain.handle('autoType', (event, username, password) => {
+            return new Promise(async (resolve, reject) => {
+
+                const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+                //just so that webpack doesn't mess this import
+                const req = eval("require");
+
+                if (process.platform === 'darwin')
+                    this.autoTypeLib = req(path.join(__dirname, 'Release', 'autotype'));
+                else return Promise.resolve(false); //until implemented
+
+                this.autoTypeLib.SwitchWindow();
+                await sleep(100);
+                this.autoTypeLib.TypeString(username);
+                await sleep(50);
+                this.autoTypeLib.Tab();
+                await sleep(50);
+                this.autoTypeLib.TypeString(password);
+                await sleep(50);
+                this.autoTypeLib.Enter();
+
+                Promise.resolve(true);
             });
         });
 
