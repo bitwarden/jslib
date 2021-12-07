@@ -3,7 +3,6 @@ import {
     LOCALE_ID,
     NgModule,
 } from '@angular/core';
-import { ToasterModule } from 'angular2-toaster';
 
 import { ApiService } from 'jslib-common/services/api.service';
 import { AppIdService } from 'jslib-common/services/appId.service';
@@ -80,9 +79,6 @@ import { UnauthGuardService } from './unauth-guard.service';
 import { ValidationService } from './validation.service';
 
 @NgModule({
-    imports: [
-        ToasterModule,
-    ],
     declarations: [],
     providers: [
         { provide: 'WINDOW', useValue: window },
