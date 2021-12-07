@@ -17,12 +17,12 @@ export class A11yInvalidDirective implements OnDestroy, OnInit {
 
     ngOnInit() {
         this.sub = this.formControlDirective.control.statusChanges.subscribe(status => {
-            if (status === 'INVALID') { 
+            if (status === 'INVALID') {
                 this.el.nativeElement.setAttribute('aria-invalid', 'true');
             } else if (status === 'VALID') {
                 this.el.nativeElement.setAttribute('aria-invalid', 'false');
             }
-        })
+        });
     }
 
     ngOnDestroy() {
