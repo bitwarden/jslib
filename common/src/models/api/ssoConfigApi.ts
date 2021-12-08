@@ -7,8 +7,54 @@ import {
     Saml2SigningBehavior,
     SsoType,
 } from '../../enums/ssoEnums';
+import { SsoConfigView } from '../view/ssoConfigView';
 
 export class SsoConfigApi extends BaseResponse {
+
+    static fromView(view: SsoConfigView, api = new SsoConfigApi()) { // TODO: then we can just give it the form value cast as SsoConfigView
+        api.configType = view.configType;
+
+        api.keyConnectorEnabled = view.keyConnectorEnabled;
+        api.keyConnectorUrl = view.keyConnectorUrl;
+
+        if (api.configType === SsoType.OpenIdConnect) {
+            api.authority = view.openId.authority;
+            api.clientId = view.openId.clientId;
+            api.clientSecret = view.openId.clientSecret;
+            api.metadataAddress = view.openId.metadataAddress;
+            api.redirectBehavior = view.openId.redirectBehavior;
+            api.getClaimsFromUserInfoEndpoint = view.openId.getClaimsFromUserInfoEndpoint;
+            api.additionalScopes = view.openId.additionalScopes;
+            api.additionalUserIdClaimTypes = view.openId.additionalUserIdClaimTypes;
+            api.additionalEmailClaimTypes = view.openId.additionalEmailClaimTypes;
+            api.additionalNameClaimTypes = view.openId.additionalNameClaimTypes;
+            api.acrValues = view.openId.acrValues;
+            api.expectedReturnAcrValue = view.openId.expectedReturnAcrValue;
+
+        } else if (api.configType === SsoType.Saml2) {
+            api.spNameIdFormat = view.saml.spNameIdFormat;
+            api.spOutboundSigningAlgorithm = view.saml.spOutboundSigningAlgorithm;
+            api.spSigningBehavior = view.saml.spSigningBehavior;
+            api.spMinIncomingSigningAlgorithm = view.saml.spMinIncomingSigningAlgorithm;
+            api.spWantAssertionsSigned = view.saml.spWantAssertionsSigned;
+            api.spValidateCertificates = view.saml.spValidateCertificates;
+
+            api.idpEntityId = view.saml.idpEntityId;
+            api.idpBindingType = view.saml.idpBindingType;
+            api.idpSingleSignOnServiceUrl = view.saml.idpSingleSignOnServiceUrl;
+            api.idpSingleLogoutServiceUrl = view.saml.idpSingleLogoutServiceUrl;
+            api.idpArtifactResolutionServiceUrl = view.saml.idpArtifactResolutionServiceUrl;
+            api.idpX509PublicCert = view.saml.idpX509PublicCert;
+            api.idpOutboundSigningAlgorithm = view.saml.idpOutboundSigningAlgorithm;
+            api.idpAllowUnsolicitedAuthnResponse = view.saml.idpAllowUnsolicitedAuthnResponse;
+            api.idpWantAuthnRequestsSigned = view.saml.idpWantAuthnRequestsSigned;
+
+            // Value is inverted in the api model (disable instead of allow)
+            api.idpDisableOutboundLogoutRequests = !view.saml.idpAllowOutboundLogoutRequests;
+        }
+
+        return api;
+    }
     configType: SsoType;
 
     keyConnectorEnabled: boolean;
