@@ -1,4 +1,5 @@
 export enum SsoType {
+    None = 0,
     OpenIdConnect = 1,
     Saml2 = 2,
 }
