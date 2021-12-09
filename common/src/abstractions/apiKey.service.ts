@@ -6,4 +6,5 @@ export abstract class ApiKeyService {
     getEntityType: () => Promise<string>;
     getEntityId: () => Promise<string>;
     isAuthenticated: () => Promise<boolean>;
+    migrateApiKeyStorage: () => Promise<any>;
 }
