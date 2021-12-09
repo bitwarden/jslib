@@ -45,9 +45,12 @@ export class StateService implements StateServiceAbstraction {
 
     private state: State = new State();
 
-    constructor(private storageService: StorageService, private secureStorageService: StorageService,
-        private logService: LogService, private stateMigrationService: StateMigrationService) {
-    }
+    constructor(
+        private storageService: StorageService,
+        private secureStorageService: StorageService,
+        private logService: LogService, 
+        private stateMigrationService: StateMigrationService
+    ) {} 
 
     async init(): Promise<void> {
         if (await this.stateMigrationService.needsMigration()) {

@@ -41,4 +41,9 @@ export class OrganizationService implements OrganizationServiceAbstraction {
     async save(organizations: {[id: string]: OrganizationData}) {
         return await this.stateService.setOrganizations(organizations);
     }
+
+    async canManageSponsorships(): Promise<boolean> {
+        const orgs = await this.getAll();
+        return orgs.some(o => o.familySponsorshipAvailable || o.familySponsorshipFriendlyName !== null);
+    }
 }

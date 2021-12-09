@@ -7,4 +7,5 @@ export abstract class OrganizationService {
     getByIdentifier: (identifier: string) => Promise<Organization>;
     getAll: (userId?: string) => Promise<Organization[]>;
     save: (orgs: {[id: string]: OrganizationData}) => Promise<any>;
+    canManageSponsorships: () => Promise<boolean>;
 }

@@ -17,14 +17,21 @@ import { PolicyType } from '../enums/policyType';
 export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     private inited = false;
 
-    constructor(private cipherService: CipherService, private folderService: FolderService,
-        private collectionService: CollectionService, private cryptoService: CryptoService,
-        protected platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
-        private searchService: SearchService, private tokenService: TokenService,
-        private policyService: PolicyService, private keyConnectorService: KeyConnectorService,
-        private stateService: StateService, private lockedCallback: () => Promise<void> = null,
-        private loggedOutCallback: (userId?: string) => Promise<void> = null) {
-    }
+    constructor(
+        private cipherService: CipherService,
+        private folderService: FolderService,
+        private collectionService: CollectionService,
+        private cryptoService: CryptoService,
+        protected platformUtilsService: PlatformUtilsService,
+        private messagingService: MessagingService,
+        private searchService: SearchService,
+        private tokenService: TokenService,
+        private policyService: PolicyService,
+        private keyConnectorService: KeyConnectorService,
+        private stateService: StateService,
+        private lockedCallback: () => Promise<void> = null,
+        private loggedOutCallback: (userId?: string) => Promise<void> = null
+    ) {}
 
     init(checkOnInterval: boolean) {
         if (this.inited) {

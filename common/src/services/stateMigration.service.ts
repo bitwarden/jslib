@@ -137,7 +137,7 @@ export class StateMigrationService {
         }
     }
 
-    async migrateStateFrom1To2(): Promise<void> {
+    private async migrateStateFrom1To2(): Promise<void> {
         const options: StorageOptions = { htmlStorageLocation: HtmlStorageLocation.Local };
         const userId = await this.storageService.get<string>('userId');
         const initialState: State = userId == null ?
