@@ -88,11 +88,11 @@ export abstract class BaseImporter {
     }
 
     protected parseCsv(data: string, header: boolean, options: any = {}): any[] {
-        const parseOptions = Object.assign({ header: header }, this.parseCsvOptions, options);
+        const parseOptions: papa.ParseConfig<string> = Object.assign({ header: header }, this.parseCsvOptions, options);
         data = this.splitNewLine(data).join('\n').trim();
-        const result: any = papa.parse(data, parseOptions);
+        const result = papa.parse(data, parseOptions);
         if (result.errors != null && result.errors.length > 0) {
-            result.errors.forEach((e: { row: string; message: string; }) => {
+            result.errors.forEach((e) => {
                 if (e.row != null) {
                     // tslint:disable-next-line
                     this.logService.warning('Error parsing row ' + e.row + ': ' + e.message);
