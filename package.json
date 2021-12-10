@@ -13,6 +13,7 @@
   },
   "license": "GPL-3.0",
   "scripts": {
+    "build": "npm run build --workspaces",
     "lint": "tslint '*/src/**/*.ts' 'spec/**/*.ts'",
     "lint:fix": "tslint '*/src/**/*.ts' 'spec/**/*.ts' --fix",
     "test": "npm run test --workspaces",
