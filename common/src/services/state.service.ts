@@ -1459,11 +1459,14 @@ export class StateService implements StateServiceAbstraction {
     private async scaffoldNewAccountLocalStorage(account: Account): Promise<void> {
         const storedState = await this.storageService.get<State>('state', await this.defaultOnDiskLocalOptions()) ?? new State();
         const storedAccount = storedState.accounts[account.profile.userId];
+        console.debug('looking for a stored account', { storedState, storedAccount, account })
         if (storedAccount != null) {
             account = {
                 settings: storedAccount.settings,
                 profile: account.profile,
                 tokens: account.tokens,
+                keys: account.keys,
+                data: account.data,
             };
         }
         storedState.accounts[account.profile.userId] = account;
@@ -1474,9 +1477,13 @@ export class StateService implements StateServiceAbstraction {
         const storedState = await this.storageService.get<State>('state', await this.defaultOnDiskMemoryOptions()) ?? new State();
         const storedAccount = storedState.accounts[account.profile.userId];
         if (storedAccount != null) {
-            storedAccount.tokens.accessToken = account.tokens.accessToken;
-            storedAccount.tokens.refreshToken = account.tokens.refreshToken;
-            account = storedAccount;
+            account = {
+                settings: storedAccount.settings,
+                profile: account.profile,
+                tokens: account.tokens,
+                keys: account.keys,
+                data: account.data,
+            };
         }
         storedState.accounts[account.profile.userId] = account;
         await this.saveStateToStorage(storedState, await this.defaultOnDiskMemoryOptions());
@@ -1486,9 +1493,13 @@ export class StateService implements StateServiceAbstraction {
         const storedState = await this.storageService.get<State>('state', await this.defaultOnDiskOptions()) ?? new State();
         const storedAccount = storedState.accounts[account.profile.userId];
         if (storedAccount != null) {
-            storedAccount.tokens.accessToken = account.tokens.accessToken;
-            storedAccount.tokens.refreshToken = account.tokens.refreshToken;
-            account = storedAccount;
+            account = {
+                settings: storedAccount.settings,
+                profile: account.profile,
+                tokens: account.tokens,
+                keys: account.keys,
+                data: account.data,
+            };
         }
         storedState.accounts[account.profile.userId] = account;
         await this.saveStateToStorage(storedState, await this.defaultOnDiskOptions());
@@ -1579,7 +1590,6 @@ export class StateService implements StateServiceAbstraction {
             return;
         }
 
-
         state.accounts[userId] = new Account({
             settings: state.accounts[userId].settings,
         });
@@ -1609,5 +1619,4 @@ export class StateService implements StateServiceAbstraction {
             }
         }
     }
-
 }
