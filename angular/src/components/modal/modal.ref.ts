@@ -6,14 +6,14 @@ export class ModalRef {
     onCreated: Observable<HTMLElement>; // Modal added to the DOM.
     onClose: Observable<any>;           // Initiated close.
     onClosed: Observable<any>;          // Modal was closed (Remove element from DOM)
-    onShow: Observable<any>;            // Start showing modal
-    onShown: Observable<any>;           // Modal is fully visible
+    onShow: Observable<void>;           // Start showing modal
+    onShown: Observable<void>;          // Modal is fully visible
 
     private readonly _onCreated = new Subject<HTMLElement>();
     private readonly _onClose = new Subject<any>();
     private readonly _onClosed = new Subject<any>();
-    private readonly _onShow = new Subject<any>();
-    private readonly _onShown = new Subject<any>();
+    private readonly _onShow = new Subject<void>();
+    private readonly _onShown = new Subject<void>();
     private lastResult: any;
 
     constructor() {
