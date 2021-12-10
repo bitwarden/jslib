@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": ".",
     "pretty": true,
     "moduleResolution": "node",
     "noImplicitAny": true,
@@ -12,10 +14,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "declarationDir": "dist/types",
-    "outDir": "dist",
-    "typeRoots": [
-      "node_modules/@types"
-    ]
+    "outDir": "dist"
   },
   "include": [
     "src",

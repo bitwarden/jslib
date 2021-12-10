@@ -1,11 +1,13 @@
-import { OnePasswordMacCsvImporter as Importer } from 'jslib-common/importers/onepasswordImporters/onepasswordMacCsvImporter';
+import { OnePasswordWinCsvImporter as Importer } from '../../src/importers/onepasswordImporters/onepasswordWinCsvImporter';
 
-import { CipherType } from 'jslib-common/enums/cipherType';
-import { CipherView } from 'jslib-common/models/view/cipherView';
+import { CipherType } from '../../src/enums/cipherType';
+import { FieldType } from '../../src/enums/fieldType';
+import { CipherView } from '../../src/models/view/cipherView';
+import { FieldView } from '../../src/models/view/fieldView';
 
-import { data as creditCardData } from './testData/onePasswordCsv/creditCard.mac.csv';
-import { data as identityData } from './testData/onePasswordCsv/identity.mac.csv';
-import { data as multiTypeData } from './testData/onePasswordCsv/multipleItems.mac.csv';
+import { data as creditCardData } from './testData/onePasswordCsv/creditCard.windows.csv';
+import { data as identityData } from './testData/onePasswordCsv/identity.windows.csv';
+import { data as multiTypeData } from './testData/onePasswordCsv/multipleItems.windows.csv';
 
 function expectIdentity(cipher: CipherView) {
     expect(cipher.type).toBe(CipherType.Identity);
@@ -20,7 +22,13 @@ function expectIdentity(cipher: CipherView) {
         email: 'email@bitwarden.com',
     }));
 
-    expect(cipher.notes).toContain('address\ncity state zip\nUnited States');
+    expect(cipher.fields).toEqual(jasmine.arrayContaining([
+        Object.assign(new FieldView(), {
+            type: FieldType.Text,
+            name: 'address',
+            value: 'address city state zip us',
+        }),
+    ]));
 }
 
 function expectCreditCard(cipher: CipherView) {
@@ -31,13 +39,17 @@ function expectCreditCard(cipher: CipherView) {
         code: '111',
         cardholderName: 'test',
         expMonth: '1',
-        expYear: '2030',
+        expYear: '1970',
     }));
 }
 
-describe('1Password mac CSV Importer', () => {
+describe('1Password windows CSV Importer', () => {
+    let importer: Importer;
+    beforeEach(() => {
+        importer = new Importer();
+    });
+
     it('should parse identity records', async () => {
-        const importer = new Importer();
         const result = await importer.parse(identityData);
 
         expect(result).not.toBeNull();
@@ -48,7 +60,6 @@ describe('1Password mac CSV Importer', () => {
     });
 
     it('should parse credit card records', async () => {
-        const importer = new Importer();
         const result = await importer.parse(creditCardData);
 
         expect(result).not.toBeNull();
@@ -58,13 +69,13 @@ describe('1Password mac CSV Importer', () => {
         expectCreditCard(cipher);
     });
 
-    it('should parse csv\'s with multiple record type', async () => {
-        const importer = new Importer();
+    it('should parse csv\'s with multiple record types', async () => {
         const result = await importer.parse(multiTypeData);
 
         expect(result).not.toBeNull();
         expect(result.success).toBe(true);
         expect(result.ciphers.length).toBe(4);
+
         expectIdentity(result.ciphers[1]);
         expectCreditCard(result.ciphers[2]);
     });

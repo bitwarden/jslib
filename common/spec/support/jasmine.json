@@ -1,9 +1,7 @@
 {
-  "spec_dir": "dist/common/spec",
+  "spec_dir": "dist/spec",
   "spec_files": [
-    "common/**/*[sS]pec.js",
-    "node/**/*[sS]pec.js",
-    "electron/**/*[sS]pec.js"
+    "**/*[sS]pec.js"
   ],
   "helpers": [
     "helpers.js"
