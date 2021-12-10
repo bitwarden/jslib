@@ -2,6 +2,7 @@ import { BaseResponse } from './baseResponse';
 
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
+import { ProductType } from '../../enums/productType';
 import { PermissionsApi } from '../api/permissionsApi';
 
 export class ProfileOrganizationResponse extends BaseResponse {
@@ -14,8 +15,8 @@ export class ProfileOrganizationResponse extends BaseResponse {
     useTotp: boolean;
     use2fa: boolean;
     useApi: boolean;
-    useBusinessPortal: boolean;
     useSso: boolean;
+    useKeyConnector: boolean;
     useResetPassword: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
@@ -34,6 +35,11 @@ export class ProfileOrganizationResponse extends BaseResponse {
     userId: string;
     providerId: string;
     providerName: string;
+    familySponsorshipFriendlyName: string;
+    familySponsorshipAvailable: boolean;
+    planProductType: ProductType;
+    keyConnectorEnabled: boolean;
+    keyConnectorUrl: string;
 
     constructor(response: any) {
         super(response);
@@ -46,8 +52,8 @@ export class ProfileOrganizationResponse extends BaseResponse {
         this.useTotp = this.getResponseProperty('UseTotp');
         this.use2fa = this.getResponseProperty('Use2fa');
         this.useApi = this.getResponseProperty('UseApi');
-        this.useBusinessPortal = this.getResponseProperty('UseBusinessPortal');
         this.useSso = this.getResponseProperty('UseSso');
+        this.useKeyConnector = this.getResponseProperty('UseKeyConnector') ?? false;
         this.useResetPassword = this.getResponseProperty('UseResetPassword');
         this.selfHost = this.getResponseProperty('SelfHost');
         this.usersGetPremium = this.getResponseProperty('UsersGetPremium');
@@ -66,5 +72,10 @@ export class ProfileOrganizationResponse extends BaseResponse {
         this.userId = this.getResponseProperty('UserId');
         this.providerId = this.getResponseProperty('ProviderId');
         this.providerName = this.getResponseProperty('ProviderName');
+        this.familySponsorshipFriendlyName = this.getResponseProperty('FamilySponsorshipFriendlyName');
+        this.familySponsorshipAvailable = this.getResponseProperty('FamilySponsorshipAvailable');
+        this.planProductType = this.getResponseProperty('PlanProductType');
+        this.keyConnectorEnabled = this.getResponseProperty('KeyConnectorEnabled') ?? false;
+        this.keyConnectorUrl = this.getResponseProperty('KeyConnectorUrl');
     }
 }

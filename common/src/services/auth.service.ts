@@ -5,7 +5,9 @@ import { TwoFactorProviderType } from '../enums/twoFactorProviderType';
 import { AuthResult } from '../models/domain/authResult';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
+import { SetKeyConnectorKeyRequest } from '../models/request/account/setKeyConnectorKeyRequest';
 import { DeviceRequest } from '../models/request/deviceRequest';
+import { KeyConnectorUserKeyRequest } from '../models/request/keyConnectorUserKeyRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
 import { TokenRequest } from '../models/request/tokenRequest';
@@ -17,13 +19,18 @@ import { ApiService } from '../abstractions/api.service';
 import { AppIdService } from '../abstractions/appId.service';
 import { AuthService as AuthServiceAbstraction } from '../abstractions/auth.service';
 import { CryptoService } from '../abstractions/crypto.service';
+import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
+import { EnvironmentService } from '../abstractions/environment.service';
 import { I18nService } from '../abstractions/i18n.service';
+import { KeyConnectorService } from '../abstractions/keyConnector.service';
 import { LogService } from '../abstractions/log.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { TokenService } from '../abstractions/token.service';
 import { UserService } from '../abstractions/user.service';
 import { VaultTimeoutService } from '../abstractions/vaultTimeout.service';
+
+import { Utils } from '../misc/utils';
 
 export const TwoFactorProviders = {
     [TwoFactorProviderType.Authenticator]: {
@@ -96,7 +103,8 @@ export class AuthService implements AuthServiceAbstraction {
         protected appIdService: AppIdService, private i18nService: I18nService,
         protected platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
         private vaultTimeoutService: VaultTimeoutService, private logService: LogService,
-        private setCryptoKeys = true) {
+        private cryptoFunctionService: CryptoFunctionService, private environmentService: EnvironmentService,
+        private keyConnectorService: KeyConnectorService, private setCryptoKeys = true) {
     }
 
     init() {
@@ -128,26 +136,26 @@ export class AuthService implements AuthServiceAbstraction {
         const localHashedPassword = await this.cryptoService.hashPassword(masterPassword, key,
             HashPurpose.LocalAuthorization);
         return await this.logInHelper(email, hashedPassword, localHashedPassword, null, null, null, null, null,
-            key, null, null, null, captchaToken);
+            key, null, null, null, captchaToken, null);
     }
 
-    async logInSso(code: string, codeVerifier: string, redirectUrl: string): Promise<AuthResult> {
+    async logInSso(code: string, codeVerifier: string, redirectUrl: string, orgId: string): Promise<AuthResult> {
         this.selectedTwoFactorProviderType = null;
         return await this.logInHelper(null, null, null, code, codeVerifier, redirectUrl, null, null,
-            null, null, null, null);
+            null, null, null, null, null, orgId);
     }
 
     async logInApiKey(clientId: string, clientSecret: string): Promise<AuthResult> {
         this.selectedTwoFactorProviderType = null;
         return await this.logInHelper(null, null, null, null, null, null, clientId, clientSecret,
-            null, null, null, null);
+            null, null, null, null, null, null);
     }
 
     async logInTwoFactor(twoFactorProvider: TwoFactorProviderType, twoFactorToken: string,
         remember?: boolean): Promise<AuthResult> {
         return await this.logInHelper(this.email, this.masterPasswordHash, this.localMasterPasswordHash, this.code,
             this.codeVerifier, this.ssoRedirectUrl, this.clientId, this.clientSecret, this.key, twoFactorProvider,
-            twoFactorToken, remember, this.captchaToken);
+            twoFactorToken, remember, this.captchaToken, null);
     }
 
     async logInComplete(email: string, masterPassword: string, twoFactorProvider: TwoFactorProviderType,
@@ -158,21 +166,21 @@ export class AuthService implements AuthServiceAbstraction {
         const localHashedPassword = await this.cryptoService.hashPassword(masterPassword, key,
             HashPurpose.LocalAuthorization);
         return await this.logInHelper(email, hashedPassword, localHashedPassword, null, null, null, null, null, key,
-            twoFactorProvider, twoFactorToken, remember, captchaToken);
+            twoFactorProvider, twoFactorToken, remember, captchaToken, null);
     }
 
     async logInSsoComplete(code: string, codeVerifier: string, redirectUrl: string,
         twoFactorProvider: TwoFactorProviderType, twoFactorToken: string, remember?: boolean): Promise<AuthResult> {
         this.selectedTwoFactorProviderType = null;
         return await this.logInHelper(null, null, null, code, codeVerifier, redirectUrl, null,
-            null, null, twoFactorProvider, twoFactorToken, remember);
+            null, null, twoFactorProvider, twoFactorToken, remember, null, null);
     }
 
     async logInApiKeyComplete(clientId: string, clientSecret: string, twoFactorProvider: TwoFactorProviderType,
         twoFactorToken: string, remember?: boolean): Promise<AuthResult> {
         this.selectedTwoFactorProviderType = null;
         return await this.logInHelper(null, null, null, null, null, null, clientId, clientSecret, null,
-            twoFactorProvider, twoFactorToken, remember);
+            twoFactorProvider, twoFactorToken, remember, null, null);
     }
 
     logOut(callback: Function) {
@@ -273,7 +281,8 @@ export class AuthService implements AuthServiceAbstraction {
 
     private async logInHelper(email: string, hashedPassword: string, localHashedPassword: string, code: string,
         codeVerifier: string, redirectUrl: string, clientId: string, clientSecret: string, key: SymmetricCryptoKey,
-        twoFactorProvider?: TwoFactorProviderType, twoFactorToken?: string, remember?: boolean, captchaToken?: string): Promise<AuthResult> {
+        twoFactorProvider?: TwoFactorProviderType, twoFactorToken?: string, remember?: boolean, captchaToken?: string,
+        orgId?: string): Promise<AuthResult> {
         const storedTwoFactorToken = await this.tokenService.getTwoFactorToken(email);
         const appId = await this.appIdService.getAppId();
         const deviceRequest = new DeviceRequest(appId, this.platformUtilsService);
@@ -358,6 +367,14 @@ export class AuthService implements AuthServiceAbstraction {
 
             // Skip this step during SSO new user flow. No key is returned from server.
             if (code == null || tokenResponse.key != null) {
+
+                if (tokenResponse.keyConnectorUrl != null) {
+                    await this.keyConnectorService.getAndSetKey(tokenResponse.keyConnectorUrl);
+                } else if (tokenResponse.apiUseKeyConnector) {
+                    const keyConnectorUrl = this.environmentService.getKeyConnectorUrl();
+                    await this.keyConnectorService.getAndSetKey(keyConnectorUrl);
+                }
+
                 await this.cryptoService.setEncKey(tokenResponse.key);
 
                 // User doesn't have a key pair yet (old account), let's generate one for them
@@ -367,12 +384,34 @@ export class AuthService implements AuthServiceAbstraction {
                         await this.apiService.postAccountKeys(new KeysRequest(keyPair[0], keyPair[1].encryptedString));
                         tokenResponse.privateKey = keyPair[1].encryptedString;
                     } catch (e) {
-                        // tslint:disable-next-line
                         this.logService.error(e);
                     }
                 }
 
                 await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
+            } else if (tokenResponse.keyConnectorUrl != null) {
+                const password = await this.cryptoFunctionService.randomBytes(64);
+
+                const k = await this.cryptoService.makeKey(Utils.fromBufferToB64(password), this.tokenService.getEmail(), tokenResponse.kdf, tokenResponse.kdfIterations);
+                const keyConnectorRequest = new KeyConnectorUserKeyRequest(k.encKeyB64);
+                await this.cryptoService.setKey(k);
+
+                const encKey = await this.cryptoService.makeEncKey(k);
+                await this.cryptoService.setEncKey(encKey[1].encryptedString);
+
+                const [pubKey, privKey] = await this.cryptoService.makeKeyPair();
+
+                try {
+                    await this.apiService.postUserKeyToKeyConnector(tokenResponse.keyConnectorUrl, keyConnectorRequest);
+                } catch (e) {
+                    throw new Error('Unable to reach key connector');
+                }
+
+                const keys = new KeysRequest(pubKey, privKey.encryptedString);
+                const setPasswordRequest = new SetKeyConnectorKeyRequest(
+                    encKey[1].encryptedString, tokenResponse.kdf, tokenResponse.kdfIterations, orgId, keys
+                );
+                await this.apiService.postSetKeyConnectorKey(setPasswordRequest);
             }
         }
 

@@ -1,6 +1,10 @@
-import { Directive } from '@angular/core';
+import {
+    Directive,
+    OnInit
+} from '@angular/core';
 
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
+import { KeyConnectorService } from 'jslib-common/abstractions/keyConnector.service';
 import { StorageService } from 'jslib-common/abstractions/storage.service';
 import { UserService } from 'jslib-common/abstractions/user.service';
 import { VaultTimeoutService } from 'jslib-common/abstractions/vaultTimeout.service';
@@ -12,14 +16,20 @@ import { Utils } from 'jslib-common/misc/utils';
 import { ModalRef } from './modal/modal.ref';
 
 @Directive()
-export class SetPinComponent {
+export class SetPinComponent implements OnInit {
 
     pin = '';
     showPin = false;
     masterPassOnRestart = true;
+    showMasterPassOnRestart = true;
 
     constructor(private modalRef: ModalRef, private cryptoService: CryptoService, private userService: UserService,
-        private storageService: StorageService, private vaultTimeoutService: VaultTimeoutService) { }
+        private storageService: StorageService, private vaultTimeoutService: VaultTimeoutService,
+        private keyConnectorService: KeyConnectorService) { }
+
+    async ngOnInit() {
+        this.showMasterPassOnRestart = this.masterPassOnRestart = !await this.keyConnectorService.getUsesKeyConnector();
+    }
 
     toggleVisibility() {
         this.showPin = !this.showPin;

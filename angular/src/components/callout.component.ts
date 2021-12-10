@@ -19,6 +19,7 @@ export class CalloutComponent implements OnInit {
     @Input() clickable: boolean;
     @Input() enforcedPolicyOptions: MasterPasswordPolicyOptions;
     @Input() enforcedPolicyMessage: string;
+    @Input() useAlertRole = false;
 
     calloutStyle: string;
 

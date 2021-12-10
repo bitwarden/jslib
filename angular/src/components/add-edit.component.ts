@@ -20,7 +20,9 @@ import { CollectionService } from 'jslib-common/abstractions/collection.service'
 import { EventService } from 'jslib-common/abstractions/event.service';
 import { FolderService } from 'jslib-common/abstractions/folder.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
+import { PasswordRepromptService } from 'jslib-common/abstractions/passwordReprompt.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
 import { StateService } from 'jslib-common/abstractions/state.service';
@@ -79,6 +81,7 @@ export class AddEditComponent implements OnInit {
     currentDate = new Date();
     allowPersonal = true;
     reprompt: boolean = false;
+    canUseReprompt: boolean = true;
 
     protected writeableCollections: CollectionView[];
     private previousCipherId: string;
@@ -88,7 +91,8 @@ export class AddEditComponent implements OnInit {
         protected auditService: AuditService, protected stateService: StateService,
         protected userService: UserService, protected collectionService: CollectionService,
         protected messagingService: MessagingService, protected eventService: EventService,
-        protected policyService: PolicyService) {
+        protected policyService: PolicyService, protected passwordRepromptService: PasswordRepromptService,
+        private logService: LogService) {
         this.typeOptions = [
             { name: i18nService.t('typeLogin'), value: CipherType.Login },
             { name: i18nService.t('typeCard'), value: CipherType.Card },
@@ -150,21 +154,29 @@ export class AddEditComponent implements OnInit {
     }
 
     async init() {
-        const myEmail = await this.userService.getEmail();
-        this.ownershipOptions.push({ name: myEmail, value: null });
+        if (this.ownershipOptions.length) {
+            this.ownershipOptions = [];
+        }
+        if (await this.policyService.policyAppliesToUser(PolicyType.PersonalOwnership)) {
+            this.allowPersonal = false;
+        } else {
+            const myEmail = await this.userService.getEmail();
+            this.ownershipOptions.push({ name: myEmail, value: null });
+        }
+
         const orgs = await this.userService.getAllOrganizations();
         orgs.sort(Utils.getSortFunction(this.i18nService, 'name')).forEach(o => {
             if (o.enabled && o.status === OrganizationUserStatusType.Confirmed) {
                 this.ownershipOptions.push({ name: o.name, value: o.id });
             }
         });
-
-        if (this.allowPersonal && await this.policyService.policyAppliesToUser(PolicyType.PersonalOwnership)) {
-            this.allowPersonal = false;
-            this.ownershipOptions.splice(0, 1);
+        if (!this.allowPersonal) {
+            this.organizationId = this.ownershipOptions[0].value;
         }
 
         this.writeableCollections = await this.loadCollections();
+
+        this.canUseReprompt = await this.passwordRepromptService.enabled();
     }
 
     async load() {
@@ -280,7 +292,9 @@ export class AddEditComponent implements OnInit {
             this.onSavedCipher.emit(this.cipher);
             this.messagingService.send(this.editMode && !this.cloneMode ? 'editedCipher' : 'addedCipher');
             return true;
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
 
         return false;
     }
@@ -343,7 +357,9 @@ export class AddEditComponent implements OnInit {
                 this.i18nService.t(this.cipher.isDeleted ? 'permanentlyDeletedItem' : 'deletedItem'));
             this.onDeletedCipher.emit(this.cipher);
             this.messagingService.send(this.cipher.isDeleted ? 'permanentlyDeletedCipher' : 'deletedCipher');
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
 
         return true;
     }
@@ -366,7 +382,9 @@ export class AddEditComponent implements OnInit {
             this.platformUtilsService.showToast('success', null, this.i18nService.t('restoredItem'));
             this.onRestoredCipher.emit(this.cipher);
             this.messagingService.send('restoredCipher');
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
 
         return true;
     }

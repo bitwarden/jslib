@@ -1,5 +1,6 @@
 import { CipherRepromptType } from '../../enums/cipherRepromptType';
 import { CipherType } from '../../enums/cipherType';
+import { LinkedIdType } from '../../enums/linkedIdType';
 
 import { Cipher } from '../domain/cipher';
 
@@ -7,6 +8,7 @@ import { AttachmentView } from './attachmentView';
 import { CardView } from './cardView';
 import { FieldView } from './fieldView';
 import { IdentityView } from './identityView';
+import { ItemView } from './itemView';
 import { LoginView } from './loginView';
 import { PasswordHistoryView } from './passwordHistoryView';
 import { SecureNoteView } from './secureNoteView';
@@ -57,21 +59,25 @@ export class CipherView implements View {
         this.reprompt = c.reprompt ?? CipherRepromptType.None;
     }
 
-    get subTitle(): string {
+    private get item() {
         switch (this.type) {
             case CipherType.Login:
-                return this.login.subTitle;
+                return this.login;
             case CipherType.SecureNote:
-                return this.secureNote.subTitle;
+                return this.secureNote;
             case CipherType.Card:
-                return this.card.subTitle;
+                return this.card;
             case CipherType.Identity:
-                return this.identity.subTitle;
+                return this.identity;
             default:
                 break;
         }
 
         return null;
+    }
+
+    get subTitle(): string {
+        return this.item.subTitle;
     }
 
     get hasPasswordHistory(): boolean {
@@ -108,5 +114,23 @@ export class CipherView implements View {
 
     get isDeleted(): boolean {
         return this.deletedDate != null;
+    }
+
+    get linkedFieldOptions() {
+        return this.item.linkedFieldOptions;
+    }
+
+    linkedFieldValue(id: LinkedIdType) {
+        const linkedFieldOption = this.linkedFieldOptions?.get(id);
+        if (linkedFieldOption == null) {
+            return null;
+        }
+
+        const item = this.item;
+        return this.item[linkedFieldOption.propertyKey as keyof typeof item];
+    }
+
+    linkedFieldI18nKey(id: LinkedIdType): string {
+        return this.linkedFieldOptions.get(id)?.i18nKey;
     }
 }

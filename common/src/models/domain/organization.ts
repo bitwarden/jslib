@@ -2,6 +2,7 @@ import { OrganizationData } from '../data/organizationData';
 
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
+import { ProductType } from '../../enums/productType';
 import { PermissionsApi } from '../api/permissionsApi';
 
 
@@ -18,8 +19,8 @@ export class Organization {
     useTotp: boolean;
     use2fa: boolean;
     useApi: boolean;
-    useBusinessPortal: boolean;
     useSso: boolean;
+    useKeyConnector: boolean;
     useResetPassword: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
@@ -35,6 +36,11 @@ export class Organization {
     providerId: string;
     providerName: string;
     isProviderUser: boolean;
+    familySponsorshipFriendlyName: string;
+    familySponsorshipAvailable: boolean;
+    planProductType: ProductType;
+    keyConnectorEnabled: boolean;
+    keyConnectorUrl: string;
 
     constructor(obj?: OrganizationData) {
         if (obj == null) {
@@ -53,8 +59,8 @@ export class Organization {
         this.useTotp = obj.useTotp;
         this.use2fa = obj.use2fa;
         this.useApi = obj.useApi;
-        this.useBusinessPortal = obj.useBusinessPortal;
         this.useSso = obj.useSso;
+        this.useKeyConnector = obj.useKeyConnector;
         this.useResetPassword = obj.useResetPassword;
         this.selfHost = obj.selfHost;
         this.usersGetPremium = obj.usersGetPremium;
@@ -70,6 +76,11 @@ export class Organization {
         this.providerId = obj.providerId;
         this.providerName = obj.providerName;
         this.isProviderUser = obj.isProviderUser;
+        this.familySponsorshipFriendlyName = obj.familySponsorshipFriendlyName;
+        this.familySponsorshipAvailable = obj.familySponsorshipAvailable;
+        this.planProductType = obj.planProductType;
+        this.keyConnectorEnabled = obj.keyConnectorEnabled;
+        this.keyConnectorUrl = obj.keyConnectorUrl;
     }
 
     get canAccess() {
@@ -92,10 +103,6 @@ export class Organization {
         return this.type === OrganizationUserType.Owner || this.isProviderUser;
     }
 
-    get canAccessBusinessPortal() {
-        return this.isAdmin || this.permissions.accessBusinessPortal;
-    }
-
     get canAccessEventLogs() {
         return this.isAdmin || this.permissions.accessEventLogs;
     }
@@ -108,12 +115,32 @@ export class Organization {
         return this.isAdmin || this.permissions.accessReports;
     }
 
-    get canManageAllCollections() {
-        return this.isAdmin || this.permissions.manageAllCollections;
+    get canCreateNewCollections() {
+        return this.isManager || (this.permissions.createNewCollections ?? this.permissions.manageAllCollections);
     }
 
-    get canManageAssignedCollections() {
-        return this.isManager || this.permissions.manageAssignedCollections;
+    get canEditAnyCollection() {
+        return this.isAdmin || (this.permissions.editAnyCollection ?? this.permissions.manageAllCollections);
+    }
+
+    get canDeleteAnyCollection() {
+        return this.isAdmin || (this.permissions.deleteAnyCollection ?? this.permissions.manageAllCollections);
+    }
+
+    get canViewAllCollections() {
+        return this.canCreateNewCollections || this.canEditAnyCollection || this.canDeleteAnyCollection;
+    }
+
+    get canEditAssignedCollections() {
+        return this.isManager || (this.permissions.editAssignedCollections ?? this.permissions.manageAssignedCollections);
+    }
+
+    get canDeleteAssignedCollections() {
+        return this.isManager || (this.permissions.deleteAssignedCollections ?? this.permissions.manageAssignedCollections);
+    }
+
+    get canViewAssignedCollections() {
+        return this.canDeleteAssignedCollections || this.canEditAssignedCollections;
     }
 
     get canManageGroups() {

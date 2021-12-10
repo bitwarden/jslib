@@ -2,6 +2,8 @@ import { ProfileOrganizationResponse } from '../response/profileOrganizationResp
 
 import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
 import { OrganizationUserType } from '../../enums/organizationUserType';
+import { ProductType } from '../../enums/productType';
+
 import { PermissionsApi } from '../api/permissionsApi';
 
 export class OrganizationData {
@@ -17,8 +19,8 @@ export class OrganizationData {
     useTotp: boolean;
     use2fa: boolean;
     useApi: boolean;
-    useBusinessPortal: boolean;
     useSso: boolean;
+    useKeyConnector: boolean;
     useResetPassword: boolean;
     selfHost: boolean;
     usersGetPremium: boolean;
@@ -34,6 +36,11 @@ export class OrganizationData {
     providerId: string;
     providerName: string;
     isProviderUser: boolean;
+    familySponsorshipFriendlyName: string;
+    familySponsorshipAvailable: boolean;
+    planProductType: ProductType;
+    keyConnectorEnabled: boolean;
+    keyConnectorUrl: string;
 
     constructor(response: ProfileOrganizationResponse) {
         this.id = response.id;
@@ -48,8 +55,8 @@ export class OrganizationData {
         this.useTotp = response.useTotp;
         this.use2fa = response.use2fa;
         this.useApi = response.useApi;
-        this.useBusinessPortal = response.useBusinessPortal;
         this.useSso = response.useSso;
+        this.useKeyConnector = response.useKeyConnector;
         this.useResetPassword = response.useResetPassword;
         this.selfHost = response.selfHost;
         this.usersGetPremium = response.usersGetPremium;
@@ -64,5 +71,10 @@ export class OrganizationData {
         this.hasPublicAndPrivateKeys = response.hasPublicAndPrivateKeys;
         this.providerId = response.providerId;
         this.providerName = response.providerName;
+        this.familySponsorshipFriendlyName = response.familySponsorshipFriendlyName;
+        this.familySponsorshipAvailable = response.familySponsorshipAvailable;
+        this.planProductType = response.planProductType;
+        this.keyConnectorEnabled = response.keyConnectorEnabled;
+        this.keyConnectorUrl = response.keyConnectorUrl;
     }
 }

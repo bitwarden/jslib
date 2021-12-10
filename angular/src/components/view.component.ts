@@ -21,6 +21,7 @@ import { CipherService } from 'jslib-common/abstractions/cipher.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { EventService } from 'jslib-common/abstractions/event.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { PasswordRepromptService } from 'jslib-common/abstractions/passwordReprompt.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { TokenService } from 'jslib-common/abstractions/token.service';
@@ -31,7 +32,6 @@ import { ErrorResponse } from 'jslib-common/models/response/errorResponse';
 
 import { AttachmentView } from 'jslib-common/models/view/attachmentView';
 import { CipherView } from 'jslib-common/models/view/cipherView';
-import { FieldView } from 'jslib-common/models/view/fieldView';
 import { LoginUriView } from 'jslib-common/models/view/loginUriView';
 
 const BroadcasterSubscriptionId = 'ViewComponent';
@@ -69,7 +69,7 @@ export class ViewComponent implements OnDestroy, OnInit {
         protected broadcasterService: BroadcasterService, protected ngZone: NgZone,
         protected changeDetectorRef: ChangeDetectorRef, protected userService: UserService,
         protected eventService: EventService, protected apiService: ApiService,
-        protected passwordRepromptService: PasswordRepromptService) { }
+        protected passwordRepromptService: PasswordRepromptService, private logService: LogService) { }
 
     ngOnInit() {
         this.broadcasterService.subscribe(BroadcasterSubscriptionId, (message: any) => {
@@ -159,7 +159,9 @@ export class ViewComponent implements OnDestroy, OnInit {
             this.platformUtilsService.showToast('success', null,
                 this.i18nService.t(this.cipher.isDeleted ? 'permanentlyDeletedItem' : 'deletedItem'));
             this.onDeletedCipher.emit(this.cipher);
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
 
         return true;
     }
@@ -180,7 +182,9 @@ export class ViewComponent implements OnDestroy, OnInit {
             await this.restoreCipher();
             this.platformUtilsService.showToast('success', null, this.i18nService.t('restoredItem'));
             this.onRestoredCipher.emit(this.cipher);
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
 
         return true;
     }

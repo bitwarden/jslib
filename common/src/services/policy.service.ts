@@ -5,12 +5,15 @@ import { UserService } from '../abstractions/user.service';
 import { PolicyData } from '../models/data/policyData';
 
 import { MasterPasswordPolicyOptions } from '../models/domain/masterPasswordPolicyOptions';
+import { Organization } from '../models/domain/organization';
 import { Policy } from '../models/domain/policy';
 import { ResetPasswordPolicyOptions } from '../models/domain/resetPasswordPolicyOptions';
 
 import { OrganizationUserStatusType } from '../enums/organizationUserStatusType';
+import { OrganizationUserType } from '../enums/organizationUserType';
 import { PolicyType } from '../enums/policyType';
 
+import { ApiService } from '../abstractions/api.service';
 import { ListResponse } from '../models/response/listResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 
@@ -21,7 +24,8 @@ const Keys = {
 export class PolicyService implements PolicyServiceAbstraction {
     policyCache: Policy[];
 
-    constructor(private userService: UserService, private storageService: StorageService) {
+    constructor(private userService: UserService, private storageService: StorageService,
+        private apiService: ApiService) {
     }
 
     clearCache(): void {
@@ -49,6 +53,18 @@ export class PolicyService implements PolicyServiceAbstraction {
     }
 
     async getPolicyForOrganization(policyType: PolicyType, organizationId: string): Promise<Policy> {
+        const org = await this.userService.getOrganization(organizationId);
+        if (org?.isProviderUser) {
+            const orgPolicies = await this.apiService.getPolicies(organizationId);
+            const policy = orgPolicies.data.find(p => p.organizationId === organizationId);
+
+            if (policy == null) {
+                return null;
+            }
+
+            return new Policy(new PolicyData(policy));
+        }
+
         const policies = await this.getAll(policyType);
         return policies.find(p => p.organizationId === organizationId);
     }
@@ -189,7 +205,15 @@ export class PolicyService implements PolicyServiceAbstraction {
             o.enabled &&
             o.status >= OrganizationUserStatusType.Accepted &&
             o.usePolicies &&
-            !o.isExemptFromPolicies &&
+            !this.isExcemptFromPolicies(o, policyType) &&
             policySet.has(o.id));
+    }
+
+    private isExcemptFromPolicies(organization: Organization, policyType: PolicyType) {
+        if (policyType === PolicyType.MaximumVaultTimeout) {
+            return organization.type === OrganizationUserType.Owner;
+        }
+
+        return organization.isExemptFromPolicies;
     }
 }

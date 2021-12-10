@@ -1,12 +1,21 @@
-import { app, BrowserWindow, screen } from 'electron';
-import { ElectronConstants } from './electronConstants';
-
+import {
+    app,
+    BrowserWindow,
+    screen,
+} from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 
-import { isDev, isMacAppStore, isSnapStore } from './utils';
-
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { StorageService } from 'jslib-common/abstractions/storage.service';
+
+import { ElectronConstants } from './electronConstants';
+import {
+    cleanUserAgent,
+    isDev,
+    isMacAppStore,
+    isSnapStore,
+} from './utils';
 
 const WindowEventHandlingDelay = 100;
 const Keys = {
@@ -21,8 +30,8 @@ export class WindowMain {
     private windowStates: { [key: string]: any; } = {};
     private enableAlwaysOnTop: boolean = false;
 
-    constructor(private storageService: StorageService, private hideTitleBar = false,
-        private defaultWidth = 950, private defaultHeight = 600,
+    constructor(private storageService: StorageService, private logService: LogService,
+        private hideTitleBar = false, private defaultWidth = 950, private defaultHeight = 600,
         private argvCallback: (argv: string[]) => void = null,
         private createWindowCallback: (win: BrowserWindow) => void) { }
 
@@ -131,13 +140,16 @@ export class WindowMain {
         this.win.show();
 
         // and load the index.html of the app.
-        this.win.loadURL(url.format({
-            protocol: 'file:',
-            pathname: path.join(__dirname, '/index.html'),
-            slashes: true,
-        }), {
-                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:74.0) Gecko/20100101 Firefox/74.0',
-            });
+        this.win.loadURL(url.format(
+            {
+                protocol: 'file:',
+                pathname: path.join(__dirname, '/index.html'),
+                slashes: true,
+            }),
+            {
+                userAgent: cleanUserAgent(this.win.webContents.userAgent),
+            }
+        );
 
         // Open the DevTools.
         if (isDev()) {
@@ -224,7 +236,9 @@ export class WindowMain {
             }
 
             await this.storageService.save(configKey, this.windowStates[configKey]);
-        } catch (e) { }
+        } catch (e) {
+            this.logService.error(e);
+        }
     }
 
     private async getWindowState(configKey: string, defaultWidth: number, defaultHeight: number) {

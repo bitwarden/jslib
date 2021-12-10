@@ -1,10 +1,12 @@
+---
 name: Build
 
 on: push
 
 jobs:
   cloc:
-    runs-on: ubuntu-latest
+    name: CLOC
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout repo
@@ -18,13 +20,14 @@ jobs:
       - name: Print lines of code
         run: cloc --include-lang TypeScript,JavaScript,HTML,Sass,CSS --vcs git
 
-  build:
 
+  build:
+    name: Build jslib
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [windows-2019, macos-10.15, ubuntu-20.04]
 
     steps:
       - name: Set up Node
@@ -65,3 +68,48 @@ jobs:
         with:
           name: test-coverage
           path: coverage/
+
+      - name: Run Node tests
+        run: npm run test:node
+
+  check-failures:
+    name: Check for failures
+    if: always()
+    runs-on: ubuntu-20.04
+    needs:
+      - cloc
+      - build
+    steps:
+      - name: Check if any job failed
+        if: ${{ (github.ref == 'refs/heads/master') || (github.ref == 'refs/heads/rc') }}
+        env:
+          CLOC_STATUS: ${{ needs.cloc.result }}
+          BUILD_STATUS: ${{ needs.build.result }}
+        run: |
+          if [ "$CLOC_STATUS" = "failure" ]; then
+              exit 1
+          elif [ "$BUILD_STATUS" = "failure" ]; then
+              exit 1
+          fi
+
+      - name: Login to Azure - Prod Subscription
+        uses: Azure/login@77f1b2e3fb80c0e8645114159d17008b8a2e475a
+        if: failure()
+        with:
+          creds: ${{ secrets.AZURE_PROD_KV_CREDENTIALS }}
+
+      - name: Retrieve secrets
+        id: retrieve-secrets
+        uses: Azure/get-keyvault-secrets@80ccd3fafe5662407cc2e55f202ee34bfff8c403
+        if: failure()
+        with:
+          keyvault: "bitwarden-prod-kv"
+          secrets: "devops-alerts-slack-webhook-url"
+
+      - name: Notify Slack on failure
+        uses: act10ns/slack@e4e71685b9b239384b0f676a63c32367f59c2522  # v1.2.2
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ steps.retrieve-secrets.outputs.devops-alerts-slack-webhook-url }}
+        with:
+          status: ${{ job.status }}

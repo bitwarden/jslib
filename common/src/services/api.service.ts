@@ -33,6 +33,9 @@ import { ImportDirectoryRequest } from '../models/request/importDirectoryRequest
 import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
 import { KdfRequest } from '../models/request/kdfRequest';
 import { KeysRequest } from '../models/request/keysRequest';
+import { OrganizationSponsorshipCreateRequest } from '../models/request/organization/organizationSponsorshipCreateRequest';
+import { OrganizationSponsorshipRedeemRequest } from '../models/request/organization/organizationSponsorshipRedeemRequest';
+import { OrganizationSsoRequest } from '../models/request/organization/organizationSsoRequest';
 import { OrganizationCreateRequest } from '../models/request/organizationCreateRequest';
 import { OrganizationImportRequest } from '../models/request/organizationImportRequest';
 import { OrganizationKeysRequest } from '../models/request/organizationKeysRequest';
@@ -51,7 +54,6 @@ import { OrganizationUserUpdateGroupsRequest } from '../models/request/organizat
 import { OrganizationUserUpdateRequest } from '../models/request/organizationUserUpdateRequest';
 import { PasswordHintRequest } from '../models/request/passwordHintRequest';
 import { PasswordRequest } from '../models/request/passwordRequest';
-import { PasswordVerificationRequest } from '../models/request/passwordVerificationRequest';
 import { PaymentRequest } from '../models/request/paymentRequest';
 import { PolicyRequest } from '../models/request/policyRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
@@ -67,6 +69,7 @@ import { ProviderUserInviteRequest } from '../models/request/provider/providerUs
 import { ProviderUserUpdateRequest } from '../models/request/provider/providerUserUpdateRequest';
 import { RegisterRequest } from '../models/request/registerRequest';
 import { SeatRequest } from '../models/request/seatRequest';
+import { SecretVerificationRequest } from '../models/request/secretVerificationRequest';
 import { SelectionReadOnlyRequest } from '../models/request/selectionReadOnlyRequest';
 import { SendAccessRequest } from '../models/request/sendAccessRequest';
 import { SendRequest } from '../models/request/sendRequest';
@@ -117,9 +120,11 @@ import {
     GroupDetailsResponse,
     GroupResponse,
 } from '../models/response/groupResponse';
+import { IdentityCaptchaResponse } from '../models/response/identityCaptchaResponse';
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
 import { ListResponse } from '../models/response/listResponse';
+import { OrganizationSsoResponse } from '../models/response/organization/organizationSsoResponse';
 import { OrganizationAutoEnrollStatusResponse } from '../models/response/organizationAutoEnrollStatusResponse';
 import { OrganizationKeysResponse } from '../models/response/organizationKeysResponse';
 import { OrganizationResponse } from '../models/response/organizationResponse';
@@ -163,8 +168,13 @@ import { ChallengeResponse } from '../models/response/twoFactorWebAuthnResponse'
 import { TwoFactorYubiKeyResponse } from '../models/response/twoFactorYubiKeyResponse';
 import { UserKeyResponse } from '../models/response/userKeyResponse';
 
-import { IdentityCaptchaResponse } from '../models/response/identityCaptchaResponse';
+import { SetKeyConnectorKeyRequest } from '../models/request/account/setKeyConnectorKeyRequest';
+import { VerifyOTPRequest } from '../models/request/account/verifyOTPRequest';
+import { KeyConnectorUserKeyRequest } from '../models/request/keyConnectorUserKeyRequest';
+import { KeyConnectorUserKeyResponse } from '../models/response/keyConnectorUserKeyResponse';
 import { SendAccessView } from '../models/view/sendAccessView';
+
+
 
 export class ApiService implements ApiServiceAbstraction {
     protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
@@ -287,11 +297,15 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/set-password', request, true, false);
     }
 
-    postSecurityStamp(request: PasswordVerificationRequest): Promise<any> {
+    postSetKeyConnectorKey(request: SetKeyConnectorKeyRequest): Promise<any> {
+        return this.send('POST', '/accounts/set-key-connector-key', request, true, false);
+    }
+
+    postSecurityStamp(request: SecretVerificationRequest): Promise<any> {
         return this.send('POST', '/accounts/security-stamp', request, true, false);
     }
 
-    deleteAccount(request: PasswordVerificationRequest): Promise<any> {
+    deleteAccount(request: SecretVerificationRequest): Promise<any> {
         return this.send('DELETE', '/accounts', request, true, false);
     }
 
@@ -354,7 +368,7 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/verify-email-token', request, false, false);
     }
 
-    postAccountVerifyPassword(request: PasswordVerificationRequest): Promise<any> {
+    postAccountVerifyPassword(request: SecretVerificationRequest): Promise<any> {
         return this.send('POST', '/accounts/verify-password', request, true, false);
     }
 
@@ -370,11 +384,6 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/accounts/kdf', request, true, false);
     }
 
-    async getEnterprisePortalSignInToken(): Promise<string> {
-        const r = await this.send('GET', '/accounts/enterprise-portal-signin-token', null, true, true);
-        return r as string;
-    }
-
     async deleteSsoUser(organizationId: string): Promise<any> {
         return this.send('DELETE', '/accounts/sso/' + organizationId, null, true, false);
     }
@@ -383,18 +392,30 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('GET', '/accounts/sso/user-identifier', null, true, true);
     }
 
-    async postUserApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+    async postUserApiKey(id: string, request: SecretVerificationRequest): Promise<ApiKeyResponse> {
         const r = await this.send('POST', '/accounts/api-key', request, true, true);
         return new ApiKeyResponse(r);
     }
 
-    async postUserRotateApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+    async postUserRotateApiKey(id: string, request: SecretVerificationRequest): Promise<ApiKeyResponse> {
         const r = await this.send('POST', '/accounts/rotate-api-key', request, true, true);
         return new ApiKeyResponse(r);
     }
 
     putUpdateTempPassword(request: UpdateTempPasswordRequest): Promise<any> {
         return this.send('PUT', '/accounts/update-temp-password', request, true, false);
+    }
+
+    postAccountRequestOTP(): Promise<void> {
+        return this.send('POST', '/accounts/request-otp', null, true, false);
+    }
+
+    postAccountVerifyOTP(request: VerifyOTPRequest): Promise<void> {
+        return this.send('POST', '/accounts/verify-otp', request, true, false);
+    }
+
+    postConvertToKeyConnector(): Promise<void> {
+        return this.send('POST', '/accounts/convert-to-key-connector', null, true, false);
     }
 
     // Folder APIs
@@ -569,7 +590,7 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('PUT', '/ciphers/' + id + '/collections-admin', request, true, false);
     }
 
-    postPurgeCiphers(request: PasswordVerificationRequest, organizationId: string = null): Promise<any> {
+    postPurgeCiphers(request: SecretVerificationRequest, organizationId: string = null): Promise<any> {
         let path = '/ciphers/purge';
         if (organizationId != null) {
             path += '?organizationId=' + organizationId;
@@ -935,44 +956,44 @@ export class ApiService implements ApiServiceAbstraction {
         return new ListResponse(r, TwoFactorProviderResponse);
     }
 
-    async getTwoFactorAuthenticator(request: PasswordVerificationRequest): Promise<TwoFactorAuthenticatorResponse> {
+    async getTwoFactorAuthenticator(request: SecretVerificationRequest): Promise<TwoFactorAuthenticatorResponse> {
         const r = await this.send('POST', '/two-factor/get-authenticator', request, true, true);
         return new TwoFactorAuthenticatorResponse(r);
     }
 
-    async getTwoFactorEmail(request: PasswordVerificationRequest): Promise<TwoFactorEmailResponse> {
+    async getTwoFactorEmail(request: SecretVerificationRequest): Promise<TwoFactorEmailResponse> {
         const r = await this.send('POST', '/two-factor/get-email', request, true, true);
         return new TwoFactorEmailResponse(r);
     }
 
-    async getTwoFactorDuo(request: PasswordVerificationRequest): Promise<TwoFactorDuoResponse> {
+    async getTwoFactorDuo(request: SecretVerificationRequest): Promise<TwoFactorDuoResponse> {
         const r = await this.send('POST', '/two-factor/get-duo', request, true, true);
         return new TwoFactorDuoResponse(r);
     }
 
     async getTwoFactorOrganizationDuo(organizationId: string,
-        request: PasswordVerificationRequest): Promise<TwoFactorDuoResponse> {
+        request: SecretVerificationRequest): Promise<TwoFactorDuoResponse> {
         const r = await this.send('POST', '/organizations/' + organizationId + '/two-factor/get-duo',
             request, true, true);
         return new TwoFactorDuoResponse(r);
     }
 
-    async getTwoFactorYubiKey(request: PasswordVerificationRequest): Promise<TwoFactorYubiKeyResponse> {
+    async getTwoFactorYubiKey(request: SecretVerificationRequest): Promise<TwoFactorYubiKeyResponse> {
         const r = await this.send('POST', '/two-factor/get-yubikey', request, true, true);
         return new TwoFactorYubiKeyResponse(r);
     }
 
-    async getTwoFactorWebAuthn(request: PasswordVerificationRequest): Promise<TwoFactorWebAuthnResponse> {
+    async getTwoFactorWebAuthn(request: SecretVerificationRequest): Promise<TwoFactorWebAuthnResponse> {
         const r = await this.send('POST', '/two-factor/get-webauthn', request, true, true);
         return new TwoFactorWebAuthnResponse(r);
     }
 
-    async getTwoFactorWebAuthnChallenge(request: PasswordVerificationRequest): Promise<ChallengeResponse> {
+    async getTwoFactorWebAuthnChallenge(request: SecretVerificationRequest): Promise<ChallengeResponse> {
         const r = await this.send('POST', '/two-factor/get-webauthn-challenge', request, true, true);
         return new ChallengeResponse(r);
     }
 
-    async getTwoFactorRecover(request: PasswordVerificationRequest): Promise<TwoFactorRecoverResponse> {
+    async getTwoFactorRecover(request: SecretVerificationRequest): Promise<TwoFactorRecoverResponse> {
         const r = await this.send('POST', '/two-factor/get-recover', request, true, true);
         return new TwoFactorRecoverResponse(r);
     }
@@ -1151,6 +1172,11 @@ export class ApiService implements ApiServiceAbstraction {
         return new TaxInfoResponse(r);
     }
 
+    async getOrganizationSso(id: string): Promise<OrganizationSsoResponse> {
+        const r = await this.send('GET', '/organizations/' + id + '/sso', null, true, true);
+        return new OrganizationSsoResponse(r);
+    }
+
     async postOrganization(request: OrganizationCreateRequest): Promise<OrganizationResponse> {
         const r = await this.send('POST', '/organizations', request, true, true);
         return new OrganizationResponse(r);
@@ -1178,14 +1204,19 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/organizations/' + id + '/license', data, true, false);
     }
 
-    async postOrganizationApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+    async postOrganizationApiKey(id: string, request: SecretVerificationRequest): Promise<ApiKeyResponse> {
         const r = await this.send('POST', '/organizations/' + id + '/api-key', request, true, true);
         return new ApiKeyResponse(r);
     }
 
-    async postOrganizationRotateApiKey(id: string, request: PasswordVerificationRequest): Promise<ApiKeyResponse> {
+    async postOrganizationRotateApiKey(id: string, request: SecretVerificationRequest): Promise<ApiKeyResponse> {
         const r = await this.send('POST', '/organizations/' + id + '/rotate-api-key', request, true, true);
         return new ApiKeyResponse(r);
+    }
+
+    async postOrganizationSso(id: string, request: OrganizationSsoRequest): Promise<OrganizationSsoResponse> {
+        const r = await this.send('POST', '/organizations/' + id + '/sso', request, true, true);
+        return new OrganizationSsoResponse(r);
     }
 
     async postOrganizationUpgrade(id: string, request: OrganizationUpgradeRequest): Promise<PaymentResponse> {
@@ -1223,7 +1254,7 @@ export class ApiService implements ApiServiceAbstraction {
         return this.send('POST', '/organizations/' + id + '/reinstate', null, true, false);
     }
 
-    deleteOrganization(id: string, request: PasswordVerificationRequest): Promise<any> {
+    deleteOrganization(id: string, request: SecretVerificationRequest): Promise<any> {
         return this.send('DELETE', '/organizations/' + id, request, true, false);
     }
 
@@ -1422,6 +1453,64 @@ export class ApiService implements ApiServiceAbstraction {
         return r as string;
     }
 
+    // Key Connector
+
+    async getUserKeyFromKeyConnector(keyConnectorUrl: string): Promise<KeyConnectorUserKeyResponse> {
+        const authHeader = await this.getActiveBearerToken();
+
+        const response = await this.fetch(new Request(keyConnectorUrl + '/user-keys', {
+            cache: 'no-store',
+            method: 'GET',
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + authHeader,
+            }),
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false, true);
+            return Promise.reject(error);
+        }
+
+        return new KeyConnectorUserKeyResponse(await response.json());
+    }
+
+    async postUserKeyToKeyConnector(keyConnectorUrl: string, request: KeyConnectorUserKeyRequest): Promise<void> {
+        const authHeader = await this.getActiveBearerToken();
+
+        const response = await this.fetch(new Request(keyConnectorUrl + '/user-keys', {
+            cache: 'no-store',
+            method: 'POST',
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + authHeader,
+                'Content-Type': 'application/json; charset=utf-8',
+            }),
+            body: JSON.stringify(request),
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false, true);
+            return Promise.reject(error);
+        }
+    }
+
+    async getKeyConnectorAlive(keyConnectorUrl: string) {
+        const response = await this.fetch(new Request(keyConnectorUrl + '/alive', {
+            cache: 'no-store',
+            method: 'GET',
+            headers: new Headers({
+                'Accept': 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
+            }),
+        }));
+
+        if (response.status !== 200) {
+            const error = await this.handleError(response, false, true);
+            return Promise.reject(error);
+        }
+    }
+
     // Helpers
 
     async getActiveBearerToken(): Promise<string> {
@@ -1472,6 +1561,42 @@ export class ApiService implements ApiServiceAbstraction {
             return Promise.reject(error);
         }
     }
+
+    async postCreateSponsorship(sponsoredOrgId: string, request: OrganizationSponsorshipCreateRequest): Promise<void> {
+        return await this.send('POST',
+            '/organization/sponsorship/' + sponsoredOrgId + '/families-for-enterprise',
+            request, true, false);
+    }
+
+    async deleteRevokeSponsorship(sponsoringOrganizationId: string): Promise<void> {
+        return await this.send('DELETE',
+            '/organization/sponsorship/' + sponsoringOrganizationId,
+            null, true, false);
+    }
+
+    async deleteRemoveSponsorship(sponsoringOrgId: string): Promise<void> {
+        return await this.send('DELETE',
+            '/organization/sponsorship/sponsored/' + sponsoringOrgId,
+            null, true, false);
+    }
+
+    async postPreValidateSponsorshipToken(sponsorshipToken: string): Promise<boolean> {
+        const r = await this.send('POST', '/organization/sponsorship/validate-token?sponsorshipToken=' + encodeURIComponent(sponsorshipToken),
+            null, true, true);
+        return r as boolean;
+    }
+
+    async postRedeemSponsorship(sponsorshipToken: string, request: OrganizationSponsorshipRedeemRequest): Promise<void> {
+        return await this.send('POST', '/organization/sponsorship/redeem?sponsorshipToken=' + encodeURIComponent(sponsorshipToken),
+            request, true, false);
+    }
+
+    async postResendSponsorshipOffer(sponsoringOrgId: string): Promise<void> {
+        return await this.send('POST',
+            '/organization/sponsorship/' + sponsoringOrgId + '/families-for-enterprise/resend',
+            null, true, false);
+    }
+
 
     protected async doAuthRefresh(): Promise<void> {
         const refreshToken = await this.tokenService.getRefreshToken();
@@ -1539,6 +1664,13 @@ export class ApiService implements ApiServiceAbstraction {
         authed: boolean, hasResponse: boolean, apiUrl?: string,
         alterHeaders?: (headers: Headers) => void): Promise<any> {
         apiUrl = Utils.isNullOrWhitespace(apiUrl) ? this.environmentService.getApiUrl() : apiUrl;
+
+        const requestUrl = apiUrl + path;
+        // Prevent directory traversal from malicious paths
+        if (new URL(requestUrl).href !== requestUrl) {
+            return Promise.reject('Invalid request url path.');
+        }
+
         const headers = new Headers({
             'Device-Type': this.deviceType,
         });
@@ -1577,7 +1709,7 @@ export class ApiService implements ApiServiceAbstraction {
         }
 
         requestInit.headers = headers;
-        const response = await this.fetch(new Request(apiUrl + path, requestInit));
+        const response = await this.fetch(new Request(requestUrl, requestInit));
 
         if (hasResponse && response.status === 200) {
             const responseJson = await response.json();

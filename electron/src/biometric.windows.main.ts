@@ -6,6 +6,7 @@ import { WindowMain } from './window.main';
 
 import { BiometricMain } from 'jslib-common/abstractions/biometric.main';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { StorageService } from 'jslib-common/abstractions/storage.service';
 import { ConstantsService } from 'jslib-common/services/constants.service';
 
@@ -14,7 +15,8 @@ export default class BiometricWindowsMain implements BiometricMain {
 
     private windowsSecurityCredentialsUiModule: any;
 
-    constructor(private storageService: StorageService, private i18nservice: I18nService, private windowMain: WindowMain) { }
+    constructor(private storageService: StorageService, private i18nservice: I18nService, private windowMain: WindowMain,
+        private logService: LogService) { }
 
     async init() {
         this.windowsSecurityCredentialsUiModule = this.getWindowsSecurityCredentialsUiModule();
@@ -125,8 +127,9 @@ export default class BiometricWindowsMain implements BiometricMain {
         try {
             const version = require('os').release();
             return Number.parseInt(version.split('.')[0], 10);
+        } catch {
+            this.logService.error('Unable to resolve windows major version number');
         }
-        catch { }
         return -1;
     }
 }

@@ -70,6 +70,7 @@ import { PasswordSafeXmlImporter } from '../importers/passwordSafeXmlImporter';
 import { PasswordWalletTxtImporter } from '../importers/passwordWalletTxtImporter';
 import { RememBearCsvImporter } from '../importers/rememBearCsvImporter';
 import { RoboFormCsvImporter } from '../importers/roboformCsvImporter';
+import { SafariCsvImporter } from '../importers/safariCsvImporter';
 import { SafeInCloudXmlImporter } from '../importers/safeInCloudXmlImporter';
 import { SaferPassCsvImporter } from '../importers/saferpassCsvImport';
 import { SecureSafeCsvImporter } from '../importers/secureSafeCsvImporter';
@@ -84,12 +85,13 @@ export class ImportService implements ImportServiceAbstraction {
     featuredImportOptions = [
         { id: 'bitwardenjson', name: 'Bitwarden (json)' },
         { id: 'bitwardencsv', name: 'Bitwarden (csv)' },
-        { id: 'lastpasscsv', name: 'LastPass (csv)' },
         { id: 'chromecsv', name: 'Chrome (csv)' },
+        { id: 'dashlanejson', name: 'Dashlane (json)' },
         { id: 'firefoxcsv', name: 'Firefox (csv)' },
         { id: 'keepass2xml', name: 'KeePass 2 (xml)' },
+        { id: 'lastpasscsv', name: 'LastPass (csv)' },
+        { id: 'safaricsv', name: 'Safari and macOS (csv)' },
         { id: '1password1pif', name: '1Password (1pif)' },
-        { id: 'dashlanejson', name: 'Dashlane (json)' },
     ];
 
     regularImportOptions: ImportOption[] = [
@@ -226,6 +228,8 @@ export class ImportService implements ImportServiceAbstraction {
                 return new UpmCsvImporter();
             case 'saferpasscsv':
                 return new SaferPassCsvImporter();
+            case 'safaricsv':
+                return new SafariCsvImporter();
             case 'meldiumcsv':
                 return new MeldiumCsvImporter();
             case '1password1pif':

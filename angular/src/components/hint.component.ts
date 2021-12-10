@@ -4,6 +4,7 @@ import { PasswordHintRequest } from 'jslib-common/models/request/passwordHintReq
 
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 
 export class HintComponent {
@@ -14,7 +15,8 @@ export class HintComponent {
     protected onSuccessfulSubmit: () => void;
 
     constructor(protected router: Router, protected i18nService: I18nService,
-        protected apiService: ApiService, protected platformUtilsService: PlatformUtilsService) { }
+        protected apiService: ApiService, protected platformUtilsService: PlatformUtilsService,
+        private logService: LogService) { }
 
     async submit() {
         if (this.email == null || this.email === '') {
@@ -37,6 +39,8 @@ export class HintComponent {
             } else if (this.router != null) {
                 this.router.navigate([this.successRoute]);
             }
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
     }
 }

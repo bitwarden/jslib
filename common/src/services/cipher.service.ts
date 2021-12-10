@@ -51,6 +51,7 @@ import { UserService } from '../abstractions/user.service';
 
 import { ConstantsService } from './constants.service';
 
+import { LogService } from '../abstractions/log.service';
 import { sequentialize } from '../misc/sequentialize';
 import { Utils } from '../misc/utils';
 
@@ -73,7 +74,8 @@ export class CipherService implements CipherServiceAbstraction {
     constructor(private cryptoService: CryptoService, private userService: UserService,
         private settingsService: SettingsService, private apiService: ApiService,
         private fileUploadService: FileUploadService, private storageService: StorageService,
-        private i18nService: I18nService, private searchService: () => SearchService) {
+        private i18nService: I18nService, private searchService: () => SearchService,
+        private logService: LogService) {
     }
 
     get decryptedCipherCache() {
@@ -224,6 +226,7 @@ export class CipherService implements CipherServiceAbstraction {
     async encryptField(fieldModel: FieldView, key: SymmetricCryptoKey): Promise<Field> {
         const field = new Field();
         field.type = fieldModel.type;
+        field.linkedId = fieldModel.linkedId;
         // normalize boolean type field values
         if (fieldModel.type === FieldType.Boolean && fieldModel.value !== 'true') {
             fieldModel.value = 'false';
@@ -423,7 +426,9 @@ export class CipherService implements CipherServiceAbstraction {
                                 if (regex.test(url)) {
                                     return true;
                                 }
-                            } catch { }
+                            } catch (e) {
+                                this.logService.error(e);
+                            }
                             break;
                         case UriMatchType.Never:
                         default:

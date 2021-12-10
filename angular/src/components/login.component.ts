@@ -1,10 +1,13 @@
 import {
     Directive,
     Input,
+    NgZone,
     OnInit,
 } from '@angular/core';
 
 import { Router } from '@angular/router';
+
+import { take } from 'rxjs/operators';
 
 import { AuthResult } from 'jslib-common/models/domain/authResult';
 
@@ -12,6 +15,7 @@ import { AuthService } from 'jslib-common/abstractions/auth.service';
 import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { LogService } from 'jslib-common/abstractions/log.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { StateService } from 'jslib-common/abstractions/state.service';
@@ -49,7 +53,8 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
         platformUtilsService: PlatformUtilsService, i18nService: I18nService,
         protected stateService: StateService, environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
-        protected cryptoFunctionService: CryptoFunctionService, private storageService: StorageService) {
+        protected cryptoFunctionService: CryptoFunctionService, private storageService: StorageService,
+        protected logService: LogService, protected ngZone: NgZone) {
         super(environmentService, i18nService, platformUtilsService);
     }
 
@@ -123,12 +128,18 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
                     this.router.navigate([this.successRoute]);
                 }
             }
-        } catch { }
+        } catch (e) {
+            this.logService.error(e);
+        }
     }
 
     togglePassword() {
         this.showPassword = !this.showPassword;
-        document.getElementById('masterPassword').focus();
+        if (this.ngZone.isStable) {
+            document.getElementById('masterPassword').focus();
+        } else {
+            this.ngZone.onStable.pipe(take(1)).subscribe(() => document.getElementById('masterPassword').focus());
+        }
     }
 
     async launchSsoBrowser(clientId: string, ssoRedirectUri: string) {

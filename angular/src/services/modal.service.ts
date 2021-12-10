@@ -22,19 +22,32 @@ export class ModalConfig<D = any> {
 
 @Injectable()
 export class ModalService {
-    protected modalCount = 0;
+    protected modalList: ComponentRef<DynamicModalComponent>[] = [];
 
     // Lazy loaded modules are not available in componentFactoryResolver,
     // therefore modules needs to manually initialize their resolvers.
     private factoryResolvers: Map<Type<any>, ComponentFactoryResolver> = new Map();
 
     constructor(private componentFactoryResolver: ComponentFactoryResolver, private applicationRef: ApplicationRef,
-        private injector: Injector) {}
+        private injector: Injector) {
+        document.addEventListener('keyup', event => {
+            if (event.key === 'Escape' && this.modalCount > 0) {
+                this.topModal.instance.close();
+            }
+        });
+    }
+
+    get modalCount() {
+        return this.modalList.length;
+    }
+
+    private get topModal() {
+        return this.modalList[this.modalCount - 1];
+    }
 
     async openViewRef<T>(componentType: Type<T>, viewContainerRef: ViewContainerRef,
         setComponentParameters: (component: T) => void = null): Promise<[ModalRef, T]> {
 
-        this.modalCount++;
         const [modalRef, modalComponentRef] = this.openInternal(componentType, null, false);
         modalComponentRef.instance.setComponentParameters = setComponentParameters;
 
@@ -49,7 +62,6 @@ export class ModalService {
         if (!(config?.allowMultipleModals ?? false) && this.modalCount > 0) {
             return;
         }
-        this.modalCount++;
 
         const [modalRef, _] = this.openInternal(componentType, config, true);
 
@@ -85,10 +97,16 @@ export class ModalService {
                 this.applicationRef.detachView(componentRef.hostView);
             }
             componentRef.destroy();
-            this.modalCount--;
+
+            this.modalList.pop();
+            if (this.modalCount > 0) {
+                this.topModal.instance.getFocus();
+            }
         });
 
         this.setupHandlers(modalRef);
+
+        this.modalList.push(componentRef);
 
         return [modalRef, componentRef];
     }
@@ -100,19 +118,20 @@ export class ModalService {
         modalRef.onCreated.pipe(first()).subscribe(el => {
             document.body.classList.add('modal-open');
 
+            const modalEl: HTMLElement = el.querySelector('.modal');
+            const dialogEl = modalEl.querySelector('.modal-dialog') as HTMLElement;
+
             backdrop = document.createElement('div');
             backdrop.className = 'modal-backdrop fade';
             backdrop.style.zIndex = `${this.modalCount}040`;
-            document.body.appendChild(backdrop);
+            modalEl.prepend(backdrop);
 
-            el.querySelector('.modal-dialog').addEventListener('click', (e: Event) => {
+            dialogEl.addEventListener('click', (e: Event) => {
                 e.stopPropagation();
             });
+            dialogEl.style.zIndex = `${this.modalCount}050`;
 
-            const modalEl: HTMLElement = el.querySelector('.modal');
-            modalEl.style.zIndex = `${this.modalCount}050`;
-
-            const modals = Array.from(el.querySelectorAll('.modal, .modal *[data-dismiss="modal"]'));
+            const modals = Array.from(el.querySelectorAll('.modal-backdrop, .modal *[data-dismiss="modal"]'));
             for (const closeElement of modals) {
                 closeElement.addEventListener('click', event => {
                     modalRef.close();
@@ -126,10 +145,6 @@ export class ModalService {
 
             if (this.modalCount === 0) {
                 document.body.classList.remove('modal-open');
-            }
-
-            if (backdrop != null) {
-                document.body.removeChild(backdrop);
             }
         });
     }

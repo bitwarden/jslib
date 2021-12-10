@@ -4,6 +4,8 @@ import {
     Router
 } from '@angular/router';
 
+import { first } from 'rxjs/operators';
+
 import { ApiService } from 'jslib-common/abstractions/api.service';
 import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
@@ -25,7 +27,6 @@ import { ChangePasswordComponent as BaseChangePasswordComponent } from './change
 
 import { HashPurpose } from 'jslib-common/enums/hashPurpose';
 import { KdfType } from 'jslib-common/enums/kdfType';
-import { PolicyType } from 'jslib-common/enums/policyType';
 
 import { Utils } from 'jslib-common/misc/utils';
 
@@ -53,13 +54,9 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
         await this.syncService.fullSync(true);
         this.syncLoading = false;
 
-        const queryParamsSub = this.route.queryParams.subscribe(async qParams => {
+        this.route.queryParams.pipe(first()).subscribe(async qParams => {
             if (qParams.identifier != null) {
                 this.identifier = qParams.identifier;
-            }
-
-            if (queryParamsSub != null) {
-                queryParamsSub.unsubscribe();
             }
         });
 
