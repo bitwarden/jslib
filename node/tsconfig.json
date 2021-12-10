@@ -13,12 +13,16 @@
     "emitDecoratorMetadata": true,
     "declarationDir": "dist/types",
     "outDir": "dist",
-    "types": [],
     "paths": {
       "jslib-common/*": [
         "../common/src/*"
       ]
-    }
+    },
+    "plugins": [
+      {
+        "transform": "typescript-transform-paths"
+      }
+    ]
   },
   "include": [
     "src",

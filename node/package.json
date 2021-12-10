@@ -14,18 +14,25 @@
   "license": "GPL-3.0",
   "scripts": {
     "clean": "rimraf dist/**/*",
-    "build": "npm run clean && tsc",
-    "build:watch": "npm run clean && tsc -watch",
+    "build": "npm run clean && ttsc",
+    "build:watch": "npm run clean && ttsc -watch",
     "lint": "tslint 'src/**/*.ts' 'spec/**/*.ts'",
-    "lint:fix": "tslint 'src/**/*.ts' 'spec/**/*.ts' --fix"
+    "lint:fix": "tslint 'src/**/*.ts' 'spec/**/*.ts' --fix",
+    "test": " ",
+    "test:node": "npm run build && jasmine"
   },
   "devDependencies": {
     "@types/inquirer": "^7.3.1",
+    "@types/jasmine": "^3.10.2",
     "@types/lowdb": "^1.0.10",
     "@types/node": "^14.17.1",
     "@types/node-fetch": "^2.5.10",
+    "jasmine": "^3.10.0",
+    "jasmine-core": "^3.10.1",
     "rimraf": "^3.0.2",
-    "typescript": "4.3.5"
+    "ttypescript": "^1.5.13",
+    "typescript": "4.3.5",
+    "typescript-transform-paths": "^3.3.1"
   },
   "dependencies": {
     "@bitwarden/jslib-common": "file:../common",

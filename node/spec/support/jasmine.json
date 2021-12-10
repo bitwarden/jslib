@@ -1,7 +1,6 @@
 {
-  "spec_dir": "dist/spec",
+  "spec_dir": "dist/node/spec",
   "spec_files": [
-    "!web/**/*[sS]pec.js",
     "**/*[sS]pec.js"
   ],
   "helpers": [

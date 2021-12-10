@@ -13,15 +13,10 @@
   },
   "license": "GPL-3.0",
   "scripts": {
-    "clean": "rimraf dist/**/*",
-    "build": "npm run clean && ttsc",
-    "build:watch": "npm run clean && ttsc -watch",
     "lint": "tslint '*/src/**/*.ts' 'spec/**/*.ts'",
     "lint:fix": "tslint '*/src/**/*.ts' 'spec/**/*.ts' --fix",
-    "test": "karma start ./spec/support/karma.conf.js --single-run",
-    "test:watch": "karma start ./spec/support/karma.conf.js",
-    "test:node": "npm run build && jasmine",
-    "test:node:watch": "concurrently -k -n TSC,Node -c yellow,cyan \"npm run build:watch\" \"nodemon -w ./dist --delay 500ms --exec jasmine\""
+    "test": "npm run test --workspaces",
+    "test:node": "npm run test:node --workspaces"
   },
   "workspaces": [
     "common",

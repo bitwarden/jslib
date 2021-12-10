@@ -1,8 +1,31 @@
-import { ConsoleLogService } from 'jslib-node/cli/services/consoleLog.service';
-import { interceptConsole, restoreConsole } from '../../common/services/consoleLog.service.spec';
+import { ConsoleLogService } from '../../src/cli/services/consoleLog.service';
 
 const originalConsole = console;
-let caughtMessage: any = {};
+let caughtMessage: any;
+
+declare var console: any;
+
+export function interceptConsole(interceptions: any): object {
+    console = {
+        // tslint:disable-next-line
+        log: function () {
+            interceptions.log = arguments;
+        },
+        // tslint:disable-next-line
+        warn: function () {
+            interceptions.warn = arguments;
+        },
+        // tslint:disable-next-line
+        error: function () {
+            interceptions.error = arguments;
+        },
+    };
+    return interceptions;
+}
+
+export function restoreConsole() {
+    console = originalConsole;
+}
 
 describe('CLI Console log service', () => {
     let logService: ConsoleLogService;
