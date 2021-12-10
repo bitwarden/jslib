@@ -5,6 +5,8 @@ interface ToastOptions {
     timeout?: number;
 }
 
+// TODO: we should split this into a few services, as it is unclear from the name what exactly this service is for.
+// Proposal: DeviceService, PlatformService, VersionService, ToastService, DialogueService, ThemeService
 export abstract class PlatformUtilsService {
     identityClientId: string;
     getDevice: () => DeviceType;
