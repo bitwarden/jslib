@@ -27,5 +27,8 @@
   "engines": {
     "node": "~14",
     "npm": "~7"
+  },
+  "devDependencies": {
+    "tslint": "^6.1.3"
   }
 }
