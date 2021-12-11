@@ -3,53 +3,51 @@ import { FSecureFskImporter as Importer } from 'jslib-common/importers/fsecureFs
 const TestDataWithStyleSetToWebsite: string =
     JSON.stringify({
         data: {
-            "8d58b5cf252dd06fbd98f5289e918ab1":
-            {
-                color: "#00baff",
+            '8d58b5cf252dd06fbd98f5289e918ab1': {
+                color: '#00baff',
                 reatedDate: 1609302913,
-                creditCvv: "",
-                creditExpiry: "",
-                creditNumber: "",
+                creditCvv: '',
+                creditExpiry: '',
+                creditNumber: '',
                 favorite: 0,
                 modifiedDate: 1609302913,
-                notes: "note",
-                password: "word",
+                notes: 'note',
+                password: 'word',
                 passwordList: [],
                 passwordModifiedDate: 1609302913,
                 rev: 1,
-                service: "My first pass",
-                style: "website",
+                service: 'My first pass',
+                style: 'website',
                 type: 1,
-                url: "https://bitwarden.com",
-                username: "pass"
-            }
-        }
+                url: 'https://bitwarden.com',
+                username: 'pass',
+            },
+        },
     });
 
 const TestDataWithStyleSetToGlobe: string =
     JSON.stringify({
         data: {
-            "8d58b5cf252dd06fbd98f5289e918ab1":
-            {
-                color: "#00baff",
+            '8d58b5cf252dd06fbd98f5289e918ab1': {
+                color: '#00baff',
                 reatedDate: 1609302913,
-                creditCvv: "",
-                creditExpiry: "",
-                creditNumber: "",
+                creditCvv: '',
+                creditExpiry: '',
+                creditNumber: '',
                 favorite: 0,
                 modifiedDate: 1609302913,
-                notes: "note",
-                password: "word",
+                notes: 'note',
+                password: 'word',
                 passwordList: [],
                 passwordModifiedDate: 1609302913,
                 rev: 1,
-                service: "My first pass",
-                style: "globe",
+                service: 'My first pass',
+                style: 'globe',
                 type: 1,
-                url: "https://bitwarden.com",
-                username: "pass"
-            }
-        }
+                url: 'https://bitwarden.com',
+                username: 'pass',
+            },
+        },
     });
 
 
