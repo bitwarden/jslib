@@ -35,7 +35,7 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Intall node-gyp
+      - name: Install node-gyp
         run: |
           npm install -g node-gyp
           node-gyp install $(node -v)
