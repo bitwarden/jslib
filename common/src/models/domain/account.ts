@@ -21,9 +21,6 @@ import { FolderData } from '../data/folderData';
 import { PolicyData } from '../data/policyData';
 import { ProviderData } from '../data/providerData';
 import { SendData } from '../data/sendData';
-import { BrowserComponentState } from './browserComponentState';
-import { BrowserGroupingsComponentState } from './browserGroupingsComponentState';
-import { BrowserSendComponentState } from './browserSendComponentState';
 
 export class EncryptionPair<TEncrypted, TDecrypted> {
     encrypted?: TEncrypted;
@@ -33,13 +30,6 @@ export class EncryptionPair<TEncrypted, TDecrypted> {
 export class DataEncryptionPair<TEncrypted, TDecrypted> {
     encrypted?: { [id: string]: TEncrypted };
     decrypted?: TDecrypted[];
-}
-
-export class AccountBrowserState {
-    groupings?: BrowserGroupingsComponentState;
-    send?: BrowserSendComponentState;
-    ciphers?: BrowserComponentState;
-    sendType?: BrowserComponentState;
 }
 
 export class AccountData {
@@ -145,7 +135,6 @@ export class AccountTokens {
 }
 
 export class Account {
-    browser?: AccountBrowserState = new AccountBrowserState();
     data?: AccountData = new AccountData();
     keys?: AccountKeys = new AccountKeys();
     profile?: AccountProfile = new AccountProfile();
@@ -154,10 +143,6 @@ export class Account {
 
     constructor(init: Partial<Account>) {
         Object.assign(this, {
-            browser: {
-                ...new AccountBrowserState(),
-                ...init?.browser,
-            },
             data: {
                 ...new AccountData(),
                 ...init?.data,

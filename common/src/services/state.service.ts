@@ -33,9 +33,6 @@ import { ProviderData } from '../models/data/providerData';
 import { SendData } from '../models/data/sendData';
 
 import { BehaviorSubject } from 'rxjs';
-import { BrowserComponentState } from '../models/domain/browserComponentState';
-import { BrowserGroupingsComponentState } from '../models/domain/browserGroupingsComponentState';
-import { BrowserSendComponentState } from '../models/domain/browserSendComponentState';
 
 import { StateMigrationService } from './stateMigration.service';
 
@@ -50,7 +47,7 @@ export class StateService implements StateServiceAbstraction {
         private secureStorageService: StorageService,
         private logService: LogService,
         private stateMigrationService: StateMigrationService
-    ) {}
+    ) { }
 
     async init(): Promise<void> {
         if (await this.stateMigrationService.needsMigration()) {
@@ -230,45 +227,6 @@ export class StateService implements StateServiceAbstraction {
         const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
         account.settings.biometricUnlock = value;
         await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
-    }
-
-    async getBrowserGroupingComponentState(options?: StorageOptions): Promise<BrowserGroupingsComponentState> {
-        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.browser?.groupings;
-    }
-
-    async setBrowserGroupingComponentState(value: BrowserGroupingsComponentState, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
-        account.browser.groupings = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
-    }
-
-    async getBrowserCipherComponentState(options?: StorageOptions): Promise<BrowserComponentState> {
-        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.browser?.ciphers;
-    }
-
-    async setBrowserCipherComponentState(value: BrowserComponentState, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
-        account.browser.ciphers = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
-    }
-
-    async getBrowserSendComponentState(options?: StorageOptions): Promise<BrowserSendComponentState> {
-        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.browser?.send;
-    }
-
-    async setBrowserSendComponentState(value: BrowserSendComponentState, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
-        account.browser.send = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
-    }
-    async getBrowserSendTypeComponentState(options?: StorageOptions): Promise<BrowserComponentState> {
-        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.browser?.sendType;
-    }
-
-    async setBrowserSendTypeComponentState(value: BrowserComponentState, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
-        account.browser.sendType = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
     }
 
     async getCanAccessPremium(options?: StorageOptions): Promise<boolean> {

@@ -13,9 +13,6 @@ import { ProviderData } from '../models/data/providerData';
 import { SendData } from '../models/data/sendData';
 
 import { Account } from '../models/domain/account';
-import { BrowserComponentState } from '../models/domain/browserComponentState';
-import { BrowserGroupingsComponentState } from '../models/domain/browserGroupingsComponentState';
-import { BrowserSendComponentState } from '../models/domain/browserSendComponentState';
 import { EncString } from '../models/domain/encString';
 import { GeneratedPasswordHistory } from '../models/domain/generatedPasswordHistory';
 import { Policy } from '../models/domain/policy';
@@ -60,14 +57,6 @@ export abstract class StateService {
     setBiometricText: (value: string, options?: StorageOptions) => Promise<void>;
     getBiometricUnlock: (options?: StorageOptions) => Promise<boolean>;
     setBiometricUnlock: (value: boolean, options?: StorageOptions) => Promise<void>;
-    getBrowserGroupingComponentState: (options?: StorageOptions) => Promise<BrowserGroupingsComponentState>;
-    setBrowserGroupingComponentState: (value: BrowserGroupingsComponentState, options?: StorageOptions) => Promise<void>;
-    getBrowserCipherComponentState: (options?: StorageOptions) => Promise<BrowserComponentState>;
-    setBrowserCipherComponentState: (value: BrowserComponentState, options?: StorageOptions) => Promise<void>;
-    getBrowserSendComponentState: (options?: StorageOptions) => Promise<BrowserSendComponentState>;
-    setBrowserSendComponentState: (value: BrowserSendComponentState, options?: StorageOptions) => Promise<void>;
-    getBrowserSendTypeComponentState: (options?: StorageOptions) => Promise<BrowserComponentState>;
-    setBrowserSendTypeComponentState: (value: BrowserComponentState, options?: StorageOptions) => Promise<void>;
     getCanAccessPremium: (options?: StorageOptions) => Promise<boolean>;
     getClearClipboard: (options?: StorageOptions) => Promise<number>;
     setClearClipboard: (value: number, options?: StorageOptions) => Promise<void>;
