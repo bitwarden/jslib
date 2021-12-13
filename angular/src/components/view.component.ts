@@ -24,9 +24,9 @@ import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { LogService } from 'jslib-common/abstractions/log.service';
 import { PasswordRepromptService } from 'jslib-common/abstractions/passwordReprompt.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
+import { StateService } from 'jslib-common/abstractions/state.service';
 import { TokenService } from 'jslib-common/abstractions/token.service';
 import { TotpService } from 'jslib-common/abstractions/totp.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { ErrorResponse } from 'jslib-common/models/response/errorResponse';
 
@@ -67,9 +67,9 @@ export class ViewComponent implements OnDestroy, OnInit {
         protected cryptoService: CryptoService, protected platformUtilsService: PlatformUtilsService,
         protected auditService: AuditService, protected win: Window,
         protected broadcasterService: BroadcasterService, protected ngZone: NgZone,
-        protected changeDetectorRef: ChangeDetectorRef, protected userService: UserService,
-        protected eventService: EventService, protected apiService: ApiService,
-        protected passwordRepromptService: PasswordRepromptService, private logService: LogService) { }
+        protected changeDetectorRef: ChangeDetectorRef, protected eventService: EventService,
+        protected apiService: ApiService, protected passwordRepromptService: PasswordRepromptService,
+        private logService: LogService, protected stateService: StateService) { }
 
     ngOnInit() {
         this.broadcasterService.subscribe(BroadcasterSubscriptionId, (message: any) => {
@@ -96,7 +96,7 @@ export class ViewComponent implements OnDestroy, OnInit {
 
         const cipher = await this.cipherService.get(this.cipherId);
         this.cipher = await cipher.decrypt();
-        this.canAccessPremium = await this.userService.canAccessPremium();
+        this.canAccessPremium = await this.stateService.getCanAccessPremium();
 
         if (this.cipher.type === CipherType.Login && this.cipher.login.totp &&
             (cipher.organizationUseTotp || this.canAccessPremium)) {

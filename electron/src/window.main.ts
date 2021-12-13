@@ -7,9 +7,8 @@ import * as path from 'path';
 import * as url from 'url';
 
 import { LogService } from 'jslib-common/abstractions/log.service';
-import { StorageService } from 'jslib-common/abstractions/storage.service';
+import { StateService } from 'jslib-common/abstractions/state.service';
 
-import { ElectronConstants } from './electronConstants';
 import {
     cleanUserAgent,
     isDev,
@@ -17,11 +16,8 @@ import {
     isSnapStore,
 } from './utils';
 
+const mainWindowSizeKey = 'mainWindowSize';
 const WindowEventHandlingDelay = 100;
-const Keys = {
-    mainWindowSize: 'mainWindowSize',
-};
-
 export class WindowMain {
     win: BrowserWindow;
     isQuitting: boolean = false;
@@ -30,7 +26,7 @@ export class WindowMain {
     private windowStates: { [key: string]: any; } = {};
     private enableAlwaysOnTop: boolean = false;
 
-    constructor(private storageService: StorageService, private logService: LogService,
+    constructor(private stateService: StateService, private logService: LogService,
         private hideTitleBar = false, private defaultWidth = 950, private defaultHeight = 600,
         private argvCallback: (argv: string[]) => void = null,
         private createWindowCallback: (win: BrowserWindow) => void) { }
@@ -107,18 +103,18 @@ export class WindowMain {
     }
 
     async createWindow(): Promise<void> {
-        this.windowStates[Keys.mainWindowSize] = await this.getWindowState(Keys.mainWindowSize, this.defaultWidth,
+        this.windowStates[mainWindowSizeKey] = await this.getWindowState(mainWindowSizeKey, this.defaultWidth,
             this.defaultHeight);
-        this.enableAlwaysOnTop = await this.storageService.get<boolean>(ElectronConstants.enableAlwaysOnTopKey);
+        this.enableAlwaysOnTop = await this.stateService.getEnableAlwaysOnTop();
 
         // Create the browser window.
         this.win = new BrowserWindow({
-            width: this.windowStates[Keys.mainWindowSize].width,
-            height: this.windowStates[Keys.mainWindowSize].height,
+            width: this.windowStates[mainWindowSizeKey].width,
+            height: this.windowStates[mainWindowSizeKey].height,
             minWidth: 680,
             minHeight: 500,
-            x: this.windowStates[Keys.mainWindowSize].x,
-            y: this.windowStates[Keys.mainWindowSize].y,
+            x: this.windowStates[mainWindowSizeKey].x,
+            y: this.windowStates[mainWindowSizeKey].y,
             title: app.name,
             icon: process.platform === 'linux' ? path.join(__dirname, '/images/icon.png') : undefined,
             titleBarStyle: this.hideTitleBar && process.platform === 'darwin' ? 'hiddenInset' : undefined,
@@ -132,7 +128,7 @@ export class WindowMain {
             },
         });
 
-        if (this.windowStates[Keys.mainWindowSize].isMaximized) {
+        if (this.windowStates[mainWindowSizeKey].isMaximized) {
             this.win.maximize();
         }
 
@@ -158,7 +154,7 @@ export class WindowMain {
 
         // Emitted when the window is closed.
         this.win.on('closed', async () => {
-            await this.updateWindowState(Keys.mainWindowSize, this.win);
+            await this.updateWindowState(mainWindowSizeKey, this.win);
 
             // Dereference the window object, usually you would store window
             // in an array if your app supports multi windows, this is the time
@@ -167,23 +163,23 @@ export class WindowMain {
         });
 
         this.win.on('close', async () => {
-            await this.updateWindowState(Keys.mainWindowSize, this.win);
+            await this.updateWindowState(mainWindowSizeKey, this.win);
         });
 
         this.win.on('maximize', async () => {
-            await this.updateWindowState(Keys.mainWindowSize, this.win);
+            await this.updateWindowState(mainWindowSizeKey, this.win);
         });
 
         this.win.on('unmaximize', async () => {
-            await this.updateWindowState(Keys.mainWindowSize, this.win);
+            await this.updateWindowState(mainWindowSizeKey, this.win);
         });
 
         this.win.on('resize', () => {
-            this.windowStateChangeHandler(Keys.mainWindowSize, this.win);
+            this.windowStateChangeHandler(mainWindowSizeKey, this.win);
         });
 
         this.win.on('move', () => {
-            this.windowStateChangeHandler(Keys.mainWindowSize, this.win);
+            this.windowStateChangeHandler(mainWindowSizeKey, this.win);
         });
         this.win.on('focus', () => {
             this.win.webContents.send('messagingService', {
@@ -200,7 +196,7 @@ export class WindowMain {
     async toggleAlwaysOnTop() {
         this.enableAlwaysOnTop = !this.win.isAlwaysOnTop();
         this.win.setAlwaysOnTop(this.enableAlwaysOnTop);
-        await this.storageService.save(ElectronConstants.enableAlwaysOnTopKey, this.enableAlwaysOnTop);
+        await this.stateService.setEnableAlwaysOnTop(this.enableAlwaysOnTop);
     }
 
     private windowStateChangeHandler(configKey: string, win: BrowserWindow) {
@@ -219,7 +215,7 @@ export class WindowMain {
             const bounds = win.getBounds();
 
             if (this.windowStates[configKey] == null) {
-                this.windowStates[configKey] = await this.storageService.get<any>(configKey);
+                this.windowStates[configKey] = (await this.stateService.getWindow()).get(configKey);
                 if (this.windowStates[configKey] == null) {
                     this.windowStates[configKey] = {};
                 }
@@ -235,14 +231,19 @@ export class WindowMain {
                 this.windowStates[configKey].height = bounds.height;
             }
 
-            await this.storageService.save(configKey, this.windowStates[configKey]);
+            const cachedWindow = await this.stateService.getWindow() ?? new Map<string, any>();
+            cachedWindow.set(configKey, this.windowStates[configKey]);
+            await this.stateService.setWindow(cachedWindow);
         } catch (e) {
             this.logService.error(e);
         }
     }
 
     private async getWindowState(configKey: string, defaultWidth: number, defaultHeight: number) {
-        let state = await this.storageService.get<any>(configKey);
+        const windowState = await this.stateService.getWindow() ?? new Map<string, any>();
+        let state = windowState.has(configKey) ?
+            windowState.get(configKey) :
+            null;
 
         const isValid = state != null && (this.stateHasBounds(state) || state.isMaximized);
         let displayBounds: Electron.Rectangle = null;

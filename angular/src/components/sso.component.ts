@@ -15,9 +15,6 @@ import { LogService } from 'jslib-common/abstractions/log.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { StateService } from 'jslib-common/abstractions/state.service';
-import { StorageService } from 'jslib-common/abstractions/storage.service';
-
-import { ConstantsService } from 'jslib-common/services/constants.service';
 
 import { Utils } from 'jslib-common/misc/utils';
 
@@ -47,18 +44,18 @@ export class SsoComponent {
 
     constructor(protected authService: AuthService, protected router: Router,
         protected i18nService: I18nService, protected route: ActivatedRoute,
-        protected storageService: StorageService, protected stateService: StateService,
-        protected platformUtilsService: PlatformUtilsService, protected apiService: ApiService,
-        protected cryptoFunctionService: CryptoFunctionService, protected environmentService: EnvironmentService,
-        protected passwordGenerationService: PasswordGenerationService, protected logService: LogService) { }
+        protected stateService: StateService, protected platformUtilsService: PlatformUtilsService,
+        protected apiService: ApiService, protected cryptoFunctionService: CryptoFunctionService,
+        protected environmentService: EnvironmentService, protected passwordGenerationService: PasswordGenerationService,
+        protected logService: LogService) { }
 
     async ngOnInit() {
         this.route.queryParams.pipe(first()).subscribe(async qParams => {
             if (qParams.code != null && qParams.state != null) {
-                const codeVerifier = await this.storageService.get<string>(ConstantsService.ssoCodeVerifierKey);
-                const state = await this.storageService.get<string>(ConstantsService.ssoStateKey);
-                await this.storageService.remove(ConstantsService.ssoCodeVerifierKey);
-                await this.storageService.remove(ConstantsService.ssoStateKey);
+                const codeVerifier = await this.stateService.getSsoCodeVerifier();
+                const state = await this.stateService.getSsoState();
+                await this.stateService.setSsoCodeVerifier(null);
+                await this.stateService.setSsoState(null);
                 if (qParams.code != null && codeVerifier != null && state != null && this.checkState(state, qParams.state)) {
                     await this.logIn(qParams.code, codeVerifier, this.getOrgIdentifierFromState(qParams.state));
                 }
@@ -106,7 +103,7 @@ export class SsoComponent {
             const codeVerifier = await this.passwordGenerationService.generatePassword(passwordOptions);
             const codeVerifierHash = await this.cryptoFunctionService.hash(codeVerifier, 'sha256');
             codeChallenge = Utils.fromBufferToUrlB64(codeVerifierHash);
-            await this.storageService.save(ConstantsService.ssoCodeVerifierKey, codeVerifier);
+            await this.stateService.setSsoCodeVerifier(codeVerifier);
         }
 
         if (state == null) {
@@ -120,7 +117,7 @@ export class SsoComponent {
         state += `_identifier=${this.identifier}`;
 
         // Save state (regardless of new or existing)
-        await this.storageService.save(ConstantsService.ssoStateKey, state);
+        await this.stateService.setSsoState(state);
 
         let authorizeUrl = this.environmentService.getIdentityUrl() + '/connect/authorize?' +
             'client_id=' + this.clientId + '&redirect_uri=' + encodeURIComponent(this.redirectUri) + '&' +
@@ -170,8 +167,8 @@ export class SsoComponent {
                     this.router.navigate([this.forcePasswordResetRoute]);
                 }
             } else {
-                const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
-                await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
+                const disableFavicon = await this.stateService.getDisableFavicon();
+                await this.stateService.setDisableFavicon(!!disableFavicon);
                 if (this.onSuccessfulLogin != null) {
                     this.onSuccessfulLogin();
                 }

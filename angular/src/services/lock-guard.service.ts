@@ -4,29 +4,26 @@ import {
     Router,
 } from '@angular/router';
 
-import { UserService } from 'jslib-common/abstractions/user.service';
+import { StateService } from 'jslib-common/abstractions/state.service';
 import { VaultTimeoutService } from 'jslib-common/abstractions/vaultTimeout.service';
 
 @Injectable()
 export class LockGuardService implements CanActivate {
-
     protected homepage = 'vault';
-    constructor(private vaultTimeoutService: VaultTimeoutService, private userService: UserService,
-        private router: Router) { }
+    constructor(private vaultTimeoutService: VaultTimeoutService, private router: Router,
+        private stateService: StateService) { }
 
     async canActivate() {
-        const isAuthed = await this.userService.isAuthenticated();
-        if (isAuthed) {
-            const locked = await this.vaultTimeoutService.isLocked();
-            if (locked) {
-                return true;
-            } else {
-                this.router.navigate([this.homepage]);
-                return false;
-            }
+        if (!await this.stateService.getIsAuthenticated()) {
+            this.router.navigate(['login']);
+            return false;
         }
 
-        this.router.navigate(['']);
-        return false;
+        if (!await this.vaultTimeoutService.isLocked()) {
+            this.router.navigate([this.homepage]);
+            return false;
+        }
+
+        return true;
     }
 }

@@ -19,16 +19,18 @@ import { FileUploadService } from 'jslib-common/services/fileUpload.service';
 import { FolderService } from 'jslib-common/services/folder.service';
 import { KeyConnectorService } from 'jslib-common/services/keyConnector.service';
 import { NotificationsService } from 'jslib-common/services/notifications.service';
+import { OrganizationService } from 'jslib-common/services/organization.service';
 import { PasswordGenerationService } from 'jslib-common/services/passwordGeneration.service';
 import { PolicyService } from 'jslib-common/services/policy.service';
+import { ProviderService } from 'jslib-common/services/provider.service';
 import { SearchService } from 'jslib-common/services/search.service';
 import { SendService } from 'jslib-common/services/send.service';
 import { SettingsService } from 'jslib-common/services/settings.service';
 import { StateService } from 'jslib-common/services/state.service';
+import { StateMigrationService } from 'jslib-common/services/stateMigration.service';
 import { SyncService } from 'jslib-common/services/sync.service';
 import { TokenService } from 'jslib-common/services/token.service';
 import { TotpService } from 'jslib-common/services/totp.service';
-import { UserService } from 'jslib-common/services/user.service';
 import { UserVerificationService } from 'jslib-common/services/userVerification.service';
 import { VaultTimeoutService } from 'jslib-common/services/vaultTimeout.service';
 import { WebCryptoFunctionService } from 'jslib-common/services/webCryptoFunction.service';
@@ -42,7 +44,7 @@ import { CipherService as CipherServiceAbstraction } from 'jslib-common/abstract
 import { CollectionService as CollectionServiceAbstraction } from 'jslib-common/abstractions/collection.service';
 import { CryptoService as CryptoServiceAbstraction } from 'jslib-common/abstractions/crypto.service';
 import { CryptoFunctionService as CryptoFunctionServiceAbstraction } from 'jslib-common/abstractions/cryptoFunction.service';
-import { EnvironmentService as EnvironmentServiceAbstraction, Urls } from 'jslib-common/abstractions/environment.service';
+import { EnvironmentService as EnvironmentServiceAbstraction } from 'jslib-common/abstractions/environment.service';
 import { EventService as EventServiceAbstraction } from 'jslib-common/abstractions/event.service';
 import { ExportService as ExportServiceAbstraction } from 'jslib-common/abstractions/export.service';
 import { FileUploadService as FileUploadServiceAbstraction }  from 'jslib-common/abstractions/fileUpload.service';
@@ -52,21 +54,23 @@ import { KeyConnectorService as KeyConnectorServiceAbstraction } from 'jslib-com
 import { LogService } from 'jslib-common/abstractions/log.service';
 import { MessagingService as MessagingServiceAbstraction } from 'jslib-common/abstractions/messaging.service';
 import { NotificationsService as NotificationsServiceAbstraction } from 'jslib-common/abstractions/notifications.service';
+import { OrganizationService as OrganizationServiceAbstraction } from 'jslib-common/abstractions/organization.service';
 import {
     PasswordGenerationService as PasswordGenerationServiceAbstraction,
 } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PasswordRepromptService as PasswordRepromptServiceAbstraction } from 'jslib-common/abstractions/passwordReprompt.service';
 import { PlatformUtilsService as PlatformUtilsServiceAbstraction } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService as PolicyServiceAbstraction } from 'jslib-common/abstractions/policy.service';
+import { ProviderService as ProviderServiceAbstraction } from 'jslib-common/abstractions/provider.service';
 import { SearchService as SearchServiceAbstraction } from 'jslib-common/abstractions/search.service';
 import { SendService as SendServiceAbstraction } from 'jslib-common/abstractions/send.service';
 import { SettingsService as SettingsServiceAbstraction } from 'jslib-common/abstractions/settings.service';
 import { StateService as StateServiceAbstraction } from 'jslib-common/abstractions/state.service';
+import { StateMigrationService as StateMigrationServiceAbstraction } from 'jslib-common/abstractions/stateMigration.service';
 import { StorageService as StorageServiceAbstraction } from 'jslib-common/abstractions/storage.service';
 import { SyncService as SyncServiceAbstraction } from 'jslib-common/abstractions/sync.service';
 import { TokenService as TokenServiceAbstraction } from 'jslib-common/abstractions/token.service';
 import { TotpService as TotpServiceAbstraction } from 'jslib-common/abstractions/totp.service';
-import { UserService as UserServiceAbstraction } from 'jslib-common/abstractions/user.service';
 import { UserVerificationService as UserVerificationServiceAbstraction } from 'jslib-common/abstractions/userVerification.service';
 import { VaultTimeoutService as VaultTimeoutServiceAbstraction } from 'jslib-common/abstractions/vaultTimeout.service';
 
@@ -108,7 +112,6 @@ import { ValidationService } from './validation.service';
             deps: [
                 CryptoServiceAbstraction,
                 ApiServiceAbstraction,
-                UserServiceAbstraction,
                 TokenServiceAbstraction,
                 AppIdServiceAbstraction,
                 I18nServiceAbstraction,
@@ -117,28 +120,41 @@ import { ValidationService } from './validation.service';
                 VaultTimeoutServiceAbstraction,
                 LogService,
                 CryptoFunctionServiceAbstraction,
-                EnvironmentServiceAbstraction,
                 KeyConnectorServiceAbstraction,
+                EnvironmentServiceAbstraction,
+                StateServiceAbstraction,
             ],
         },
         {
             provide: CipherServiceAbstraction,
-            useFactory: (cryptoService: CryptoServiceAbstraction, userService: UserServiceAbstraction,
-                settingsService: SettingsServiceAbstraction, apiService: ApiServiceAbstraction,
-                fileUploadService: FileUploadServiceAbstraction, storageService: StorageServiceAbstraction,
-                i18nService: I18nServiceAbstraction, injector: Injector, logService: LogService) =>
-                new CipherService(cryptoService, userService, settingsService, apiService, fileUploadService,
-                    storageService, i18nService, () => injector.get(SearchServiceAbstraction), logService),
+            useFactory: (
+                cryptoService: CryptoServiceAbstraction,
+                settingsService: SettingsServiceAbstraction,
+                apiService: ApiServiceAbstraction,
+                fileUploadService: FileUploadServiceAbstraction,
+                i18nService: I18nServiceAbstraction,
+                injector: Injector,
+                logService: LogService,
+                stateService: StateServiceAbstraction,
+            ) => new CipherService(
+                cryptoService,
+                settingsService,
+                apiService,
+                fileUploadService,
+                i18nService,
+                () => injector.get(SearchServiceAbstraction),
+                logService,
+                stateService,
+            ),
             deps: [
                 CryptoServiceAbstraction,
-                UserServiceAbstraction,
                 SettingsServiceAbstraction,
                 ApiServiceAbstraction,
                 FileUploadServiceAbstraction,
-                StorageServiceAbstraction,
                 I18nServiceAbstraction,
                 Injector, // TODO: Get rid of this circular dependency!
                 LogService,
+                StateServiceAbstraction,
             ],
         },
         {
@@ -146,11 +162,10 @@ import { ValidationService } from './validation.service';
             useClass: FolderService,
             deps: [
                 CryptoServiceAbstraction,
-                UserServiceAbstraction,
                 ApiServiceAbstraction,
-                StorageServiceAbstraction,
                 I18nServiceAbstraction,
                 CipherServiceAbstraction,
+                StateServiceAbstraction,
             ],
         },
         { provide: LogService, useFactory: () => new ConsoleLogService(false) },
@@ -159,35 +174,33 @@ import { ValidationService } from './validation.service';
             useClass: CollectionService,
             deps: [
                 CryptoServiceAbstraction,
-                UserServiceAbstraction,
-                StorageServiceAbstraction,
                 I18nServiceAbstraction,
+                StateServiceAbstraction,
             ],
         },
         {
             provide: EnvironmentServiceAbstraction,
             useClass: EnvironmentService,
-            deps: [StorageServiceAbstraction],
+            deps: [StateServiceAbstraction],
         },
         {
             provide: TotpServiceAbstraction,
             useClass: TotpService,
             deps: [
-                StorageServiceAbstraction,
                 CryptoFunctionServiceAbstraction,
                 LogService,
+                StateServiceAbstraction,
             ],
         },
-        { provide: TokenServiceAbstraction, useClass: TokenService, deps: [StorageServiceAbstraction] },
+        { provide: TokenServiceAbstraction, useClass: TokenService, deps: [StateServiceAbstraction] },
         {
             provide: CryptoServiceAbstraction,
             useClass: CryptoService,
             deps: [
-                StorageServiceAbstraction,
-                'SECURE_STORAGE',
                 CryptoFunctionServiceAbstraction,
                 PlatformUtilsServiceAbstraction,
                 LogService,
+                StateServiceAbstraction,
             ],
         },
         {
@@ -195,8 +208,8 @@ import { ValidationService } from './validation.service';
             useClass: PasswordGenerationService,
             deps: [
                 CryptoServiceAbstraction,
-                StorageServiceAbstraction,
                 PolicyServiceAbstraction,
+                StateServiceAbstraction,
             ],
         },
         {
@@ -222,71 +235,121 @@ import { ValidationService } from './validation.service';
         },
         {
             provide: SyncServiceAbstraction,
-            useFactory: (userService: UserServiceAbstraction, apiService: ApiServiceAbstraction,
-                settingsService: SettingsServiceAbstraction, folderService: FolderServiceAbstraction,
-                cipherService: CipherServiceAbstraction, cryptoService: CryptoServiceAbstraction,
-                collectionService: CollectionServiceAbstraction, storageService: StorageServiceAbstraction,
-                messagingService: MessagingServiceAbstraction, policyService: PolicyServiceAbstraction,
-                sendService: SendServiceAbstraction, logService: LogService, tokenService: TokenService,
-                keyConnectorService: KeyConnectorServiceAbstraction) => new SyncService(userService, apiService,
-                    settingsService, folderService, cipherService, cryptoService, collectionService, storageService,
-                    messagingService, policyService, sendService, logService, tokenService, keyConnectorService,
-                    async (expired: boolean) => messagingService.send('logout', { expired: expired })),
+            useFactory: (
+                apiService: ApiServiceAbstraction,
+                settingsService: SettingsServiceAbstraction,
+                folderService: FolderServiceAbstraction,
+                cipherService: CipherServiceAbstraction,
+                cryptoService: CryptoServiceAbstraction,
+                collectionService: CollectionServiceAbstraction,
+                messagingService: MessagingServiceAbstraction,
+                policyService: PolicyServiceAbstraction,
+                sendService: SendServiceAbstraction,
+                logService: LogService,
+                keyConnectorService: KeyConnectorServiceAbstraction,
+                stateService: StateServiceAbstraction,
+                organizationService: OrganizationServiceAbstraction,
+                providerService: ProviderServiceAbstraction,
+            ) => new SyncService(
+                apiService,
+                settingsService,
+                folderService,
+                cipherService,
+                cryptoService,
+                collectionService,
+                messagingService,
+                policyService,
+                sendService,
+                logService,
+                keyConnectorService,
+                stateService,
+                organizationService,
+                providerService,
+                async (expired: boolean) => messagingService.send('logout', { expired: expired })),
             deps: [
-                UserServiceAbstraction,
                 ApiServiceAbstraction,
                 SettingsServiceAbstraction,
                 FolderServiceAbstraction,
                 CipherServiceAbstraction,
                 CryptoServiceAbstraction,
                 CollectionServiceAbstraction,
-                StorageServiceAbstraction,
                 MessagingServiceAbstraction,
                 PolicyServiceAbstraction,
                 SendServiceAbstraction,
                 LogService,
-                TokenServiceAbstraction,
                 KeyConnectorServiceAbstraction,
+                StateServiceAbstraction,
+                OrganizationServiceAbstraction,
+                ProviderServiceAbstraction,
             ],
-        },
-        {
-            provide: UserServiceAbstraction,
-            useClass: UserService,
-            deps: [TokenServiceAbstraction, StorageServiceAbstraction],
         },
         { provide: BroadcasterServiceAbstraction, useClass: BroadcasterService },
         {
             provide: SettingsServiceAbstraction,
             useClass: SettingsService,
-            deps: [UserServiceAbstraction, StorageServiceAbstraction],
+            deps: [StateServiceAbstraction],
         },
         {
             provide: VaultTimeoutServiceAbstraction,
-            useFactory: (cipherService: CipherServiceAbstraction, folderService: FolderServiceAbstraction,
-                collectionService: CollectionServiceAbstraction, cryptoService: CryptoServiceAbstraction,
-                platformUtilsService: PlatformUtilsServiceAbstraction, storageService: StorageServiceAbstraction,
-                messagingService: MessagingServiceAbstraction, searchService: SearchServiceAbstraction,
-                userService: UserServiceAbstraction, tokenService: TokenServiceAbstraction,
-                policyService: PolicyServiceAbstraction, keyConnectorService: KeyConnectorServiceAbstraction) =>
-                new VaultTimeoutService(cipherService, folderService, collectionService, cryptoService,
-                    platformUtilsService, storageService, messagingService, searchService, userService, tokenService,
-                    policyService, keyConnectorService, null,
-                    async () => messagingService.send('logout', { expired: false })),
+            useFactory: (
+                cipherService: CipherServiceAbstraction,
+                folderService: FolderServiceAbstraction,
+                collectionService: CollectionServiceAbstraction,
+                cryptoService: CryptoServiceAbstraction,
+                platformUtilsService: PlatformUtilsServiceAbstraction,
+                messagingService: MessagingServiceAbstraction,
+                searchService: SearchServiceAbstraction,
+                tokenService: TokenServiceAbstraction,
+                policyService: PolicyServiceAbstraction,
+                keyConnectorService: KeyConnectorServiceAbstraction,
+                stateService: StateServiceAbstraction,
+            ) => new VaultTimeoutService(
+                cipherService,
+                folderService,
+                collectionService,
+                cryptoService,
+                platformUtilsService,
+                messagingService,
+                searchService,
+                tokenService,
+                policyService,
+                keyConnectorService,
+                stateService,
+                null,
+                async () => messagingService.send('logout', { expired: false }),
+            ),
             deps: [
                 CipherServiceAbstraction,
                 FolderServiceAbstraction,
                 CollectionServiceAbstraction,
                 CryptoServiceAbstraction,
                 PlatformUtilsServiceAbstraction,
-                StorageServiceAbstraction,
                 MessagingServiceAbstraction,
                 SearchServiceAbstraction,
-                UserServiceAbstraction,
                 TokenServiceAbstraction,
                 PolicyServiceAbstraction,
+                KeyConnectorServiceAbstraction,
+                StateServiceAbstraction,
             ],
         },
-        { provide: StateServiceAbstraction, useClass: StateService },
+        {
+            provide: StateServiceAbstraction,
+            useClass: StateService,
+            deps: [
+                StorageServiceAbstraction,
+                'SECURE_STORAGE',
+                LogService,
+                StateMigrationServiceAbstraction,
+            ],
+        },
+        {
+            provide: StateMigrationServiceAbstraction,
+            useClass: StateMigrationService,
+            deps: [
+                StorageServiceAbstraction,
+                'SECURE_STORAGE',
+            ],
+        },
         {
             provide: ExportServiceAbstraction,
             useClass: ExportService,
@@ -308,14 +371,26 @@ import { ValidationService } from './validation.service';
         },
         {
             provide: NotificationsServiceAbstraction,
-            useFactory: (userService: UserServiceAbstraction, syncService: SyncServiceAbstraction,
-                appIdService: AppIdServiceAbstraction, apiService: ApiServiceAbstraction,
-                vaultTimeoutService: VaultTimeoutServiceAbstraction, environmentService: EnvironmentServiceAbstraction,
-                messagingService: MessagingServiceAbstraction, logService: LogService) =>
-                new NotificationsService(userService, syncService, appIdService, apiService, vaultTimeoutService,
-                environmentService, async () => messagingService.send('logout', { expired: true }), logService),
+            useFactory: (
+                syncService: SyncServiceAbstraction,
+                appIdService: AppIdServiceAbstraction,
+                apiService: ApiServiceAbstraction,
+                vaultTimeoutService: VaultTimeoutServiceAbstraction,
+                environmentService: EnvironmentServiceAbstraction,
+                messagingService: MessagingServiceAbstraction,
+                logService: LogService,
+                stateService: StateServiceAbstraction,
+            ) => new NotificationsService(
+                syncService,
+                appIdService,
+                apiService,
+                vaultTimeoutService,
+                environmentService,
+                async () => messagingService.send('logout', { expired: true }),
+                logService,
+                stateService,
+            ),
             deps: [
-                UserServiceAbstraction,
                 SyncServiceAbstraction,
                 AppIdServiceAbstraction,
                 ApiServiceAbstraction,
@@ -323,6 +398,7 @@ import { ValidationService } from './validation.service';
                 EnvironmentServiceAbstraction,
                 MessagingServiceAbstraction,
                 LogService,
+                StateServiceAbstraction,
             ],
         },
         {
@@ -334,19 +410,19 @@ import { ValidationService } from './validation.service';
             provide: EventServiceAbstraction,
             useClass: EventService,
             deps: [
-                StorageServiceAbstraction,
                 ApiServiceAbstraction,
-                UserServiceAbstraction,
                 CipherServiceAbstraction,
+                StateServiceAbstraction,
                 LogService,
+                OrganizationServiceAbstraction,
             ],
         },
         {
             provide: PolicyServiceAbstraction,
             useClass: PolicyService,
             deps: [
-                UserServiceAbstraction,
-                StorageServiceAbstraction,
+                StateServiceAbstraction,
+                OrganizationServiceAbstraction,
                 ApiServiceAbstraction,
             ],
         },
@@ -355,24 +431,23 @@ import { ValidationService } from './validation.service';
             useClass: SendService,
             deps: [
                 CryptoServiceAbstraction,
-                UserServiceAbstraction,
                 ApiServiceAbstraction,
                 FileUploadServiceAbstraction,
-                StorageServiceAbstraction,
                 I18nServiceAbstraction,
                 CryptoFunctionServiceAbstraction,
+                StateServiceAbstraction,
             ],
         },
         {
             provide: KeyConnectorServiceAbstraction,
             useClass: KeyConnectorService,
             deps: [
-                StorageServiceAbstraction,
-                UserServiceAbstraction,
+                StateServiceAbstraction,
                 CryptoServiceAbstraction,
                 ApiServiceAbstraction,
                 TokenServiceAbstraction,
                 LogService,
+                OrganizationServiceAbstraction,
             ],
         },
         {
@@ -385,6 +460,20 @@ import { ValidationService } from './validation.service';
             ],
         },
         { provide: PasswordRepromptServiceAbstraction, useClass: PasswordRepromptService },
+        {
+            provide: OrganizationServiceAbstraction,
+            useClass: OrganizationService,
+            deps: [
+                StateServiceAbstraction,
+            ],
+        },
+        {
+            provide: ProviderServiceAbstraction,
+            useClass: ProviderService,
+            deps: [
+                StateServiceAbstraction,
+            ],
+        },
     ],
 })
 export class JslibServicesModule {
