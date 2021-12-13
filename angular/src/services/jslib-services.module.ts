@@ -66,9 +66,7 @@ import { SearchService as SearchServiceAbstraction } from 'jslib-common/abstract
 import { SendService as SendServiceAbstraction } from 'jslib-common/abstractions/send.service';
 import { SettingsService as SettingsServiceAbstraction } from 'jslib-common/abstractions/settings.service';
 import { StateService as StateServiceAbstraction } from 'jslib-common/abstractions/state.service';
-import { 
-    StateMigrationService as StateMigrationServiceAbstraction 
-} from 'jslib-common/abstractions/stateMigration.service';
+import { StateMigrationService as StateMigrationServiceAbstraction } from 'jslib-common/abstractions/stateMigration.service';
 import { StorageService as StorageServiceAbstraction } from 'jslib-common/abstractions/storage.service';
 import { SyncService as SyncServiceAbstraction } from 'jslib-common/abstractions/sync.service';
 import { TokenService as TokenServiceAbstraction } from 'jslib-common/abstractions/token.service';
@@ -124,13 +122,13 @@ import { ValidationService } from './validation.service';
                 CryptoFunctionServiceAbstraction,
                 KeyConnectorServiceAbstraction,
                 EnvironmentServiceAbstraction,
-                StateServiceAbstraction
+                StateServiceAbstraction,
             ],
         },
         {
             provide: CipherServiceAbstraction,
             useFactory: (
-                cryptoService: CryptoServiceAbstraction, 
+                cryptoService: CryptoServiceAbstraction,
                 settingsService: SettingsServiceAbstraction,
                 apiService: ApiServiceAbstraction,
                 fileUploadService: FileUploadServiceAbstraction,
@@ -146,7 +144,7 @@ import { ValidationService } from './validation.service';
                 i18nService,
                 () => injector.get(SearchServiceAbstraction),
                 logService,
-                stateService
+                stateService,
             ),
             deps: [
                 CryptoServiceAbstraction,
@@ -247,11 +245,11 @@ import { ValidationService } from './validation.service';
                 messagingService: MessagingServiceAbstraction,
                 policyService: PolicyServiceAbstraction,
                 sendService: SendServiceAbstraction,
-                logService: LogService, 
+                logService: LogService,
                 keyConnectorService: KeyConnectorServiceAbstraction,
                 stateService: StateServiceAbstraction,
                 organizationService: OrganizationServiceAbstraction,
-                providerService: ProviderServiceAbstraction
+                providerService: ProviderServiceAbstraction,
             ) => new SyncService(
                 apiService,
                 settingsService,
@@ -318,7 +316,7 @@ import { ValidationService } from './validation.service';
                 keyConnectorService,
                 stateService,
                 null,
-                async () => messagingService.send('logout', { expired: false })
+                async () => messagingService.send('logout', { expired: false }),
             ),
             deps: [
                 CipherServiceAbstraction,
@@ -334,23 +332,23 @@ import { ValidationService } from './validation.service';
                 StateServiceAbstraction,
             ],
         },
-        { 
+        {
             provide: StateServiceAbstraction,
             useClass: StateService,
             deps: [
-                StorageServiceAbstraction, 
+                StorageServiceAbstraction,
                 'SECURE_STORAGE',
                 LogService,
                 StateMigrationServiceAbstraction,
-            ]
+            ],
         },
-        { 
+        {
             provide: StateMigrationServiceAbstraction,
             useClass: StateMigrationService,
             deps: [
-                StorageServiceAbstraction, 
+                StorageServiceAbstraction,
                 'SECURE_STORAGE',
-            ]
+            ],
         },
         {
             provide: ExportServiceAbstraction,
@@ -416,7 +414,7 @@ import { ValidationService } from './validation.service';
                 CipherServiceAbstraction,
                 StateServiceAbstraction,
                 LogService,
-                OrganizationServiceAbstraction
+                OrganizationServiceAbstraction,
             ],
         },
         {
@@ -462,19 +460,19 @@ import { ValidationService } from './validation.service';
             ],
         },
         { provide: PasswordRepromptServiceAbstraction, useClass: PasswordRepromptService },
-        { 
+        {
             provide: OrganizationServiceAbstraction,
             useClass: OrganizationService,
             deps: [
                 StateServiceAbstraction,
-            ]
+            ],
         },
-        { 
+        {
             provide: ProviderServiceAbstraction,
             useClass: ProviderService,
             deps: [
                 StateServiceAbstraction,
-            ]
+            ],
         },
     ],
 })

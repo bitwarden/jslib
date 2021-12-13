@@ -48,9 +48,9 @@ export class StateService implements StateServiceAbstraction {
     constructor(
         private storageService: StorageService,
         private secureStorageService: StorageService,
-        private logService: LogService, 
+        private logService: LogService,
         private stateMigrationService: StateMigrationService
-    ) {} 
+    ) {}
 
     async init(): Promise<void> {
         if (await this.stateMigrationService.needsMigration()) {
@@ -1459,7 +1459,6 @@ export class StateService implements StateServiceAbstraction {
     private async scaffoldNewAccountLocalStorage(account: Account): Promise<void> {
         const storedState = await this.storageService.get<State>('state', await this.defaultOnDiskLocalOptions()) ?? new State();
         const storedAccount = storedState.accounts[account.profile.userId];
-        console.debug('looking for a stored account', { storedState, storedAccount, account })
         if (storedAccount != null) {
             account = {
                 settings: storedAccount.settings,
