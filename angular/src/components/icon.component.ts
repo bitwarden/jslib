@@ -14,12 +14,12 @@ import { StateService } from 'jslib-common/abstractions/state.service';
 import { Utils } from 'jslib-common/misc/utils';
 
 const IconMap: any = {
-    'fa-globe': String.fromCharCode(0xf0ac),
-    'fa-sticky-note-o': String.fromCharCode(0xf24a),
-    'fa-id-card-o': String.fromCharCode(0xf2c3),
-    'fa-credit-card': String.fromCharCode(0xf09d),
-    'fa-android': String.fromCharCode(0xf17b),
-    'fa-apple': String.fromCharCode(0xf179),
+    'bwi-globe': String.fromCharCode(0xe909),
+    'bwi-sticky-note': String.fromCharCode(0xe90a),
+    'bwi-id-card': String.fromCharCode(0xe907),
+    'bwi-credit-card': String.fromCharCode(0xe908),
+    'bwi-android': String.fromCharCode(0xe944),
+    'bwi-apple': String.fromCharCode(0xe945),
 };
 
 @Component({
@@ -55,17 +55,17 @@ export class IconComponent implements OnChanges {
     protected load() {
         switch (this.cipher.type) {
             case CipherType.Login:
-                this.icon = 'fa-globe';
+                this.icon = 'bwi-globe';
                 this.setLoginIcon();
                 break;
             case CipherType.SecureNote:
-                this.icon = 'fa-sticky-note-o';
+                this.icon = 'bwi-sticky-note';
                 break;
             case CipherType.Card:
-                this.icon = 'fa-credit-card';
+                this.icon = 'bwi-credit-card';
                 break;
             case CipherType.Identity:
-                this.icon = 'fa-id-card-o';
+                this.icon = 'bwi-id-card';
                 break;
             default:
                 break;
@@ -78,10 +78,10 @@ export class IconComponent implements OnChanges {
             let isWebsite = false;
 
             if (hostnameUri.indexOf('androidapp://') === 0) {
-                this.icon = 'fa-android';
+                this.icon = 'bwi-android';
                 this.image = null;
             } else if (hostnameUri.indexOf('iosapp://') === 0) {
-                this.icon = 'fa-apple';
+                this.icon = 'bwi-apple';
                 this.image = null;
             } else if (this.imageEnabled && hostnameUri.indexOf('://') === -1 && hostnameUri.indexOf('.') > -1) {
                 hostnameUri = 'http://' + hostnameUri;
