@@ -15,28 +15,22 @@ import { CipherService } from '../abstractions/cipher.service';
 import { CryptoService } from '../abstractions/crypto.service';
 import { FolderService as FolderServiceAbstraction } from '../abstractions/folder.service';
 import { I18nService } from '../abstractions/i18n.service';
-import { StorageService } from '../abstractions/storage.service';
-import { UserService } from '../abstractions/user.service';
+import { StateService } from '../abstractions/state.service';
+
 import { CipherData } from '../models/data/cipherData';
 
 import { ServiceUtils } from '../misc/serviceUtils';
 import { Utils } from '../misc/utils';
 
-const Keys = {
-    foldersPrefix: 'folders_',
-    ciphersPrefix: 'ciphers_',
-};
 const NestingDelimiter = '/';
 
 export class FolderService implements FolderServiceAbstraction {
-    decryptedFolderCache: FolderView[];
+    constructor(private cryptoService: CryptoService, private apiService: ApiService,
+        private i18nService: I18nService, private cipherService: CipherService,
+        private stateService: StateService) { }
 
-    constructor(private cryptoService: CryptoService, private userService: UserService,
-        private apiService: ApiService, private storageService: StorageService,
-        private i18nService: I18nService, private cipherService: CipherService) { }
-
-    clearCache(): void {
-        this.decryptedFolderCache = null;
+    async clearCache(userId?: string): Promise<void> {
+        await this.stateService.setDecryptedFolders(null, { userId: userId });
     }
 
     async encrypt(model: FolderView, key?: SymmetricCryptoKey): Promise<Folder> {
@@ -47,9 +41,7 @@ export class FolderService implements FolderServiceAbstraction {
     }
 
     async get(id: string): Promise<Folder> {
-        const userId = await this.userService.getUserId();
-        const folders = await this.storageService.get<{ [id: string]: FolderData; }>(
-            Keys.foldersPrefix + userId);
+        const folders = await this.stateService.getEncryptedFolders();
         if (folders == null || !folders.hasOwnProperty(id)) {
             return null;
         }
@@ -58,9 +50,7 @@ export class FolderService implements FolderServiceAbstraction {
     }
 
     async getAll(): Promise<Folder[]> {
-        const userId = await this.userService.getUserId();
-        const folders = await this.storageService.get<{ [id: string]: FolderData; }>(
-            Keys.foldersPrefix + userId);
+        const folders = await this.stateService.getEncryptedFolders();
         const response: Folder[] = [];
         for (const id in folders) {
             if (folders.hasOwnProperty(id)) {
@@ -71,8 +61,9 @@ export class FolderService implements FolderServiceAbstraction {
     }
 
     async getAllDecrypted(): Promise<FolderView[]> {
-        if (this.decryptedFolderCache != null) {
-            return this.decryptedFolderCache;
+        const decryptedFolders = await this.stateService.getDecryptedFolders();
+        if (decryptedFolders != null) {
+            return decryptedFolders;
         }
 
         const hasKey = await this.cryptoService.hasKey();
@@ -94,8 +85,8 @@ export class FolderService implements FolderServiceAbstraction {
         noneFolder.name = this.i18nService.t('noneFolder');
         decFolders.push(noneFolder);
 
-        this.decryptedFolderCache = decFolders;
-        return this.decryptedFolderCache;
+        await this.stateService.setDecryptedFolders(decFolders);
+        return decFolders;
     }
 
     async getAllNested(): Promise<TreeNode<FolderView>[]> {
@@ -127,15 +118,13 @@ export class FolderService implements FolderServiceAbstraction {
             response = await this.apiService.putFolder(folder.id, request);
         }
 
-        const userId = await this.userService.getUserId();
+        const userId = await this.stateService.getUserId();
         const data = new FolderData(response, userId);
         await this.upsert(data);
     }
 
     async upsert(folder: FolderData | FolderData[]): Promise<any> {
-        const userId = await this.userService.getUserId();
-        let folders = await this.storageService.get<{ [id: string]: FolderData; }>(
-            Keys.foldersPrefix + userId);
+        let folders = await this.stateService.getEncryptedFolders();
         if (folders == null) {
             folders = {};
         }
@@ -149,25 +138,22 @@ export class FolderService implements FolderServiceAbstraction {
             });
         }
 
-        await this.storageService.save(Keys.foldersPrefix + userId, folders);
-        this.decryptedFolderCache = null;
+        await this.stateService.setDecryptedFolders(null);
+        await this.stateService.setEncryptedFolders(folders);
     }
 
     async replace(folders: { [id: string]: FolderData; }): Promise<any> {
-        const userId = await this.userService.getUserId();
-        await this.storageService.save(Keys.foldersPrefix + userId, folders);
-        this.decryptedFolderCache = null;
+        await this.stateService.setDecryptedFolders(null);
+        await this.stateService.setEncryptedFolders(folders);
     }
 
-    async clear(userId: string): Promise<any> {
-        await this.storageService.remove(Keys.foldersPrefix + userId);
-        this.decryptedFolderCache = null;
+    async clear(userId?: string): Promise<any> {
+        await this.stateService.setDecryptedFolders(null, { userId: userId });
+        await this.stateService.setEncryptedFolders(null, { userId: userId });
     }
 
     async delete(id: string | string[]): Promise<any> {
-        const userId = await this.userService.getUserId();
-        const folders = await this.storageService.get<{ [id: string]: FolderData; }>(
-            Keys.foldersPrefix + userId);
+        const folders = await this.stateService.getEncryptedFolders();
         if (folders == null) {
             return;
         }
@@ -183,11 +169,11 @@ export class FolderService implements FolderServiceAbstraction {
             });
         }
 
-        await this.storageService.save(Keys.foldersPrefix + userId, folders);
-        this.decryptedFolderCache = null;
+        await this.stateService.setDecryptedFolders(null);
+        await this.stateService.setEncryptedFolders(folders);
 
         // Items in a deleted folder are re-assigned to "No Folder"
-        const ciphers = await this.storageService.get<{ [id: string]: CipherData; }>(Keys.ciphersPrefix + userId);
+        const ciphers = await this.stateService.getEncryptedCiphers();
         if (ciphers != null) {
             const updates: CipherData[] = [];
             for (const cId in ciphers) {

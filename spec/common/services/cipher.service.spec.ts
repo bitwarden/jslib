@@ -7,8 +7,8 @@ import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { LogService } from 'jslib-common/abstractions/log.service';
 import { SearchService } from 'jslib-common/abstractions/search.service';
 import { SettingsService } from 'jslib-common/abstractions/settings.service';
-import { StorageService } from 'jslib-common/abstractions/storage.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
+import { StateService } from 'jslib-common/abstractions/state.service';
+
 import { Utils } from 'jslib-common/misc/utils';
 import { Cipher } from 'jslib-common/models/domain/cipher';
 import { EncArrayBuffer } from 'jslib-common/models/domain/encArrayBuffer';
@@ -22,11 +22,10 @@ const ENCRYPTED_BYTES = new EncArrayBuffer(Utils.fromUtf8ToArray(ENCRYPTED_TEXT)
 
 describe('Cipher Service', () => {
     let cryptoService: SubstituteOf<CryptoService>;
-    let userService: SubstituteOf<UserService>;
+    let stateService: SubstituteOf<StateService>;
     let settingsService: SubstituteOf<SettingsService>;
     let apiService: SubstituteOf<ApiService>;
     let fileUploadService: SubstituteOf<FileUploadService>;
-    let storageService: SubstituteOf<StorageService>;
     let i18nService: SubstituteOf<I18nService>;
     let searchService: SubstituteOf<SearchService>;
     let logService: SubstituteOf<LogService>;
@@ -35,11 +34,10 @@ describe('Cipher Service', () => {
 
     beforeEach(() => {
         cryptoService = Substitute.for<CryptoService>();
-        userService = Substitute.for<UserService>();
+        stateService = Substitute.for<StateService>();
         settingsService = Substitute.for<SettingsService>();
         apiService = Substitute.for<ApiService>();
         fileUploadService = Substitute.for<FileUploadService>();
-        storageService = Substitute.for<StorageService>();
         i18nService = Substitute.for<I18nService>();
         searchService = Substitute.for<SearchService>();
         logService = Substitute.for<LogService>();
@@ -47,12 +45,11 @@ describe('Cipher Service', () => {
         cryptoService.encryptToBytes(Arg.any(), Arg.any()).resolves(ENCRYPTED_BYTES);
         cryptoService.encrypt(Arg.any(), Arg.any()).resolves(new EncString(ENCRYPTED_TEXT));
 
-        cipherService = new CipherService(cryptoService, userService, settingsService, apiService, fileUploadService,
-            storageService, i18nService, () => searchService, logService);
+        cipherService = new CipherService(cryptoService, settingsService, apiService, fileUploadService,
+            i18nService, () => searchService, logService, stateService);
     });
 
     it('attachments upload encrypted file contents', async () => {
-        const key = new SymmetricCryptoKey(new Uint8Array(32).buffer);
         const fileName = 'filename';
         const fileData = new Uint8Array(10).buffer;
         cryptoService.getOrgKey(Arg.any()).resolves(new SymmetricCryptoKey(new Uint8Array(32).buffer));

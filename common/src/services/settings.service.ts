@@ -1,6 +1,5 @@
 import { SettingsService as SettingsServiceAbstraction } from '../abstractions/settings.service';
-import { StorageService } from '../abstractions/storage.service';
-import { UserService } from '../abstractions/user.service';
+import { StateService } from '../abstractions/state.service';
 
 const Keys = {
     settingsPrefix: 'settings_',
@@ -8,13 +7,11 @@ const Keys = {
 };
 
 export class SettingsService implements SettingsServiceAbstraction {
-    private settingsCache: any;
-
-    constructor(private userService: UserService, private storageService: StorageService) {
+    constructor(private stateService: StateService) {
     }
 
-    clearCache(): void {
-        this.settingsCache = null;
+    async clearCache(): Promise<void> {
+        await this.stateService.setSettings(null);
     }
 
     getEquivalentDomains(): Promise<any> {
@@ -25,19 +22,18 @@ export class SettingsService implements SettingsServiceAbstraction {
         await this.setSettingsKey(Keys.equivalentDomains, equivalentDomains);
     }
 
-    async clear(userId: string): Promise<void> {
-        await this.storageService.remove(Keys.settingsPrefix + userId);
-        this.clearCache();
+    async clear(userId?: string): Promise<void> {
+        await this.stateService.setSettings(null, { userId: userId });
     }
 
     // Helpers
 
     private async getSettings(): Promise<any> {
-        if (this.settingsCache == null) {
-            const userId = await this.userService.getUserId();
-            this.settingsCache = this.storageService.get(Keys.settingsPrefix + userId);
+        const settings = await this.stateService.getSettings();
+        if (settings == null) {
+            const userId = await this.stateService.getUserId();
         }
-        return this.settingsCache;
+        return settings;
     }
 
     private async getSettingsKey(key: string): Promise<any> {
@@ -49,14 +45,12 @@ export class SettingsService implements SettingsServiceAbstraction {
     }
 
     private async setSettingsKey(key: string, value: any): Promise<void> {
-        const userId = await this.userService.getUserId();
         let settings = await this.getSettings();
         if (!settings) {
             settings = {};
         }
 
         settings[key] = value;
-        await this.storageService.save(Keys.settingsPrefix + userId, settings);
-        this.settingsCache = settings;
+        await this.stateService.setSettings(settings);
     }
 }

@@ -27,7 +27,7 @@
   "devDependencies": {
     "@fluffy-spoon/substitute": "^1.202.0",
     "@types/jasmine": "^3.7.6",
-    "@types/node": "^14.17.1",
+    "@types/node": "^16.11.12",
     "concurrently": "^6.1.0",
     "form-data": "4.0.0",
     "husky": "^7.0.4",
@@ -64,8 +64,8 @@
     "@bitwarden/jslib-node": "file:node"
   },
   "engines": {
-    "node": "~14",
-    "npm": "~7"
+    "node": "~16",
+    "npm": "~8"
   },
   "lint-staged": {
     "*.{js,ts,css,scss,md}": "prettier --write"

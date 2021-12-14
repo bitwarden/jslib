@@ -12,7 +12,7 @@ import { CryptoService } from 'jslib-common/abstractions/crypto.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { LogService } from 'jslib-common/abstractions/log.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
+import { StateService } from 'jslib-common/abstractions/state.service';
 
 import { Cipher } from 'jslib-common/models/domain/cipher';
 import { ErrorResponse } from 'jslib-common/models/response/errorResponse';
@@ -37,9 +37,9 @@ export class AttachmentsComponent implements OnInit {
     emergencyAccessId?: string = null;
 
     constructor(protected cipherService: CipherService, protected i18nService: I18nService,
-        protected cryptoService: CryptoService, protected userService: UserService,
-        protected platformUtilsService: PlatformUtilsService, protected apiService: ApiService,
-        protected win: Window, private logService: LogService) { }
+        protected cryptoService: CryptoService, protected platformUtilsService: PlatformUtilsService,
+        protected apiService: ApiService, protected win: Window,
+        protected logService: LogService, protected stateService: StateService) { }
 
     async ngOnInit() {
         await this.init();
@@ -164,7 +164,7 @@ export class AttachmentsComponent implements OnInit {
         this.cipher = await this.cipherDomain.decrypt();
 
         this.hasUpdatedKey = await this.cryptoService.hasEncKey();
-        const canAccessPremium = await this.userService.canAccessPremium();
+        const canAccessPremium = await this.stateService.getCanAccessPremium();
         this.canAccessAttachments = canAccessPremium || this.cipher.organizationId != null;
 
         if (!this.canAccessAttachments) {

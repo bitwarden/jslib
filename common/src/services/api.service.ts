@@ -1515,7 +1515,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     async getActiveBearerToken(): Promise<string> {
         let accessToken = await this.tokenService.getToken();
-        if (this.tokenService.tokenNeedsRefresh()) {
+        if (await this.tokenService.tokenNeedsRefresh()) {
             await this.doAuthRefresh();
             accessToken = await this.tokenService.getToken();
         }
@@ -1637,7 +1637,7 @@ export class ApiService implements ApiServiceAbstraction {
             headers.set('User-Agent', this.customUserAgent);
         }
 
-        const decodedToken = this.tokenService.decodeToken();
+        const decodedToken = await this.tokenService.decodeToken();
         const response = await this.fetch(new Request(this.environmentService.getIdentityUrl() + '/connect/token', {
             body: this.qsStringify({
                 grant_type: 'refresh_token',
