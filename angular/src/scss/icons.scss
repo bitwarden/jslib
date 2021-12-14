@@ -1,0 +1,86 @@
+.credit-card-icon {
+    height: 18px;
+    width: 24px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+@each $theme in $dark-icon-themes {
+    .#{$theme} .card-visa {
+        background-image: url(../images/cards/visa-dark.png);
+    }
+}
+  
+.card-visa {
+    background-image: url(../images/cards/visa-light.png);
+}
+
+@each $theme in $dark-icon-themes {
+    .#{$theme} .card-amex {
+        background-image: url(../images/cards/amex-dark.png);
+    }
+}
+  
+.card-amex {
+    background-image: url(../images/cards/amex-light.png);
+}
+
+@each $theme in $dark-icon-themes {
+    .#{$theme} .card-diners-club {
+        background-image: url(../images/cards/diners_club-dark.png);
+    }
+}
+  
+.card-diners-club {
+    background-image: url(../images/cards/diners_club-light.png);
+}
+
+@each $theme in $dark-icon-themes {
+    .#{$theme} .card-discover {
+        background-image: url(../images/cards/discover-dark.png);
+    }
+}
+  
+.card-discover {
+    background-image: url(../images/cards/discover-light.png);
+}
+
+@each $theme in $dark-icon-themes {
+    .#{$theme} .card-jcb {
+        background-image: url(../images/cards/jcb-dark.png);
+    }
+}
+  
+.card-jcb {
+    background-image: url(../images/cards/jcb-light.png);
+}
+
+@each $theme in $dark-icon-themes {
+    .#{$theme} .card-maestro {
+        background-image: url(../images/cards/maestro-dark.png);
+    }
+}
+  
+.card-maestro {
+    background-image: url(../images/cards/maestro-light.png);
+}
+
+@each $theme in $dark-icon-themes {
+    .#{$theme} .card-mastercard {
+        background-image: url(../images/cards/mastercard-dark.png);
+    }
+}
+  
+.card-mastercard {
+    background-image: url(../images/cards/mastercard-light.png);
+}
+
+@each $theme in $dark-icon-themes {
+    .#{$theme} .card-union-pay {
+        background-image: url(../images/cards/union_pay-dark.png);
+    }
+}
+  
+.card-union-pay {
+    background-image: url(../images/cards/union_pay-light.png);
+}
