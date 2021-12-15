@@ -23,6 +23,7 @@ import { IdentityTokenResponse } from 'jslib-common/models/response/identityToke
 import { StateService } from 'jslib-common/abstractions/state.service';
 import { AccountProfile, AccountTokens } from 'jslib-common/models/domain/account';
 import { KeyConnectorUserKeyRequest } from 'jslib-common/models/request/keyConnectorUserKeyRequest';
+import { IdentityTwoFactorResponse } from 'jslib-common/models/response/identityTwoFactorResponse';
 
 describe('Cipher Service', () => {
     let cryptoService: SubstituteOf<CryptoService>;
@@ -231,6 +232,7 @@ describe('Cipher Service', () => {
         cryptoService.didNotReceive().setEncPrivateKey(Arg.any());
     });
 
+    // TODO: this should be logInSso
     it('logIn: gets and sets KeyConnector key for enrolled user', async () => {
         logInSetup();
         commonSetup();
@@ -259,6 +261,32 @@ describe('Cipher Service', () => {
 
         commonSuccessAssertions();
         apiService.received(1).postAccountKeys(Arg.any());
+    });
+
+    it('logIn: bails out if 2FA is required', async () => {
+        const twoFactorProviders = new Map<number, null>([
+            [1, null]
+        ]);
+
+        logInSetup();
+        commonSetup();
+        const tokenResponse = newTokenResponse();
+        (tokenResponse as any).twoFactorProviders2 = twoFactorProviders;
+
+        tokenService.getTwoFactorToken(email).resolves(null);
+        apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
+
+        const expected = new AuthResult();
+        expected.twoFactor = true;
+        expected.twoFactorProviders = twoFactorProviders;
+        expected.captchaSiteKey = undefined;
+
+        const result = await authService.logIn(email, masterPassword);
+
+        stateService.didNotReceive().addAccount(Arg.any());
+        messagingService.didNotReceive().send(Arg.any());
+
+        expect(result).toEqual(expected);
     });
 
     // it('login: new SSO user with Key Connector posts key to the server', async () => {
