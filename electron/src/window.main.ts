@@ -1,35 +1,31 @@
-import {
-    app,
-    BrowserWindow,
-    screen,
-} from 'electron';
-import * as path from 'path';
-import * as url from 'url';
+import { app, BrowserWindow, screen } from "electron";
+import * as path from "path";
+import * as url from "url";
 
-import { LogService } from 'jslib-common/abstractions/log.service';
-import { StateService } from 'jslib-common/abstractions/state.service';
+import { LogService } from "jslib-common/abstractions/log.service";
+import { StateService } from "jslib-common/abstractions/state.service";
 
-import {
-    cleanUserAgent,
-    isDev,
-    isMacAppStore,
-    isSnapStore,
-} from './utils';
+import { cleanUserAgent, isDev, isMacAppStore, isSnapStore } from "./utils";
 
-const mainWindowSizeKey = 'mainWindowSize';
+const mainWindowSizeKey = "mainWindowSize";
 const WindowEventHandlingDelay = 100;
 export class WindowMain {
     win: BrowserWindow;
     isQuitting: boolean = false;
 
     private windowStateChangeTimer: NodeJS.Timer;
-    private windowStates: { [key: string]: any; } = {};
+    private windowStates: { [key: string]: any } = {};
     private enableAlwaysOnTop: boolean = false;
 
-    constructor(private stateService: StateService, private logService: LogService,
-        private hideTitleBar = false, private defaultWidth = 950, private defaultHeight = 600,
+    constructor(
+        private stateService: StateService,
+        private logService: LogService,
+        private hideTitleBar = false,
+        private defaultWidth = 950,
+        private defaultHeight = 600,
         private argvCallback: (argv: string[]) => void = null,
-        private createWindowCallback: (win: BrowserWindow) => void) { }
+        private createWindowCallback: (win: BrowserWindow) => void
+    ) {}
 
     init(): Promise<any> {
         return new Promise<void>((resolve, reject) => {
@@ -40,7 +36,7 @@ export class WindowMain {
                         app.quit();
                         return;
                     } else {
-                        app.on('second-instance', (event, argv, workingDirectory) => {
+                        app.on("second-instance", (event, argv, workingDirectory) => {
                             // Someone tried to run a second instance, we should focus our window.
                             if (this.win != null) {
                                 if (this.win.isMinimized() || !this.win.isVisible()) {
@@ -48,7 +44,7 @@ export class WindowMain {
                                 }
                                 this.win.focus();
                             }
-                            if (process.platform === 'win32' || process.platform === 'linux') {
+                            if (process.platform === "win32" || process.platform === "linux") {
                                 if (this.argvCallback != null) {
                                     this.argvCallback(argv);
                                 }
@@ -59,14 +55,14 @@ export class WindowMain {
 
                 // This method will be called when Electron is shutting
                 // down the application.
-                app.on('before-quit', () => {
+                app.on("before-quit", () => {
                     this.isQuitting = true;
                 });
 
                 // This method will be called when Electron has finished
                 // initialization and is ready to create browser windows.
                 // Some APIs can only be used after this event occurs.
-                app.on('ready', async () => {
+                app.on("ready", async () => {
                     await this.createWindow();
                     resolve();
                     if (this.argvCallback != null) {
@@ -75,15 +71,15 @@ export class WindowMain {
                 });
 
                 // Quit when all windows are closed.
-                app.on('window-all-closed', () => {
+                app.on("window-all-closed", () => {
                     // On OS X it is common for applications and their menu bar
                     // to stay active until the user quits explicitly with Cmd + Q
-                    if (process.platform !== 'darwin' || this.isQuitting || isMacAppStore()) {
+                    if (process.platform !== "darwin" || this.isQuitting || isMacAppStore()) {
                         app.quit();
                     }
                 });
 
-                app.on('activate', async () => {
+                app.on("activate", async () => {
                     // On OS X it's common to re-create a window in the app when the
                     // dock icon is clicked and there are no other windows open.
                     if (this.win === null) {
@@ -93,7 +89,6 @@ export class WindowMain {
                         this.win.show();
                     }
                 });
-
             } catch (e) {
                 // Catch Error
                 // throw e;
@@ -103,8 +98,11 @@ export class WindowMain {
     }
 
     async createWindow(): Promise<void> {
-        this.windowStates[mainWindowSizeKey] = await this.getWindowState(mainWindowSizeKey, this.defaultWidth,
-            this.defaultHeight);
+        this.windowStates[mainWindowSizeKey] = await this.getWindowState(
+            mainWindowSizeKey,
+            this.defaultWidth,
+            this.defaultHeight
+        );
         this.enableAlwaysOnTop = await this.stateService.getEnableAlwaysOnTop();
 
         // Create the browser window.
@@ -116,10 +114,10 @@ export class WindowMain {
             x: this.windowStates[mainWindowSizeKey].x,
             y: this.windowStates[mainWindowSizeKey].y,
             title: app.name,
-            icon: process.platform === 'linux' ? path.join(__dirname, '/images/icon.png') : undefined,
-            titleBarStyle: this.hideTitleBar && process.platform === 'darwin' ? 'hiddenInset' : undefined,
+            icon: process.platform === "linux" ? path.join(__dirname, "/images/icon.png") : undefined,
+            titleBarStyle: this.hideTitleBar && process.platform === "darwin" ? "hiddenInset" : undefined,
             show: false,
-            backgroundColor: '#fff',
+            backgroundColor: "#fff",
             alwaysOnTop: this.enableAlwaysOnTop,
             webPreferences: {
                 nodeIntegration: true,
@@ -136,10 +134,10 @@ export class WindowMain {
         this.win.show();
 
         // and load the index.html of the app.
-        this.win.loadURL(url.format(
-            {
-                protocol: 'file:',
-                pathname: path.join(__dirname, '/index.html'),
+        this.win.loadURL(
+            url.format({
+                protocol: "file:",
+                pathname: path.join(__dirname, "/index.html"),
                 slashes: true,
             }),
             {
@@ -153,7 +151,7 @@ export class WindowMain {
         }
 
         // Emitted when the window is closed.
-        this.win.on('closed', async () => {
+        this.win.on("closed", async () => {
             await this.updateWindowState(mainWindowSizeKey, this.win);
 
             // Dereference the window object, usually you would store window
@@ -162,28 +160,28 @@ export class WindowMain {
             this.win = null;
         });
 
-        this.win.on('close', async () => {
+        this.win.on("close", async () => {
             await this.updateWindowState(mainWindowSizeKey, this.win);
         });
 
-        this.win.on('maximize', async () => {
+        this.win.on("maximize", async () => {
             await this.updateWindowState(mainWindowSizeKey, this.win);
         });
 
-        this.win.on('unmaximize', async () => {
+        this.win.on("unmaximize", async () => {
             await this.updateWindowState(mainWindowSizeKey, this.win);
         });
 
-        this.win.on('resize', () => {
+        this.win.on("resize", () => {
             this.windowStateChangeHandler(mainWindowSizeKey, this.win);
         });
 
-        this.win.on('move', () => {
+        this.win.on("move", () => {
             this.windowStateChangeHandler(mainWindowSizeKey, this.win);
         });
-        this.win.on('focus', () => {
-            this.win.webContents.send('messagingService', {
-                command: 'windowIsFocused',
+        this.win.on("focus", () => {
+            this.win.webContents.send("messagingService", {
+                command: "windowIsFocused",
                 windowIsFocused: true,
             });
         });
@@ -231,7 +229,7 @@ export class WindowMain {
                 this.windowStates[configKey].height = bounds.height;
             }
 
-            const cachedWindow = await this.stateService.getWindow() ?? new Map<string, any>();
+            const cachedWindow = (await this.stateService.getWindow()) ?? new Map<string, any>();
             cachedWindow.set(configKey, this.windowStates[configKey]);
             await this.stateService.setWindow(cachedWindow);
         } catch (e) {
@@ -240,10 +238,8 @@ export class WindowMain {
     }
 
     private async getWindowState(configKey: string, defaultWidth: number, defaultHeight: number) {
-        const windowState = await this.stateService.getWindow() ?? new Map<string, any>();
-        let state = windowState.has(configKey) ?
-            windowState.get(configKey) :
-            null;
+        const windowState = (await this.stateService.getWindow()) ?? new Map<string, any>();
+        let state = windowState.has(configKey) ? windowState.get(configKey) : null;
 
         const isValid = state != null && (this.stateHasBounds(state) || state.isMaximized);
         let displayBounds: Electron.Rectangle = null;
@@ -258,10 +254,12 @@ export class WindowMain {
             // Check if the display where the window was last open is still available
             displayBounds = screen.getDisplayMatching(state.displayBounds).bounds;
 
-            if (displayBounds.width !== state.displayBounds.width ||
+            if (
+                displayBounds.width !== state.displayBounds.width ||
                 displayBounds.height !== state.displayBounds.height ||
                 displayBounds.x !== state.displayBounds.x ||
-                displayBounds.y !== state.displayBounds.y) {
+                displayBounds.y !== state.displayBounds.y
+            ) {
                 state.x = undefined;
                 state.y = undefined;
                 displayBounds = screen.getPrimaryDisplay().bounds;
@@ -285,7 +283,14 @@ export class WindowMain {
     }
 
     private stateHasBounds(state: any): boolean {
-        return state != null && Number.isInteger(state.x) && Number.isInteger(state.y) &&
-            Number.isInteger(state.width) && state.width > 0 && Number.isInteger(state.height) && state.height > 0;
+        return (
+            state != null &&
+            Number.isInteger(state.x) &&
+            Number.isInteger(state.y) &&
+            Number.isInteger(state.width) &&
+            state.width > 0 &&
+            Number.isInteger(state.height) &&
+            state.height > 0
+        );
     }
 }

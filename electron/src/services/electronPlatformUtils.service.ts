@@ -1,42 +1,39 @@
-import {
-    clipboard,
-    ipcRenderer,
-    shell,
-} from 'electron';
+import { clipboard, ipcRenderer, shell } from "electron";
 
-import {
-    isDev,
-    isMacAppStore,
-} from '../utils';
+import { isDev, isMacAppStore } from "../utils";
 
-import { DeviceType } from 'jslib-common/enums/deviceType';
-import { ThemeType } from 'jslib-common/enums/themeType';
+import { DeviceType } from "jslib-common/enums/deviceType";
+import { ThemeType } from "jslib-common/enums/themeType";
 
-import { I18nService } from 'jslib-common/abstractions/i18n.service';
-import { MessagingService } from 'jslib-common/abstractions/messaging.service';
-import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
-import { StateService } from 'jslib-common/abstractions/state.service';
+import { I18nService } from "jslib-common/abstractions/i18n.service";
+import { MessagingService } from "jslib-common/abstractions/messaging.service";
+import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
+import { StateService } from "jslib-common/abstractions/state.service";
 
 export class ElectronPlatformUtilsService implements PlatformUtilsService {
     identityClientId: string;
 
     private deviceCache: DeviceType = null;
 
-    constructor(protected i18nService: I18nService, private messagingService: MessagingService,
-        private isDesktopApp: boolean, private stateService: StateService) {
-        this.identityClientId = isDesktopApp ? 'desktop' : 'connector';
+    constructor(
+        protected i18nService: I18nService,
+        private messagingService: MessagingService,
+        private isDesktopApp: boolean,
+        private stateService: StateService
+    ) {
+        this.identityClientId = isDesktopApp ? "desktop" : "connector";
     }
 
     getDevice(): DeviceType {
         if (!this.deviceCache) {
             switch (process.platform) {
-                case 'win32':
+                case "win32":
                     this.deviceCache = DeviceType.WindowsDesktop;
                     break;
-                case 'darwin':
+                case "darwin":
                     this.deviceCache = DeviceType.MacOsDesktop;
                     break;
-                case 'linux':
+                case "linux":
                 default:
                     this.deviceCache = DeviceType.LinuxDesktop;
                     break;
@@ -48,7 +45,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
 
     getDeviceString(): string {
         const device = DeviceType[this.getDevice()].toLowerCase();
-        return device.replace('desktop', '');
+        return device.replace("desktop", "");
     }
 
     isFirefox(): boolean {
@@ -93,7 +90,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
 
     saveFile(win: Window, blobData: any, blobOptions: any, fileName: string): void {
         const blob = new Blob([blobData], blobOptions);
-        const a = win.document.createElement('a');
+        const a = win.document.createElement("a");
         a.href = URL.createObjectURL(blob);
         a.download = fileName;
         win.document.body.appendChild(a);
@@ -102,22 +99,26 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     }
 
     getApplicationVersion(): Promise<string> {
-        return ipcRenderer.invoke('appVersion');
+        return ipcRenderer.invoke("appVersion");
     }
 
     // Temporarily restricted to only Windows until https://github.com/electron/electron/pull/28349
     // has been merged and an updated electron build is available.
     supportsWebAuthn(win: Window): boolean {
-        return process.platform === 'win32';
+        return process.platform === "win32";
     }
 
     supportsDuo(): boolean {
         return true;
     }
 
-    showToast(type: 'error' | 'success' | 'warning' | 'info', title: string, text: string | string[],
-        options?: any): void {
-        this.messagingService.send('showToast', {
+    showToast(
+        type: "error" | "success" | "warning" | "info",
+        title: string,
+        text: string | string[],
+        options?: any
+    ): void {
+        this.messagingService.send("showToast", {
             text: text,
             title: title,
             type: type,
@@ -125,14 +126,19 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         });
     }
 
-    async showDialog(text: string, title?: string, confirmText?: string, cancelText?: string, type?: string):
-        Promise<boolean> {
-        const buttons = [confirmText == null ? this.i18nService.t('ok') : confirmText];
+    async showDialog(
+        text: string,
+        title?: string,
+        confirmText?: string,
+        cancelText?: string,
+        type?: string
+    ): Promise<boolean> {
+        const buttons = [confirmText == null ? this.i18nService.t("ok") : confirmText];
         if (cancelText != null) {
             buttons.push(cancelText);
         }
 
-        const result = await ipcRenderer.invoke('showMessageBox', {
+        const result = await ipcRenderer.invoke("showMessageBox", {
             type: type,
             title: title,
             message: title,
@@ -160,7 +166,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         const clearMs: number = options && options.clearMs ? options.clearMs : null;
         clipboard.writeText(text, type);
         if (!clearing) {
-            this.messagingService.send('copiedToClipboard', {
+            this.messagingService.send("copiedToClipboard", {
                 clipboardValue: text,
                 clearMs: clearMs,
                 type: type,
@@ -179,20 +185,20 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     }
 
     authenticateBiometric(): Promise<boolean> {
-        return new Promise(resolve => {
-            const val = ipcRenderer.sendSync('biometric', {
-                action: 'authenticate',
+        return new Promise((resolve) => {
+            const val = ipcRenderer.sendSync("biometric", {
+                action: "authenticate",
             });
             resolve(val);
         });
     }
 
     getDefaultSystemTheme() {
-        return ipcRenderer.invoke('systemTheme');
+        return ipcRenderer.invoke("systemTheme");
     }
 
-    onDefaultSystemThemeChange(callback: ((theme: ThemeType.Light | ThemeType.Dark) => unknown)) {
-        ipcRenderer.on('systemThemeUpdated', (event, theme: ThemeType.Light | ThemeType.Dark) => callback(theme));
+    onDefaultSystemThemeChange(callback: (theme: ThemeType.Light | ThemeType.Dark) => unknown) {
+        ipcRenderer.on("systemThemeUpdated", (event, theme: ThemeType.Light | ThemeType.Dark) => callback(theme));
     }
 
     async getEffectiveTheme() {

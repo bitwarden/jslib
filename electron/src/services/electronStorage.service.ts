@@ -1,35 +1,35 @@
-import { ipcMain, ipcRenderer } from 'electron';
-import * as fs from 'fs';
+import { ipcMain, ipcRenderer } from "electron";
+import * as fs from "fs";
 
-import { StorageService } from 'jslib-common/abstractions/storage.service';
+import { StorageService } from "jslib-common/abstractions/storage.service";
 
-import { NodeUtils } from 'jslib-common/misc/nodeUtils';
+import { NodeUtils } from "jslib-common/misc/nodeUtils";
 
 // tslint:disable-next-line
-const Store = require('electron-store');
+const Store = require("electron-store");
 
 export class ElectronStorageService implements StorageService {
     private store: any;
 
     constructor(dir: string, defaults = {}) {
         if (!fs.existsSync(dir)) {
-            NodeUtils.mkdirpSync(dir, '700');
+            NodeUtils.mkdirpSync(dir, "700");
         }
         const storeConfig: any = {
             defaults: defaults,
-            name: 'data',
+            name: "data",
         };
         this.store = new Store(storeConfig);
 
-        ipcMain.handle('storageService', (event, options) => {
+        ipcMain.handle("storageService", (event, options) => {
             switch (options.action) {
-                case 'get':
+                case "get":
                     return this.get(options.key);
-                case 'has':
+                case "has":
                     return this.has(options.key);
-                case 'save':
+                case "save":
                     return this.save(options.key, options.obj);
-                case 'remove':
+                case "remove":
                     return this.remove(options.key);
             }
         });

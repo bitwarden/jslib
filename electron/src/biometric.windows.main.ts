@@ -1,20 +1,24 @@
-import { ipcMain } from 'electron';
-import forceFocus from 'forcefocus';
+import { ipcMain } from "electron";
+import forceFocus from "forcefocus";
 
-import { WindowMain } from './window.main';
+import { WindowMain } from "./window.main";
 
-import { BiometricMain } from 'jslib-common/abstractions/biometric.main';
-import { I18nService } from 'jslib-common/abstractions/i18n.service';
-import { LogService } from 'jslib-common/abstractions/log.service';
-import { StateService } from 'jslib-common/abstractions/state.service';
+import { BiometricMain } from "jslib-common/abstractions/biometric.main";
+import { I18nService } from "jslib-common/abstractions/i18n.service";
+import { LogService } from "jslib-common/abstractions/log.service";
+import { StateService } from "jslib-common/abstractions/state.service";
 
 export default class BiometricWindowsMain implements BiometricMain {
     isError: boolean = false;
 
     private windowsSecurityCredentialsUiModule: any;
 
-    constructor(private i18nservice: I18nService, private windowMain: WindowMain,
-        private stateService: StateService, private logService: LogService) { }
+    constructor(
+        private i18nservice: I18nService,
+        private windowMain: WindowMain,
+        private stateService: StateService,
+        private logService: LogService
+    ) {}
 
     async init() {
         this.windowsSecurityCredentialsUiModule = this.getWindowsSecurityCredentialsUiModule();
@@ -26,10 +30,10 @@ export default class BiometricWindowsMain implements BiometricMain {
             this.isError = true;
         }
         await this.stateService.setEnableBiometric(supportsBiometric);
-        await this.stateService.setBiometricText('unlockWithWindowsHello');
-        await this.stateService.setNoAutoPromptBiometricsText('noAutoPromptWindowsHello');
+        await this.stateService.setBiometricText("unlockWithWindowsHello");
+        await this.stateService.setNoAutoPromptBiometricsText("noAutoPromptWindowsHello");
 
-        ipcMain.on('biometric', async (event: any, message: any) => {
+        ipcMain.on("biometric", async (event: any, message: any) => {
             event.returnValue = await this.authenticateBiometric();
         });
     }
@@ -46,7 +50,7 @@ export default class BiometricWindowsMain implements BiometricMain {
             return false;
         }
 
-        const verification = await this.requestVerificationAsync(this.i18nservice.t('windowsHelloConsentMessage'));
+        const verification = await this.requestVerificationAsync(this.i18nservice.t("windowsHelloConsentMessage"));
 
         return verification === module.UserConsentVerificationResult.verified;
     }
@@ -54,7 +58,7 @@ export default class BiometricWindowsMain implements BiometricMain {
     getWindowsSecurityCredentialsUiModule(): any {
         try {
             if (this.windowsSecurityCredentialsUiModule == null && this.getWindowsMajorVersion() >= 10) {
-                this.windowsSecurityCredentialsUiModule = require('@nodert-win10-rs4/windows.security.credentials.ui');
+                this.windowsSecurityCredentialsUiModule = require("@nodert-win10-rs4/windows.security.credentials.ui");
             }
             return this.windowsSecurityCredentialsUiModule;
         } catch {
@@ -114,19 +118,21 @@ export default class BiometricWindowsMain implements BiometricMain {
                     module.UserConsentVerifierAvailability.deviceBusy,
                 ];
             }
-        } catch { /*Ignore error*/ }
+        } catch {
+            /*Ignore error*/
+        }
         return [];
     }
 
     getWindowsMajorVersion(): number {
-        if (process.platform !== 'win32') {
+        if (process.platform !== "win32") {
             return -1;
         }
         try {
-            const version = require('os').release();
-            return Number.parseInt(version.split('.')[0], 10);
+            const version = require("os").release();
+            return Number.parseInt(version.split(".")[0], 10);
         } catch {
-            this.logService.error('Unable to resolve windows major version number');
+            this.logService.error("Unable to resolve windows major version number");
         }
         return -1;
     }

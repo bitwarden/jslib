@@ -1,8 +1,8 @@
-import { ipcMain, systemPreferences } from 'electron';
+import { ipcMain, systemPreferences } from "electron";
 
-import { BiometricMain } from 'jslib-common/abstractions/biometric.main';
-import { I18nService } from 'jslib-common/abstractions/i18n.service';
-import { StateService } from 'jslib-common/abstractions/state.service';
+import { BiometricMain } from "jslib-common/abstractions/biometric.main";
+import { I18nService } from "jslib-common/abstractions/i18n.service";
+import { StateService } from "jslib-common/abstractions/state.service";
 
 export default class BiometricDarwinMain implements BiometricMain {
     isError: boolean = false;
@@ -11,10 +11,10 @@ export default class BiometricDarwinMain implements BiometricMain {
 
     async init() {
         await this.stateService.setEnableBiometric(await this.supportsBiometric());
-        await this.stateService.setBiometricText('unlockWithTouchId');
-        await this.stateService.setNoAutoPromptBiometricsText('noAutoPromptTouchId');
+        await this.stateService.setBiometricText("unlockWithTouchId");
+        await this.stateService.setNoAutoPromptBiometricsText("noAutoPromptTouchId");
 
-        ipcMain.on('biometric', async (event: any, message: any) => {
+        ipcMain.on("biometric", async (event: any, message: any) => {
             event.returnValue = await this.authenticateBiometric();
         });
     }
@@ -25,7 +25,7 @@ export default class BiometricDarwinMain implements BiometricMain {
 
     async authenticateBiometric(): Promise<boolean> {
         try {
-            await systemPreferences.promptTouchID(this.i18nservice.t('touchIdConsentMessage'));
+            await systemPreferences.promptTouchID(this.i18nservice.t("touchIdConsentMessage"));
             return true;
         } catch {
             return false;

@@ -1,12 +1,16 @@
-import { ipcRenderer } from 'electron';
+import { ipcRenderer } from "electron";
 
-export type RendererMenuItem = {label?: string, type?: ('normal' | 'separator' | 'submenu' | 'checkbox' | 'radio'), click?: () => any};
+export type RendererMenuItem = {
+    label?: string;
+    type?: "normal" | "separator" | "submenu" | "checkbox" | "radio";
+    click?: () => any;
+};
 
 export function invokeMenu(menu: RendererMenuItem[]) {
-    const menuWithoutClick = menu.map(m => {
+    const menuWithoutClick = menu.map((m) => {
         return { label: m.label, type: m.type };
     });
-    ipcRenderer.invoke('openContextMenu', { menu: menuWithoutClick }).then((i: number) => {
+    ipcRenderer.invoke("openContextMenu", { menu: menuWithoutClick }).then((i: number) => {
         if (i !== -1) {
             menu[i].click();
         }
@@ -15,18 +19,18 @@ export function invokeMenu(menu: RendererMenuItem[]) {
 
 export function isDev() {
     // ref: https://github.com/sindresorhus/electron-is-dev
-    if ('ELECTRON_IS_DEV' in process.env) {
+    if ("ELECTRON_IS_DEV" in process.env) {
         return parseInt(process.env.ELECTRON_IS_DEV, 10) === 1;
     }
-    return (process.defaultApp || /node_modules[\\/]electron[\\/]/.test(process.execPath));
+    return process.defaultApp || /node_modules[\\/]electron[\\/]/.test(process.execPath);
 }
 
 export function isAppImage() {
-    return process.platform === 'linux' && 'APPIMAGE' in process.env;
+    return process.platform === "linux" && "APPIMAGE" in process.env;
 }
 
 export function isMac() {
-    return process.platform === 'darwin';
+    return process.platform === "darwin";
 }
 
 export function isMacAppStore() {
@@ -34,21 +38,20 @@ export function isMacAppStore() {
 }
 
 export function isWindowsStore() {
-    const isWindows = process.platform === 'win32';
+    const isWindows = process.platform === "win32";
     let windowsStore = process.windowsStore;
-    if (isWindows && !windowsStore &&
-        process.resourcesPath.indexOf('8bitSolutionsLLC.bitwardendesktop_') > -1) {
+    if (isWindows && !windowsStore && process.resourcesPath.indexOf("8bitSolutionsLLC.bitwardendesktop_") > -1) {
         windowsStore = true;
     }
     return isWindows && windowsStore === true;
 }
 
 export function isSnapStore() {
-    return process.platform === 'linux' && process.env.SNAP_USER_DATA != null;
+    return process.platform === "linux" && process.env.SNAP_USER_DATA != null;
 }
 
 export function isWindowsPortable() {
-    return process.platform === 'win32' && process.env.PORTABLE_EXECUTABLE_DIR != null;
+    return process.platform === "win32" && process.env.PORTABLE_EXECUTABLE_DIR != null;
 }
 
 /**
@@ -59,10 +62,11 @@ export function cleanUserAgent(userAgent: string): string {
         const startIndex = userAgent.indexOf(startString);
         return userAgent.substring(startIndex, userAgent.indexOf(endString, startIndex) + 1);
     };
-    const systemInformation = '(Windows NT 10.0; Win64; x64)';
+    const systemInformation = "(Windows NT 10.0; Win64; x64)";
 
     // Set system information, remove bitwarden, and electron information
-    return userAgent.replace(userAgentItem('(', ')'), systemInformation)
-        .replace(userAgentItem('Bitwarden', ' '), '')
-        .replace(userAgentItem('Electron', ' '), '');
+    return userAgent
+        .replace(userAgentItem("(", ")"), systemInformation)
+        .replace(userAgentItem("Bitwarden", " "), "")
+        .replace(userAgentItem("Electron", " "), "");
 }

@@ -1,18 +1,21 @@
-import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
-import { LogService } from 'jslib-common/abstractions/log.service';
-import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
-import { StateService } from 'jslib-common/abstractions/state.service';
+import { CryptoFunctionService } from "jslib-common/abstractions/cryptoFunction.service";
+import { LogService } from "jslib-common/abstractions/log.service";
+import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
+import { StateService } from "jslib-common/abstractions/state.service";
 
-import { CryptoService } from 'jslib-common/services/crypto.service';
+import { CryptoService } from "jslib-common/services/crypto.service";
 
-import { KeySuffixOptions } from 'jslib-common/enums/keySuffixOptions';
-import { StorageLocation } from 'jslib-common/enums/storageLocation';
-import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
+import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
+import { StorageLocation } from "jslib-common/enums/storageLocation";
+import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
 
 export class ElectronCryptoService extends CryptoService {
-
-    constructor(cryptoFunctionService: CryptoFunctionService, platformUtilService: PlatformUtilsService,
-        logService: LogService, stateService: StateService) {
+    constructor(
+        cryptoFunctionService: CryptoFunctionService,
+        platformUtilService: PlatformUtilsService,
+        logService: LogService,
+        stateService: StateService
+    ) {
         super(cryptoFunctionService, platformUtilService, logService, stateService);
     }
 

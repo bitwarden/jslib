@@ -1,23 +1,22 @@
-import log from 'electron-log';
-import * as path from 'path';
+import log from "electron-log";
+import * as path from "path";
 
-import { isDev } from '../utils';
+import { isDev } from "../utils";
 
-import { LogLevelType } from 'jslib-common/enums/logLevelType';
+import { LogLevelType } from "jslib-common/enums/logLevelType";
 
-import { ConsoleLogService as BaseLogService } from 'jslib-common/services/consoleLog.service';
+import { ConsoleLogService as BaseLogService } from "jslib-common/services/consoleLog.service";
 
 export class ElectronLogService extends BaseLogService {
-
     constructor(protected filter: (level: LogLevelType) => boolean = null, logDir: string = null) {
         super(isDev(), filter);
         if (log.transports == null) {
             return;
         }
 
-        log.transports.file.level = 'info';
+        log.transports.file.level = "info";
         if (logDir != null) {
-            log.transports.file.file = path.join(logDir, 'app.log');
+            log.transports.file.file = path.join(logDir, "app.log");
         }
     }
 
