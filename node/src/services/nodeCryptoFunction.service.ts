@@ -1,17 +1,21 @@
-import * as crypto from 'crypto';
-import * as forge from 'node-forge';
+import * as crypto from "crypto";
+import * as forge from "node-forge";
 
-import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
+import { CryptoFunctionService } from "jslib-common/abstractions/cryptoFunction.service";
 
-import { DecryptParameters } from 'jslib-common/models/domain/decryptParameters';
-import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
+import { DecryptParameters } from "jslib-common/models/domain/decryptParameters";
+import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
 
-import { Utils } from 'jslib-common/misc/utils';
+import { Utils } from "jslib-common/misc/utils";
 
 export class NodeCryptoFunctionService implements CryptoFunctionService {
-    pbkdf2(password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
-        iterations: number): Promise<ArrayBuffer> {
-        const len = algorithm === 'sha256' ? 32 : 64;
+    pbkdf2(
+        password: string | ArrayBuffer,
+        salt: string | ArrayBuffer,
+        algorithm: "sha256" | "sha512",
+        iterations: number
+    ): Promise<ArrayBuffer> {
+        const len = algorithm === "sha256" ? 32 : 64;
         const nodePassword = this.toNodeValue(password);
         const nodeSalt = this.toNodeValue(salt);
         return new Promise<ArrayBuffer>((resolve, reject) => {
@@ -26,23 +30,32 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
     }
 
     // ref: https://tools.ietf.org/html/rfc5869
-    async hkdf(ikm: ArrayBuffer, salt: string | ArrayBuffer, info: string | ArrayBuffer,
-        outputByteSize: number, algorithm: 'sha256' | 'sha512'): Promise<ArrayBuffer> {
+    async hkdf(
+        ikm: ArrayBuffer,
+        salt: string | ArrayBuffer,
+        info: string | ArrayBuffer,
+        outputByteSize: number,
+        algorithm: "sha256" | "sha512"
+    ): Promise<ArrayBuffer> {
         const saltBuf = this.toArrayBuffer(salt);
         const prk = await this.hmac(ikm, saltBuf, algorithm);
         return this.hkdfExpand(prk, info, outputByteSize, algorithm);
     }
 
     // ref: https://tools.ietf.org/html/rfc5869
-    async hkdfExpand(prk: ArrayBuffer, info: string | ArrayBuffer, outputByteSize: number,
-        algorithm: 'sha256' | 'sha512'): Promise<ArrayBuffer> {
-        const hashLen = algorithm === 'sha256' ? 32 : 64;
+    async hkdfExpand(
+        prk: ArrayBuffer,
+        info: string | ArrayBuffer,
+        outputByteSize: number,
+        algorithm: "sha256" | "sha512"
+    ): Promise<ArrayBuffer> {
+        const hashLen = algorithm === "sha256" ? 32 : 64;
         if (outputByteSize > 255 * hashLen) {
-            throw new Error('outputByteSize is too large.');
+            throw new Error("outputByteSize is too large.");
         }
         const prkArr = new Uint8Array(prk);
         if (prkArr.length < hashLen) {
-            throw new Error('prk is too small.');
+            throw new Error("prk is too small.");
         }
         const infoBuf = this.toArrayBuffer(info);
         const infoArr = new Uint8Array(infoBuf);
@@ -65,14 +78,14 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         return okm.slice(0, outputByteSize).buffer;
     }
 
-    hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512' | 'md5'): Promise<ArrayBuffer> {
+    hash(value: string | ArrayBuffer, algorithm: "sha1" | "sha256" | "sha512" | "md5"): Promise<ArrayBuffer> {
         const nodeValue = this.toNodeValue(value);
         const hash = crypto.createHash(algorithm);
         hash.update(nodeValue);
         return Promise.resolve(this.toArrayBuffer(hash.digest()));
     }
 
-    hmac(value: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
+    hmac(value: ArrayBuffer, key: ArrayBuffer, algorithm: "sha1" | "sha256" | "sha512"): Promise<ArrayBuffer> {
         const nodeValue = this.toNodeBuffer(value);
         const nodeKey = this.toNodeBuffer(key);
         const hmac = crypto.createHmac(algorithm, nodeKey);
@@ -82,8 +95,8 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
 
     async compare(a: ArrayBuffer, b: ArrayBuffer): Promise<boolean> {
         const key = await this.randomBytes(32);
-        const mac1 = await this.hmac(a, key, 'sha256');
-        const mac2 = await this.hmac(b, key, 'sha256');
+        const mac1 = await this.hmac(a, key, "sha256");
+        const mac2 = await this.hmac(b, key, "sha256");
         if (mac1.byteLength !== mac2.byteLength) {
             return false;
         }
@@ -99,7 +112,7 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         return true;
     }
 
-    hmacFast(value: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
+    hmacFast(value: ArrayBuffer, key: ArrayBuffer, algorithm: "sha1" | "sha256" | "sha512"): Promise<ArrayBuffer> {
         return this.hmac(value, key, algorithm);
     }
 
@@ -111,13 +124,17 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         const nodeData = this.toNodeBuffer(data);
         const nodeIv = this.toNodeBuffer(iv);
         const nodeKey = this.toNodeBuffer(key);
-        const cipher = crypto.createCipheriv('aes-256-cbc', nodeKey, nodeIv);
+        const cipher = crypto.createCipheriv("aes-256-cbc", nodeKey, nodeIv);
         const encBuf = Buffer.concat([cipher.update(nodeData), cipher.final()]);
         return Promise.resolve(this.toArrayBuffer(encBuf));
     }
 
-    aesDecryptFastParameters(data: string, iv: string, mac: string, key: SymmetricCryptoKey):
-        DecryptParameters<ArrayBuffer> {
+    aesDecryptFastParameters(
+        data: string,
+        iv: string,
+        mac: string,
+        key: SymmetricCryptoKey
+    ): DecryptParameters<ArrayBuffer> {
         const p = new DecryptParameters<ArrayBuffer>();
         p.encKey = key.encKey;
         p.data = Utils.fromB64ToArray(data).buffer;
@@ -147,14 +164,14 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         const nodeData = this.toNodeBuffer(data);
         const nodeIv = this.toNodeBuffer(iv);
         const nodeKey = this.toNodeBuffer(key);
-        const decipher = crypto.createDecipheriv('aes-256-cbc', nodeKey, nodeIv);
+        const decipher = crypto.createDecipheriv("aes-256-cbc", nodeKey, nodeIv);
         const decBuf = Buffer.concat([decipher.update(nodeData), decipher.final()]);
         return Promise.resolve(this.toArrayBuffer(decBuf));
     }
 
-    rsaEncrypt(data: ArrayBuffer, publicKey: ArrayBuffer, algorithm: 'sha1' | 'sha256'): Promise<ArrayBuffer> {
-        if (algorithm === 'sha256') {
-            throw new Error('Node crypto does not support RSA-OAEP SHA-256');
+    rsaEncrypt(data: ArrayBuffer, publicKey: ArrayBuffer, algorithm: "sha1" | "sha256"): Promise<ArrayBuffer> {
+        if (algorithm === "sha256") {
+            throw new Error("Node crypto does not support RSA-OAEP SHA-256");
         }
 
         const pem = this.toPemPublicKey(publicKey);
@@ -162,9 +179,9 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
         return Promise.resolve(this.toArrayBuffer(decipher));
     }
 
-    rsaDecrypt(data: ArrayBuffer, privateKey: ArrayBuffer, algorithm: 'sha1' | 'sha256'): Promise<ArrayBuffer> {
-        if (algorithm === 'sha256') {
-            throw new Error('Node crypto does not support RSA-OAEP SHA-256');
+    rsaDecrypt(data: ArrayBuffer, privateKey: ArrayBuffer, algorithm: "sha1" | "sha256"): Promise<ArrayBuffer> {
+        if (algorithm === "sha256") {
+            throw new Error("Node crypto does not support RSA-OAEP SHA-256");
         }
 
         const pem = this.toPemPrivateKey(privateKey);
@@ -185,27 +202,30 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
 
     async rsaGenerateKeyPair(length: 1024 | 2048 | 4096): Promise<[ArrayBuffer, ArrayBuffer]> {
         return new Promise<[ArrayBuffer, ArrayBuffer]>((resolve, reject) => {
-            forge.pki.rsa.generateKeyPair({
-                bits: length,
-                workers: -1,
-                e: 0x10001, // 65537
-            }, (error, keyPair) => {
-                if (error != null) {
-                    reject(error);
-                    return;
+            forge.pki.rsa.generateKeyPair(
+                {
+                    bits: length,
+                    workers: -1,
+                    e: 0x10001, // 65537
+                },
+                (error, keyPair) => {
+                    if (error != null) {
+                        reject(error);
+                        return;
+                    }
+
+                    const publicKeyAsn1 = (forge.pki as any).publicKeyToAsn1(keyPair.publicKey);
+                    const publicKeyByteString = forge.asn1.toDer(publicKeyAsn1).getBytes();
+                    const publicKey = Utils.fromByteStringToArray(publicKeyByteString);
+
+                    const privateKeyAsn1 = (forge.pki as any).privateKeyToAsn1(keyPair.privateKey);
+                    const privateKeyPkcs8 = (forge.pki as any).wrapRsaPrivateKey(privateKeyAsn1);
+                    const privateKeyByteString = forge.asn1.toDer(privateKeyPkcs8).getBytes();
+                    const privateKey = Utils.fromByteStringToArray(privateKeyByteString);
+
+                    resolve([publicKey.buffer, privateKey.buffer]);
                 }
-
-                const publicKeyAsn1 = (forge.pki as any).publicKeyToAsn1(keyPair.publicKey);
-                const publicKeyByteString = forge.asn1.toDer(publicKeyAsn1).getBytes();
-                const publicKey = Utils.fromByteStringToArray(publicKeyByteString);
-
-                const privateKeyAsn1 = (forge.pki as any).privateKeyToAsn1(keyPair.privateKey);
-                const privateKeyPkcs8 = (forge.pki as any).wrapRsaPrivateKey(privateKeyAsn1);
-                const privateKeyByteString = forge.asn1.toDer(privateKeyPkcs8).getBytes();
-                const privateKey = Utils.fromByteStringToArray(privateKeyByteString);
-
-                resolve([publicKey.buffer, privateKey.buffer]);
-            });
+            );
         });
     }
 
@@ -223,7 +243,7 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
 
     private toNodeValue(value: string | ArrayBuffer): string | Buffer {
         let nodeValue: string | Buffer;
-        if (typeof (value) === 'string') {
+        if (typeof value === "string") {
             nodeValue = value;
         } else {
             nodeValue = this.toNodeBuffer(value);
@@ -237,7 +257,7 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
 
     private toArrayBuffer(value: Buffer | string | ArrayBuffer): ArrayBuffer {
         let buf: ArrayBuffer;
-        if (typeof (value) === 'string') {
+        if (typeof value === "string") {
             buf = Utils.fromUtf8ToArray(value).buffer;
         } else {
             buf = new Uint8Array(value).buffer;

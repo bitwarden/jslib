@@ -1,4 +1,4 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class FileResponse implements BaseResponse {
     object: string;
@@ -6,7 +6,7 @@ export class FileResponse implements BaseResponse {
     fileName: string;
 
     constructor(data: Buffer, fileName: string) {
-        this.object = 'file';
+        this.object = "file";
         this.data = data;
         this.fileName = fileName;
     }

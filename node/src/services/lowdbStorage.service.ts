@@ -1,13 +1,13 @@
-import * as fs from 'fs';
-import * as lowdb from 'lowdb';
-import * as FileSync from 'lowdb/adapters/FileSync';
-import * as path from 'path';
+import * as fs from "fs";
+import * as lowdb from "lowdb";
+import * as FileSync from "lowdb/adapters/FileSync";
+import * as path from "path";
 
-import { LogService } from 'jslib-common/abstractions/log.service';
-import { StorageService } from 'jslib-common/abstractions/storage.service';
+import { LogService } from "jslib-common/abstractions/log.service";
+import { StorageService } from "jslib-common/abstractions/storage.service";
 
-import { NodeUtils } from 'jslib-common/misc/nodeUtils';
-import { Utils } from 'jslib-common/misc/utils';
+import { NodeUtils } from "jslib-common/misc/nodeUtils";
+import { Utils } from "jslib-common/misc/utils";
 
 export class LowdbStorageService implements StorageService {
     protected dataFilePath: string;
@@ -19,18 +19,18 @@ export class LowdbStorageService implements StorageService {
     }
 
     async init() {
-        this.logService.info('Initializing lowdb storage service.');
+        this.logService.info("Initializing lowdb storage service.");
         let adapter: lowdb.AdapterSync<any>;
         if (Utils.isNode && this.dir != null) {
             if (!fs.existsSync(this.dir)) {
                 this.logService.warning(`Could not find dir, "${this.dir}"; creating it instead.`);
-                NodeUtils.mkdirpSync(this.dir, '700');
+                NodeUtils.mkdirpSync(this.dir, "700");
                 this.logService.info(`Created dir "${this.dir}".`);
             }
-            this.dataFilePath = path.join(this.dir, 'data.json');
+            this.dataFilePath = path.join(this.dir, "data.json");
             if (!fs.existsSync(this.dataFilePath)) {
                 this.logService.warning(`Could not find data file, "${this.dataFilePath}"; creating it instead.`);
-                fs.writeFileSync(this.dataFilePath, '', { mode: 0o600 });
+                fs.writeFileSync(this.dataFilePath, "", { mode: 0o600 });
                 fs.chmodSync(this.dataFilePath, 0o600);
                 this.logService.info(`Created data file "${this.dataFilePath}" with chmod 600.`);
             } else {
@@ -41,17 +41,19 @@ export class LowdbStorageService implements StorageService {
             });
         }
         try {
-            this.logService.info('Attempting to create lowdb storage adapter.');
+            this.logService.info("Attempting to create lowdb storage adapter.");
             this.db = lowdb(adapter);
-            this.logService.info('Successfully created lowdb storage adapter.');
+            this.logService.info("Successfully created lowdb storage adapter.");
         } catch (e) {
             if (e instanceof SyntaxError) {
                 this.logService.warning(`Error creating lowdb storage adapter, "${e.message}"; emptying data file.`);
                 if (fs.existsSync(this.dataFilePath)) {
-                    const backupPath = this.dataFilePath + '.bak';
+                    const backupPath = this.dataFilePath + ".bak";
                     this.logService.warning(`Writing backup of data file to ${backupPath}`);
-                    await fs.copyFile(this.dataFilePath, backupPath, err => {
-                        this.logService.warning(`Error while creating data file backup, "${e.message}". No backup may have been created.`);
+                    await fs.copyFile(this.dataFilePath, backupPath, (err) => {
+                        this.logService.warning(
+                            `Error while creating data file backup, "${e.message}". No backup may have been created.`
+                        );
                     });
                 }
                 adapter.write({});
@@ -64,10 +66,10 @@ export class LowdbStorageService implements StorageService {
 
         if (this.defaults != null) {
             this.lockDbFile(() => {
-                this.logService.info('Writing defaults.');
+                this.logService.info("Writing defaults.");
                 this.readForNoCache();
                 this.db.defaults(this.defaults).write();
-                this.logService.info('Successfully wrote defaults to db.');
+                this.logService.info("Successfully wrote defaults to db.");
             });
         }
     }
@@ -85,7 +87,7 @@ export class LowdbStorageService implements StorageService {
     }
 
     has(key: string): Promise<boolean> {
-        return this.get(key).then(v => v != null);
+        return this.get(key).then((v) => v != null);
     }
 
     save(key: string, obj: any): Promise<any> {

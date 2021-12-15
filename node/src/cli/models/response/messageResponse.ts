@@ -1,4 +1,4 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class MessageResponse implements BaseResponse {
     object: string;
@@ -8,7 +8,7 @@ export class MessageResponse implements BaseResponse {
     noColor = false;
 
     constructor(title: string, message: string) {
-        this.object = 'message';
+        this.object = "message";
         this.title = title;
         this.message = message;
     }
