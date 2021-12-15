@@ -115,17 +115,17 @@ export class StateMigrationService {
     readonly latestVersion: number = 2;
 
     constructor(
-        private storageService: StorageService,
-        private secureStorageService: StorageService
+        protected storageService: StorageService,
+        protected secureStorageService: StorageService
     ) {}
 
     async needsMigration(): Promise<boolean> {
-        const currentStateVersion = (await this.storageService.get<State>('state'))?.globals?.stateVersion;
+        const currentStateVersion = (await this.storageService.get<State<Account>>('state'))?.globals?.stateVersion;
         return currentStateVersion == null || currentStateVersion < this.latestVersion;
     }
 
     async migrate(): Promise<void> {
-        let currentStateVersion = (await this.storageService.get<State>('state'))?.globals?.stateVersion ?? 1;
+        let currentStateVersion = (await this.storageService.get<State<Account>>('state'))?.globals?.stateVersion ?? 1;
         while (currentStateVersion < this.latestVersion) {
             switch (currentStateVersion) {
                 case 1:
@@ -137,10 +137,10 @@ export class StateMigrationService {
         }
     }
 
-    private async migrateStateFrom1To2(): Promise<void> {
+    protected async migrateStateFrom1To2(): Promise<void> {
         const options: StorageOptions = { htmlStorageLocation: HtmlStorageLocation.Local };
         const userId = await this.storageService.get<string>('userId');
-        const initialState: State = userId == null ?
+        const initialState: State<Account> = userId == null ?
             {
                 globals: {
                     stateVersion: 2,

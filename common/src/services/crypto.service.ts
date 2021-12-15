@@ -25,9 +25,12 @@ import { ProfileProviderOrganizationResponse } from '../models/response/profileP
 import { ProfileProviderResponse } from '../models/response/profileProviderResponse';
 
 export class CryptoService implements CryptoServiceAbstraction {
-    constructor(private cryptoFunctionService: CryptoFunctionService, protected platformUtilService: PlatformUtilsService,
-        protected logService: LogService, protected stateService: StateService) {
-    }
+    constructor(
+        private cryptoFunctionService: CryptoFunctionService,
+        protected platformUtilService: PlatformUtilsService,
+        protected logService: LogService,
+        protected stateService: StateService,
+    ) { }
 
     async setKey(key: SymmetricCryptoKey, userId?: string): Promise<any> {
         await this.stateService.setCryptoMasterKey(key, { userId: userId });
