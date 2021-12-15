@@ -246,6 +246,21 @@ describe('Cipher Service', () => {
         keyConnectorService.received(1).getAndSetKey(keyConnectorUrl);
     });
 
+    it('logIn: makes new KeyPair for an old account', async () => {
+        logInSetup();
+        commonSetup();
+        const tokenResponse = newTokenResponse();
+        tokenResponse.privateKey = null;
+
+        tokenService.getTwoFactorToken(email).resolves(null);
+        apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
+
+        const result = await authService.logIn(email, masterPassword);
+
+        commonSuccessAssertions();
+        apiService.received(1).postAccountKeys(Arg.any());
+    });
+
     // it('login: new SSO user with Key Connector posts key to the server', async () => {
     //     logInSetup();
     //     commonSetup();
