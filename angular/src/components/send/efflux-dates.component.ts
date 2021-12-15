@@ -83,9 +83,9 @@ export class EffluxDatesComponent implements OnInit {
     { name: this.i18nService.t("custom"), value: DatePreset.Custom },
   ];
 
-  expirationDatePresets: any[] = [{ name: this.i18nService.t("never"), value: DatePreset.Never }].concat([
-    ...this.deletionDatePresets,
-  ]);
+  expirationDatePresets: any[] = [
+    { name: this.i18nService.t("never"), value: DatePreset.Never },
+  ].concat([...this.deletionDatePresets]);
 
   get selectedDeletionDatePreset(): FormControl {
     return this.datesForm.get("selectedDeletionDatePreset") as FormControl;
@@ -150,7 +150,10 @@ export class EffluxDatesComponent implements OnInit {
         switch (this.browserPath) {
           case BrowserPath.Safari:
           case BrowserPath.Firefox:
-            if ((!this.fallbackExpirationDate.value || !this.fallbackExpirationTime.value) && this.editMode) {
+            if (
+              (!this.fallbackExpirationDate.value || !this.fallbackExpirationTime.value) &&
+              this.editMode
+            ) {
               return null;
             }
             return this.fallbackExpirationDate.value + "T" + this.fallbackExpirationTime.value;
@@ -232,8 +235,12 @@ export class EffluxDatesComponent implements OnInit {
           this.fallbackDeletionDate.setValue(this.initialDeletionDate.toISOString().slice(0, 10));
           this.fallbackDeletionTime.setValue(this.initialDeletionDate.toTimeString().slice(0, 5));
           if (this.initialExpirationDate != null) {
-            this.fallbackExpirationDate.setValue(this.initialExpirationDate.toISOString().slice(0, 10));
-            this.fallbackExpirationTime.setValue(this.initialExpirationDate.toTimeString().slice(0, 5));
+            this.fallbackExpirationDate.setValue(
+              this.initialExpirationDate.toISOString().slice(0, 10)
+            );
+            this.fallbackExpirationTime.setValue(
+              this.initialExpirationDate.toTimeString().slice(0, 5)
+            );
           }
           break;
         case BrowserPath.Default:
@@ -254,7 +261,9 @@ export class EffluxDatesComponent implements OnInit {
       switch (this.browserPath) {
         case BrowserPath.Safari:
           this.fallbackDeletionDate.setValue(this.nextWeek.toISOString().slice(0, 10));
-          this.fallbackDeletionTime.setValue(this.safariTimePresetOptions(DateField.DeletionDate)[1].twentyFourHour);
+          this.fallbackDeletionTime.setValue(
+            this.safariTimePresetOptions(DateField.DeletionDate)[1].twentyFourHour
+          );
           break;
         default:
           break;
@@ -328,7 +337,11 @@ export class EffluxDatesComponent implements OnInit {
         twentyFourHour: this.datePipe.transform(this.initialExpirationDate, "HH:mm"),
       };
       return [previousValue, { twelveHour: null, twentyFourHour: null }, ...validTimes];
-    } else if (field === DateField.DeletionDate && this.initialDeletionDate != null && this.editMode) {
+    } else if (
+      field === DateField.DeletionDate &&
+      this.initialDeletionDate != null &&
+      this.editMode
+    ) {
       const previousValue: TimeOption = {
         twelveHour: this.datePipe.transform(this.initialDeletionDate, "hh:mm a"),
         twentyFourHour: this.datePipe.transform(this.initialDeletionDate, "HH:mm"),

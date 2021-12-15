@@ -116,7 +116,11 @@ export class UpdateTempPasswordComponent extends BaseChangePasswordComponent {
       // Update user's password
       this.formPromise = this.apiService.putUpdateTempPassword(request);
       await this.formPromise;
-      this.platformUtilsService.showToast("success", null, this.i18nService.t("updatedMasterPassword"));
+      this.platformUtilsService.showToast(
+        "success",
+        null,
+        this.i18nService.t("updatedMasterPassword")
+      );
 
       if (this.onSuccessfulChangePassword != null) {
         this.onSuccessfulChangePassword();

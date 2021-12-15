@@ -62,12 +62,16 @@ export class ShareComponent implements OnInit {
     if (this.organizationId == null || this.writeableCollections.length === 0) {
       this.collections = [];
     } else {
-      this.collections = this.writeableCollections.filter((c) => c.organizationId === this.organizationId);
+      this.collections = this.writeableCollections.filter(
+        (c) => c.organizationId === this.organizationId
+      );
     }
   }
 
   async submit(): Promise<boolean> {
-    const selectedCollectionIds = this.collections.filter((c) => !!(c as any).checked).map((c) => c.id);
+    const selectedCollectionIds = this.collections
+      .filter((c) => !!(c as any).checked)
+      .map((c) => c.id);
     if (selectedCollectionIds.length === 0) {
       this.platformUtilsService.showToast(
         "error",
@@ -80,7 +84,8 @@ export class ShareComponent implements OnInit {
     const cipherDomain = await this.cipherService.get(this.cipherId);
     const cipherView = await cipherDomain.decrypt();
     const orgName =
-      this.organizations.find((o) => o.id === this.organizationId)?.name ?? this.i18nService.t("organization");
+      this.organizations.find((o) => o.id === this.organizationId)?.name ??
+      this.i18nService.t("organization");
 
     try {
       this.formPromise = this.cipherService

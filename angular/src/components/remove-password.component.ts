@@ -43,7 +43,11 @@ export class RemovePasswordComponent implements OnInit {
 
     try {
       await this.actionPromise;
-      this.platformUtilsService.showToast("success", null, this.i18nService.t("removedMasterPassword"));
+      this.platformUtilsService.showToast(
+        "success",
+        null,
+        this.i18nService.t("removedMasterPassword")
+      );
       await this.keyConnectorService.removeConvertAccountRequired();
       this.router.navigate([""]);
     } catch (e) {

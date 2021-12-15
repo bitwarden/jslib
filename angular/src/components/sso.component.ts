@@ -60,8 +60,17 @@ export class SsoComponent {
         const state = await this.stateService.getSsoState();
         await this.stateService.setSsoCodeVerifier(null);
         await this.stateService.setSsoState(null);
-        if (qParams.code != null && codeVerifier != null && state != null && this.checkState(state, qParams.state)) {
-          await this.logIn(qParams.code, codeVerifier, this.getOrgIdentifierFromState(qParams.state));
+        if (
+          qParams.code != null &&
+          codeVerifier != null &&
+          state != null &&
+          this.checkState(state, qParams.state)
+        ) {
+          await this.logIn(
+            qParams.code,
+            codeVerifier,
+            this.getOrgIdentifierFromState(qParams.state)
+          );
         }
       } else if (
         qParams.clientId != null &&
@@ -97,7 +106,10 @@ export class SsoComponent {
     return await this.apiService.preValidateSso(this.identifier);
   }
 
-  protected async buildAuthorizeUrl(returnUri?: string, includeUserIdentifier?: boolean): Promise<string> {
+  protected async buildAuthorizeUrl(
+    returnUri?: string,
+    includeUserIdentifier?: boolean
+  ): Promise<string> {
     let codeChallenge = this.codeChallenge;
     let state = this.state;
 
@@ -159,7 +171,12 @@ export class SsoComponent {
   private async logIn(code: string, codeVerifier: string, orgIdFromState: string) {
     this.loggingIn = true;
     try {
-      this.formPromise = this.authService.logInSso(code, codeVerifier, this.redirectUri, orgIdFromState);
+      this.formPromise = this.authService.logInSso(
+        code,
+        codeVerifier,
+        this.redirectUri,
+        orgIdFromState
+      );
       const response = await this.formPromise;
       if (response.twoFactor) {
         if (this.onSuccessfulLoginTwoFactorNavigate != null) {
@@ -203,7 +220,11 @@ export class SsoComponent {
     } catch (e) {
       this.logService.error(e);
       if (e.message === "Unable to reach key connector") {
-        this.platformUtilsService.showToast("error", null, this.i18nService.t("ssoKeyConnectorUnavailable"));
+        this.platformUtilsService.showToast(
+          "error",
+          null,
+          this.i18nService.t("ssoKeyConnectorUnavailable")
+        );
       }
     }
     this.loggingIn = false;

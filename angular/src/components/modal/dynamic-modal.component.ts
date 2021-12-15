@@ -23,7 +23,8 @@ import { ModalRef } from "./modal.ref";
 export class DynamicModalComponent implements AfterViewInit, OnDestroy {
   componentRef: ComponentRef<any>;
 
-  @ViewChild("modalContent", { read: ViewContainerRef, static: true }) modalContentRef: ViewContainerRef;
+  @ViewChild("modalContent", { read: ViewContainerRef, static: true })
+  modalContentRef: ViewContainerRef;
 
   childComponentType: Type<any>;
   setComponentParameters: (component: any) => void;
@@ -46,7 +47,9 @@ export class DynamicModalComponent implements AfterViewInit, OnDestroy {
     this.cd.detectChanges();
 
     this.modalRef.created(this.el.nativeElement);
-    this.focusTrap = this.focusTrapFactory.create(this.el.nativeElement.querySelector(".modal-dialog"));
+    this.focusTrap = this.focusTrapFactory.create(
+      this.el.nativeElement.querySelector(".modal-dialog")
+    );
     if (this.el.nativeElement.querySelector("[appAutoFocus]") == null) {
       this.focusTrap.focusFirstTabbableElementWhenReady();
     }

@@ -1,4 +1,13 @@
-import { ChangeDetectorRef, Directive, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output } from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Directive,
+  EventEmitter,
+  Input,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  Output,
+} from "@angular/core";
 
 import { CipherRepromptType } from "jslib-common/enums/cipherRepromptType";
 import { CipherType } from "jslib-common/enums/cipherType";
@@ -152,7 +161,9 @@ export class ViewComponent implements OnDestroy, OnInit {
     }
 
     const confirmed = await this.platformUtilsService.showDialog(
-      this.i18nService.t(this.cipher.isDeleted ? "permanentlyDeleteItemConfirmation" : "deleteItemConfirmation"),
+      this.i18nService.t(
+        this.cipher.isDeleted ? "permanentlyDeleteItemConfirmation" : "deleteItemConfirmation"
+      ),
       this.i18nService.t("deleteItem"),
       this.i18nService.t("yes"),
       this.i18nService.t("no"),
@@ -238,7 +249,11 @@ export class ViewComponent implements OnDestroy, OnInit {
   }
 
   async checkPassword() {
-    if (this.cipher.login == null || this.cipher.login.password == null || this.cipher.login.password === "") {
+    if (
+      this.cipher.login == null ||
+      this.cipher.login.password == null ||
+      this.cipher.login.password === ""
+    ) {
       return;
     }
 
@@ -246,7 +261,11 @@ export class ViewComponent implements OnDestroy, OnInit {
     const matches = await this.checkPasswordPromise;
 
     if (matches > 0) {
-      this.platformUtilsService.showToast("warning", null, this.i18nService.t("passwordExposed", matches.toString()));
+      this.platformUtilsService.showToast(
+        "warning",
+        null,
+        this.i18nService.t("passwordExposed", matches.toString())
+      );
     } else {
       this.platformUtilsService.showToast("success", null, this.i18nService.t("passwordSafe"));
     }
@@ -269,7 +288,10 @@ export class ViewComponent implements OnDestroy, OnInit {
       return;
     }
 
-    if (this.passwordRepromptService.protectedFields().includes(aType) && !(await this.promptPassword())) {
+    if (
+      this.passwordRepromptService.protectedFields().includes(aType) &&
+      !(await this.promptPassword())
+    ) {
       return;
     }
 
@@ -314,7 +336,10 @@ export class ViewComponent implements OnDestroy, OnInit {
 
     let url: string;
     try {
-      const attachmentDownloadResponse = await this.apiService.getAttachmentData(this.cipher.id, attachment.id);
+      const attachmentDownloadResponse = await this.apiService.getAttachmentData(
+        this.cipher.id,
+        attachment.id
+      );
       url = attachmentDownloadResponse.url;
     } catch (e) {
       if (e instanceof ErrorResponse && (e as ErrorResponse).statusCode === 404) {
@@ -337,7 +362,9 @@ export class ViewComponent implements OnDestroy, OnInit {
     try {
       const buf = await response.arrayBuffer();
       const key =
-        attachment.key != null ? attachment.key : await this.cryptoService.getOrgKey(this.cipher.organizationId);
+        attachment.key != null
+          ? attachment.key
+          : await this.cryptoService.getOrgKey(this.cipher.organizationId);
       const decBuf = await this.cryptoService.decryptFromBytes(buf, key);
       this.platformUtilsService.saveFile(this.win, decBuf, null, attachment.fileName);
     } catch (e) {
@@ -378,7 +405,11 @@ export class ViewComponent implements OnDestroy, OnInit {
   }
 
   private async totpUpdateCode() {
-    if (this.cipher == null || this.cipher.type !== CipherType.Login || this.cipher.login.totp == null) {
+    if (
+      this.cipher == null ||
+      this.cipher.type !== CipherType.Login ||
+      this.cipher.login.totp == null
+    ) {
       if (this.totpInterval) {
         clearInterval(this.totpInterval);
       }
@@ -389,7 +420,8 @@ export class ViewComponent implements OnDestroy, OnInit {
     if (this.totpCode != null) {
       if (this.totpCode.length > 4) {
         const half = Math.floor(this.totpCode.length / 2);
-        this.totpCodeFormatted = this.totpCode.substring(0, half) + " " + this.totpCode.substring(half);
+        this.totpCodeFormatted =
+          this.totpCode.substring(0, half) + " " + this.totpCode.substring(half);
       } else {
         this.totpCodeFormatted = this.totpCode;
       }

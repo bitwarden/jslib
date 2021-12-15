@@ -168,7 +168,12 @@ export class RegisterComponent extends CaptchaProtectedComponent implements OnIn
     const kdf = KdfType.PBKDF2_SHA256;
     const useLowerKdf = this.platformUtilsService.isIE();
     const kdfIterations = useLowerKdf ? 10000 : 100000;
-    const key = await this.cryptoService.makeKey(this.masterPassword, this.email, kdf, kdfIterations);
+    const key = await this.cryptoService.makeKey(
+      this.masterPassword,
+      this.email,
+      kdf,
+      kdfIterations
+    );
     const encKey = await this.cryptoService.makeEncKey(key);
     const hashedPassword = await this.cryptoService.hashPassword(this.masterPassword, key);
     const keys = await this.cryptoService.makeKeyPair(encKey[0]);

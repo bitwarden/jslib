@@ -23,7 +23,8 @@ export class SetPinComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.showMasterPassOnRestart = this.masterPassOnRestart = !(await this.keyConnectorService.getUsesKeyConnector());
+    this.showMasterPassOnRestart = this.masterPassOnRestart =
+      !(await this.keyConnectorService.getUsesKeyConnector());
   }
 
   toggleVisibility() {

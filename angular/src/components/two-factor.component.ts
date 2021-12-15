@@ -103,7 +103,9 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
       );
     }
 
-    this.selectedProviderType = this.authService.getDefaultTwoFactorProvider(this.webAuthnSupported);
+    this.selectedProviderType = this.authService.getDefaultTwoFactorProvider(
+      this.webAuthnSupported
+    );
     await this.init();
   }
 
@@ -190,7 +192,11 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
   }
 
   async doSubmit() {
-    this.formPromise = this.authService.logInTwoFactor(this.selectedProviderType, this.token, this.remember);
+    this.formPromise = this.authService.logInTwoFactor(
+      this.selectedProviderType,
+      this.token,
+      this.remember
+    );
     const response: AuthResult = await this.formPromise;
     const disableFavicon = await this.stateService.getDisableFavicon();
     await this.stateService.setDisableFavicon(!!disableFavicon);

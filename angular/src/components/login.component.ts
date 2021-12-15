@@ -136,7 +136,9 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
     if (this.ngZone.isStable) {
       document.getElementById("masterPassword").focus();
     } else {
-      this.ngZone.onStable.pipe(take(1)).subscribe(() => document.getElementById("masterPassword").focus());
+      this.ngZone.onStable
+        .pipe(take(1))
+        .subscribe(() => document.getElementById("masterPassword").focus());
     }
   }
 
@@ -177,6 +179,8 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
   }
 
   protected focusInput() {
-    document.getElementById(this.email == null || this.email === "" ? "email" : "masterPassword").focus();
+    document
+      .getElementById(this.email == null || this.email === "" ? "email" : "masterPassword")
+      .focus();
   }
 }

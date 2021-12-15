@@ -280,7 +280,8 @@ export class AddEditComponent implements OnInit {
       sendData[0].deletionDate = null;
     }
     try {
-      sendData[0].expirationDate = this.expirationDate == null ? null : new Date(this.expirationDate);
+      sendData[0].expirationDate =
+        this.expirationDate == null ? null : new Date(this.expirationDate);
     } catch {
       sendData[0].expirationDate = null;
     }

@@ -1,5 +1,11 @@
 import { Directive, Input, OnInit } from "@angular/core";
-import { AbstractControl, ControlValueAccessor, FormBuilder, ValidationErrors, Validator } from "@angular/forms";
+import {
+  AbstractControl,
+  ControlValueAccessor,
+  FormBuilder,
+  ValidationErrors,
+  Validator,
+} from "@angular/forms";
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { PolicyService } from "jslib-common/abstractions/policy.service";
@@ -31,7 +37,11 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
   private onChange: (vaultTimeout: number) => void;
   private validatorChange: () => void;
 
-  constructor(private fb: FormBuilder, private policyService: PolicyService, private i18nService: I18nService) {}
+  constructor(
+    private fb: FormBuilder,
+    private policyService: PolicyService,
+    private i18nService: I18nService
+  ) {}
 
   async ngOnInit() {
     if (await this.policyService.policyAppliesToUser(PolicyType.MaximumVaultTimeout)) {
@@ -71,7 +81,10 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
   }
 
   ngOnChanges() {
-    this.vaultTimeouts.push({ name: this.i18nService.t("custom"), value: VaultTimeoutInputComponent.CUSTOM_VALUE });
+    this.vaultTimeouts.push({
+      name: this.i18nService.t("custom"),
+      value: VaultTimeoutInputComponent.CUSTOM_VALUE,
+    });
   }
 
   getVaultTimeout(value: any) {

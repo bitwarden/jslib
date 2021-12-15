@@ -126,12 +126,19 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
 
             // RSA Encrypt user's encKey.key with organization public key
             const userEncKey = await this.cryptoService.getEncKey();
-            const encryptedKey = await this.cryptoService.rsaEncrypt(userEncKey.key, publicKey.buffer);
+            const encryptedKey = await this.cryptoService.rsaEncrypt(
+              userEncKey.key,
+              publicKey.buffer
+            );
 
             const resetRequest = new OrganizationUserResetPasswordEnrollmentRequest();
             resetRequest.resetPasswordKey = encryptedKey.encryptedString;
 
-            return this.apiService.putOrganizationUserResetPasswordEnrollment(this.orgId, userId, resetRequest);
+            return this.apiService.putOrganizationUserResetPasswordEnrollment(
+              this.orgId,
+              userId,
+              resetRequest
+            );
           });
       } else {
         this.formPromise = this.apiService.setPassword(request).then(async () => {

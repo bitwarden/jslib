@@ -13,7 +13,13 @@ import {
 @Component({
   selector: "[toast-component2]",
   template: `
-    <button *ngIf="options.closeButton" (click)="remove()" type="button" class="toast-close-button" aria-label="Close">
+    <button
+      *ngIf="options.closeButton"
+      (click)="remove()"
+      type="button"
+      class="toast-close-button"
+      aria-label="Close"
+    >
       <span aria-hidden="true">&times;</span>
     </button>
     <div class="icon">

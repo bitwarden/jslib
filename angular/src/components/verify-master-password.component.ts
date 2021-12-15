@@ -20,7 +20,9 @@ import { Verification } from "jslib-common/types/verification";
     },
   ],
   animations: [
-    trigger("sent", [transition(":enter", [style({ opacity: 0 }), animate("100ms", style({ opacity: 1 }))])]),
+    trigger("sent", [
+      transition(":enter", [style({ opacity: 0 }), animate("100ms", style({ opacity: 1 }))]),
+    ]),
   ],
 })
 export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnInit {

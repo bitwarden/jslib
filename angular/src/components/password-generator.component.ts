@@ -86,7 +86,12 @@ export class PasswordGeneratorComponent implements OnInit {
     // Application level normalize options depedent on class variables
     this.options.ambiguous = !this.avoidAmbiguous;
 
-    if (!this.options.uppercase && !this.options.lowercase && !this.options.number && !this.options.special) {
+    if (
+      !this.options.uppercase &&
+      !this.options.lowercase &&
+      !this.options.number &&
+      !this.options.special
+    ) {
       this.options.lowercase = true;
       if (this.win != null) {
         const lowercase = this.win.document.querySelector("#lowercase") as HTMLInputElement;
