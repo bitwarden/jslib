@@ -136,7 +136,7 @@ describe('Cipher Service', () => {
         return tokenResponse;
     }
 
-    it('logIn: simple call: no 2FA, captcha or password reset', async () => {
+    it('logIn: works in the most simple case (no 2FA, no captcha, no password reset, no KC)', async () => {
         logInSetup();
         commonSetup();
         const tokenResponse = newTokenResponse();
@@ -214,8 +214,7 @@ describe('Cipher Service', () => {
         apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
         // Re-init authService with setCryptoKeys = false
-        authService = new AuthService(cryptoService, apiService, tokenService, appIdService, i18nService,
-            platformUtilsService, messagingService, vaultTimeoutService, logService, cryptoFunctionService,
+        authService = new AuthService(cryptoService, apiService, tokenService, appIdService, i18nService, platformUtilsService, messagingService, vaultTimeoutService, logService, cryptoFunctionService,
             keyConnectorService, environmentService, stateService, false);
         authService.init();
 
@@ -229,4 +228,20 @@ describe('Cipher Service', () => {
         cryptoService.didNotReceive().setEncKey(Arg.any());
         cryptoService.didNotReceive().setEncPrivateKey(Arg.any());
     });
+
+    it('logIn: gets and sets KeyConnector key for enrolled user', async () => {
+        const keyConnectorUrl = 'KEY_CONNECTOR_URL';
+        logInSetup();
+        commonSetup();
+        const tokenResponse = newTokenResponse();
+        tokenResponse.keyConnectorUrl = keyConnectorUrl;
+
+        tokenService.getTwoFactorToken(email).resolves(null);
+        apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
+
+        const result = await authService.logIn(email, masterPassword);
+
+        commonSuccessAssertions();
+        keyConnectorService.received(1).getAndSetKey(keyConnectorUrl);
+    })
 });
