@@ -95,6 +95,32 @@ describe('Cipher Service', () => {
         tokenService.decodeToken(accessToken).resolves(decodedToken)
     }
 
+    function commonSuccessAssertions() {
+        stateService.received(1).addAccount({
+            profile: {
+                ...new AccountProfile(),
+                ...{
+                    userId: userId,
+                    email: email,
+                    apiKeyClientId: null,
+                    apiKeyClientSecret: null,
+                    hasPremiumPersonally: false,
+                    kdfIterations: kdfIterations,
+                    kdfType: kdf,
+                },
+            },
+            tokens: {
+                ...new AccountTokens(),
+                ...{
+                    accessToken: accessToken,
+                    refreshToken: refreshToken,
+                },
+            },
+        })
+        stateService.received(1).setBiometricLocked(false);
+        messagingService.received(1).send('loggedIn');
+    }
+
     function newTokenResponse() {
         const tokenResponse = new IdentityTokenResponse({});
         (tokenResponse as any).twoFactorProviders2 = false;
@@ -139,34 +165,11 @@ describe('Cipher Service', () => {
             actual.captchaResponse == null));
 
         // Sets local environment:
-        stateService.received(1).addAccount({
-            profile: {
-                ...new AccountProfile(),
-                ...{
-                    userId: userId,
-                    email: email,
-                    apiKeyClientId: null,
-                    apiKeyClientSecret: null,
-                    hasPremiumPersonally: false,
-                    kdfIterations: tokenResponse.kdfIterations,
-                    kdfType: tokenResponse.kdf,
-                },
-            },
-            tokens: {
-                ...new AccountTokens(),
-                ...{
-                    accessToken: tokenResponse.accessToken,
-                    refreshToken: tokenResponse.refreshToken,
-                },
-            },
-        })
+        commonSuccessAssertions();
         cryptoService.received(1).setKey(preloginKey);
         cryptoService.received(1).setKeyHash(localHashedPassword);
         cryptoService.received(1).setEncKey(encKey);
         cryptoService.received(1).setEncPrivateKey(privateKey);
-        stateService.received(1).setBiometricLocked(false);
-
-        messagingService.received(1).send('loggedIn');
 
         // Negative tests
         apiService.didNotReceive().postAccountKeys(Arg.any()); // Did not generate new private key pair
