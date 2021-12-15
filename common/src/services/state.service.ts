@@ -1171,33 +1171,33 @@ export class StateService implements StateServiceAbstraction {
     }
 
     async getSsoCodeVerifier(options?: StorageOptions): Promise<string> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.profile?.ssoCodeVerifier;
+        return (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.ssoCodeVerifier;
     }
 
     async setSsoCodeVerifier(value: string, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
-        account.profile.ssoCodeVerifier = value;
-        await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
+        const globals = await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        globals.ssoCodeVerifier = value;
+        await this.saveGlobals(globals, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
     }
 
     async getSsoOrgIdentifier(options?: StorageOptions): Promise<string> {
-        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.profile?.ssoOrganizationIdentifier;
+        return (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.ssoOrganizationIdentifier;
     }
 
     async setSsoOrganizationIdentifier(value: string, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
-        account.profile.ssoOrganizationIdentifier = value;
-        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
+        const globals = await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
+        globals.ssoOrganizationIdentifier = value;
+        await this.saveGlobals(globals, this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()));
     }
 
     async getSsoState(options?: StorageOptions): Promise<string> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.profile?.ssoState;
+        return (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.ssoState;
     }
 
     async setSsoState(value: string, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
-        account.profile.ssoState = value;
-        await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
+        const globals = await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
+        globals.ssoState = value;
+        await this.saveGlobals(globals, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
     }
 
     async getTheme(options?: StorageOptions): Promise<string> {

@@ -4,7 +4,10 @@ export class GlobalState {
     lastActive?: number;
     locale?: string;
     openAtLogin?: boolean;
-    organizationInvitation?: any;
+    organizationInvitation?: any;    
+    ssoCodeVerifier?: string;
+    ssoOrganizationIdentifier?: string;
+    ssoState?: string;
     rememberedEmail?: string;
     theme?: string;
     window?: Map<string, any> = new Map<string, any>();
