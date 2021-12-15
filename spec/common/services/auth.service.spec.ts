@@ -204,4 +204,29 @@ describe('Cipher Service', () => {
         messagingService.didNotReceive().send(Arg.any());
         expect(result).toEqual(expected);
     });
+
+    it('logIn: does not set crypto keys if setCryptoKeys is false', async () => {
+        logInSetup();
+        commonSetup();
+        const tokenResponse = newTokenResponse();
+
+        tokenService.getTwoFactorToken(email).resolves(null);
+        apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
+
+        // Re-init authService with setCryptoKeys = false
+        authService = new AuthService(cryptoService, apiService, tokenService, appIdService, i18nService,
+            platformUtilsService, messagingService, vaultTimeoutService, logService, cryptoFunctionService,
+            keyConnectorService, environmentService, stateService, false);
+        authService.init();
+
+        // Act
+        const result = await authService.logIn(email, masterPassword);
+
+        // Assertions
+        commonSuccessAssertions();
+        cryptoService.didNotReceive().setKey(Arg.any());
+        cryptoService.didNotReceive().setKeyHash(Arg.any());
+        cryptoService.didNotReceive().setEncKey(Arg.any());
+        cryptoService.didNotReceive().setEncPrivateKey(Arg.any());
+    });
 });
