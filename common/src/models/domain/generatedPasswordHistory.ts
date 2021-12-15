@@ -1,9 +1,9 @@
 export class GeneratedPasswordHistory {
-    password: string;
-    date: number;
+  password: string;
+  date: number;
 
-    constructor(password: string, date: number) {
-        this.password = password;
-        this.date = date;
-    }
+  constructor(password: string, date: number) {
+    this.password = password;
+    this.date = date;
+  }
 }

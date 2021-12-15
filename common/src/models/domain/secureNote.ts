@@ -8,24 +8,24 @@ import { SecureNoteView } from "../view/secureNoteView";
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
 export class SecureNote extends Domain {
-    type: SecureNoteType;
+  type: SecureNoteType;
 
-    constructor(obj?: SecureNoteData, alreadyEncrypted: boolean = false) {
-        super();
-        if (obj == null) {
-            return;
-        }
-
-        this.type = obj.type;
+  constructor(obj?: SecureNoteData, alreadyEncrypted: boolean = false) {
+    super();
+    if (obj == null) {
+      return;
     }
 
-    decrypt(orgId: string, encKey?: SymmetricCryptoKey): Promise<SecureNoteView> {
-        return Promise.resolve(new SecureNoteView(this));
-    }
+    this.type = obj.type;
+  }
 
-    toSecureNoteData(): SecureNoteData {
-        const n = new SecureNoteData();
-        n.type = this.type;
-        return n;
-    }
+  decrypt(orgId: string, encKey?: SymmetricCryptoKey): Promise<SecureNoteView> {
+    return Promise.resolve(new SecureNoteView(this));
+  }
+
+  toSecureNoteData(): SecureNoteData {
+    const n = new SecureNoteData();
+    n.type = this.type;
+    return n;
+  }
 }

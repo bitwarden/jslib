@@ -1,4 +1,4 @@
 export class OrganizationUserResetPasswordRequest {
-    newMasterPasswordHash: string;
-    key: string;
+  newMasterPasswordHash: string;
+  key: string;
 }
