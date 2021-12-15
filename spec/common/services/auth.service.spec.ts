@@ -22,6 +22,7 @@ import { AuthResult } from 'jslib-common/models/domain/authResult';
 import { IdentityTokenResponse } from 'jslib-common/models/response/identityTokenResponse';
 import { StateService } from 'jslib-common/abstractions/state.service';
 import { AccountProfile, AccountTokens } from 'jslib-common/models/domain/account';
+import { KeyConnectorUserKeyRequest } from 'jslib-common/models/request/keyConnectorUserKeyRequest';
 
 describe('Cipher Service', () => {
     let cryptoService: SubstituteOf<CryptoService>;
@@ -43,12 +44,13 @@ describe('Cipher Service', () => {
     const masterPassword = 'password';
     const hashedPassword = 'HASHED_PASSWORD';
     const localHashedPassword = 'LOCAL_HASHED_PASSWORD';
-    const preloginKey = new SymmetricCryptoKey(Utils.fromB64ToArray('XVs4Gg+EdUXb9mHsSA6iOa5e88iVLvUtP/L0OXIamVA='));
+    const preloginKey = new SymmetricCryptoKey(Utils.fromB64ToArray('N2KWjlLpfi5uHjv+YcfUKIpZ1l+W+6HRensmIqD+BFYBf6N/dvFpJfWwYnVBdgFCK2tJTAIMLhqzIQQEUmGFgg=='));
     const deviceId = Utils.newGuid();
     const accessToken = 'ACCESS_TOKEN';
     const refreshToken = 'REFRESH_TOKEN';
     const encKey = 'ENC_KEY';
     const privateKey = 'PRIVATE_KEY';
+    const keyConnectorUrl = 'KEY_CONNECTOR_URL';
     const kdf = 0;
     const kdfIterations = 10000;
     const userId = Utils.newGuid();
@@ -230,7 +232,6 @@ describe('Cipher Service', () => {
     });
 
     it('logIn: gets and sets KeyConnector key for enrolled user', async () => {
-        const keyConnectorUrl = 'KEY_CONNECTOR_URL';
         logInSetup();
         commonSetup();
         const tokenResponse = newTokenResponse();
@@ -243,5 +244,25 @@ describe('Cipher Service', () => {
 
         commonSuccessAssertions();
         keyConnectorService.received(1).getAndSetKey(keyConnectorUrl);
-    })
+    });
+
+    // it('login: new SSO user with Key Connector posts key to the server', async () => {
+    //     logInSetup();
+    //     commonSetup();
+
+    //     const tokenResponse = newTokenResponse();
+    //     tokenResponse.keyConnectorUrl = keyConnectorUrl;
+    //     tokenResponse.key = null;
+
+    //     tokenService.getTwoFactorToken(email).resolves(null);
+    //     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
+
+    //     // const result = await authService.logInSso();
+
+    //     commonSuccessAssertions();
+    //     cryptoService.received(1).setKey(preloginKey);
+    //     cryptoService.received(1).setEncKey(Arg.any());
+    //     apiService.received(1).postUserKeyToKeyConnector(keyConnectorUrl, Arg.any());
+    //     apiService.received(1).postSetKeyConnectorKey(Arg.any());
+    // });
 });
