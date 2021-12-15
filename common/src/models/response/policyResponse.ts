@@ -1,6 +1,6 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
-import { PolicyType } from '../../enums/policyType';
+import { PolicyType } from "../../enums/policyType";
 
 export class PolicyResponse extends BaseResponse {
     id: string;
@@ -11,10 +11,10 @@ export class PolicyResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.id = this.getResponseProperty('Id');
-        this.organizationId = this.getResponseProperty('OrganizationId');
-        this.type = this.getResponseProperty('Type');
-        this.data = this.getResponseProperty('Data');
-        this.enabled = this.getResponseProperty('Enabled');
+        this.id = this.getResponseProperty("Id");
+        this.organizationId = this.getResponseProperty("OrganizationId");
+        this.type = this.getResponseProperty("Type");
+        this.data = this.getResponseProperty("Data");
+        this.enabled = this.getResponseProperty("Enabled");
     }
 }

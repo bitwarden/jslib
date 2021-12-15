@@ -1,10 +1,10 @@
-import Domain from './domainBase';
-import { EncString } from './encString';
-import { SymmetricCryptoKey } from './symmetricCryptoKey';
+import Domain from "./domainBase";
+import { EncString } from "./encString";
+import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
-import { SendTextData } from '../data/sendTextData';
+import { SendTextData } from "../data/sendTextData";
 
-import { SendTextView } from '../view/sendTextView';
+import { SendTextView } from "../view/sendTextView";
 
 export class SendText extends Domain {
     text: EncString;
@@ -17,14 +17,25 @@ export class SendText extends Domain {
         }
 
         this.hidden = obj.hidden;
-        this.buildDomainModel(this, obj, {
-            text: null,
-        }, alreadyEncrypted, []);
+        this.buildDomainModel(
+            this,
+            obj,
+            {
+                text: null,
+            },
+            alreadyEncrypted,
+            []
+        );
     }
 
     decrypt(key: SymmetricCryptoKey): Promise<SendTextView> {
-        return this.decryptObj(new SendTextView(this), {
-            text: null,
-        }, null, key);
+        return this.decryptObj(
+            new SendTextView(this),
+            {
+                text: null,
+            },
+            null,
+            key
+        );
     }
 }

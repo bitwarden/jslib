@@ -1,4 +1,4 @@
-import { EmailTokenRequest } from './emailTokenRequest';
+import { EmailTokenRequest } from "./emailTokenRequest";
 
 export class EmailRequest extends EmailTokenRequest {
     newMasterPasswordHash: string;

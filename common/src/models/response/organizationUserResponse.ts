@@ -1,11 +1,11 @@
-import { BaseResponse } from './baseResponse';
-import { SelectionReadOnlyResponse } from './selectionReadOnlyResponse';
+import { BaseResponse } from "./baseResponse";
+import { SelectionReadOnlyResponse } from "./selectionReadOnlyResponse";
 
-import { PermissionsApi } from '../api/permissionsApi';
+import { PermissionsApi } from "../api/permissionsApi";
 
-import { KdfType } from '../../enums/kdfType';
-import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
-import { OrganizationUserType } from '../../enums/organizationUserType';
+import { KdfType } from "../../enums/kdfType";
+import { OrganizationUserStatusType } from "../../enums/organizationUserStatusType";
+import { OrganizationUserType } from "../../enums/organizationUserType";
 
 export class OrganizationUserResponse extends BaseResponse {
     id: string;
@@ -18,13 +18,13 @@ export class OrganizationUserResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.id = this.getResponseProperty('Id');
-        this.userId = this.getResponseProperty('UserId');
-        this.type = this.getResponseProperty('Type');
-        this.status = this.getResponseProperty('Status');
-        this.permissions = new PermissionsApi(this.getResponseProperty('Permissions'));
-        this.accessAll = this.getResponseProperty('AccessAll');
-        this.resetPasswordEnrolled = this.getResponseProperty('ResetPasswordEnrolled');
+        this.id = this.getResponseProperty("Id");
+        this.userId = this.getResponseProperty("UserId");
+        this.type = this.getResponseProperty("Type");
+        this.status = this.getResponseProperty("Status");
+        this.permissions = new PermissionsApi(this.getResponseProperty("Permissions"));
+        this.accessAll = this.getResponseProperty("AccessAll");
+        this.resetPasswordEnrolled = this.getResponseProperty("ResetPasswordEnrolled");
     }
 }
 
@@ -36,10 +36,10 @@ export class OrganizationUserUserDetailsResponse extends OrganizationUserRespons
 
     constructor(response: any) {
         super(response);
-        this.name = this.getResponseProperty('Name');
-        this.email = this.getResponseProperty('Email');
-        this.twoFactorEnabled = this.getResponseProperty('TwoFactorEnabled');
-        this.usesKeyConnector = this.getResponseProperty('UsesKeyConnector') ?? false;
+        this.name = this.getResponseProperty("Name");
+        this.email = this.getResponseProperty("Email");
+        this.twoFactorEnabled = this.getResponseProperty("TwoFactorEnabled");
+        this.usesKeyConnector = this.getResponseProperty("UsesKeyConnector") ?? false;
     }
 }
 
@@ -48,7 +48,7 @@ export class OrganizationUserDetailsResponse extends OrganizationUserResponse {
 
     constructor(response: any) {
         super(response);
-        const collections = this.getResponseProperty('Collections');
+        const collections = this.getResponseProperty("Collections");
         if (collections != null) {
             this.collections = collections.map((c: any) => new SelectionReadOnlyResponse(c));
         }
@@ -63,9 +63,9 @@ export class OrganizationUserResetPasswordDetailsReponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.kdf = this.getResponseProperty('Kdf');
-        this.kdfIterations = this.getResponseProperty('KdfIterations');
-        this.resetPasswordKey = this.getResponseProperty('ResetPasswordKey');
-        this.encryptedPrivateKey = this.getResponseProperty('EncryptedPrivateKey');
+        this.kdf = this.getResponseProperty("Kdf");
+        this.kdfIterations = this.getResponseProperty("KdfIterations");
+        this.resetPasswordKey = this.getResponseProperty("ResetPasswordKey");
+        this.encryptedPrivateKey = this.getResponseProperty("EncryptedPrivateKey");
     }
 }

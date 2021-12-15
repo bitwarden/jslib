@@ -1,4 +1,4 @@
-import { SendTextApi } from '../api/sendTextApi';
+import { SendTextApi } from "../api/sendTextApi";
 
 export class SendTextData {
     text: string;

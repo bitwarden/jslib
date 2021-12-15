@@ -1,6 +1,6 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
-import { DeviceType } from '../../enums/deviceType';
+import { DeviceType } from "../../enums/deviceType";
 
 export class DeviceResponse extends BaseResponse {
     id: string;
@@ -11,10 +11,10 @@ export class DeviceResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.id = this.getResponseProperty('Id');
-        this.name = this.getResponseProperty('Name');
-        this.identifier = this.getResponseProperty('Identifier');
-        this.type = this.getResponseProperty('Type');
-        this.creationDate = this.getResponseProperty('CreationDate');
+        this.id = this.getResponseProperty("Id");
+        this.name = this.getResponseProperty("Name");
+        this.identifier = this.getResponseProperty("Identifier");
+        this.type = this.getResponseProperty("Type");
+        this.creationDate = this.getResponseProperty("CreationDate");
     }
 }

@@ -1,14 +1,14 @@
-import { UriMatchType } from '../../enums/uriMatchType';
+import { UriMatchType } from "../../enums/uriMatchType";
 
-import { LoginUriView } from '../view/loginUriView';
+import { LoginUriView } from "../view/loginUriView";
 
-import { EncString } from '../domain/encString';
-import { LoginUri as LoginUriDomain } from '../domain/loginUri';
+import { EncString } from "../domain/encString";
+import { LoginUri as LoginUriDomain } from "../domain/loginUri";
 
 export class LoginUri {
     static template(): LoginUri {
         const req = new LoginUri();
-        req.uri = 'https://google.com';
+        req.uri = "https://google.com";
         req.match = null;
         return req;
     }

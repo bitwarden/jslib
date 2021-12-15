@@ -1,5 +1,5 @@
-import { BaseResponse } from './baseResponse';
-import { ProfileResponse } from './profileResponse';
+import { BaseResponse } from "./baseResponse";
+import { ProfileResponse } from "./profileResponse";
 
 export class PaymentResponse extends BaseResponse {
     userProfile: ProfileResponse;
@@ -8,11 +8,11 @@ export class PaymentResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        const userProfile = this.getResponseProperty('UserProfile');
+        const userProfile = this.getResponseProperty("UserProfile");
         if (userProfile != null) {
             this.userProfile = new ProfileResponse(userProfile);
         }
-        this.paymentIntentClientSecret = this.getResponseProperty('PaymentIntentClientSecret');
-        this.success = this.getResponseProperty('Success');
+        this.paymentIntentClientSecret = this.getResponseProperty("PaymentIntentClientSecret");
+        this.success = this.getResponseProperty("Success");
     }
 }

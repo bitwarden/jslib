@@ -1,12 +1,12 @@
-import { SendType } from '../../enums/sendType';
-import { Utils } from '../../misc/utils';
+import { SendType } from "../../enums/sendType";
+import { Utils } from "../../misc/utils";
 
-import { Send } from '../domain/send';
-import { SymmetricCryptoKey } from '../domain/symmetricCryptoKey';
+import { Send } from "../domain/send";
+import { SymmetricCryptoKey } from "../domain/symmetricCryptoKey";
 
-import { SendFileView } from './sendFileView';
-import { SendTextView } from './sendTextView';
-import { View } from './view';
+import { SendFileView } from "./sendFileView";
+import { SendTextView } from "./sendTextView";
+import { View } from "./view";
 
 export class SendView implements View {
     id: string = null;

@@ -1,9 +1,9 @@
-import { CollectionData } from '../data/collectionData';
+import { CollectionData } from "../data/collectionData";
 
-import { CollectionView } from '../view/collectionView';
+import { CollectionView } from "../view/collectionView";
 
-import Domain from './domainBase';
-import { EncString } from './encString';
+import Domain from "./domainBase";
+import { EncString } from "./encString";
 
 export class Collection extends Domain {
     id: string;
@@ -19,19 +19,29 @@ export class Collection extends Domain {
             return;
         }
 
-        this.buildDomainModel(this, obj, {
-            id: null,
-            organizationId: null,
-            name: null,
-            externalId: null,
-            readOnly: null,
-            hidePasswords: null,
-        }, alreadyEncrypted, ['id', 'organizationId', 'externalId', 'readOnly', 'hidePasswords']);
+        this.buildDomainModel(
+            this,
+            obj,
+            {
+                id: null,
+                organizationId: null,
+                name: null,
+                externalId: null,
+                readOnly: null,
+                hidePasswords: null,
+            },
+            alreadyEncrypted,
+            ["id", "organizationId", "externalId", "readOnly", "hidePasswords"]
+        );
     }
 
     decrypt(): Promise<CollectionView> {
-        return this.decryptObj(new CollectionView(this), {
-            name: null,
-        }, this.organizationId);
+        return this.decryptObj(
+            new CollectionView(this),
+            {
+                name: null,
+            },
+            this.organizationId
+        );
     }
 }

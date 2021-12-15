@@ -1,4 +1,4 @@
-import { SecretVerificationRequest } from './secretVerificationRequest';
+import { SecretVerificationRequest } from "./secretVerificationRequest";
 
 export class UpdateTwoFactorYubioOtpRequest extends SecretVerificationRequest {
     key1: string;

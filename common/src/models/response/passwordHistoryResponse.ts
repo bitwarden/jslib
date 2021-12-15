@@ -1,4 +1,4 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class PasswordHistoryResponse extends BaseResponse {
     password: string;
@@ -6,7 +6,7 @@ export class PasswordHistoryResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.password = this.getResponseProperty('Password');
-        this.lastUsedDate = this.getResponseProperty('LastUsedDate');
+        this.password = this.getResponseProperty("Password");
+        this.lastUsedDate = this.getResponseProperty("LastUsedDate");
     }
 }

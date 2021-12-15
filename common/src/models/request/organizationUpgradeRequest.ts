@@ -1,6 +1,6 @@
-import { PlanType } from '../../enums/planType';
+import { PlanType } from "../../enums/planType";
 
-import { OrganizationKeysRequest } from './organizationKeysRequest';
+import { OrganizationKeysRequest } from "./organizationKeysRequest";
 
 export class OrganizationUpgradeRequest {
     businessName: string;

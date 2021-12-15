@@ -1,17 +1,17 @@
-import { CryptoService } from '../../abstractions/crypto.service';
+import { CryptoService } from "../../abstractions/crypto.service";
 
-import { SendType } from '../../enums/sendType';
+import { SendType } from "../../enums/sendType";
 
-import { Utils } from '../../misc/utils';
+import { Utils } from "../../misc/utils";
 
-import { SendData } from '../data/sendData';
+import { SendData } from "../data/sendData";
 
-import { SendView } from '../view/sendView';
+import { SendView } from "../view/sendView";
 
-import Domain from './domainBase';
-import { EncString } from './encString';
-import { SendFile } from './sendFile';
-import { SendText } from './sendText';
+import Domain from "./domainBase";
+import { EncString } from "./encString";
+import { SendFile } from "./sendFile";
+import { SendText } from "./sendText";
 
 export class Send extends Domain {
     id: string;
@@ -38,14 +38,20 @@ export class Send extends Domain {
             return;
         }
 
-        this.buildDomainModel(this, obj, {
-            id: null,
-            accessId: null,
-            userId: null,
-            name: null,
-            notes: null,
-            key: null,
-        }, alreadyEncrypted, ['id', 'accessId', 'userId']);
+        this.buildDomainModel(
+            this,
+            obj,
+            {
+                id: null,
+                accessId: null,
+                userId: null,
+                name: null,
+                notes: null,
+                key: null,
+            },
+            alreadyEncrypted,
+            ["id", "accessId", "userId"]
+        );
 
         this.type = obj.type;
         this.maxAccessCount = obj.maxAccessCount;
@@ -77,7 +83,7 @@ export class Send extends Domain {
         if (containerService) {
             cryptoService = containerService.getCryptoService();
         } else {
-            throw new Error('global bitwardenContainerService not initialized.');
+            throw new Error("global bitwardenContainerService not initialized.");
         }
 
         try {
@@ -87,10 +93,15 @@ export class Send extends Domain {
             // TODO: error?
         }
 
-        await this.decryptObj(model, {
-            name: null,
-            notes: null,
-        }, null, model.cryptoKey);
+        await this.decryptObj(
+            model,
+            {
+                name: null,
+                notes: null,
+            },
+            null,
+            model.cryptoKey
+        );
 
         switch (this.type) {
             case SendType.File:

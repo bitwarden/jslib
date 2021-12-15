@@ -1,4 +1,4 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class OrganizationUserBulkPublicKeyResponse extends BaseResponse {
     id: string;
@@ -7,8 +7,8 @@ export class OrganizationUserBulkPublicKeyResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.id = this.getResponseProperty('Id');
-        this.userId = this.getResponseProperty('UserId');
-        this.key = this.getResponseProperty('Key');
+        this.id = this.getResponseProperty("Id");
+        this.userId = this.getResponseProperty("UserId");
+        this.key = this.getResponseProperty("Key");
     }
 }

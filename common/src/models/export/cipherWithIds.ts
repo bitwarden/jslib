@@ -1,8 +1,8 @@
-import { Cipher } from './cipher';
+import { Cipher } from "./cipher";
 
-import { CipherView } from '../view/cipherView';
+import { CipherView } from "../view/cipherView";
 
-import { Cipher as CipherDomain } from '../domain/cipher';
+import { Cipher as CipherDomain } from "../domain/cipher";
 
 export class CipherWithIds extends Cipher {
     id: string;

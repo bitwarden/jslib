@@ -1,6 +1,6 @@
-import { View } from './view';
+import { View } from "./view";
 
-import { SendFile } from '../domain/sendFile';
+import { SendFile } from "../domain/sendFile";
 
 export class SendFileView implements View {
     id: string = null;

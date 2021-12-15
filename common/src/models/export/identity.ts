@@ -1,29 +1,29 @@
-import { IdentityView } from '../view/identityView';
+import { IdentityView } from "../view/identityView";
 
-import { EncString } from '../domain/encString';
-import { Identity as IdentityDomain } from '../domain/identity';
+import { EncString } from "../domain/encString";
+import { Identity as IdentityDomain } from "../domain/identity";
 
 export class Identity {
     static template(): Identity {
         const req = new Identity();
-        req.title = 'Mr';
-        req.firstName = 'John';
-        req.middleName = 'William';
-        req.lastName = 'Doe';
-        req.address1 = '123 Any St';
-        req.address2 = 'Apt #123';
+        req.title = "Mr";
+        req.firstName = "John";
+        req.middleName = "William";
+        req.lastName = "Doe";
+        req.address1 = "123 Any St";
+        req.address2 = "Apt #123";
         req.address3 = null;
-        req.city = 'New York';
-        req.state = 'NY';
-        req.postalCode = '10001';
-        req.country = 'US';
-        req.company = 'Acme Inc.';
-        req.email = 'john@company.com';
-        req.phone = '5555551234';
-        req.ssn = '000-123-4567';
-        req.username = 'jdoe';
-        req.passportNumber = 'US-123456789';
-        req.licenseNumber = 'D123-12-123-12333';
+        req.city = "New York";
+        req.state = "NY";
+        req.postalCode = "10001";
+        req.country = "US";
+        req.company = "Acme Inc.";
+        req.email = "john@company.com";
+        req.phone = "5555551234";
+        req.ssn = "000-123-4567";
+        req.username = "jdoe";
+        req.passportNumber = "US-123456789";
+        req.licenseNumber = "D123-12-123-12333";
         return req;
     }
 

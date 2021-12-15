@@ -1,9 +1,9 @@
-import { KeysRequest } from './keysRequest';
-import { ReferenceEventRequest } from './referenceEventRequest';
+import { KeysRequest } from "./keysRequest";
+import { ReferenceEventRequest } from "./referenceEventRequest";
 
-import { KdfType } from '../../enums/kdfType';
+import { KdfType } from "../../enums/kdfType";
 
-import { CaptchaProtectedRequest } from './captchaProtectedRequest';
+import { CaptchaProtectedRequest } from "./captchaProtectedRequest";
 
 export class RegisterRequest implements CaptchaProtectedRequest {
     masterPasswordHint: string;
@@ -11,10 +11,17 @@ export class RegisterRequest implements CaptchaProtectedRequest {
     token: string;
     organizationUserId: string;
 
-
-    constructor(public email: string, public name: string, public masterPasswordHash: string,
-        masterPasswordHint: string, public key: string, public kdf: KdfType, public kdfIterations: number,
-        public referenceData: ReferenceEventRequest, public captchaResponse: string) {
+    constructor(
+        public email: string,
+        public name: string,
+        public masterPasswordHash: string,
+        masterPasswordHint: string,
+        public key: string,
+        public kdf: KdfType,
+        public kdfIterations: number,
+        public referenceData: ReferenceEventRequest,
+        public captchaResponse: string
+    ) {
         this.masterPasswordHint = masterPasswordHint ? masterPasswordHint : null;
     }
 }

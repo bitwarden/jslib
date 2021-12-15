@@ -1,6 +1,6 @@
-import { ProviderUserStatusType } from '../../enums/providerUserStatusType';
-import { ProviderUserType } from '../../enums/providerUserType';
-import { ProviderData } from '../data/providerData';
+import { ProviderUserStatusType } from "../../enums/providerUserStatusType";
+import { ProviderUserType } from "../../enums/providerUserType";
+import { ProviderData } from "../data/providerData";
 
 export class Provider {
     id: string;

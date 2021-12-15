@@ -1,4 +1,4 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class GlobalDomainResponse extends BaseResponse {
     type: number;
@@ -7,8 +7,8 @@ export class GlobalDomainResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.type = this.getResponseProperty('Type');
-        this.domains = this.getResponseProperty('Domains');
-        this.excluded = this.getResponseProperty('Excluded');
+        this.type = this.getResponseProperty("Type");
+        this.domains = this.getResponseProperty("Domains");
+        this.excluded = this.getResponseProperty("Excluded");
     }
 }

@@ -1,4 +1,4 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class ListResponse<T> extends BaseResponse {
     data: T[];
@@ -6,8 +6,8 @@ export class ListResponse<T> extends BaseResponse {
 
     constructor(response: any, t: new (dataResponse: any) => T) {
         super(response);
-        const data = this.getResponseProperty('Data');
+        const data = this.getResponseProperty("Data");
         this.data = data == null ? [] : data.map((dr: any) => new t(dr));
-        this.continuationToken = this.getResponseProperty('ContinuationToken');
+        this.continuationToken = this.getResponseProperty("ContinuationToken");
     }
 }

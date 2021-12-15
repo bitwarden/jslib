@@ -1,9 +1,9 @@
-import { FolderData } from '../data/folderData';
+import { FolderData } from "../data/folderData";
 
-import { FolderView } from '../view/folderView';
+import { FolderView } from "../view/folderView";
 
-import Domain from './domainBase';
-import { EncString } from './encString';
+import Domain from "./domainBase";
+import { EncString } from "./encString";
 
 export class Folder extends Domain {
     id: string;
@@ -16,17 +16,27 @@ export class Folder extends Domain {
             return;
         }
 
-        this.buildDomainModel(this, obj, {
-            id: null,
-            name: null,
-        }, alreadyEncrypted, ['id']);
+        this.buildDomainModel(
+            this,
+            obj,
+            {
+                id: null,
+                name: null,
+            },
+            alreadyEncrypted,
+            ["id"]
+        );
 
         this.revisionDate = obj.revisionDate != null ? new Date(obj.revisionDate) : null;
     }
 
     decrypt(): Promise<FolderView> {
-        return this.decryptObj(new FolderView(this), {
-            name: null,
-        }, null);
+        return this.decryptObj(
+            new FolderView(this),
+            {
+                name: null,
+            },
+            null
+        );
     }
 }

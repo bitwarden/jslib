@@ -1,5 +1,5 @@
-import { SsoConfigApi } from '../../api/ssoConfigApi';
-import { BaseResponse } from '../baseResponse';
+import { SsoConfigApi } from "../../api/ssoConfigApi";
+import { BaseResponse } from "../baseResponse";
 
 export class OrganizationSsoResponse extends BaseResponse {
     enabled: boolean;
@@ -8,9 +8,9 @@ export class OrganizationSsoResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.enabled = this.getResponseProperty('Enabled');
-        this.data = new SsoConfigApi(this.getResponseProperty('Data'));
-        this.urls = new SsoUrls(this.getResponseProperty('Urls'));
+        this.enabled = this.getResponseProperty("Enabled");
+        this.data = new SsoConfigApi(this.getResponseProperty("Data"));
+        this.urls = new SsoUrls(this.getResponseProperty("Urls"));
     }
 }
 
@@ -23,10 +23,10 @@ class SsoUrls extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.callbackPath = this.getResponseProperty('CallbackPath');
-        this.signedOutCallbackPath = this.getResponseProperty('SignedOutCallbackPath');
-        this.spEntityId = this.getResponseProperty('SpEntityId');
-        this.spMetadataUrl = this.getResponseProperty('SpMetadataUrl');
-        this.spAcsUrl = this.getResponseProperty('SpAcsUrl');
+        this.callbackPath = this.getResponseProperty("CallbackPath");
+        this.signedOutCallbackPath = this.getResponseProperty("SignedOutCallbackPath");
+        this.spEntityId = this.getResponseProperty("SpEntityId");
+        this.spMetadataUrl = this.getResponseProperty("SpMetadataUrl");
+        this.spAcsUrl = this.getResponseProperty("SpAcsUrl");
     }
 }

@@ -1,10 +1,10 @@
-import { ProfileOrganizationResponse } from '../response/profileOrganizationResponse';
+import { ProfileOrganizationResponse } from "../response/profileOrganizationResponse";
 
-import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
-import { OrganizationUserType } from '../../enums/organizationUserType';
-import { ProductType } from '../../enums/productType';
+import { OrganizationUserStatusType } from "../../enums/organizationUserStatusType";
+import { OrganizationUserType } from "../../enums/organizationUserType";
+import { ProductType } from "../../enums/productType";
 
-import { PermissionsApi } from '../api/permissionsApi';
+import { PermissionsApi } from "../api/permissionsApi";
 
 export class OrganizationData {
     id: string;

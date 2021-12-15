@@ -1,9 +1,9 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
-import { ProviderUserStatusType } from '../../enums/providerUserStatusType';
-import { ProviderUserType } from '../../enums/providerUserType';
+import { ProviderUserStatusType } from "../../enums/providerUserStatusType";
+import { ProviderUserType } from "../../enums/providerUserType";
 
-import { PermissionsApi } from '../api/permissionsApi';
+import { PermissionsApi } from "../api/permissionsApi";
 
 export class ProfileProviderResponse extends BaseResponse {
     id: string;
@@ -18,14 +18,14 @@ export class ProfileProviderResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.id = this.getResponseProperty('Id');
-        this.name = this.getResponseProperty('Name');
-        this.key = this.getResponseProperty('Key');
-        this.status = this.getResponseProperty('Status');
-        this.type = this.getResponseProperty('Type');
-        this.enabled = this.getResponseProperty('Enabled');
-        this.permissions = new PermissionsApi(this.getResponseProperty('permissions'));
-        this.userId = this.getResponseProperty('UserId');
-        this.useEvents = this.getResponseProperty('UseEvents');
+        this.id = this.getResponseProperty("Id");
+        this.name = this.getResponseProperty("Name");
+        this.key = this.getResponseProperty("Key");
+        this.status = this.getResponseProperty("Status");
+        this.type = this.getResponseProperty("Type");
+        this.enabled = this.getResponseProperty("Enabled");
+        this.permissions = new PermissionsApi(this.getResponseProperty("permissions"));
+        this.userId = this.getResponseProperty("UserId");
+        this.useEvents = this.getResponseProperty("UseEvents");
     }
 }

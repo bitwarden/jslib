@@ -1,4 +1,4 @@
-import { SelectionReadOnlyRequest } from './selectionReadOnlyRequest';
+import { SelectionReadOnlyRequest } from "./selectionReadOnlyRequest";
 
 export class GroupRequest {
     name: string;

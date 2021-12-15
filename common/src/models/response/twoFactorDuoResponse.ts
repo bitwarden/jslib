@@ -1,4 +1,4 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class TwoFactorDuoResponse extends BaseResponse {
     enabled: boolean;
@@ -8,9 +8,9 @@ export class TwoFactorDuoResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.enabled = this.getResponseProperty('Enabled');
-        this.host = this.getResponseProperty('Host');
-        this.secretKey = this.getResponseProperty('SecretKey');
-        this.integrationKey = this.getResponseProperty('IntegrationKey');
+        this.enabled = this.getResponseProperty("Enabled");
+        this.host = this.getResponseProperty("Host");
+        this.secretKey = this.getResponseProperty("SecretKey");
+        this.integrationKey = this.getResponseProperty("IntegrationKey");
     }
 }

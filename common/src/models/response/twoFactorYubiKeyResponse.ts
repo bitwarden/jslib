@@ -1,4 +1,4 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class TwoFactorYubiKeyResponse extends BaseResponse {
     enabled: boolean;
@@ -11,12 +11,12 @@ export class TwoFactorYubiKeyResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.enabled = this.getResponseProperty('Enabled');
-        this.key1 = this.getResponseProperty('Key1');
-        this.key2 = this.getResponseProperty('Key2');
-        this.key3 = this.getResponseProperty('Key3');
-        this.key4 = this.getResponseProperty('Key4');
-        this.key5 = this.getResponseProperty('Key5');
-        this.nfc = this.getResponseProperty('Nfc');
+        this.enabled = this.getResponseProperty("Enabled");
+        this.key1 = this.getResponseProperty("Key1");
+        this.key2 = this.getResponseProperty("Key2");
+        this.key3 = this.getResponseProperty("Key3");
+        this.key4 = this.getResponseProperty("Key4");
+        this.key5 = this.getResponseProperty("Key5");
+        this.nfc = this.getResponseProperty("Nfc");
     }
 }

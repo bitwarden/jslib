@@ -1,6 +1,6 @@
-import { KeysRequest } from './keysRequest';
+import { KeysRequest } from "./keysRequest";
 
-import { KdfType } from '../../enums/kdfType';
+import { KdfType } from "../../enums/kdfType";
 
 export class SetPasswordRequest {
     masterPasswordHash: string;
@@ -11,8 +11,15 @@ export class SetPasswordRequest {
     kdfIterations: number;
     orgIdentifier: string;
 
-    constructor(masterPasswordHash: string, key: string, masterPasswordHint: string, kdf: KdfType,
-        kdfIterations: number, orgIdentifier: string, keys: KeysRequest) {
+    constructor(
+        masterPasswordHash: string,
+        key: string,
+        masterPasswordHint: string,
+        kdf: KdfType,
+        kdfIterations: number,
+        orgIdentifier: string,
+        keys: KeysRequest
+    ) {
         this.masterPasswordHash = masterPasswordHash;
         this.key = key;
         this.masterPasswordHint = masterPasswordHint;

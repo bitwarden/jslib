@@ -1,7 +1,7 @@
-import { PaymentMethodType } from '../../enums/paymentMethodType';
-import { PlanType } from '../../enums/planType';
+import { PaymentMethodType } from "../../enums/paymentMethodType";
+import { PlanType } from "../../enums/planType";
 
-import { OrganizationKeysRequest } from './organizationKeysRequest';
+import { OrganizationKeysRequest } from "./organizationKeysRequest";
 
 export class OrganizationCreateRequest {
     name: string;

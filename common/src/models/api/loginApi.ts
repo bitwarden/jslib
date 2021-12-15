@@ -1,6 +1,6 @@
-import { BaseResponse } from '../response/baseResponse';
+import { BaseResponse } from "../response/baseResponse";
 
-import { LoginUriApi } from './loginUriApi';
+import { LoginUriApi } from "./loginUriApi";
 
 export class LoginApi extends BaseResponse {
     uris: LoginUriApi[];
@@ -15,13 +15,13 @@ export class LoginApi extends BaseResponse {
         if (data == null) {
             return;
         }
-        this.username = this.getResponseProperty('Username');
-        this.password = this.getResponseProperty('Password');
-        this.passwordRevisionDate = this.getResponseProperty('PasswordRevisionDate');
-        this.totp = this.getResponseProperty('Totp');
-        this.autofillOnPageLoad = this.getResponseProperty('AutofillOnPageLoad');
+        this.username = this.getResponseProperty("Username");
+        this.password = this.getResponseProperty("Password");
+        this.passwordRevisionDate = this.getResponseProperty("PasswordRevisionDate");
+        this.totp = this.getResponseProperty("Totp");
+        this.autofillOnPageLoad = this.getResponseProperty("AutofillOnPageLoad");
 
-        const uris = this.getResponseProperty('Uris');
+        const uris = this.getResponseProperty("Uris");
         if (uris != null) {
             this.uris = uris.map((u: any) => new LoginUriApi(u));
         }

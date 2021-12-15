@@ -1,6 +1,6 @@
-import { BaseResponse } from '../response/baseResponse';
+import { BaseResponse } from "../response/baseResponse";
 
-import { SecureNoteType } from '../../enums/secureNoteType';
+import { SecureNoteType } from "../../enums/secureNoteType";
 
 export class SecureNoteApi extends BaseResponse {
     type: SecureNoteType;
@@ -10,6 +10,6 @@ export class SecureNoteApi extends BaseResponse {
         if (data == null) {
             return;
         }
-        this.type = this.getResponseProperty('Type');
+        this.type = this.getResponseProperty("Type");
     }
 }

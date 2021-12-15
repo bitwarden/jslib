@@ -1,6 +1,6 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
-import { NotificationType } from '../../enums/notificationType';
+import { NotificationType } from "../../enums/notificationType";
 
 export class NotificationResponse extends BaseResponse {
     contextId: string;
@@ -9,10 +9,10 @@ export class NotificationResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.contextId = this.getResponseProperty('ContextId');
-        this.type = this.getResponseProperty('Type');
+        this.contextId = this.getResponseProperty("ContextId");
+        this.type = this.getResponseProperty("Type");
 
-        const payload = this.getResponseProperty('Payload');
+        const payload = this.getResponseProperty("Payload");
         switch (this.type) {
             case NotificationType.SyncCipherCreate:
             case NotificationType.SyncCipherDelete:
@@ -51,11 +51,11 @@ export class SyncCipherNotification extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.id = this.getResponseProperty('Id');
-        this.userId = this.getResponseProperty('UserId');
-        this.organizationId = this.getResponseProperty('OrganizationId');
-        this.collectionIds = this.getResponseProperty('CollectionIds');
-        this.revisionDate = new Date(this.getResponseProperty('RevisionDate'));
+        this.id = this.getResponseProperty("Id");
+        this.userId = this.getResponseProperty("UserId");
+        this.organizationId = this.getResponseProperty("OrganizationId");
+        this.collectionIds = this.getResponseProperty("CollectionIds");
+        this.revisionDate = new Date(this.getResponseProperty("RevisionDate"));
     }
 }
 
@@ -66,9 +66,9 @@ export class SyncFolderNotification extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.id = this.getResponseProperty('Id');
-        this.userId = this.getResponseProperty('UserId');
-        this.revisionDate = new Date(this.getResponseProperty('RevisionDate'));
+        this.id = this.getResponseProperty("Id");
+        this.userId = this.getResponseProperty("UserId");
+        this.revisionDate = new Date(this.getResponseProperty("RevisionDate"));
     }
 }
 
@@ -78,8 +78,8 @@ export class UserNotification extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.userId = this.getResponseProperty('UserId');
-        this.date = new Date(this.getResponseProperty('Date'));
+        this.userId = this.getResponseProperty("UserId");
+        this.date = new Date(this.getResponseProperty("Date"));
     }
 }
 
@@ -90,8 +90,8 @@ export class SyncSendNotification extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.id = this.getResponseProperty('Id');
-        this.userId = this.getResponseProperty('UserId');
-        this.revisionDate = new Date(this.getResponseProperty('RevisionDate'));
+        this.id = this.getResponseProperty("Id");
+        this.userId = this.getResponseProperty("UserId");
+        this.revisionDate = new Date(this.getResponseProperty("RevisionDate"));
     }
 }

@@ -1,8 +1,8 @@
-import { Collection } from './collection';
+import { Collection } from "./collection";
 
-import { CollectionView } from '../view/collectionView';
+import { CollectionView } from "../view/collectionView";
 
-import { Collection as CollectionDomain } from '../domain/collection';
+import { Collection as CollectionDomain } from "../domain/collection";
 
 export class CollectionWithId extends Collection {
     id: string;

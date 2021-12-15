@@ -1,10 +1,9 @@
-import { OrganizationData } from '../data/organizationData';
+import { OrganizationData } from "../data/organizationData";
 
-import { OrganizationUserStatusType } from '../../enums/organizationUserStatusType';
-import { OrganizationUserType } from '../../enums/organizationUserType';
-import { ProductType } from '../../enums/productType';
-import { PermissionsApi } from '../api/permissionsApi';
-
+import { OrganizationUserStatusType } from "../../enums/organizationUserStatusType";
+import { OrganizationUserType } from "../../enums/organizationUserType";
+import { ProductType } from "../../enums/productType";
+import { PermissionsApi } from "../api/permissionsApi";
 
 export class Organization {
     id: string;
@@ -91,8 +90,11 @@ export class Organization {
     }
 
     get isManager() {
-        return this.type === OrganizationUserType.Manager || this.type === OrganizationUserType.Owner ||
-            this.type === OrganizationUserType.Admin;
+        return (
+            this.type === OrganizationUserType.Manager ||
+            this.type === OrganizationUserType.Owner ||
+            this.type === OrganizationUserType.Admin
+        );
     }
 
     get isAdmin() {
@@ -132,11 +134,15 @@ export class Organization {
     }
 
     get canEditAssignedCollections() {
-        return this.isManager || (this.permissions.editAssignedCollections ?? this.permissions.manageAssignedCollections);
+        return (
+            this.isManager || (this.permissions.editAssignedCollections ?? this.permissions.manageAssignedCollections)
+        );
     }
 
     get canDeleteAssignedCollections() {
-        return this.isManager || (this.permissions.deleteAssignedCollections ?? this.permissions.manageAssignedCollections);
+        return (
+            this.isManager || (this.permissions.deleteAssignedCollections ?? this.permissions.manageAssignedCollections)
+        );
     }
 
     get canViewAssignedCollections() {

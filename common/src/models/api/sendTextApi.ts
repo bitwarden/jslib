@@ -1,4 +1,4 @@
-import { BaseResponse } from '../response/baseResponse';
+import { BaseResponse } from "../response/baseResponse";
 
 export class SendTextApi extends BaseResponse {
     text: string;
@@ -9,7 +9,7 @@ export class SendTextApi extends BaseResponse {
         if (data == null) {
             return;
         }
-        this.text = this.getResponseProperty('Text');
-        this.hidden = this.getResponseProperty('Hidden') || false;
+        this.text = this.getResponseProperty("Text");
+        this.hidden = this.getResponseProperty("Hidden") || false;
     }
 }

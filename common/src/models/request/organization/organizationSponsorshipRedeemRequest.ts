@@ -1,4 +1,4 @@
-import { PlanSponsorshipType } from '../../../enums/planSponsorshipType';
+import { PlanSponsorshipType } from "../../../enums/planSponsorshipType";
 
 export class OrganizationSponsorshipRedeemRequest {
     planSponsorshipType: PlanSponsorshipType;

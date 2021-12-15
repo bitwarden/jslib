@@ -1,13 +1,13 @@
-import { CollectionView } from '../view/collectionView';
+import { CollectionView } from "../view/collectionView";
 
-import { Collection as CollectionDomain } from '../domain/collection';
-import { EncString } from '../domain/encString';
+import { Collection as CollectionDomain } from "../domain/collection";
+import { EncString } from "../domain/encString";
 
 export class Collection {
     static template(): Collection {
         const req = new Collection();
-        req.organizationId = '00000000-0000-0000-0000-000000000000';
-        req.name = 'Collection name';
+        req.organizationId = "00000000-0000-0000-0000-000000000000";
+        req.name = "Collection name";
         req.externalId = null;
         return req;
     }

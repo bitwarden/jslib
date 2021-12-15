@@ -1,6 +1,6 @@
-import { EncryptionType } from '../../enums/encryptionType';
+import { EncryptionType } from "../../enums/encryptionType";
 
-import { Utils } from '../../misc/utils';
+import { Utils } from "../../misc/utils";
 
 export class SymmetricCryptoKey {
     key: ArrayBuffer;
@@ -16,7 +16,7 @@ export class SymmetricCryptoKey {
 
     constructor(key: ArrayBuffer, encType?: EncryptionType) {
         if (key == null) {
-            throw new Error('Must provide key');
+            throw new Error("Must provide key");
         }
 
         if (encType == null) {
@@ -25,7 +25,7 @@ export class SymmetricCryptoKey {
             } else if (key.byteLength === 64) {
                 encType = EncryptionType.AesCbc256_HmacSha256_B64;
             } else {
-                throw new Error('Unable to determine encType.');
+                throw new Error("Unable to determine encType.");
             }
         }
 
@@ -42,7 +42,7 @@ export class SymmetricCryptoKey {
             this.encKey = key.slice(0, 32);
             this.macKey = key.slice(32, 64);
         } else {
-            throw new Error('Unsupported encType/key length.');
+            throw new Error("Unsupported encType/key length.");
         }
 
         if (this.key != null) {

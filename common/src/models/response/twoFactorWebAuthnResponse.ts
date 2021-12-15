@@ -1,5 +1,5 @@
-import { Utils } from '../../misc/utils';
-import { BaseResponse } from './baseResponse';
+import { Utils } from "../../misc/utils";
+import { BaseResponse } from "./baseResponse";
 
 export class TwoFactorWebAuthnResponse extends BaseResponse {
     enabled: boolean;
@@ -7,8 +7,8 @@ export class TwoFactorWebAuthnResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.enabled = this.getResponseProperty('Enabled');
-        const keys = this.getResponseProperty('Keys');
+        this.enabled = this.getResponseProperty("Enabled");
+        const keys = this.getResponseProperty("Keys");
         this.keys = keys == null ? null : keys.map((k: any) => new KeyResponse(k));
     }
 }
@@ -20,9 +20,9 @@ export class KeyResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.name = this.getResponseProperty('Name');
-        this.id = this.getResponseProperty('Id');
-        this.migrated = this.getResponseProperty('Migrated');
+        this.name = this.getResponseProperty("Name");
+        this.id = this.getResponseProperty("Id");
+        this.migrated = this.getResponseProperty("Migrated");
     }
 }
 
@@ -39,19 +39,19 @@ export class ChallengeResponse extends BaseResponse implements PublicKeyCredenti
 
     constructor(response: any) {
         super(response);
-        this.attestation = this.getResponseProperty('attestation');
-        this.authenticatorSelection = this.getResponseProperty('authenticatorSelection');
-        this.challenge = Utils.fromUrlB64ToArray(this.getResponseProperty('challenge'));
-        this.excludeCredentials = this.getResponseProperty('excludeCredentials').map((c: any) => {
+        this.attestation = this.getResponseProperty("attestation");
+        this.authenticatorSelection = this.getResponseProperty("authenticatorSelection");
+        this.challenge = Utils.fromUrlB64ToArray(this.getResponseProperty("challenge"));
+        this.excludeCredentials = this.getResponseProperty("excludeCredentials").map((c: any) => {
             c.id = Utils.fromUrlB64ToArray(c.id).buffer;
             return c;
         });
-        this.extensions = this.getResponseProperty('extensions');
-        this.pubKeyCredParams = this.getResponseProperty('pubKeyCredParams');
-        this.rp = this.getResponseProperty('rp');
-        this.timeout = this.getResponseProperty('timeout');
+        this.extensions = this.getResponseProperty("extensions");
+        this.pubKeyCredParams = this.getResponseProperty("pubKeyCredParams");
+        this.rp = this.getResponseProperty("rp");
+        this.timeout = this.getResponseProperty("timeout");
 
-        const user = this.getResponseProperty('user');
+        const user = this.getResponseProperty("user");
         user.id = Utils.fromUrlB64ToArray(user.id);
 
         this.user = user;

@@ -1,12 +1,12 @@
-import { ItemView } from './itemView';
+import { ItemView } from "./itemView";
 
-import { Identity } from '../domain/identity';
+import { Identity } from "../domain/identity";
 
-import { Utils } from '../../misc/utils';
+import { Utils } from "../../misc/utils";
 
-import { IdentityLinkedId as LinkedId } from '../../enums/linkedIdType';
+import { IdentityLinkedId as LinkedId } from "../../enums/linkedIdType";
 
-import { linkedFieldOption } from '../../misc/linkedFieldOption.decorator';
+import { linkedFieldOption } from "../../misc/linkedFieldOption.decorator";
 
 export class IdentityView extends ItemView {
     @linkedFieldOption(LinkedId.Title)
@@ -19,11 +19,11 @@ export class IdentityView extends ItemView {
     address2: string = null;
     @linkedFieldOption(LinkedId.Address3)
     address3: string = null;
-    @linkedFieldOption(LinkedId.City, 'cityTown')
+    @linkedFieldOption(LinkedId.City, "cityTown")
     city: string = null;
-    @linkedFieldOption(LinkedId.State, 'stateProvince')
+    @linkedFieldOption(LinkedId.State, "stateProvince")
     state: string = null;
-    @linkedFieldOption(LinkedId.PostalCode, 'zipPostalCode')
+    @linkedFieldOption(LinkedId.PostalCode, "zipPostalCode")
     postalCode: string = null;
     @linkedFieldOption(LinkedId.Country)
     country: string = null;
@@ -72,13 +72,13 @@ export class IdentityView extends ItemView {
 
     get subTitle(): string {
         if (this._subTitle == null && (this.firstName != null || this.lastName != null)) {
-            this._subTitle = '';
+            this._subTitle = "";
             if (this.firstName != null) {
                 this._subTitle = this.firstName;
             }
             if (this.lastName != null) {
-                if (this._subTitle !== '') {
-                    this._subTitle += ' ';
+                if (this._subTitle !== "") {
+                    this._subTitle += " ";
                 }
                 this._subTitle += this.lastName;
             }
@@ -90,15 +90,15 @@ export class IdentityView extends ItemView {
     @linkedFieldOption(LinkedId.FullName)
     get fullName(): string {
         if (this.title != null || this.firstName != null || this.middleName != null || this.lastName != null) {
-            let name = '';
+            let name = "";
             if (this.title != null) {
-                name += (this.title + ' ');
+                name += this.title + " ";
             }
             if (this.firstName != null) {
-                name += (this.firstName + ' ');
+                name += this.firstName + " ";
             }
             if (this.middleName != null) {
-                name += (this.middleName + ' ');
+                name += this.middleName + " ";
             }
             if (this.lastName != null) {
                 name += this.lastName;
@@ -113,13 +113,13 @@ export class IdentityView extends ItemView {
         let address = this.address1;
         if (!Utils.isNullOrWhitespace(this.address2)) {
             if (!Utils.isNullOrWhitespace(address)) {
-                address += ', ';
+                address += ", ";
             }
             address += this.address2;
         }
         if (!Utils.isNullOrWhitespace(this.address3)) {
             if (!Utils.isNullOrWhitespace(address)) {
-                address += ', ';
+                address += ", ";
             }
             address += this.address3;
         }
@@ -130,14 +130,14 @@ export class IdentityView extends ItemView {
         if (this.city == null && this.state == null && this.postalCode == null) {
             return null;
         }
-        const city = this.city || '-';
+        const city = this.city || "-";
         const state = this.state;
-        const postalCode = this.postalCode || '-';
+        const postalCode = this.postalCode || "-";
         let addressPart2 = city;
         if (!Utils.isNullOrWhitespace(state)) {
-            addressPart2 += ', ' + state;
+            addressPart2 += ", " + state;
         }
-        addressPart2 += ', ' + postalCode;
+        addressPart2 += ", " + postalCode;
         return addressPart2;
     }
 }

@@ -1,4 +1,4 @@
-import { Folder } from '../domain/folder';
+import { Folder } from "../domain/folder";
 
 export class FolderRequest {
     name: string;

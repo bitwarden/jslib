@@ -1,6 +1,6 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
-import { KdfType } from '../../enums/kdfType';
+import { KdfType } from "../../enums/kdfType";
 
 export class IdentityTokenResponse extends BaseResponse {
     accessToken: string;
@@ -25,14 +25,14 @@ export class IdentityTokenResponse extends BaseResponse {
         this.refreshToken = response.refresh_token;
         this.tokenType = response.token_type;
 
-        this.resetMasterPassword = this.getResponseProperty('ResetMasterPassword');
-        this.privateKey = this.getResponseProperty('PrivateKey');
-        this.key = this.getResponseProperty('Key');
-        this.twoFactorToken = this.getResponseProperty('TwoFactorToken');
-        this.kdf = this.getResponseProperty('Kdf');
-        this.kdfIterations = this.getResponseProperty('KdfIterations');
-        this.forcePasswordReset = this.getResponseProperty('ForcePasswordReset');
-        this.apiUseKeyConnector = this.getResponseProperty('ApiUseKeyConnector');
-        this.keyConnectorUrl = this.getResponseProperty('KeyConnectorUrl');
+        this.resetMasterPassword = this.getResponseProperty("ResetMasterPassword");
+        this.privateKey = this.getResponseProperty("PrivateKey");
+        this.key = this.getResponseProperty("Key");
+        this.twoFactorToken = this.getResponseProperty("TwoFactorToken");
+        this.kdf = this.getResponseProperty("Kdf");
+        this.kdfIterations = this.getResponseProperty("KdfIterations");
+        this.forcePasswordReset = this.getResponseProperty("ForcePasswordReset");
+        this.apiUseKeyConnector = this.getResponseProperty("ApiUseKeyConnector");
+        this.keyConnectorUrl = this.getResponseProperty("KeyConnectorUrl");
     }
 }

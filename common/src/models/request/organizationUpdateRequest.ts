@@ -1,4 +1,4 @@
-import { OrganizationKeysRequest } from './organizationKeysRequest';
+import { OrganizationKeysRequest } from "./organizationKeysRequest";
 
 export class OrganizationUpdateRequest {
     name: string;

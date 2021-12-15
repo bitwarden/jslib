@@ -1,6 +1,6 @@
-import { CipherRequest } from './cipherRequest';
-import { CollectionRequest } from './collectionRequest';
-import { KvpRequest } from './kvpRequest';
+import { CipherRequest } from "./cipherRequest";
+import { CollectionRequest } from "./collectionRequest";
+import { KvpRequest } from "./kvpRequest";
 
 export class ImportOrganizationCiphersRequest {
     ciphers: CipherRequest[] = [];

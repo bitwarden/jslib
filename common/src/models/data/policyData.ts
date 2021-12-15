@@ -1,6 +1,6 @@
-import { PolicyResponse } from '../response/policyResponse';
+import { PolicyResponse } from "../response/policyResponse";
 
-import { PolicyType } from '../../enums/policyType';
+import { PolicyType } from "../../enums/policyType";
 
 export class PolicyData {
     id: string;

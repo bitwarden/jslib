@@ -1,13 +1,13 @@
-import { ItemView } from './itemView';
-import { LoginUriView } from './loginUriView';
+import { ItemView } from "./itemView";
+import { LoginUriView } from "./loginUriView";
 
-import { Utils } from '../../misc/utils';
+import { Utils } from "../../misc/utils";
 
-import { Login } from '../domain/login';
+import { Login } from "../domain/login";
 
-import { LoginLinkedId as LinkedId } from '../../enums/linkedIdType';
+import { LoginLinkedId as LinkedId } from "../../enums/linkedIdType";
 
-import { linkedFieldOption } from '../../misc/linkedFieldOption.decorator';
+import { linkedFieldOption } from "../../misc/linkedFieldOption.decorator";
 
 export class LoginView extends ItemView {
     @linkedFieldOption(LinkedId.Username)
@@ -35,7 +35,7 @@ export class LoginView extends ItemView {
     }
 
     get maskedPassword(): string {
-        return this.password != null ? '••••••••' : null;
+        return this.password != null ? "••••••••" : null;
     }
 
     get subTitle(): string {
@@ -43,7 +43,7 @@ export class LoginView extends ItemView {
     }
 
     get canLaunch(): boolean {
-        return this.hasUris && this.uris.some(u => u.canLaunch);
+        return this.hasUris && this.uris.some((u) => u.canLaunch);
     }
 
     get hasTotp(): boolean {
@@ -52,7 +52,7 @@ export class LoginView extends ItemView {
 
     get launchUri(): string {
         if (this.hasUris) {
-            const uri = this.uris.find(u => u.canLaunch);
+            const uri = this.uris.find((u) => u.canLaunch);
             if (uri != null) {
                 return uri.launchUri;
             }

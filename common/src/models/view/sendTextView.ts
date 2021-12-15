@@ -1,6 +1,6 @@
-import { View } from './view';
+import { View } from "./view";
 
-import { SendText } from '../domain/sendText';
+import { SendText } from "../domain/sendText";
 
 export class SendTextView implements View {
     text: string = null;
@@ -15,6 +15,6 @@ export class SendTextView implements View {
     }
 
     get maskedText(): string {
-        return this.text != null ? '••••••••' : null;
+        return this.text != null ? "••••••••" : null;
     }
 }

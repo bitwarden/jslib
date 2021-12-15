@@ -1,4 +1,4 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class AttachmentResponse extends BaseResponse {
     id: string;
@@ -10,11 +10,11 @@ export class AttachmentResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.id = this.getResponseProperty('Id');
-        this.url = this.getResponseProperty('Url');
-        this.fileName = this.getResponseProperty('FileName');
-        this.key = this.getResponseProperty('Key');
-        this.size = this.getResponseProperty('Size');
-        this.sizeName = this.getResponseProperty('SizeName');
+        this.id = this.getResponseProperty("Id");
+        this.url = this.getResponseProperty("Url");
+        this.fileName = this.getResponseProperty("FileName");
+        this.key = this.getResponseProperty("Key");
+        this.size = this.getResponseProperty("Size");
+        this.sizeName = this.getResponseProperty("SizeName");
     }
 }

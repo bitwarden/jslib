@@ -1,9 +1,9 @@
-import { TwoFactorProviderType } from '../../enums/twoFactorProviderType';
+import { TwoFactorProviderType } from "../../enums/twoFactorProviderType";
 
 export class AuthResult {
     twoFactor: boolean = false;
-    captchaSiteKey: string = '';
+    captchaSiteKey: string = "";
     resetMasterPassword: boolean = false;
     forcePasswordReset: boolean = false;
-    twoFactorProviders: Map<TwoFactorProviderType, { [key: string]: string; }> = null;
+    twoFactorProviders: Map<TwoFactorProviderType, { [key: string]: string }> = null;
 }

@@ -1,4 +1,4 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class TaxInfoResponse extends BaseResponse {
     taxId: string;
@@ -12,13 +12,13 @@ export class TaxInfoResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.taxId = this.getResponseProperty('TaxIdNumber');
-        this.taxIdType = this.getResponseProperty('TaxIdType');
-        this.line1 = this.getResponseProperty('Line1');
-        this.line2 = this.getResponseProperty('Line2');
-        this.city = this.getResponseProperty('City');
-        this.state = this.getResponseProperty('State');
-        this.postalCode = this.getResponseProperty('PostalCode');
-        this.country = this.getResponseProperty('Country');
+        this.taxId = this.getResponseProperty("TaxIdNumber");
+        this.taxIdType = this.getResponseProperty("TaxIdType");
+        this.line1 = this.getResponseProperty("Line1");
+        this.line2 = this.getResponseProperty("Line2");
+        this.city = this.getResponseProperty("City");
+        this.state = this.getResponseProperty("State");
+        this.postalCode = this.getResponseProperty("PostalCode");
+        this.country = this.getResponseProperty("Country");
     }
 }

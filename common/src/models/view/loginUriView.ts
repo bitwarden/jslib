@@ -1,25 +1,25 @@
-import { UriMatchType } from '../../enums/uriMatchType';
+import { UriMatchType } from "../../enums/uriMatchType";
 
-import { View } from './view';
+import { View } from "./view";
 
-import { LoginUri } from '../domain/loginUri';
+import { LoginUri } from "../domain/loginUri";
 
-import { Utils } from '../../misc/utils';
+import { Utils } from "../../misc/utils";
 
 const CanLaunchWhitelist = [
-    'https://',
-    'http://',
-    'ssh://',
-    'ftp://',
-    'sftp://',
-    'irc://',
-    'vnc://',
+    "https://",
+    "http://",
+    "ssh://",
+    "ftp://",
+    "sftp://",
+    "irc://",
+    "vnc://",
     // https://docs.microsoft.com/en-us/windows-server/remote/remote-desktop-services/clients/remote-desktop-uri
-    'rdp://', // Legacy RDP URI scheme
-    'ms-rd:', // Preferred RDP URI scheme
-    'chrome://',
-    'iosapp://',
-    'androidapp://',
+    "rdp://", // Legacy RDP URI scheme
+    "ms-rd:", // Preferred RDP URI scheme
+    "chrome://",
+    "iosapp://",
+    "androidapp://",
 ];
 
 export class LoginUriView implements View {
@@ -53,7 +53,7 @@ export class LoginUriView implements View {
     get domain(): string {
         if (this._domain == null && this.uri != null) {
             this._domain = Utils.getDomain(this.uri);
-            if (this._domain === '') {
+            if (this._domain === "") {
                 this._domain = null;
             }
         }
@@ -67,7 +67,7 @@ export class LoginUriView implements View {
         }
         if (this._hostname == null && this.uri != null) {
             this._hostname = Utils.getHostname(this.uri);
-            if (this._hostname === '') {
+            if (this._hostname === "") {
                 this._hostname = null;
             }
         }
@@ -81,7 +81,7 @@ export class LoginUriView implements View {
         }
         if (this._host == null && this.uri != null) {
             this._host = Utils.getHost(this.uri);
-            if (this._host === '') {
+            if (this._host === "") {
                 this._host = null;
             }
         }
@@ -98,8 +98,12 @@ export class LoginUriView implements View {
     }
 
     get isWebsite(): boolean {
-        return this.uri != null && (this.uri.indexOf('http://') === 0 || this.uri.indexOf('https://') === 0 ||
-            (this.uri.indexOf('://') < 0 && Utils.tldEndingRegex.test(this.uri)));
+        return (
+            this.uri != null &&
+            (this.uri.indexOf("http://") === 0 ||
+                this.uri.indexOf("https://") === 0 ||
+                (this.uri.indexOf("://") < 0 && Utils.tldEndingRegex.test(this.uri)))
+        );
     }
 
     get canLaunch(): boolean {
@@ -120,6 +124,6 @@ export class LoginUriView implements View {
     }
 
     get launchUri(): string {
-        return this.uri.indexOf('://') < 0 && Utils.tldEndingRegex.test(this.uri) ? ('http://' + this.uri) : this.uri;
+        return this.uri.indexOf("://") < 0 && Utils.tldEndingRegex.test(this.uri) ? "http://" + this.uri : this.uri;
     }
 }

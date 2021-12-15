@@ -1,4 +1,4 @@
-import { CipherView } from '../view/cipherView';
+import { CipherView } from "../view/cipherView";
 
 const CacheTTL = 3000;
 
@@ -6,7 +6,7 @@ export class SortedCiphersCache {
     private readonly sortedCiphersByUrl: Map<string, Ciphers> = new Map<string, Ciphers>();
     private readonly timeouts: Map<string, any> = new Map<string, any>();
 
-    constructor(private readonly comparator: (a: CipherView, b: CipherView) => number) { }
+    constructor(private readonly comparator: (a: CipherView, b: CipherView) => number) {}
 
     isCached(url: string) {
         return this.sortedCiphersByUrl.has(url);
@@ -45,17 +45,20 @@ export class SortedCiphersCache {
 
     private resetTimer(url: string) {
         clearTimeout(this.timeouts.get(url));
-        this.timeouts.set(url, setTimeout(() => {
-            this.sortedCiphersByUrl.delete(url);
-            this.timeouts.delete(url);
-        }, CacheTTL));
+        this.timeouts.set(
+            url,
+            setTimeout(() => {
+                this.sortedCiphersByUrl.delete(url);
+                this.timeouts.delete(url);
+            }, CacheTTL)
+        );
     }
 }
 
 class Ciphers {
     lastUsedIndex = -1;
 
-    constructor(private readonly ciphers: CipherView[]) { }
+    constructor(private readonly ciphers: CipherView[]) {}
 
     getLastUsed() {
         this.lastUsedIndex = Math.max(this.lastUsedIndex, 0);
@@ -63,8 +66,10 @@ class Ciphers {
     }
 
     getLastLaunched() {
-        const usedCiphers = this.ciphers.filter(cipher => cipher.localData?.lastLaunched);
-        const sortedCiphers = usedCiphers.sort((x, y) => y.localData.lastLaunched.valueOf() - x.localData.lastLaunched.valueOf());
+        const usedCiphers = this.ciphers.filter((cipher) => cipher.localData?.lastLaunched);
+        const sortedCiphers = usedCiphers.sort(
+            (x, y) => y.localData.lastLaunched.valueOf() - x.localData.lastLaunched.valueOf()
+        );
         return sortedCiphers[0];
     }
 

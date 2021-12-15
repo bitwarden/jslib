@@ -1,4 +1,4 @@
-import { ImportDirectoryRequestGroup } from './importDirectoryRequestGroup';
+import { ImportDirectoryRequestGroup } from "./importDirectoryRequestGroup";
 
 export class OrganizationImportGroupRequest {
     name: string;
@@ -11,8 +11,7 @@ export class OrganizationImportGroupRequest {
 
         if (model instanceof ImportDirectoryRequestGroup) {
             this.memberExternalIds = model.users;
-        }
-        else {
+        } else {
             this.memberExternalIds = model.memberExternalIds;
         }
     }

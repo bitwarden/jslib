@@ -1,9 +1,9 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
-import { SendType } from '../../enums/sendType';
+import { SendType } from "../../enums/sendType";
 
-import { SendFileApi } from '../api/sendFileApi';
-import { SendTextApi } from '../api/sendTextApi';
+import { SendFileApi } from "../api/sendFileApi";
+import { SendTextApi } from "../api/sendTextApi";
 
 export class SendAccessResponse extends BaseResponse {
     id: string;
@@ -16,21 +16,21 @@ export class SendAccessResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.id = this.getResponseProperty('Id');
-        this.type = this.getResponseProperty('Type');
-        this.name = this.getResponseProperty('Name');
+        this.id = this.getResponseProperty("Id");
+        this.type = this.getResponseProperty("Type");
+        this.name = this.getResponseProperty("Name");
 
-        const text = this.getResponseProperty('Text');
+        const text = this.getResponseProperty("Text");
         if (text != null) {
             this.text = new SendTextApi(text);
         }
 
-        const file = this.getResponseProperty('File');
+        const file = this.getResponseProperty("File");
         if (file != null) {
             this.file = new SendFileApi(file);
         }
 
-        this.expirationDate = this.getResponseProperty('ExpirationDate');
-        this.creatorIdentifier = this.getResponseProperty('CreatorIdentifier');
+        this.expirationDate = this.getResponseProperty("ExpirationDate");
+        this.creatorIdentifier = this.getResponseProperty("CreatorIdentifier");
     }
 }

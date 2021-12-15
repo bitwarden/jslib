@@ -1,6 +1,6 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
-import { KdfType } from '../../enums/kdfType';
+import { KdfType } from "../../enums/kdfType";
 
 export class PreloginResponse extends BaseResponse {
     kdf: KdfType;
@@ -8,7 +8,7 @@ export class PreloginResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.kdf = this.getResponseProperty('Kdf');
-        this.kdfIterations = this.getResponseProperty('KdfIterations');
+        this.kdf = this.getResponseProperty("Kdf");
+        this.kdfIterations = this.getResponseProperty("KdfIterations");
     }
 }

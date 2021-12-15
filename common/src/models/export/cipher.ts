@@ -1,16 +1,16 @@
-import { CipherRepromptType } from '../../enums/cipherRepromptType';
-import { CipherType } from '../../enums/cipherType';
+import { CipherRepromptType } from "../../enums/cipherRepromptType";
+import { CipherType } from "../../enums/cipherType";
 
-import { CipherView } from '../view/cipherView';
+import { CipherView } from "../view/cipherView";
 
-import { Cipher as CipherDomain } from '../domain/cipher';
-import { EncString } from '../domain/encString';
+import { Cipher as CipherDomain } from "../domain/cipher";
+import { EncString } from "../domain/encString";
 
-import { Card } from './card';
-import { Field } from './field';
-import { Identity } from './identity';
-import { Login } from './login';
-import { SecureNote } from './secureNote';
+import { Card } from "./card";
+import { Field } from "./field";
+import { Identity } from "./identity";
+import { Login } from "./login";
+import { SecureNote } from "./secureNote";
 
 export class Cipher {
     static template(): Cipher {
@@ -19,8 +19,8 @@ export class Cipher {
         req.collectionIds = null;
         req.folderId = null;
         req.type = CipherType.Login;
-        req.name = 'Item name';
-        req.notes = 'Some notes about this item.';
+        req.name = "Item name";
+        req.notes = "Some notes about this item.";
         req.favorite = false;
         req.fields = [];
         req.login = null;
@@ -47,7 +47,7 @@ export class Cipher {
         view.reprompt = req.reprompt ?? CipherRepromptType.None;
 
         if (req.fields != null) {
-            view.fields = req.fields.map(f => Field.toView(f));
+            view.fields = req.fields.map((f) => Field.toView(f));
         }
 
         switch (req.type) {
@@ -80,7 +80,7 @@ export class Cipher {
         domain.reprompt = req.reprompt ?? CipherRepromptType.None;
 
         if (req.fields != null) {
-            domain.fields = req.fields.map(f => Field.toDomain(f));
+            domain.fields = req.fields.map((f) => Field.toDomain(f));
         }
 
         switch (req.type) {
@@ -134,9 +134,9 @@ export class Cipher {
 
         if (o.fields != null) {
             if (o instanceof CipherView) {
-                this.fields = o.fields.map(f => new Field(f));
+                this.fields = o.fields.map((f) => new Field(f));
             } else {
-                this.fields = o.fields.map(f => new Field(f));
+                this.fields = o.fields.map((f) => new Field(f));
             }
         }
 

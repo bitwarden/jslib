@@ -1,4 +1,4 @@
-import { ImportDirectoryRequestUser } from './importDirectoryRequestUser';
+import { ImportDirectoryRequestUser } from "./importDirectoryRequestUser";
 
 export class OrganizationImportMemberRequest {
     email: string;

@@ -1,6 +1,6 @@
-import { LoginApi } from '../api/loginApi';
+import { LoginApi } from "../api/loginApi";
 
-import { LoginUriData } from './loginUriData';
+import { LoginUriData } from "./loginUriData";
 
 export class LoginData {
     uris: LoginUriData[];
@@ -22,7 +22,7 @@ export class LoginData {
         this.autofillOnPageLoad = data.autofillOnPageLoad;
 
         if (data.uris) {
-            this.uris = data.uris.map(u => new LoginUriData(u));
+            this.uris = data.uris.map((u) => new LoginUriData(u));
         }
     }
 }

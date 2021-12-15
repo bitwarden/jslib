@@ -1,10 +1,10 @@
-import Domain from './domainBase';
-import { EncString } from './encString';
-import { SymmetricCryptoKey } from './symmetricCryptoKey';
+import Domain from "./domainBase";
+import { EncString } from "./encString";
+import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
-import { SendFileData } from '../data/sendFileData';
+import { SendFileData } from "../data/sendFileData";
 
-import { SendFileView } from '../view/sendFileView';
+import { SendFileView } from "../view/sendFileView";
 
 export class SendFile extends Domain {
     id: string;
@@ -19,17 +19,28 @@ export class SendFile extends Domain {
         }
 
         this.size = obj.size;
-        this.buildDomainModel(this, obj, {
-            id: null,
-            sizeName: null,
-            fileName: null,
-        }, alreadyEncrypted, ['id', 'sizeName']);
+        this.buildDomainModel(
+            this,
+            obj,
+            {
+                id: null,
+                sizeName: null,
+                fileName: null,
+            },
+            alreadyEncrypted,
+            ["id", "sizeName"]
+        );
     }
 
     async decrypt(key: SymmetricCryptoKey): Promise<SendFileView> {
-        const view = await this.decryptObj(new SendFileView(this), {
-            fileName: null,
-        }, null, key);
+        const view = await this.decryptObj(
+            new SendFileView(this),
+            {
+                fileName: null,
+            },
+            null,
+            key
+        );
         return view;
     }
 }

@@ -1,16 +1,16 @@
-import { FieldType } from '../../enums/fieldType';
-import { LinkedIdType } from '../../enums/linkedIdType';
+import { FieldType } from "../../enums/fieldType";
+import { LinkedIdType } from "../../enums/linkedIdType";
 
-import { FieldView } from '../view/fieldView';
+import { FieldView } from "../view/fieldView";
 
-import { EncString } from '../domain/encString';
-import { Field as FieldDomain } from '../domain/field';
+import { EncString } from "../domain/encString";
+import { Field as FieldDomain } from "../domain/field";
 
 export class Field {
     static template(): Field {
         const req = new Field();
-        req.name = 'Field name';
-        req.value = 'Some value';
+        req.name = "Field name";
+        req.value = "Some value";
         req.type = FieldType.Text;
         return req;
     }

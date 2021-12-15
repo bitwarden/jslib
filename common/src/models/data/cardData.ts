@@ -1,4 +1,4 @@
-import { CardApi } from '../api/cardApi';
+import { CardApi } from "../api/cardApi";
 
 export class CardData {
     cardholderName: string;

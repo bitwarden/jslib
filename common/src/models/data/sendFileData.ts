@@ -1,4 +1,4 @@
-import { SendFileApi } from '../api/sendFileApi';
+import { SendFileApi } from "../api/sendFileApi";
 
 export class SendFileData {
     id: string;

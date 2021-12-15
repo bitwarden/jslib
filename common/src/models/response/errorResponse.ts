@@ -1,10 +1,10 @@
-import { Utils } from '../../misc/utils';
+import { Utils } from "../../misc/utils";
 
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class ErrorResponse extends BaseResponse {
     message: string;
-    validationErrors: { [key: string]: string[]; };
+    validationErrors: { [key: string]: string[] };
     statusCode: number;
     captchaRequired: boolean;
     captchaSiteKey: string;
@@ -13,7 +13,7 @@ export class ErrorResponse extends BaseResponse {
         super(response);
         let errorModel = null;
         if (response != null) {
-            const responseErrorModel = this.getResponseProperty('ErrorModel');
+            const responseErrorModel = this.getResponseProperty("ErrorModel");
             if (responseErrorModel && identityResponse) {
                 errorModel = responseErrorModel;
             } else {
@@ -22,13 +22,13 @@ export class ErrorResponse extends BaseResponse {
         }
 
         if (errorModel) {
-            this.message = this.getResponseProperty('Message', errorModel);
-            this.validationErrors = this.getResponseProperty('ValidationErrors', errorModel);
+            this.message = this.getResponseProperty("Message", errorModel);
+            this.validationErrors = this.getResponseProperty("ValidationErrors", errorModel);
             this.captchaSiteKey = this.validationErrors?.HCaptcha_SiteKey?.[0];
             this.captchaRequired = !Utils.isNullOrWhitespace(this.captchaSiteKey);
         } else {
             if (status === 429) {
-                this.message = 'Rate limit exceeded. Try again later.';
+                this.message = "Rate limit exceeded. Try again later.";
             }
         }
         this.statusCode = status;
@@ -59,10 +59,10 @@ export class ErrorResponse extends BaseResponse {
                 continue;
             }
             this.validationErrors[key].forEach((item: string) => {
-                let prefix = '';
-                if (key.indexOf('[') > -1 && key.indexOf(']') > -1) {
-                    const lastSep = key.lastIndexOf('.');
-                    prefix = key.substr(0, lastSep > -1 ? lastSep : key.length) + ': ';
+                let prefix = "";
+                if (key.indexOf("[") > -1 && key.indexOf("]") > -1) {
+                    const lastSep = key.lastIndexOf(".");
+                    prefix = key.substr(0, lastSep > -1 ? lastSep : key.length) + ": ";
                 }
                 messages.push(prefix + item);
             });

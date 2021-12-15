@@ -1,9 +1,9 @@
-import { BaseResponse } from '../baseResponse';
+import { BaseResponse } from "../baseResponse";
 
-import { PermissionsApi } from '../../api/permissionsApi';
+import { PermissionsApi } from "../../api/permissionsApi";
 
-import { ProviderUserStatusType } from '../../../enums/providerUserStatusType';
-import { ProviderUserType } from '../../../enums/providerUserType';
+import { ProviderUserStatusType } from "../../../enums/providerUserStatusType";
+import { ProviderUserType } from "../../../enums/providerUserType";
 
 export class ProviderUserResponse extends BaseResponse {
     id: string;
@@ -14,11 +14,11 @@ export class ProviderUserResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.id = this.getResponseProperty('Id');
-        this.userId = this.getResponseProperty('UserId');
-        this.type = this.getResponseProperty('Type');
-        this.status = this.getResponseProperty('Status');
-        this.permissions = new PermissionsApi(this.getResponseProperty('Permissions'));
+        this.id = this.getResponseProperty("Id");
+        this.userId = this.getResponseProperty("UserId");
+        this.type = this.getResponseProperty("Type");
+        this.status = this.getResponseProperty("Status");
+        this.permissions = new PermissionsApi(this.getResponseProperty("Permissions"));
     }
 }
 
@@ -28,7 +28,7 @@ export class ProviderUserUserDetailsResponse extends ProviderUserResponse {
 
     constructor(response: any) {
         super(response);
-        this.name = this.getResponseProperty('Name');
-        this.email = this.getResponseProperty('Email');
+        this.name = this.getResponseProperty("Name");
+        this.email = this.getResponseProperty("Email");
     }
 }

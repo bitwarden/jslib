@@ -1,7 +1,7 @@
-import Domain from './domainBase';
+import Domain from "./domainBase";
 
 export class PasswordGeneratorPolicyOptions extends Domain {
-    defaultType: string = '';
+    defaultType: string = "";
     minLength: number = 0;
     useUppercase: boolean = false;
     useLowercase: boolean = false;
@@ -14,7 +14,8 @@ export class PasswordGeneratorPolicyOptions extends Domain {
     includeNumber: boolean = false;
 
     inEffect() {
-        return this.defaultType !== '' ||
+        return (
+            this.defaultType !== "" ||
             this.minLength > 0 ||
             this.numberCount > 0 ||
             this.specialCount > 0 ||
@@ -24,6 +25,7 @@ export class PasswordGeneratorPolicyOptions extends Domain {
             this.useSpecial ||
             this.minNumberWords > 0 ||
             this.capitalize ||
-            this.includeNumber;
+            this.includeNumber
+        );
     }
 }

@@ -1,18 +1,18 @@
-import { CipherRepromptType } from '../../enums/cipherRepromptType';
-import { CipherType } from '../../enums/cipherType';
-import { LinkedIdType } from '../../enums/linkedIdType';
+import { CipherRepromptType } from "../../enums/cipherRepromptType";
+import { CipherType } from "../../enums/cipherType";
+import { LinkedIdType } from "../../enums/linkedIdType";
 
-import { Cipher } from '../domain/cipher';
+import { Cipher } from "../domain/cipher";
 
-import { AttachmentView } from './attachmentView';
-import { CardView } from './cardView';
-import { FieldView } from './fieldView';
-import { IdentityView } from './identityView';
-import { ItemView } from './itemView';
-import { LoginView } from './loginView';
-import { PasswordHistoryView } from './passwordHistoryView';
-import { SecureNoteView } from './secureNoteView';
-import { View } from './view';
+import { AttachmentView } from "./attachmentView";
+import { CardView } from "./cardView";
+import { FieldView } from "./fieldView";
+import { IdentityView } from "./identityView";
+import { ItemView } from "./itemView";
+import { LoginView } from "./loginView";
+import { PasswordHistoryView } from "./passwordHistoryView";
+import { SecureNoteView } from "./secureNoteView";
+import { View } from "./view";
 
 export class CipherView implements View {
     id: string = null;
@@ -106,7 +106,7 @@ export class CipherView implements View {
     get passwordRevisionDisplayDate(): Date {
         if (this.type !== CipherType.Login || this.login == null) {
             return null;
-        } else if (this.login.password == null || this.login.password === '') {
+        } else if (this.login.password == null || this.login.password === "") {
             return null;
         }
         return this.login.passwordRevisionDate;

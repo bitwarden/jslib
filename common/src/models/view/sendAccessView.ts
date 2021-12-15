@@ -1,10 +1,10 @@
-import { SendType } from '../../enums/sendType';
+import { SendType } from "../../enums/sendType";
 
-import { SendAccess } from '../domain/sendAccess';
+import { SendAccess } from "../domain/sendAccess";
 
-import { SendFileView } from './sendFileView';
-import { SendTextView } from './sendTextView';
-import { View } from './view';
+import { SendFileView } from "./sendFileView";
+import { SendTextView } from "./sendTextView";
+import { View } from "./view";
 
 export class SendAccessView implements View {
     id: string = null;

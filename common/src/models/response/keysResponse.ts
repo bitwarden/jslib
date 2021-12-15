@@ -1,4 +1,4 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class KeysResponse extends BaseResponse {
     privateKey: string;
@@ -6,7 +6,7 @@ export class KeysResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.privateKey = this.getResponseProperty('PrivateKey');
-        this.publicKey = this.getResponseProperty('PublicKey');
+        this.privateKey = this.getResponseProperty("PrivateKey");
+        this.publicKey = this.getResponseProperty("PublicKey");
     }
 }

@@ -1,4 +1,4 @@
-import { BaseResponse } from '../response/baseResponse';
+import { BaseResponse } from "../response/baseResponse";
 
 export class PermissionsApi extends BaseResponse {
     accessEventLogs: boolean;
@@ -31,25 +31,25 @@ export class PermissionsApi extends BaseResponse {
         if (data == null) {
             return this;
         }
-        this.accessEventLogs = this.getResponseProperty('AccessEventLogs');
-        this.accessImportExport = this.getResponseProperty('AccessImportExport');
-        this.accessReports = this.getResponseProperty('AccessReports');
+        this.accessEventLogs = this.getResponseProperty("AccessEventLogs");
+        this.accessImportExport = this.getResponseProperty("AccessImportExport");
+        this.accessReports = this.getResponseProperty("AccessReports");
 
         // For backwards compatibility with Server <= 1.43.0
-        this.manageAllCollections = this.getResponseProperty('ManageAllCollections');
-        this.manageAssignedCollections = this.getResponseProperty('ManageAssignedCollections');
+        this.manageAllCollections = this.getResponseProperty("ManageAllCollections");
+        this.manageAssignedCollections = this.getResponseProperty("ManageAssignedCollections");
 
-        this.createNewCollections = this.getResponseProperty('CreateNewCollections');
-        this.editAnyCollection = this.getResponseProperty('EditAnyCollection');
-        this.deleteAnyCollection = this.getResponseProperty('DeleteAnyCollection');
-        this.editAssignedCollections = this.getResponseProperty('EditAssignedCollections');
-        this.deleteAssignedCollections = this.getResponseProperty('DeleteAssignedCollections');
+        this.createNewCollections = this.getResponseProperty("CreateNewCollections");
+        this.editAnyCollection = this.getResponseProperty("EditAnyCollection");
+        this.deleteAnyCollection = this.getResponseProperty("DeleteAnyCollection");
+        this.editAssignedCollections = this.getResponseProperty("EditAssignedCollections");
+        this.deleteAssignedCollections = this.getResponseProperty("DeleteAssignedCollections");
 
-        this.manageCiphers = this.getResponseProperty('ManageCiphers');
-        this.manageGroups = this.getResponseProperty('ManageGroups');
-        this.manageSso = this.getResponseProperty('ManageSso');
-        this.managePolicies = this.getResponseProperty('ManagePolicies');
-        this.manageUsers = this.getResponseProperty('ManageUsers');
-        this.manageResetPassword = this.getResponseProperty('ManageResetPassword');
+        this.manageCiphers = this.getResponseProperty("ManageCiphers");
+        this.manageGroups = this.getResponseProperty("ManageGroups");
+        this.manageSso = this.getResponseProperty("ManageSso");
+        this.managePolicies = this.getResponseProperty("ManagePolicies");
+        this.manageUsers = this.getResponseProperty("ManageUsers");
+        this.manageResetPassword = this.getResponseProperty("ManageResetPassword");
     }
 }

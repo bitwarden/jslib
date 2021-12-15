@@ -1,4 +1,4 @@
-import { IdentityApi } from '../api/identityApi';
+import { IdentityApi } from "../api/identityApi";
 
 export class IdentityData {
     title: string;

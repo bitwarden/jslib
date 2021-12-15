@@ -1,6 +1,6 @@
-import { BaseResponse } from '../response/baseResponse';
+import { BaseResponse } from "../response/baseResponse";
 
-import { UriMatchType } from '../../enums/uriMatchType';
+import { UriMatchType } from "../../enums/uriMatchType";
 
 export class LoginUriApi extends BaseResponse {
     uri: string;
@@ -11,8 +11,8 @@ export class LoginUriApi extends BaseResponse {
         if (data == null) {
             return;
         }
-        this.uri = this.getResponseProperty('Uri');
-        const match = this.getResponseProperty('Match');
+        this.uri = this.getResponseProperty("Uri");
+        const match = this.getResponseProperty("Match");
         this.match = match != null ? match : null;
     }
 }

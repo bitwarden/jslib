@@ -1,17 +1,17 @@
-import { CardView } from '../view/cardView';
+import { CardView } from "../view/cardView";
 
-import { Card as CardDomain } from '../domain/card';
-import { EncString } from '../domain/encString';
+import { Card as CardDomain } from "../domain/card";
+import { EncString } from "../domain/encString";
 
 export class Card {
     static template(): Card {
         const req = new Card();
-        req.cardholderName = 'John Doe';
-        req.brand = 'visa';
-        req.number = '4242424242424242';
-        req.expMonth = '04';
-        req.expYear = '2023';
-        req.code = '123';
+        req.cardholderName = "John Doe";
+        req.brand = "visa";
+        req.number = "4242424242424242";
+        req.expMonth = "04";
+        req.expYear = "2023";
+        req.code = "123";
         return req;
     }
 

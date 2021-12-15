@@ -1,6 +1,6 @@
-import { View } from './view';
+import { View } from "./view";
 
-import { Password } from '../domain/password';
+import { Password } from "../domain/password";
 
 export class PasswordHistoryView implements View {
     password: string = null;

@@ -1,4 +1,4 @@
-import { SecretVerificationRequest } from './secretVerificationRequest';
+import { SecretVerificationRequest } from "./secretVerificationRequest";
 
 export class UpdateTwoFactorEmailRequest extends SecretVerificationRequest {
     token: string;

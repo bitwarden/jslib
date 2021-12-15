@@ -1,20 +1,20 @@
-import { CipherRepromptType } from '../../enums/cipherRepromptType';
-import { CipherType } from '../../enums/cipherType';
+import { CipherRepromptType } from "../../enums/cipherRepromptType";
+import { CipherType } from "../../enums/cipherType";
 
-import { CipherData } from '../data/cipherData';
+import { CipherData } from "../data/cipherData";
 
-import { CipherView } from '../view/cipherView';
+import { CipherView } from "../view/cipherView";
 
-import { Attachment } from './attachment';
-import { Card } from './card';
-import Domain from './domainBase';
-import { EncString } from './encString';
-import { Field } from './field';
-import { Identity } from './identity';
-import { Login } from './login';
-import { Password } from './password';
-import { SecureNote } from './secureNote';
-import { SymmetricCryptoKey } from './symmetricCryptoKey';
+import { Attachment } from "./attachment";
+import { Card } from "./card";
+import Domain from "./domainBase";
+import { EncString } from "./encString";
+import { Field } from "./field";
+import { Identity } from "./identity";
+import { Login } from "./login";
+import { Password } from "./password";
+import { SecureNote } from "./secureNote";
+import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
 export class Cipher extends Domain {
     id: string;
@@ -46,14 +46,20 @@ export class Cipher extends Domain {
             return;
         }
 
-        this.buildDomainModel(this, obj, {
-            id: null,
-            userId: null,
-            organizationId: null,
-            folderId: null,
-            name: null,
-            notes: null,
-        }, alreadyEncrypted, ['id', 'userId', 'organizationId', 'folderId']);
+        this.buildDomainModel(
+            this,
+            obj,
+            {
+                id: null,
+                userId: null,
+                organizationId: null,
+                folderId: null,
+                name: null,
+                notes: null,
+            },
+            alreadyEncrypted,
+            ["id", "userId", "organizationId", "folderId"]
+        );
 
         this.type = obj.type;
         this.favorite = obj.favorite;
@@ -88,19 +94,19 @@ export class Cipher extends Domain {
         }
 
         if (obj.attachments != null) {
-            this.attachments = obj.attachments.map(a => new Attachment(a, alreadyEncrypted));
+            this.attachments = obj.attachments.map((a) => new Attachment(a, alreadyEncrypted));
         } else {
             this.attachments = null;
         }
 
         if (obj.fields != null) {
-            this.fields = obj.fields.map(f => new Field(f, alreadyEncrypted));
+            this.fields = obj.fields.map((f) => new Field(f, alreadyEncrypted));
         } else {
             this.fields = null;
         }
 
         if (obj.passwordHistory != null) {
-            this.passwordHistory = obj.passwordHistory.map(ph => new Password(ph, alreadyEncrypted));
+            this.passwordHistory = obj.passwordHistory.map((ph) => new Password(ph, alreadyEncrypted));
         } else {
             this.passwordHistory = null;
         }
@@ -109,10 +115,15 @@ export class Cipher extends Domain {
     async decrypt(encKey?: SymmetricCryptoKey): Promise<CipherView> {
         const model = new CipherView(this);
 
-        await this.decryptObj(model, {
-            name: null,
-            notes: null,
-        }, this.organizationId, encKey);
+        await this.decryptObj(
+            model,
+            {
+                name: null,
+                notes: null,
+            },
+            this.organizationId,
+            encKey
+        );
 
         switch (this.type) {
             case CipherType.Login:
@@ -136,11 +147,13 @@ export class Cipher extends Domain {
         if (this.attachments != null && this.attachments.length > 0) {
             const attachments: any[] = [];
             await this.attachments.reduce((promise, attachment) => {
-                return promise.then(() => {
-                    return attachment.decrypt(orgId, encKey);
-                }).then(decAttachment => {
-                    attachments.push(decAttachment);
-                });
+                return promise
+                    .then(() => {
+                        return attachment.decrypt(orgId, encKey);
+                    })
+                    .then((decAttachment) => {
+                        attachments.push(decAttachment);
+                    });
             }, Promise.resolve());
             model.attachments = attachments;
         }
@@ -148,11 +161,13 @@ export class Cipher extends Domain {
         if (this.fields != null && this.fields.length > 0) {
             const fields: any[] = [];
             await this.fields.reduce((promise, field) => {
-                return promise.then(() => {
-                    return field.decrypt(orgId, encKey);
-                }).then(decField => {
-                    fields.push(decField);
-                });
+                return promise
+                    .then(() => {
+                        return field.decrypt(orgId, encKey);
+                    })
+                    .then((decField) => {
+                        fields.push(decField);
+                    });
             }, Promise.resolve());
             model.fields = fields;
         }
@@ -160,11 +175,13 @@ export class Cipher extends Domain {
         if (this.passwordHistory != null && this.passwordHistory.length > 0) {
             const passwordHistory: any[] = [];
             await this.passwordHistory.reduce((promise, ph) => {
-                return promise.then(() => {
-                    return ph.decrypt(orgId, encKey);
-                }).then(decPh => {
-                    passwordHistory.push(decPh);
-                });
+                return promise
+                    .then(() => {
+                        return ph.decrypt(orgId, encKey);
+                    })
+                    .then((decPh) => {
+                        passwordHistory.push(decPh);
+                    });
             }, Promise.resolve());
             model.passwordHistory = passwordHistory;
         }
@@ -211,13 +228,13 @@ export class Cipher extends Domain {
         }
 
         if (this.fields != null) {
-            c.fields = this.fields.map(f => f.toFieldData());
+            c.fields = this.fields.map((f) => f.toFieldData());
         }
         if (this.attachments != null) {
-            c.attachments = this.attachments.map(a => a.toAttachmentData());
+            c.attachments = this.attachments.map((a) => a.toAttachmentData());
         }
         if (this.passwordHistory != null) {
-            c.passwordHistory = this.passwordHistory.map(ph => ph.toPasswordHistoryData());
+            c.passwordHistory = this.passwordHistory.map((ph) => ph.toPasswordHistoryData());
         }
         return c;
     }

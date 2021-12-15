@@ -1,12 +1,12 @@
-import { FolderView } from '../view/folderView';
+import { FolderView } from "../view/folderView";
 
-import { EncString } from '../domain/encString';
-import { Folder as FolderDomain } from '../domain/folder';
+import { EncString } from "../domain/encString";
+import { Folder as FolderDomain } from "../domain/folder";
 
 export class Folder {
     static template(): Folder {
         const req = new Folder();
-        req.name = 'Folder name';
+        req.name = "Folder name";
         return req;
     }
 

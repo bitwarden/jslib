@@ -1,7 +1,7 @@
-import { View } from './view';
+import { View } from "./view";
 
-import { Folder } from '../domain/folder';
-import { ITreeNodeObject } from '../domain/treeNode';
+import { Folder } from "../domain/folder";
+import { ITreeNodeObject } from "../domain/treeNode";
 
 export class FolderView implements View, ITreeNodeObject {
     id: string = null;

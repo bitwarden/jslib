@@ -1,10 +1,10 @@
-import { EncryptionType } from '../../enums/encryptionType';
+import { EncryptionType } from "../../enums/encryptionType";
 
-import { CryptoService } from '../../abstractions/crypto.service';
+import { CryptoService } from "../../abstractions/crypto.service";
 
-import { Utils } from '../../misc/utils';
+import { Utils } from "../../misc/utils";
 
-import { SymmetricCryptoKey } from './symmetricCryptoKey';
+import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
 export class EncString {
     encryptedString?: string;
@@ -20,14 +20,14 @@ export class EncString {
             const encType = encryptedStringOrType as EncryptionType;
 
             if (iv != null) {
-                this.encryptedString = encType + '.' + iv + '|' + data;
+                this.encryptedString = encType + "." + iv + "|" + data;
             } else {
-                this.encryptedString = encType + '.' + data;
+                this.encryptedString = encType + "." + data;
             }
 
             // mac
             if (mac != null) {
-                this.encryptedString += ('|' + mac);
+                this.encryptedString += "|" + mac;
             }
 
             this.encryptionType = encType;
@@ -43,20 +43,20 @@ export class EncString {
             return;
         }
 
-        const headerPieces = this.encryptedString.split('.');
+        const headerPieces = this.encryptedString.split(".");
         let encPieces: string[] = null;
 
         if (headerPieces.length === 2) {
             try {
                 this.encryptionType = parseInt(headerPieces[0], null);
-                encPieces = headerPieces[1].split('|');
+                encPieces = headerPieces[1].split("|");
             } catch (e) {
                 return;
             }
         } else {
-            encPieces = this.encryptedString.split('|');
-            this.encryptionType = encPieces.length === 3 ? EncryptionType.AesCbc128_HmacSha256_B64 :
-                EncryptionType.AesCbc256_B64;
+            encPieces = this.encryptedString.split("|");
+            this.encryptionType =
+                encPieces.length === 3 ? EncryptionType.AesCbc128_HmacSha256_B64 : EncryptionType.AesCbc256_B64;
         }
 
         switch (this.encryptionType) {
@@ -101,7 +101,7 @@ export class EncString {
         if (containerService) {
             cryptoService = containerService.getCryptoService();
         } else {
-            throw new Error('global bitwardenContainerService not initialized.');
+            throw new Error("global bitwardenContainerService not initialized.");
         }
 
         try {
@@ -110,7 +110,7 @@ export class EncString {
             }
             this.decryptedValue = await cryptoService.decryptToUtf8(this, key);
         } catch (e) {
-            this.decryptedValue = '[error: cannot decrypt]';
+            this.decryptedValue = "[error: cannot decrypt]";
         }
         return this.decryptedValue;
     }

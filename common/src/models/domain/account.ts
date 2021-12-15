@@ -1,26 +1,26 @@
-import { OrganizationData } from '../data/organizationData';
+import { OrganizationData } from "../data/organizationData";
 
-import { AuthenticationStatus } from '../../enums/authenticationStatus';
-import { KdfType } from '../../enums/kdfType';
-import { UriMatchType } from '../../enums/uriMatchType';
+import { AuthenticationStatus } from "../../enums/authenticationStatus";
+import { KdfType } from "../../enums/kdfType";
+import { UriMatchType } from "../../enums/uriMatchType";
 
-import { CipherView } from '../view/cipherView';
-import { CollectionView } from '../view/collectionView';
-import { FolderView } from '../view/folderView';
-import { SendView } from '../view/sendView';
+import { CipherView } from "../view/cipherView";
+import { CollectionView } from "../view/collectionView";
+import { FolderView } from "../view/folderView";
+import { SendView } from "../view/sendView";
 
-import { EncString } from './encString';
-import { GeneratedPasswordHistory } from './generatedPasswordHistory';
-import { Policy } from './policy';
-import { SymmetricCryptoKey } from './symmetricCryptoKey';
+import { EncString } from "./encString";
+import { GeneratedPasswordHistory } from "./generatedPasswordHistory";
+import { Policy } from "./policy";
+import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
-import { CipherData } from '../data/cipherData';
-import { CollectionData } from '../data/collectionData';
-import { EventData } from '../data/eventData';
-import { FolderData } from '../data/folderData';
-import { PolicyData } from '../data/policyData';
-import { ProviderData } from '../data/providerData';
-import { SendData } from '../data/sendData';
+import { CipherData } from "../data/cipherData";
+import { CollectionData } from "../data/collectionData";
+import { EventData } from "../data/eventData";
+import { FolderData } from "../data/folderData";
+import { PolicyData } from "../data/policyData";
+import { ProviderData } from "../data/providerData";
+import { SendData } from "../data/sendData";
 
 export class EncryptionPair<TEncrypted, TDecrypted> {
     encrypted?: TEncrypted;
@@ -37,9 +37,13 @@ export class AccountData {
     folders?: DataEncryptionPair<FolderData, FolderView> = new DataEncryptionPair<FolderData, FolderView>();
     localData?: any;
     sends?: DataEncryptionPair<SendData, SendView> = new DataEncryptionPair<SendData, SendView>();
-    collections?: DataEncryptionPair<CollectionData, CollectionView> = new DataEncryptionPair<CollectionData, CollectionView>();
+    collections?: DataEncryptionPair<CollectionData, CollectionView> = new DataEncryptionPair<
+        CollectionData,
+        CollectionView
+    >();
     policies?: DataEncryptionPair<PolicyData, Policy> = new DataEncryptionPair<PolicyData, Policy>();
-    passwordGenerationHistory?: EncryptionPair<GeneratedPasswordHistory[], GeneratedPasswordHistory[]> = new EncryptionPair<GeneratedPasswordHistory[], GeneratedPasswordHistory[]>();
+    passwordGenerationHistory?: EncryptionPair<GeneratedPasswordHistory[], GeneratedPasswordHistory[]> =
+        new EncryptionPair<GeneratedPasswordHistory[], GeneratedPasswordHistory[]>();
     addEditCipherInfo?: any;
     collapsedGroupings?: Set<string>;
     eventCollection?: EventData[];
@@ -53,8 +57,14 @@ export class AccountKeys {
     cryptoMasterKeyB64?: string;
     cryptoMasterKeyBiometric?: string;
     cryptoSymmetricKey?: EncryptionPair<string, SymmetricCryptoKey> = new EncryptionPair<string, SymmetricCryptoKey>();
-    organizationKeys?: EncryptionPair<any, Map<string, SymmetricCryptoKey>> = new EncryptionPair<any, Map<string, SymmetricCryptoKey>>();
-    providerKeys?: EncryptionPair<any, Map<string, SymmetricCryptoKey>> = new EncryptionPair<any, Map<string, SymmetricCryptoKey>>();
+    organizationKeys?: EncryptionPair<any, Map<string, SymmetricCryptoKey>> = new EncryptionPair<
+        any,
+        Map<string, SymmetricCryptoKey>
+    >();
+    providerKeys?: EncryptionPair<any, Map<string, SymmetricCryptoKey>> = new EncryptionPair<
+        any,
+        Map<string, SymmetricCryptoKey>
+    >();
     privateKey?: EncryptionPair<string, ArrayBuffer> = new EncryptionPair<string, ArrayBuffer>();
     legacyEtmKey?: SymmetricCryptoKey;
     publicKey?: ArrayBuffer;
@@ -113,7 +123,7 @@ export class AccountSettings {
     enableStartToTray?: boolean;
     enableTray?: boolean;
     environmentUrls?: any = {
-        server: 'bitwarden.com',
+        server: "bitwarden.com",
     };
     equivalentDomains?: any;
     minimizeOnCopyToClipboard?: boolean;

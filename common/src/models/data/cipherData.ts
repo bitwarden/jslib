@@ -1,15 +1,15 @@
-import { CipherRepromptType } from '../../enums/cipherRepromptType';
-import { CipherType } from '../../enums/cipherType';
+import { CipherRepromptType } from "../../enums/cipherRepromptType";
+import { CipherType } from "../../enums/cipherType";
 
-import { AttachmentData } from './attachmentData';
-import { CardData } from './cardData';
-import { FieldData } from './fieldData';
-import { IdentityData } from './identityData';
-import { LoginData } from './loginData';
-import { PasswordHistoryData } from './passwordHistoryData';
-import { SecureNoteData } from './secureNoteData';
+import { AttachmentData } from "./attachmentData";
+import { CardData } from "./cardData";
+import { FieldData } from "./fieldData";
+import { IdentityData } from "./identityData";
+import { LoginData } from "./loginData";
+import { PasswordHistoryData } from "./passwordHistoryData";
+import { SecureNoteData } from "./secureNoteData";
 
-import { CipherResponse } from '../response/cipherResponse';
+import { CipherResponse } from "../response/cipherResponse";
 
 export class CipherData {
     id: string;
@@ -75,13 +75,13 @@ export class CipherData {
         }
 
         if (response.fields != null) {
-            this.fields = response.fields.map(f => new FieldData(f));
+            this.fields = response.fields.map((f) => new FieldData(f));
         }
         if (response.attachments != null) {
-            this.attachments = response.attachments.map(a => new AttachmentData(a));
+            this.attachments = response.attachments.map((a) => new AttachmentData(a));
         }
         if (response.passwordHistory != null) {
-            this.passwordHistory = response.passwordHistory.map(ph => new PasswordHistoryData(ph));
+            this.passwordHistory = response.passwordHistory.map((ph) => new PasswordHistoryData(ph));
         }
     }
 }

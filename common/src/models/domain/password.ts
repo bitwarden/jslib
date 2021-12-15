@@ -1,10 +1,10 @@
-import { PasswordHistoryData } from '../data/passwordHistoryData';
+import { PasswordHistoryData } from "../data/passwordHistoryData";
 
-import Domain from './domainBase';
-import { EncString } from './encString';
+import Domain from "./domainBase";
+import { EncString } from "./encString";
 
-import { PasswordHistoryView } from '../view/passwordHistoryView';
-import { SymmetricCryptoKey } from './symmetricCryptoKey';
+import { PasswordHistoryView } from "../view/passwordHistoryView";
+import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
 export class Password extends Domain {
     password: EncString;
@@ -16,16 +16,26 @@ export class Password extends Domain {
             return;
         }
 
-        this.buildDomainModel(this, obj, {
-            password: null,
-        }, alreadyEncrypted);
+        this.buildDomainModel(
+            this,
+            obj,
+            {
+                password: null,
+            },
+            alreadyEncrypted
+        );
         this.lastUsedDate = new Date(obj.lastUsedDate);
     }
 
     decrypt(orgId: string, encKey?: SymmetricCryptoKey): Promise<PasswordHistoryView> {
-         return this.decryptObj(new PasswordHistoryView(this), {
-            password: null,
-        }, orgId, encKey);
+        return this.decryptObj(
+            new PasswordHistoryView(this),
+            {
+                password: null,
+            },
+            orgId,
+            encKey
+        );
     }
 
     toPasswordHistoryData(): PasswordHistoryData {

@@ -1,4 +1,4 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class BreachAccountResponse extends BaseResponse {
     addedDate: string;
@@ -16,17 +16,17 @@ export class BreachAccountResponse extends BaseResponse {
 
     constructor(response: any) {
         super(response);
-        this.addedDate = this.getResponseProperty('AddedDate');
-        this.breachDate = this.getResponseProperty('BreachDate');
-        this.dataClasses = this.getResponseProperty('DataClasses');
-        this.description = this.getResponseProperty('Description');
-        this.domain = this.getResponseProperty('Domain');
-        this.isActive = this.getResponseProperty('IsActive');
-        this.isVerified = this.getResponseProperty('IsVerified');
-        this.logoPath = this.getResponseProperty('LogoPath');
-        this.modifiedDate = this.getResponseProperty('ModifiedDate');
-        this.name = this.getResponseProperty('Name');
-        this.pwnCount = this.getResponseProperty('PwnCount');
-        this.title = this.getResponseProperty('Title');
+        this.addedDate = this.getResponseProperty("AddedDate");
+        this.breachDate = this.getResponseProperty("BreachDate");
+        this.dataClasses = this.getResponseProperty("DataClasses");
+        this.description = this.getResponseProperty("Description");
+        this.domain = this.getResponseProperty("Domain");
+        this.isActive = this.getResponseProperty("IsActive");
+        this.isVerified = this.getResponseProperty("IsVerified");
+        this.logoPath = this.getResponseProperty("LogoPath");
+        this.modifiedDate = this.getResponseProperty("ModifiedDate");
+        this.name = this.getResponseProperty("Name");
+        this.pwnCount = this.getResponseProperty("PwnCount");
+        this.title = this.getResponseProperty("Title");
     }
 }

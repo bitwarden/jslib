@@ -1,12 +1,12 @@
-import { LoginUri } from './loginUri';
+import { LoginUri } from "./loginUri";
 
-import { LoginData } from '../data/loginData';
+import { LoginData } from "../data/loginData";
 
-import { LoginView } from '../view/loginView';
+import { LoginView } from "../view/loginView";
 
-import Domain from './domainBase';
-import { EncString } from './encString';
-import { SymmetricCryptoKey } from './symmetricCryptoKey';
+import Domain from "./domainBase";
+import { EncString } from "./encString";
+import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
 export class Login extends Domain {
     uris: LoginUri[];
@@ -24,26 +24,37 @@ export class Login extends Domain {
 
         this.passwordRevisionDate = obj.passwordRevisionDate != null ? new Date(obj.passwordRevisionDate) : null;
         this.autofillOnPageLoad = obj.autofillOnPageLoad;
-        this.buildDomainModel(this, obj, {
-            username: null,
-            password: null,
-            totp: null,
-        }, alreadyEncrypted, []);
+        this.buildDomainModel(
+            this,
+            obj,
+            {
+                username: null,
+                password: null,
+                totp: null,
+            },
+            alreadyEncrypted,
+            []
+        );
 
         if (obj.uris) {
             this.uris = [];
-            obj.uris.forEach(u => {
+            obj.uris.forEach((u) => {
                 this.uris.push(new LoginUri(u, alreadyEncrypted));
             });
         }
     }
 
     async decrypt(orgId: string, encKey?: SymmetricCryptoKey): Promise<LoginView> {
-        const view = await this.decryptObj(new LoginView(this), {
-            username: null,
-            password: null,
-            totp: null,
-        }, orgId, encKey);
+        const view = await this.decryptObj(
+            new LoginView(this),
+            {
+                username: null,
+                password: null,
+                totp: null,
+            },
+            orgId,
+            encKey
+        );
 
         if (this.uris != null) {
             view.uris = [];
@@ -68,7 +79,7 @@ export class Login extends Domain {
 
         if (this.uris != null && this.uris.length > 0) {
             l.uris = [];
-            this.uris.forEach(u => {
+            this.uris.forEach((u) => {
                 l.uris.push(u.toLoginUriData());
             });
         }

@@ -1,7 +1,7 @@
-import { View } from './view';
+import { View } from "./view";
 
-import { Attachment } from '../domain/attachment';
-import { SymmetricCryptoKey } from '../domain/symmetricCryptoKey';
+import { Attachment } from "../domain/attachment";
+import { SymmetricCryptoKey } from "../domain/symmetricCryptoKey";
 
 export class AttachmentView implements View {
     id: string = null;

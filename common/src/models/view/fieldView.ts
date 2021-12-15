@@ -1,9 +1,9 @@
-import { FieldType } from '../../enums/fieldType';
-import { LinkedIdType } from '../../enums/linkedIdType';
+import { FieldType } from "../../enums/fieldType";
+import { LinkedIdType } from "../../enums/linkedIdType";
 
-import { View } from './view';
+import { View } from "./view";
 
-import { Field } from '../domain/field';
+import { Field } from "../domain/field";
 
 export class FieldView implements View {
     name: string = null;
@@ -23,6 +23,6 @@ export class FieldView implements View {
     }
 
     get maskedValue(): string {
-        return this.value != null ? '••••••••' : null;
+        return this.value != null ? "••••••••" : null;
     }
 }

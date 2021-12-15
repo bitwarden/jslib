@@ -1,19 +1,19 @@
-import { ItemView } from './itemView';
+import { ItemView } from "./itemView";
 
-import { Card } from '../domain/card';
+import { Card } from "../domain/card";
 
-import { CardLinkedId as LinkedId } from '../../enums/linkedIdType';
+import { CardLinkedId as LinkedId } from "../../enums/linkedIdType";
 
-import { linkedFieldOption } from '../../misc/linkedFieldOption.decorator';
+import { linkedFieldOption } from "../../misc/linkedFieldOption.decorator";
 
 export class CardView extends ItemView {
     @linkedFieldOption(LinkedId.CardholderName)
     cardholderName: string = null;
-    @linkedFieldOption(LinkedId.ExpMonth, 'expirationMonth')
+    @linkedFieldOption(LinkedId.ExpMonth, "expirationMonth")
     expMonth: string = null;
-    @linkedFieldOption(LinkedId.ExpYear, 'expirationYear')
+    @linkedFieldOption(LinkedId.ExpYear, "expirationYear")
     expYear: string = null;
-    @linkedFieldOption(LinkedId.Code, 'securityCode')
+    @linkedFieldOption(LinkedId.Code, "securityCode")
     code: string = null;
 
     // tslint:disable
@@ -27,11 +27,11 @@ export class CardView extends ItemView {
     }
 
     get maskedCode(): string {
-        return this.code != null ? '•'.repeat(this.code.length) : null;
+        return this.code != null ? "•".repeat(this.code.length) : null;
     }
 
     get maskedNumber(): string {
-        return this.number != null ? '•'.repeat(this.number.length) : null;
+        return this.number != null ? "•".repeat(this.number.length) : null;
     }
 
     @linkedFieldOption(LinkedId.Brand)
@@ -56,15 +56,15 @@ export class CardView extends ItemView {
         if (this._subTitle == null) {
             this._subTitle = this.brand;
             if (this.number != null && this.number.length >= 4) {
-                if (this._subTitle != null && this._subTitle !== '') {
-                    this._subTitle += ', ';
+                if (this._subTitle != null && this._subTitle !== "") {
+                    this._subTitle += ", ";
                 } else {
-                    this._subTitle = '';
+                    this._subTitle = "";
                 }
 
                 // Show last 5 on amex, last 4 for all others
-                const count = this.number.length >= 5 && this.number.match(new RegExp('^3[47]')) != null ? 5 : 4;
-                this._subTitle += ('*' + this.number.substr(this.number.length - count));
+                const count = this.number.length >= 5 && this.number.match(new RegExp("^3[47]")) != null ? 5 : 4;
+                this._subTitle += "*" + this.number.substr(this.number.length - count);
             }
         }
         return this._subTitle;
@@ -75,12 +75,12 @@ export class CardView extends ItemView {
             return null;
         }
 
-        let exp = this.expMonth != null ? ('0' + this.expMonth).slice(-2) : '__';
-        exp += (' / ' + (this.expYear != null ? this.formatYear(this.expYear) : '____'));
+        let exp = this.expMonth != null ? ("0" + this.expMonth).slice(-2) : "__";
+        exp += " / " + (this.expYear != null ? this.formatYear(this.expYear) : "____");
         return exp;
     }
 
     private formatYear(year: string): string {
-        return year.length === 2 ? '20' + year : year;
+        return year.length === 2 ? "20" + year : year;
     }
 }

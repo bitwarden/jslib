@@ -1,14 +1,14 @@
-import { SendType } from '../../enums/sendType';
+import { SendType } from "../../enums/sendType";
 
-import { SendAccessResponse } from '../response/sendAccessResponse';
+import { SendAccessResponse } from "../response/sendAccessResponse";
 
-import { SendAccessView } from '../view/sendAccessView';
+import { SendAccessView } from "../view/sendAccessView";
 
-import Domain from './domainBase';
-import { EncString } from './encString';
-import { SendFile } from './sendFile';
-import { SendText } from './sendText';
-import { SymmetricCryptoKey } from './symmetricCryptoKey';
+import Domain from "./domainBase";
+import { EncString } from "./encString";
+import { SendFile } from "./sendFile";
+import { SendText } from "./sendText";
+import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
 export class SendAccess extends Domain {
     id: string;
@@ -25,12 +25,18 @@ export class SendAccess extends Domain {
             return;
         }
 
-        this.buildDomainModel(this, obj, {
-            id: null,
-            name: null,
-            expirationDate: null,
-            creatorIdentifier: null,
-        }, alreadyEncrypted, ['id', 'expirationDate', 'creatorIdentifier']);
+        this.buildDomainModel(
+            this,
+            obj,
+            {
+                id: null,
+                name: null,
+                expirationDate: null,
+                creatorIdentifier: null,
+            },
+            alreadyEncrypted,
+            ["id", "expirationDate", "creatorIdentifier"]
+        );
 
         this.type = obj.type;
 
@@ -49,9 +55,14 @@ export class SendAccess extends Domain {
     async decrypt(key: SymmetricCryptoKey): Promise<SendAccessView> {
         const model = new SendAccessView(this);
 
-        await this.decryptObj(model, {
-            name: null,
-        }, null, key);
+        await this.decryptObj(
+            model,
+            {
+                name: null,
+            },
+            null,
+            key
+        );
 
         switch (this.type) {
             case SendType.File:

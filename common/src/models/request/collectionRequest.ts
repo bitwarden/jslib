@@ -1,6 +1,6 @@
-import { Collection } from '../domain/collection';
+import { Collection } from "../domain/collection";
 
-import { SelectionReadOnlyRequest } from './selectionReadOnlyRequest';
+import { SelectionReadOnlyRequest } from "./selectionReadOnlyRequest";
 
 export class CollectionRequest {
     name: string;

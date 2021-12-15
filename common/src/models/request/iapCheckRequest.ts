@@ -1,4 +1,4 @@
-import { PaymentMethodType } from '../../enums/paymentMethodType';
+import { PaymentMethodType } from "../../enums/paymentMethodType";
 
 export class IapCheckRequest {
     paymentMethodType: PaymentMethodType;

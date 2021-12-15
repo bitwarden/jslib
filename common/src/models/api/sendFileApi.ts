@@ -1,4 +1,4 @@
-import { BaseResponse } from '../response/baseResponse';
+import { BaseResponse } from "../response/baseResponse";
 
 export class SendFileApi extends BaseResponse {
     id: string;
@@ -12,10 +12,10 @@ export class SendFileApi extends BaseResponse {
         if (data == null) {
             return;
         }
-        this.id = this.getResponseProperty('Id');
-        this.fileName = this.getResponseProperty('FileName');
-        this.key = this.getResponseProperty('Key');
-        this.size = this.getResponseProperty('Size');
-        this.sizeName = this.getResponseProperty('SizeName');
+        this.id = this.getResponseProperty("Id");
+        this.fileName = this.getResponseProperty("FileName");
+        this.key = this.getResponseProperty("Key");
+        this.size = this.getResponseProperty("Size");
+        this.sizeName = this.getResponseProperty("SizeName");
     }
 }
