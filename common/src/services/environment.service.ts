@@ -1,12 +1,11 @@
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject } from "rxjs";
 
-import { EnvironmentUrls } from '../models/domain/environmentUrls';
+import { EnvironmentUrls } from "../models/domain/environmentUrls";
 
-import { EnvironmentService as EnvironmentServiceAbstraction, Urls } from '../abstractions/environment.service';
-import { StateService } from '../abstractions/state.service';
+import { EnvironmentService as EnvironmentServiceAbstraction, Urls } from "../abstractions/environment.service";
+import { StateService } from "../abstractions/state.service";
 
 export class EnvironmentService implements EnvironmentServiceAbstraction {
-
     private readonly urlsSubject = new Subject<Urls>();
     urls: Observable<Urls> = this.urlsSubject; // tslint:disable-line
 
@@ -31,10 +30,10 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         }
 
         if (this.baseUrl != null) {
-            return this.baseUrl + '/notifications';
+            return this.baseUrl + "/notifications";
         }
 
-        return 'https://notifications.bitwarden.com';
+        return "https://notifications.bitwarden.com";
     }
 
     getWebVaultUrl() {
@@ -45,13 +44,13 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         if (this.baseUrl) {
             return this.baseUrl;
         }
-        return 'https://vault.bitwarden.com';
+        return "https://vault.bitwarden.com";
     }
 
     getSendUrl() {
-        return this.getWebVaultUrl() === 'https://vault.bitwarden.com'
-            ? 'https://send.bitwarden.com/#'
-            : this.getWebVaultUrl() + '/#/send/';
+        return this.getWebVaultUrl() === "https://vault.bitwarden.com"
+            ? "https://send.bitwarden.com/#"
+            : this.getWebVaultUrl() + "/#/send/";
     }
 
     getIconsUrl() {
@@ -60,10 +59,10 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         }
 
         if (this.baseUrl) {
-            return this.baseUrl + '/icons';
+            return this.baseUrl + "/icons";
         }
 
-        return 'https://icons.bitwarden.net';
+        return "https://icons.bitwarden.net";
     }
 
     getApiUrl() {
@@ -72,10 +71,10 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         }
 
         if (this.baseUrl) {
-            return this.baseUrl + '/api';
+            return this.baseUrl + "/api";
         }
 
-        return 'https://api.bitwarden.com';
+        return "https://api.bitwarden.com";
     }
 
     getIdentityUrl() {
@@ -84,10 +83,10 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         }
 
         if (this.baseUrl) {
-            return this.baseUrl + '/identity';
+            return this.baseUrl + "/identity";
         }
 
-        return 'https://identity.bitwarden.com';
+        return "https://identity.bitwarden.com";
     }
 
     getEventsUrl() {
@@ -96,10 +95,10 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
         }
 
         if (this.baseUrl) {
-            return this.baseUrl + '/events';
+            return this.baseUrl + "/events";
         }
 
-        return 'https://events.bitwarden.com';
+        return "https://events.bitwarden.com";
     }
 
     getKeyConnectorUrl() {
@@ -186,13 +185,13 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
     }
 
     private formatUrl(url: string): string {
-        if (url == null || url === '') {
+        if (url == null || url === "") {
             return null;
         }
 
-        url = url.replace(/\/+$/g, '');
-        if (!url.startsWith('http://') && !url.startsWith('https://')) {
-            url = 'https://' + url;
+        url = url.replace(/\/+$/g, "");
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            url = "https://" + url;
         }
 
         return url.trim();

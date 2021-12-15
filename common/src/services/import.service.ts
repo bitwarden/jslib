@@ -1,153 +1,155 @@
-import { ApiService } from '../abstractions/api.service';
-import { CipherService } from '../abstractions/cipher.service';
-import { CollectionService } from '../abstractions/collection.service';
-import { CryptoService } from '../abstractions/crypto.service';
-import { FolderService } from '../abstractions/folder.service';
-import { I18nService } from '../abstractions/i18n.service';
-import {
-    ImportOption,
-    ImportService as ImportServiceAbstraction,
-} from '../abstractions/import.service';
-import { PlatformUtilsService } from '../abstractions/platformUtils.service';
+import { ApiService } from "../abstractions/api.service";
+import { CipherService } from "../abstractions/cipher.service";
+import { CollectionService } from "../abstractions/collection.service";
+import { CryptoService } from "../abstractions/crypto.service";
+import { FolderService } from "../abstractions/folder.service";
+import { I18nService } from "../abstractions/i18n.service";
+import { ImportOption, ImportService as ImportServiceAbstraction } from "../abstractions/import.service";
+import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
-import { CipherType } from '../enums/cipherType';
+import { CipherType } from "../enums/cipherType";
 
-import { Utils } from '../misc/utils';
+import { Utils } from "../misc/utils";
 
-import { CipherRequest } from '../models/request/cipherRequest';
-import { CollectionRequest } from '../models/request/collectionRequest';
-import { FolderRequest } from '../models/request/folderRequest';
-import { ImportCiphersRequest } from '../models/request/importCiphersRequest';
-import { ImportOrganizationCiphersRequest } from '../models/request/importOrganizationCiphersRequest';
-import { KvpRequest } from '../models/request/kvpRequest';
+import { CipherRequest } from "../models/request/cipherRequest";
+import { CollectionRequest } from "../models/request/collectionRequest";
+import { FolderRequest } from "../models/request/folderRequest";
+import { ImportCiphersRequest } from "../models/request/importCiphersRequest";
+import { ImportOrganizationCiphersRequest } from "../models/request/importOrganizationCiphersRequest";
+import { KvpRequest } from "../models/request/kvpRequest";
 
-import { ErrorResponse } from '../models/response/errorResponse';
-import { CipherView } from '../models/view/cipherView';
+import { ErrorResponse } from "../models/response/errorResponse";
+import { CipherView } from "../models/view/cipherView";
 
-import { AscendoCsvImporter } from '../importers/ascendoCsvImporter';
-import { AvastCsvImporter } from '../importers/avastCsvImporter';
-import { AvastJsonImporter } from '../importers/avastJsonImporter';
-import { AviraCsvImporter } from '../importers/aviraCsvImporter';
-import { BitwardenCsvImporter } from '../importers/bitwardenCsvImporter';
-import { BitwardenJsonImporter } from '../importers/bitwardenJsonImporter';
-import { BlackBerryCsvImporter } from '../importers/blackBerryCsvImporter';
-import { BlurCsvImporter } from '../importers/blurCsvImporter';
-import { ButtercupCsvImporter } from '../importers/buttercupCsvImporter';
-import { ChromeCsvImporter } from '../importers/chromeCsvImporter';
-import { ClipperzHtmlImporter } from '../importers/clipperzHtmlImporter';
-import { CodebookCsvImporter } from '../importers/codebookCsvImporter';
-import { DashlaneJsonImporter } from '../importers/dashlaneJsonImporter';
-import { EncryptrCsvImporter } from '../importers/encryptrCsvImporter';
-import { EnpassCsvImporter } from '../importers/enpassCsvImporter';
-import { EnpassJsonImporter } from '../importers/enpassJsonImporter';
-import { FirefoxCsvImporter } from '../importers/firefoxCsvImporter';
-import { FSecureFskImporter } from '../importers/fsecureFskImporter';
-import { GnomeJsonImporter } from '../importers/gnomeJsonImporter';
-import { Importer } from '../importers/importer';
-import { KasperskyTxtImporter } from '../importers/kasperskyTxtImporter';
-import { KeePass2XmlImporter } from '../importers/keepass2XmlImporter';
-import { KeePassXCsvImporter } from '../importers/keepassxCsvImporter';
-import { KeeperCsvImporter } from '../importers/keeperCsvImporter';
-import { LastPassCsvImporter } from '../importers/lastpassCsvImporter';
-import { LogMeOnceCsvImporter } from '../importers/logMeOnceCsvImporter';
-import { MeldiumCsvImporter } from '../importers/meldiumCsvImporter';
-import { MSecureCsvImporter } from '../importers/msecureCsvImporter';
-import { MykiCsvImporter } from '../importers/mykiCsvImporter';
-import { NordPassCsvImporter } from '../importers/nordpassCsvImporter';
-import { OnePassword1PifImporter } from '../importers/onepasswordImporters/onepassword1PifImporter';
-import { OnePasswordMacCsvImporter } from '../importers/onepasswordImporters/onepasswordMacCsvImporter';
-import { OnePasswordWinCsvImporter } from '../importers/onepasswordImporters/onepasswordWinCsvImporter';
-import { PadlockCsvImporter } from '../importers/padlockCsvImporter';
-import { PassKeepCsvImporter } from '../importers/passkeepCsvImporter';
-import { PassmanJsonImporter } from '../importers/passmanJsonImporter';
-import { PasspackCsvImporter } from '../importers/passpackCsvImporter';
-import { PasswordAgentCsvImporter } from '../importers/passwordAgentCsvImporter';
-import { PasswordBossJsonImporter } from '../importers/passwordBossJsonImporter';
-import { PasswordDragonXmlImporter } from '../importers/passwordDragonXmlImporter';
-import { PasswordSafeXmlImporter } from '../importers/passwordSafeXmlImporter';
-import { PasswordWalletTxtImporter } from '../importers/passwordWalletTxtImporter';
-import { RememBearCsvImporter } from '../importers/rememBearCsvImporter';
-import { RoboFormCsvImporter } from '../importers/roboformCsvImporter';
-import { SafariCsvImporter } from '../importers/safariCsvImporter';
-import { SafeInCloudXmlImporter } from '../importers/safeInCloudXmlImporter';
-import { SaferPassCsvImporter } from '../importers/saferpassCsvImport';
-import { SecureSafeCsvImporter } from '../importers/secureSafeCsvImporter';
-import { SplashIdCsvImporter } from '../importers/splashIdCsvImporter';
-import { StickyPasswordXmlImporter } from '../importers/stickyPasswordXmlImporter';
-import { TrueKeyCsvImporter } from '../importers/truekeyCsvImporter';
-import { UpmCsvImporter } from '../importers/upmCsvImporter';
-import { YotiCsvImporter } from '../importers/yotiCsvImporter';
-import { ZohoVaultCsvImporter } from '../importers/zohoVaultCsvImporter';
+import { AscendoCsvImporter } from "../importers/ascendoCsvImporter";
+import { AvastCsvImporter } from "../importers/avastCsvImporter";
+import { AvastJsonImporter } from "../importers/avastJsonImporter";
+import { AviraCsvImporter } from "../importers/aviraCsvImporter";
+import { BitwardenCsvImporter } from "../importers/bitwardenCsvImporter";
+import { BitwardenJsonImporter } from "../importers/bitwardenJsonImporter";
+import { BlackBerryCsvImporter } from "../importers/blackBerryCsvImporter";
+import { BlurCsvImporter } from "../importers/blurCsvImporter";
+import { ButtercupCsvImporter } from "../importers/buttercupCsvImporter";
+import { ChromeCsvImporter } from "../importers/chromeCsvImporter";
+import { ClipperzHtmlImporter } from "../importers/clipperzHtmlImporter";
+import { CodebookCsvImporter } from "../importers/codebookCsvImporter";
+import { DashlaneJsonImporter } from "../importers/dashlaneJsonImporter";
+import { EncryptrCsvImporter } from "../importers/encryptrCsvImporter";
+import { EnpassCsvImporter } from "../importers/enpassCsvImporter";
+import { EnpassJsonImporter } from "../importers/enpassJsonImporter";
+import { FirefoxCsvImporter } from "../importers/firefoxCsvImporter";
+import { FSecureFskImporter } from "../importers/fsecureFskImporter";
+import { GnomeJsonImporter } from "../importers/gnomeJsonImporter";
+import { Importer } from "../importers/importer";
+import { KasperskyTxtImporter } from "../importers/kasperskyTxtImporter";
+import { KeePass2XmlImporter } from "../importers/keepass2XmlImporter";
+import { KeePassXCsvImporter } from "../importers/keepassxCsvImporter";
+import { KeeperCsvImporter } from "../importers/keeperCsvImporter";
+import { LastPassCsvImporter } from "../importers/lastpassCsvImporter";
+import { LogMeOnceCsvImporter } from "../importers/logMeOnceCsvImporter";
+import { MeldiumCsvImporter } from "../importers/meldiumCsvImporter";
+import { MSecureCsvImporter } from "../importers/msecureCsvImporter";
+import { MykiCsvImporter } from "../importers/mykiCsvImporter";
+import { NordPassCsvImporter } from "../importers/nordpassCsvImporter";
+import { OnePassword1PifImporter } from "../importers/onepasswordImporters/onepassword1PifImporter";
+import { OnePasswordMacCsvImporter } from "../importers/onepasswordImporters/onepasswordMacCsvImporter";
+import { OnePasswordWinCsvImporter } from "../importers/onepasswordImporters/onepasswordWinCsvImporter";
+import { PadlockCsvImporter } from "../importers/padlockCsvImporter";
+import { PassKeepCsvImporter } from "../importers/passkeepCsvImporter";
+import { PassmanJsonImporter } from "../importers/passmanJsonImporter";
+import { PasspackCsvImporter } from "../importers/passpackCsvImporter";
+import { PasswordAgentCsvImporter } from "../importers/passwordAgentCsvImporter";
+import { PasswordBossJsonImporter } from "../importers/passwordBossJsonImporter";
+import { PasswordDragonXmlImporter } from "../importers/passwordDragonXmlImporter";
+import { PasswordSafeXmlImporter } from "../importers/passwordSafeXmlImporter";
+import { PasswordWalletTxtImporter } from "../importers/passwordWalletTxtImporter";
+import { RememBearCsvImporter } from "../importers/rememBearCsvImporter";
+import { RoboFormCsvImporter } from "../importers/roboformCsvImporter";
+import { SafariCsvImporter } from "../importers/safariCsvImporter";
+import { SafeInCloudXmlImporter } from "../importers/safeInCloudXmlImporter";
+import { SaferPassCsvImporter } from "../importers/saferpassCsvImport";
+import { SecureSafeCsvImporter } from "../importers/secureSafeCsvImporter";
+import { SplashIdCsvImporter } from "../importers/splashIdCsvImporter";
+import { StickyPasswordXmlImporter } from "../importers/stickyPasswordXmlImporter";
+import { TrueKeyCsvImporter } from "../importers/truekeyCsvImporter";
+import { UpmCsvImporter } from "../importers/upmCsvImporter";
+import { YotiCsvImporter } from "../importers/yotiCsvImporter";
+import { ZohoVaultCsvImporter } from "../importers/zohoVaultCsvImporter";
 
 export class ImportService implements ImportServiceAbstraction {
     featuredImportOptions = [
-        { id: 'bitwardenjson', name: 'Bitwarden (json)' },
-        { id: 'bitwardencsv', name: 'Bitwarden (csv)' },
-        { id: 'chromecsv', name: 'Chrome (csv)' },
-        { id: 'dashlanejson', name: 'Dashlane (json)' },
-        { id: 'firefoxcsv', name: 'Firefox (csv)' },
-        { id: 'keepass2xml', name: 'KeePass 2 (xml)' },
-        { id: 'lastpasscsv', name: 'LastPass (csv)' },
-        { id: 'safaricsv', name: 'Safari and macOS (csv)' },
-        { id: '1password1pif', name: '1Password (1pif)' },
+        { id: "bitwardenjson", name: "Bitwarden (json)" },
+        { id: "bitwardencsv", name: "Bitwarden (csv)" },
+        { id: "chromecsv", name: "Chrome (csv)" },
+        { id: "dashlanejson", name: "Dashlane (json)" },
+        { id: "firefoxcsv", name: "Firefox (csv)" },
+        { id: "keepass2xml", name: "KeePass 2 (xml)" },
+        { id: "lastpasscsv", name: "LastPass (csv)" },
+        { id: "safaricsv", name: "Safari and macOS (csv)" },
+        { id: "1password1pif", name: "1Password (1pif)" },
     ];
 
     regularImportOptions: ImportOption[] = [
-        { id: 'keepassxcsv', name: 'KeePassX (csv)' },
-        { id: '1passwordwincsv', name: '1Password 6 and 7 Windows (csv)' },
-        { id: '1passwordmaccsv', name: '1Password 6 and 7 Mac (csv)' },
-        { id: 'roboformcsv', name: 'RoboForm (csv)' },
-        { id: 'keepercsv', name: 'Keeper (csv)' },
-        { id: 'enpasscsv', name: 'Enpass (csv)' },
-        { id: 'enpassjson', name: 'Enpass (json)' },
-        { id: 'safeincloudxml', name: 'SafeInCloud (xml)' },
-        { id: 'pwsafexml', name: 'Password Safe (xml)' },
-        { id: 'stickypasswordxml', name: 'Sticky Password (xml)' },
-        { id: 'msecurecsv', name: 'mSecure (csv)' },
-        { id: 'truekeycsv', name: 'True Key (csv)' },
-        { id: 'passwordbossjson', name: 'Password Boss (json)' },
-        { id: 'zohovaultcsv', name: 'Zoho Vault (csv)' },
-        { id: 'splashidcsv', name: 'SplashID (csv)' },
-        { id: 'passworddragonxml', name: 'Password Dragon (xml)' },
-        { id: 'padlockcsv', name: 'Padlock (csv)' },
-        { id: 'passboltcsv', name: 'Passbolt (csv)' },
-        { id: 'clipperzhtml', name: 'Clipperz (html)' },
-        { id: 'aviracsv', name: 'Avira (csv)' },
-        { id: 'saferpasscsv', name: 'SaferPass (csv)' },
-        { id: 'upmcsv', name: 'Universal Password Manager (csv)' },
-        { id: 'ascendocsv', name: 'Ascendo DataVault (csv)' },
-        { id: 'meldiumcsv', name: 'Meldium (csv)' },
-        { id: 'passkeepcsv', name: 'PassKeep (csv)' },
-        { id: 'operacsv', name: 'Opera (csv)' },
-        { id: 'vivaldicsv', name: 'Vivaldi (csv)' },
-        { id: 'gnomejson', name: 'GNOME Passwords and Keys/Seahorse (json)' },
-        { id: 'blurcsv', name: 'Blur (csv)' },
-        { id: 'passwordagentcsv', name: 'Password Agent (csv)' },
-        { id: 'passpackcsv', name: 'Passpack (csv)' },
-        { id: 'passmanjson', name: 'Passman (json)' },
-        { id: 'avastcsv', name: 'Avast Passwords (csv)' },
-        { id: 'avastjson', name: 'Avast Passwords (json)' },
-        { id: 'fsecurefsk', name: 'F-Secure KEY (fsk)' },
-        { id: 'kasperskytxt', name: 'Kaspersky Password Manager (txt)' },
-        { id: 'remembearcsv', name: 'RememBear (csv)' },
-        { id: 'passwordwallettxt', name: 'PasswordWallet (txt)' },
-        { id: 'mykicsv', name: 'Myki (csv)' },
-        { id: 'securesafecsv', name: 'SecureSafe (csv)' },
-        { id: 'logmeoncecsv', name: 'LogMeOnce (csv)' },
-        { id: 'blackberrycsv', name: 'BlackBerry Password Keeper (csv)' },
-        { id: 'buttercupcsv', name: 'Buttercup (csv)' },
-        { id: 'codebookcsv', name: 'Codebook (csv)' },
-        { id: 'encryptrcsv', name: 'Encryptr (csv)' },
-        { id: 'yoticsv', name: 'Yoti (csv)' },
-        { id: 'nordpasscsv', name: 'Nordpass (csv)' },
+        { id: "keepassxcsv", name: "KeePassX (csv)" },
+        { id: "1passwordwincsv", name: "1Password 6 and 7 Windows (csv)" },
+        { id: "1passwordmaccsv", name: "1Password 6 and 7 Mac (csv)" },
+        { id: "roboformcsv", name: "RoboForm (csv)" },
+        { id: "keepercsv", name: "Keeper (csv)" },
+        { id: "enpasscsv", name: "Enpass (csv)" },
+        { id: "enpassjson", name: "Enpass (json)" },
+        { id: "safeincloudxml", name: "SafeInCloud (xml)" },
+        { id: "pwsafexml", name: "Password Safe (xml)" },
+        { id: "stickypasswordxml", name: "Sticky Password (xml)" },
+        { id: "msecurecsv", name: "mSecure (csv)" },
+        { id: "truekeycsv", name: "True Key (csv)" },
+        { id: "passwordbossjson", name: "Password Boss (json)" },
+        { id: "zohovaultcsv", name: "Zoho Vault (csv)" },
+        { id: "splashidcsv", name: "SplashID (csv)" },
+        { id: "passworddragonxml", name: "Password Dragon (xml)" },
+        { id: "padlockcsv", name: "Padlock (csv)" },
+        { id: "passboltcsv", name: "Passbolt (csv)" },
+        { id: "clipperzhtml", name: "Clipperz (html)" },
+        { id: "aviracsv", name: "Avira (csv)" },
+        { id: "saferpasscsv", name: "SaferPass (csv)" },
+        { id: "upmcsv", name: "Universal Password Manager (csv)" },
+        { id: "ascendocsv", name: "Ascendo DataVault (csv)" },
+        { id: "meldiumcsv", name: "Meldium (csv)" },
+        { id: "passkeepcsv", name: "PassKeep (csv)" },
+        { id: "operacsv", name: "Opera (csv)" },
+        { id: "vivaldicsv", name: "Vivaldi (csv)" },
+        { id: "gnomejson", name: "GNOME Passwords and Keys/Seahorse (json)" },
+        { id: "blurcsv", name: "Blur (csv)" },
+        { id: "passwordagentcsv", name: "Password Agent (csv)" },
+        { id: "passpackcsv", name: "Passpack (csv)" },
+        { id: "passmanjson", name: "Passman (json)" },
+        { id: "avastcsv", name: "Avast Passwords (csv)" },
+        { id: "avastjson", name: "Avast Passwords (json)" },
+        { id: "fsecurefsk", name: "F-Secure KEY (fsk)" },
+        { id: "kasperskytxt", name: "Kaspersky Password Manager (txt)" },
+        { id: "remembearcsv", name: "RememBear (csv)" },
+        { id: "passwordwallettxt", name: "PasswordWallet (txt)" },
+        { id: "mykicsv", name: "Myki (csv)" },
+        { id: "securesafecsv", name: "SecureSafe (csv)" },
+        { id: "logmeoncecsv", name: "LogMeOnce (csv)" },
+        { id: "blackberrycsv", name: "BlackBerry Password Keeper (csv)" },
+        { id: "buttercupcsv", name: "Buttercup (csv)" },
+        { id: "codebookcsv", name: "Codebook (csv)" },
+        { id: "encryptrcsv", name: "Encryptr (csv)" },
+        { id: "yoticsv", name: "Yoti (csv)" },
+        { id: "nordpasscsv", name: "Nordpass (csv)" },
     ];
 
-    constructor(private cipherService: CipherService, private folderService: FolderService,
-        private apiService: ApiService, private i18nService: I18nService,
-        private collectionService: CollectionService, private platformUtilsService: PlatformUtilsService,
-        private cryptoService: CryptoService) { }
+    constructor(
+        private cipherService: CipherService,
+        private folderService: FolderService,
+        private apiService: ApiService,
+        private i18nService: I18nService,
+        private collectionService: CollectionService,
+        private platformUtilsService: PlatformUtilsService,
+        private cryptoService: CryptoService
+    ) {}
 
     getImportOptions(): ImportOption[] {
         return this.featuredImportOptions.concat(this.regularImportOptions);
@@ -157,15 +159,17 @@ export class ImportService implements ImportServiceAbstraction {
         const importResult = await importer.parse(fileContents);
         if (importResult.success) {
             if (importResult.folders.length === 0 && importResult.ciphers.length === 0) {
-                return new Error(this.i18nService.t('importNothingError'));
+                return new Error(this.i18nService.t("importNothingError"));
             } else if (importResult.ciphers.length > 0) {
                 const halfway = Math.floor(importResult.ciphers.length / 2);
                 const last = importResult.ciphers.length - 1;
 
-                if (this.badData(importResult.ciphers[0]) &&
+                if (
+                    this.badData(importResult.ciphers[0]) &&
                     this.badData(importResult.ciphers[halfway]) &&
-                    this.badData(importResult.ciphers[last])) {
-                    return new Error(this.i18nService.t('importFormatError'));
+                    this.badData(importResult.ciphers[last])
+                ) {
+                    return new Error(this.i18nService.t("importFormatError"));
                 }
             }
             try {
@@ -179,7 +183,7 @@ export class ImportService implements ImportServiceAbstraction {
             if (!Utils.isNullOrWhitespace(importResult.errorMessage)) {
                 return new Error(importResult.errorMessage);
             } else {
-                return new Error(this.i18nService.t('importFormatError'));
+                return new Error(this.i18nService.t("importFormatError"));
             }
         }
     }
@@ -194,119 +198,119 @@ export class ImportService implements ImportServiceAbstraction {
     }
 
     private getImporterInstance(format: string) {
-        if (format == null || format === '') {
+        if (format == null || format === "") {
             return null;
         }
 
         switch (format) {
-            case 'bitwardencsv':
+            case "bitwardencsv":
                 return new BitwardenCsvImporter();
-            case 'bitwardenjson':
+            case "bitwardenjson":
                 return new BitwardenJsonImporter(this.cryptoService, this.i18nService);
-            case 'lastpasscsv':
-            case 'passboltcsv':
+            case "lastpasscsv":
+            case "passboltcsv":
                 return new LastPassCsvImporter();
-            case 'keepassxcsv':
+            case "keepassxcsv":
                 return new KeePassXCsvImporter();
-            case 'aviracsv':
+            case "aviracsv":
                 return new AviraCsvImporter();
-            case 'blurcsv':
+            case "blurcsv":
                 return new BlurCsvImporter();
-            case 'safeincloudxml':
+            case "safeincloudxml":
                 return new SafeInCloudXmlImporter();
-            case 'padlockcsv':
+            case "padlockcsv":
                 return new PadlockCsvImporter();
-            case 'keepass2xml':
+            case "keepass2xml":
                 return new KeePass2XmlImporter();
-            case 'chromecsv':
-            case 'operacsv':
-            case 'vivaldicsv':
+            case "chromecsv":
+            case "operacsv":
+            case "vivaldicsv":
                 return new ChromeCsvImporter();
-            case 'firefoxcsv':
+            case "firefoxcsv":
                 return new FirefoxCsvImporter();
-            case 'upmcsv':
+            case "upmcsv":
                 return new UpmCsvImporter();
-            case 'saferpasscsv':
+            case "saferpasscsv":
                 return new SaferPassCsvImporter();
-            case 'safaricsv':
+            case "safaricsv":
                 return new SafariCsvImporter();
-            case 'meldiumcsv':
+            case "meldiumcsv":
                 return new MeldiumCsvImporter();
-            case '1password1pif':
+            case "1password1pif":
                 return new OnePassword1PifImporter();
-            case '1passwordwincsv':
+            case "1passwordwincsv":
                 return new OnePasswordWinCsvImporter();
-            case '1passwordmaccsv':
+            case "1passwordmaccsv":
                 return new OnePasswordMacCsvImporter();
-            case 'keepercsv':
+            case "keepercsv":
                 return new KeeperCsvImporter();
-            case 'passworddragonxml':
+            case "passworddragonxml":
                 return new PasswordDragonXmlImporter();
-            case 'enpasscsv':
+            case "enpasscsv":
                 return new EnpassCsvImporter();
-            case 'enpassjson':
+            case "enpassjson":
                 return new EnpassJsonImporter();
-            case 'pwsafexml':
+            case "pwsafexml":
                 return new PasswordSafeXmlImporter();
-            case 'dashlanejson':
+            case "dashlanejson":
                 return new DashlaneJsonImporter();
-            case 'msecurecsv':
+            case "msecurecsv":
                 return new MSecureCsvImporter();
-            case 'stickypasswordxml':
+            case "stickypasswordxml":
                 return new StickyPasswordXmlImporter();
-            case 'truekeycsv':
+            case "truekeycsv":
                 return new TrueKeyCsvImporter();
-            case 'clipperzhtml':
+            case "clipperzhtml":
                 return new ClipperzHtmlImporter();
-            case 'roboformcsv':
+            case "roboformcsv":
                 return new RoboFormCsvImporter();
-            case 'ascendocsv':
+            case "ascendocsv":
                 return new AscendoCsvImporter();
-            case 'passwordbossjson':
+            case "passwordbossjson":
                 return new PasswordBossJsonImporter();
-            case 'zohovaultcsv':
+            case "zohovaultcsv":
                 return new ZohoVaultCsvImporter();
-            case 'splashidcsv':
+            case "splashidcsv":
                 return new SplashIdCsvImporter();
-            case 'passkeepcsv':
+            case "passkeepcsv":
                 return new PassKeepCsvImporter();
-            case 'gnomejson':
+            case "gnomejson":
                 return new GnomeJsonImporter();
-            case 'passwordagentcsv':
+            case "passwordagentcsv":
                 return new PasswordAgentCsvImporter();
-            case 'passpackcsv':
+            case "passpackcsv":
                 return new PasspackCsvImporter();
-            case 'passmanjson':
+            case "passmanjson":
                 return new PassmanJsonImporter();
-            case 'avastcsv':
+            case "avastcsv":
                 return new AvastCsvImporter();
-            case 'avastjson':
+            case "avastjson":
                 return new AvastJsonImporter();
-            case 'fsecurefsk':
+            case "fsecurefsk":
                 return new FSecureFskImporter();
-            case 'kasperskytxt':
+            case "kasperskytxt":
                 return new KasperskyTxtImporter();
-            case 'remembearcsv':
+            case "remembearcsv":
                 return new RememBearCsvImporter();
-            case 'passwordwallettxt':
+            case "passwordwallettxt":
                 return new PasswordWalletTxtImporter();
-            case 'mykicsv':
+            case "mykicsv":
                 return new MykiCsvImporter();
-            case 'securesafecsv':
+            case "securesafecsv":
                 return new SecureSafeCsvImporter();
-            case 'logmeoncecsv':
+            case "logmeoncecsv":
                 return new LogMeOnceCsvImporter();
-            case 'blackberrycsv':
+            case "blackberrycsv":
                 return new BlackBerryCsvImporter();
-            case 'buttercupcsv':
+            case "buttercupcsv":
                 return new ButtercupCsvImporter();
-            case 'codebookcsv':
+            case "codebookcsv":
                 return new CodebookCsvImporter();
-            case 'encryptrcsv':
+            case "encryptrcsv":
                 return new EncryptrCsvImporter();
-            case 'yoticsv':
+            case "yoticsv":
                 return new YotiCsvImporter();
-            case 'nordpasscsv':
+            case "nordpasscsv":
                 return new NordPassCsvImporter();
             default:
                 return null;
@@ -327,8 +331,9 @@ export class ImportService implements ImportServiceAbstraction {
                 }
             }
             if (importResult.folderRelationships != null) {
-                importResult.folderRelationships.forEach(r =>
-                    request.folderRelationships.push(new KvpRequest(r[0], r[1])));
+                importResult.folderRelationships.forEach((r) =>
+                    request.folderRelationships.push(new KvpRequest(r[0], r[1]))
+                );
             }
             return await this.apiService.postImportCiphers(request);
         } else {
@@ -346,16 +351,21 @@ export class ImportService implements ImportServiceAbstraction {
                 }
             }
             if (importResult.collectionRelationships != null) {
-                importResult.collectionRelationships.forEach(r =>
-                    request.collectionRelationships.push(new KvpRequest(r[0], r[1])));
+                importResult.collectionRelationships.forEach((r) =>
+                    request.collectionRelationships.push(new KvpRequest(r[0], r[1]))
+                );
             }
             return await this.apiService.postImportOrganizationCiphers(organizationId, request);
         }
     }
 
     private badData(c: CipherView) {
-        return (c.name == null || c.name === '--') &&
-            (c.type === CipherType.Login && c.login != null && Utils.isNullOrWhitespace(c.login.password));
+        return (
+            (c.name == null || c.name === "--") &&
+            c.type === CipherType.Login &&
+            c.login != null &&
+            Utils.isNullOrWhitespace(c.login.password)
+        );
     }
 
     private handleServerError(errorResponse: ErrorResponse, importResult: ImportResult): Error {
@@ -363,7 +373,7 @@ export class ImportService implements ImportServiceAbstraction {
             return new Error(errorResponse.message);
         }
 
-        let errorMessage = '';
+        let errorMessage = "";
 
         Object.entries(errorResponse.validationErrors).forEach(([key, value], index) => {
             let item;
@@ -371,31 +381,31 @@ export class ImportService implements ImportServiceAbstraction {
             const i = Number(key.match(/[0-9]+/)[0]);
 
             switch (key.match(/^\w+/)[0]) {
-                case 'Ciphers':
+                case "Ciphers":
                     item = importResult.ciphers[i];
                     itemType = CipherType[item.type];
                     break;
-                case 'Folders':
+                case "Folders":
                     item = importResult.folders[i];
-                    itemType = 'Folder';
+                    itemType = "Folder";
                     break;
-                case 'Collections':
+                case "Collections":
                     item = importResult.collections[i];
-                    itemType = 'Collection';
+                    itemType = "Collection";
                     break;
                 default:
                     return;
             }
 
             if (index > 0) {
-                errorMessage += '\n\n';
+                errorMessage += "\n\n";
             }
 
-            if (itemType !== 'Folder' && itemType !== 'Collection') {
-                errorMessage += '[' + (i + 1) + '] ';
+            if (itemType !== "Folder" && itemType !== "Collection") {
+                errorMessage += "[" + (i + 1) + "] ";
             }
 
-            errorMessage += '[' + itemType + '] "' + item.name + '": ' + value;
+            errorMessage += "[" + itemType + '] "' + item.name + '": ' + value;
         });
 
         return new Error(errorMessage);

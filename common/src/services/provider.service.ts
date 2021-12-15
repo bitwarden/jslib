@@ -1,13 +1,12 @@
-import { ProviderService as ProviderServiceAbstraction } from '../abstractions/provider.service';
-import { StateService } from '../abstractions/state.service';
+import { ProviderService as ProviderServiceAbstraction } from "../abstractions/provider.service";
+import { StateService } from "../abstractions/state.service";
 
-import { ProviderData } from '../models/data/providerData';
+import { ProviderData } from "../models/data/providerData";
 
-import { Provider } from '../models/domain/provider';
+import { Provider } from "../models/domain/provider";
 
 export class ProviderService implements ProviderServiceAbstraction {
-    constructor(private stateService: StateService) {
-    }
+    constructor(private stateService: StateService) {}
 
     async get(id: string): Promise<Provider> {
         const providers = await this.stateService.getProviders();
@@ -29,7 +28,7 @@ export class ProviderService implements ProviderServiceAbstraction {
         return response;
     }
 
-    async save(providers: { [id: string]: ProviderData; }) {
+    async save(providers: { [id: string]: ProviderData }) {
         await this.stateService.setProviders(providers);
     }
 }

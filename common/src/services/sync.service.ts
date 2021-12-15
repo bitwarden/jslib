@@ -1,54 +1,63 @@
-import { ApiService } from '../abstractions/api.service';
-import { CipherService } from '../abstractions/cipher.service';
-import { CollectionService } from '../abstractions/collection.service';
-import { CryptoService } from '../abstractions/crypto.service';
-import { FolderService } from '../abstractions/folder.service';
-import { KeyConnectorService } from '../abstractions/keyConnector.service';
-import { LogService } from '../abstractions/log.service';
-import { MessagingService } from '../abstractions/messaging.service';
-import { OrganizationService } from '../abstractions/organization.service';
-import { PolicyService } from '../abstractions/policy.service';
-import { ProviderService } from '../abstractions/provider.service';
-import { SendService } from '../abstractions/send.service';
-import { SettingsService } from '../abstractions/settings.service';
-import { StateService } from '../abstractions/state.service';
-import { SyncService as SyncServiceAbstraction } from '../abstractions/sync.service';
+import { ApiService } from "../abstractions/api.service";
+import { CipherService } from "../abstractions/cipher.service";
+import { CollectionService } from "../abstractions/collection.service";
+import { CryptoService } from "../abstractions/crypto.service";
+import { FolderService } from "../abstractions/folder.service";
+import { KeyConnectorService } from "../abstractions/keyConnector.service";
+import { LogService } from "../abstractions/log.service";
+import { MessagingService } from "../abstractions/messaging.service";
+import { OrganizationService } from "../abstractions/organization.service";
+import { PolicyService } from "../abstractions/policy.service";
+import { ProviderService } from "../abstractions/provider.service";
+import { SendService } from "../abstractions/send.service";
+import { SettingsService } from "../abstractions/settings.service";
+import { StateService } from "../abstractions/state.service";
+import { SyncService as SyncServiceAbstraction } from "../abstractions/sync.service";
 
-import { CipherData } from '../models/data/cipherData';
-import { CollectionData } from '../models/data/collectionData';
-import { FolderData } from '../models/data/folderData';
-import { OrganizationData } from '../models/data/organizationData';
-import { PolicyData } from '../models/data/policyData';
-import { ProviderData } from '../models/data/providerData';
-import { SendData } from '../models/data/sendData';
+import { CipherData } from "../models/data/cipherData";
+import { CollectionData } from "../models/data/collectionData";
+import { FolderData } from "../models/data/folderData";
+import { OrganizationData } from "../models/data/organizationData";
+import { PolicyData } from "../models/data/policyData";
+import { ProviderData } from "../models/data/providerData";
+import { SendData } from "../models/data/sendData";
 
-import { CipherResponse } from '../models/response/cipherResponse';
-import { CollectionDetailsResponse } from '../models/response/collectionResponse';
-import { DomainsResponse } from '../models/response/domainsResponse';
-import { FolderResponse } from '../models/response/folderResponse';
+import { CipherResponse } from "../models/response/cipherResponse";
+import { CollectionDetailsResponse } from "../models/response/collectionResponse";
+import { DomainsResponse } from "../models/response/domainsResponse";
+import { FolderResponse } from "../models/response/folderResponse";
 import {
     SyncCipherNotification,
     SyncFolderNotification,
     SyncSendNotification,
-} from '../models/response/notificationResponse';
-import { PolicyResponse } from '../models/response/policyResponse';
-import { ProfileResponse } from '../models/response/profileResponse';
-import { SendResponse } from '../models/response/sendResponse';
+} from "../models/response/notificationResponse";
+import { PolicyResponse } from "../models/response/policyResponse";
+import { ProfileResponse } from "../models/response/profileResponse";
+import { SendResponse } from "../models/response/sendResponse";
 
 export class SyncService implements SyncServiceAbstraction {
     syncInProgress: boolean = false;
 
-    constructor(private apiService: ApiService, private settingsService: SettingsService,
-        private folderService: FolderService, private cipherService: CipherService,
-        private cryptoService: CryptoService, private collectionService: CollectionService,
-        private messagingService: MessagingService,  private policyService: PolicyService,
-        private sendService: SendService, private logService: LogService,
-        private keyConnectorService: KeyConnectorService, private stateService: StateService,
-        private organizationService: OrganizationService, private providerService: ProviderService,
-        private logoutCallback: (expired: boolean) => Promise<void>) { }
+    constructor(
+        private apiService: ApiService,
+        private settingsService: SettingsService,
+        private folderService: FolderService,
+        private cipherService: CipherService,
+        private cryptoService: CryptoService,
+        private collectionService: CollectionService,
+        private messagingService: MessagingService,
+        private policyService: PolicyService,
+        private sendService: SendService,
+        private logService: LogService,
+        private keyConnectorService: KeyConnectorService,
+        private stateService: StateService,
+        private organizationService: OrganizationService,
+        private providerService: ProviderService,
+        private logoutCallback: (expired: boolean) => Promise<void>
+    ) {}
 
     async getLastSync(): Promise<Date> {
-        if (await this.stateService.getUserId() == null) {
+        if ((await this.stateService.getUserId()) == null) {
             return null;
         }
 
@@ -115,13 +124,15 @@ export class SyncService implements SyncServiceAbstraction {
         if (await this.stateService.getIsAuthenticated()) {
             try {
                 const localFolder = await this.folderService.get(notification.id);
-                if ((!isEdit && localFolder == null) ||
-                    (isEdit && localFolder != null && localFolder.revisionDate < notification.revisionDate)) {
+                if (
+                    (!isEdit && localFolder == null) ||
+                    (isEdit && localFolder != null && localFolder.revisionDate < notification.revisionDate)
+                ) {
                     const remoteFolder = await this.apiService.getFolder(notification.id);
                     if (remoteFolder != null) {
                         const userId = await this.stateService.getUserId();
                         await this.folderService.upsert(new FolderData(remoteFolder, userId));
-                        this.messagingService.send('syncedUpsertedFolder', { folderId: notification.id });
+                        this.messagingService.send("syncedUpsertedFolder", { folderId: notification.id });
                         return this.syncCompleted(true);
                     }
                 }
@@ -136,7 +147,7 @@ export class SyncService implements SyncServiceAbstraction {
         this.syncStarted();
         if (await this.stateService.getIsAuthenticated()) {
             await this.folderService.delete(notification.id);
-            this.messagingService.send('syncedDeletedFolder', { folderId: notification.id });
+            this.messagingService.send("syncedDeletedFolder", { folderId: notification.id });
             this.syncCompleted(true);
             return true;
         }
@@ -168,8 +179,13 @@ export class SyncService implements SyncServiceAbstraction {
                     }
                 }
 
-                if (!shouldUpdate && checkCollections && notification.organizationId != null &&
-                    notification.collectionIds != null && notification.collectionIds.length > 0) {
+                if (
+                    !shouldUpdate &&
+                    checkCollections &&
+                    notification.organizationId != null &&
+                    notification.collectionIds != null &&
+                    notification.collectionIds.length > 0
+                ) {
                     const collections = await this.collectionService.getAll();
                     if (collections != null) {
                         for (let i = 0; i < collections.length; i++) {
@@ -186,14 +202,14 @@ export class SyncService implements SyncServiceAbstraction {
                     if (remoteCipher != null) {
                         const userId = await this.stateService.getUserId();
                         await this.cipherService.upsert(new CipherData(remoteCipher, userId));
-                        this.messagingService.send('syncedUpsertedCipher', { cipherId: notification.id });
+                        this.messagingService.send("syncedUpsertedCipher", { cipherId: notification.id });
                         return this.syncCompleted(true);
                     }
                 }
             } catch (e) {
                 if (e != null && e.statusCode === 404 && isEdit) {
                     await this.cipherService.delete(notification.id);
-                    this.messagingService.send('syncedDeletedCipher', { cipherId: notification.id });
+                    this.messagingService.send("syncedDeletedCipher", { cipherId: notification.id });
                     return this.syncCompleted(true);
                 }
             }
@@ -205,7 +221,7 @@ export class SyncService implements SyncServiceAbstraction {
         this.syncStarted();
         if (await this.stateService.getIsAuthenticated()) {
             await this.cipherService.delete(notification.id);
-            this.messagingService.send('syncedDeletedCipher', { cipherId: notification.id });
+            this.messagingService.send("syncedDeletedCipher", { cipherId: notification.id });
             return this.syncCompleted(true);
         }
         return this.syncCompleted(false);
@@ -216,13 +232,15 @@ export class SyncService implements SyncServiceAbstraction {
         if (await this.stateService.getIsAuthenticated()) {
             try {
                 const localSend = await this.sendService.get(notification.id);
-                if ((!isEdit && localSend == null) ||
-                    (isEdit && localSend != null && localSend.revisionDate < notification.revisionDate)) {
+                if (
+                    (!isEdit && localSend == null) ||
+                    (isEdit && localSend != null && localSend.revisionDate < notification.revisionDate)
+                ) {
                     const remoteSend = await this.apiService.getSend(notification.id);
                     if (remoteSend != null) {
                         const userId = await this.stateService.getUserId();
                         await this.sendService.upsert(new SendData(remoteSend, userId));
-                        this.messagingService.send('syncedUpsertedSend', { sendId: notification.id });
+                        this.messagingService.send("syncedUpsertedSend", { sendId: notification.id });
                         return this.syncCompleted(true);
                     }
                 }
@@ -237,7 +255,7 @@ export class SyncService implements SyncServiceAbstraction {
         this.syncStarted();
         if (await this.stateService.getIsAuthenticated()) {
             await this.sendService.delete(notification.id);
-            this.messagingService.send('syncedDeletedSend', { sendId: notification.id });
+            this.messagingService.send("syncedDeletedSend", { sendId: notification.id });
             this.syncCompleted(true);
             return true;
         }
@@ -248,12 +266,12 @@ export class SyncService implements SyncServiceAbstraction {
 
     private syncStarted() {
         this.syncInProgress = true;
-        this.messagingService.send('syncStarted');
+        this.messagingService.send("syncStarted");
     }
 
     private syncCompleted(successfully: boolean): boolean {
         this.syncInProgress = false;
-        this.messagingService.send('syncCompleted', { successfully: successfully });
+        this.messagingService.send("syncCompleted", { successfully: successfully });
         return successfully;
     }
 
@@ -281,7 +299,7 @@ export class SyncService implements SyncServiceAbstraction {
                 await this.logoutCallback(true);
             }
 
-            throw new Error('Stamp has changed');
+            throw new Error("Stamp has changed");
         }
 
         await this.cryptoService.setEncKey(response.key);
@@ -293,62 +311,59 @@ export class SyncService implements SyncServiceAbstraction {
         await this.stateService.setForcePasswordReset(response.forcePasswordReset);
         await this.keyConnectorService.setUsesKeyConnector(response.usesKeyConnector);
 
-        const organizations: { [id: string]: OrganizationData; } = {};
-        response.organizations.forEach(o => {
+        const organizations: { [id: string]: OrganizationData } = {};
+        response.organizations.forEach((o) => {
             organizations[o.id] = new OrganizationData(o);
         });
 
-        const providers: { [id: string]: ProviderData; } = {};
-        response.providers.forEach(p => {
+        const providers: { [id: string]: ProviderData } = {};
+        response.providers.forEach((p) => {
             providers[p.id] = new ProviderData(p);
         });
 
-        response.providerOrganizations.forEach(o => {
+        response.providerOrganizations.forEach((o) => {
             if (organizations[o.id] == null) {
                 organizations[o.id] = new OrganizationData(o);
                 organizations[o.id].isProviderUser = true;
             }
         });
 
-        await Promise.all([
-            this.organizationService.save(organizations),
-            this.providerService.save(providers),
-        ]);
+        await Promise.all([this.organizationService.save(organizations), this.providerService.save(providers)]);
 
         if (await this.keyConnectorService.userNeedsMigration()) {
-            this.messagingService.send('convertAccountToKeyConnector');
+            this.messagingService.send("convertAccountToKeyConnector");
         } else {
             this.keyConnectorService.removeConvertAccountRequired();
         }
     }
 
     private async syncFolders(userId: string, response: FolderResponse[]) {
-        const folders: { [id: string]: FolderData; } = {};
-        response.forEach(f => {
+        const folders: { [id: string]: FolderData } = {};
+        response.forEach((f) => {
             folders[f.id] = new FolderData(f, userId);
         });
         return await this.folderService.replace(folders);
     }
 
     private async syncCollections(response: CollectionDetailsResponse[]) {
-        const collections: { [id: string]: CollectionData; } = {};
-        response.forEach(c => {
+        const collections: { [id: string]: CollectionData } = {};
+        response.forEach((c) => {
             collections[c.id] = new CollectionData(c);
         });
         return await this.collectionService.replace(collections);
     }
 
     private async syncCiphers(userId: string, response: CipherResponse[]) {
-        const ciphers: { [id: string]: CipherData; } = {};
-        response.forEach(c => {
+        const ciphers: { [id: string]: CipherData } = {};
+        response.forEach((c) => {
             ciphers[c.id] = new CipherData(c, userId);
         });
         return await this.cipherService.replace(ciphers);
     }
 
     private async syncSends(userId: string, response: SendResponse[]) {
-        const sends: { [id: string]: SendData; } = {};
-        response.forEach(s => {
+        const sends: { [id: string]: SendData } = {};
+        response.forEach((s) => {
             sends[s.id] = new SendData(s, userId);
         });
         return await this.sendService.replace(sends);
@@ -361,7 +376,7 @@ export class SyncService implements SyncServiceAbstraction {
         }
 
         if (response != null && response.globalEquivalentDomains != null) {
-            response.globalEquivalentDomains.forEach(global => {
+            response.globalEquivalentDomains.forEach((global) => {
                 if (global.domains.length > 0) {
                     eqDomains.push(global.domains);
                 }
@@ -372,9 +387,9 @@ export class SyncService implements SyncServiceAbstraction {
     }
 
     private async syncPolicies(response: PolicyResponse[]) {
-        const policies: { [id: string]: PolicyData; } = {};
+        const policies: { [id: string]: PolicyData } = {};
         if (response != null) {
-            response.forEach(p => {
+            response.forEach((p) => {
                 policies[p.id] = new PolicyData(p);
             });
         }

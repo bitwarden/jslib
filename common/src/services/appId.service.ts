@@ -1,18 +1,17 @@
-import { Utils } from '../misc/utils';
+import { Utils } from "../misc/utils";
 
-import { AppIdService as AppIdServiceAbstraction } from '../abstractions/appId.service';
-import { StorageService } from '../abstractions/storage.service';
+import { AppIdService as AppIdServiceAbstraction } from "../abstractions/appId.service";
+import { StorageService } from "../abstractions/storage.service";
 
 export class AppIdService implements AppIdServiceAbstraction {
-    constructor(private storageService: StorageService) {
-    }
+    constructor(private storageService: StorageService) {}
 
     getAppId(): Promise<string> {
-        return this.makeAndGetAppId('appId');
+        return this.makeAndGetAppId("appId");
     }
 
     getAnonymousAppId(): Promise<string> {
-        return this.makeAndGetAppId('anonymousAppId');
+        return this.makeAndGetAppId("anonymousAppId");
     }
 
     private async makeAndGetAppId(key: string) {

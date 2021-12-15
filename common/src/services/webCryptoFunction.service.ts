@@ -1,12 +1,12 @@
-import * as forge from 'node-forge';
+import * as forge from "node-forge";
 
-import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
-import { PlatformUtilsService } from '../abstractions/platformUtils.service';
+import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
+import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 
-import { Utils } from '../misc/utils';
+import { Utils } from "../misc/utils";
 
-import { DecryptParameters } from '../models/domain/decryptParameters';
-import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
+import { DecryptParameters } from "../models/domain/decryptParameters";
+import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 
 export class WebCryptoFunctionService implements CryptoFunctionService {
     private crypto: Crypto;
@@ -15,67 +15,80 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     private isOldSafari: boolean;
 
     constructor(private win: Window, private platformUtilsService: PlatformUtilsService) {
-        this.crypto = typeof win.crypto !== 'undefined' ? win.crypto : null;
-        this.subtle = (!!this.crypto && typeof win.crypto.subtle !== 'undefined') ? win.crypto.subtle : null;
+        this.crypto = typeof win.crypto !== "undefined" ? win.crypto : null;
+        this.subtle = !!this.crypto && typeof win.crypto.subtle !== "undefined" ? win.crypto.subtle : null;
         this.isIE = platformUtilsService.isIE();
         const ua = win.navigator.userAgent;
-        this.isOldSafari = platformUtilsService.isSafari() &&
-            (ua.indexOf(' Version/10.') > -1 || ua.indexOf(' Version/9.') > -1);
+        this.isOldSafari =
+            platformUtilsService.isSafari() && (ua.indexOf(" Version/10.") > -1 || ua.indexOf(" Version/9.") > -1);
     }
 
-    async pbkdf2(password: string | ArrayBuffer, salt: string | ArrayBuffer, algorithm: 'sha256' | 'sha512',
-        iterations: number): Promise<ArrayBuffer> {
+    async pbkdf2(
+        password: string | ArrayBuffer,
+        salt: string | ArrayBuffer,
+        algorithm: "sha256" | "sha512",
+        iterations: number
+    ): Promise<ArrayBuffer> {
         if (this.isIE || this.isOldSafari) {
-            const forgeLen = algorithm === 'sha256' ? 32 : 64;
+            const forgeLen = algorithm === "sha256" ? 32 : 64;
             const passwordBytes = this.toByteString(password);
             const saltBytes = this.toByteString(salt);
             const derivedKeyBytes = (forge as any).pbkdf2(passwordBytes, saltBytes, iterations, forgeLen, algorithm);
             return Utils.fromByteStringToArray(derivedKeyBytes).buffer;
         }
 
-        const wcLen = algorithm === 'sha256' ? 256 : 512;
+        const wcLen = algorithm === "sha256" ? 256 : 512;
         const passwordBuf = this.toBuf(password);
         const saltBuf = this.toBuf(salt);
 
         const pbkdf2Params: Pbkdf2Params = {
-            name: 'PBKDF2',
+            name: "PBKDF2",
             salt: saltBuf,
             iterations: iterations,
             hash: { name: this.toWebCryptoAlgorithm(algorithm) },
         };
 
-        const impKey = await this.subtle.importKey('raw', passwordBuf, { name: 'PBKDF2' } as any,
-            false, ['deriveBits']);
+        const impKey = await this.subtle.importKey("raw", passwordBuf, { name: "PBKDF2" } as any, false, [
+            "deriveBits",
+        ]);
         return await this.subtle.deriveBits(pbkdf2Params, impKey, wcLen);
     }
 
-    async hkdf(ikm: ArrayBuffer, salt: string | ArrayBuffer, info: string | ArrayBuffer,
-        outputByteSize: number, algorithm: 'sha256' | 'sha512'): Promise<ArrayBuffer> {
+    async hkdf(
+        ikm: ArrayBuffer,
+        salt: string | ArrayBuffer,
+        info: string | ArrayBuffer,
+        outputByteSize: number,
+        algorithm: "sha256" | "sha512"
+    ): Promise<ArrayBuffer> {
         const saltBuf = this.toBuf(salt);
         const infoBuf = this.toBuf(info);
 
         const hkdfParams: HkdfParams = {
-            name: 'HKDF',
+            name: "HKDF",
             salt: saltBuf,
             info: infoBuf,
             hash: { name: this.toWebCryptoAlgorithm(algorithm) },
         };
 
-        const impKey = await this.subtle.importKey('raw', ikm, { name: 'HKDF' } as any,
-            false, ['deriveBits']);
+        const impKey = await this.subtle.importKey("raw", ikm, { name: "HKDF" } as any, false, ["deriveBits"]);
         return await this.subtle.deriveBits(hkdfParams as any, impKey, outputByteSize * 8);
     }
 
     // ref: https://tools.ietf.org/html/rfc5869
-    async hkdfExpand(prk: ArrayBuffer, info: string | ArrayBuffer, outputByteSize: number,
-        algorithm: 'sha256' | 'sha512'): Promise<ArrayBuffer> {
-        const hashLen = algorithm === 'sha256' ? 32 : 64;
+    async hkdfExpand(
+        prk: ArrayBuffer,
+        info: string | ArrayBuffer,
+        outputByteSize: number,
+        algorithm: "sha256" | "sha512"
+    ): Promise<ArrayBuffer> {
+        const hashLen = algorithm === "sha256" ? 32 : 64;
         if (outputByteSize > 255 * hashLen) {
-            throw new Error('outputByteSize is too large.');
+            throw new Error("outputByteSize is too large.");
         }
         const prkArr = new Uint8Array(prk);
         if (prkArr.length < hashLen) {
-            throw new Error('prk is too small.');
+            throw new Error("prk is too small.");
         }
         const infoBuf = this.toBuf(info);
         const infoArr = new Uint8Array(infoBuf);
@@ -98,11 +111,11 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return okm.slice(0, outputByteSize).buffer;
     }
 
-    async hash(value: string | ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512' | 'md5'): Promise<ArrayBuffer> {
-        if ((this.isIE && algorithm === 'sha1') || algorithm === 'md5') {
-            const md = algorithm === 'md5' ? forge.md.md5.create() : forge.md.sha1.create();
+    async hash(value: string | ArrayBuffer, algorithm: "sha1" | "sha256" | "sha512" | "md5"): Promise<ArrayBuffer> {
+        if ((this.isIE && algorithm === "sha1") || algorithm === "md5") {
+            const md = algorithm === "md5" ? forge.md.md5.create() : forge.md.sha1.create();
             const valueBytes = this.toByteString(value);
-            md.update(valueBytes, 'raw');
+            md.update(valueBytes, "raw");
             return Utils.fromByteStringToArray(md.digest().data).buffer;
         }
 
@@ -110,22 +123,22 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return await this.subtle.digest({ name: this.toWebCryptoAlgorithm(algorithm) }, valueBuf);
     }
 
-    async hmac(value: ArrayBuffer, key: ArrayBuffer, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<ArrayBuffer> {
-        if (this.isIE && algorithm === 'sha512') {
+    async hmac(value: ArrayBuffer, key: ArrayBuffer, algorithm: "sha1" | "sha256" | "sha512"): Promise<ArrayBuffer> {
+        if (this.isIE && algorithm === "sha512") {
             const hmac = (forge as any).hmac.create();
             const keyBytes = this.toByteString(key);
             const valueBytes = this.toByteString(value);
             hmac.start(algorithm, keyBytes);
-            hmac.update(valueBytes, 'raw');
+            hmac.update(valueBytes, "raw");
             return Utils.fromByteStringToArray(hmac.digest().data).buffer;
         }
 
         const signingAlgorithm = {
-            name: 'HMAC',
+            name: "HMAC",
             hash: { name: this.toWebCryptoAlgorithm(algorithm) },
         };
 
-        const impKey = await this.subtle.importKey('raw', key, signingAlgorithm, false, ['sign']);
+        const impKey = await this.subtle.importKey("raw", key, signingAlgorithm, false, ["sign"]);
         return await this.subtle.sign(signingAlgorithm, impKey, value);
     }
 
@@ -135,10 +148,10 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     async compare(a: ArrayBuffer, b: ArrayBuffer): Promise<boolean> {
         const macKey = await this.randomBytes(32);
         const signingAlgorithm = {
-            name: 'HMAC',
-            hash: { name: 'SHA-256' },
+            name: "HMAC",
+            hash: { name: "SHA-256" },
         };
-        const impKey = await this.subtle.importKey('raw', macKey, signingAlgorithm, false, ['sign']);
+        const impKey = await this.subtle.importKey("raw", macKey, signingAlgorithm, false, ["sign"]);
         const mac1 = await this.subtle.sign(signingAlgorithm, impKey, a);
         const mac2 = await this.subtle.sign(signingAlgorithm, impKey, b);
 
@@ -157,7 +170,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return true;
     }
 
-    hmacFast(value: string, key: string, algorithm: 'sha1' | 'sha256' | 'sha512'): Promise<string> {
+    hmacFast(value: string, key: string, algorithm: "sha1" | "sha256" | "sha512"): Promise<string> {
         const hmac = (forge as any).hmac.create();
         hmac.start(algorithm, key);
         hmac.update(value);
@@ -175,7 +188,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         const macKey = buffer.getBytes();
 
         const hmac = (forge as any).hmac.create();
-        hmac.start('sha256', macKey);
+        hmac.start("sha256", macKey);
         hmac.update(a);
         const mac1 = hmac.digest().getBytes();
 
@@ -188,12 +201,16 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     }
 
     async aesEncrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
-        const impKey = await this.subtle.importKey('raw', key, { name: 'AES-CBC' } as any, false, ['encrypt']);
-        return await this.subtle.encrypt({ name: 'AES-CBC', iv: iv }, impKey, data);
+        const impKey = await this.subtle.importKey("raw", key, { name: "AES-CBC" } as any, false, ["encrypt"]);
+        return await this.subtle.encrypt({ name: "AES-CBC", iv: iv }, impKey, data);
     }
 
-    aesDecryptFastParameters(data: string, iv: string, mac: string, key: SymmetricCryptoKey):
-        DecryptParameters<string> {
+    aesDecryptFastParameters(
+        data: string,
+        iv: string,
+        mac: string,
+        key: SymmetricCryptoKey
+    ): DecryptParameters<string> {
         const p = new DecryptParameters<string>();
         if (key.meta != null) {
             p.encKey = key.meta.encKeyByteString;
@@ -229,71 +246,71 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
 
     aesDecryptFast(parameters: DecryptParameters<string>): Promise<string> {
         const dataBuffer = (forge as any).util.createBuffer(parameters.data);
-        const decipher = (forge as any).cipher.createDecipher('AES-CBC', parameters.encKey);
+        const decipher = (forge as any).cipher.createDecipher("AES-CBC", parameters.encKey);
         decipher.start({ iv: parameters.iv });
         decipher.update(dataBuffer);
         decipher.finish();
-        const val = decipher.output.toString('utf8');
+        const val = decipher.output.toString("utf8");
         return Promise.resolve(val);
     }
 
     async aesDecrypt(data: ArrayBuffer, iv: ArrayBuffer, key: ArrayBuffer): Promise<ArrayBuffer> {
-        const impKey = await this.subtle.importKey('raw', key, { name: 'AES-CBC' } as any, false, ['decrypt']);
-        return await this.subtle.decrypt({ name: 'AES-CBC', iv: iv }, impKey, data);
+        const impKey = await this.subtle.importKey("raw", key, { name: "AES-CBC" } as any, false, ["decrypt"]);
+        return await this.subtle.decrypt({ name: "AES-CBC", iv: iv }, impKey, data);
     }
 
-    async rsaEncrypt(data: ArrayBuffer, publicKey: ArrayBuffer, algorithm: 'sha1' | 'sha256'): Promise<ArrayBuffer> {
+    async rsaEncrypt(data: ArrayBuffer, publicKey: ArrayBuffer, algorithm: "sha1" | "sha256"): Promise<ArrayBuffer> {
         // Note: Edge browser requires that we specify name and hash for both key import and decrypt.
         // We cannot use the proper types here.
         const rsaParams = {
-            name: 'RSA-OAEP',
+            name: "RSA-OAEP",
             hash: { name: this.toWebCryptoAlgorithm(algorithm) },
         };
-        const impKey = await this.subtle.importKey('spki', publicKey, rsaParams, false, ['encrypt']);
+        const impKey = await this.subtle.importKey("spki", publicKey, rsaParams, false, ["encrypt"]);
         return await this.subtle.encrypt(rsaParams, impKey, data);
     }
 
-    async rsaDecrypt(data: ArrayBuffer, privateKey: ArrayBuffer, algorithm: 'sha1' | 'sha256'): Promise<ArrayBuffer> {
+    async rsaDecrypt(data: ArrayBuffer, privateKey: ArrayBuffer, algorithm: "sha1" | "sha256"): Promise<ArrayBuffer> {
         // Note: Edge browser requires that we specify name and hash for both key import and decrypt.
         // We cannot use the proper types here.
         const rsaParams = {
-            name: 'RSA-OAEP',
+            name: "RSA-OAEP",
             hash: { name: this.toWebCryptoAlgorithm(algorithm) },
         };
-        const impKey = await this.subtle.importKey('pkcs8', privateKey, rsaParams, false, ['decrypt']);
+        const impKey = await this.subtle.importKey("pkcs8", privateKey, rsaParams, false, ["decrypt"]);
         return await this.subtle.decrypt(rsaParams, impKey, data);
     }
 
     async rsaExtractPublicKey(privateKey: ArrayBuffer): Promise<ArrayBuffer> {
         const rsaParams = {
-            name: 'RSA-OAEP',
+            name: "RSA-OAEP",
             // Have to specify some algorithm
-            hash: { name: this.toWebCryptoAlgorithm('sha1') },
+            hash: { name: this.toWebCryptoAlgorithm("sha1") },
         };
-        const impPrivateKey = await this.subtle.importKey('pkcs8', privateKey, rsaParams, true, ['decrypt']);
-        const jwkPrivateKey = await this.subtle.exportKey('jwk', impPrivateKey);
+        const impPrivateKey = await this.subtle.importKey("pkcs8", privateKey, rsaParams, true, ["decrypt"]);
+        const jwkPrivateKey = await this.subtle.exportKey("jwk", impPrivateKey);
         const jwkPublicKeyParams = {
-            kty: 'RSA',
+            kty: "RSA",
             e: jwkPrivateKey.e,
             n: jwkPrivateKey.n,
-            alg: 'RSA-OAEP',
+            alg: "RSA-OAEP",
             ext: true,
         };
-        const impPublicKey = await this.subtle.importKey('jwk', jwkPublicKeyParams, rsaParams, true, ['encrypt']);
-        return await this.subtle.exportKey('spki', impPublicKey);
+        const impPublicKey = await this.subtle.importKey("jwk", jwkPublicKeyParams, rsaParams, true, ["encrypt"]);
+        return await this.subtle.exportKey("spki", impPublicKey);
     }
 
     async rsaGenerateKeyPair(length: 1024 | 2048 | 4096): Promise<[ArrayBuffer, ArrayBuffer]> {
         const rsaParams = {
-            name: 'RSA-OAEP',
+            name: "RSA-OAEP",
             modulusLength: length,
             publicExponent: new Uint8Array([0x01, 0x00, 0x01]), // 65537
             // Have to specify some algorithm
-            hash: { name: this.toWebCryptoAlgorithm('sha1') },
+            hash: { name: this.toWebCryptoAlgorithm("sha1") },
         };
-        const keyPair = (await this.subtle.generateKey(rsaParams, true, ['encrypt', 'decrypt'])) as CryptoKeyPair;
-        const publicKey = await this.subtle.exportKey('spki', keyPair.publicKey);
-        const privateKey = await this.subtle.exportKey('pkcs8', keyPair.privateKey);
+        const keyPair = (await this.subtle.generateKey(rsaParams, true, ["encrypt", "decrypt"])) as CryptoKeyPair;
+        const publicKey = await this.subtle.exportKey("spki", keyPair.publicKey);
+        const privateKey = await this.subtle.exportKey("pkcs8", keyPair.privateKey);
         return [publicKey, privateKey];
     }
 
@@ -305,7 +322,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
 
     private toBuf(value: string | ArrayBuffer): ArrayBuffer {
         let buf: ArrayBuffer;
-        if (typeof (value) === 'string') {
+        if (typeof value === "string") {
             buf = Utils.fromUtf8ToArray(value).buffer;
         } else {
             buf = value;
@@ -315,7 +332,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
 
     private toByteString(value: string | ArrayBuffer): string {
         let bytes: string;
-        if (typeof (value) === 'string') {
+        if (typeof value === "string") {
             bytes = forge.util.encodeUtf8(value);
         } else {
             bytes = Utils.fromBufferToByteString(value);
@@ -323,10 +340,10 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
         return bytes;
     }
 
-    private toWebCryptoAlgorithm(algorithm: 'sha1' | 'sha256' | 'sha512' | 'md5'): string {
-        if (algorithm === 'md5') {
-            throw new Error('MD5 is not supported in WebCrypto.');
+    private toWebCryptoAlgorithm(algorithm: "sha1" | "sha256" | "sha512" | "md5"): string {
+        if (algorithm === "md5") {
+            throw new Error("MD5 is not supported in WebCrypto.");
         }
-        return algorithm === 'sha1' ? 'SHA-1' : algorithm === 'sha256' ? 'SHA-256' : 'SHA-512';
+        return algorithm === "sha1" ? "SHA-1" : algorithm === "sha256" ? "SHA-256" : "SHA-512";
     }
 }

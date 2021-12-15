@@ -1,8 +1,7 @@
-import { CryptoService } from '../abstractions/crypto.service';
+import { CryptoService } from "../abstractions/crypto.service";
 
 export class ContainerService {
-    constructor(private cryptoService: CryptoService) {
-    }
+    constructor(private cryptoService: CryptoService) {}
 
     // deprecated, use attachToGlobal instead
     attachToWindow(win: any) {

@@ -1,28 +1,30 @@
-import { OrganizationService } from '../abstractions/organization.service';
-import { PolicyService as PolicyServiceAbstraction } from '../abstractions/policy.service';
-import { StateService } from '../abstractions/state.service';
+import { OrganizationService } from "../abstractions/organization.service";
+import { PolicyService as PolicyServiceAbstraction } from "../abstractions/policy.service";
+import { StateService } from "../abstractions/state.service";
 
-import { PolicyData } from '../models/data/policyData';
+import { PolicyData } from "../models/data/policyData";
 
-import { MasterPasswordPolicyOptions } from '../models/domain/masterPasswordPolicyOptions';
-import { Organization } from '../models/domain/organization';
-import { Policy } from '../models/domain/policy';
-import { ResetPasswordPolicyOptions } from '../models/domain/resetPasswordPolicyOptions';
+import { MasterPasswordPolicyOptions } from "../models/domain/masterPasswordPolicyOptions";
+import { Organization } from "../models/domain/organization";
+import { Policy } from "../models/domain/policy";
+import { ResetPasswordPolicyOptions } from "../models/domain/resetPasswordPolicyOptions";
 
-import { OrganizationUserStatusType } from '../enums/organizationUserStatusType';
-import { OrganizationUserType } from '../enums/organizationUserType';
-import { PolicyType } from '../enums/policyType';
+import { OrganizationUserStatusType } from "../enums/organizationUserStatusType";
+import { OrganizationUserType } from "../enums/organizationUserType";
+import { PolicyType } from "../enums/policyType";
 
-import { ApiService } from '../abstractions/api.service';
-import { ListResponse } from '../models/response/listResponse';
-import { PolicyResponse } from '../models/response/policyResponse';
+import { ApiService } from "../abstractions/api.service";
+import { ListResponse } from "../models/response/listResponse";
+import { PolicyResponse } from "../models/response/policyResponse";
 
 export class PolicyService implements PolicyServiceAbstraction {
     policyCache: Policy[];
 
-    constructor(private stateService: StateService, private organizationService: OrganizationService,
-        private apiService: ApiService) {
-    }
+    constructor(
+        private stateService: StateService,
+        private organizationService: OrganizationService,
+        private apiService: ApiService
+    ) {}
 
     async clearCache(): Promise<void> {
         await this.stateService.setDecryptedPolicies(null);
@@ -43,7 +45,7 @@ export class PolicyService implements PolicyServiceAbstraction {
             await this.stateService.setDecryptedPolicies(response, { userId: userId });
         }
         if (type != null) {
-            return response.filter(policy => policy.type === type);
+            return response.filter((policy) => policy.type === type);
         } else {
             return response;
         }
@@ -53,7 +55,7 @@ export class PolicyService implements PolicyServiceAbstraction {
         const org = await this.organizationService.get(organizationId);
         if (org?.isProviderUser) {
             const orgPolicies = await this.apiService.getPolicies(organizationId);
-            const policy = orgPolicies.data.find(p => p.organizationId === organizationId);
+            const policy = orgPolicies.data.find((p) => p.organizationId === organizationId);
 
             if (policy == null) {
                 return null;
@@ -63,10 +65,10 @@ export class PolicyService implements PolicyServiceAbstraction {
         }
 
         const policies = await this.getAll(policyType);
-        return policies.find(p => p.organizationId === organizationId);
+        return policies.find((p) => p.organizationId === organizationId);
     }
 
-    async replace(policies: { [id: string]: PolicyData; }): Promise<any> {
+    async replace(policies: { [id: string]: PolicyData }): Promise<any> {
         await this.stateService.setDecryptedPolicies(null);
         await this.stateService.setEncryptedPolicies(policies);
     }
@@ -82,14 +84,14 @@ export class PolicyService implements PolicyServiceAbstraction {
         if (policies == null) {
             policies = await this.getAll(PolicyType.MasterPassword);
         } else {
-            policies = policies.filter(p => p.type === PolicyType.MasterPassword);
+            policies = policies.filter((p) => p.type === PolicyType.MasterPassword);
         }
 
         if (policies == null || policies.length === 0) {
             return enforcedOptions;
         }
 
-        policies.forEach(currentPolicy => {
+        policies.forEach((currentPolicy) => {
             if (!currentPolicy.enabled || currentPolicy.data == null) {
                 return;
             }
@@ -98,13 +100,14 @@ export class PolicyService implements PolicyServiceAbstraction {
                 enforcedOptions = new MasterPasswordPolicyOptions();
             }
 
-            if (currentPolicy.data.minComplexity != null
-                && currentPolicy.data.minComplexity > enforcedOptions.minComplexity) {
+            if (
+                currentPolicy.data.minComplexity != null &&
+                currentPolicy.data.minComplexity > enforcedOptions.minComplexity
+            ) {
                 enforcedOptions.minComplexity = currentPolicy.data.minComplexity;
             }
 
-            if (currentPolicy.data.minLength != null
-                && currentPolicy.data.minLength > enforcedOptions.minLength) {
+            if (currentPolicy.data.minLength != null && currentPolicy.data.minLength > enforcedOptions.minLength) {
                 enforcedOptions.minLength = currentPolicy.data.minLength;
             }
 
@@ -128,8 +131,11 @@ export class PolicyService implements PolicyServiceAbstraction {
         return enforcedOptions;
     }
 
-    evaluateMasterPassword(passwordStrength: number, newPassword: string,
-        enforcedPolicyOptions: MasterPasswordPolicyOptions): boolean {
+    evaluateMasterPassword(
+        passwordStrength: number,
+        newPassword: string,
+        enforcedPolicyOptions: MasterPasswordPolicyOptions
+    ): boolean {
         if (enforcedPolicyOptions == null) {
             return true;
         }
@@ -150,11 +156,11 @@ export class PolicyService implements PolicyServiceAbstraction {
             return false;
         }
 
-        if (enforcedPolicyOptions.requireNumbers && !(/[0-9]/.test(newPassword))) {
+        if (enforcedPolicyOptions.requireNumbers && !/[0-9]/.test(newPassword)) {
             return false;
         }
 
-        if (enforcedPolicyOptions.requireSpecial && !(/[!@#$%\^&*]/g.test(newPassword))) {
+        if (enforcedPolicyOptions.requireSpecial && !/[!@#$%\^&*]/g.test(newPassword)) {
             return false;
         }
 
@@ -168,7 +174,9 @@ export class PolicyService implements PolicyServiceAbstraction {
             return [resetPasswordPolicyOptions, false];
         }
 
-        const policy = policies.find(p => p.organizationId === orgId && p.type === PolicyType.ResetPassword && p.enabled);
+        const policy = policies.find(
+            (p) => p.organizationId === orgId && p.type === PolicyType.ResetPassword && p.enabled
+        );
         resetPasswordPolicyOptions.autoEnrollEnabled = policy?.data?.autoEnrollEnabled ?? false;
 
         return [resetPasswordPolicyOptions, policy?.enabled ?? false];
@@ -179,8 +187,8 @@ export class PolicyService implements PolicyServiceAbstraction {
             return null;
         }
 
-        const policiesData = policiesResponse.data.map(p => new PolicyData(p));
-        return policiesData.map(p => new Policy(p));
+        const policiesData = policiesResponse.data.map((p) => new PolicyData(p));
+        return policiesData.map((p) => new Policy(p));
     }
 
     async policyAppliesToUser(policyType: PolicyType, policyFilter?: (policy: Policy) => boolean, userId?: string) {
@@ -189,20 +197,21 @@ export class PolicyService implements PolicyServiceAbstraction {
         let filteredPolicies;
 
         if (policyFilter != null) {
-            filteredPolicies = policies.filter(p => p.enabled && policyFilter(p));
-        }
-        else {
-            filteredPolicies = policies.filter(p => p.enabled);
+            filteredPolicies = policies.filter((p) => p.enabled && policyFilter(p));
+        } else {
+            filteredPolicies = policies.filter((p) => p.enabled);
         }
 
-        const policySet = new Set(filteredPolicies.map(p => p.organizationId));
+        const policySet = new Set(filteredPolicies.map((p) => p.organizationId));
 
-        return organizations.some(o =>
-            o.enabled &&
-            o.status >= OrganizationUserStatusType.Accepted &&
-            o.usePolicies &&
-            !this.isExcemptFromPolicies(o, policyType) &&
-            policySet.has(o.id));
+        return organizations.some(
+            (o) =>
+                o.enabled &&
+                o.status >= OrganizationUserStatusType.Accepted &&
+                o.usePolicies &&
+                !this.isExcemptFromPolicies(o, policyType) &&
+                policySet.has(o.id)
+        );
     }
 
     private isExcemptFromPolicies(organization: Organization, policyType: PolicyType) {

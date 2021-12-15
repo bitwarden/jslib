@@ -1,14 +1,14 @@
-import { LogService } from '../abstractions/log.service';
+import { LogService } from "../abstractions/log.service";
 
-import { Utils } from '../misc/utils';
+import { Utils } from "../misc/utils";
 
-import { EncArrayBuffer } from '../models/domain/encArrayBuffer';
+import { EncArrayBuffer } from "../models/domain/encArrayBuffer";
 
 const MAX_SINGLE_BLOB_UPLOAD_SIZE = 256 * 1024 * 1024; // 256 MiB
 const MAX_BLOCKS_PER_BLOB = 50000;
 
 export class AzureFileUploadService {
-    constructor(private logService: LogService) { }
+    constructor(private logService: LogService) {}
 
     async upload(url: string, data: EncArrayBuffer, renewalCallback: () => Promise<string>) {
         if (data.buffer.byteLength <= MAX_SINGLE_BLOB_UPLOAD_SIZE) {
@@ -20,16 +20,16 @@ export class AzureFileUploadService {
     private async azureUploadBlob(url: string, data: EncArrayBuffer) {
         const urlObject = Utils.getUrl(url);
         const headers = new Headers({
-            'x-ms-date': new Date().toUTCString(),
-            'x-ms-version': urlObject.searchParams.get('sv'),
-            'Content-Length': data.buffer.byteLength.toString(),
-            'x-ms-blob-type': 'BlockBlob',
+            "x-ms-date": new Date().toUTCString(),
+            "x-ms-version": urlObject.searchParams.get("sv"),
+            "Content-Length": data.buffer.byteLength.toString(),
+            "x-ms-blob-type": "BlockBlob",
         });
 
         const request = new Request(url, {
             body: data.buffer,
-            cache: 'no-store',
-            method: 'PUT',
+            cache: "no-store",
+            method: "PUT",
             headers: headers,
         });
 
@@ -41,7 +41,7 @@ export class AzureFileUploadService {
     }
     private async azureUploadBlocks(url: string, data: EncArrayBuffer, renewalCallback: () => Promise<string>) {
         const baseUrl = Utils.getUrl(url);
-        const blockSize = this.getMaxBlockSize(baseUrl.searchParams.get('sv'));
+        const blockSize = this.getMaxBlockSize(baseUrl.searchParams.get("sv"));
         let blockIndex = 0;
         const numBlocks = Math.ceil(data.buffer.byteLength / blockSize);
         const blocksStaged: string[] = [];
@@ -55,20 +55,20 @@ export class AzureFileUploadService {
                 url = await this.renewUrlIfNecessary(url, renewalCallback);
                 const blockUrl = Utils.getUrl(url);
                 const blockId = this.encodedBlockId(blockIndex);
-                blockUrl.searchParams.append('comp', 'block');
-                blockUrl.searchParams.append('blockid', blockId);
+                blockUrl.searchParams.append("comp", "block");
+                blockUrl.searchParams.append("blockid", blockId);
                 const start = blockIndex * blockSize;
                 const blockData = data.buffer.slice(start, start + blockSize);
                 const blockHeaders = new Headers({
-                    'x-ms-date': new Date().toUTCString(),
-                    'x-ms-version': blockUrl.searchParams.get('sv'),
-                    'Content-Length': blockData.byteLength.toString(),
+                    "x-ms-date": new Date().toUTCString(),
+                    "x-ms-version": blockUrl.searchParams.get("sv"),
+                    "Content-Length": blockData.byteLength.toString(),
                 });
 
                 const blockRequest = new Request(blockUrl.toString(), {
                     body: blockData,
-                    cache: 'no-store',
-                    method: 'PUT',
+                    cache: "no-store",
+                    method: "PUT",
                     headers: blockHeaders,
                 });
 
@@ -76,7 +76,7 @@ export class AzureFileUploadService {
 
                 if (blockResponse.status !== 201) {
                     const message = `Unsuccessful block PUT. Received status ${blockResponse.status}`;
-                    this.logService.error(message + '\n' + await blockResponse.json());
+                    this.logService.error(message + "\n" + (await blockResponse.json()));
                     throw new Error(message);
                 }
 
@@ -87,17 +87,17 @@ export class AzureFileUploadService {
             url = await this.renewUrlIfNecessary(url, renewalCallback);
             const blockListUrl = Utils.getUrl(url);
             const blockListXml = this.blockListXml(blocksStaged);
-            blockListUrl.searchParams.append('comp', 'blocklist');
+            blockListUrl.searchParams.append("comp", "blocklist");
             const headers = new Headers({
-                'x-ms-date': new Date().toUTCString(),
-                'x-ms-version': blockListUrl.searchParams.get('sv'),
-                'Content-Length': blockListXml.length.toString(),
+                "x-ms-date": new Date().toUTCString(),
+                "x-ms-version": blockListUrl.searchParams.get("sv"),
+                "Content-Length": blockListXml.length.toString(),
             });
 
             const request = new Request(blockListUrl.toString(), {
                 body: blockListXml,
-                cache: 'no-store',
-                method: 'PUT',
+                cache: "no-store",
+                method: "PUT",
                 headers: headers,
             });
 
@@ -105,7 +105,7 @@ export class AzureFileUploadService {
 
             if (response.status !== 201) {
                 const message = `Unsuccessful block list PUT. Received status ${response.status}`;
-                this.logService.error(message + '\n' + await response.json());
+                this.logService.error(message + "\n" + (await response.json()));
                 throw new Error(message);
             }
         } catch (e) {
@@ -115,7 +115,7 @@ export class AzureFileUploadService {
 
     private async renewUrlIfNecessary(url: string, renewalCallback: () => Promise<string>): Promise<string> {
         const urlObject = Utils.getUrl(url);
-        const expiry = new Date(urlObject.searchParams.get('se') ?? '');
+        const expiry = new Date(urlObject.searchParams.get("se") ?? "");
 
         if (isNaN(expiry.getTime())) {
             expiry.setTime(Date.now() + 3600000);
@@ -129,23 +129,23 @@ export class AzureFileUploadService {
 
     private encodedBlockId(blockIndex: number) {
         // Encoded blockId max size is 64, so pre-encoding max size is 48
-        const utfBlockId = ('000000000000000000000000000000000000000000000000' + blockIndex.toString()).slice(-48);
+        const utfBlockId = ("000000000000000000000000000000000000000000000000" + blockIndex.toString()).slice(-48);
         return Utils.fromUtf8ToB64(utfBlockId);
     }
 
     private blockListXml(blockIdList: string[]) {
         let xml = '<?xml version="1.0" encoding="utf-8"?><BlockList>';
-        blockIdList.forEach(blockId => {
+        blockIdList.forEach((blockId) => {
             xml += `<Latest>${blockId}</Latest>`;
         });
-        xml += '</BlockList>';
+        xml += "</BlockList>";
         return xml;
     }
 
     private getMaxBlockSize(version: string) {
-        if (Version.compare(version, '2019-12-12') >= 0) {
+        if (Version.compare(version, "2019-12-12") >= 0) {
             return 4000 * 1024 * 1024; // 4000 MiB
-        } else if (Version.compare(version, '2016-05-31') >= 0) {
+        } else if (Version.compare(version, "2016-05-31") >= 0) {
             return 100 * 1024 * 1024; // 100 MiB
         } else {
             return 4 * 1024 * 1024; // 4 MiB
@@ -162,18 +162,21 @@ class Version {
      * and greater than zero if a is newer than b
      */
     static compare(a: Required<Version> | string, b: Required<Version> | string) {
-        if (typeof (a) === 'string') {
+        if (typeof a === "string") {
             a = new Version(a);
         }
 
-        if (typeof (b) === 'string') {
+        if (typeof b === "string") {
             b = new Version(b);
         }
 
-        return a.year !== b.year ? a.year - b.year :
-            a.month !== b.month ? a.month - b.month :
-                a.day !== b.day ? a.day - b.day :
-                    0;
+        return a.year !== b.year
+            ? a.year - b.year
+            : a.month !== b.month
+            ? a.month - b.month
+            : a.day !== b.day
+            ? a.day - b.day
+            : 0;
     }
     year = 0;
     month = 0;
@@ -181,7 +184,7 @@ class Version {
 
     constructor(version: string) {
         try {
-            const parts = version.split('-').map(v => Number.parseInt(v, 10));
+            const parts = version.split("-").map((v) => Number.parseInt(v, 10));
             this.year = parts[0];
             this.month = parts[1];
             this.day = parts[2];

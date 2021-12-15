@@ -1,4 +1,4 @@
-import { BroadcasterService as BroadcasterServiceAbstraction } from '../abstractions/broadcaster.service';
+import { BroadcasterService as BroadcasterServiceAbstraction } from "../abstractions/broadcaster.service";
 
 export class BroadcasterService implements BroadcasterServiceAbstraction {
     subscribers: Map<string, (message: any) => any> = new Map<string, (message: any) => any>();
@@ -11,7 +11,7 @@ export class BroadcasterService implements BroadcasterServiceAbstraction {
             return;
         }
 
-        this.subscribers.forEach(value => {
+        this.subscribers.forEach((value) => {
             value(message);
         });
     }

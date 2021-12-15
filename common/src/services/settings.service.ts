@@ -1,14 +1,13 @@
-import { SettingsService as SettingsServiceAbstraction } from '../abstractions/settings.service';
-import { StateService } from '../abstractions/state.service';
+import { SettingsService as SettingsServiceAbstraction } from "../abstractions/settings.service";
+import { StateService } from "../abstractions/state.service";
 
 const Keys = {
-    settingsPrefix: 'settings_',
-    equivalentDomains: 'equivalentDomains',
+    settingsPrefix: "settings_",
+    equivalentDomains: "equivalentDomains",
 };
 
 export class SettingsService implements SettingsServiceAbstraction {
-    constructor(private stateService: StateService) {
-    }
+    constructor(private stateService: StateService) {}
 
     async clearCache(): Promise<void> {
         await this.stateService.setSettings(null);

@@ -1,20 +1,18 @@
-import * as zxcvbn from 'zxcvbn';
+import * as zxcvbn from "zxcvbn";
 
-import { EncString } from '../models/domain/encString';
-import { GeneratedPasswordHistory } from '../models/domain/generatedPasswordHistory';
-import { PasswordGeneratorPolicyOptions } from '../models/domain/passwordGeneratorPolicyOptions';
-import { Policy } from '../models/domain/policy';
+import { EncString } from "../models/domain/encString";
+import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
+import { PasswordGeneratorPolicyOptions } from "../models/domain/passwordGeneratorPolicyOptions";
+import { Policy } from "../models/domain/policy";
 
-import { CryptoService } from '../abstractions/crypto.service';
-import {
-    PasswordGenerationService as PasswordGenerationServiceAbstraction,
-} from '../abstractions/passwordGeneration.service';
-import { PolicyService } from '../abstractions/policy.service';
-import { StateService } from '../abstractions/state.service';
+import { CryptoService } from "../abstractions/crypto.service";
+import { PasswordGenerationService as PasswordGenerationServiceAbstraction } from "../abstractions/passwordGeneration.service";
+import { PolicyService } from "../abstractions/policy.service";
+import { StateService } from "../abstractions/state.service";
 
-import { EEFLongWordList } from '../misc/wordlist';
+import { EEFLongWordList } from "../misc/wordlist";
 
-import { PolicyType } from '../enums/policyType';
+import { PolicyType } from "../enums/policyType";
 
 const DefaultOptions = {
     length: 14,
@@ -27,9 +25,9 @@ const DefaultOptions = {
     minLowercase: 0,
     special: false,
     minSpecial: 1,
-    type: 'password',
+    type: "password",
     numWords: 3,
-    wordSeparator: '-',
+    wordSeparator: "-",
     capitalize: false,
     includeNumber: false,
 };
@@ -37,14 +35,17 @@ const DefaultOptions = {
 const MaxPasswordsInHistory = 100;
 
 export class PasswordGenerationService implements PasswordGenerationServiceAbstraction {
-    constructor(private cryptoService: CryptoService, private policyService: PolicyService,
-        private stateService: StateService) { }
+    constructor(
+        private cryptoService: CryptoService,
+        private policyService: PolicyService,
+        private stateService: StateService
+    ) {}
 
     async generatePassword(options: any): Promise<string> {
         // overload defaults with given options
         const o = Object.assign({}, DefaultOptions, options);
 
-        if (o.type === 'passphrase') {
+        if (o.type === "passphrase") {
             return this.generatePassphrase(options);
         }
 
@@ -59,80 +60,80 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         const positions: string[] = [];
         if (o.lowercase && o.minLowercase > 0) {
             for (let i = 0; i < o.minLowercase; i++) {
-                positions.push('l');
+                positions.push("l");
             }
         }
         if (o.uppercase && o.minUppercase > 0) {
             for (let i = 0; i < o.minUppercase; i++) {
-                positions.push('u');
+                positions.push("u");
             }
         }
         if (o.number && o.minNumber > 0) {
             for (let i = 0; i < o.minNumber; i++) {
-                positions.push('n');
+                positions.push("n");
             }
         }
         if (o.special && o.minSpecial > 0) {
             for (let i = 0; i < o.minSpecial; i++) {
-                positions.push('s');
+                positions.push("s");
             }
         }
         while (positions.length < o.length) {
-            positions.push('a');
+            positions.push("a");
         }
 
         // shuffle
         await this.shuffleArray(positions);
 
         // build out the char sets
-        let allCharSet = '';
+        let allCharSet = "";
 
-        let lowercaseCharSet = 'abcdefghijkmnopqrstuvwxyz';
+        let lowercaseCharSet = "abcdefghijkmnopqrstuvwxyz";
         if (o.ambiguous) {
-            lowercaseCharSet += 'l';
+            lowercaseCharSet += "l";
         }
         if (o.lowercase) {
             allCharSet += lowercaseCharSet;
         }
 
-        let uppercaseCharSet = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+        let uppercaseCharSet = "ABCDEFGHJKLMNPQRSTUVWXYZ";
         if (o.ambiguous) {
-            uppercaseCharSet += 'IO';
+            uppercaseCharSet += "IO";
         }
         if (o.uppercase) {
             allCharSet += uppercaseCharSet;
         }
 
-        let numberCharSet = '23456789';
+        let numberCharSet = "23456789";
         if (o.ambiguous) {
-            numberCharSet += '01';
+            numberCharSet += "01";
         }
         if (o.number) {
             allCharSet += numberCharSet;
         }
 
-        const specialCharSet = '!@#$%^&*';
+        const specialCharSet = "!@#$%^&*";
         if (o.special) {
             allCharSet += specialCharSet;
         }
 
-        let password = '';
+        let password = "";
         for (let i = 0; i < o.length; i++) {
             let positionChars: string;
             switch (positions[i]) {
-                case 'l':
+                case "l":
                     positionChars = lowercaseCharSet;
                     break;
-                case 'u':
+                case "u":
                     positionChars = uppercaseCharSet;
                     break;
-                case 'n':
+                case "n":
                     positionChars = numberCharSet;
                     break;
-                case 's':
+                case "s":
                     positionChars = specialCharSet;
                     break;
-                case 'a':
+                case "a":
                     positionChars = allCharSet;
                     break;
                 default:
@@ -153,7 +154,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             o.numWords = DefaultOptions.numWords;
         }
         if (o.wordSeparator == null || o.wordSeparator.length === 0 || o.wordSeparator.length > 1) {
-            o.wordSeparator = ' ';
+            o.wordSeparator = " ";
         }
         if (o.capitalize == null) {
             o.capitalize = false;
@@ -241,26 +242,29 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             }
 
             // Force default type if password/passphrase selected via policy
-            if (enforcedPolicyOptions.defaultType === 'password' ||
-                enforcedPolicyOptions.defaultType === 'passphrase') {
+            if (
+                enforcedPolicyOptions.defaultType === "password" ||
+                enforcedPolicyOptions.defaultType === "passphrase"
+            ) {
                 options.type = enforcedPolicyOptions.defaultType;
             }
-        } else { // UI layer expects an instantiated object to prevent more explicit null checks
+        } else {
+            // UI layer expects an instantiated object to prevent more explicit null checks
             enforcedPolicyOptions = new PasswordGeneratorPolicyOptions();
         }
         return [options, enforcedPolicyOptions];
     }
 
     async getPasswordGeneratorPolicyOptions(): Promise<PasswordGeneratorPolicyOptions> {
-        const policies: Policy[] = this.policyService == null ? null :
-            await this.policyService.getAll(PolicyType.PasswordGenerator);
+        const policies: Policy[] =
+            this.policyService == null ? null : await this.policyService.getAll(PolicyType.PasswordGenerator);
         let enforcedOptions: PasswordGeneratorPolicyOptions = null;
 
         if (policies == null || policies.length === 0) {
             return enforcedOptions;
         }
 
-        policies.forEach(currentPolicy => {
+        policies.forEach((currentPolicy) => {
             if (!currentPolicy.enabled || currentPolicy.data == null) {
                 return;
             }
@@ -270,12 +274,11 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             }
 
             // Password wins in multi-org collisions
-            if (currentPolicy.data.defaultType != null && enforcedOptions.defaultType !== 'password') {
+            if (currentPolicy.data.defaultType != null && enforcedOptions.defaultType !== "password") {
                 enforcedOptions.defaultType = currentPolicy.data.defaultType;
             }
 
-            if (currentPolicy.data.minLength != null
-                && currentPolicy.data.minLength > enforcedOptions.minLength) {
+            if (currentPolicy.data.minLength != null && currentPolicy.data.minLength > enforcedOptions.minLength) {
                 enforcedOptions.minLength = currentPolicy.data.minLength;
             }
 
@@ -291,8 +294,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
                 enforcedOptions.useNumbers = true;
             }
 
-            if (currentPolicy.data.minNumbers != null
-                && currentPolicy.data.minNumbers > enforcedOptions.numberCount) {
+            if (currentPolicy.data.minNumbers != null && currentPolicy.data.minNumbers > enforcedOptions.numberCount) {
                 enforcedOptions.numberCount = currentPolicy.data.minNumbers;
             }
 
@@ -300,13 +302,14 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
                 enforcedOptions.useSpecial = true;
             }
 
-            if (currentPolicy.data.minSpecial != null
-                && currentPolicy.data.minSpecial > enforcedOptions.specialCount) {
+            if (currentPolicy.data.minSpecial != null && currentPolicy.data.minSpecial > enforcedOptions.specialCount) {
                 enforcedOptions.specialCount = currentPolicy.data.minSpecial;
             }
 
-            if (currentPolicy.data.minNumberWords != null
-                && currentPolicy.data.minNumberWords > enforcedOptions.minNumberWords) {
+            if (
+                currentPolicy.data.minNumberWords != null &&
+                currentPolicy.data.minNumberWords > enforcedOptions.minNumberWords
+            ) {
                 enforcedOptions.minNumberWords = currentPolicy.data.minNumberWords;
             }
 
@@ -332,16 +335,14 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             return new Array<GeneratedPasswordHistory>();
         }
 
-        if (await this.stateService.getDecryptedPasswordGenerationHistory() != null) {
+        if ((await this.stateService.getDecryptedPasswordGenerationHistory()) != null) {
             const encrypted = await this.stateService.getEncryptedPasswordGenerationHistory();
             const decrypted = await this.decryptHistory(encrypted);
             await this.stateService.setDecryptedPasswordGenerationHistory(decrypted);
         }
 
         const passwordGenerationHistory = await this.stateService.getDecryptedPasswordGenerationHistory();
-        return passwordGenerationHistory != null ?
-            passwordGenerationHistory :
-            new Array<GeneratedPasswordHistory>();
+        return passwordGenerationHistory != null ? passwordGenerationHistory : new Array<GeneratedPasswordHistory>();
     }
 
     async addHistory(password: string): Promise<any> {
@@ -378,7 +379,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
         if (password == null || password.length === 0) {
             return null;
         }
-        let globalUserInputs = ['bitwarden', 'bit', 'warden'];
+        let globalUserInputs = ["bitwarden", "bit", "warden"];
         if (userInputs != null && userInputs.length > 0) {
             globalUserInputs = globalUserInputs.concat(userInputs);
         }
@@ -465,7 +466,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             return Promise.resolve([]);
         }
 
-        const promises = history.map(async item => {
+        const promises = history.map(async (item) => {
             const encrypted = await this.cryptoService.encrypt(item.password);
             return new GeneratedPasswordHistory(encrypted.encryptedString, item.date);
         });
@@ -478,7 +479,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
             return Promise.resolve([]);
         }
 
-        const promises = history.map(async item => {
+        const promises = history.map(async (item) => {
             const decrypted = await this.cryptoService.decryptToUtf8(new EncString(item.password));
             return new GeneratedPasswordHistory(decrypted, item.date);
         });

@@ -1,33 +1,37 @@
-import { FolderData } from '../models/data/folderData';
+import { FolderData } from "../models/data/folderData";
 
-import { Folder } from '../models/domain/folder';
-import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
-import { TreeNode } from '../models/domain/treeNode';
+import { Folder } from "../models/domain/folder";
+import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
+import { TreeNode } from "../models/domain/treeNode";
 
-import { FolderRequest } from '../models/request/folderRequest';
+import { FolderRequest } from "../models/request/folderRequest";
 
-import { FolderResponse } from '../models/response/folderResponse';
+import { FolderResponse } from "../models/response/folderResponse";
 
-import { FolderView } from '../models/view/folderView';
+import { FolderView } from "../models/view/folderView";
 
-import { ApiService } from '../abstractions/api.service';
-import { CipherService } from '../abstractions/cipher.service';
-import { CryptoService } from '../abstractions/crypto.service';
-import { FolderService as FolderServiceAbstraction } from '../abstractions/folder.service';
-import { I18nService } from '../abstractions/i18n.service';
-import { StateService } from '../abstractions/state.service';
+import { ApiService } from "../abstractions/api.service";
+import { CipherService } from "../abstractions/cipher.service";
+import { CryptoService } from "../abstractions/crypto.service";
+import { FolderService as FolderServiceAbstraction } from "../abstractions/folder.service";
+import { I18nService } from "../abstractions/i18n.service";
+import { StateService } from "../abstractions/state.service";
 
-import { CipherData } from '../models/data/cipherData';
+import { CipherData } from "../models/data/cipherData";
 
-import { ServiceUtils } from '../misc/serviceUtils';
-import { Utils } from '../misc/utils';
+import { ServiceUtils } from "../misc/serviceUtils";
+import { Utils } from "../misc/utils";
 
-const NestingDelimiter = '/';
+const NestingDelimiter = "/";
 
 export class FolderService implements FolderServiceAbstraction {
-    constructor(private cryptoService: CryptoService, private apiService: ApiService,
-        private i18nService: I18nService, private cipherService: CipherService,
-        private stateService: StateService) { }
+    constructor(
+        private cryptoService: CryptoService,
+        private apiService: ApiService,
+        private i18nService: I18nService,
+        private cipherService: CipherService,
+        private stateService: StateService
+    ) {}
 
     async clearCache(userId?: string): Promise<void> {
         await this.stateService.setDecryptedFolders(null, { userId: userId });
@@ -68,21 +72,21 @@ export class FolderService implements FolderServiceAbstraction {
 
         const hasKey = await this.cryptoService.hasKey();
         if (!hasKey) {
-            throw new Error('No key.');
+            throw new Error("No key.");
         }
 
         const decFolders: FolderView[] = [];
         const promises: Promise<any>[] = [];
         const folders = await this.getAll();
-        folders.forEach(folder => {
-            promises.push(folder.decrypt().then(f => decFolders.push(f)));
+        folders.forEach((folder) => {
+            promises.push(folder.decrypt().then((f) => decFolders.push(f)));
         });
 
         await Promise.all(promises);
-        decFolders.sort(Utils.getSortFunction(this.i18nService, 'name'));
+        decFolders.sort(Utils.getSortFunction(this.i18nService, "name"));
 
         const noneFolder = new FolderView();
-        noneFolder.name = this.i18nService.t('noneFolder');
+        noneFolder.name = this.i18nService.t("noneFolder");
         decFolders.push(noneFolder);
 
         await this.stateService.setDecryptedFolders(decFolders);
@@ -92,11 +96,11 @@ export class FolderService implements FolderServiceAbstraction {
     async getAllNested(): Promise<TreeNode<FolderView>[]> {
         const folders = await this.getAllDecrypted();
         const nodes: TreeNode<FolderView>[] = [];
-        folders.forEach(f => {
+        folders.forEach((f) => {
             const folderCopy = new FolderView();
             folderCopy.id = f.id;
             folderCopy.revisionDate = f.revisionDate;
-            const parts = f.name != null ? f.name.replace(/^\/+|\/+$/g, '').split(NestingDelimiter) : [];
+            const parts = f.name != null ? f.name.replace(/^\/+|\/+$/g, "").split(NestingDelimiter) : [];
             ServiceUtils.nestedTraverse(nodes, 0, parts, folderCopy, null, NestingDelimiter);
         });
         return nodes;
@@ -133,7 +137,7 @@ export class FolderService implements FolderServiceAbstraction {
             const f = folder as FolderData;
             folders[f.id] = f;
         } else {
-            (folder as FolderData[]).forEach(f => {
+            (folder as FolderData[]).forEach((f) => {
                 folders[f.id] = f;
             });
         }
@@ -142,7 +146,7 @@ export class FolderService implements FolderServiceAbstraction {
         await this.stateService.setEncryptedFolders(folders);
     }
 
-    async replace(folders: { [id: string]: FolderData; }): Promise<any> {
+    async replace(folders: { [id: string]: FolderData }): Promise<any> {
         await this.stateService.setDecryptedFolders(null);
         await this.stateService.setEncryptedFolders(folders);
     }
@@ -158,13 +162,13 @@ export class FolderService implements FolderServiceAbstraction {
             return;
         }
 
-        if (typeof id === 'string') {
+        if (typeof id === "string") {
             if (folders[id] == null) {
                 return;
             }
             delete folders[id];
         } else {
-            (id as string[]).forEach(i => {
+            (id as string[]).forEach((i) => {
                 delete folders[i];
             });
         }

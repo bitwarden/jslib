@@ -1,79 +1,82 @@
-import { I18nService as I18nServiceAbstraction } from '../abstractions/i18n.service';
+import { I18nService as I18nServiceAbstraction } from "../abstractions/i18n.service";
 
 export class I18nService implements I18nServiceAbstraction {
     locale: string;
     // First locale is the default (English)
-    supportedTranslationLocales: string[] = ['en'];
+    supportedTranslationLocales: string[] = ["en"];
     translationLocale: string;
     collator: Intl.Collator;
     localeNames = new Map<string, string>([
-        ['af', 'Afrikaans'],
-        ['az', 'Azərbaycanca'],
-        ['be', 'Беларуская'],
-        ['bg', 'български'],
-        ['ca', 'català'],
-        ['cs', 'čeština'],
-        ['da', 'dansk'],
-        ['de', 'Deutsch'],
-        ['el', 'Ελληνικά'],
-        ['en', 'English'],
-        ['en-GB', 'English (British)'],
-        ['eo', 'Esperanto'],
-        ['es', 'español'],
-        ['et', 'eesti'],
-        ['fa', 'فارسی'],
-        ['fi', 'suomi'],
-        ['fr', 'français'],
-        ['he', 'עברית'],
-        ['hi', 'हिन्दी'],
-        ['hr', 'hrvatski'],
-        ['hu', 'magyar'],
-        ['id', 'Bahasa Indonesia'],
-        ['it', 'italiano'],
-        ['ja', '日本語'],
-        ['ko', '한국어'],
-        ['lv', 'Latvietis'],
-        ['ml', 'മലയാളം'],
-        ['nb', 'norsk (bokmål)'],
-        ['nl', 'Nederlands'],
-        ['pl', 'polski'],
-        ['pt-BR', 'português do Brasil'],
-        ['pt-PT', 'português'],
-        ['ro', 'română'],
-        ['ru', 'русский'],
-        ['sk', 'slovenčina'],
-        ['sr', 'Српски'],
-        ['sv', 'svenska'],
-        ['th', 'ไทย'],
-        ['tr', 'Türkçe'],
-        ['uk', 'українська'],
-        ['vi', 'Tiếng Việt'],
-        ['zh-CN', '中文（中国大陆）'],
-        ['zh-TW', '中文（台灣）'],
+        ["af", "Afrikaans"],
+        ["az", "Azərbaycanca"],
+        ["be", "Беларуская"],
+        ["bg", "български"],
+        ["ca", "català"],
+        ["cs", "čeština"],
+        ["da", "dansk"],
+        ["de", "Deutsch"],
+        ["el", "Ελληνικά"],
+        ["en", "English"],
+        ["en-GB", "English (British)"],
+        ["eo", "Esperanto"],
+        ["es", "español"],
+        ["et", "eesti"],
+        ["fa", "فارسی"],
+        ["fi", "suomi"],
+        ["fr", "français"],
+        ["he", "עברית"],
+        ["hi", "हिन्दी"],
+        ["hr", "hrvatski"],
+        ["hu", "magyar"],
+        ["id", "Bahasa Indonesia"],
+        ["it", "italiano"],
+        ["ja", "日本語"],
+        ["ko", "한국어"],
+        ["lv", "Latvietis"],
+        ["ml", "മലയാളം"],
+        ["nb", "norsk (bokmål)"],
+        ["nl", "Nederlands"],
+        ["pl", "polski"],
+        ["pt-BR", "português do Brasil"],
+        ["pt-PT", "português"],
+        ["ro", "română"],
+        ["ru", "русский"],
+        ["sk", "slovenčina"],
+        ["sr", "Српски"],
+        ["sv", "svenska"],
+        ["th", "ไทย"],
+        ["tr", "Türkçe"],
+        ["uk", "українська"],
+        ["vi", "Tiếng Việt"],
+        ["zh-CN", "中文（中国大陆）"],
+        ["zh-TW", "中文（台灣）"],
     ]);
 
     protected inited: boolean;
     protected defaultMessages: any = {};
     protected localeMessages: any = {};
 
-    constructor(protected systemLanguage: string, protected localesDirectory: string,
-        protected getLocalesJson: (formattedLocale: string) => Promise<any>) {
-        this.systemLanguage = systemLanguage.replace('_', '-');
+    constructor(
+        protected systemLanguage: string,
+        protected localesDirectory: string,
+        protected getLocalesJson: (formattedLocale: string) => Promise<any>
+    ) {
+        this.systemLanguage = systemLanguage.replace("_", "-");
     }
 
     async init(locale?: string) {
         if (this.inited) {
-            throw new Error('i18n already initialized.');
+            throw new Error("i18n already initialized.");
         }
         if (this.supportedTranslationLocales == null || this.supportedTranslationLocales.length === 0) {
-            throw new Error('supportedTranslationLocales not set.');
+            throw new Error("supportedTranslationLocales not set.");
         }
 
         this.inited = true;
         this.locale = this.translationLocale = locale != null ? locale : this.systemLanguage;
 
         try {
-            this.collator = new Intl.Collator(this.locale, { numeric: true, sensitivity: 'base' });
+            this.collator = new Intl.Collator(this.locale, { numeric: true, sensitivity: "base" });
         } catch {
             this.collator = null;
         }
@@ -105,18 +108,18 @@ export class I18nService implements I18nServiceAbstraction {
         } else if (this.defaultMessages.hasOwnProperty(id) && this.defaultMessages[id]) {
             result = this.defaultMessages[id];
         } else {
-            result = '';
+            result = "";
         }
 
-        if (result !== '') {
+        if (result !== "") {
             if (p1 != null) {
-                result = result.split('__$1__').join(p1);
+                result = result.split("__$1__").join(p1);
             }
             if (p2 != null) {
-                result = result.split('__$2__').join(p2);
+                result = result.split("__$2__").join(p2);
             }
             if (p3 != null) {
-                result = result.split('__$3__').join(p3);
+                result = result.split("__$3__").join(p3);
             }
         }
 
@@ -124,7 +127,7 @@ export class I18nService implements I18nServiceAbstraction {
     }
 
     private async loadMessages(locale: string, messagesObj: any): Promise<any> {
-        const formattedLocale = locale.replace('-', '_');
+        const formattedLocale = locale.replace("-", "_");
         const locales = await this.getLocalesJson(formattedLocale);
         for (const prop in locales) {
             if (!locales.hasOwnProperty(prop)) {
@@ -134,20 +137,21 @@ export class I18nService implements I18nServiceAbstraction {
 
             if (locales[prop].placeholders) {
                 for (const placeProp in locales[prop].placeholders) {
-                    if (!locales[prop].placeholders.hasOwnProperty(placeProp) ||
-                        !locales[prop].placeholders[placeProp].content) {
+                    if (
+                        !locales[prop].placeholders.hasOwnProperty(placeProp) ||
+                        !locales[prop].placeholders[placeProp].content
+                    ) {
                         continue;
                     }
 
-                    const replaceToken = '\\$' + placeProp.toUpperCase() + '\\$';
+                    const replaceToken = "\\$" + placeProp.toUpperCase() + "\\$";
                     let replaceContent = locales[prop].placeholders[placeProp].content;
-                    if (replaceContent === '$1' || replaceContent === '$2' || replaceContent === '$3') {
-                        replaceContent = '__$' + replaceContent + '__';
+                    if (replaceContent === "$1" || replaceContent === "$2" || replaceContent === "$3") {
+                        replaceContent = "__$" + replaceContent + "__";
                     }
-                    messagesObj[prop] = messagesObj[prop].replace(new RegExp(replaceToken, 'g'), replaceContent);
+                    messagesObj[prop] = messagesObj[prop].replace(new RegExp(replaceToken, "g"), replaceContent);
                 }
             }
         }
     }
-
 }

@@ -1,13 +1,12 @@
-import { OrganizationService as OrganizationServiceAbstraction } from '../abstractions/organization.service';
-import { StateService } from '../abstractions/state.service';
+import { OrganizationService as OrganizationServiceAbstraction } from "../abstractions/organization.service";
+import { StateService } from "../abstractions/state.service";
 
-import { OrganizationData } from '../models/data/organizationData';
+import { OrganizationData } from "../models/data/organizationData";
 
-import { Organization } from '../models/domain/organization';
+import { Organization } from "../models/domain/organization";
 
 export class OrganizationService implements OrganizationServiceAbstraction {
-    constructor(private stateService: StateService) {
-    }
+    constructor(private stateService: StateService) {}
 
     async get(id: string): Promise<Organization> {
         const organizations = await this.stateService.getOrganizations();
@@ -24,7 +23,7 @@ export class OrganizationService implements OrganizationServiceAbstraction {
             return null;
         }
 
-        return organizations.find(o => o.identifier === identifier);
+        return organizations.find((o) => o.identifier === identifier);
     }
 
     async getAll(userId?: string): Promise<Organization[]> {
@@ -38,12 +37,12 @@ export class OrganizationService implements OrganizationServiceAbstraction {
         return response;
     }
 
-    async save(organizations: {[id: string]: OrganizationData}) {
+    async save(organizations: { [id: string]: OrganizationData }) {
         return await this.stateService.setOrganizations(organizations);
     }
 
     async canManageSponsorships(): Promise<boolean> {
         const orgs = await this.getAll();
-        return orgs.some(o => o.familySponsorshipAvailable || o.familySponsorshipFriendlyName !== null);
+        return orgs.some((o) => o.familySponsorshipAvailable || o.familySponsorshipFriendlyName !== null);
     }
 }
