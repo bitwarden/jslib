@@ -1,27 +1,27 @@
-import { FirefoxCsvImporter as Importer } from 'jslib-common/importers/firefoxCsvImporter';
+import { FirefoxCsvImporter as Importer } from "jslib-common/importers/firefoxCsvImporter";
 
-import { CipherView } from 'jslib-common/models/view/cipherView';
-import { LoginUriView } from 'jslib-common/models/view/loginUriView';
-import { LoginView } from 'jslib-common/models/view/loginView';
+import { CipherView } from "jslib-common/models/view/cipherView";
+import { LoginUriView } from "jslib-common/models/view/loginUriView";
+import { LoginView } from "jslib-common/models/view/loginView";
 
-import { data as firefoxAccountsData } from './testData/firefoxCsv/firefoxAccountsData.csv';
-import { data as simplePasswordData } from './testData/firefoxCsv/simplePasswordData.csv';
+import { data as firefoxAccountsData } from "./testData/firefoxCsv/firefoxAccountsData.csv";
+import { data as simplePasswordData } from "./testData/firefoxCsv/simplePasswordData.csv";
 
 const CipherData = [
     {
-        title: 'should parse password',
+        title: "should parse password",
         csv: simplePasswordData,
         expected: Object.assign(new CipherView(), {
             id: null,
             organizationId: null,
             folderId: null,
-            name: 'example.com',
+            name: "example.com",
             login: Object.assign(new LoginView(), {
-                username: 'foo',
-                password: 'bar',
+                username: "foo",
+                password: "bar",
                 uris: [
                     Object.assign(new LoginUriView(), {
-                        uri: 'https://example.com',
+                        uri: "https://example.com",
                     }),
                 ],
             }),
@@ -36,13 +36,13 @@ const CipherData = [
             id: null,
             organizationId: null,
             folderId: null,
-            name: 'example.com',
+            name: "example.com",
             login: Object.assign(new LoginView(), {
-                username: 'foo',
-                password: 'bar',
+                username: "foo",
+                password: "bar",
                 uris: [
                     Object.assign(new LoginUriView(), {
-                        uri: 'https://example.com',
+                        uri: "https://example.com",
                     }),
                 ],
             }),
@@ -52,8 +52,8 @@ const CipherData = [
     },
 ];
 
-describe('Firefox CSV Importer', () => {
-    CipherData.forEach(data => {
+describe("Firefox CSV Importer", () => {
+    CipherData.forEach((data) => {
         it(data.title, async () => {
             const importer = new Importer();
             const result = await importer.parse(data.csv);

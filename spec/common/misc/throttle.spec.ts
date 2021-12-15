@@ -1,8 +1,8 @@
-import { sequentialize } from 'jslib-common/misc/sequentialize';
-import { throttle } from 'jslib-common/misc/throttle';
+import { sequentialize } from "jslib-common/misc/sequentialize";
+import { throttle } from "jslib-common/misc/throttle";
 
-describe('throttle decorator', () => {
-    it('should call the function once at a time', async () => {
+describe("throttle decorator", () => {
+    it("should call the function once at a time", async () => {
         const foo = new Foo();
         const promises = [];
         for (let i = 0; i < 10; i++) {
@@ -13,7 +13,7 @@ describe('throttle decorator', () => {
         expect(foo.calls).toBe(10);
     });
 
-    it('should call the function once at a time for each object', async () => {
+    it("should call the function once at a time for each object", async () => {
         const foo = new Foo();
         const foo2 = new Foo();
         const promises = [];
@@ -27,7 +27,7 @@ describe('throttle decorator', () => {
         expect(foo2.calls).toBe(10);
     });
 
-    it('should call the function limit at a time', async () => {
+    it("should call the function limit at a time", async () => {
         const foo = new Foo();
         const promises = [];
         for (let i = 0; i < 10; i++) {
@@ -38,7 +38,7 @@ describe('throttle decorator', () => {
         expect(foo.calls).toBe(10);
     });
 
-    it('should call the function limit at a time for each object', async () => {
+    it("should call the function limit at a time for each object", async () => {
         const foo = new Foo();
         const foo2 = new Foo();
         const promises = [];
@@ -52,7 +52,7 @@ describe('throttle decorator', () => {
         expect(foo2.calls).toBe(10);
     });
 
-    it('should work together with sequentialize', async () => {
+    it("should work together with sequentialize", async () => {
         const foo = new Foo();
         const promises = [];
         for (let i = 0; i < 10; i++) {
@@ -68,11 +68,11 @@ class Foo {
     calls = 0;
     inflight = 0;
 
-    @throttle(1, () => 'bar')
+    @throttle(1, () => "bar")
     bar(a: number) {
         this.calls++;
         this.inflight++;
-        return new Promise(res => {
+        return new Promise((res) => {
             setTimeout(() => {
                 expect(this.inflight).toBe(1);
                 this.inflight--;
@@ -81,11 +81,11 @@ class Foo {
         });
     }
 
-    @throttle(5, () => 'baz')
+    @throttle(5, () => "baz")
     baz(a: number) {
         this.calls++;
         this.inflight++;
-        return new Promise(res => {
+        return new Promise((res) => {
             setTimeout(() => {
                 expect(this.inflight).toBeLessThanOrEqual(5);
                 this.inflight--;
@@ -94,12 +94,12 @@ class Foo {
         });
     }
 
-    @sequentialize(args => 'qux' + args[0])
-    @throttle(1, () => 'qux')
+    @sequentialize((args) => "qux" + args[0])
+    @throttle(1, () => "qux")
     qux(a: number) {
         this.calls++;
         this.inflight++;
-        return new Promise(res => {
+        return new Promise((res) => {
             setTimeout(() => {
                 expect(this.inflight).toBe(1);
                 this.inflight--;

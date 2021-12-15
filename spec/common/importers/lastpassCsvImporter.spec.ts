@@ -1,11 +1,11 @@
-import { LastPassCsvImporter as Importer } from 'jslib-common/importers/lastpassCsvImporter';
+import { LastPassCsvImporter as Importer } from "jslib-common/importers/lastpassCsvImporter";
 
-import { ImportResult } from 'jslib-common/models/domain/importResult';
-import { CipherView } from 'jslib-common/models/view/cipherView';
-import { FieldView } from 'jslib-common/models/view/fieldView';
+import { ImportResult } from "jslib-common/models/domain/importResult";
+import { CipherView } from "jslib-common/models/view/cipherView";
+import { FieldView } from "jslib-common/models/view/fieldView";
 
-import { CipherType } from 'jslib-common/enums/cipherType';
-import { FieldType } from 'jslib-common/enums/fieldType';
+import { CipherType } from "jslib-common/enums/cipherType";
+import { FieldType } from "jslib-common/enums/fieldType";
 
 function baseExcept(result: ImportResult) {
     expect(result).not.toBeNull();
@@ -16,17 +16,17 @@ function baseExcept(result: ImportResult) {
 function expectLogin(cipher: CipherView) {
     expect(cipher.type).toBe(CipherType.Login);
 
-    expect(cipher.name).toBe('example.com');
-    expect(cipher.notes).toBe('super secure notes');
-    expect(cipher.login.uri).toBe('http://example.com');
-    expect(cipher.login.username).toBe('someUser');
-    expect(cipher.login.password).toBe('myPassword');
-    expect(cipher.login.totp).toBe('Y64VEVMBTSXCYIWRSHRNDZW62MPGVU2G');
+    expect(cipher.name).toBe("example.com");
+    expect(cipher.notes).toBe("super secure notes");
+    expect(cipher.login.uri).toBe("http://example.com");
+    expect(cipher.login.username).toBe("someUser");
+    expect(cipher.login.password).toBe("myPassword");
+    expect(cipher.login.totp).toBe("Y64VEVMBTSXCYIWRSHRNDZW62MPGVU2G");
 }
 
 const CipherData = [
     {
-        title: 'should parse expiration date',
+        title: "should parse expiration date",
         csv: `url,username,password,extra,name,grouping,fav
 http://sn,,,"NoteType:Credit Card
 Name on Card:John Doe
@@ -41,27 +41,27 @@ Notes:some text
             id: null,
             organizationId: null,
             folderId: null,
-            name: 'Credit-card',
-            notes: 'some text\n',
+            name: "Credit-card",
+            notes: "some text\n",
             type: 3,
             card: {
-                cardholderName: 'John Doe',
-                number: '1234567812345678',
-                code: '123',
-                expYear: '2020',
-                expMonth: '6',
+                cardholderName: "John Doe",
+                number: "1234567812345678",
+                code: "123",
+                expYear: "2020",
+                expMonth: "6",
             },
             fields: [
                 Object.assign(new FieldView(), {
-                    name: 'Start Date',
-                    value: 'October,2017',
+                    name: "Start Date",
+                    value: "October,2017",
                     type: FieldType.Text,
                 }),
             ],
         }),
     },
     {
-        title: 'should parse blank card note',
+        title: "should parse blank card note",
         csv: `url,username,password,extra,name,grouping,fav
 http://sn,,,"NoteType:Credit Card
 Name on Card:
@@ -75,7 +75,7 @@ Notes:",empty,,0`,
             id: null,
             organizationId: null,
             folderId: null,
-            name: 'empty',
+            name: "empty",
             notes: null,
             type: 3,
             card: {
@@ -83,15 +83,15 @@ Notes:",empty,,0`,
             },
             fields: [
                 Object.assign(new FieldView(), {
-                    name: 'Start Date',
-                    value: ',',
+                    name: "Start Date",
+                    value: ",",
                     type: FieldType.Text,
                 }),
             ],
         }),
     },
     {
-        title: 'should parse card expiration date w/ no exp year',
+        title: "should parse card expiration date w/ no exp year",
         csv: `url,username,password,extra,name,grouping,fav
 http://sn,,,"NoteType:Credit Card
 Name on Card:John Doe
@@ -105,31 +105,31 @@ Notes:",noyear,,0`,
             id: null,
             organizationId: null,
             folderId: null,
-            name: 'noyear',
+            name: "noyear",
             notes: null,
             type: 3,
             card: {
-                cardholderName: 'John Doe',
-                number: '1234567887654321',
-                code: '321',
-                expMonth: '1',
+                cardholderName: "John Doe",
+                number: "1234567887654321",
+                code: "321",
+                expMonth: "1",
             },
             fields: [
                 Object.assign(new FieldView(), {
-                    name: 'Type',
-                    value: 'Visa',
+                    name: "Type",
+                    value: "Visa",
                     type: FieldType.Text,
                 }),
                 Object.assign(new FieldView(), {
-                    name: 'Start Date',
-                    value: ',',
+                    name: "Start Date",
+                    value: ",",
                     type: FieldType.Text,
                 }),
             ],
         }),
     },
     {
-        title: 'should parse card expiration date w/ no month',
+        title: "should parse card expiration date w/ no month",
         csv: `url,username,password,extra,name,grouping,fav
 http://sn,,,"NoteType:Credit Card
 Name on Card:John Doe
@@ -143,25 +143,25 @@ Notes:",nomonth,,0`,
             id: null,
             organizationId: null,
             folderId: null,
-            name: 'nomonth',
+            name: "nomonth",
             notes: null,
             type: 3,
             card: {
-                cardholderName: 'John Doe',
-                number: '8765432112345678',
-                code: '987',
-                expYear: '2020',
+                cardholderName: "John Doe",
+                number: "8765432112345678",
+                code: "987",
+                expYear: "2020",
                 expMonth: undefined,
             },
             fields: [
                 Object.assign(new FieldView(), {
-                    name: 'Type',
-                    value: 'Mastercard',
+                    name: "Type",
+                    value: "Mastercard",
                     type: FieldType.Text,
                 }),
                 Object.assign(new FieldView(), {
-                    name: 'Start Date',
-                    value: ',',
+                    name: "Start Date",
+                    value: ",",
                     type: FieldType.Text,
                 }),
             ],
@@ -169,8 +169,8 @@ Notes:",nomonth,,0`,
     },
 ];
 
-describe('Lastpass CSV Importer', () => {
-    CipherData.forEach(data => {
+describe("Lastpass CSV Importer", () => {
+    CipherData.forEach((data) => {
         it(data.title, async () => {
             const importer = new Importer();
             const result = await importer.parse(data.csv);
@@ -188,7 +188,7 @@ describe('Lastpass CSV Importer', () => {
         });
     });
 
-    it('should parse login with totp', async () => {
+    it("should parse login with totp", async () => {
         const input = `url,username,password,totp,extra,name,grouping,fav
         http://example.com,someUser,myPassword,Y64VEVMBTSXCYIWRSHRNDZW62MPGVU2G,super secure notes,example.com,,0`;
 

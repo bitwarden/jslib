@@ -1,142 +1,143 @@
-import { FieldType } from 'jslib-common/enums/fieldType';
-import { OnePassword1PifImporter as Importer } from 'jslib-common/importers/onepasswordImporters/onepassword1PifImporter';
+import { FieldType } from "jslib-common/enums/fieldType";
+import { OnePassword1PifImporter as Importer } from "jslib-common/importers/onepasswordImporters/onepassword1PifImporter";
 
-const TestData: string = '***aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee***\n' +
+const TestData: string =
+    "***aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee***\n" +
     JSON.stringify({
-        uuid: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+        uuid: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         updatedAt: 1486071244,
-        securityLevel: 'SL5',
-        contentsHash: 'aaaaaaaa',
-        title: 'Imported Entry',
-        location: 'https://www.google.com',
+        securityLevel: "SL5",
+        contentsHash: "aaaaaaaa",
+        title: "Imported Entry",
+        location: "https://www.google.com",
         secureContents: {
             fields: [
                 {
-                    value: 'user@test.net',
-                    id: 'email-input',
-                    name: 'email',
-                    type: 'T',
-                    designation: 'username',
+                    value: "user@test.net",
+                    id: "email-input",
+                    name: "email",
+                    type: "T",
+                    designation: "username",
                 },
                 {
-                    value: 'myservicepassword',
-                    id: 'password-input',
-                    name: 'password',
-                    type: 'P',
-                    designation: 'password',
+                    value: "myservicepassword",
+                    id: "password-input",
+                    name: "password",
+                    type: "P",
+                    designation: "password",
                 },
             ],
             sections: [
                 {
                     fields: [
                         {
-                            k: 'concealed',
-                            n: 'AAAAAAAAAAAABBBBBBBBBBBCCCCCCCCC',
-                            v: 'console-password-123',
-                            t: 'console password',
+                            k: "concealed",
+                            n: "AAAAAAAAAAAABBBBBBBBBBBCCCCCCCCC",
+                            v: "console-password-123",
+                            t: "console password",
                         },
                     ],
-                    title: 'Admin Console',
-                    name: 'admin_console',
+                    title: "Admin Console",
+                    name: "admin_console",
                 },
             ],
             passwordHistory: [
                 {
-                    value: 'old-password',
+                    value: "old-password",
                     time: 1447791421,
                 },
             ],
         },
         URLs: [
             {
-                label: 'website',
-                url: 'https://www.google.com',
+                label: "website",
+                url: "https://www.google.com",
             },
         ],
         txTimestamp: 1508941334,
         createdAt: 1390426636,
-        typeName: 'webforms.WebForm',
+        typeName: "webforms.WebForm",
     });
 
 const WindowsOpVaultTestData = JSON.stringify({
-    category: '001',
+    category: "001",
     created: 1544823719,
-    hmac: 'NtyBmTTPOb88HV3JUKPx1xl/vcMhac9kvCfe/NtszY0=',
-    k: '**REMOVED LONG LINE FOR LINTER** -Kyle',
+    hmac: "NtyBmTTPOb88HV3JUKPx1xl/vcMhac9kvCfe/NtszY0=",
+    k: "**REMOVED LONG LINE FOR LINTER** -Kyle",
     tx: 1553395669,
     updated: 1553395669,
-    uuid: '528AB076FB5F4FBF960884B8E01619AC',
+    uuid: "528AB076FB5F4FBF960884B8E01619AC",
     overview: {
-        title: 'Google',
+        title: "Google",
         URLs: [
             {
-                u: 'google.com',
+                u: "google.com",
             },
         ],
-        url: 'google.com',
+        url: "google.com",
         ps: 26,
-        ainfo: 'googluser',
+        ainfo: "googluser",
     },
     details: {
         passwordHistory: [
             {
-                value: 'oldpass1',
+                value: "oldpass1",
                 time: 1553394449,
             },
             {
-                value: 'oldpass2',
+                value: "oldpass2",
                 time: 1553394457,
             },
             {
-                value: 'oldpass3',
+                value: "oldpass3",
                 time: 1553394458,
             },
             {
-                value: 'oldpass4',
+                value: "oldpass4",
                 time: 1553394459,
             },
             {
-                value: 'oldpass5',
+                value: "oldpass5",
                 time: 1553394460,
             },
             {
-                value: 'oldpass6',
+                value: "oldpass6",
                 time: 1553394461,
             },
         ],
         fields: [
             {
-                type: 'T',
-                id: 'username',
-                name: 'username',
-                value: 'googluser',
-                designation: 'username',
+                type: "T",
+                id: "username",
+                name: "username",
+                value: "googluser",
+                designation: "username",
             },
             {
-                type: 'P',
-                id: 'password',
-                name: 'password',
-                value: '12345678901',
-                designation: 'password',
+                type: "P",
+                id: "password",
+                name: "password",
+                value: "12345678901",
+                designation: "password",
             },
         ],
-        notesPlain: 'This is a note\r\n\r\nline1\r\nline2',
+        notesPlain: "This is a note\r\n\r\nline1\r\nline2",
         sections: [
             {
-                title: 'test',
-                name: '1214FD88CD30405D9EED14BEB4D61B60',
+                title: "test",
+                name: "1214FD88CD30405D9EED14BEB4D61B60",
                 fields: [
                     {
-                        k: 'string',
-                        n: '6CC3BD77482D4559A4B8BB2D360F821B',
-                        v: 'fgfg',
-                        t: 'fgggf',
+                        k: "string",
+                        n: "6CC3BD77482D4559A4B8BB2D360F821B",
+                        v: "fgfg",
+                        t: "fgggf",
                     },
                     {
-                        k: 'concealed',
-                        n: '5CFE7BCAA1DF4578BBF7EB508959BFF3',
-                        v: 'dfgdfgfdg',
-                        t: 'pwfield',
+                        k: "concealed",
+                        n: "5CFE7BCAA1DF4578BBF7EB508959BFF3",
+                        v: "dfgdfgfdg",
+                        t: "pwfield",
                     },
                 ],
             },
@@ -145,295 +146,295 @@ const WindowsOpVaultTestData = JSON.stringify({
 });
 
 const IdentityTestData = JSON.stringify({
-    uuid: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    uuid: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
     updatedAt: 1553365894,
-    securityLevel: 'SL5',
-    contentsHash: 'eeeeeeee',
-    title: 'Test Identity',
+    securityLevel: "SL5",
+    contentsHash: "eeeeeeee",
+    title: "Test Identity",
     secureContents: {
-        lastname: 'Fritzenberger',
-        zip: '223344',
-        birthdate_dd: '11',
-        homephone: '+49 333 222 111',
-        company: 'Web Inc.',
-        firstname: 'Frank',
-        birthdate_mm: '3',
-        country: 'de',
-        sex: 'male',
+        lastname: "Fritzenberger",
+        zip: "223344",
+        birthdate_dd: "11",
+        homephone: "+49 333 222 111",
+        company: "Web Inc.",
+        firstname: "Frank",
+        birthdate_mm: "3",
+        country: "de",
+        sex: "male",
         sections: [
             {
                 fields: [
                     {
-                        k: 'string',
+                        k: "string",
                         inputTraits: {
-                            autocapitalization: 'Words',
+                            autocapitalization: "Words",
                         },
-                        n: 'firstname',
-                        v: 'Frank',
+                        n: "firstname",
+                        v: "Frank",
                         a: {
-                            guarded: 'yes',
+                            guarded: "yes",
                         },
-                        t: 'first name',
+                        t: "first name",
                     },
                     {
-                        k: 'string',
+                        k: "string",
                         inputTraits: {
-                            autocapitalization: 'Words',
+                            autocapitalization: "Words",
                         },
-                        n: 'initial',
-                        v: 'MD',
+                        n: "initial",
+                        v: "MD",
                         a: {
-                            guarded: 'yes',
+                            guarded: "yes",
                         },
-                        t: 'initial',
+                        t: "initial",
                     },
                     {
-                        k: 'string',
+                        k: "string",
                         inputTraits: {
-                            autocapitalization: 'Words',
+                            autocapitalization: "Words",
                         },
-                        n: 'lastname',
-                        v: 'Fritzenberger',
+                        n: "lastname",
+                        v: "Fritzenberger",
                         a: {
-                            guarded: 'yes',
+                            guarded: "yes",
                         },
-                        t: 'last name',
+                        t: "last name",
                     },
                     {
-                        k: 'menu',
-                        v: 'male',
-                        n: 'sex',
+                        k: "menu",
+                        v: "male",
+                        n: "sex",
                         a: {
-                            guarded: 'yes',
+                            guarded: "yes",
                         },
-                        t: 'sex',
+                        t: "sex",
                     },
                     {
-                        k: 'date',
+                        k: "date",
                         v: 1552305660,
-                        n: 'birthdate',
+                        n: "birthdate",
                         a: {
-                            guarded: 'yes',
+                            guarded: "yes",
                         },
-                        t: 'birth date',
+                        t: "birth date",
                     },
                     {
-                        k: 'string',
+                        k: "string",
                         inputTraits: {
-                            autocapitalization: 'Words',
+                            autocapitalization: "Words",
                         },
-                        n: 'occupation',
-                        v: 'Engineer',
+                        n: "occupation",
+                        v: "Engineer",
                         a: {
-                            guarded: 'yes',
+                            guarded: "yes",
                         },
-                        t: 'occupation',
+                        t: "occupation",
                     },
                     {
-                        k: 'string',
+                        k: "string",
                         inputTraits: {
-                            autocapitalization: 'Words',
+                            autocapitalization: "Words",
                         },
-                        n: 'company',
-                        v: 'Web Inc.',
+                        n: "company",
+                        v: "Web Inc.",
                         a: {
-                            guarded: 'yes',
+                            guarded: "yes",
                         },
-                        t: 'company',
+                        t: "company",
                     },
                     {
-                        k: 'string',
+                        k: "string",
                         inputTraits: {
-                            autocapitalization: 'Words',
+                            autocapitalization: "Words",
                         },
-                        n: 'department',
-                        v: 'IT',
+                        n: "department",
+                        v: "IT",
                         a: {
-                            guarded: 'yes',
+                            guarded: "yes",
                         },
-                        t: 'department',
+                        t: "department",
                     },
                     {
-                        k: 'string',
+                        k: "string",
                         inputTraits: {
-                            autocapitalization: 'Words',
+                            autocapitalization: "Words",
                         },
-                        n: 'jobtitle',
-                        v: 'Developer',
+                        n: "jobtitle",
+                        v: "Developer",
                         a: {
-                            guarded: 'yes',
+                            guarded: "yes",
                         },
-                        t: 'job title',
+                        t: "job title",
                     },
                 ],
-                title: 'Identification',
-                name: 'name',
+                title: "Identification",
+                name: "name",
             },
             {
                 fields: [
                     {
-                        k: 'address',
+                        k: "address",
                         inputTraits: {
-                            autocapitalization: 'Sentences',
+                            autocapitalization: "Sentences",
                         },
-                        n: 'address',
+                        n: "address",
                         v: {
-                            street: 'Mainstreet 1',
-                            city: 'Berlin',
-                            country: 'de',
-                            zip: '223344',
+                            street: "Mainstreet 1",
+                            city: "Berlin",
+                            country: "de",
+                            zip: "223344",
                         },
                         a: {
-                            guarded: 'yes',
+                            guarded: "yes",
                         },
-                        t: 'address',
+                        t: "address",
                     },
                     {
-                        k: 'phone',
-                        v: '+49 001 222 333 44',
-                        n: 'defphone',
+                        k: "phone",
+                        v: "+49 001 222 333 44",
+                        n: "defphone",
                         a: {
-                            guarded: 'yes',
+                            guarded: "yes",
                         },
-                        t: 'default phone',
+                        t: "default phone",
                     },
                     {
-                        k: 'phone',
-                        v: '+49 333 222 111',
-                        n: 'homephone',
+                        k: "phone",
+                        v: "+49 333 222 111",
+                        n: "homephone",
                         a: {
-                            guarded: 'yes',
+                            guarded: "yes",
                         },
-                        t: 'home',
+                        t: "home",
                     },
                     {
-                        k: 'phone',
-                        n: 'cellphone',
+                        k: "phone",
+                        n: "cellphone",
                         a: {
-                            guarded: 'yes',
+                            guarded: "yes",
                         },
-                        t: 'mobile',
+                        t: "mobile",
                     },
                     {
-                        k: 'phone',
-                        n: 'busphone',
+                        k: "phone",
+                        n: "busphone",
                         a: {
-                            guarded: 'yes',
+                            guarded: "yes",
                         },
-                        t: 'business',
+                        t: "business",
                     },
                 ],
-                title: 'Address',
-                name: 'address',
+                title: "Address",
+                name: "address",
             },
             {
                 fields: [
                     {
-                        k: 'string',
-                        n: 'username',
+                        k: "string",
+                        n: "username",
                         a: {
-                            guarded: 'yes',
+                            guarded: "yes",
                         },
-                        t: 'username',
+                        t: "username",
                     },
                     {
-                        k: 'string',
-                        n: 'reminderq',
-                        t: 'reminder question',
+                        k: "string",
+                        n: "reminderq",
+                        t: "reminder question",
                     },
                     {
-                        k: 'string',
-                        n: 'remindera',
-                        t: 'reminder answer',
+                        k: "string",
+                        n: "remindera",
+                        t: "reminder answer",
                     },
                     {
-                        k: 'string',
+                        k: "string",
                         inputTraits: {
-                            keyboard: 'EmailAddress',
+                            keyboard: "EmailAddress",
                         },
-                        n: 'email',
-                        v: 'test@web.de',
+                        n: "email",
+                        v: "test@web.de",
                         a: {
-                            guarded: 'yes',
+                            guarded: "yes",
                         },
-                        t: 'email',
+                        t: "email",
                     },
                     {
-                        k: 'string',
-                        n: 'website',
+                        k: "string",
+                        n: "website",
                         inputTraits: {
-                            keyboard: 'URL',
+                            keyboard: "URL",
                         },
-                        t: 'website',
+                        t: "website",
                     },
                     {
-                        k: 'string',
-                        n: 'icq',
-                        t: 'ICQ',
+                        k: "string",
+                        n: "icq",
+                        t: "ICQ",
                     },
                     {
-                        k: 'string',
-                        n: 'skype',
-                        t: 'skype',
+                        k: "string",
+                        n: "skype",
+                        t: "skype",
                     },
                     {
-                        k: 'string',
-                        n: 'aim',
-                        t: 'AOL/AIM',
+                        k: "string",
+                        n: "aim",
+                        t: "AOL/AIM",
                     },
                     {
-                        k: 'string',
-                        n: 'yahoo',
-                        t: 'Yahoo',
+                        k: "string",
+                        n: "yahoo",
+                        t: "Yahoo",
                     },
                     {
-                        k: 'string',
-                        n: 'msn',
-                        t: 'MSN',
+                        k: "string",
+                        n: "msn",
+                        t: "MSN",
                     },
                     {
-                        k: 'string',
-                        n: 'forumsig',
-                        t: 'forum signature',
+                        k: "string",
+                        n: "forumsig",
+                        t: "forum signature",
                     },
                 ],
-                title: 'Internet Details',
-                name: 'internet',
+                title: "Internet Details",
+                name: "internet",
             },
             {
-                title: 'Related Items',
-                name: 'linked items',
+                title: "Related Items",
+                name: "linked items",
             },
         ],
-        initial: 'MD',
-        address1: 'Mainstreet 1',
-        city: 'Berlin',
-        jobtitle: 'Developer',
-        occupation: 'Engineer',
-        department: 'IT',
-        email: 'test@web.de',
-        birthdate_yy: '2019',
-        homephone_local: '+49 333 222 111',
-        defphone_local: '+49 001 222 333 44',
-        defphone: '+49 001 222 333 44',
+        initial: "MD",
+        address1: "Mainstreet 1",
+        city: "Berlin",
+        jobtitle: "Developer",
+        occupation: "Engineer",
+        department: "IT",
+        email: "test@web.de",
+        birthdate_yy: "2019",
+        homephone_local: "+49 333 222 111",
+        defphone_local: "+49 001 222 333 44",
+        defphone: "+49 001 222 333 44",
     },
     txTimestamp: 1553365894,
     createdAt: 1553364679,
-    typeName: 'identities.Identity',
+    typeName: "identities.Identity",
 });
 
-describe('1Password 1Pif Importer', () => {
-    it('should parse data', async () => {
+describe("1Password 1Pif Importer", () => {
+    it("should parse data", async () => {
         const importer = new Importer();
         const result = await importer.parse(TestData);
         expect(result != null).toBe(true);
 
         const cipher = result.ciphers.shift();
-        expect(cipher.login.username).toEqual('user@test.net');
-        expect(cipher.login.password).toEqual('myservicepassword');
+        expect(cipher.login.username).toEqual("user@test.net");
+        expect(cipher.login.password).toEqual("myservicepassword");
         expect(cipher.login.uris.length).toEqual(1);
         const uriView = cipher.login.uris.shift();
-        expect(uriView.uri).toEqual('https://www.google.com');
+        expect(uriView.uri).toEqual("https://www.google.com");
     });
 
     it('should create concealed field as "hidden" type', async () => {
@@ -449,65 +450,65 @@ describe('1Password 1Pif Importer', () => {
         expect(fields.length).toEqual(1);
 
         const field = fields.shift();
-        expect(field.name).toEqual('console password');
-        expect(field.value).toEqual('console-password-123');
+        expect(field.name).toEqual("console password");
+        expect(field.value).toEqual("console-password-123");
         expect(field.type).toEqual(FieldType.Hidden);
     });
 
-    it('should create identity records', async () => {
+    it("should create identity records", async () => {
         const importer = new Importer();
         const result = await importer.parse(IdentityTestData);
         expect(result != null).toBe(true);
         const cipher = result.ciphers.shift();
-        expect(cipher.name).toEqual('Test Identity');
+        expect(cipher.name).toEqual("Test Identity");
 
         const identity = cipher.identity;
-        expect(identity.firstName).toEqual('Frank');
-        expect(identity.middleName).toEqual('MD');
-        expect(identity.lastName).toEqual('Fritzenberger');
-        expect(identity.company).toEqual('Web Inc.');
-        expect(identity.address1).toEqual('Mainstreet 1');
-        expect(identity.country).toEqual('DE');
-        expect(identity.city).toEqual('Berlin');
-        expect(identity.postalCode).toEqual('223344');
-        expect(identity.phone).toEqual('+49 001 222 333 44');
-        expect(identity.email).toEqual('test@web.de');
+        expect(identity.firstName).toEqual("Frank");
+        expect(identity.middleName).toEqual("MD");
+        expect(identity.lastName).toEqual("Fritzenberger");
+        expect(identity.company).toEqual("Web Inc.");
+        expect(identity.address1).toEqual("Mainstreet 1");
+        expect(identity.country).toEqual("DE");
+        expect(identity.city).toEqual("Berlin");
+        expect(identity.postalCode).toEqual("223344");
+        expect(identity.phone).toEqual("+49 001 222 333 44");
+        expect(identity.email).toEqual("test@web.de");
 
         // remaining fields as custom fields
         expect(cipher.fields.length).toEqual(6);
     });
 
-    it('should create password history', async () => {
+    it("should create password history", async () => {
         const importer = new Importer();
         const result = await importer.parse(TestData);
         const cipher = result.ciphers.shift();
 
         expect(cipher.passwordHistory.length).toEqual(1);
         const ph = cipher.passwordHistory.shift();
-        expect(ph.password).toEqual('old-password');
-        expect(ph.lastUsedDate.toISOString()).toEqual('2015-11-17T20:17:01.000Z');
+        expect(ph.password).toEqual("old-password");
+        expect(ph.lastUsedDate.toISOString()).toEqual("2015-11-17T20:17:01.000Z");
     });
 
-    it('should create password history from windows opvault 1pif format', async () => {
+    it("should create password history from windows opvault 1pif format", async () => {
         const importer = new Importer();
         const result = await importer.parse(WindowsOpVaultTestData);
         const cipher = result.ciphers.shift();
 
         expect(cipher.passwordHistory.length).toEqual(5);
         let ph = cipher.passwordHistory.shift();
-        expect(ph.password).toEqual('oldpass6');
-        expect(ph.lastUsedDate.toISOString()).toEqual('2019-03-24T02:27:41.000Z');
+        expect(ph.password).toEqual("oldpass6");
+        expect(ph.lastUsedDate.toISOString()).toEqual("2019-03-24T02:27:41.000Z");
         ph = cipher.passwordHistory.shift();
-        expect(ph.password).toEqual('oldpass5');
-        expect(ph.lastUsedDate.toISOString()).toEqual('2019-03-24T02:27:40.000Z');
+        expect(ph.password).toEqual("oldpass5");
+        expect(ph.lastUsedDate.toISOString()).toEqual("2019-03-24T02:27:40.000Z");
         ph = cipher.passwordHistory.shift();
-        expect(ph.password).toEqual('oldpass4');
-        expect(ph.lastUsedDate.toISOString()).toEqual('2019-03-24T02:27:39.000Z');
+        expect(ph.password).toEqual("oldpass4");
+        expect(ph.lastUsedDate.toISOString()).toEqual("2019-03-24T02:27:39.000Z");
         ph = cipher.passwordHistory.shift();
-        expect(ph.password).toEqual('oldpass3');
-        expect(ph.lastUsedDate.toISOString()).toEqual('2019-03-24T02:27:38.000Z');
+        expect(ph.password).toEqual("oldpass3");
+        expect(ph.lastUsedDate.toISOString()).toEqual("2019-03-24T02:27:38.000Z");
         ph = cipher.passwordHistory.shift();
-        expect(ph.password).toEqual('oldpass2');
-        expect(ph.lastUsedDate.toISOString()).toEqual('2019-03-24T02:27:37.000Z');
+        expect(ph.password).toEqual("oldpass2");
+        expect(ph.lastUsedDate.toISOString()).toEqual("2019-03-24T02:27:37.000Z");
     });
 });
