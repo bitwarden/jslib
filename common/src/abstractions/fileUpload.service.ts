@@ -4,15 +4,15 @@ import { AttachmentUploadDataResponse } from "../models/response/attachmentUploa
 import { SendFileUploadDataResponse } from "../models/response/sendFileUploadDataResponse";
 
 export abstract class FileUploadService {
-    uploadSendFile: (
-        uploadData: SendFileUploadDataResponse,
-        fileName: EncString,
-        encryptedFileData: EncArrayBuffer
-    ) => Promise<any>;
-    uploadCipherAttachment: (
-        admin: boolean,
-        uploadData: AttachmentUploadDataResponse,
-        fileName: EncString,
-        encryptedFileData: EncArrayBuffer
-    ) => Promise<any>;
+  uploadSendFile: (
+    uploadData: SendFileUploadDataResponse,
+    fileName: EncString,
+    encryptedFileData: EncArrayBuffer
+  ) => Promise<any>;
+  uploadCipherAttachment: (
+    admin: boolean,
+    uploadData: AttachmentUploadDataResponse,
+    fileName: EncString,
+    encryptedFileData: EncArrayBuffer
+  ) => Promise<any>;
 }

@@ -99,13 +99,16 @@ import { AttachmentUploadDataResponse } from "../models/response/attachmentUploa
 import { BillingResponse } from "../models/response/billingResponse";
 import { BreachAccountResponse } from "../models/response/breachAccountResponse";
 import { CipherResponse } from "../models/response/cipherResponse";
-import { CollectionGroupDetailsResponse, CollectionResponse } from "../models/response/collectionResponse";
+import {
+  CollectionGroupDetailsResponse,
+  CollectionResponse,
+} from "../models/response/collectionResponse";
 import { DomainsResponse } from "../models/response/domainsResponse";
 import {
-    EmergencyAccessGranteeDetailsResponse,
-    EmergencyAccessGrantorDetailsResponse,
-    EmergencyAccessTakeoverResponse,
-    EmergencyAccessViewResponse,
+  EmergencyAccessGranteeDetailsResponse,
+  EmergencyAccessGrantorDetailsResponse,
+  EmergencyAccessTakeoverResponse,
+  EmergencyAccessViewResponse,
 } from "../models/response/emergencyAccessResponse";
 import { EventResponse } from "../models/response/eventResponse";
 import { FolderResponse } from "../models/response/folderResponse";
@@ -123,9 +126,9 @@ import { OrganizationSubscriptionResponse } from "../models/response/organizatio
 import { OrganizationUserBulkPublicKeyResponse } from "../models/response/organizationUserBulkPublicKeyResponse";
 import { OrganizationUserBulkResponse } from "../models/response/organizationUserBulkResponse";
 import {
-    OrganizationUserDetailsResponse,
-    OrganizationUserResetPasswordDetailsReponse,
-    OrganizationUserUserDetailsResponse,
+  OrganizationUserDetailsResponse,
+  OrganizationUserResetPasswordDetailsReponse,
+  OrganizationUserUserDetailsResponse,
 } from "../models/response/organizationUserResponse";
 import { PaymentResponse } from "../models/response/paymentResponse";
 import { PlanResponse } from "../models/response/planResponse";
@@ -133,15 +136,15 @@ import { PolicyResponse } from "../models/response/policyResponse";
 import { PreloginResponse } from "../models/response/preloginResponse";
 import { ProfileResponse } from "../models/response/profileResponse";
 import {
-    ProviderOrganizationOrganizationDetailsResponse,
-    ProviderOrganizationResponse,
+  ProviderOrganizationOrganizationDetailsResponse,
+  ProviderOrganizationResponse,
 } from "../models/response/provider/providerOrganizationResponse";
 import { ProviderResponse } from "../models/response/provider/providerResponse";
 import { ProviderUserBulkPublicKeyResponse } from "../models/response/provider/providerUserBulkPublicKeyResponse";
 import { ProviderUserBulkResponse } from "../models/response/provider/providerUserBulkResponse";
 import {
-    ProviderUserResponse,
-    ProviderUserUserDetailsResponse,
+  ProviderUserResponse,
+  ProviderUserUserDetailsResponse,
 } from "../models/response/provider/providerUserResponse";
 import { SelectionReadOnlyResponse } from "../models/response/selectionReadOnlyResponse";
 import { SendAccessResponse } from "../models/response/sendAccessResponse";
@@ -157,394 +160,518 @@ import { TwoFactorDuoResponse } from "../models/response/twoFactorDuoResponse";
 import { TwoFactorEmailResponse } from "../models/response/twoFactorEmailResponse";
 import { TwoFactorProviderResponse } from "../models/response/twoFactorProviderResponse";
 import { TwoFactorRecoverResponse } from "../models/response/twoFactorRescoverResponse";
-import { ChallengeResponse, TwoFactorWebAuthnResponse } from "../models/response/twoFactorWebAuthnResponse";
+import {
+  ChallengeResponse,
+  TwoFactorWebAuthnResponse,
+} from "../models/response/twoFactorWebAuthnResponse";
 import { TwoFactorYubiKeyResponse } from "../models/response/twoFactorYubiKeyResponse";
 import { UserKeyResponse } from "../models/response/userKeyResponse";
 
 import { SendAccessView } from "../models/view/sendAccessView";
 
 export abstract class ApiService {
-    postIdentityToken: (
-        request: TokenRequest
-    ) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse>;
-    refreshIdentityToken: () => Promise<any>;
+  postIdentityToken: (
+    request: TokenRequest
+  ) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse>;
+  refreshIdentityToken: () => Promise<any>;
 
-    getProfile: () => Promise<ProfileResponse>;
-    getUserBilling: () => Promise<BillingResponse>;
-    getUserSubscription: () => Promise<SubscriptionResponse>;
-    getTaxInfo: () => Promise<TaxInfoResponse>;
-    putProfile: (request: UpdateProfileRequest) => Promise<ProfileResponse>;
-    putTaxInfo: (request: TaxInfoUpdateRequest) => Promise<any>;
-    postPrelogin: (request: PreloginRequest) => Promise<PreloginResponse>;
-    postEmailToken: (request: EmailTokenRequest) => Promise<any>;
-    postEmail: (request: EmailRequest) => Promise<any>;
-    postPassword: (request: PasswordRequest) => Promise<any>;
-    setPassword: (request: SetPasswordRequest) => Promise<any>;
-    postSetKeyConnectorKey: (request: SetKeyConnectorKeyRequest) => Promise<any>;
-    postSecurityStamp: (request: SecretVerificationRequest) => Promise<any>;
-    deleteAccount: (request: SecretVerificationRequest) => Promise<any>;
-    getAccountRevisionDate: () => Promise<number>;
-    postPasswordHint: (request: PasswordHintRequest) => Promise<any>;
-    postRegister: (request: RegisterRequest) => Promise<any>;
-    postPremium: (data: FormData) => Promise<PaymentResponse>;
-    postIapCheck: (request: IapCheckRequest) => Promise<any>;
-    postReinstatePremium: () => Promise<any>;
-    postCancelPremium: () => Promise<any>;
-    postAccountStorage: (request: StorageRequest) => Promise<PaymentResponse>;
-    postAccountPayment: (request: PaymentRequest) => Promise<any>;
-    postAccountLicense: (data: FormData) => Promise<any>;
-    postAccountKey: (request: UpdateKeyRequest) => Promise<any>;
-    postAccountKeys: (request: KeysRequest) => Promise<any>;
-    postAccountVerifyEmail: () => Promise<any>;
-    postAccountVerifyEmailToken: (request: VerifyEmailRequest) => Promise<any>;
-    postAccountVerifyPassword: (request: SecretVerificationRequest) => Promise<any>;
-    postAccountRecoverDelete: (request: DeleteRecoverRequest) => Promise<any>;
-    postAccountRecoverDeleteToken: (request: VerifyDeleteRecoverRequest) => Promise<any>;
-    postAccountKdf: (request: KdfRequest) => Promise<any>;
-    postUserApiKey: (id: string, request: SecretVerificationRequest) => Promise<ApiKeyResponse>;
-    postUserRotateApiKey: (id: string, request: SecretVerificationRequest) => Promise<ApiKeyResponse>;
-    putUpdateTempPassword: (request: UpdateTempPasswordRequest) => Promise<any>;
-    postAccountRequestOTP: () => Promise<void>;
-    postAccountVerifyOTP: (request: VerifyOTPRequest) => Promise<void>;
-    postConvertToKeyConnector: () => Promise<void>;
+  getProfile: () => Promise<ProfileResponse>;
+  getUserBilling: () => Promise<BillingResponse>;
+  getUserSubscription: () => Promise<SubscriptionResponse>;
+  getTaxInfo: () => Promise<TaxInfoResponse>;
+  putProfile: (request: UpdateProfileRequest) => Promise<ProfileResponse>;
+  putTaxInfo: (request: TaxInfoUpdateRequest) => Promise<any>;
+  postPrelogin: (request: PreloginRequest) => Promise<PreloginResponse>;
+  postEmailToken: (request: EmailTokenRequest) => Promise<any>;
+  postEmail: (request: EmailRequest) => Promise<any>;
+  postPassword: (request: PasswordRequest) => Promise<any>;
+  setPassword: (request: SetPasswordRequest) => Promise<any>;
+  postSetKeyConnectorKey: (request: SetKeyConnectorKeyRequest) => Promise<any>;
+  postSecurityStamp: (request: SecretVerificationRequest) => Promise<any>;
+  deleteAccount: (request: SecretVerificationRequest) => Promise<any>;
+  getAccountRevisionDate: () => Promise<number>;
+  postPasswordHint: (request: PasswordHintRequest) => Promise<any>;
+  postRegister: (request: RegisterRequest) => Promise<any>;
+  postPremium: (data: FormData) => Promise<PaymentResponse>;
+  postIapCheck: (request: IapCheckRequest) => Promise<any>;
+  postReinstatePremium: () => Promise<any>;
+  postCancelPremium: () => Promise<any>;
+  postAccountStorage: (request: StorageRequest) => Promise<PaymentResponse>;
+  postAccountPayment: (request: PaymentRequest) => Promise<any>;
+  postAccountLicense: (data: FormData) => Promise<any>;
+  postAccountKey: (request: UpdateKeyRequest) => Promise<any>;
+  postAccountKeys: (request: KeysRequest) => Promise<any>;
+  postAccountVerifyEmail: () => Promise<any>;
+  postAccountVerifyEmailToken: (request: VerifyEmailRequest) => Promise<any>;
+  postAccountVerifyPassword: (request: SecretVerificationRequest) => Promise<any>;
+  postAccountRecoverDelete: (request: DeleteRecoverRequest) => Promise<any>;
+  postAccountRecoverDeleteToken: (request: VerifyDeleteRecoverRequest) => Promise<any>;
+  postAccountKdf: (request: KdfRequest) => Promise<any>;
+  postUserApiKey: (id: string, request: SecretVerificationRequest) => Promise<ApiKeyResponse>;
+  postUserRotateApiKey: (id: string, request: SecretVerificationRequest) => Promise<ApiKeyResponse>;
+  putUpdateTempPassword: (request: UpdateTempPasswordRequest) => Promise<any>;
+  postAccountRequestOTP: () => Promise<void>;
+  postAccountVerifyOTP: (request: VerifyOTPRequest) => Promise<void>;
+  postConvertToKeyConnector: () => Promise<void>;
 
-    getFolder: (id: string) => Promise<FolderResponse>;
-    postFolder: (request: FolderRequest) => Promise<FolderResponse>;
-    putFolder: (id: string, request: FolderRequest) => Promise<FolderResponse>;
-    deleteFolder: (id: string) => Promise<any>;
+  getFolder: (id: string) => Promise<FolderResponse>;
+  postFolder: (request: FolderRequest) => Promise<FolderResponse>;
+  putFolder: (id: string, request: FolderRequest) => Promise<FolderResponse>;
+  deleteFolder: (id: string) => Promise<any>;
 
-    getSend: (id: string) => Promise<SendResponse>;
-    postSendAccess: (id: string, request: SendAccessRequest, apiUrl?: string) => Promise<SendAccessResponse>;
-    getSends: () => Promise<ListResponse<SendResponse>>;
-    postSend: (request: SendRequest) => Promise<SendResponse>;
-    postFileTypeSend: (request: SendRequest) => Promise<SendFileUploadDataResponse>;
-    postSendFile: (sendId: string, fileId: string, data: FormData) => Promise<any>;
-    /**
-     * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
-     * This method still exists for backward compatibility with old server versions.
-     */
-    postSendFileLegacy: (data: FormData) => Promise<SendResponse>;
-    putSend: (id: string, request: SendRequest) => Promise<SendResponse>;
-    putSendRemovePassword: (id: string) => Promise<SendResponse>;
-    deleteSend: (id: string) => Promise<any>;
-    getSendFileDownloadData: (
-        send: SendAccessView,
-        request: SendAccessRequest,
-        apiUrl?: string
-    ) => Promise<SendFileDownloadDataResponse>;
-    renewSendFileUploadUrl: (sendId: string, fileId: string) => Promise<SendFileUploadDataResponse>;
+  getSend: (id: string) => Promise<SendResponse>;
+  postSendAccess: (
+    id: string,
+    request: SendAccessRequest,
+    apiUrl?: string
+  ) => Promise<SendAccessResponse>;
+  getSends: () => Promise<ListResponse<SendResponse>>;
+  postSend: (request: SendRequest) => Promise<SendResponse>;
+  postFileTypeSend: (request: SendRequest) => Promise<SendFileUploadDataResponse>;
+  postSendFile: (sendId: string, fileId: string, data: FormData) => Promise<any>;
+  /**
+   * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
+   * This method still exists for backward compatibility with old server versions.
+   */
+  postSendFileLegacy: (data: FormData) => Promise<SendResponse>;
+  putSend: (id: string, request: SendRequest) => Promise<SendResponse>;
+  putSendRemovePassword: (id: string) => Promise<SendResponse>;
+  deleteSend: (id: string) => Promise<any>;
+  getSendFileDownloadData: (
+    send: SendAccessView,
+    request: SendAccessRequest,
+    apiUrl?: string
+  ) => Promise<SendFileDownloadDataResponse>;
+  renewSendFileUploadUrl: (sendId: string, fileId: string) => Promise<SendFileUploadDataResponse>;
 
-    getCipher: (id: string) => Promise<CipherResponse>;
-    getCipherAdmin: (id: string) => Promise<CipherResponse>;
-    getAttachmentData: (
-        cipherId: string,
-        attachmentId: string,
-        emergencyAccessId?: string
-    ) => Promise<AttachmentResponse>;
-    getCiphersOrganization: (organizationId: string) => Promise<ListResponse<CipherResponse>>;
-    postCipher: (request: CipherRequest) => Promise<CipherResponse>;
-    postCipherCreate: (request: CipherCreateRequest) => Promise<CipherResponse>;
-    postCipherAdmin: (request: CipherCreateRequest) => Promise<CipherResponse>;
-    putCipher: (id: string, request: CipherRequest) => Promise<CipherResponse>;
-    putCipherAdmin: (id: string, request: CipherRequest) => Promise<CipherResponse>;
-    deleteCipher: (id: string) => Promise<any>;
-    deleteCipherAdmin: (id: string) => Promise<any>;
-    deleteManyCiphers: (request: CipherBulkDeleteRequest) => Promise<any>;
-    deleteManyCiphersAdmin: (request: CipherBulkDeleteRequest) => Promise<any>;
-    putMoveCiphers: (request: CipherBulkMoveRequest) => Promise<any>;
-    putShareCipher: (id: string, request: CipherShareRequest) => Promise<CipherResponse>;
-    putShareCiphers: (request: CipherBulkShareRequest) => Promise<any>;
-    putCipherCollections: (id: string, request: CipherCollectionsRequest) => Promise<any>;
-    putCipherCollectionsAdmin: (id: string, request: CipherCollectionsRequest) => Promise<any>;
-    postPurgeCiphers: (request: SecretVerificationRequest, organizationId?: string) => Promise<any>;
-    postImportCiphers: (request: ImportCiphersRequest) => Promise<any>;
-    postImportOrganizationCiphers: (organizationId: string, request: ImportOrganizationCiphersRequest) => Promise<any>;
-    putDeleteCipher: (id: string) => Promise<any>;
-    putDeleteCipherAdmin: (id: string) => Promise<any>;
-    putDeleteManyCiphers: (request: CipherBulkDeleteRequest) => Promise<any>;
-    putDeleteManyCiphersAdmin: (request: CipherBulkDeleteRequest) => Promise<any>;
-    putRestoreCipher: (id: string) => Promise<CipherResponse>;
-    putRestoreCipherAdmin: (id: string) => Promise<CipherResponse>;
-    putRestoreManyCiphers: (request: CipherBulkRestoreRequest) => Promise<ListResponse<CipherResponse>>;
+  getCipher: (id: string) => Promise<CipherResponse>;
+  getCipherAdmin: (id: string) => Promise<CipherResponse>;
+  getAttachmentData: (
+    cipherId: string,
+    attachmentId: string,
+    emergencyAccessId?: string
+  ) => Promise<AttachmentResponse>;
+  getCiphersOrganization: (organizationId: string) => Promise<ListResponse<CipherResponse>>;
+  postCipher: (request: CipherRequest) => Promise<CipherResponse>;
+  postCipherCreate: (request: CipherCreateRequest) => Promise<CipherResponse>;
+  postCipherAdmin: (request: CipherCreateRequest) => Promise<CipherResponse>;
+  putCipher: (id: string, request: CipherRequest) => Promise<CipherResponse>;
+  putCipherAdmin: (id: string, request: CipherRequest) => Promise<CipherResponse>;
+  deleteCipher: (id: string) => Promise<any>;
+  deleteCipherAdmin: (id: string) => Promise<any>;
+  deleteManyCiphers: (request: CipherBulkDeleteRequest) => Promise<any>;
+  deleteManyCiphersAdmin: (request: CipherBulkDeleteRequest) => Promise<any>;
+  putMoveCiphers: (request: CipherBulkMoveRequest) => Promise<any>;
+  putShareCipher: (id: string, request: CipherShareRequest) => Promise<CipherResponse>;
+  putShareCiphers: (request: CipherBulkShareRequest) => Promise<any>;
+  putCipherCollections: (id: string, request: CipherCollectionsRequest) => Promise<any>;
+  putCipherCollectionsAdmin: (id: string, request: CipherCollectionsRequest) => Promise<any>;
+  postPurgeCiphers: (request: SecretVerificationRequest, organizationId?: string) => Promise<any>;
+  postImportCiphers: (request: ImportCiphersRequest) => Promise<any>;
+  postImportOrganizationCiphers: (
+    organizationId: string,
+    request: ImportOrganizationCiphersRequest
+  ) => Promise<any>;
+  putDeleteCipher: (id: string) => Promise<any>;
+  putDeleteCipherAdmin: (id: string) => Promise<any>;
+  putDeleteManyCiphers: (request: CipherBulkDeleteRequest) => Promise<any>;
+  putDeleteManyCiphersAdmin: (request: CipherBulkDeleteRequest) => Promise<any>;
+  putRestoreCipher: (id: string) => Promise<CipherResponse>;
+  putRestoreCipherAdmin: (id: string) => Promise<CipherResponse>;
+  putRestoreManyCiphers: (
+    request: CipherBulkRestoreRequest
+  ) => Promise<ListResponse<CipherResponse>>;
 
-    /**
-     * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
-     * This method still exists for backward compatibility with old server versions.
-     */
-    postCipherAttachmentLegacy: (id: string, data: FormData) => Promise<CipherResponse>;
-    /**
-     * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
-     * This method still exists for backward compatibility with old server versions.
-     */
-    postCipherAttachmentAdminLegacy: (id: string, data: FormData) => Promise<CipherResponse>;
-    postCipherAttachment: (id: string, request: AttachmentRequest) => Promise<AttachmentUploadDataResponse>;
-    deleteCipherAttachment: (id: string, attachmentId: string) => Promise<any>;
-    deleteCipherAttachmentAdmin: (id: string, attachmentId: string) => Promise<any>;
-    postShareCipherAttachment: (
-        id: string,
-        attachmentId: string,
-        data: FormData,
-        organizationId: string
-    ) => Promise<any>;
-    renewAttachmentUploadUrl: (id: string, attachmentId: string) => Promise<AttachmentUploadDataResponse>;
-    postAttachmentFile: (id: string, attachmentId: string, data: FormData) => Promise<any>;
+  /**
+   * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
+   * This method still exists for backward compatibility with old server versions.
+   */
+  postCipherAttachmentLegacy: (id: string, data: FormData) => Promise<CipherResponse>;
+  /**
+   * @deprecated Mar 25 2021: This method has been deprecated in favor of direct uploads.
+   * This method still exists for backward compatibility with old server versions.
+   */
+  postCipherAttachmentAdminLegacy: (id: string, data: FormData) => Promise<CipherResponse>;
+  postCipherAttachment: (
+    id: string,
+    request: AttachmentRequest
+  ) => Promise<AttachmentUploadDataResponse>;
+  deleteCipherAttachment: (id: string, attachmentId: string) => Promise<any>;
+  deleteCipherAttachmentAdmin: (id: string, attachmentId: string) => Promise<any>;
+  postShareCipherAttachment: (
+    id: string,
+    attachmentId: string,
+    data: FormData,
+    organizationId: string
+  ) => Promise<any>;
+  renewAttachmentUploadUrl: (
+    id: string,
+    attachmentId: string
+  ) => Promise<AttachmentUploadDataResponse>;
+  postAttachmentFile: (id: string, attachmentId: string, data: FormData) => Promise<any>;
 
-    getCollectionDetails: (organizationId: string, id: string) => Promise<CollectionGroupDetailsResponse>;
-    getUserCollections: () => Promise<ListResponse<CollectionResponse>>;
-    getCollections: (organizationId: string) => Promise<ListResponse<CollectionResponse>>;
-    getCollectionUsers: (organizationId: string, id: string) => Promise<SelectionReadOnlyResponse[]>;
-    postCollection: (organizationId: string, request: CollectionRequest) => Promise<CollectionResponse>;
-    putCollectionUsers: (organizationId: string, id: string, request: SelectionReadOnlyRequest[]) => Promise<any>;
-    putCollection: (organizationId: string, id: string, request: CollectionRequest) => Promise<CollectionResponse>;
-    deleteCollection: (organizationId: string, id: string) => Promise<any>;
-    deleteCollectionUser: (organizationId: string, id: string, organizationUserId: string) => Promise<any>;
+  getCollectionDetails: (
+    organizationId: string,
+    id: string
+  ) => Promise<CollectionGroupDetailsResponse>;
+  getUserCollections: () => Promise<ListResponse<CollectionResponse>>;
+  getCollections: (organizationId: string) => Promise<ListResponse<CollectionResponse>>;
+  getCollectionUsers: (organizationId: string, id: string) => Promise<SelectionReadOnlyResponse[]>;
+  postCollection: (
+    organizationId: string,
+    request: CollectionRequest
+  ) => Promise<CollectionResponse>;
+  putCollectionUsers: (
+    organizationId: string,
+    id: string,
+    request: SelectionReadOnlyRequest[]
+  ) => Promise<any>;
+  putCollection: (
+    organizationId: string,
+    id: string,
+    request: CollectionRequest
+  ) => Promise<CollectionResponse>;
+  deleteCollection: (organizationId: string, id: string) => Promise<any>;
+  deleteCollectionUser: (
+    organizationId: string,
+    id: string,
+    organizationUserId: string
+  ) => Promise<any>;
 
-    getGroupDetails: (organizationId: string, id: string) => Promise<GroupDetailsResponse>;
-    getGroups: (organizationId: string) => Promise<ListResponse<GroupResponse>>;
-    getGroupUsers: (organizationId: string, id: string) => Promise<string[]>;
-    postGroup: (organizationId: string, request: GroupRequest) => Promise<GroupResponse>;
-    putGroup: (organizationId: string, id: string, request: GroupRequest) => Promise<GroupResponse>;
-    putGroupUsers: (organizationId: string, id: string, request: string[]) => Promise<any>;
-    deleteGroup: (organizationId: string, id: string) => Promise<any>;
-    deleteGroupUser: (organizationId: string, id: string, organizationUserId: string) => Promise<any>;
+  getGroupDetails: (organizationId: string, id: string) => Promise<GroupDetailsResponse>;
+  getGroups: (organizationId: string) => Promise<ListResponse<GroupResponse>>;
+  getGroupUsers: (organizationId: string, id: string) => Promise<string[]>;
+  postGroup: (organizationId: string, request: GroupRequest) => Promise<GroupResponse>;
+  putGroup: (organizationId: string, id: string, request: GroupRequest) => Promise<GroupResponse>;
+  putGroupUsers: (organizationId: string, id: string, request: string[]) => Promise<any>;
+  deleteGroup: (organizationId: string, id: string) => Promise<any>;
+  deleteGroupUser: (organizationId: string, id: string, organizationUserId: string) => Promise<any>;
 
-    getPolicy: (organizationId: string, type: PolicyType) => Promise<PolicyResponse>;
-    getPolicies: (organizationId: string) => Promise<ListResponse<PolicyResponse>>;
-    getPoliciesByToken: (
-        organizationId: string,
-        token: string,
-        email: string,
-        organizationUserId: string
-    ) => Promise<ListResponse<PolicyResponse>>;
-    putPolicy: (organizationId: string, type: PolicyType, request: PolicyRequest) => Promise<PolicyResponse>;
+  getPolicy: (organizationId: string, type: PolicyType) => Promise<PolicyResponse>;
+  getPolicies: (organizationId: string) => Promise<ListResponse<PolicyResponse>>;
+  getPoliciesByToken: (
+    organizationId: string,
+    token: string,
+    email: string,
+    organizationUserId: string
+  ) => Promise<ListResponse<PolicyResponse>>;
+  putPolicy: (
+    organizationId: string,
+    type: PolicyType,
+    request: PolicyRequest
+  ) => Promise<PolicyResponse>;
 
-    getOrganizationUser: (organizationId: string, id: string) => Promise<OrganizationUserDetailsResponse>;
-    getOrganizationUserGroups: (organizationId: string, id: string) => Promise<string[]>;
-    getOrganizationUsers: (organizationId: string) => Promise<ListResponse<OrganizationUserUserDetailsResponse>>;
-    getOrganizationUserResetPasswordDetails: (
-        organizationId: string,
-        id: string
-    ) => Promise<OrganizationUserResetPasswordDetailsReponse>;
-    postOrganizationUserInvite: (organizationId: string, request: OrganizationUserInviteRequest) => Promise<any>;
-    postOrganizationUserReinvite: (organizationId: string, id: string) => Promise<any>;
-    postManyOrganizationUserReinvite: (
-        organizationId: string,
-        request: OrganizationUserBulkRequest
-    ) => Promise<ListResponse<OrganizationUserBulkResponse>>;
-    postOrganizationUserAccept: (
-        organizationId: string,
-        id: string,
-        request: OrganizationUserAcceptRequest
-    ) => Promise<any>;
-    postOrganizationUserConfirm: (
-        organizationId: string,
-        id: string,
-        request: OrganizationUserConfirmRequest
-    ) => Promise<any>;
-    postOrganizationUsersPublicKey: (
-        organizationId: string,
-        request: OrganizationUserBulkRequest
-    ) => Promise<ListResponse<OrganizationUserBulkPublicKeyResponse>>;
-    postOrganizationUserBulkConfirm: (
-        organizationId: string,
-        request: OrganizationUserBulkConfirmRequest
-    ) => Promise<ListResponse<OrganizationUserBulkResponse>>;
+  getOrganizationUser: (
+    organizationId: string,
+    id: string
+  ) => Promise<OrganizationUserDetailsResponse>;
+  getOrganizationUserGroups: (organizationId: string, id: string) => Promise<string[]>;
+  getOrganizationUsers: (
+    organizationId: string
+  ) => Promise<ListResponse<OrganizationUserUserDetailsResponse>>;
+  getOrganizationUserResetPasswordDetails: (
+    organizationId: string,
+    id: string
+  ) => Promise<OrganizationUserResetPasswordDetailsReponse>;
+  postOrganizationUserInvite: (
+    organizationId: string,
+    request: OrganizationUserInviteRequest
+  ) => Promise<any>;
+  postOrganizationUserReinvite: (organizationId: string, id: string) => Promise<any>;
+  postManyOrganizationUserReinvite: (
+    organizationId: string,
+    request: OrganizationUserBulkRequest
+  ) => Promise<ListResponse<OrganizationUserBulkResponse>>;
+  postOrganizationUserAccept: (
+    organizationId: string,
+    id: string,
+    request: OrganizationUserAcceptRequest
+  ) => Promise<any>;
+  postOrganizationUserConfirm: (
+    organizationId: string,
+    id: string,
+    request: OrganizationUserConfirmRequest
+  ) => Promise<any>;
+  postOrganizationUsersPublicKey: (
+    organizationId: string,
+    request: OrganizationUserBulkRequest
+  ) => Promise<ListResponse<OrganizationUserBulkPublicKeyResponse>>;
+  postOrganizationUserBulkConfirm: (
+    organizationId: string,
+    request: OrganizationUserBulkConfirmRequest
+  ) => Promise<ListResponse<OrganizationUserBulkResponse>>;
 
-    putOrganizationUser: (organizationId: string, id: string, request: OrganizationUserUpdateRequest) => Promise<any>;
-    putOrganizationUserGroups: (
-        organizationId: string,
-        id: string,
-        request: OrganizationUserUpdateGroupsRequest
-    ) => Promise<any>;
-    putOrganizationUserResetPasswordEnrollment: (
-        organizationId: string,
-        userId: string,
-        request: OrganizationUserResetPasswordEnrollmentRequest
-    ) => Promise<any>;
-    putOrganizationUserResetPassword: (
-        organizationId: string,
-        id: string,
-        request: OrganizationUserResetPasswordRequest
-    ) => Promise<any>;
-    deleteOrganizationUser: (organizationId: string, id: string) => Promise<any>;
-    deleteManyOrganizationUsers: (
-        organizationId: string,
-        request: OrganizationUserBulkRequest
-    ) => Promise<ListResponse<OrganizationUserBulkResponse>>;
+  putOrganizationUser: (
+    organizationId: string,
+    id: string,
+    request: OrganizationUserUpdateRequest
+  ) => Promise<any>;
+  putOrganizationUserGroups: (
+    organizationId: string,
+    id: string,
+    request: OrganizationUserUpdateGroupsRequest
+  ) => Promise<any>;
+  putOrganizationUserResetPasswordEnrollment: (
+    organizationId: string,
+    userId: string,
+    request: OrganizationUserResetPasswordEnrollmentRequest
+  ) => Promise<any>;
+  putOrganizationUserResetPassword: (
+    organizationId: string,
+    id: string,
+    request: OrganizationUserResetPasswordRequest
+  ) => Promise<any>;
+  deleteOrganizationUser: (organizationId: string, id: string) => Promise<any>;
+  deleteManyOrganizationUsers: (
+    organizationId: string,
+    request: OrganizationUserBulkRequest
+  ) => Promise<ListResponse<OrganizationUserBulkResponse>>;
 
-    getSync: () => Promise<SyncResponse>;
-    postImportDirectory: (organizationId: string, request: ImportDirectoryRequest) => Promise<any>;
-    postPublicImportDirectory: (request: OrganizationImportRequest) => Promise<any>;
+  getSync: () => Promise<SyncResponse>;
+  postImportDirectory: (organizationId: string, request: ImportDirectoryRequest) => Promise<any>;
+  postPublicImportDirectory: (request: OrganizationImportRequest) => Promise<any>;
 
-    getSettingsDomains: () => Promise<DomainsResponse>;
-    putSettingsDomains: (request: UpdateDomainsRequest) => Promise<DomainsResponse>;
+  getSettingsDomains: () => Promise<DomainsResponse>;
+  putSettingsDomains: (request: UpdateDomainsRequest) => Promise<DomainsResponse>;
 
-    getTwoFactorProviders: () => Promise<ListResponse<TwoFactorProviderResponse>>;
-    getTwoFactorOrganizationProviders: (organizationId: string) => Promise<ListResponse<TwoFactorProviderResponse>>;
-    getTwoFactorAuthenticator: (request: SecretVerificationRequest) => Promise<TwoFactorAuthenticatorResponse>;
-    getTwoFactorEmail: (request: SecretVerificationRequest) => Promise<TwoFactorEmailResponse>;
-    getTwoFactorDuo: (request: SecretVerificationRequest) => Promise<TwoFactorDuoResponse>;
-    getTwoFactorOrganizationDuo: (
-        organizationId: string,
-        request: SecretVerificationRequest
-    ) => Promise<TwoFactorDuoResponse>;
-    getTwoFactorYubiKey: (request: SecretVerificationRequest) => Promise<TwoFactorYubiKeyResponse>;
-    getTwoFactorWebAuthn: (request: SecretVerificationRequest) => Promise<TwoFactorWebAuthnResponse>;
-    getTwoFactorWebAuthnChallenge: (request: SecretVerificationRequest) => Promise<ChallengeResponse>;
-    getTwoFactorRecover: (request: SecretVerificationRequest) => Promise<TwoFactorRecoverResponse>;
-    putTwoFactorAuthenticator: (
-        request: UpdateTwoFactorAuthenticatorRequest
-    ) => Promise<TwoFactorAuthenticatorResponse>;
-    putTwoFactorEmail: (request: UpdateTwoFactorEmailRequest) => Promise<TwoFactorEmailResponse>;
-    putTwoFactorDuo: (request: UpdateTwoFactorDuoRequest) => Promise<TwoFactorDuoResponse>;
-    putTwoFactorOrganizationDuo: (
-        organizationId: string,
-        request: UpdateTwoFactorDuoRequest
-    ) => Promise<TwoFactorDuoResponse>;
-    putTwoFactorYubiKey: (request: UpdateTwoFactorYubioOtpRequest) => Promise<TwoFactorYubiKeyResponse>;
-    putTwoFactorWebAuthn: (request: UpdateTwoFactorWebAuthnRequest) => Promise<TwoFactorWebAuthnResponse>;
-    deleteTwoFactorWebAuthn: (request: UpdateTwoFactorWebAuthnDeleteRequest) => Promise<TwoFactorWebAuthnResponse>;
-    putTwoFactorDisable: (request: TwoFactorProviderRequest) => Promise<TwoFactorProviderResponse>;
-    putTwoFactorOrganizationDisable: (
-        organizationId: string,
-        request: TwoFactorProviderRequest
-    ) => Promise<TwoFactorProviderResponse>;
-    postTwoFactorRecover: (request: TwoFactorRecoveryRequest) => Promise<any>;
-    postTwoFactorEmailSetup: (request: TwoFactorEmailRequest) => Promise<any>;
-    postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
+  getTwoFactorProviders: () => Promise<ListResponse<TwoFactorProviderResponse>>;
+  getTwoFactorOrganizationProviders: (
+    organizationId: string
+  ) => Promise<ListResponse<TwoFactorProviderResponse>>;
+  getTwoFactorAuthenticator: (
+    request: SecretVerificationRequest
+  ) => Promise<TwoFactorAuthenticatorResponse>;
+  getTwoFactorEmail: (request: SecretVerificationRequest) => Promise<TwoFactorEmailResponse>;
+  getTwoFactorDuo: (request: SecretVerificationRequest) => Promise<TwoFactorDuoResponse>;
+  getTwoFactorOrganizationDuo: (
+    organizationId: string,
+    request: SecretVerificationRequest
+  ) => Promise<TwoFactorDuoResponse>;
+  getTwoFactorYubiKey: (request: SecretVerificationRequest) => Promise<TwoFactorYubiKeyResponse>;
+  getTwoFactorWebAuthn: (request: SecretVerificationRequest) => Promise<TwoFactorWebAuthnResponse>;
+  getTwoFactorWebAuthnChallenge: (request: SecretVerificationRequest) => Promise<ChallengeResponse>;
+  getTwoFactorRecover: (request: SecretVerificationRequest) => Promise<TwoFactorRecoverResponse>;
+  putTwoFactorAuthenticator: (
+    request: UpdateTwoFactorAuthenticatorRequest
+  ) => Promise<TwoFactorAuthenticatorResponse>;
+  putTwoFactorEmail: (request: UpdateTwoFactorEmailRequest) => Promise<TwoFactorEmailResponse>;
+  putTwoFactorDuo: (request: UpdateTwoFactorDuoRequest) => Promise<TwoFactorDuoResponse>;
+  putTwoFactorOrganizationDuo: (
+    organizationId: string,
+    request: UpdateTwoFactorDuoRequest
+  ) => Promise<TwoFactorDuoResponse>;
+  putTwoFactorYubiKey: (
+    request: UpdateTwoFactorYubioOtpRequest
+  ) => Promise<TwoFactorYubiKeyResponse>;
+  putTwoFactorWebAuthn: (
+    request: UpdateTwoFactorWebAuthnRequest
+  ) => Promise<TwoFactorWebAuthnResponse>;
+  deleteTwoFactorWebAuthn: (
+    request: UpdateTwoFactorWebAuthnDeleteRequest
+  ) => Promise<TwoFactorWebAuthnResponse>;
+  putTwoFactorDisable: (request: TwoFactorProviderRequest) => Promise<TwoFactorProviderResponse>;
+  putTwoFactorOrganizationDisable: (
+    organizationId: string,
+    request: TwoFactorProviderRequest
+  ) => Promise<TwoFactorProviderResponse>;
+  postTwoFactorRecover: (request: TwoFactorRecoveryRequest) => Promise<any>;
+  postTwoFactorEmailSetup: (request: TwoFactorEmailRequest) => Promise<any>;
+  postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
 
-    getEmergencyAccessTrusted: () => Promise<ListResponse<EmergencyAccessGranteeDetailsResponse>>;
-    getEmergencyAccessGranted: () => Promise<ListResponse<EmergencyAccessGrantorDetailsResponse>>;
-    getEmergencyAccess: (id: string) => Promise<EmergencyAccessGranteeDetailsResponse>;
-    getEmergencyGrantorPolicies: (id: string) => Promise<ListResponse<PolicyResponse>>;
-    putEmergencyAccess: (id: string, request: EmergencyAccessUpdateRequest) => Promise<any>;
-    deleteEmergencyAccess: (id: string) => Promise<any>;
-    postEmergencyAccessInvite: (request: EmergencyAccessInviteRequest) => Promise<any>;
-    postEmergencyAccessReinvite: (id: string) => Promise<any>;
-    postEmergencyAccessAccept: (id: string, request: EmergencyAccessAcceptRequest) => Promise<any>;
-    postEmergencyAccessConfirm: (id: string, request: EmergencyAccessConfirmRequest) => Promise<any>;
-    postEmergencyAccessInitiate: (id: string) => Promise<any>;
-    postEmergencyAccessApprove: (id: string) => Promise<any>;
-    postEmergencyAccessReject: (id: string) => Promise<any>;
-    postEmergencyAccessTakeover: (id: string) => Promise<EmergencyAccessTakeoverResponse>;
-    postEmergencyAccessPassword: (id: string, request: EmergencyAccessPasswordRequest) => Promise<any>;
-    postEmergencyAccessView: (id: string) => Promise<EmergencyAccessViewResponse>;
+  getEmergencyAccessTrusted: () => Promise<ListResponse<EmergencyAccessGranteeDetailsResponse>>;
+  getEmergencyAccessGranted: () => Promise<ListResponse<EmergencyAccessGrantorDetailsResponse>>;
+  getEmergencyAccess: (id: string) => Promise<EmergencyAccessGranteeDetailsResponse>;
+  getEmergencyGrantorPolicies: (id: string) => Promise<ListResponse<PolicyResponse>>;
+  putEmergencyAccess: (id: string, request: EmergencyAccessUpdateRequest) => Promise<any>;
+  deleteEmergencyAccess: (id: string) => Promise<any>;
+  postEmergencyAccessInvite: (request: EmergencyAccessInviteRequest) => Promise<any>;
+  postEmergencyAccessReinvite: (id: string) => Promise<any>;
+  postEmergencyAccessAccept: (id: string, request: EmergencyAccessAcceptRequest) => Promise<any>;
+  postEmergencyAccessConfirm: (id: string, request: EmergencyAccessConfirmRequest) => Promise<any>;
+  postEmergencyAccessInitiate: (id: string) => Promise<any>;
+  postEmergencyAccessApprove: (id: string) => Promise<any>;
+  postEmergencyAccessReject: (id: string) => Promise<any>;
+  postEmergencyAccessTakeover: (id: string) => Promise<EmergencyAccessTakeoverResponse>;
+  postEmergencyAccessPassword: (
+    id: string,
+    request: EmergencyAccessPasswordRequest
+  ) => Promise<any>;
+  postEmergencyAccessView: (id: string) => Promise<EmergencyAccessViewResponse>;
 
-    getOrganization: (id: string) => Promise<OrganizationResponse>;
-    getOrganizationBilling: (id: string) => Promise<BillingResponse>;
-    getOrganizationSubscription: (id: string) => Promise<OrganizationSubscriptionResponse>;
-    getOrganizationLicense: (id: string, installationId: string) => Promise<any>;
-    getOrganizationTaxInfo: (id: string) => Promise<TaxInfoResponse>;
-    getOrganizationAutoEnrollStatus: (identifier: string) => Promise<OrganizationAutoEnrollStatusResponse>;
-    getOrganizationSso: (id: string) => Promise<OrganizationSsoResponse>;
-    postOrganization: (request: OrganizationCreateRequest) => Promise<OrganizationResponse>;
-    putOrganization: (id: string, request: OrganizationUpdateRequest) => Promise<OrganizationResponse>;
-    putOrganizationTaxInfo: (id: string, request: OrganizationTaxInfoUpdateRequest) => Promise<any>;
-    postLeaveOrganization: (id: string) => Promise<any>;
-    postOrganizationLicense: (data: FormData) => Promise<OrganizationResponse>;
-    postOrganizationLicenseUpdate: (id: string, data: FormData) => Promise<any>;
-    postOrganizationApiKey: (id: string, request: SecretVerificationRequest) => Promise<ApiKeyResponse>;
-    postOrganizationRotateApiKey: (id: string, request: SecretVerificationRequest) => Promise<ApiKeyResponse>;
-    postOrganizationSso: (id: string, request: OrganizationSsoRequest) => Promise<OrganizationSsoResponse>;
-    postOrganizationUpgrade: (id: string, request: OrganizationUpgradeRequest) => Promise<PaymentResponse>;
-    postOrganizationUpdateSubscription: (id: string, request: OrganizationSubscriptionUpdateRequest) => Promise<void>;
-    postOrganizationSeat: (id: string, request: SeatRequest) => Promise<PaymentResponse>;
-    postOrganizationStorage: (id: string, request: StorageRequest) => Promise<any>;
-    postOrganizationPayment: (id: string, request: PaymentRequest) => Promise<any>;
-    postOrganizationVerifyBank: (id: string, request: VerifyBankRequest) => Promise<any>;
-    postOrganizationCancel: (id: string) => Promise<any>;
-    postOrganizationReinstate: (id: string) => Promise<any>;
-    deleteOrganization: (id: string, request: SecretVerificationRequest) => Promise<any>;
-    getPlans: () => Promise<ListResponse<PlanResponse>>;
-    getTaxRates: () => Promise<ListResponse<TaxRateResponse>>;
-    getOrganizationKeys: (id: string) => Promise<OrganizationKeysResponse>;
-    postOrganizationKeys: (id: string, request: OrganizationKeysRequest) => Promise<OrganizationKeysResponse>;
+  getOrganization: (id: string) => Promise<OrganizationResponse>;
+  getOrganizationBilling: (id: string) => Promise<BillingResponse>;
+  getOrganizationSubscription: (id: string) => Promise<OrganizationSubscriptionResponse>;
+  getOrganizationLicense: (id: string, installationId: string) => Promise<any>;
+  getOrganizationTaxInfo: (id: string) => Promise<TaxInfoResponse>;
+  getOrganizationAutoEnrollStatus: (
+    identifier: string
+  ) => Promise<OrganizationAutoEnrollStatusResponse>;
+  getOrganizationSso: (id: string) => Promise<OrganizationSsoResponse>;
+  postOrganization: (request: OrganizationCreateRequest) => Promise<OrganizationResponse>;
+  putOrganization: (
+    id: string,
+    request: OrganizationUpdateRequest
+  ) => Promise<OrganizationResponse>;
+  putOrganizationTaxInfo: (id: string, request: OrganizationTaxInfoUpdateRequest) => Promise<any>;
+  postLeaveOrganization: (id: string) => Promise<any>;
+  postOrganizationLicense: (data: FormData) => Promise<OrganizationResponse>;
+  postOrganizationLicenseUpdate: (id: string, data: FormData) => Promise<any>;
+  postOrganizationApiKey: (
+    id: string,
+    request: SecretVerificationRequest
+  ) => Promise<ApiKeyResponse>;
+  postOrganizationRotateApiKey: (
+    id: string,
+    request: SecretVerificationRequest
+  ) => Promise<ApiKeyResponse>;
+  postOrganizationSso: (
+    id: string,
+    request: OrganizationSsoRequest
+  ) => Promise<OrganizationSsoResponse>;
+  postOrganizationUpgrade: (
+    id: string,
+    request: OrganizationUpgradeRequest
+  ) => Promise<PaymentResponse>;
+  postOrganizationUpdateSubscription: (
+    id: string,
+    request: OrganizationSubscriptionUpdateRequest
+  ) => Promise<void>;
+  postOrganizationSeat: (id: string, request: SeatRequest) => Promise<PaymentResponse>;
+  postOrganizationStorage: (id: string, request: StorageRequest) => Promise<any>;
+  postOrganizationPayment: (id: string, request: PaymentRequest) => Promise<any>;
+  postOrganizationVerifyBank: (id: string, request: VerifyBankRequest) => Promise<any>;
+  postOrganizationCancel: (id: string) => Promise<any>;
+  postOrganizationReinstate: (id: string) => Promise<any>;
+  deleteOrganization: (id: string, request: SecretVerificationRequest) => Promise<any>;
+  getPlans: () => Promise<ListResponse<PlanResponse>>;
+  getTaxRates: () => Promise<ListResponse<TaxRateResponse>>;
+  getOrganizationKeys: (id: string) => Promise<OrganizationKeysResponse>;
+  postOrganizationKeys: (
+    id: string,
+    request: OrganizationKeysRequest
+  ) => Promise<OrganizationKeysResponse>;
 
-    postProviderSetup: (id: string, request: ProviderSetupRequest) => Promise<ProviderResponse>;
-    getProvider: (id: string) => Promise<ProviderResponse>;
-    putProvider: (id: string, request: ProviderUpdateRequest) => Promise<ProviderResponse>;
+  postProviderSetup: (id: string, request: ProviderSetupRequest) => Promise<ProviderResponse>;
+  getProvider: (id: string) => Promise<ProviderResponse>;
+  putProvider: (id: string, request: ProviderUpdateRequest) => Promise<ProviderResponse>;
 
-    getProviderUsers: (providerId: string) => Promise<ListResponse<ProviderUserUserDetailsResponse>>;
-    getProviderUser: (providerId: string, id: string) => Promise<ProviderUserResponse>;
-    postProviderUserInvite: (providerId: string, request: ProviderUserInviteRequest) => Promise<any>;
-    postProviderUserReinvite: (providerId: string, id: string) => Promise<any>;
-    postManyProviderUserReinvite: (
-        providerId: string,
-        request: ProviderUserBulkRequest
-    ) => Promise<ListResponse<ProviderUserBulkResponse>>;
-    postProviderUserAccept: (providerId: string, id: string, request: ProviderUserAcceptRequest) => Promise<any>;
-    postProviderUserConfirm: (providerId: string, id: string, request: ProviderUserConfirmRequest) => Promise<any>;
-    postProviderUsersPublicKey: (
-        providerId: string,
-        request: ProviderUserBulkRequest
-    ) => Promise<ListResponse<ProviderUserBulkPublicKeyResponse>>;
-    postProviderUserBulkConfirm: (
-        providerId: string,
-        request: ProviderUserBulkConfirmRequest
-    ) => Promise<ListResponse<ProviderUserBulkResponse>>;
-    putProviderUser: (providerId: string, id: string, request: ProviderUserUpdateRequest) => Promise<any>;
-    deleteProviderUser: (organizationId: string, id: string) => Promise<any>;
-    deleteManyProviderUsers: (
-        providerId: string,
-        request: ProviderUserBulkRequest
-    ) => Promise<ListResponse<ProviderUserBulkResponse>>;
-    getProviderClients: (providerId: string) => Promise<ListResponse<ProviderOrganizationOrganizationDetailsResponse>>;
-    postProviderAddOrganization: (providerId: string, request: ProviderAddOrganizationRequest) => Promise<any>;
-    postProviderCreateOrganization: (
-        providerId: string,
-        request: ProviderOrganizationCreateRequest
-    ) => Promise<ProviderOrganizationResponse>;
-    deleteProviderOrganization: (providerId: string, organizationId: string) => Promise<any>;
+  getProviderUsers: (providerId: string) => Promise<ListResponse<ProviderUserUserDetailsResponse>>;
+  getProviderUser: (providerId: string, id: string) => Promise<ProviderUserResponse>;
+  postProviderUserInvite: (providerId: string, request: ProviderUserInviteRequest) => Promise<any>;
+  postProviderUserReinvite: (providerId: string, id: string) => Promise<any>;
+  postManyProviderUserReinvite: (
+    providerId: string,
+    request: ProviderUserBulkRequest
+  ) => Promise<ListResponse<ProviderUserBulkResponse>>;
+  postProviderUserAccept: (
+    providerId: string,
+    id: string,
+    request: ProviderUserAcceptRequest
+  ) => Promise<any>;
+  postProviderUserConfirm: (
+    providerId: string,
+    id: string,
+    request: ProviderUserConfirmRequest
+  ) => Promise<any>;
+  postProviderUsersPublicKey: (
+    providerId: string,
+    request: ProviderUserBulkRequest
+  ) => Promise<ListResponse<ProviderUserBulkPublicKeyResponse>>;
+  postProviderUserBulkConfirm: (
+    providerId: string,
+    request: ProviderUserBulkConfirmRequest
+  ) => Promise<ListResponse<ProviderUserBulkResponse>>;
+  putProviderUser: (
+    providerId: string,
+    id: string,
+    request: ProviderUserUpdateRequest
+  ) => Promise<any>;
+  deleteProviderUser: (organizationId: string, id: string) => Promise<any>;
+  deleteManyProviderUsers: (
+    providerId: string,
+    request: ProviderUserBulkRequest
+  ) => Promise<ListResponse<ProviderUserBulkResponse>>;
+  getProviderClients: (
+    providerId: string
+  ) => Promise<ListResponse<ProviderOrganizationOrganizationDetailsResponse>>;
+  postProviderAddOrganization: (
+    providerId: string,
+    request: ProviderAddOrganizationRequest
+  ) => Promise<any>;
+  postProviderCreateOrganization: (
+    providerId: string,
+    request: ProviderOrganizationCreateRequest
+  ) => Promise<ProviderOrganizationResponse>;
+  deleteProviderOrganization: (providerId: string, organizationId: string) => Promise<any>;
 
-    getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
-    getEventsCipher: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
-    getEventsOrganization: (
-        id: string,
-        start: string,
-        end: string,
-        token: string
-    ) => Promise<ListResponse<EventResponse>>;
-    getEventsOrganizationUser: (
-        organizationId: string,
-        id: string,
-        start: string,
-        end: string,
-        token: string
-    ) => Promise<ListResponse<EventResponse>>;
-    getEventsProvider: (id: string, start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
-    getEventsProviderUser: (
-        providerId: string,
-        id: string,
-        start: string,
-        end: string,
-        token: string
-    ) => Promise<ListResponse<EventResponse>>;
-    postEventsCollect: (request: EventRequest[]) => Promise<any>;
+  getEvents: (start: string, end: string, token: string) => Promise<ListResponse<EventResponse>>;
+  getEventsCipher: (
+    id: string,
+    start: string,
+    end: string,
+    token: string
+  ) => Promise<ListResponse<EventResponse>>;
+  getEventsOrganization: (
+    id: string,
+    start: string,
+    end: string,
+    token: string
+  ) => Promise<ListResponse<EventResponse>>;
+  getEventsOrganizationUser: (
+    organizationId: string,
+    id: string,
+    start: string,
+    end: string,
+    token: string
+  ) => Promise<ListResponse<EventResponse>>;
+  getEventsProvider: (
+    id: string,
+    start: string,
+    end: string,
+    token: string
+  ) => Promise<ListResponse<EventResponse>>;
+  getEventsProviderUser: (
+    providerId: string,
+    id: string,
+    start: string,
+    end: string,
+    token: string
+  ) => Promise<ListResponse<EventResponse>>;
+  postEventsCollect: (request: EventRequest[]) => Promise<any>;
 
-    deleteSsoUser: (organizationId: string) => Promise<any>;
-    getSsoUserIdentifier: () => Promise<string>;
+  deleteSsoUser: (organizationId: string) => Promise<any>;
+  getSsoUserIdentifier: () => Promise<string>;
 
-    getUserPublicKey: (id: string) => Promise<UserKeyResponse>;
+  getUserPublicKey: (id: string) => Promise<UserKeyResponse>;
 
-    getHibpBreach: (username: string) => Promise<BreachAccountResponse[]>;
+  getHibpBreach: (username: string) => Promise<BreachAccountResponse[]>;
 
-    postBitPayInvoice: (request: BitPayInvoiceRequest) => Promise<string>;
-    postSetupPayment: () => Promise<string>;
+  postBitPayInvoice: (request: BitPayInvoiceRequest) => Promise<string>;
+  postSetupPayment: () => Promise<string>;
 
-    getActiveBearerToken: () => Promise<string>;
-    fetch: (request: Request) => Promise<Response>;
-    nativeFetch: (request: Request) => Promise<Response>;
+  getActiveBearerToken: () => Promise<string>;
+  fetch: (request: Request) => Promise<Response>;
+  nativeFetch: (request: Request) => Promise<Response>;
 
-    preValidateSso: (identifier: string) => Promise<boolean>;
+  preValidateSso: (identifier: string) => Promise<boolean>;
 
-    postCreateSponsorship: (sponsorshipOrgId: string, request: OrganizationSponsorshipCreateRequest) => Promise<void>;
-    deleteRevokeSponsorship: (sponsoringOrganizationId: string) => Promise<void>;
-    deleteRemoveSponsorship: (sponsoringOrgId: string) => Promise<void>;
-    postPreValidateSponsorshipToken: (sponsorshipToken: string) => Promise<boolean>;
-    postRedeemSponsorship: (sponsorshipToken: string, request: OrganizationSponsorshipRedeemRequest) => Promise<void>;
-    postResendSponsorshipOffer: (sponsoringOrgId: string) => Promise<void>;
+  postCreateSponsorship: (
+    sponsorshipOrgId: string,
+    request: OrganizationSponsorshipCreateRequest
+  ) => Promise<void>;
+  deleteRevokeSponsorship: (sponsoringOrganizationId: string) => Promise<void>;
+  deleteRemoveSponsorship: (sponsoringOrgId: string) => Promise<void>;
+  postPreValidateSponsorshipToken: (sponsorshipToken: string) => Promise<boolean>;
+  postRedeemSponsorship: (
+    sponsorshipToken: string,
+    request: OrganizationSponsorshipRedeemRequest
+  ) => Promise<void>;
+  postResendSponsorshipOffer: (sponsoringOrgId: string) => Promise<void>;
 
-    getUserKeyFromKeyConnector: (keyConnectorUrl: string) => Promise<KeyConnectorUserKeyResponse>;
-    postUserKeyToKeyConnector: (keyConnectorUrl: string, request: KeyConnectorUserKeyRequest) => Promise<void>;
-    getKeyConnectorAlive: (keyConnectorUrl: string) => Promise<void>;
+  getUserKeyFromKeyConnector: (keyConnectorUrl: string) => Promise<KeyConnectorUserKeyResponse>;
+  postUserKeyToKeyConnector: (
+    keyConnectorUrl: string,
+    request: KeyConnectorUserKeyRequest
+  ) => Promise<void>;
+  getKeyConnectorAlive: (keyConnectorUrl: string) => Promise<void>;
 }

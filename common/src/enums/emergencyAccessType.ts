@@ -1,4 +1,4 @@
 export enum EmergencyAccessType {
-    View = 0,
-    Takeover = 1,
+  View = 0,
+  Takeover = 1,
 }
