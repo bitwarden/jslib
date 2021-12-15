@@ -8,30 +8,33 @@ import { ModalService } from "./modal.service";
 
 @Injectable()
 export class PasswordRepromptService implements PasswordRepromptServiceAbstraction {
-    protected component = PasswordRepromptComponent;
+  protected component = PasswordRepromptComponent;
 
-    constructor(private modalService: ModalService, private keyConnectorService: KeyConnectorService) {}
+  constructor(
+    private modalService: ModalService,
+    private keyConnectorService: KeyConnectorService
+  ) {}
 
-    protectedFields() {
-        return ["TOTP", "Password", "H_Field", "Card Number", "Security Code"];
+  protectedFields() {
+    return ["TOTP", "Password", "H_Field", "Card Number", "Security Code"];
+  }
+
+  async showPasswordPrompt() {
+    if (!(await this.enabled())) {
+      return true;
     }
 
-    async showPasswordPrompt() {
-        if (!(await this.enabled())) {
-            return true;
-        }
+    const ref = this.modalService.open(this.component, { allowMultipleModals: true });
 
-        const ref = this.modalService.open(this.component, { allowMultipleModals: true });
-
-        if (ref == null) {
-            return false;
-        }
-
-        const result = await ref.onClosedPromise();
-        return result === true;
+    if (ref == null) {
+      return false;
     }
 
-    async enabled() {
-        return !(await this.keyConnectorService.getUsesKeyConnector());
-    }
+    const result = await ref.onClosedPromise();
+    return result === true;
+  }
+
+  async enabled() {
+    return !(await this.keyConnectorService.getUsesKeyConnector());
+  }
 }
