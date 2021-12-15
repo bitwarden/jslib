@@ -6,43 +6,45 @@ import { OrganizationData } from "../models/data/organizationData";
 import { Organization } from "../models/domain/organization";
 
 export class OrganizationService implements OrganizationServiceAbstraction {
-    constructor(private stateService: StateService) {}
+  constructor(private stateService: StateService) {}
 
-    async get(id: string): Promise<Organization> {
-        const organizations = await this.stateService.getOrganizations();
-        if (organizations == null || !organizations.hasOwnProperty(id)) {
-            return null;
-        }
-
-        return new Organization(organizations[id]);
+  async get(id: string): Promise<Organization> {
+    const organizations = await this.stateService.getOrganizations();
+    if (organizations == null || !organizations.hasOwnProperty(id)) {
+      return null;
     }
 
-    async getByIdentifier(identifier: string): Promise<Organization> {
-        const organizations = await this.getAll();
-        if (organizations == null || organizations.length === 0) {
-            return null;
-        }
+    return new Organization(organizations[id]);
+  }
 
-        return organizations.find((o) => o.identifier === identifier);
+  async getByIdentifier(identifier: string): Promise<Organization> {
+    const organizations = await this.getAll();
+    if (organizations == null || organizations.length === 0) {
+      return null;
     }
 
-    async getAll(userId?: string): Promise<Organization[]> {
-        const organizations = await this.stateService.getOrganizations({ userId: userId });
-        const response: Organization[] = [];
-        for (const id in organizations) {
-            if (organizations.hasOwnProperty(id) && !organizations[id].isProviderUser) {
-                response.push(new Organization(organizations[id]));
-            }
-        }
-        return response;
-    }
+    return organizations.find((o) => o.identifier === identifier);
+  }
 
-    async save(organizations: { [id: string]: OrganizationData }) {
-        return await this.stateService.setOrganizations(organizations);
+  async getAll(userId?: string): Promise<Organization[]> {
+    const organizations = await this.stateService.getOrganizations({ userId: userId });
+    const response: Organization[] = [];
+    for (const id in organizations) {
+      if (organizations.hasOwnProperty(id) && !organizations[id].isProviderUser) {
+        response.push(new Organization(organizations[id]));
+      }
     }
+    return response;
+  }
 
-    async canManageSponsorships(): Promise<boolean> {
-        const orgs = await this.getAll();
-        return orgs.some((o) => o.familySponsorshipAvailable || o.familySponsorshipFriendlyName !== null);
-    }
+  async save(organizations: { [id: string]: OrganizationData }) {
+    return await this.stateService.setOrganizations(organizations);
+  }
+
+  async canManageSponsorships(): Promise<boolean> {
+    const orgs = await this.getAll();
+    return orgs.some(
+      (o) => o.familySponsorshipAvailable || o.familySponsorshipFriendlyName !== null
+    );
+  }
 }
