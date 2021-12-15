@@ -4,7 +4,7 @@ export class GlobalState {
     lastActive?: number;
     locale?: string;
     openAtLogin?: boolean;
-    organizationInvitation?: any;    
+    organizationInvitation?: any;
     ssoCodeVerifier?: string;
     ssoOrganizationIdentifier?: string;
     ssoState?: string;
