@@ -1,22 +1,18 @@
-import {
-    Directive,
-    ElementRef,
-    HostListener,
-} from '@angular/core';
+import { Directive, ElementRef, HostListener } from "@angular/core";
 
-import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
+import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 
 @Directive({
-    selector: '[appSelectCopy]',
+    selector: "[appSelectCopy]",
 })
 export class SelectCopyDirective {
-    constructor(private el: ElementRef, private platformUtilsService: PlatformUtilsService) { }
+    constructor(private el: ElementRef, private platformUtilsService: PlatformUtilsService) {}
 
-    @HostListener('copy') onCopy() {
+    @HostListener("copy") onCopy() {
         if (window == null) {
             return;
         }
-        let copyText = '';
+        let copyText = "";
         const selection = window.getSelection();
         for (let i = 0; i < selection.rangeCount; i++) {
             const range = selection.getRangeAt(i);
@@ -30,7 +26,7 @@ export class SelectCopyDirective {
             const newLinePos = text.search(/(?:\r\n|\r|\n)/);
             if (newLinePos > -1) {
                 const otherPart = text.substr(newLinePos).trim();
-                if (otherPart === '') {
+                if (otherPart === "") {
                     stringEndPos = newLinePos;
                 }
             }

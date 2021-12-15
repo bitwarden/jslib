@@ -1,7 +1,4 @@
-import {
-    Pipe,
-    PipeTransform,
-} from '@angular/core';
+import { Pipe, PipeTransform } from "@angular/core";
 
 interface User {
     name?: string;
@@ -9,7 +6,7 @@ interface User {
 }
 
 @Pipe({
-    name: 'userName',
+    name: "userName",
 })
 export class UserNamePipe implements PipeTransform {
     transform(user?: User): string {
@@ -17,6 +14,6 @@ export class UserNamePipe implements PipeTransform {
             return null;
         }
 
-        return user.name == null || user.name.trim() === '' ? user.email : user.name;
+        return user.name == null || user.name.trim() === "" ? user.email : user.name;
     }
 }

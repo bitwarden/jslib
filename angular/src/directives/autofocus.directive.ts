@@ -1,25 +1,20 @@
-import {
-    Directive,
-    ElementRef,
-    Input,
-    NgZone,
-} from '@angular/core';
+import { Directive, ElementRef, Input, NgZone } from "@angular/core";
 
-import { take } from 'rxjs/operators';
+import { take } from "rxjs/operators";
 
-import { Utils } from 'jslib-common/misc/utils';
+import { Utils } from "jslib-common/misc/utils";
 
 @Directive({
-    selector: '[appAutofocus]',
+    selector: "[appAutofocus]",
 })
 export class AutofocusDirective {
     @Input() set appAutofocus(condition: boolean | string) {
-        this.autofocus = condition === '' || condition === true;
+        this.autofocus = condition === "" || condition === true;
     }
 
     private autofocus: boolean;
 
-    constructor(private el: ElementRef, private ngZone: NgZone) { }
+    constructor(private el: ElementRef, private ngZone: NgZone) {}
 
     ngOnInit() {
         if (!Utils.isMobileBrowser && this.autofocus) {

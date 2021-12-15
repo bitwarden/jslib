@@ -7,13 +7,13 @@ import {
     Injectable,
     Injector,
     Type,
-    ViewContainerRef
-} from '@angular/core';
-import { first } from 'rxjs/operators';
+    ViewContainerRef,
+} from "@angular/core";
+import { first } from "rxjs/operators";
 
-import { DynamicModalComponent } from '../components/modal/dynamic-modal.component';
-import { ModalInjector } from '../components/modal/modal-injector';
-import { ModalRef } from '../components/modal/modal.ref';
+import { DynamicModalComponent } from "../components/modal/dynamic-modal.component";
+import { ModalInjector } from "../components/modal/modal-injector";
+import { ModalRef } from "../components/modal/modal.ref";
 
 export class ModalConfig<D = any> {
     data?: D;
@@ -28,10 +28,13 @@ export class ModalService {
     // therefore modules needs to manually initialize their resolvers.
     private factoryResolvers: Map<Type<any>, ComponentFactoryResolver> = new Map();
 
-    constructor(private componentFactoryResolver: ComponentFactoryResolver, private applicationRef: ApplicationRef,
-        private injector: Injector) {
-        document.addEventListener('keyup', event => {
-            if (event.key === 'Escape' && this.modalCount > 0) {
+    constructor(
+        private componentFactoryResolver: ComponentFactoryResolver,
+        private applicationRef: ApplicationRef,
+        private injector: Injector
+    ) {
+        document.addEventListener("keyup", (event) => {
+            if (event.key === "Escape" && this.modalCount > 0) {
                 this.topModal.instance.close();
             }
         });
@@ -45,9 +48,11 @@ export class ModalService {
         return this.modalList[this.modalCount - 1];
     }
 
-    async openViewRef<T>(componentType: Type<T>, viewContainerRef: ViewContainerRef,
-        setComponentParameters: (component: T) => void = null): Promise<[ModalRef, T]> {
-
+    async openViewRef<T>(
+        componentType: Type<T>,
+        viewContainerRef: ViewContainerRef,
+        setComponentParameters: (component: T) => void = null
+    ): Promise<[ModalRef, T]> {
         const [modalRef, modalComponentRef] = this.openInternal(componentType, null, false);
         modalComponentRef.instance.setComponentParameters = setComponentParameters;
 
@@ -68,7 +73,10 @@ export class ModalService {
         return modalRef;
     }
 
-    registerComponentFactoryResolver<T>(componentType: Type<T>, componentFactoryResolver: ComponentFactoryResolver): void {
+    registerComponentFactoryResolver<T>(
+        componentType: Type<T>,
+        componentFactoryResolver: ComponentFactoryResolver
+    ): void {
         this.factoryResolvers.set(componentType, componentFactoryResolver);
     }
 
@@ -80,9 +88,11 @@ export class ModalService {
         return this.componentFactoryResolver.resolveComponentFactory(componentType);
     }
 
-    protected openInternal(componentType: Type<any>, config?: ModalConfig, attachToDom?: boolean):
-        [ModalRef, ComponentRef<DynamicModalComponent>] {
-
+    protected openInternal(
+        componentType: Type<any>,
+        config?: ModalConfig,
+        attachToDom?: boolean
+    ): [ModalRef, ComponentRef<DynamicModalComponent>] {
         const [modalRef, componentRef] = this.createModalComponent(config);
         componentRef.instance.childComponentType = componentType;
 
@@ -115,25 +125,25 @@ export class ModalService {
         let backdrop: HTMLElement = null;
 
         // Add backdrop, setup [data-dismiss] handler.
-        modalRef.onCreated.pipe(first()).subscribe(el => {
-            document.body.classList.add('modal-open');
+        modalRef.onCreated.pipe(first()).subscribe((el) => {
+            document.body.classList.add("modal-open");
 
-            const modalEl: HTMLElement = el.querySelector('.modal');
-            const dialogEl = modalEl.querySelector('.modal-dialog') as HTMLElement;
+            const modalEl: HTMLElement = el.querySelector(".modal");
+            const dialogEl = modalEl.querySelector(".modal-dialog") as HTMLElement;
 
-            backdrop = document.createElement('div');
-            backdrop.className = 'modal-backdrop fade';
+            backdrop = document.createElement("div");
+            backdrop.className = "modal-backdrop fade";
             backdrop.style.zIndex = `${this.modalCount}040`;
             modalEl.prepend(backdrop);
 
-            dialogEl.addEventListener('click', (e: Event) => {
+            dialogEl.addEventListener("click", (e: Event) => {
                 e.stopPropagation();
             });
             dialogEl.style.zIndex = `${this.modalCount}050`;
 
             const modals = Array.from(el.querySelectorAll('.modal-backdrop, .modal *[data-dismiss="modal"]'));
             for (const closeElement of modals) {
-                closeElement.addEventListener('click', event => {
+                closeElement.addEventListener("click", (event) => {
                     modalRef.close();
                 });
             }
@@ -144,7 +154,7 @@ export class ModalService {
             modalRef.closed();
 
             if (this.modalCount === 0) {
-                document.body.classList.remove('modal-open');
+                document.body.classList.remove("modal-open");
             }
         });
     }

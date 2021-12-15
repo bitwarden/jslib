@@ -2,11 +2,8 @@ import {
     CdkFixedSizeVirtualScroll,
     FixedSizeVirtualScrollStrategy,
     VIRTUAL_SCROLL_STRATEGY,
-} from '@angular/cdk/scrolling';
-import {
-    Directive,
-    forwardRef,
-} from '@angular/core';
+} from "@angular/cdk/scrolling";
+import { Directive, forwardRef } from "@angular/core";
 
 // Custom virtual scroll strategy for cdk-virtual-scroll
 // Uses a sample list item to set the itemSize for FixedSizeVirtualScrollStrategy
@@ -34,29 +31,35 @@ export function _cipherListVirtualScrollStrategyFactory(cipherListDir: CipherLis
 }
 
 @Directive({
-    selector: 'cdk-virtual-scroll-viewport[itemSize]',
-    providers: [{
-        provide: VIRTUAL_SCROLL_STRATEGY,
-        useFactory: _cipherListVirtualScrollStrategyFactory,
-        deps: [forwardRef(() => CipherListVirtualScroll)],
-    }],
+    selector: "cdk-virtual-scroll-viewport[itemSize]",
+    providers: [
+        {
+            provide: VIRTUAL_SCROLL_STRATEGY,
+            useFactory: _cipherListVirtualScrollStrategyFactory,
+            deps: [forwardRef(() => CipherListVirtualScroll)],
+        },
+    ],
 })
 export class CipherListVirtualScroll extends CdkFixedSizeVirtualScroll {
     _scrollStrategy: CipherListVirtualScrollStrategy;
 
     constructor() {
         super();
-        this._scrollStrategy = new CipherListVirtualScrollStrategy(this.itemSize, this.minBufferPx, this.maxBufferPx,
-            this.checkAndUpdateItemSize);
+        this._scrollStrategy = new CipherListVirtualScrollStrategy(
+            this.itemSize,
+            this.minBufferPx,
+            this.maxBufferPx,
+            this.checkAndUpdateItemSize
+        );
     }
 
     checkAndUpdateItemSize = () => {
-        const sampleItem = document.querySelector('cdk-virtual-scroll-viewport .virtual-scroll-item') as HTMLElement;
+        const sampleItem = document.querySelector("cdk-virtual-scroll-viewport .virtual-scroll-item") as HTMLElement;
         const newItemSize = sampleItem?.offsetHeight;
 
         if (newItemSize != null && newItemSize !== this.itemSize) {
             this.itemSize = newItemSize;
             this._scrollStrategy.updateItemAndBufferSize(this.itemSize, this.minBufferPx, this.maxBufferPx);
         }
-    }
+    };
 }

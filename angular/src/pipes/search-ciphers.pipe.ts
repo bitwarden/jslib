@@ -1,12 +1,9 @@
-import {
-    Pipe,
-    PipeTransform,
-} from '@angular/core';
+import { Pipe, PipeTransform } from "@angular/core";
 
-import { CipherView } from 'jslib-common/models/view/cipherView';
+import { CipherView } from "jslib-common/models/view/cipherView";
 
 @Pipe({
-    name: 'searchCiphers',
+    name: "searchCiphers",
 })
 export class SearchCiphersPipe implements PipeTransform {
     transform(ciphers: CipherView[], searchText: string, deleted: boolean = false): CipherView[] {
@@ -15,13 +12,13 @@ export class SearchCiphersPipe implements PipeTransform {
         }
 
         if (searchText == null || searchText.length < 2) {
-            return ciphers.filter(c => {
+            return ciphers.filter((c) => {
                 return deleted !== c.isDeleted;
             });
         }
 
         searchText = searchText.trim().toLowerCase();
-        return ciphers.filter(c => {
+        return ciphers.filter((c) => {
             if (deleted !== c.isDeleted) {
                 return false;
             }
