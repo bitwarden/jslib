@@ -33,8 +33,9 @@
 
 // Sizing Changes
 .bwi-lg {
-  font-size: 1.33em;
-  vertical-align: -25%;
+  font-size: (4em / 3);
+  line-height: (3em / 4);
+  vertical-align: -15%;
 }
 .bwi-2x { font-size: 2em; }
 .bwi-4x { font-size: 4em; }
