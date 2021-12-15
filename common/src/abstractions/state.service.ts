@@ -1,28 +1,28 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject } from "rxjs";
 
-import { KdfType } from '../enums/kdfType';
-import { UriMatchType } from '../enums/uriMatchType';
+import { KdfType } from "../enums/kdfType";
+import { UriMatchType } from "../enums/uriMatchType";
 
-import { CipherData } from '../models/data/cipherData';
-import { CollectionData } from '../models/data/collectionData';
-import { EventData } from '../models/data/eventData';
-import { FolderData } from '../models/data/folderData';
-import { OrganizationData } from '../models/data/organizationData';
-import { PolicyData } from '../models/data/policyData';
-import { ProviderData } from '../models/data/providerData';
-import { SendData } from '../models/data/sendData';
+import { CipherData } from "../models/data/cipherData";
+import { CollectionData } from "../models/data/collectionData";
+import { EventData } from "../models/data/eventData";
+import { FolderData } from "../models/data/folderData";
+import { OrganizationData } from "../models/data/organizationData";
+import { PolicyData } from "../models/data/policyData";
+import { ProviderData } from "../models/data/providerData";
+import { SendData } from "../models/data/sendData";
 
-import { Account } from '../models/domain/account';
-import { EncString } from '../models/domain/encString';
-import { GeneratedPasswordHistory } from '../models/domain/generatedPasswordHistory';
-import { Policy } from '../models/domain/policy';
-import { StorageOptions } from '../models/domain/storageOptions';
-import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
+import { Account } from "../models/domain/account";
+import { EncString } from "../models/domain/encString";
+import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
+import { Policy } from "../models/domain/policy";
+import { StorageOptions } from "../models/domain/storageOptions";
+import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 
-import { CipherView } from '../models/view/cipherView';
-import { CollectionView } from '../models/view/collectionView';
-import { FolderView } from '../models/view/folderView';
-import { SendView } from '../models/view/sendView';
+import { CipherView } from "../models/view/cipherView";
+import { CollectionView } from "../models/view/collectionView";
+import { FolderView } from "../models/view/folderView";
+import { SendView } from "../models/view/sendView";
 
 export abstract class StateService {
     accounts: BehaviorSubject<{ [userId: string]: Account }>;
@@ -86,7 +86,10 @@ export abstract class StateService {
     getDecryptedOrganizationKeys: (options?: StorageOptions) => Promise<Map<string, SymmetricCryptoKey>>;
     setDecryptedOrganizationKeys: (value: Map<string, SymmetricCryptoKey>, options?: StorageOptions) => Promise<void>;
     getDecryptedPasswordGenerationHistory: (options?: StorageOptions) => Promise<GeneratedPasswordHistory[]>;
-    setDecryptedPasswordGenerationHistory: (value: GeneratedPasswordHistory[], options?: StorageOptions) => Promise<void>;
+    setDecryptedPasswordGenerationHistory: (
+        value: GeneratedPasswordHistory[],
+        options?: StorageOptions
+    ) => Promise<void>;
     getDecryptedPinProtected: (options?: StorageOptions) => Promise<EncString>;
     setDecryptedPinProtected: (value: EncString, options?: StorageOptions) => Promise<void>;
     getDecryptedPolicies: (options?: StorageOptions) => Promise<Policy[]>;
@@ -156,7 +159,10 @@ export abstract class StateService {
     getEncryptedOrganizationKeys: (options?: StorageOptions) => Promise<any>;
     setEncryptedOrganizationKeys: (value: Map<string, SymmetricCryptoKey>, options?: StorageOptions) => Promise<void>;
     getEncryptedPasswordGenerationHistory: (options?: StorageOptions) => Promise<GeneratedPasswordHistory[]>;
-    setEncryptedPasswordGenerationHistory: (value: GeneratedPasswordHistory[], options?: StorageOptions) => Promise<void>;
+    setEncryptedPasswordGenerationHistory: (
+        value: GeneratedPasswordHistory[],
+        options?: StorageOptions
+    ) => Promise<void>;
     getEncryptedPinProtected: (options?: StorageOptions) => Promise<string>;
     setEncryptedPinProtected: (value: string, options?: StorageOptions) => Promise<void>;
     getEncryptedPolicies: (options?: StorageOptions) => Promise<{ [id: string]: PolicyData }>;
@@ -256,4 +262,3 @@ export abstract class StateService {
     getWindow: () => Promise<Map<string, any>>;
     setWindow: (value: Map<string, any>) => Promise<void>;
 }
-

@@ -1,7 +1,7 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
 export class ClipperzHtmlImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -12,9 +12,9 @@ export class ClipperzHtmlImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        const textarea = doc.querySelector('textarea');
+        const textarea = doc.querySelector("textarea");
         if (textarea == null || this.isNullOrWhitespace(textarea.textContent)) {
-            result.errorMessage = 'Missing textarea.';
+            result.errorMessage = "Missing textarea.";
             result.success = false;
             return Promise.resolve(result);
         }
@@ -23,10 +23,10 @@ export class ClipperzHtmlImporter extends BaseImporter implements Importer {
         entries.forEach((entry: any) => {
             const cipher = this.initLoginCipher();
             if (!this.isNullOrWhitespace(entry.label)) {
-                cipher.name = entry.label.split(' ')[0];
+                cipher.name = entry.label.split(" ")[0];
             }
             if (entry.data != null && !this.isNullOrWhitespace(entry.data.notes)) {
-                cipher.notes = entry.data.notes.split('\\n').join('\n');
+                cipher.notes = entry.data.notes.split("\\n").join("\n");
             }
 
             if (entry.currentVersion != null && entry.currentVersion.fields != null) {
@@ -38,27 +38,31 @@ export class ClipperzHtmlImporter extends BaseImporter implements Importer {
                     const field = entry.currentVersion.fields[property];
                     const actionType = field.actionType != null ? field.actionType.toLowerCase() : null;
                     switch (actionType) {
-                        case 'password':
+                        case "password":
                             cipher.login.password = this.getValueOrDefault(field.value);
                             break;
-                        case 'email':
-                        case 'username':
-                        case 'user':
-                        case 'name':
+                        case "email":
+                        case "username":
+                        case "user":
+                        case "name":
                             cipher.login.username = this.getValueOrDefault(field.value);
                             break;
-                        case 'url':
+                        case "url":
                             cipher.login.uris = this.makeUriArray(field.value);
                             break;
                         default:
                             const labelLower = field.label != null ? field.label.toLowerCase() : null;
                             if (cipher.login.password == null && this.passwordFieldNames.indexOf(labelLower) > -1) {
                                 cipher.login.password = this.getValueOrDefault(field.value);
-                            } else if (cipher.login.username == null &&
-                                this.usernameFieldNames.indexOf(labelLower) > -1) {
+                            } else if (
+                                cipher.login.username == null &&
+                                this.usernameFieldNames.indexOf(labelLower) > -1
+                            ) {
                                 cipher.login.username = this.getValueOrDefault(field.value);
-                            } else if ((cipher.login.uris == null || cipher.login.uris.length === 0) &&
-                                this.uriFieldNames.indexOf(labelLower) > -1) {
+                            } else if (
+                                (cipher.login.uris == null || cipher.login.uris.length === 0) &&
+                                this.uriFieldNames.indexOf(labelLower) > -1
+                            ) {
                                 cipher.login.uris = this.makeUriArray(field.value);
                             } else {
                                 this.processKvp(cipher, field.label, field.value);

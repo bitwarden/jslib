@@ -1,19 +1,19 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
-import { CipherView } from '../models/view/cipherView';
-import { CollectionView } from '../models/view/collectionView';
-import { FieldView } from '../models/view/fieldView';
-import { FolderView } from '../models/view/folderView';
-import { LoginView } from '../models/view/loginView';
-import { SecureNoteView } from '../models/view/secureNoteView';
+import { CipherView } from "../models/view/cipherView";
+import { CollectionView } from "../models/view/collectionView";
+import { FieldView } from "../models/view/fieldView";
+import { FolderView } from "../models/view/folderView";
+import { LoginView } from "../models/view/loginView";
+import { SecureNoteView } from "../models/view/secureNoteView";
 
-import { CipherRepromptType } from '../enums/cipherRepromptType';
-import { CipherType } from '../enums/cipherType';
-import { FieldType } from '../enums/fieldType';
-import { SecureNoteType } from '../enums/secureNoteType';
+import { CipherRepromptType } from "../enums/cipherRepromptType";
+import { CipherType } from "../enums/cipherType";
+import { FieldType } from "../enums/fieldType";
+import { SecureNoteType } from "../enums/secureNoteType";
 
 export class BitwardenCsvImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -24,10 +24,10 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach(value => {
+        results.forEach((value) => {
             if (this.organization && !this.isNullOrWhitespace(value.collections)) {
-                const collections = (value.collections as string).split(',');
-                collections.forEach(col => {
+                const collections = (value.collections as string).split(",");
+                collections.forEach((col) => {
                     let addCollection = true;
                     let collectionIndex = result.collections.length;
 
@@ -52,15 +52,18 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
             }
 
             const cipher = new CipherView();
-            cipher.favorite = !this.organization && this.getValueOrDefault(value.favorite, '0') !== '0' ? true : false;
+            cipher.favorite = !this.organization && this.getValueOrDefault(value.favorite, "0") !== "0" ? true : false;
             cipher.type = CipherType.Login;
             cipher.notes = this.getValueOrDefault(value.notes);
-            cipher.name = this.getValueOrDefault(value.name, '--');
+            cipher.name = this.getValueOrDefault(value.name, "--");
             try {
-                cipher.reprompt = parseInt(this.getValueOrDefault(value.reprompt, CipherRepromptType.None.toString()), 10);
+                cipher.reprompt = parseInt(
+                    this.getValueOrDefault(value.reprompt, CipherRepromptType.None.toString()),
+                    10
+                );
             } catch (e) {
                 // tslint:disable-next-line
-                console.error('Unable to parse reprompt value', e);
+                console.error("Unable to parse reprompt value", e);
                 cipher.reprompt = CipherRepromptType.None;
             }
 
@@ -71,7 +74,7 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
                         continue;
                     }
 
-                    const delimPosition = fields[i].lastIndexOf(': ');
+                    const delimPosition = fields[i].lastIndexOf(": ");
                     if (delimPosition === -1) {
                         continue;
                     }
@@ -84,7 +87,7 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
                     field.name = fields[i].substr(0, delimPosition);
                     field.value = null;
                     field.type = FieldType.Text;
-                    if (fields[i].length > (delimPosition + 2)) {
+                    if (fields[i].length > delimPosition + 2) {
                         field.value = fields[i].substr(delimPosition + 2);
                     }
                     cipher.fields.push(field);
@@ -93,7 +96,7 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
 
             const valueType = value.type != null ? value.type.toLowerCase() : null;
             switch (valueType) {
-                case 'note':
+                case "note":
                     cipher.type = CipherType.SecureNote;
                     cipher.secureNote = new SecureNoteView();
                     cipher.secureNote.type = SecureNoteType.Generic;

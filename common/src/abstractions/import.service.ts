@@ -1,4 +1,4 @@
-import { Importer } from '../importers/importer';
+import { Importer } from "../importers/importer";
 
 export interface ImportOption {
     id: string;

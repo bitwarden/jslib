@@ -1,14 +1,14 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { CipherType } from '../enums/cipherType';
-import { SecureNoteType } from '../enums/secureNoteType';
+import { CipherType } from "../enums/cipherType";
+import { SecureNoteType } from "../enums/secureNoteType";
 
-import { CardView } from '../models/view/cardView';
-import { IdentityView } from '../models/view/identityView';
-import { SecureNoteView } from '../models/view/secureNoteView';
+import { CardView } from "../models/view/cardView";
+import { IdentityView } from "../models/view/identityView";
+import { SecureNoteView } from "../models/view/secureNoteView";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
 export class MykiCsvImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -19,9 +19,9 @@ export class MykiCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach(value => {
+        results.forEach((value) => {
             const cipher = this.initLoginCipher();
-            cipher.name = this.getValueOrDefault(value.nickname, '--');
+            cipher.name = this.getValueOrDefault(value.nickname, "--");
             cipher.notes = this.getValueOrDefault(value.additionalInfo);
 
             if (value.url !== undefined) {
@@ -60,7 +60,7 @@ export class MykiCsvImporter extends BaseImporter implements Importer {
                 cipher.secureNote = new SecureNoteView();
                 cipher.type = CipherType.SecureNote;
                 cipher.secureNote.type = SecureNoteType.Generic;
-                cipher.name = this.getValueOrDefault(value.title, '--');
+                cipher.name = this.getValueOrDefault(value.title, "--");
                 cipher.notes = this.getValueOrDefault(value.content);
             } else {
                 return;

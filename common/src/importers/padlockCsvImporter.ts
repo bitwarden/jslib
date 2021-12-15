@@ -1,10 +1,10 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
-import { CollectionView } from '../models/view/collectionView';
-import { FolderView } from '../models/view/folderView';
+import { CollectionView } from "../models/view/collectionView";
+import { FolderView } from "../models/view/folderView";
 
 export class PadlockCsvImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -16,7 +16,7 @@ export class PadlockCsvImporter extends BaseImporter implements Importer {
         }
 
         let headers: string[] = null;
-        results.forEach(value => {
+        results.forEach((value) => {
             if (headers == null) {
                 headers = value.map((v: string) => v);
                 return;
@@ -28,8 +28,8 @@ export class PadlockCsvImporter extends BaseImporter implements Importer {
 
             if (!this.isNullOrWhitespace(value[1])) {
                 if (this.organization) {
-                    const tags = (value[1] as string).split(',');
-                    tags.forEach(tag => {
+                    const tags = (value[1] as string).split(",");
+                    tags.forEach((tag) => {
                         tag = tag.trim();
                         let addCollection = true;
                         let collectionIndex = result.collections.length;
@@ -51,14 +51,14 @@ export class PadlockCsvImporter extends BaseImporter implements Importer {
                         result.collectionRelationships.push([result.ciphers.length, collectionIndex]);
                     });
                 } else {
-                    const tags = (value[1] as string).split(',');
+                    const tags = (value[1] as string).split(",");
                     const tag = tags.length > 0 ? tags[0].trim() : null;
                     this.processFolder(result, tag);
                 }
             }
 
             const cipher = this.initLoginCipher();
-            cipher.name = this.getValueOrDefault(value[0], '--');
+            cipher.name = this.getValueOrDefault(value[0], "--");
 
             for (let i = 2; i < value.length; i++) {
                 const header = headers[i].trim().toLowerCase();

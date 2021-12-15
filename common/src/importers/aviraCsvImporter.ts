@@ -1,7 +1,7 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
 export class AviraCsvImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -12,10 +12,12 @@ export class AviraCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach(value => {
+        results.forEach((value) => {
             const cipher = this.initLoginCipher();
-            cipher.name = this.getValueOrDefault(value.name,
-                this.getValueOrDefault(this.nameFromUrl(value.website), '--'));
+            cipher.name = this.getValueOrDefault(
+                value.name,
+                this.getValueOrDefault(this.nameFromUrl(value.website), "--")
+            );
             cipher.login.uris = this.makeUriArray(value.website);
             cipher.login.password = this.getValueOrDefault(value.password);
 

@@ -1,21 +1,24 @@
-import { EncArrayBuffer } from '../models/domain/encArrayBuffer';
-import { EncString } from '../models/domain/encString';
-import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
+import { EncArrayBuffer } from "../models/domain/encArrayBuffer";
+import { EncString } from "../models/domain/encString";
+import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 
-import { ProfileOrganizationResponse } from '../models/response/profileOrganizationResponse';
-import { ProfileProviderOrganizationResponse } from '../models/response/profileProviderOrganizationResponse';
-import { ProfileProviderResponse } from '../models/response/profileProviderResponse';
+import { ProfileOrganizationResponse } from "../models/response/profileOrganizationResponse";
+import { ProfileProviderOrganizationResponse } from "../models/response/profileProviderOrganizationResponse";
+import { ProfileProviderResponse } from "../models/response/profileProviderResponse";
 
-import { HashPurpose } from '../enums/hashPurpose';
-import { KdfType } from '../enums/kdfType';
-import { KeySuffixOptions } from '../enums/keySuffixOptions';
+import { HashPurpose } from "../enums/hashPurpose";
+import { KdfType } from "../enums/kdfType";
+import { KeySuffixOptions } from "../enums/keySuffixOptions";
 
 export abstract class CryptoService {
     setKey: (key: SymmetricCryptoKey) => Promise<any>;
     setKeyHash: (keyHash: string) => Promise<void>;
     setEncKey: (encKey: string) => Promise<void>;
     setEncPrivateKey: (encPrivateKey: string) => Promise<void>;
-    setOrgKeys: (orgs: ProfileOrganizationResponse[], providerOrgs: ProfileProviderOrganizationResponse[]) => Promise<void>;
+    setOrgKeys: (
+        orgs: ProfileOrganizationResponse[],
+        providerOrgs: ProfileProviderOrganizationResponse[]
+    ) => Promise<void>;
     setProviderKeys: (orgs: ProfileProviderResponse[]) => Promise<void>;
     getKey: (keySuffix?: KeySuffixOptions, userId?: string) => Promise<SymmetricCryptoKey>;
     getKeyFromStorage: (keySuffix: KeySuffixOptions) => Promise<SymmetricCryptoKey>;
@@ -42,8 +45,13 @@ export abstract class CryptoService {
     clearKeys: (userId?: string) => Promise<any>;
     toggleKey: () => Promise<any>;
     makeKey: (password: string, salt: string, kdf: KdfType, kdfIterations: number) => Promise<SymmetricCryptoKey>;
-    makeKeyFromPin: (pin: string, salt: string, kdf: KdfType, kdfIterations: number,
-        protectedKeyCs?: EncString) => Promise<SymmetricCryptoKey>;
+    makeKeyFromPin: (
+        pin: string,
+        salt: string,
+        kdf: KdfType,
+        kdfIterations: number,
+        protectedKeyCs?: EncString
+    ) => Promise<SymmetricCryptoKey>;
     makeShareKey: () => Promise<[EncString, SymmetricCryptoKey]>;
     makeKeyPair: (key?: SymmetricCryptoKey) => Promise<[string, EncString]>;
     makePinKey: (pin: string, salt: string, kdf: KdfType, kdfIterations: number) => Promise<SymmetricCryptoKey>;

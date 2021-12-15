@@ -1,11 +1,9 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
-const OfficialProps = [
-    '!group_id', '!group_name', 'title', 'username', 'password', 'URL', 'id',
-];
+const OfficialProps = ["!group_id", "!group_name", "title", "username", "password", "URL", "id"];
 
 export class ButtercupCsvImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -16,11 +14,11 @@ export class ButtercupCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach(value => {
-            this.processFolder(result, this.getValueOrDefault(value['!group_name']));
+        results.forEach((value) => {
+            this.processFolder(result, this.getValueOrDefault(value["!group_name"]));
 
             const cipher = this.initLoginCipher();
-            cipher.name = this.getValueOrDefault(value.title, '--');
+            cipher.name = this.getValueOrDefault(value.title, "--");
             cipher.login.username = this.getValueOrDefault(value.username);
             cipher.login.password = this.getValueOrDefault(value.password);
             cipher.login.uris = this.makeUriArray(value.URL);

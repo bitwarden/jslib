@@ -1,10 +1,10 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
-import { CipherType } from '../enums/cipherType';
-import { SecureNoteType } from '../enums/secureNoteType';
+import { CipherType } from "../enums/cipherType";
+import { SecureNoteType } from "../enums/secureNoteType";
 
 export class AvastJsonImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -52,10 +52,10 @@ export class AvastJsonImporter extends BaseImporter implements Importer {
                 cipher.card.brand = this.getCardBrand(cipher.card.number);
                 if (value.expirationDate != null) {
                     if (value.expirationDate.month != null) {
-                        cipher.card.expMonth = value.expirationDate.month + '';
+                        cipher.card.expMonth = value.expirationDate.month + "";
                     }
                     if (value.expirationDate.year != null) {
-                        cipher.card.expYear = value.expirationDate.year + '';
+                        cipher.card.expYear = value.expirationDate.year + "";
                     }
                 }
                 this.cleanupCipher(cipher);

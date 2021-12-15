@@ -1,11 +1,11 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { FieldType } from '../enums/fieldType';
+import { FieldType } from "../enums/fieldType";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
-import { FolderView } from '../models/view/folderView';
+import { FolderView } from "../models/view/folderView";
 
 export class KeePass2XmlImporter extends BaseImporter implements Importer {
     result = new ImportResult();
@@ -17,14 +17,14 @@ export class KeePass2XmlImporter extends BaseImporter implements Importer {
             return Promise.resolve(this.result);
         }
 
-        const rootGroup = doc.querySelector('KeePassFile > Root > Group');
+        const rootGroup = doc.querySelector("KeePassFile > Root > Group");
         if (rootGroup == null) {
-            this.result.errorMessage = 'Missing `KeePassFile > Root > Group` node.';
+            this.result.errorMessage = "Missing `KeePassFile > Root > Group` node.";
             this.result.success = false;
             return Promise.resolve(this.result);
         }
 
-        this.traverse(rootGroup, true, '');
+        this.traverse(rootGroup, true, "");
 
         if (this.organization) {
             this.moveFoldersToCollections(this.result);
@@ -39,46 +39,45 @@ export class KeePass2XmlImporter extends BaseImporter implements Importer {
         let groupName = groupPrefixName;
 
         if (!isRootNode) {
-            if (groupName !== '') {
-                groupName += '/';
+            if (groupName !== "") {
+                groupName += "/";
             }
-            const nameEl = this.querySelectorDirectChild(node, 'Name');
-            groupName += nameEl == null ? '-' : nameEl.textContent;
+            const nameEl = this.querySelectorDirectChild(node, "Name");
+            groupName += nameEl == null ? "-" : nameEl.textContent;
             const folder = new FolderView();
             folder.name = groupName;
             this.result.folders.push(folder);
         }
 
-        this.querySelectorAllDirectChild(node, 'Entry').forEach(entry => {
+        this.querySelectorAllDirectChild(node, "Entry").forEach((entry) => {
             const cipherIndex = this.result.ciphers.length;
 
             const cipher = this.initLoginCipher();
-            this.querySelectorAllDirectChild(entry, 'String').forEach(entryString => {
-                const valueEl = this.querySelectorDirectChild(entryString, 'Value');
+            this.querySelectorAllDirectChild(entry, "String").forEach((entryString) => {
+                const valueEl = this.querySelectorDirectChild(entryString, "Value");
                 const value = valueEl != null ? valueEl.textContent : null;
                 if (this.isNullOrWhitespace(value)) {
                     return;
                 }
-                const keyEl = this.querySelectorDirectChild(entryString, 'Key');
+                const keyEl = this.querySelectorDirectChild(entryString, "Key");
                 const key = keyEl != null ? keyEl.textContent : null;
 
-                if (key === 'URL') {
+                if (key === "URL") {
                     cipher.login.uris = this.makeUriArray(value);
-                } else if (key === 'UserName') {
+                } else if (key === "UserName") {
                     cipher.login.username = value;
-                } else if (key === 'Password') {
+                } else if (key === "Password") {
                     cipher.login.password = value;
-                }  else if (key === 'otp') {
-                    cipher.login.totp = value.replace('key=', '');
-                } else if (key === 'Title') {
+                } else if (key === "otp") {
+                    cipher.login.totp = value.replace("key=", "");
+                } else if (key === "Title") {
                     cipher.name = value;
-                } else if (key === 'Notes') {
-                    cipher.notes += (value + '\n');
+                } else if (key === "Notes") {
+                    cipher.notes += value + "\n";
                 } else {
                     let type = FieldType.Text;
-                    const attrs = (valueEl.attributes as any);
-                    if (attrs.length > 0 && attrs.ProtectInMemory != null &&
-                        attrs.ProtectInMemory.value === 'True') {
+                    const attrs = valueEl.attributes as any;
+                    if (attrs.length > 0 && attrs.ProtectInMemory != null && attrs.ProtectInMemory.value === "True") {
                         type = FieldType.Hidden;
                     }
                     this.processKvp(cipher, key, value, type);
@@ -93,7 +92,7 @@ export class KeePass2XmlImporter extends BaseImporter implements Importer {
             }
         });
 
-        this.querySelectorAllDirectChild(node, 'Group').forEach(group => {
+        this.querySelectorAllDirectChild(node, "Group").forEach((group) => {
             this.traverse(group, false, groupName);
         });
     }

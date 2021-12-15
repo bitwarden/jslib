@@ -1,9 +1,9 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
-import { CollectionView } from '../models/view/collectionView';
+import { CollectionView } from "../models/view/collectionView";
 
 export class PasspackCsvImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -14,21 +14,25 @@ export class PasspackCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach(value => {
+        results.forEach((value) => {
             const tagsJson = !this.isNullOrWhitespace(value.Tags) ? JSON.parse(value.Tags) : null;
-            const tags: string[] = tagsJson != null && tagsJson.tags != null && tagsJson.tags.length > 0 ?
-                tagsJson.tags.map((tagJson: string) => {
-                    try {
-                        const t = JSON.parse(tagJson);
-                        return this.getValueOrDefault(t.tag);
-                    } catch {
-                        // Ignore error
-                    }
-                    return null;
-                }).filter((t: string) => !this.isNullOrWhitespace(t)) : null;
+            const tags: string[] =
+                tagsJson != null && tagsJson.tags != null && tagsJson.tags.length > 0
+                    ? tagsJson.tags
+                          .map((tagJson: string) => {
+                              try {
+                                  const t = JSON.parse(tagJson);
+                                  return this.getValueOrDefault(t.tag);
+                              } catch {
+                                  // Ignore error
+                              }
+                              return null;
+                          })
+                          .filter((t: string) => !this.isNullOrWhitespace(t))
+                    : null;
 
             if (this.organization && tags != null && tags.length > 0) {
-                tags.forEach(tag => {
+                tags.forEach((tag) => {
                     let addCollection = true;
                     let collectionIndex = result.collections.length;
 
@@ -53,32 +57,35 @@ export class PasspackCsvImporter extends BaseImporter implements Importer {
             }
 
             const cipher = this.initLoginCipher();
-            cipher.notes = this.getValueOrDefault(value.Notes, '');
-            cipher.notes += ('\n\n' + this.getValueOrDefault(value['Shared Notes'], '') + '\n');
-            cipher.name = this.getValueOrDefault(value['Entry Name'], '--');
-            cipher.login.username = this.getValueOrDefault(value['User ID']);
+            cipher.notes = this.getValueOrDefault(value.Notes, "");
+            cipher.notes += "\n\n" + this.getValueOrDefault(value["Shared Notes"], "") + "\n";
+            cipher.name = this.getValueOrDefault(value["Entry Name"], "--");
+            cipher.login.username = this.getValueOrDefault(value["User ID"]);
             cipher.login.password = this.getValueOrDefault(value.Password);
             cipher.login.uris = this.makeUriArray(value.URL);
 
             if (value.__parsed_extra != null && value.__parsed_extra.length > 0) {
                 value.__parsed_extra.forEach((extra: string) => {
                     if (!this.isNullOrWhitespace(extra)) {
-                        cipher.notes += ('\n' + extra);
+                        cipher.notes += "\n" + extra;
                     }
                 });
             }
 
-            const fieldsJson = !this.isNullOrWhitespace(value['Extra Fields']) ?
-                JSON.parse(value['Extra Fields']) : null;
-            const fields = fieldsJson != null && fieldsJson.extraFields != null &&
-                fieldsJson.extraFields.length > 0 ? fieldsJson.extraFields.map((fieldJson: string) => {
-                    try {
-                        return JSON.parse(fieldJson);
-                    } catch {
-                        // Ignore error
-                    }
-                    return null;
-                }) : null;
+            const fieldsJson = !this.isNullOrWhitespace(value["Extra Fields"])
+                ? JSON.parse(value["Extra Fields"])
+                : null;
+            const fields =
+                fieldsJson != null && fieldsJson.extraFields != null && fieldsJson.extraFields.length > 0
+                    ? fieldsJson.extraFields.map((fieldJson: string) => {
+                          try {
+                              return JSON.parse(fieldJson);
+                          } catch {
+                              // Ignore error
+                          }
+                          return null;
+                      })
+                    : null;
             if (fields != null) {
                 fields.forEach((f: any) => {
                     if (f != null) {

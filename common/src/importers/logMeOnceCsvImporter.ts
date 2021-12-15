@@ -1,7 +1,7 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
 export class LogMeOnceCsvImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -12,12 +12,12 @@ export class LogMeOnceCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach(value => {
+        results.forEach((value) => {
             if (value.length < 4) {
                 return;
             }
             const cipher = this.initLoginCipher();
-            cipher.name = this.getValueOrDefault(value[0], '--');
+            cipher.name = this.getValueOrDefault(value[0], "--");
             cipher.login.username = this.getValueOrDefault(value[2]);
             cipher.login.password = this.getValueOrDefault(value[3]);
             cipher.login.uris = this.makeUriArray(value[1]);

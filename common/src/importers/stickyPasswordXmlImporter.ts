@@ -1,7 +1,7 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
 export class StickyPasswordXmlImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -12,43 +12,44 @@ export class StickyPasswordXmlImporter extends BaseImporter implements Importer 
             return Promise.resolve(result);
         }
 
-        const loginNodes = doc.querySelectorAll('root > Database > Logins > Login');
-        Array.from(loginNodes).forEach(loginNode => {
-            const accountId = loginNode.getAttribute('ID');
+        const loginNodes = doc.querySelectorAll("root > Database > Logins > Login");
+        Array.from(loginNodes).forEach((loginNode) => {
+            const accountId = loginNode.getAttribute("ID");
             if (this.isNullOrWhitespace(accountId)) {
                 return;
             }
 
-            const usernameText = loginNode.getAttribute('Name');
-            const passwordText = loginNode.getAttribute('Password');
+            const usernameText = loginNode.getAttribute("Name");
+            const passwordText = loginNode.getAttribute("Password");
             let titleText: string = null;
             let linkText: string = null;
             let notesText: string = null;
             let groupId: string = null;
             let groupText: string = null;
 
-            const accountLogin = doc.querySelector('root > Database > Accounts > Account > ' +
-                'LoginLinks > Login[SourceLoginID="' + accountId + '"]');
+            const accountLogin = doc.querySelector(
+                "root > Database > Accounts > Account > " + 'LoginLinks > Login[SourceLoginID="' + accountId + '"]'
+            );
             if (accountLogin != null) {
                 const account = accountLogin.parentElement.parentElement;
                 if (account != null) {
-                    titleText = account.getAttribute('Name');
-                    linkText = account.getAttribute('Link');
-                    groupId = account.getAttribute('ParentID');
-                    notesText = account.getAttribute('Comments');
+                    titleText = account.getAttribute("Name");
+                    linkText = account.getAttribute("Link");
+                    groupId = account.getAttribute("ParentID");
+                    notesText = account.getAttribute("Comments");
                     if (!this.isNullOrWhitespace(notesText)) {
-                        notesText = notesText.split('/n').join('\n');
+                        notesText = notesText.split("/n").join("\n");
                     }
                 }
             }
 
             if (!this.isNullOrWhitespace(groupId)) {
-                groupText = this.buildGroupText(doc, groupId, '');
+                groupText = this.buildGroupText(doc, groupId, "");
                 this.processFolder(result, groupText);
             }
 
             const cipher = this.initLoginCipher();
-            cipher.name = this.getValueOrDefault(titleText, '--');
+            cipher.name = this.getValueOrDefault(titleText, "--");
             cipher.notes = this.getValueOrDefault(notesText);
             cipher.login.username = this.getValueOrDefault(usernameText);
             cipher.login.password = this.getValueOrDefault(passwordText);
@@ -71,9 +72,9 @@ export class StickyPasswordXmlImporter extends BaseImporter implements Importer 
             return groupText;
         }
         if (!this.isNullOrWhitespace(groupText)) {
-            groupText = '/' + groupText;
+            groupText = "/" + groupText;
         }
-        groupText = group.getAttribute('Name') + groupText;
-        return this.buildGroupText(doc, group.getAttribute('ParentID'), groupText);
+        groupText = group.getAttribute("Name") + groupText;
+        return this.buildGroupText(doc, group.getAttribute("ParentID"), groupText);
     }
 }

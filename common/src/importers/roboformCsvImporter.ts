@@ -1,7 +1,7 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
 export class RoboFormCsvImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -13,15 +13,17 @@ export class RoboFormCsvImporter extends BaseImporter implements Importer {
         }
 
         let i = 1;
-        results.forEach(value => {
-            const folder = !this.isNullOrWhitespace(value.Folder) && value.Folder.startsWith('/') ?
-                value.Folder.replace('/', '') : value.Folder;
+        results.forEach((value) => {
+            const folder =
+                !this.isNullOrWhitespace(value.Folder) && value.Folder.startsWith("/")
+                    ? value.Folder.replace("/", "")
+                    : value.Folder;
             const folderName = !this.isNullOrWhitespace(folder) ? folder : null;
             this.processFolder(result, folderName);
 
             const cipher = this.initLoginCipher();
             cipher.notes = this.getValueOrDefault(value.Note);
-            cipher.name = this.getValueOrDefault(value.Name, '--');
+            cipher.name = this.getValueOrDefault(value.Name, "--");
             cipher.login.username = this.getValueOrDefault(value.Login);
             cipher.login.password = this.getValueOrDefault(value.Pwd);
             cipher.login.uris = this.makeUriArray(value.Url);
@@ -32,12 +34,12 @@ export class RoboFormCsvImporter extends BaseImporter implements Importer {
                     fields = fields.concat(value.__parsed_extra);
                 }
                 fields.forEach((field: string) => {
-                    const parts = field.split(':');
+                    const parts = field.split(":");
                     if (parts.length < 3) {
                         return;
                     }
-                    const key = parts[0] === '-no-name-' ? null : parts[0];
-                    const val = parts.length === 4 && parts[2] === 'rck' ? parts[1] : parts[2];
+                    const key = parts[0] === "-no-name-" ? null : parts[0];
+                    const val = parts.length === 4 && parts[2] === "rck" ? parts[1] : parts[2];
                     this.processKvp(cipher, key, val);
                 });
             }
@@ -45,7 +47,7 @@ export class RoboFormCsvImporter extends BaseImporter implements Importer {
             this.convertToNoteIfNeeded(cipher);
             this.cleanupCipher(cipher);
 
-            if (i === results.length && cipher.name === '--' && this.isNullOrWhitespace(cipher.login.password)) {
+            if (i === results.length && cipher.name === "--" && this.isNullOrWhitespace(cipher.login.password)) {
                 return;
             }
 

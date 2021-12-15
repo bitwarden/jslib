@@ -1,7 +1,7 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
 export class AscendoCsvImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -12,16 +12,16 @@ export class AscendoCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach(value => {
+        results.forEach((value) => {
             if (value.length < 2) {
                 return;
             }
 
             const cipher = this.initLoginCipher();
             cipher.notes = this.getValueOrDefault(value[value.length - 1]);
-            cipher.name = this.getValueOrDefault(value[0], '--');
+            cipher.name = this.getValueOrDefault(value[0], "--");
 
-            if (value.length > 2 && (value.length % 2) === 0) {
+            if (value.length > 2 && value.length % 2 === 0) {
                 for (let i = 0; i < value.length - 2; i += 2) {
                     const val: string = value[i + 2];
                     const field: string = value[i + 1];
@@ -32,11 +32,12 @@ export class AscendoCsvImporter extends BaseImporter implements Importer {
                     const fieldLower = field.toLowerCase();
                     if (cipher.login.password == null && this.passwordFieldNames.indexOf(fieldLower) > -1) {
                         cipher.login.password = this.getValueOrDefault(val);
-                    } else if (cipher.login.username == null &&
-                        this.usernameFieldNames.indexOf(fieldLower) > -1) {
+                    } else if (cipher.login.username == null && this.usernameFieldNames.indexOf(fieldLower) > -1) {
                         cipher.login.username = this.getValueOrDefault(val);
-                    } else if ((cipher.login.uris == null || cipher.login.uris.length === 0) &&
-                        this.uriFieldNames.indexOf(fieldLower) > -1) {
+                    } else if (
+                        (cipher.login.uris == null || cipher.login.uris.length === 0) &&
+                        this.uriFieldNames.indexOf(fieldLower) > -1
+                    ) {
                         cipher.login.uris = this.makeUriArray(val);
                     } else {
                         this.processKvp(cipher, field, val);

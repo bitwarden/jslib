@@ -1,15 +1,15 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { EncString } from '../models/domain/encString';
-import { ImportResult } from '../models/domain/importResult';
+import { EncString } from "../models/domain/encString";
+import { ImportResult } from "../models/domain/importResult";
 
-import { CipherWithIds } from '../models/export/cipherWithIds';
-import { CollectionWithId } from '../models/export/collectionWithId';
-import { FolderWithId } from '../models/export/folderWithId';
+import { CipherWithIds } from "../models/export/cipherWithIds";
+import { CollectionWithId } from "../models/export/collectionWithId";
+import { FolderWithId } from "../models/export/folderWithId";
 
-import { CryptoService } from '../abstractions/crypto.service';
-import { I18nService } from '../abstractions/i18n.service';
+import { CryptoService } from "../abstractions/crypto.service";
+import { I18nService } from "../abstractions/i18n.service";
 
 export class BitwardenJsonImporter extends BaseImporter implements Importer {
     private results: any;
@@ -43,7 +43,7 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
             const encKeyValidationDecrypt = await this.cryptoService.decryptToUtf8(encKeyValidation, orgKey);
             if (encKeyValidationDecrypt === null) {
                 this.result.success = false;
-                this.result.errorMessage = this.i18nService.t('importEncKeyError');
+                this.result.errorMessage = this.i18nService.t("importEncKeyError");
                 return;
             }
         }
@@ -89,7 +89,7 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
             if (!this.organization && c.folderId != null && groupingsMap.has(c.folderId)) {
                 this.result.folderRelationships.push([this.result.ciphers.length, groupingsMap.get(c.folderId)]);
             } else if (this.organization && c.collectionIds != null) {
-                c.collectionIds.forEach(cId => {
+                c.collectionIds.forEach((cId) => {
                     if (groupingsMap.has(cId)) {
                         this.result.collectionRelationships.push([this.result.ciphers.length, groupingsMap.get(cId)]);
                     }
@@ -143,7 +143,7 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
             if (!this.organization && c.folderId != null && groupingsMap.has(c.folderId)) {
                 this.result.folderRelationships.push([this.result.ciphers.length, groupingsMap.get(c.folderId)]);
             } else if (this.organization && c.collectionIds != null) {
-                c.collectionIds.forEach(cId => {
+                c.collectionIds.forEach((cId) => {
                     if (groupingsMap.has(cId)) {
                         this.result.collectionRelationships.push([this.result.ciphers.length, groupingsMap.get(cId)]);
                     }

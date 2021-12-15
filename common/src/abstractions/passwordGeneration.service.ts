@@ -1,7 +1,7 @@
-import * as zxcvbn from 'zxcvbn';
+import * as zxcvbn from "zxcvbn";
 
-import { GeneratedPasswordHistory } from '../models/domain/generatedPasswordHistory';
-import { PasswordGeneratorPolicyOptions } from '../models/domain/passwordGeneratorPolicyOptions';
+import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
+import { PasswordGeneratorPolicyOptions } from "../models/domain/passwordGeneratorPolicyOptions";
 
 export abstract class PasswordGenerationService {
     generatePassword: (options: any) => Promise<string>;

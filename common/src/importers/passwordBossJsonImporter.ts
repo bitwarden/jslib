@@ -1,12 +1,12 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
-import { CardView } from '../models/view/cardView';
-import { FolderView } from '../models/view/folderView';
+import { CardView } from "../models/view/cardView";
+import { FolderView } from "../models/view/folderView";
 
-import { CipherType } from '../enums/cipherType';
+import { CipherType } from "../enums/cipherType";
 
 export class PasswordBossJsonImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -31,7 +31,7 @@ export class PasswordBossJsonImporter extends BaseImporter implements Importer {
 
         results.items.forEach((value: any) => {
             const cipher = this.initLoginCipher();
-            cipher.name = this.getValueOrDefault(value.name, '--');
+            cipher.name = this.getValueOrDefault(value.name, "--");
             cipher.login.uris = this.makeUriArray(value.login_url);
 
             if (value.folder != null && foldersIndexMap.has(value.folder)) {
@@ -43,10 +43,10 @@ export class PasswordBossJsonImporter extends BaseImporter implements Importer {
             }
 
             if (!this.isNullOrWhitespace(value.identifiers.notes)) {
-                cipher.notes = value.identifiers.notes.split('\\r\\n').join('\n').split('\\n').join('\n');
+                cipher.notes = value.identifiers.notes.split("\\r\\n").join("\n").split("\\n").join("\n");
             }
 
-            if (value.type === 'CreditCard') {
+            if (value.type === "CreditCard") {
                 cipher.card = new CardView();
                 cipher.type = CipherType.Card;
             }
@@ -57,11 +57,11 @@ export class PasswordBossJsonImporter extends BaseImporter implements Importer {
                 }
                 const valObj = value.identifiers[property];
                 const val = valObj != null ? valObj.toString() : null;
-                if (this.isNullOrWhitespace(val) || property === 'notes' || property === 'ignoreItemInSecurityScore') {
+                if (this.isNullOrWhitespace(val) || property === "notes" || property === "ignoreItemInSecurityScore") {
                     continue;
                 }
 
-                if (property === 'custom_fields') {
+                if (property === "custom_fields") {
                     valObj.forEach((cf: any) => {
                         this.processKvp(cipher, cf.name, cf.value);
                     });
@@ -69,17 +69,17 @@ export class PasswordBossJsonImporter extends BaseImporter implements Importer {
                 }
 
                 if (cipher.type === CipherType.Card) {
-                    if (property === 'cardNumber') {
+                    if (property === "cardNumber") {
                         cipher.card.number = val;
                         cipher.card.brand = this.getCardBrand(val);
                         continue;
-                    } else if (property === 'nameOnCard') {
+                    } else if (property === "nameOnCard") {
                         cipher.card.cardholderName = val;
                         continue;
-                    } else if (property === 'security_code') {
+                    } else if (property === "security_code") {
                         cipher.card.code = val;
                         continue;
-                    } else if (property === 'expires') {
+                    } else if (property === "expires") {
                         try {
                             const expDate = new Date(val);
                             cipher.card.expYear = expDate.getFullYear().toString();
@@ -88,22 +88,26 @@ export class PasswordBossJsonImporter extends BaseImporter implements Importer {
                             // Ignore error
                         }
                         continue;
-                    } else if (property === 'cardType') {
+                    } else if (property === "cardType") {
                         continue;
                     }
                 } else {
-                    if ((property === 'username' || property === 'email') &&
-                        this.isNullOrWhitespace(cipher.login.username)) {
+                    if (
+                        (property === "username" || property === "email") &&
+                        this.isNullOrWhitespace(cipher.login.username)
+                    ) {
                         cipher.login.username = val;
                         continue;
-                    } else if (property === 'password') {
+                    } else if (property === "password") {
                         cipher.login.password = val;
                         continue;
-                    } else if (property === 'totp') {
+                    } else if (property === "totp") {
                         cipher.login.totp = val;
                         continue;
-                    } else if ((cipher.login.uris == null || cipher.login.uris.length === 0) &&
-                        this.uriFieldNames.indexOf(property) > -1) {
+                    } else if (
+                        (cipher.login.uris == null || cipher.login.uris.length === 0) &&
+                        this.uriFieldNames.indexOf(property) > -1
+                    ) {
                         cipher.login.uris = this.makeUriArray(val);
                         continue;
                     }

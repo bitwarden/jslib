@@ -1,7 +1,7 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
 export class PassKeepCsvImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -12,15 +12,15 @@ export class PassKeepCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach(value => {
-            this.processFolder(result, this.getValue('category', value));
+        results.forEach((value) => {
+            this.processFolder(result, this.getValue("category", value));
             const cipher = this.initLoginCipher();
-            cipher.notes = this.getValue('description', value);
-            cipher.name = this.getValueOrDefault(this.getValue('title', value), '--');
-            cipher.login.username = this.getValue('username', value);
-            cipher.login.password = this.getValue('password', value);
-            cipher.login.uris = this.makeUriArray(this.getValue('site', value));
-            this.processKvp(cipher, 'Password 2', this.getValue('password2', value));
+            cipher.notes = this.getValue("description", value);
+            cipher.name = this.getValueOrDefault(this.getValue("title", value), "--");
+            cipher.login.username = this.getValue("username", value);
+            cipher.login.password = this.getValue("password", value);
+            cipher.login.uris = this.makeUriArray(this.getValue("site", value));
+            this.processKvp(cipher, "Password 2", this.getValue("password2", value));
             this.cleanupCipher(cipher);
             result.ciphers.push(cipher);
         });
@@ -34,6 +34,6 @@ export class PassKeepCsvImporter extends BaseImporter implements Importer {
     }
 
     private getValue(key: string, value: any) {
-        return this.getValueOrDefault(value[key], this.getValueOrDefault(value[(' ' + key)]));
+        return this.getValueOrDefault(value[key], this.getValueOrDefault(value[" " + key]));
     }
 }

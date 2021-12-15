@@ -1,8 +1,8 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
-import { CipherView } from '../models/view/cipherView';
+import { ImportResult } from "../models/domain/importResult";
+import { CipherView } from "../models/view/cipherView";
 
 export class SplashIdCsvImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -13,17 +13,17 @@ export class SplashIdCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach(value => {
+        results.forEach((value) => {
             if (value.length < 3) {
                 return;
             }
 
             this.processFolder(result, this.getValueOrDefault(value[value.length - 1]));
             const cipher = this.initLoginCipher();
-            cipher.notes = this.getValueOrDefault(value[value.length - 2], '');
-            cipher.name = this.getValueOrDefault(value[1], '--');
+            cipher.notes = this.getValueOrDefault(value[value.length - 2], "");
+            cipher.name = this.getValueOrDefault(value[1], "--");
 
-            if (value[0] === 'Web Logins' || value[0] === 'Servers' || value[0] === 'Email Accounts') {
+            if (value[0] === "Web Logins" || value[0] === "Servers" || value[0] === "Email Accounts") {
                 cipher.login.username = this.getValueOrDefault(value[2]);
                 cipher.login.password = this.getValueOrDefault(value[3]);
                 cipher.login.uris = this.makeUriArray(value[4]);
@@ -51,7 +51,7 @@ export class SplashIdCsvImporter extends BaseImporter implements Importer {
             if (this.isNullOrWhitespace(value[i])) {
                 continue;
             }
-            cipher.notes += (value[i] + '\n');
+            cipher.notes += value[i] + "\n";
         }
     }
 }

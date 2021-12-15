@@ -1,12 +1,12 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
-const NotesHeader = 'Notes\n\n';
-const ApplicationsHeader = 'Applications\n\n';
-const WebsitesHeader = 'Websites\n\n';
-const Delimiter = '\n---\n';
+const NotesHeader = "Notes\n\n";
+const ApplicationsHeader = "Applications\n\n";
+const WebsitesHeader = "Websites\n\n";
+const Delimiter = "\n---\n";
 
 export class KasperskyTxtImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -15,7 +15,7 @@ export class KasperskyTxtImporter extends BaseImporter implements Importer {
         let notesData: string;
         let applicationsData: string;
         let websitesData: string;
-        let workingData = this.splitNewLine(data).join('\n');
+        let workingData = this.splitNewLine(data).join("\n");
 
         if (workingData.indexOf(NotesHeader) !== -1) {
             const parts = workingData.split(NotesHeader);
@@ -43,30 +43,30 @@ export class KasperskyTxtImporter extends BaseImporter implements Importer {
         const applications = this.parseDataCategory(applicationsData);
         const websites = this.parseDataCategory(websitesData);
 
-        notes.forEach(n => {
+        notes.forEach((n) => {
             const cipher = this.initLoginCipher();
-            cipher.name = this.getValueOrDefault(n.get('Name'));
-            cipher.notes = this.getValueOrDefault(n.get('Text'));
+            cipher.name = this.getValueOrDefault(n.get("Name"));
+            cipher.notes = this.getValueOrDefault(n.get("Text"));
             this.cleanupCipher(cipher);
             result.ciphers.push(cipher);
         });
 
-        websites.concat(applications).forEach(w => {
+        websites.concat(applications).forEach((w) => {
             const cipher = this.initLoginCipher();
-            const nameKey = w.has('Website name') ? 'Website name' : 'Application';
-            cipher.name = this.getValueOrDefault(w.get(nameKey), '');
-            if (!this.isNullOrWhitespace(w.get('Login name'))) {
+            const nameKey = w.has("Website name") ? "Website name" : "Application";
+            cipher.name = this.getValueOrDefault(w.get(nameKey), "");
+            if (!this.isNullOrWhitespace(w.get("Login name"))) {
                 if (!this.isNullOrWhitespace(cipher.name)) {
-                    cipher.name += ': ';
+                    cipher.name += ": ";
                 }
-                cipher.name += w.get('Login name');
+                cipher.name += w.get("Login name");
             }
-            cipher.notes = this.getValueOrDefault(w.get('Comment'));
-            if (w.has('Website URL')) {
-                cipher.login.uris = this.makeUriArray(w.get('Website URL'));
+            cipher.notes = this.getValueOrDefault(w.get("Comment"));
+            if (w.has("Website URL")) {
+                cipher.login.uris = this.makeUriArray(w.get("Website URL"));
             }
-            cipher.login.username = this.getValueOrDefault(w.get('Login'));
-            cipher.login.password = this.getValueOrDefault(w.get('Password'));
+            cipher.login.username = this.getValueOrDefault(w.get("Login"));
+            cipher.login.password = this.getValueOrDefault(w.get("Password"));
             this.cleanupCipher(cipher);
             result.ciphers.push(cipher);
         });
@@ -80,19 +80,19 @@ export class KasperskyTxtImporter extends BaseImporter implements Importer {
             return [];
         }
         const items: Map<string, string>[] = [];
-        data.split(Delimiter).forEach(p => {
-            if (p.indexOf('\n') === -1) {
+        data.split(Delimiter).forEach((p) => {
+            if (p.indexOf("\n") === -1) {
                 return;
             }
             const item = new Map<string, string>();
             let itemComment: string;
             let itemCommentKey: string;
-            p.split('\n').forEach(l => {
+            p.split("\n").forEach((l) => {
                 if (itemComment != null) {
-                    itemComment += ('\n' + l);
+                    itemComment += "\n" + l;
                     return;
                 }
-                const colonIndex = l.indexOf(':');
+                const colonIndex = l.indexOf(":");
                 let key: string;
                 let val: string;
                 if (colonIndex === -1) {
@@ -106,7 +106,7 @@ export class KasperskyTxtImporter extends BaseImporter implements Importer {
                 if (key != null) {
                     item.set(key, val);
                 }
-                if (key === 'Comment' || key === 'Text') {
+                if (key === "Comment" || key === "Text") {
                     itemComment = val;
                     itemCommentKey = key;
                 }

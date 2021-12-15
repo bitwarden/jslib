@@ -1,4 +1,4 @@
-import { Organization } from '../models/domain/organization';
+import { Organization } from "../models/domain/organization";
 
 export abstract class KeyConnectorService {
     getAndSetKey: (url?: string) => Promise<void>;

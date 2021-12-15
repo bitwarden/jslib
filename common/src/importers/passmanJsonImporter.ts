@@ -1,7 +1,7 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
 export class PassmanJsonImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -25,12 +25,12 @@ export class PassmanJsonImporter extends BaseImporter implements Importer {
             if (this.isNullOrWhitespace(cipher.login.username)) {
                 cipher.login.username = this.getValueOrDefault(credential.email);
             } else if (!this.isNullOrWhitespace(credential.email)) {
-                cipher.notes = ('Email: ' + credential.email + '\n');
+                cipher.notes = "Email: " + credential.email + "\n";
             }
 
             cipher.login.password = this.getValueOrDefault(credential.password);
             cipher.login.uris = this.makeUriArray(credential.url);
-            cipher.notes += this.getValueOrDefault(credential.description, '');
+            cipher.notes += this.getValueOrDefault(credential.description, "");
             if (credential.otp != null) {
                 cipher.login.totp = this.getValueOrDefault(credential.otp.secret);
             }
@@ -38,8 +38,8 @@ export class PassmanJsonImporter extends BaseImporter implements Importer {
             if (credential.custom_fields != null) {
                 credential.custom_fields.forEach((customField: any) => {
                     switch (customField.field_type) {
-                        case 'text':
-                        case 'password':
+                        case "text":
+                        case "password":
                             this.processKvp(cipher, customField.label, customField.value);
                             break;
                     }

@@ -1,11 +1,11 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
-import { CardView } from '../models/view/cardView';
+import { CardView } from "../models/view/cardView";
 
-import { CipherType } from '../enums/cipherType';
+import { CipherType } from "../enums/cipherType";
 
 export class FSecureFskImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -26,11 +26,11 @@ export class FSecureFskImporter extends BaseImporter implements Importer {
             cipher.name = this.getValueOrDefault(value.service);
             cipher.notes = this.getValueOrDefault(value.notes);
 
-            if (value.style === 'website' || value.style === 'globe') {
+            if (value.style === "website" || value.style === "globe") {
                 cipher.login.username = this.getValueOrDefault(value.username);
                 cipher.login.password = this.getValueOrDefault(value.password);
                 cipher.login.uris = this.makeUriArray(value.url);
-            } else if (value.style === 'creditcard') {
+            } else if (value.style === "creditcard") {
                 cipher.type = CipherType.Card;
                 cipher.card = new CardView();
                 cipher.card.cardholderName = this.getValueOrDefault(value.username);
@@ -39,11 +39,11 @@ export class FSecureFskImporter extends BaseImporter implements Importer {
                 cipher.card.code = this.getValueOrDefault(value.creditCvv);
                 if (!this.isNullOrWhitespace(value.creditExpiry)) {
                     if (!this.setCardExpiration(cipher, value.creditExpiry)) {
-                        this.processKvp(cipher, 'Expiration', value.creditExpiry);
+                        this.processKvp(cipher, "Expiration", value.creditExpiry);
                     }
                 }
                 if (!this.isNullOrWhitespace(value.password)) {
-                    this.processKvp(cipher, 'PIN', value.password);
+                    this.processKvp(cipher, "PIN", value.password);
                 }
             } else {
                 continue;

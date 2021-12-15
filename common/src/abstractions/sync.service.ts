@@ -2,7 +2,7 @@ import {
     SyncCipherNotification,
     SyncFolderNotification,
     SyncSendNotification,
-} from '../models/response/notificationResponse';
+} from "../models/response/notificationResponse";
 
 export abstract class SyncService {
     syncInProgress: boolean;

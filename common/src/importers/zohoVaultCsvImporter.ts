@@ -1,8 +1,8 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
-import { CipherView } from '../models/view/cipherView';
+import { ImportResult } from "../models/domain/importResult";
+import { CipherView } from "../models/view/cipherView";
 
 export class ZohoVaultCsvImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -13,18 +13,21 @@ export class ZohoVaultCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach(value => {
-            if (this.isNullOrWhitespace(value['Password Name']) && this.isNullOrWhitespace(value['Secret Name'])) {
+        results.forEach((value) => {
+            if (this.isNullOrWhitespace(value["Password Name"]) && this.isNullOrWhitespace(value["Secret Name"])) {
                 return;
             }
             this.processFolder(result, this.getValueOrDefault(value.ChamberName));
             const cipher = this.initLoginCipher();
-            cipher.favorite = this.getValueOrDefault(value.Favorite, '0') === '1';
+            cipher.favorite = this.getValueOrDefault(value.Favorite, "0") === "1";
             cipher.notes = this.getValueOrDefault(value.Notes);
             cipher.name = this.getValueOrDefault(
-                value['Password Name'], this.getValueOrDefault(value['Secret Name'], '--'));
+                value["Password Name"],
+                this.getValueOrDefault(value["Secret Name"], "--")
+            );
             cipher.login.uris = this.makeUriArray(
-                this.getValueOrDefault(value['Password URL'], this.getValueOrDefault(value['Secret URL'])));
+                this.getValueOrDefault(value["Password URL"], this.getValueOrDefault(value["Secret URL"]))
+            );
             this.parseData(cipher, value.SecretData);
             this.parseData(cipher, value.CustomData);
             this.convertToNoteIfNeeded(cipher);
@@ -45,14 +48,14 @@ export class ZohoVaultCsvImporter extends BaseImporter implements Importer {
             return;
         }
         const dataLines = this.splitNewLine(data);
-        dataLines.forEach(line => {
-            const delimPosition = line.indexOf(':');
+        dataLines.forEach((line) => {
+            const delimPosition = line.indexOf(":");
             if (delimPosition < 0) {
                 return;
             }
             const field = line.substring(0, delimPosition);
             const value = line.length > delimPosition ? line.substring(delimPosition + 1) : null;
-            if (this.isNullOrWhitespace(field) || this.isNullOrWhitespace(value) || field === 'SecretType') {
+            if (this.isNullOrWhitespace(field) || this.isNullOrWhitespace(value) || field === "SecretType") {
                 return;
             }
             const fieldLower = field.toLowerCase();

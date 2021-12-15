@@ -1,11 +1,11 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { CipherType } from '../enums/cipherType';
+import { CipherType } from "../enums/cipherType";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
-import { CardView } from '../models/view/cardView';
+import { CardView } from "../models/view/cardView";
 
 export class RememBearCsvImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -16,18 +16,18 @@ export class RememBearCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach(value => {
-            if (value.trash === 'true') {
+        results.forEach((value) => {
+            if (value.trash === "true") {
                 return;
             }
             const cipher = this.initLoginCipher();
             cipher.name = this.getValueOrDefault(value.name);
             cipher.notes = this.getValueOrDefault(value.notes);
-            if (value.type === 'LoginItem') {
+            if (value.type === "LoginItem") {
                 cipher.login.uris = this.makeUriArray(value.website);
                 cipher.login.password = this.getValueOrDefault(value.password);
                 cipher.login.username = this.getValueOrDefault(value.username);
-            } else if (value.type === 'CreditCardItem') {
+            } else if (value.type === "CreditCardItem") {
                 cipher.type = CipherType.Card;
                 cipher.card = new CardView();
                 cipher.card.cardholderName = this.getValueOrDefault(value.cardholder);
@@ -60,11 +60,11 @@ export class RememBearCsvImporter extends BaseImporter implements Importer {
 
                 const pin = this.getValueOrDefault(value.pin);
                 if (pin != null) {
-                    this.processKvp(cipher, 'PIN', pin);
+                    this.processKvp(cipher, "PIN", pin);
                 }
                 const zip = this.getValueOrDefault(value.zipCode);
                 if (zip != null) {
-                    this.processKvp(cipher, 'Zip Code', zip);
+                    this.processKvp(cipher, "Zip Code", zip);
                 }
             }
             this.cleanupCipher(cipher);

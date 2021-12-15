@@ -1,18 +1,31 @@
-import { ImportResult } from '../../models/domain/importResult';
-import { BaseImporter } from '../baseImporter';
-import { Importer } from '../importer';
+import { ImportResult } from "../../models/domain/importResult";
+import { BaseImporter } from "../baseImporter";
+import { Importer } from "../importer";
 
-import { CipherType } from '../../enums/cipherType';
-import { FieldType } from '../../enums/fieldType';
-import { CipherView } from '../../models/view/cipherView';
-import { CipherImportContext } from './cipherImportContext';
+import { CipherType } from "../../enums/cipherType";
+import { FieldType } from "../../enums/fieldType";
+import { CipherView } from "../../models/view/cipherView";
+import { CipherImportContext } from "./cipherImportContext";
 
-export const IgnoredProperties = ['ainfo', 'autosubmit', 'notesplain', 'ps', 'scope', 'tags', 'title', 'uuid', 'notes'];
+export const IgnoredProperties = ["ainfo", "autosubmit", "notesplain", "ps", "scope", "tags", "title", "uuid", "notes"];
 
 export abstract class OnePasswordCsvImporter extends BaseImporter implements Importer {
     protected loginPropertyParsers = [this.setLoginUsername, this.setLoginPassword, this.setLoginUris];
-    protected creditCardPropertyParsers = [this.setCreditCardNumber, this.setCreditCardVerification, this.setCreditCardCardholderName, this.setCreditCardExpiry];
-    protected identityPropertyParsers = [this.setIdentityFirstName, this.setIdentityInitial, this.setIdentityLastName, this.setIdentityUserName, this.setIdentityEmail, this.setIdentityPhone, this.setIdentityCompany];
+    protected creditCardPropertyParsers = [
+        this.setCreditCardNumber,
+        this.setCreditCardVerification,
+        this.setCreditCardCardholderName,
+        this.setCreditCardExpiry,
+    ];
+    protected identityPropertyParsers = [
+        this.setIdentityFirstName,
+        this.setIdentityInitial,
+        this.setIdentityLastName,
+        this.setIdentityUserName,
+        this.setIdentityEmail,
+        this.setIdentityPhone,
+        this.setIdentityCompany,
+    ];
 
     abstract setCipherType(value: any, cipher: CipherView): void;
 
@@ -20,20 +33,20 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
         const result = new ImportResult();
         const results = this.parseCsv(data, true, {
             quoteChar: '"',
-            escapeChar: '\\',
+            escapeChar: "\\",
         });
         if (results == null) {
             result.success = false;
             return Promise.resolve(result);
         }
 
-        results.forEach(value => {
-            if (this.isNullOrWhitespace(this.getProp(value, 'title'))) {
+        results.forEach((value) => {
+            if (this.isNullOrWhitespace(this.getProp(value, "title"))) {
                 return;
             }
 
             const cipher = this.initLoginCipher();
-            cipher.name = this.getValueOrDefault(this.getProp(value, 'title'), '--');
+            cipher.name = this.getValueOrDefault(this.getProp(value, "title"), "--");
 
             this.setNotes(value, cipher);
 
@@ -57,8 +70,12 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
                 altUsername = this.setUnknownValue(context, altUsername);
             }
 
-            if (cipher.type === CipherType.Login && !this.isNullOrWhitespace(altUsername) &&
-                this.isNullOrWhitespace(cipher.login.username) && altUsername.indexOf('://') === -1) {
+            if (
+                cipher.type === CipherType.Login &&
+                !this.isNullOrWhitespace(altUsername) &&
+                this.isNullOrWhitespace(cipher.login.username) &&
+                altUsername.indexOf("://") === -1
+            ) {
                 cipher.login.username = altUsername;
             }
 
@@ -108,10 +125,12 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
     }
 
     protected setNotes(importRecord: any, cipher: CipherView) {
-        cipher.notes = this.getValueOrDefault(this.getProp(importRecord, 'notesPlain'), '') + '\n' +
-            this.getValueOrDefault(this.getProp(importRecord, 'notes'), '') + '\n';
+        cipher.notes =
+            this.getValueOrDefault(this.getProp(importRecord, "notesPlain"), "") +
+            "\n" +
+            this.getValueOrDefault(this.getProp(importRecord, "notes"), "") +
+            "\n";
         cipher.notes.trim();
-
     }
 
     protected setKnownLoginValue(context: CipherImportContext): boolean {
@@ -142,18 +161,31 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
     }
 
     protected setUnknownValue(context: CipherImportContext, altUsername: string): string {
-        if (IgnoredProperties.indexOf(context.lowerProperty) === -1 && !context.lowerProperty.startsWith('section:') &&
-            !context.lowerProperty.startsWith('section ')) {
-            if (altUsername == null && context.lowerProperty === 'email') {
+        if (
+            IgnoredProperties.indexOf(context.lowerProperty) === -1 &&
+            !context.lowerProperty.startsWith("section:") &&
+            !context.lowerProperty.startsWith("section ")
+        ) {
+            if (altUsername == null && context.lowerProperty === "email") {
                 return context.importRecord[context.property];
-            }
-            else if (context.lowerProperty === 'created date' || context.lowerProperty === 'modified date') {
-                const readableDate = new Date(parseInt(context.importRecord[context.property], 10) * 1000).toUTCString();
-                this.processKvp(context.cipher, '1Password ' + context.property, readableDate);
+            } else if (context.lowerProperty === "created date" || context.lowerProperty === "modified date") {
+                const readableDate = new Date(
+                    parseInt(context.importRecord[context.property], 10) * 1000
+                ).toUTCString();
+                this.processKvp(context.cipher, "1Password " + context.property, readableDate);
                 return null;
             }
-            if (context.lowerProperty.includes('password') || context.lowerProperty.includes('key') || context.lowerProperty.includes('secret')) {
-                this.processKvp(context.cipher, context.property, context.importRecord[context.property], FieldType.Hidden);
+            if (
+                context.lowerProperty.includes("password") ||
+                context.lowerProperty.includes("key") ||
+                context.lowerProperty.includes("secret")
+            ) {
+                this.processKvp(
+                    context.cipher,
+                    context.property,
+                    context.importRecord[context.property],
+                    FieldType.Hidden
+                );
             } else {
                 this.processKvp(context.cipher, context.property, context.importRecord[context.property]);
             }
@@ -162,7 +194,10 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
     }
 
     protected setIdentityFirstName(context: CipherImportContext) {
-        if (this.isNullOrWhitespace(context.cipher.identity.firstName) && context.lowerProperty.includes('first name')) {
+        if (
+            this.isNullOrWhitespace(context.cipher.identity.firstName) &&
+            context.lowerProperty.includes("first name")
+        ) {
             context.cipher.identity.firstName = context.importRecord[context.property];
             return true;
         }
@@ -170,7 +205,7 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
     }
 
     protected setIdentityInitial(context: CipherImportContext) {
-        if (this.isNullOrWhitespace(context.cipher.identity.middleName) && context.lowerProperty.includes('initial')) {
+        if (this.isNullOrWhitespace(context.cipher.identity.middleName) && context.lowerProperty.includes("initial")) {
             context.cipher.identity.middleName = context.importRecord[context.property];
             return true;
         }
@@ -178,7 +213,7 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
     }
 
     protected setIdentityLastName(context: CipherImportContext) {
-        if (this.isNullOrWhitespace(context.cipher.identity.lastName) && context.lowerProperty.includes('last name')) {
+        if (this.isNullOrWhitespace(context.cipher.identity.lastName) && context.lowerProperty.includes("last name")) {
             context.cipher.identity.lastName = context.importRecord[context.property];
             return true;
         }
@@ -186,7 +221,7 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
     }
 
     protected setIdentityUserName(context: CipherImportContext) {
-        if (this.isNullOrWhitespace(context.cipher.identity.username) && context.lowerProperty.includes('username')) {
+        if (this.isNullOrWhitespace(context.cipher.identity.username) && context.lowerProperty.includes("username")) {
             context.cipher.identity.username = context.importRecord[context.property];
             return true;
         }
@@ -194,7 +229,7 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
     }
 
     protected setIdentityCompany(context: CipherImportContext) {
-        if (this.isNullOrWhitespace(context.cipher.identity.company) && context.lowerProperty.includes('company')) {
+        if (this.isNullOrWhitespace(context.cipher.identity.company) && context.lowerProperty.includes("company")) {
             context.cipher.identity.company = context.importRecord[context.property];
             return true;
         }
@@ -202,7 +237,7 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
     }
 
     protected setIdentityPhone(context: CipherImportContext) {
-        if (this.isNullOrWhitespace(context.cipher.identity.phone) && context.lowerProperty.includes('default phone')) {
+        if (this.isNullOrWhitespace(context.cipher.identity.phone) && context.lowerProperty.includes("default phone")) {
             context.cipher.identity.phone = context.importRecord[context.property];
             return true;
         }
@@ -210,7 +245,7 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
     }
 
     protected setIdentityEmail(context: CipherImportContext) {
-        if (this.isNullOrWhitespace(context.cipher.identity.email) && context.lowerProperty.includes('email')) {
+        if (this.isNullOrWhitespace(context.cipher.identity.email) && context.lowerProperty.includes("email")) {
             context.cipher.identity.email = context.importRecord[context.property];
             return true;
         }
@@ -218,7 +253,7 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
     }
 
     protected setCreditCardNumber(context: CipherImportContext): boolean {
-        if (this.isNullOrWhitespace(context.cipher.card.number) && context.lowerProperty.includes('number')) {
+        if (this.isNullOrWhitespace(context.cipher.card.number) && context.lowerProperty.includes("number")) {
             context.cipher.card.number = context.importRecord[context.property];
             context.cipher.card.brand = this.getCardBrand(context.cipher.card.number);
             return true;
@@ -227,7 +262,10 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
     }
 
     protected setCreditCardVerification(context: CipherImportContext) {
-        if (this.isNullOrWhitespace(context.cipher.card.code) && context.lowerProperty.includes('verification number')) {
+        if (
+            this.isNullOrWhitespace(context.cipher.card.code) &&
+            context.lowerProperty.includes("verification number")
+        ) {
             context.cipher.card.code = context.importRecord[context.property];
             return true;
         }
@@ -235,7 +273,10 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
     }
 
     protected setCreditCardCardholderName(context: CipherImportContext) {
-        if (this.isNullOrWhitespace(context.cipher.card.cardholderName) && context.lowerProperty.includes('cardholder name')) {
+        if (
+            this.isNullOrWhitespace(context.cipher.card.cardholderName) &&
+            context.lowerProperty.includes("cardholder name")
+        ) {
             context.cipher.card.cardholderName = context.importRecord[context.property];
             return true;
         }
@@ -243,10 +284,13 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
     }
 
     protected setCreditCardExpiry(context: CipherImportContext) {
-        if (this.isNullOrWhitespace(context.cipher.card.expiration) && context.lowerProperty.includes('expiry date') &&
-            context.importRecord[context.property].length === 7) {
+        if (
+            this.isNullOrWhitespace(context.cipher.card.expiration) &&
+            context.lowerProperty.includes("expiry date") &&
+            context.importRecord[context.property].length === 7
+        ) {
             context.cipher.card.expMonth = (context.importRecord[context.property] as string).substr(0, 2);
-            if (context.cipher.card.expMonth[0] === '0') {
+            if (context.cipher.card.expMonth[0] === "0") {
                 context.cipher.card.expMonth = context.cipher.card.expMonth.substr(1, 1);
             }
             context.cipher.card.expYear = (context.importRecord[context.property] as string).substr(3, 4);
@@ -256,7 +300,7 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
     }
 
     protected setLoginPassword(context: CipherImportContext) {
-        if (this.isNullOrWhitespace(context.cipher.login.password) && context.lowerProperty === 'password') {
+        if (this.isNullOrWhitespace(context.cipher.login.password) && context.lowerProperty === "password") {
             context.cipher.login.password = context.importRecord[context.property];
             return true;
         }
@@ -264,7 +308,7 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
     }
 
     protected setLoginUsername(context: CipherImportContext) {
-        if (this.isNullOrWhitespace(context.cipher.login.username) && context.lowerProperty === 'username') {
+        if (this.isNullOrWhitespace(context.cipher.login.username) && context.lowerProperty === "username") {
             context.cipher.login.username = context.importRecord[context.property];
             return true;
         }
@@ -272,11 +316,14 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
     }
 
     protected setLoginUris(context: CipherImportContext) {
-        if ((context.cipher.login.uris == null || context.cipher.login.uris.length === 0) && context.lowerProperty === 'urls') {
+        if (
+            (context.cipher.login.uris == null || context.cipher.login.uris.length === 0) &&
+            context.lowerProperty === "urls"
+        ) {
             const urls = context.importRecord[context.property].split(this.newLineRegex);
             context.cipher.login.uris = this.makeUriArray(urls);
             return true;
-        } else if ((context.lowerProperty === 'url')) {
+        } else if (context.lowerProperty === "url") {
             if (context.cipher.login.uris == null) {
                 context.cipher.login.uris = [];
             }

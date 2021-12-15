@@ -1,13 +1,13 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
-import { CipherType } from '../enums/cipherType';
-import { SecureNoteType } from '../enums/secureNoteType';
+import { CipherType } from "../enums/cipherType";
+import { SecureNoteType } from "../enums/secureNoteType";
 
-import { CardView } from '../models/view/cardView';
-import { SecureNoteView } from '../models/view/secureNoteView';
+import { CardView } from "../models/view/cardView";
+import { SecureNoteView } from "../models/view/secureNoteView";
 
 export class EnpassCsvImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -19,31 +19,38 @@ export class EnpassCsvImporter extends BaseImporter implements Importer {
         }
 
         let firstRow = true;
-        results.forEach(value => {
-            if (value.length < 2 || (firstRow && (value[0] === 'Title' || value[0] === 'title'))) {
+        results.forEach((value) => {
+            if (value.length < 2 || (firstRow && (value[0] === "Title" || value[0] === "title"))) {
                 firstRow = false;
                 return;
             }
 
             const cipher = this.initLoginCipher();
             cipher.notes = this.getValueOrDefault(value[value.length - 1]);
-            cipher.name = this.getValueOrDefault(value[0], '--');
+            cipher.name = this.getValueOrDefault(value[0], "--");
 
-            if (value.length === 2 || (!this.containsField(value, 'username') &&
-                !this.containsField(value, 'password') && !this.containsField(value, 'email') &&
-                !this.containsField(value, 'url'))) {
+            if (
+                value.length === 2 ||
+                (!this.containsField(value, "username") &&
+                    !this.containsField(value, "password") &&
+                    !this.containsField(value, "email") &&
+                    !this.containsField(value, "url"))
+            ) {
                 cipher.type = CipherType.SecureNote;
                 cipher.secureNote = new SecureNoteView();
                 cipher.secureNote.type = SecureNoteType.Generic;
             }
 
-            if (this.containsField(value, 'cardholder') && this.containsField(value, 'number') &&
-                this.containsField(value, 'expiry date')) {
+            if (
+                this.containsField(value, "cardholder") &&
+                this.containsField(value, "number") &&
+                this.containsField(value, "expiry date")
+            ) {
                 cipher.type = CipherType.Card;
                 cipher.card = new CardView();
             }
 
-            if (value.length > 2 && (value.length % 2) === 0) {
+            if (value.length > 2 && value.length % 2 === 0) {
                 for (let i = 0; i < value.length - 2; i += 2) {
                     const fieldValue: string = value[i + 2];
                     if (this.isNullOrWhitespace(fieldValue)) {
@@ -54,37 +61,42 @@ export class EnpassCsvImporter extends BaseImporter implements Importer {
                     const fieldNameLower = fieldName.toLowerCase();
 
                     if (cipher.type === CipherType.Login) {
-                        if (fieldNameLower === 'url' && (cipher.login.uris == null || cipher.login.uris.length === 0)) {
+                        if (fieldNameLower === "url" && (cipher.login.uris == null || cipher.login.uris.length === 0)) {
                             cipher.login.uris = this.makeUriArray(fieldValue);
                             continue;
-                        } else if ((fieldNameLower === 'username' || fieldNameLower === 'email') &&
-                            this.isNullOrWhitespace(cipher.login.username)) {
+                        } else if (
+                            (fieldNameLower === "username" || fieldNameLower === "email") &&
+                            this.isNullOrWhitespace(cipher.login.username)
+                        ) {
                             cipher.login.username = fieldValue;
                             continue;
-                        } else if (fieldNameLower === 'password' && this.isNullOrWhitespace(cipher.login.password)) {
+                        } else if (fieldNameLower === "password" && this.isNullOrWhitespace(cipher.login.password)) {
                             cipher.login.password = fieldValue;
                             continue;
-                        } else if (fieldNameLower === 'totp' && this.isNullOrWhitespace(cipher.login.totp)) {
+                        } else if (fieldNameLower === "totp" && this.isNullOrWhitespace(cipher.login.totp)) {
                             cipher.login.totp = fieldValue;
                             continue;
                         }
                     } else if (cipher.type === CipherType.Card) {
-                        if (fieldNameLower === 'cardholder' && this.isNullOrWhitespace(cipher.card.cardholderName)) {
+                        if (fieldNameLower === "cardholder" && this.isNullOrWhitespace(cipher.card.cardholderName)) {
                             cipher.card.cardholderName = fieldValue;
                             continue;
-                        } else if (fieldNameLower === 'number' && this.isNullOrWhitespace(cipher.card.number)) {
+                        } else if (fieldNameLower === "number" && this.isNullOrWhitespace(cipher.card.number)) {
                             cipher.card.number = fieldValue;
                             cipher.card.brand = this.getCardBrand(fieldValue);
                             continue;
-                        } else if (fieldNameLower === 'cvc' && this.isNullOrWhitespace(cipher.card.code)) {
+                        } else if (fieldNameLower === "cvc" && this.isNullOrWhitespace(cipher.card.code)) {
                             cipher.card.code = fieldValue;
                             continue;
-                        } else if (fieldNameLower === 'expiry date' && this.isNullOrWhitespace(cipher.card.expMonth) &&
-                            this.isNullOrWhitespace(cipher.card.expYear)) {
+                        } else if (
+                            fieldNameLower === "expiry date" &&
+                            this.isNullOrWhitespace(cipher.card.expMonth) &&
+                            this.isNullOrWhitespace(cipher.card.expYear)
+                        ) {
                             if (this.setCardExpiration(cipher, fieldValue)) {
                                 continue;
                             }
-                        } else if (fieldNameLower === 'type') {
+                        } else if (fieldNameLower === "type") {
                             // Skip since brand was determined from number above
                             continue;
                         }
@@ -106,7 +118,6 @@ export class EnpassCsvImporter extends BaseImporter implements Importer {
         if (fields == null || name == null) {
             return false;
         }
-        return fields.filter(f => !this.isNullOrWhitespace(f) &&
-            f.toLowerCase() === name.toLowerCase()).length > 0;
+        return fields.filter((f) => !this.isNullOrWhitespace(f) && f.toLowerCase() === name.toLowerCase()).length > 0;
     }
 }

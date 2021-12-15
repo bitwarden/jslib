@@ -1,18 +1,26 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
-import { CardView } from '../models/view/cardView';
-import { CipherView } from '../models/view/cipherView';
-import { IdentityView } from '../models/view/identityView';
-import { SecureNoteView } from '../models/view/secureNoteView';
+import { CardView } from "../models/view/cardView";
+import { CipherView } from "../models/view/cipherView";
+import { IdentityView } from "../models/view/identityView";
+import { SecureNoteView } from "../models/view/secureNoteView";
 
-import { CipherType } from '../enums/cipherType';
-import { SecureNoteType } from '../enums/secureNoteType';
+import { CipherType } from "../enums/cipherType";
+import { SecureNoteType } from "../enums/secureNoteType";
 
-const HandledResults = new Set(['ADDRESS', 'AUTHENTIFIANT', 'BANKSTATEMENT', 'IDCARD', 'IDENTITY',
-    'PAYMENTMEANS_CREDITCARD', 'PAYMENTMEAN_PAYPAL', 'EMAIL']);
+const HandledResults = new Set([
+    "ADDRESS",
+    "AUTHENTIFIANT",
+    "BANKSTATEMENT",
+    "IDCARD",
+    "IDENTITY",
+    "PAYMENTMEANS_CREDITCARD",
+    "PAYMENTMEAN_PAYPAL",
+    "EMAIL",
+]);
 
 export class DashlaneJsonImporter extends BaseImporter implements Importer {
     private result: ImportResult;
@@ -32,10 +40,10 @@ export class DashlaneJsonImporter extends BaseImporter implements Importer {
             this.processAuth(results.AUTHENTIFIANT);
         }
         if (results.BANKSTATEMENT != null) {
-            this.processNote(results.BANKSTATEMENT, 'BankAccountName');
+            this.processNote(results.BANKSTATEMENT, "BankAccountName");
         }
         if (results.IDCARD != null) {
-            this.processNote(results.IDCARD, 'Fullname');
+            this.processNote(results.IDCARD, "Fullname");
         }
         if (results.PAYMENTMEANS_CREDITCARD != null) {
             this.processCard(results.PAYMENTMEANS_CREDITCARD);
@@ -46,7 +54,7 @@ export class DashlaneJsonImporter extends BaseImporter implements Importer {
 
         for (const key in results) {
             if (results.hasOwnProperty(key) && !HandledResults.has(key)) {
-                this.processNote(results[key], null, 'Generic Note');
+                this.processNote(results[key], null, "Generic Note");
             }
         }
 
@@ -59,17 +67,19 @@ export class DashlaneJsonImporter extends BaseImporter implements Importer {
             const cipher = this.initLoginCipher();
             cipher.name = this.getValueOrDefault(credential.title);
 
-            cipher.login.username = this.getValueOrDefault(credential.login,
-                this.getValueOrDefault(credential.secondaryLogin));
+            cipher.login.username = this.getValueOrDefault(
+                credential.login,
+                this.getValueOrDefault(credential.secondaryLogin)
+            );
             if (this.isNullOrWhitespace(cipher.login.username)) {
                 cipher.login.username = this.getValueOrDefault(credential.email);
             } else if (!this.isNullOrWhitespace(credential.email)) {
-                cipher.notes = ('Email: ' + credential.email + '\n');
+                cipher.notes = "Email: " + credential.email + "\n";
             }
 
             cipher.login.password = this.getValueOrDefault(credential.password);
             cipher.login.uris = this.makeUriArray(credential.domain);
-            cipher.notes += this.getValueOrDefault(credential.note, '');
+            cipher.notes += this.getValueOrDefault(credential.note, "");
 
             this.convertToNoteIfNeeded(cipher);
             this.cleanupCipher(cipher);
@@ -82,8 +92,8 @@ export class DashlaneJsonImporter extends BaseImporter implements Importer {
             const cipher = new CipherView();
             cipher.identity = new IdentityView();
             cipher.type = CipherType.Identity;
-            cipher.name = this.getValueOrDefault(obj.fullName, '');
-            const nameParts = cipher.name.split(' ');
+            cipher.name = this.getValueOrDefault(obj.fullName, "");
+            const nameParts = cipher.name.split(" ");
             if (nameParts.length > 0) {
                 cipher.identity.firstName = this.getValueOrDefault(nameParts[0]);
             }
@@ -131,7 +141,7 @@ export class DashlaneJsonImporter extends BaseImporter implements Importer {
                 if (this.isNullOrWhitespace(cipher.name)) {
                     cipher.name = cipher.card.brand;
                 } else {
-                    cipher.name += (' - ' + cipher.card.brand);
+                    cipher.name += " - " + cipher.card.brand;
                 }
             }
             this.cleanupCipher(cipher);

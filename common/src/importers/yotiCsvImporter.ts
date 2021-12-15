@@ -1,7 +1,7 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
 export class YotiCsvImporter extends BaseImporter implements Importer {
     parse(data: string): Promise<ImportResult> {
@@ -12,10 +12,10 @@ export class YotiCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach(value => {
+        results.forEach((value) => {
             const cipher = this.initLoginCipher();
-            cipher.name = this.getValueOrDefault(value.Name, '--');
-            cipher.login.username = this.getValueOrDefault(value['User name']);
+            cipher.name = this.getValueOrDefault(value.Name, "--");
+            cipher.login.username = this.getValueOrDefault(value["User name"]);
             cipher.login.password = this.getValueOrDefault(value.Password);
             cipher.login.uris = this.makeUriArray(value.URL);
             this.cleanupCipher(cipher);

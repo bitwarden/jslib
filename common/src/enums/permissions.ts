@@ -13,7 +13,7 @@ export enum Permissions {
      */
     ManageAssignedCollections,
     ManageGroups,
-    ManageOrganization ,
+    ManageOrganization,
     ManagePolicies,
     ManageProvider,
     ManageUsers,

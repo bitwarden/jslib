@@ -1,16 +1,26 @@
-import { BaseImporter } from './baseImporter';
-import { Importer } from './importer';
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
-import { ImportResult } from '../models/domain/importResult';
+import { ImportResult } from "../models/domain/importResult";
 
-import { CardView } from '../models/view/cardView';
-import { SecureNoteView } from '../models/view/secureNoteView';
+import { CardView } from "../models/view/cardView";
+import { SecureNoteView } from "../models/view/secureNoteView";
 
-import { CipherType } from '../enums/cipherType';
-import { SecureNoteType } from '../enums/secureNoteType';
+import { CipherType } from "../enums/cipherType";
+import { SecureNoteType } from "../enums/secureNoteType";
 
-const PropertiesToIgnore = ['kind', 'autologin', 'favorite', 'hexcolor', 'protectedwithpassword', 'subdomainonly',
-    'type', 'tk_export_version', 'note', 'title', 'document_content',
+const PropertiesToIgnore = [
+    "kind",
+    "autologin",
+    "favorite",
+    "hexcolor",
+    "protectedwithpassword",
+    "subdomainonly",
+    "type",
+    "tk_export_version",
+    "note",
+    "title",
+    "document_content",
 ];
 
 export class TrueKeyCsvImporter extends BaseImporter implements Importer {
@@ -22,21 +32,21 @@ export class TrueKeyCsvImporter extends BaseImporter implements Importer {
             return Promise.resolve(result);
         }
 
-        results.forEach(value => {
+        results.forEach((value) => {
             const cipher = this.initLoginCipher();
-            cipher.favorite = this.getValueOrDefault(value.favorite, '').toLowerCase() === 'true';
-            cipher.name = this.getValueOrDefault(value.name, '--');
-            cipher.notes = this.getValueOrDefault(value.memo, '');
+            cipher.favorite = this.getValueOrDefault(value.favorite, "").toLowerCase() === "true";
+            cipher.name = this.getValueOrDefault(value.name, "--");
+            cipher.notes = this.getValueOrDefault(value.memo, "");
             cipher.login.username = this.getValueOrDefault(value.login);
             cipher.login.password = this.getValueOrDefault(value.password);
             cipher.login.uris = this.makeUriArray(value.url);
 
-            if (value.kind !== 'login') {
-                cipher.name = this.getValueOrDefault(value.title, '--');
-                cipher.notes = this.getValueOrDefault(value.note, '');
+            if (value.kind !== "login") {
+                cipher.name = this.getValueOrDefault(value.title, "--");
+                cipher.notes = this.getValueOrDefault(value.note, "");
             }
 
-            if (value.kind === 'cc') {
+            if (value.kind === "cc") {
                 cipher.type = CipherType.Card;
                 cipher.card = new CardView();
                 cipher.card.cardholderName = this.getValueOrDefault(value.cardholder);
@@ -51,16 +61,19 @@ export class TrueKeyCsvImporter extends BaseImporter implements Importer {
                         // Ignore error
                     }
                 }
-            } else if (value.kind !== 'login') {
+            } else if (value.kind !== "login") {
                 cipher.type = CipherType.SecureNote;
                 cipher.secureNote = new SecureNoteView();
                 cipher.secureNote.type = SecureNoteType.Generic;
                 if (!this.isNullOrWhitespace(cipher.notes)) {
-                    cipher.notes = this.getValueOrDefault(value.document_content, '');
+                    cipher.notes = this.getValueOrDefault(value.document_content, "");
                 }
                 for (const property in value) {
-                    if (value.hasOwnProperty(property) && PropertiesToIgnore.indexOf(property.toLowerCase()) < 0 &&
-                        !this.isNullOrWhitespace(value[property])) {
+                    if (
+                        value.hasOwnProperty(property) &&
+                        PropertiesToIgnore.indexOf(property.toLowerCase()) < 0 &&
+                        !this.isNullOrWhitespace(value[property])
+                    ) {
                         this.processKvp(cipher, property, value[property]);
                     }
                 }
