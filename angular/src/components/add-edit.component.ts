@@ -1,45 +1,39 @@
-import {
-    Directive,
-    EventEmitter,
-    Input,
-    OnInit,
-    Output,
-} from '@angular/core';
+import { Directive, EventEmitter, Input, OnInit, Output } from "@angular/core";
 
-import { CipherRepromptType } from 'jslib-common/enums/cipherRepromptType';
-import { CipherType } from 'jslib-common/enums/cipherType';
-import { EventType } from 'jslib-common/enums/eventType';
-import { OrganizationUserStatusType } from 'jslib-common/enums/organizationUserStatusType';
-import { PolicyType } from 'jslib-common/enums/policyType';
-import { SecureNoteType } from 'jslib-common/enums/secureNoteType';
-import { UriMatchType } from 'jslib-common/enums/uriMatchType';
+import { CipherRepromptType } from "jslib-common/enums/cipherRepromptType";
+import { CipherType } from "jslib-common/enums/cipherType";
+import { EventType } from "jslib-common/enums/eventType";
+import { OrganizationUserStatusType } from "jslib-common/enums/organizationUserStatusType";
+import { PolicyType } from "jslib-common/enums/policyType";
+import { SecureNoteType } from "jslib-common/enums/secureNoteType";
+import { UriMatchType } from "jslib-common/enums/uriMatchType";
 
-import { AuditService } from 'jslib-common/abstractions/audit.service';
-import { CipherService } from 'jslib-common/abstractions/cipher.service';
-import { CollectionService } from 'jslib-common/abstractions/collection.service';
-import { EventService } from 'jslib-common/abstractions/event.service';
-import { FolderService } from 'jslib-common/abstractions/folder.service';
-import { I18nService } from 'jslib-common/abstractions/i18n.service';
-import { LogService } from 'jslib-common/abstractions/log.service';
-import { MessagingService } from 'jslib-common/abstractions/messaging.service';
-import { OrganizationService } from 'jslib-common/abstractions/organization.service';
-import { PasswordRepromptService } from 'jslib-common/abstractions/passwordReprompt.service';
-import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
-import { PolicyService } from 'jslib-common/abstractions/policy.service';
-import { StateService } from 'jslib-common/abstractions/state.service';
+import { AuditService } from "jslib-common/abstractions/audit.service";
+import { CipherService } from "jslib-common/abstractions/cipher.service";
+import { CollectionService } from "jslib-common/abstractions/collection.service";
+import { EventService } from "jslib-common/abstractions/event.service";
+import { FolderService } from "jslib-common/abstractions/folder.service";
+import { I18nService } from "jslib-common/abstractions/i18n.service";
+import { LogService } from "jslib-common/abstractions/log.service";
+import { MessagingService } from "jslib-common/abstractions/messaging.service";
+import { OrganizationService } from "jslib-common/abstractions/organization.service";
+import { PasswordRepromptService } from "jslib-common/abstractions/passwordReprompt.service";
+import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
+import { PolicyService } from "jslib-common/abstractions/policy.service";
+import { StateService } from "jslib-common/abstractions/state.service";
 
-import { Cipher } from 'jslib-common/models/domain/cipher';
+import { Cipher } from "jslib-common/models/domain/cipher";
 
-import { CardView } from 'jslib-common/models/view/cardView';
-import { CipherView } from 'jslib-common/models/view/cipherView';
-import { CollectionView } from 'jslib-common/models/view/collectionView';
-import { FolderView } from 'jslib-common/models/view/folderView';
-import { IdentityView } from 'jslib-common/models/view/identityView';
-import { LoginUriView } from 'jslib-common/models/view/loginUriView';
-import { LoginView } from 'jslib-common/models/view/loginView';
-import { SecureNoteView } from 'jslib-common/models/view/secureNoteView';
+import { CardView } from "jslib-common/models/view/cardView";
+import { CipherView } from "jslib-common/models/view/cipherView";
+import { CollectionView } from "jslib-common/models/view/collectionView";
+import { FolderView } from "jslib-common/models/view/folderView";
+import { IdentityView } from "jslib-common/models/view/identityView";
+import { LoginUriView } from "jslib-common/models/view/loginUriView";
+import { LoginView } from "jslib-common/models/view/loginView";
+import { SecureNoteView } from "jslib-common/models/view/secureNoteView";
 
-import { Utils } from 'jslib-common/misc/utils';
+import { Utils } from "jslib-common/misc/utils";
 
 @Directive()
 export class AddEditComponent implements OnInit {
@@ -86,66 +80,74 @@ export class AddEditComponent implements OnInit {
     protected writeableCollections: CollectionView[];
     private previousCipherId: string;
 
-    constructor(protected cipherService: CipherService, protected folderService: FolderService,
-        protected i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
-        protected auditService: AuditService, protected stateService: StateService,
-        protected collectionService: CollectionService, protected messagingService: MessagingService,
-        protected eventService: EventService, protected policyService: PolicyService,
-        private logService: LogService, protected passwordRepromptService: PasswordRepromptService,
-        private organizationService: OrganizationService) {
+    constructor(
+        protected cipherService: CipherService,
+        protected folderService: FolderService,
+        protected i18nService: I18nService,
+        protected platformUtilsService: PlatformUtilsService,
+        protected auditService: AuditService,
+        protected stateService: StateService,
+        protected collectionService: CollectionService,
+        protected messagingService: MessagingService,
+        protected eventService: EventService,
+        protected policyService: PolicyService,
+        private logService: LogService,
+        protected passwordRepromptService: PasswordRepromptService,
+        private organizationService: OrganizationService
+    ) {
         this.typeOptions = [
-            { name: i18nService.t('typeLogin'), value: CipherType.Login },
-            { name: i18nService.t('typeCard'), value: CipherType.Card },
-            { name: i18nService.t('typeIdentity'), value: CipherType.Identity },
-            { name: i18nService.t('typeSecureNote'), value: CipherType.SecureNote },
+            { name: i18nService.t("typeLogin"), value: CipherType.Login },
+            { name: i18nService.t("typeCard"), value: CipherType.Card },
+            { name: i18nService.t("typeIdentity"), value: CipherType.Identity },
+            { name: i18nService.t("typeSecureNote"), value: CipherType.SecureNote },
         ];
         this.cardBrandOptions = [
-            { name: '-- ' + i18nService.t('select') + ' --', value: null },
-            { name: 'Visa', value: 'Visa' },
-            { name: 'Mastercard', value: 'Mastercard' },
-            { name: 'American Express', value: 'Amex' },
-            { name: 'Discover', value: 'Discover' },
-            { name: 'Diners Club', value: 'Diners Club' },
-            { name: 'JCB', value: 'JCB' },
-            { name: 'Maestro', value: 'Maestro' },
-            { name: 'UnionPay', value: 'UnionPay' },
-            { name: i18nService.t('other'), value: 'Other' },
+            { name: "-- " + i18nService.t("select") + " --", value: null },
+            { name: "Visa", value: "Visa" },
+            { name: "Mastercard", value: "Mastercard" },
+            { name: "American Express", value: "Amex" },
+            { name: "Discover", value: "Discover" },
+            { name: "Diners Club", value: "Diners Club" },
+            { name: "JCB", value: "JCB" },
+            { name: "Maestro", value: "Maestro" },
+            { name: "UnionPay", value: "UnionPay" },
+            { name: i18nService.t("other"), value: "Other" },
         ];
         this.cardExpMonthOptions = [
-            { name: '-- ' + i18nService.t('select') + ' --', value: null },
-            { name: '01 - ' + i18nService.t('january'), value: '1' },
-            { name: '02 - ' + i18nService.t('february'), value: '2' },
-            { name: '03 - ' + i18nService.t('march'), value: '3' },
-            { name: '04 - ' + i18nService.t('april'), value: '4' },
-            { name: '05 - ' + i18nService.t('may'), value: '5' },
-            { name: '06 - ' + i18nService.t('june'), value: '6' },
-            { name: '07 - ' + i18nService.t('july'), value: '7' },
-            { name: '08 - ' + i18nService.t('august'), value: '8' },
-            { name: '09 - ' + i18nService.t('september'), value: '9' },
-            { name: '10 - ' + i18nService.t('october'), value: '10' },
-            { name: '11 - ' + i18nService.t('november'), value: '11' },
-            { name: '12 - ' + i18nService.t('december'), value: '12' },
+            { name: "-- " + i18nService.t("select") + " --", value: null },
+            { name: "01 - " + i18nService.t("january"), value: "1" },
+            { name: "02 - " + i18nService.t("february"), value: "2" },
+            { name: "03 - " + i18nService.t("march"), value: "3" },
+            { name: "04 - " + i18nService.t("april"), value: "4" },
+            { name: "05 - " + i18nService.t("may"), value: "5" },
+            { name: "06 - " + i18nService.t("june"), value: "6" },
+            { name: "07 - " + i18nService.t("july"), value: "7" },
+            { name: "08 - " + i18nService.t("august"), value: "8" },
+            { name: "09 - " + i18nService.t("september"), value: "9" },
+            { name: "10 - " + i18nService.t("october"), value: "10" },
+            { name: "11 - " + i18nService.t("november"), value: "11" },
+            { name: "12 - " + i18nService.t("december"), value: "12" },
         ];
         this.identityTitleOptions = [
-            { name: '-- ' + i18nService.t('select') + ' --', value: null },
-            { name: i18nService.t('mr'), value: i18nService.t('mr') },
-            { name: i18nService.t('mrs'), value: i18nService.t('mrs') },
-            { name: i18nService.t('ms'), value: i18nService.t('ms') },
-            { name: i18nService.t('dr'), value: i18nService.t('dr') },
+            { name: "-- " + i18nService.t("select") + " --", value: null },
+            { name: i18nService.t("mr"), value: i18nService.t("mr") },
+            { name: i18nService.t("mrs"), value: i18nService.t("mrs") },
+            { name: i18nService.t("ms"), value: i18nService.t("ms") },
+            { name: i18nService.t("dr"), value: i18nService.t("dr") },
         ];
         this.uriMatchOptions = [
-            { name: i18nService.t('defaultMatchDetection'), value: null },
-            { name: i18nService.t('baseDomain'), value: UriMatchType.Domain },
-            { name: i18nService.t('host'), value: UriMatchType.Host },
-            { name: i18nService.t('startsWith'), value: UriMatchType.StartsWith },
-            { name: i18nService.t('regEx'), value: UriMatchType.RegularExpression },
-            { name: i18nService.t('exact'), value: UriMatchType.Exact },
-            { name: i18nService.t('never'), value: UriMatchType.Never },
+            { name: i18nService.t("defaultMatchDetection"), value: null },
+            { name: i18nService.t("baseDomain"), value: UriMatchType.Domain },
+            { name: i18nService.t("host"), value: UriMatchType.Host },
+            { name: i18nService.t("startsWith"), value: UriMatchType.StartsWith },
+            { name: i18nService.t("regEx"), value: UriMatchType.RegularExpression },
+            { name: i18nService.t("exact"), value: UriMatchType.Exact },
+            { name: i18nService.t("never"), value: UriMatchType.Never },
         ];
         this.autofillOnPageLoadOptions = [
-            { name: i18nService.t('autoFillOnPageLoadUseDefault'), value: null },
-            { name: i18nService.t('autoFillOnPageLoadYes'), value: true },
-            { name: i18nService.t('autoFillOnPageLoadNo'), value: false },
+            { name: i18nService.t("autoFillOnPageLoadUseDefault"), value: null },
+            { name: i18nService.t("autoFillOnPageLoadYes"), value: true },
+            { name: i18nService.t("autoFillOnPageLoadNo"), value: false },
         ];
     }
 
@@ -165,7 +167,7 @@ export class AddEditComponent implements OnInit {
         }
 
         const orgs = await this.organizationService.getAll();
-        orgs.sort(Utils.getSortFunction(this.i18nService, 'name')).forEach(o => {
+        orgs.sort(Utils.getSortFunction(this.i18nService, "name")).forEach((o) => {
             if (o.enabled && o.status === OrganizationUserStatusType.Confirmed) {
                 this.ownershipOptions.push({ name: o.name, value: o.id });
             }
@@ -185,12 +187,12 @@ export class AddEditComponent implements OnInit {
             this.editMode = true;
             if (this.cloneMode) {
                 this.cloneMode = true;
-                this.title = this.i18nService.t('addItem');
+                this.title = this.i18nService.t("addItem");
             } else {
-                this.title = this.i18nService.t('editItem');
+                this.title = this.i18nService.t("editItem");
             }
         } else {
-            this.title = this.i18nService.t('addItem');
+            this.title = this.i18nService.t("addItem");
         }
 
         const addEditCipherInfo: any = await this.stateService.getAddEditCipherInfo();
@@ -207,7 +209,7 @@ export class AddEditComponent implements OnInit {
 
                 // Adjust Cipher Name if Cloning
                 if (this.cloneMode) {
-                    this.cipher.name += ' - ' + this.i18nService.t('clone');
+                    this.cipher.name += " - " + this.i18nService.t("clone");
                     // If not allowing personal ownership, update cipher's org Id to prompt downstream changes
                     if (this.cipher.organizationId == null && !this.allowPersonal) {
                         this.cipher.organizationId = this.organizationId;
@@ -231,7 +233,7 @@ export class AddEditComponent implements OnInit {
         if (this.cipher != null && (!this.editMode || addEditCipherInfo != null || this.cloneMode)) {
             await this.organizationChanged();
             if (this.collectionIds != null && this.collectionIds.length > 0 && this.collections.length > 0) {
-                this.collections.forEach(c => {
+                this.collections.forEach((c) => {
                     if (this.collectionIds.indexOf(c.id) > -1) {
                         (c as any).checked = true;
                     }
@@ -253,28 +255,38 @@ export class AddEditComponent implements OnInit {
             return this.restore();
         }
 
-        if (this.cipher.name == null || this.cipher.name === '') {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('nameRequired'));
+        if (this.cipher.name == null || this.cipher.name === "") {
+            this.platformUtilsService.showToast(
+                "error",
+                this.i18nService.t("errorOccurred"),
+                this.i18nService.t("nameRequired")
+            );
             return false;
         }
 
         if ((!this.editMode || this.cloneMode) && !this.allowPersonal && this.cipher.organizationId == null) {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('personalOwnershipSubmitError'));
+            this.platformUtilsService.showToast(
+                "error",
+                this.i18nService.t("errorOccurred"),
+                this.i18nService.t("personalOwnershipSubmitError")
+            );
             return false;
         }
 
-        if ((!this.editMode || this.cloneMode) && this.cipher.type === CipherType.Login &&
-            this.cipher.login.uris != null && this.cipher.login.uris.length === 1 &&
-            (this.cipher.login.uris[0].uri == null || this.cipher.login.uris[0].uri === '')) {
+        if (
+            (!this.editMode || this.cloneMode) &&
+            this.cipher.type === CipherType.Login &&
+            this.cipher.login.uris != null &&
+            this.cipher.login.uris.length === 1 &&
+            (this.cipher.login.uris[0].uri == null || this.cipher.login.uris[0].uri === "")
+        ) {
             this.cipher.login.uris = null;
         }
 
         // Allows saving of selected collections during "Add" and "Clone" flows
         if ((!this.editMode || this.cloneMode) && this.cipher.organizationId != null) {
-            this.cipher.collectionIds = this.collections == null ? [] :
-                this.collections.filter(c => (c as any).checked).map(c => c.id);
+            this.cipher.collectionIds =
+                this.collections == null ? [] : this.collections.filter((c) => (c as any).checked).map((c) => c.id);
         }
 
         // Clear current Cipher Id to trigger "Add" cipher flow
@@ -287,10 +299,13 @@ export class AddEditComponent implements OnInit {
             this.formPromise = this.saveCipher(cipher);
             await this.formPromise;
             this.cipher.id = cipher.id;
-            this.platformUtilsService.showToast('success', null,
-                this.i18nService.t(this.editMode && !this.cloneMode ? 'editedItem' : 'addedItem'));
+            this.platformUtilsService.showToast(
+                "success",
+                null,
+                this.i18nService.t(this.editMode && !this.cloneMode ? "editedItem" : "addedItem")
+            );
             this.onSavedCipher.emit(this.cipher);
-            this.messagingService.send(this.editMode && !this.cloneMode ? 'editedCipher' : 'addedCipher');
+            this.messagingService.send(this.editMode && !this.cloneMode ? "editedCipher" : "addedCipher");
             return true;
         } catch (e) {
             this.logService.error(e);
@@ -344,8 +359,12 @@ export class AddEditComponent implements OnInit {
 
     async delete(): Promise<boolean> {
         const confirmed = await this.platformUtilsService.showDialog(
-            this.i18nService.t(this.cipher.isDeleted ? 'permanentlyDeleteItemConfirmation' : 'deleteItemConfirmation'),
-            this.i18nService.t('deleteItem'), this.i18nService.t('yes'), this.i18nService.t('no'), 'warning');
+            this.i18nService.t(this.cipher.isDeleted ? "permanentlyDeleteItemConfirmation" : "deleteItemConfirmation"),
+            this.i18nService.t("deleteItem"),
+            this.i18nService.t("yes"),
+            this.i18nService.t("no"),
+            "warning"
+        );
         if (!confirmed) {
             return false;
         }
@@ -353,10 +372,13 @@ export class AddEditComponent implements OnInit {
         try {
             this.deletePromise = this.deleteCipher();
             await this.deletePromise;
-            this.platformUtilsService.showToast('success', null,
-                this.i18nService.t(this.cipher.isDeleted ? 'permanentlyDeletedItem' : 'deletedItem'));
+            this.platformUtilsService.showToast(
+                "success",
+                null,
+                this.i18nService.t(this.cipher.isDeleted ? "permanentlyDeletedItem" : "deletedItem")
+            );
             this.onDeletedCipher.emit(this.cipher);
-            this.messagingService.send(this.cipher.isDeleted ? 'permanentlyDeletedCipher' : 'deletedCipher');
+            this.messagingService.send(this.cipher.isDeleted ? "permanentlyDeletedCipher" : "deletedCipher");
         } catch (e) {
             this.logService.error(e);
         }
@@ -370,8 +392,12 @@ export class AddEditComponent implements OnInit {
         }
 
         const confirmed = await this.platformUtilsService.showDialog(
-            this.i18nService.t('restoreItemConfirmation'), this.i18nService.t('restoreItem'),
-            this.i18nService.t('yes'), this.i18nService.t('no'), 'warning');
+            this.i18nService.t("restoreItemConfirmation"),
+            this.i18nService.t("restoreItem"),
+            this.i18nService.t("yes"),
+            this.i18nService.t("no"),
+            "warning"
+        );
         if (!confirmed) {
             return false;
         }
@@ -379,9 +405,9 @@ export class AddEditComponent implements OnInit {
         try {
             this.restorePromise = this.restoreCipher();
             await this.restorePromise;
-            this.platformUtilsService.showToast('success', null, this.i18nService.t('restoredItem'));
+            this.platformUtilsService.showToast("success", null, this.i18nService.t("restoredItem"));
             this.onRestoredCipher.emit(this.cipher);
-            this.messagingService.send('restoredCipher');
+            this.messagingService.send("restoredCipher");
         } catch (e) {
             this.logService.error(e);
         }
@@ -392,8 +418,11 @@ export class AddEditComponent implements OnInit {
     async generatePassword(): Promise<boolean> {
         if (this.cipher.login != null && this.cipher.login.password != null && this.cipher.login.password.length) {
             const confirmed = await this.platformUtilsService.showDialog(
-                this.i18nService.t('overwritePasswordConfirmation'), this.i18nService.t('overwritePassword'),
-                this.i18nService.t('yes'), this.i18nService.t('no'));
+                this.i18nService.t("overwritePasswordConfirmation"),
+                this.i18nService.t("overwritePassword"),
+                this.i18nService.t("yes"),
+                this.i18nService.t("no")
+            );
             if (!confirmed) {
                 return false;
             }
@@ -405,7 +434,7 @@ export class AddEditComponent implements OnInit {
 
     togglePassword() {
         this.showPassword = !this.showPassword;
-        document.getElementById('loginPassword').focus();
+        document.getElementById("loginPassword").focus();
         if (this.editMode && this.showPassword) {
             this.eventService.collect(EventType.Cipher_ClientToggledPasswordVisible, this.cipherId);
         }
@@ -420,28 +449,28 @@ export class AddEditComponent implements OnInit {
 
     toggleCardCode() {
         this.showCardCode = !this.showCardCode;
-        document.getElementById('cardCode').focus();
+        document.getElementById("cardCode").focus();
         if (this.editMode && this.showCardCode) {
             this.eventService.collect(EventType.Cipher_ClientToggledCardCodeVisible, this.cipherId);
         }
     }
 
     toggleUriOptions(uri: LoginUriView) {
-        const u = (uri as any);
+        const u = uri as any;
         u.showOptions = u.showOptions == null && uri.match != null ? false : !u.showOptions;
     }
 
     loginUriMatchChanged(uri: LoginUriView) {
-        const u = (uri as any);
+        const u = uri as any;
         u.showOptions = u.showOptions == null ? true : u.showOptions;
     }
 
     async organizationChanged() {
         if (this.writeableCollections != null) {
-            this.writeableCollections.forEach(c => (c as any).checked = false);
+            this.writeableCollections.forEach((c) => ((c as any).checked = false));
         }
         if (this.cipher.organizationId != null) {
-            this.collections = this.writeableCollections.filter(c => c.organizationId === this.cipher.organizationId);
+            this.collections = this.writeableCollections.filter((c) => c.organizationId === this.cipher.organizationId);
             const org = await this.organizationService.get(this.cipher.organizationId);
             if (org != null) {
                 this.cipher.organizationUseTotp = org.useTotp;
@@ -456,7 +485,7 @@ export class AddEditComponent implements OnInit {
             return;
         }
 
-        if (this.cipher.login == null || this.cipher.login.password == null || this.cipher.login.password === '') {
+        if (this.cipher.login == null || this.cipher.login.password == null || this.cipher.login.password === "") {
             return;
         }
 
@@ -465,10 +494,13 @@ export class AddEditComponent implements OnInit {
         this.checkPasswordPromise = null;
 
         if (matches > 0) {
-            this.platformUtilsService.showToast('warning', null,
-                this.i18nService.t('passwordExposed', matches.toString()));
+            this.platformUtilsService.showToast(
+                "warning",
+                null,
+                this.i18nService.t("passwordExposed", matches.toString())
+            );
         } else {
-            this.platformUtilsService.showToast('success', null, this.i18nService.t('passwordSafe'));
+            this.platformUtilsService.showToast("success", null, this.i18nService.t("passwordSafe"));
         }
     }
 
@@ -483,7 +515,7 @@ export class AddEditComponent implements OnInit {
 
     protected async loadCollections() {
         const allCollections = await this.collectionService.getAllDecrypted();
-        return allCollections.filter(c => !c.readOnly);
+        return allCollections.filter((c) => !c.readOnly);
     }
 
     protected loadCipher() {
@@ -499,7 +531,8 @@ export class AddEditComponent implements OnInit {
     }
 
     protected deleteCipher() {
-        return this.cipher.isDeleted ? this.cipherService.deleteWithServer(this.cipher.id)
+        return this.cipher.isDeleted
+            ? this.cipherService.deleteWithServer(this.cipher.id)
             : this.cipherService.softDeleteWithServer(this.cipher.id);
     }
 

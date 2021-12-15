@@ -1,12 +1,8 @@
-import {
-    Directive,
-    EventEmitter,
-    Output,
-} from '@angular/core';
+import { Directive, EventEmitter, Output } from "@angular/core";
 
-import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
-import { I18nService } from 'jslib-common/abstractions/i18n.service';
-import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
+import { EnvironmentService } from "jslib-common/abstractions/environment.service";
+import { I18nService } from "jslib-common/abstractions/i18n.service";
+import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 
 @Directive()
 export class EnvironmentComponent {
@@ -20,17 +16,19 @@ export class EnvironmentComponent {
     baseUrl: string;
     showCustom = false;
 
-    constructor(protected platformUtilsService: PlatformUtilsService, protected environmentService: EnvironmentService,
-        protected i18nService: I18nService) {
-
+    constructor(
+        protected platformUtilsService: PlatformUtilsService,
+        protected environmentService: EnvironmentService,
+        protected i18nService: I18nService
+    ) {
         const urls = this.environmentService.getUrls();
 
-        this.baseUrl = urls.base || '';
-        this.webVaultUrl = urls.webVault || '';
-        this.apiUrl = urls.api || '';
-        this.identityUrl = urls.identity || '';
-        this.iconsUrl = urls.icons || '';
-        this.notificationsUrl = urls.notifications || '';
+        this.baseUrl = urls.base || "";
+        this.webVaultUrl = urls.webVault || "";
+        this.apiUrl = urls.api || "";
+        this.identityUrl = urls.identity || "";
+        this.iconsUrl = urls.icons || "";
+        this.notificationsUrl = urls.notifications || "";
     }
 
     async submit() {
@@ -51,7 +49,7 @@ export class EnvironmentComponent {
         this.iconsUrl = resUrls.icons;
         this.notificationsUrl = resUrls.notifications;
 
-        this.platformUtilsService.showToast('success', null, this.i18nService.t('environmentSaved'));
+        this.platformUtilsService.showToast("success", null, this.i18nService.t("environmentSaved"));
         this.saved();
     }
 

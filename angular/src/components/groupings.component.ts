@@ -1,20 +1,15 @@
-import {
-    Directive,
-    EventEmitter,
-    Input,
-    Output,
-} from '@angular/core';
+import { Directive, EventEmitter, Input, Output } from "@angular/core";
 
-import { CipherType } from 'jslib-common/enums/cipherType';
+import { CipherType } from "jslib-common/enums/cipherType";
 
-import { CollectionView } from 'jslib-common/models/view/collectionView';
-import { FolderView } from 'jslib-common/models/view/folderView';
+import { CollectionView } from "jslib-common/models/view/collectionView";
+import { FolderView } from "jslib-common/models/view/folderView";
 
-import { TreeNode } from 'jslib-common/models/domain/treeNode';
+import { TreeNode } from "jslib-common/models/domain/treeNode";
 
-import { CollectionService } from 'jslib-common/abstractions/collection.service';
-import { FolderService } from 'jslib-common/abstractions/folder.service';
-import { StateService } from 'jslib-common/abstractions/state.service';
+import { CollectionService } from "jslib-common/abstractions/collection.service";
+import { FolderService } from "jslib-common/abstractions/folder.service";
+import { StateService } from "jslib-common/abstractions/state.service";
 
 @Directive()
 export class GroupingsComponent {
@@ -48,8 +43,11 @@ export class GroupingsComponent {
 
     private collapsedGroupings: Set<string>;
 
-    constructor(protected collectionService: CollectionService, protected folderService: FolderService,
-        protected stateService: StateService) { }
+    constructor(
+        protected collectionService: CollectionService,
+        protected folderService: FolderService,
+        protected stateService: StateService
+    ) {}
 
     async load(setLoaded = true) {
         const collapsedGroupings = await this.stateService.getCollapsedGroupings();
@@ -73,7 +71,7 @@ export class GroupingsComponent {
         }
         const collections = await this.collectionService.getAllDecrypted();
         if (organizationId != null) {
-            this.collections = collections.filter(c => c.organizationId === organizationId);
+            this.collections = collections.filter((c) => c.organizationId === organizationId);
         } else {
             this.collections = collections;
         }
@@ -143,7 +141,7 @@ export class GroupingsComponent {
         this.selectedCollectionId = null;
     }
 
-    async collapse(grouping: FolderView | CollectionView, idPrefix = '') {
+    async collapse(grouping: FolderView | CollectionView, idPrefix = "") {
         if (grouping.id == null) {
             return;
         }
@@ -156,7 +154,7 @@ export class GroupingsComponent {
         await this.stateService.setCollapsedGroupings(this.collapsedGroupings);
     }
 
-    isCollapsed(grouping: FolderView | CollectionView, idPrefix = '') {
+    isCollapsed(grouping: FolderView | CollectionView, idPrefix = "") {
         return this.collapsedGroupings.has(idPrefix + grouping.id);
     }
 }

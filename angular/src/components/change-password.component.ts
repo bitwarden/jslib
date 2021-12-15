@@ -1,18 +1,18 @@
-import { Directive, OnInit } from '@angular/core';
+import { Directive, OnInit } from "@angular/core";
 
-import { CryptoService } from 'jslib-common/abstractions/crypto.service';
-import { I18nService } from 'jslib-common/abstractions/i18n.service';
-import { MessagingService } from 'jslib-common/abstractions/messaging.service';
-import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
-import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
-import { PolicyService } from 'jslib-common/abstractions/policy.service';
-import { StateService } from 'jslib-common/abstractions/state.service';
+import { CryptoService } from "jslib-common/abstractions/crypto.service";
+import { I18nService } from "jslib-common/abstractions/i18n.service";
+import { MessagingService } from "jslib-common/abstractions/messaging.service";
+import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
+import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
+import { PolicyService } from "jslib-common/abstractions/policy.service";
+import { StateService } from "jslib-common/abstractions/state.service";
 
-import { EncString } from 'jslib-common/models/domain/encString';
-import { MasterPasswordPolicyOptions } from 'jslib-common/models/domain/masterPasswordPolicyOptions';
-import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
+import { EncString } from "jslib-common/models/domain/encString";
+import { MasterPasswordPolicyOptions } from "jslib-common/models/domain/masterPasswordPolicyOptions";
+import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
 
-import { KdfType } from 'jslib-common/enums/kdfType';
+import { KdfType } from "jslib-common/enums/kdfType";
 
 @Directive()
 export class ChangePasswordComponent implements OnInit {
@@ -28,10 +28,15 @@ export class ChangePasswordComponent implements OnInit {
 
     private masterPasswordStrengthTimeout: any;
 
-    constructor(protected i18nService: I18nService, protected cryptoService: CryptoService,
-        protected messagingService: MessagingService, protected passwordGenerationService: PasswordGenerationService,
-        protected platformUtilsService: PlatformUtilsService, protected policyService: PolicyService,
-        protected stateService: StateService) { }
+    constructor(
+        protected i18nService: I18nService,
+        protected cryptoService: CryptoService,
+        protected messagingService: MessagingService,
+        protected passwordGenerationService: PasswordGenerationService,
+        protected platformUtilsService: PlatformUtilsService,
+        protected policyService: PolicyService,
+        protected stateService: StateService
+    ) {}
 
     async ngOnInit() {
         this.email = await this.stateService.getEmail();
@@ -39,11 +44,11 @@ export class ChangePasswordComponent implements OnInit {
     }
 
     async submit() {
-        if (!await this.strongPassword()) {
+        if (!(await this.strongPassword())) {
             return;
         }
 
-        if (!await this.setupSubmitActions()) {
+        if (!(await this.setupSubmitActions())) {
             return;
         }
 
@@ -54,8 +59,12 @@ export class ChangePasswordComponent implements OnInit {
         if (this.kdfIterations == null) {
             this.kdfIterations = await this.stateService.getKdfIterations();
         }
-        const key = await this.cryptoService.makeKey(this.masterPassword, email.trim().toLowerCase(),
-            this.kdf, this.kdfIterations);
+        const key = await this.cryptoService.makeKey(
+            this.masterPassword,
+            email.trim().toLowerCase(),
+            this.kdf,
+            this.kdfIterations
+        );
         const masterPasswordHash = await this.cryptoService.hashPassword(this.masterPassword, key);
 
         let encKey: [SymmetricCryptoKey, EncString] = null;
@@ -75,45 +84,69 @@ export class ChangePasswordComponent implements OnInit {
         return true;
     }
 
-    async performSubmitActions(masterPasswordHash: string, key: SymmetricCryptoKey,
-        encKey: [SymmetricCryptoKey, EncString]) {
+    async performSubmitActions(
+        masterPasswordHash: string,
+        key: SymmetricCryptoKey,
+        encKey: [SymmetricCryptoKey, EncString]
+    ) {
         // Override in sub-class
     }
 
     async strongPassword(): Promise<boolean> {
-        if (this.masterPassword == null || this.masterPassword === '') {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('masterPassRequired'));
+        if (this.masterPassword == null || this.masterPassword === "") {
+            this.platformUtilsService.showToast(
+                "error",
+                this.i18nService.t("errorOccurred"),
+                this.i18nService.t("masterPassRequired")
+            );
             return false;
         }
         if (this.masterPassword.length < 8) {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('masterPassLength'));
+            this.platformUtilsService.showToast(
+                "error",
+                this.i18nService.t("errorOccurred"),
+                this.i18nService.t("masterPassLength")
+            );
             return false;
         }
         if (this.masterPassword !== this.masterPasswordRetype) {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('masterPassDoesntMatch'));
+            this.platformUtilsService.showToast(
+                "error",
+                this.i18nService.t("errorOccurred"),
+                this.i18nService.t("masterPassDoesntMatch")
+            );
             return false;
         }
 
-        const strengthResult = this.passwordGenerationService.passwordStrength(this.masterPassword,
-            this.getPasswordStrengthUserInput());
+        const strengthResult = this.passwordGenerationService.passwordStrength(
+            this.masterPassword,
+            this.getPasswordStrengthUserInput()
+        );
 
-        if (this.enforcedPolicyOptions != null &&
+        if (
+            this.enforcedPolicyOptions != null &&
             !this.policyService.evaluateMasterPassword(
                 strengthResult.score,
                 this.masterPassword,
-                this.enforcedPolicyOptions)) {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('masterPasswordPolicyRequirementsNotMet'));
+                this.enforcedPolicyOptions
+            )
+        ) {
+            this.platformUtilsService.showToast(
+                "error",
+                this.i18nService.t("errorOccurred"),
+                this.i18nService.t("masterPasswordPolicyRequirementsNotMet")
+            );
             return false;
         }
 
         if (strengthResult != null && strengthResult.score < 3) {
-            const result = await this.platformUtilsService.showDialog(this.i18nService.t('weakMasterPasswordDesc'),
-                this.i18nService.t('weakMasterPassword'), this.i18nService.t('yes'), this.i18nService.t('no'),
-                'warning');
+            const result = await this.platformUtilsService.showDialog(
+                this.i18nService.t("weakMasterPasswordDesc"),
+                this.i18nService.t("weakMasterPassword"),
+                this.i18nService.t("yes"),
+                this.i18nService.t("no"),
+                "warning"
+            );
             if (!result) {
                 return false;
             }
@@ -127,25 +160,37 @@ export class ChangePasswordComponent implements OnInit {
             clearTimeout(this.masterPasswordStrengthTimeout);
         }
         this.masterPasswordStrengthTimeout = setTimeout(() => {
-            const strengthResult = this.passwordGenerationService.passwordStrength(this.masterPassword,
-                this.getPasswordStrengthUserInput());
+            const strengthResult = this.passwordGenerationService.passwordStrength(
+                this.masterPassword,
+                this.getPasswordStrengthUserInput()
+            );
             this.masterPasswordScore = strengthResult == null ? null : strengthResult.score;
         }, 300);
     }
 
     async logOut() {
-        const confirmed = await this.platformUtilsService.showDialog(this.i18nService.t('logOutConfirmation'),
-            this.i18nService.t('logOut'), this.i18nService.t('logOut'), this.i18nService.t('cancel'));
+        const confirmed = await this.platformUtilsService.showDialog(
+            this.i18nService.t("logOutConfirmation"),
+            this.i18nService.t("logOut"),
+            this.i18nService.t("logOut"),
+            this.i18nService.t("cancel")
+        );
         if (confirmed) {
-            this.messagingService.send('logout');
+            this.messagingService.send("logout");
         }
     }
 
     private getPasswordStrengthUserInput() {
         let userInput: string[] = [];
-        const atPosition = this.email.indexOf('@');
+        const atPosition = this.email.indexOf("@");
         if (atPosition > -1) {
-            userInput = userInput.concat(this.email.substr(0, atPosition).trim().toLowerCase().split(/[^A-Za-z0-9]/));
+            userInput = userInput.concat(
+                this.email
+                    .substr(0, atPosition)
+                    .trim()
+                    .toLowerCase()
+                    .split(/[^A-Za-z0-9]/)
+            );
         }
         return userInput;
     }

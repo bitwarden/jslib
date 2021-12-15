@@ -1,19 +1,15 @@
-import {
-    Component,
-    Input,
-    OnInit,
-} from '@angular/core';
+import { Component, Input, OnInit } from "@angular/core";
 
-import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { I18nService } from "jslib-common/abstractions/i18n.service";
 
-import { MasterPasswordPolicyOptions } from 'jslib-common/models/domain/masterPasswordPolicyOptions';
+import { MasterPasswordPolicyOptions } from "jslib-common/models/domain/masterPasswordPolicyOptions";
 
 @Component({
-    selector: 'app-callout',
-    templateUrl: 'callout.component.html',
+    selector: "app-callout",
+    templateUrl: "callout.component.html",
 })
 export class CalloutComponent implements OnInit {
-    @Input() type = 'info';
+    @Input() type = "info";
     @Input() icon: string;
     @Input() title: string;
     @Input() clickable: boolean;
@@ -23,61 +19,61 @@ export class CalloutComponent implements OnInit {
 
     calloutStyle: string;
 
-    constructor(private i18nService: I18nService) { }
+    constructor(private i18nService: I18nService) {}
 
     ngOnInit() {
         this.calloutStyle = this.type;
 
         if (this.enforcedPolicyMessage === undefined) {
-            this.enforcedPolicyMessage = this.i18nService.t('masterPasswordPolicyInEffect');
+            this.enforcedPolicyMessage = this.i18nService.t("masterPasswordPolicyInEffect");
         }
 
-        if (this.type === 'warning' || this.type === 'danger') {
-            if (this.type === 'danger') {
-                this.calloutStyle = 'danger';
+        if (this.type === "warning" || this.type === "danger") {
+            if (this.type === "danger") {
+                this.calloutStyle = "danger";
             }
             if (this.title === undefined) {
-                this.title = this.i18nService.t('warning');
+                this.title = this.i18nService.t("warning");
             }
             if (this.icon === undefined) {
-                this.icon = 'fa-warning';
+                this.icon = "fa-warning";
             }
-        } else if (this.type === 'error') {
-            this.calloutStyle = 'danger';
+        } else if (this.type === "error") {
+            this.calloutStyle = "danger";
             if (this.title === undefined) {
-                this.title = this.i18nService.t('error');
+                this.title = this.i18nService.t("error");
             }
             if (this.icon === undefined) {
-                this.icon = 'fa-bolt';
+                this.icon = "fa-bolt";
             }
-        } else if (this.type === 'tip') {
-            this.calloutStyle = 'success';
+        } else if (this.type === "tip") {
+            this.calloutStyle = "success";
             if (this.title === undefined) {
-                this.title = this.i18nService.t('tip');
+                this.title = this.i18nService.t("tip");
             }
             if (this.icon === undefined) {
-                this.icon = 'fa-lightbulb-o';
+                this.icon = "fa-lightbulb-o";
             }
         }
     }
 
     getPasswordScoreAlertDisplay() {
         if (this.enforcedPolicyOptions == null) {
-            return '';
+            return "";
         }
 
         let str: string;
         switch (this.enforcedPolicyOptions.minComplexity) {
             case 4:
-                str = this.i18nService.t('strong');
+                str = this.i18nService.t("strong");
                 break;
             case 3:
-                str = this.i18nService.t('good');
+                str = this.i18nService.t("good");
                 break;
             default:
-                str = this.i18nService.t('weak');
+                str = this.i18nService.t("weak");
                 break;
         }
-        return str + ' (' + this.enforcedPolicyOptions.minComplexity + ')';
+        return str + " (" + this.enforcedPolicyOptions.minComplexity + ")";
     }
 }

@@ -1,26 +1,34 @@
-<div #callout class="callout callout-{{calloutStyle}}" [ngClass]="{'clickable': clickable}"
-    [attr.role]="useAlertRole ? 'alert' : null">
+<div
+    #callout
+    class="callout callout-{{ calloutStyle }}"
+    [ngClass]="{ clickable: clickable }"
+    [attr.role]="useAlertRole ? 'alert' : null"
+>
     <h3 class="callout-heading" *ngIf="title">
-        <i class="fa {{icon}}" *ngIf="icon" aria-hidden="true"></i>
-        {{title}}
+        <i class="fa {{ icon }}" *ngIf="icon" aria-hidden="true"></i>
+        {{ title }}
     </h3>
     <div class="enforced-policy-options" *ngIf="enforcedPolicyOptions">
-        {{enforcedPolicyMessage}}
+        {{ enforcedPolicyMessage }}
         <ul>
             <li *ngIf="enforcedPolicyOptions?.minComplexity > 0">
-                {{'policyInEffectMinComplexity' | i18n : getPasswordScoreAlertDisplay()}}
+                {{ "policyInEffectMinComplexity" | i18n: getPasswordScoreAlertDisplay() }}
             </li>
             <li *ngIf="enforcedPolicyOptions?.minLength > 0">
-                {{'policyInEffectMinLength' | i18n : enforcedPolicyOptions?.minLength.toString()}}
+                {{ "policyInEffectMinLength" | i18n: enforcedPolicyOptions?.minLength.toString() }}
             </li>
             <li *ngIf="enforcedPolicyOptions?.requireUpper">
-                {{'policyInEffectUppercase' | i18n}}</li>
+                {{ "policyInEffectUppercase" | i18n }}
+            </li>
             <li *ngIf="enforcedPolicyOptions?.requireLower">
-                {{'policyInEffectLowercase' | i18n}}</li>
+                {{ "policyInEffectLowercase" | i18n }}
+            </li>
             <li *ngIf="enforcedPolicyOptions?.requireNumbers">
-                {{'policyInEffectNumbers' | i18n}}</li>
+                {{ "policyInEffectNumbers" | i18n }}
+            </li>
             <li *ngIf="enforcedPolicyOptions?.requireSpecial">
-                {{'policyInEffectSpecial' | i18n : '!@#$%^&*'}}</li>
+                {{ "policyInEffectSpecial" | i18n: "!@#$%^&*" }}
+            </li>
         </ul>
     </div>
     <ng-content></ng-content>

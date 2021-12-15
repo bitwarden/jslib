@@ -1,13 +1,8 @@
-import {
-    Directive,
-    EventEmitter,
-    Input,
-    Output,
-} from '@angular/core';
+import { Directive, EventEmitter, Input, Output } from "@angular/core";
 
-import { SearchService } from 'jslib-common/abstractions/search.service';
+import { SearchService } from "jslib-common/abstractions/search.service";
 
-import { CipherView } from 'jslib-common/models/view/cipherView';
+import { CipherView } from "jslib-common/models/view/cipherView";
 
 @Directive()
 export class CiphersComponent {
@@ -28,7 +23,7 @@ export class CiphersComponent {
 
     private searchTimeout: any = null;
 
-    constructor(protected searchService: SearchService) { }
+    constructor(protected searchService: SearchService) {}
 
     async load(filter: (cipher: CipherView) => boolean = null, deleted: boolean = false) {
         this.deleted = deleted || false;
@@ -87,9 +82,13 @@ export class CiphersComponent {
         return !this.searchPending && this.searchService.isSearchable(this.searchText);
     }
 
-    protected deletedFilter: (cipher: CipherView) => boolean = c => c.isDeleted === this.deleted;
+    protected deletedFilter: (cipher: CipherView) => boolean = (c) => c.isDeleted === this.deleted;
 
     protected async doSearch(indexedCiphers?: CipherView[]) {
-        this.ciphers = await this.searchService.searchCiphers(this.searchText, [this.filter, this.deletedFilter], indexedCiphers);
+        this.ciphers = await this.searchService.searchCiphers(
+            this.searchText,
+            [this.filter, this.deletedFilter],
+            indexedCiphers
+        );
     }
 }

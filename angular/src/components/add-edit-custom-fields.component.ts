@@ -1,26 +1,18 @@
-import {
-    Directive,
-    Input,
-    OnChanges,
-    SimpleChanges,
-} from '@angular/core';
+import { Directive, Input, OnChanges, SimpleChanges } from "@angular/core";
 
-import {
-    CdkDragDrop,
-    moveItemInArray,
-} from '@angular/cdk/drag-drop';
+import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 
-import { EventService } from 'jslib-common/abstractions/event.service';
-import { I18nService } from 'jslib-common/abstractions/i18n.service';
+import { EventService } from "jslib-common/abstractions/event.service";
+import { I18nService } from "jslib-common/abstractions/i18n.service";
 
-import { CipherView } from 'jslib-common/models/view/cipherView';
-import { FieldView } from 'jslib-common/models/view/fieldView';
+import { CipherView } from "jslib-common/models/view/cipherView";
+import { FieldView } from "jslib-common/models/view/fieldView";
 
-import { CipherType } from 'jslib-common/enums/cipherType';
-import { EventType } from 'jslib-common/enums/eventType';
-import { FieldType } from 'jslib-common/enums/fieldType';
+import { CipherType } from "jslib-common/enums/cipherType";
+import { EventType } from "jslib-common/enums/eventType";
+import { FieldType } from "jslib-common/enums/fieldType";
 
-import { Utils } from 'jslib-common/misc/utils';
+import { Utils } from "jslib-common/misc/utils";
 
 @Directive()
 export class AddEditCustomFieldsComponent implements OnChanges {
@@ -39,11 +31,11 @@ export class AddEditCustomFieldsComponent implements OnChanges {
 
     constructor(private i18nService: I18nService, private eventService: EventService) {
         this.addFieldTypeOptions = [
-            { name: i18nService.t('cfTypeText'), value: FieldType.Text },
-            { name: i18nService.t('cfTypeHidden'), value: FieldType.Hidden },
-            { name: i18nService.t('cfTypeBoolean'), value: FieldType.Boolean },
+            { name: i18nService.t("cfTypeText"), value: FieldType.Text },
+            { name: i18nService.t("cfTypeHidden"), value: FieldType.Hidden },
+            { name: i18nService.t("cfTypeBoolean"), value: FieldType.Boolean },
         ];
-        this.addFieldLinkedTypeOption = { name: this.i18nService.t('cfTypeLinked'), value: FieldType.Linked };
+        this.addFieldLinkedTypeOption = { name: this.i18nService.t("cfTypeLinked"), value: FieldType.Linked };
     }
 
     ngOnChanges(changes: SimpleChanges) {
@@ -80,7 +72,7 @@ export class AddEditCustomFieldsComponent implements OnChanges {
     }
 
     toggleFieldValue(field: FieldView) {
-        const f = (field as any);
+        const f = field as any;
         f.showValue = !f.showValue;
         if (this.editMode && f.showValue) {
             this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible, this.cipher.id);
@@ -102,8 +94,9 @@ export class AddEditCustomFieldsComponent implements OnChanges {
 
         const options: any = [];
         this.cipher.linkedFieldOptions.forEach((linkedFieldOption, id) =>
-            options.push({ name: this.i18nService.t(linkedFieldOption.i18nKey), value: id }));
-        this.linkedFieldOptions = options.sort(Utils.getSortFunction(this.i18nService, 'name'));
+            options.push({ name: this.i18nService.t(linkedFieldOption.i18nKey), value: id })
+        );
+        this.linkedFieldOptions = options.sort(Utils.getSortFunction(this.i18nService, "name"));
     }
 
     private resetCipherLinkedFields() {
@@ -113,12 +106,12 @@ export class AddEditCustomFieldsComponent implements OnChanges {
 
         // Delete any Linked custom fields if the item type does not support them
         if (this.cipher.linkedFieldOptions == null) {
-            this.cipher.fields = this.cipher.fields.filter(f => f.type !== FieldType.Linked);
+            this.cipher.fields = this.cipher.fields.filter((f) => f.type !== FieldType.Linked);
             return;
         }
 
         this.cipher.fields
-            .filter(f => f.type === FieldType.Linked)
-            .forEach(f => f.linkedId = this.linkedFieldOptions[0].value);
+            .filter((f) => f.type === FieldType.Linked)
+            .forEach((f) => (f.linkedId = this.linkedFieldOptions[0].value));
     }
 }

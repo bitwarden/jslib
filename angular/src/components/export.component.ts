@@ -1,22 +1,17 @@
-import {
-    Directive,
-    EventEmitter,
-    OnInit,
-    Output,
-} from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { Directive, EventEmitter, OnInit, Output } from "@angular/core";
+import { FormBuilder } from "@angular/forms";
 
-import { CryptoService } from 'jslib-common/abstractions/crypto.service';
-import { EventService } from 'jslib-common/abstractions/event.service';
-import { ExportService } from 'jslib-common/abstractions/export.service';
-import { I18nService } from 'jslib-common/abstractions/i18n.service';
-import { LogService } from 'jslib-common/abstractions/log.service';
-import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
-import { PolicyService } from 'jslib-common/abstractions/policy.service';
-import { UserVerificationService } from 'jslib-common/abstractions/userVerification.service';
+import { CryptoService } from "jslib-common/abstractions/crypto.service";
+import { EventService } from "jslib-common/abstractions/event.service";
+import { ExportService } from "jslib-common/abstractions/export.service";
+import { I18nService } from "jslib-common/abstractions/i18n.service";
+import { LogService } from "jslib-common/abstractions/log.service";
+import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
+import { PolicyService } from "jslib-common/abstractions/policy.service";
+import { UserVerificationService } from "jslib-common/abstractions/userVerification.service";
 
-import { EventType } from 'jslib-common/enums/eventType';
-import { PolicyType } from 'jslib-common/enums/policyType';
+import { EventType } from "jslib-common/enums/eventType";
+import { PolicyType } from "jslib-common/enums/policyType";
 
 @Directive()
 export class ExportComponent implements OnInit {
@@ -26,21 +21,28 @@ export class ExportComponent implements OnInit {
     disabledByPolicy: boolean = false;
 
     exportForm = this.fb.group({
-        format: ['json'],
-        secret: [''],
+        format: ["json"],
+        secret: [""],
     });
 
     formatOptions = [
-        { name: '.json', value: 'json' },
-        { name: '.csv', value: 'csv' },
-        { name: '.json (Encrypted)', value: 'encrypted_json' },
+        { name: ".json", value: "json" },
+        { name: ".csv", value: "csv" },
+        { name: ".json (Encrypted)", value: "encrypted_json" },
     ];
 
-    constructor(protected cryptoService: CryptoService, protected i18nService: I18nService,
-        protected platformUtilsService: PlatformUtilsService, protected exportService: ExportService,
-        protected eventService: EventService, private policyService: PolicyService, protected win: Window,
-        private logService: LogService, private userVerificationService: UserVerificationService,
-        private fb: FormBuilder) { }
+    constructor(
+        protected cryptoService: CryptoService,
+        protected i18nService: I18nService,
+        protected platformUtilsService: PlatformUtilsService,
+        protected exportService: ExportService,
+        protected eventService: EventService,
+        private policyService: PolicyService,
+        protected win: Window,
+        private logService: LogService,
+        private userVerificationService: UserVerificationService,
+        private fb: FormBuilder
+    ) {}
 
     async ngOnInit() {
         await this.checkExportDisabled();
@@ -54,12 +56,12 @@ export class ExportComponent implements OnInit {
     }
 
     get encryptedFormat() {
-        return this.format === 'encrypted_json';
+        return this.format === "encrypted_json";
     }
 
     async submit() {
         if (this.disabledByPolicy) {
-            this.platformUtilsService.showToast('error', null, this.i18nService.t('personalVaultExportPolicyInEffect'));
+            this.platformUtilsService.showToast("error", null, this.i18nService.t("personalVaultExportPolicyInEffect"));
             return;
         }
 
@@ -68,11 +70,11 @@ export class ExportComponent implements OnInit {
             return;
         }
 
-        const secret = this.exportForm.get('secret').value;
+        const secret = this.exportForm.get("secret").value;
         try {
             await this.userVerificationService.verifyUser(secret);
         } catch (e) {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'), e.message);
+            this.platformUtilsService.showToast("error", this.i18nService.t("errorOccurred"), e.message);
             return;
         }
 
@@ -82,7 +84,7 @@ export class ExportComponent implements OnInit {
             this.downloadFile(data);
             this.saved();
             await this.collectEvent();
-            this.exportForm.get('secret').setValue('');
+            this.exportForm.get("secret").setValue("");
         } catch (e) {
             this.logService.error(e);
         }
@@ -91,16 +93,24 @@ export class ExportComponent implements OnInit {
     async warningDialog() {
         if (this.encryptedFormat) {
             return await this.platformUtilsService.showDialog(
-                '<p>' + this.i18nService.t('encExportKeyWarningDesc') +
-                '<p>' + this.i18nService.t('encExportAccountWarningDesc'),
-                this.i18nService.t('confirmVaultExport'), this.i18nService.t('exportVault'),
-                this.i18nService.t('cancel'), 'warning',
-                true);
+                "<p>" +
+                    this.i18nService.t("encExportKeyWarningDesc") +
+                    "<p>" +
+                    this.i18nService.t("encExportAccountWarningDesc"),
+                this.i18nService.t("confirmVaultExport"),
+                this.i18nService.t("exportVault"),
+                this.i18nService.t("cancel"),
+                "warning",
+                true
+            );
         } else {
             return await this.platformUtilsService.showDialog(
-                this.i18nService.t('exportWarningDesc'),
-                this.i18nService.t('confirmVaultExport'), this.i18nService.t('exportVault'),
-                this.i18nService.t('cancel'), 'warning');
+                this.i18nService.t("exportWarningDesc"),
+                this.i18nService.t("confirmVaultExport"),
+                this.i18nService.t("exportVault"),
+                this.i18nService.t("cancel"),
+                "warning"
+            );
         }
     }
 
@@ -114,13 +124,13 @@ export class ExportComponent implements OnInit {
 
     protected getFileName(prefix?: string) {
         let extension = this.format;
-        if (this.format === 'encrypted_json') {
+        if (this.format === "encrypted_json") {
             if (prefix == null) {
-                prefix = 'encrypted';
+                prefix = "encrypted";
             } else {
-                prefix = 'encrypted_' + prefix;
+                prefix = "encrypted_" + prefix;
             }
-            extension = 'json';
+            extension = "json";
         }
         return this.exportService.getFileName(prefix, extension);
     }
@@ -130,11 +140,11 @@ export class ExportComponent implements OnInit {
     }
 
     get format() {
-        return this.exportForm.get('format').value;
+        return this.exportForm.get("format").value;
     }
 
     private downloadFile(csv: string): void {
         const fileName = this.getFileName();
-        this.platformUtilsService.saveFile(this.win, csv, { type: 'text/plain' }, fileName);
+        this.platformUtilsService.saveFile(this.win, csv, { type: "text/plain" }, fileName);
     }
 }

@@ -1,21 +1,15 @@
-import {
-    Directive,
-    EventEmitter,
-    Input,
-    OnInit,
-    Output,
-} from '@angular/core';
+import { Directive, EventEmitter, Input, OnInit, Output } from "@angular/core";
 
-import { CipherService } from 'jslib-common/abstractions/cipher.service';
-import { CollectionService } from 'jslib-common/abstractions/collection.service';
-import { I18nService } from 'jslib-common/abstractions/i18n.service';
-import { LogService } from 'jslib-common/abstractions/log.service';
-import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
+import { CipherService } from "jslib-common/abstractions/cipher.service";
+import { CollectionService } from "jslib-common/abstractions/collection.service";
+import { I18nService } from "jslib-common/abstractions/i18n.service";
+import { LogService } from "jslib-common/abstractions/log.service";
+import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 
-import { CipherView } from 'jslib-common/models/view/cipherView';
-import { CollectionView } from 'jslib-common/models/view/collectionView';
+import { CipherView } from "jslib-common/models/view/cipherView";
+import { CollectionView } from "jslib-common/models/view/collectionView";
 
-import { Cipher } from 'jslib-common/models/domain/cipher';
+import { Cipher } from "jslib-common/models/domain/cipher";
 
 @Directive()
 export class CollectionsComponent implements OnInit {
@@ -30,8 +24,13 @@ export class CollectionsComponent implements OnInit {
 
     protected cipherDomain: Cipher;
 
-    constructor(protected collectionService: CollectionService, protected platformUtilsService: PlatformUtilsService,
-        protected i18nService: I18nService, protected cipherService: CipherService, private logService: LogService) { }
+    constructor(
+        protected collectionService: CollectionService,
+        protected platformUtilsService: PlatformUtilsService,
+        protected i18nService: I18nService,
+        protected cipherService: CipherService,
+        private logService: LogService
+    ) {}
 
     async ngOnInit() {
         await this.load();
@@ -43,21 +42,22 @@ export class CollectionsComponent implements OnInit {
         this.cipher = await this.cipherDomain.decrypt();
         this.collections = await this.loadCollections();
 
-        this.collections.forEach(c => (c as any).checked = false);
+        this.collections.forEach((c) => ((c as any).checked = false));
         if (this.collectionIds != null) {
-            this.collections.forEach(c => {
+            this.collections.forEach((c) => {
                 (c as any).checked = this.collectionIds != null && this.collectionIds.indexOf(c.id) > -1;
             });
         }
     }
 
     async submit() {
-        const selectedCollectionIds = this.collections
-            .filter(c => !!(c as any).checked)
-            .map(c => c.id);
+        const selectedCollectionIds = this.collections.filter((c) => !!(c as any).checked).map((c) => c.id);
         if (!this.allowSelectNone && selectedCollectionIds.length === 0) {
-            this.platformUtilsService.showToast('error', this.i18nService.t('errorOccurred'),
-                this.i18nService.t('selectOneCollection'));
+            this.platformUtilsService.showToast(
+                "error",
+                this.i18nService.t("errorOccurred"),
+                this.i18nService.t("selectOneCollection")
+            );
             return;
         }
         this.cipherDomain.collectionIds = selectedCollectionIds;
@@ -65,7 +65,7 @@ export class CollectionsComponent implements OnInit {
             this.formPromise = this.saveCollections();
             await this.formPromise;
             this.onSavedCollections.emit();
-            this.platformUtilsService.showToast('success', null, this.i18nService.t('editedItem'));
+            this.platformUtilsService.showToast("success", null, this.i18nService.t("editedItem"));
         } catch (e) {
             this.logService.error(e);
         }
@@ -81,7 +81,7 @@ export class CollectionsComponent implements OnInit {
 
     protected async loadCollections() {
         const allCollections = await this.collectionService.getAllDecrypted();
-        return allCollections.filter(c => !c.readOnly && c.organizationId === this.cipher.organizationId);
+        return allCollections.filter((c) => !c.readOnly && c.organizationId === this.cipher.organizationId);
     }
 
     protected saveCollections() {
