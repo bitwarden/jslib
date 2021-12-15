@@ -21,7 +21,6 @@ import { HashPurpose } from 'jslib-common/enums/hashPurpose';
 import { AuthResult } from 'jslib-common/models/domain/authResult';
 import { IdentityTokenResponse } from 'jslib-common/models/response/identityTokenResponse';
 import { StateService } from 'jslib-common/abstractions/state.service';
-import { access } from 'fs';
 import { AccountProfile, AccountTokens } from 'jslib-common/models/domain/account';
 
 describe('Cipher Service', () => {
@@ -46,6 +45,18 @@ describe('Cipher Service', () => {
     const localHashedPassword = 'LOCAL_HASHED_PASSWORD';
     const preloginKey = new SymmetricCryptoKey(Utils.fromB64ToArray('XVs4Gg+EdUXb9mHsSA6iOa5e88iVLvUtP/L0OXIamVA='));
     const deviceId = Utils.newGuid();
+    const accessToken = 'ACCESS_TOKEN';
+    const refreshToken = 'REFRESH_TOKEN';
+    const encKey = 'ENC_KEY';
+    const privateKey = 'PRIVATE_KEY';
+    const kdf = 0;
+    const kdfIterations = 10000;
+    const userId = Utils.newGuid();
+    const decodedToken = {
+        sub: userId,
+        email: email,
+        premium: false,
+    };
 
     let authService: AuthService;
 
@@ -70,49 +81,41 @@ describe('Cipher Service', () => {
         authService.init();
     });
 
-    it('logIn method: simple call: no 2FA, captcha or password reset', async () => {
-        // Arrange - entry method
+    function logInSetup() {
+        // Arrange for logIn and logInComplete
         cryptoService.makeKey(masterPassword, email, Arg.any(), Arg.any()).resolves(preloginKey);
         cryptoService.hashPassword(masterPassword, Arg.any()).resolves(hashedPassword);
         cryptoService.hashPassword(masterPassword, Arg.any(), HashPurpose.LocalAuthorization).resolves(localHashedPassword);
-        // captchaToken is null
+    }
 
-        // Arrange - logInHelper
-        tokenService.getTwoFactorToken(email).resolves(null);        
+    function commonSetup() {
+        // For logInHelper, i.e. always required
         appIdService.getAppId().resolves(deviceId);
 
-        // Arrange tokenResponse
+        tokenService.decodeToken(accessToken).resolves(decodedToken)
+    }
+
+    function newTokenResponse() {
         const tokenResponse = new IdentityTokenResponse({});
         (tokenResponse as any).twoFactorProviders2 = false;
         (tokenResponse as any).siteKey = undefined;
         tokenResponse.resetMasterPassword = false;
         tokenResponse.forcePasswordReset = false;
-
-        const accessToken = 'ACCESS_TOKEN';
         tokenResponse.accessToken = accessToken;
-
-        const refreshToken = 'REFRESH_TOKEN';
         tokenResponse.refreshToken = refreshToken;
-
-        const kdf = 0;
-        const kdfIterations = 10000;
         tokenResponse.kdf = kdf;
         tokenResponse.kdfIterations = kdfIterations;
-
-        const encKey = 'ENC_KEY';
         tokenResponse.key = encKey;
-
-        const userId = Utils.newGuid();
-        const decodedToken = {
-            sub: userId,
-            email: email,
-            premium: false,
-        }
-        tokenService.decodeToken(accessToken).resolves(decodedToken)
-
-        const privateKey = 'PRIVATE_KEY';
         tokenResponse.privateKey = privateKey;
+        return tokenResponse;
+    }
 
+    it('logIn method: simple call: no 2FA, captcha or password reset', async () => {
+        logInSetup();
+        commonSetup();
+        const tokenResponse = newTokenResponse();
+
+        tokenService.getTwoFactorToken(email).resolves(null);
         apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
         const expected = new AuthResult();
