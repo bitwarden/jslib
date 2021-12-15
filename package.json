@@ -29,6 +29,7 @@
     "@fluffy-spoon/substitute": "^1.202.0",
     "@types/jasmine": "^3.7.6",
     "@types/node": "^16.11.12",
+    "commander": "7.2.0",
     "concurrently": "^6.1.0",
     "form-data": "4.0.0",
     "husky": "^7.0.4",
