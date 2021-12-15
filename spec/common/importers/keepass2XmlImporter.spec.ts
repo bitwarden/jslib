@@ -181,9 +181,9 @@ line2</Value>
 </KeePassFile>`;
 
 describe("KeePass2 Xml Importer", () => {
-    it("should parse XML data", async () => {
-        const importer = new Importer();
-        const result = await importer.parse(TestData);
-        expect(result != null).toBe(true);
-    });
+  it("should parse XML data", async () => {
+    const importer = new Importer();
+    const result = await importer.parse(TestData);
+    expect(result != null).toBe(true);
+  });
 });
