@@ -18,6 +18,7 @@
     "build:watch": "npm run clean && ttsc -watch",
     "lint": "tslint '*/src/**/*.ts' 'spec/**/*.ts'",
     "lint:fix": "tslint '*/src/**/*.ts' 'spec/**/*.ts' --fix",
+    "prettier": "prettier --write .",
     "test": "karma start ./spec/support/karma.conf.js --single-run",
     "test:watch": "karma start ./spec/support/karma.conf.js",
     "test:node": "npm run build && jasmine",
