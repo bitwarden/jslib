@@ -13,7 +13,7 @@ import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.se
 import { TokenService } from 'jslib-common/abstractions/token.service';
 import { VaultTimeoutService } from 'jslib-common/abstractions/vaultTimeout.service'
 
-import { AuthService } from 'jslib-common/services/auth.service';
+import { AuthService, TwoFactorProviders } from 'jslib-common/services/auth.service';
 
 import { Utils } from 'jslib-common/misc/utils';
 import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
@@ -24,6 +24,7 @@ import { StateService } from 'jslib-common/abstractions/state.service';
 import { AccountProfile, AccountTokens } from 'jslib-common/models/domain/account';
 import { KeyConnectorUserKeyRequest } from 'jslib-common/models/request/keyConnectorUserKeyRequest';
 import { IdentityTwoFactorResponse } from 'jslib-common/models/response/identityTwoFactorResponse';
+import { TwoFactorProviderType } from 'jslib-common/enums/twoFactorProviderType';
 
 describe('Cipher Service', () => {
     let cryptoService: SubstituteOf<CryptoService>;
@@ -66,6 +67,10 @@ describe('Cipher Service', () => {
     const ssoCodeVerifier = 'SSO_CODE_VERIFIER';
     const ssoRedirectUrl = 'SSO_REDIRECT_URL';
     const ssoOrgId = 'SSO_ORG_ID';
+
+    const twoFactorProviderType = TwoFactorProviderType.Authenticator;
+    const twoFactorToken = 'TWO_FACTOR_TOKEN';
+    const twoFactorRemember = true;
 
     let authService: AuthService;
 
@@ -195,7 +200,6 @@ describe('Cipher Service', () => {
         expect(result).toEqual(expected);
     });
 
-
     it('logIn: bails out if captchaSiteKey is true', async () => {
         const siteKey = 'CAPTCHA_SITE_KEY';
 
@@ -258,6 +262,8 @@ describe('Cipher Service', () => {
         apiService.received(1).postAccountKeys(Arg.any());
     });
 
+    // 2FA
+
     it('logIn: bails out if 2FA is required', async () => {
         const twoFactorProviders = new Map<number, null>([
             [1, null]
@@ -284,80 +290,99 @@ describe('Cipher Service', () => {
         expect(result).toEqual(expected);
     });
 
+    it('logInTwoFactor: sends 2FA token to server', async () => {
+        commonSetup();
+
+        authService.email = email;
+        authService.masterPasswordHash = hashedPassword;
+        authService.localMasterPasswordHash = localHashedPassword;
+
+        await authService.logInTwoFactor(twoFactorProviderType, twoFactorToken, twoFactorRemember);
+
+        apiService.received(1).postIdentityToken(Arg.is(actual =>
+            actual.email === email &&
+            actual.masterPasswordHash === hashedPassword &&
+            actual.device.identifier === deviceId &&
+            actual.provider == twoFactorProviderType &&
+            actual.token == twoFactorToken &&
+            actual.remember === twoFactorRemember &&
+            actual.captchaResponse == null));
+    });
+
     // SSO
 
-    it('logInSso: basic happy path', async () => {
-        // TODO: get working when SSO works again
-        return;
-        commonSetup();
-        const tokenResponse = newTokenResponse();
+    // it('logInSso: basic happy path', async () => {
+    //     // TODO: get working when SSO works again
+    //     return;
+    //     commonSetup();
+    //     const tokenResponse = newTokenResponse();
 
-        tokenService.getTwoFactorToken(null).resolves(null);
-        apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
+    //     tokenService.getTwoFactorToken(null).resolves(null);
+    //     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-        const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
+    //     const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
 
-        // Assert
-        // Api call:
-        apiService.received(1).postIdentityToken(Arg.is(actual => 
-            actual.code === ssoCode &&
-            actual.codeVerifier === ssoCodeVerifier &&
-            actual.redirectUri === ssoRedirectUrl &&
-            actual.device.identifier === deviceId &&
-            actual.provider == null &&
-            actual.token == null &&
-            actual.captchaResponse == null));
+    //     // Assert
+    //     // Api call:
+    //     apiService.received(1).postIdentityToken(Arg.is(actual => 
+    //         actual.code === ssoCode &&
+    //         actual.codeVerifier === ssoCodeVerifier &&
+    //         actual.redirectUri === ssoRedirectUrl &&
+    //         actual.device.identifier === deviceId &&
+    //         actual.provider == null &&
+    //         actual.token == null &&
+    //         actual.captchaResponse == null));
 
-        // Sets local environment:
-        // TODO: analyse actual behaviour and update
-        commonSuccessAssertions();
-        cryptoService.received(1).setKey(preloginKey);
-        cryptoService.received(1).setKeyHash(localHashedPassword);
-        cryptoService.received(1).setEncKey(encKey);
-        cryptoService.received(1).setEncPrivateKey(privateKey);
+    //     // Sets local environment:
+    //     // TODO: analyse actual behaviour and update
+    //     commonSuccessAssertions();
+    //     cryptoService.received(1).setKey(preloginKey);
+    //     cryptoService.received(1).setKeyHash(localHashedPassword);
+    //     cryptoService.received(1).setEncKey(encKey);
+    //     cryptoService.received(1).setEncPrivateKey(privateKey);
 
-        // Negative tests
-        apiService.didNotReceive().postAccountKeys(Arg.any()); // Did not generate new private key pair
-        keyConnectorService.didNotReceive().getAndSetKey(Arg.any()); // Did not fetch Key Connector key
-        apiService.didNotReceive().postUserKeyToKeyConnector(Arg.any(), Arg.any()); // Did not send key to KC
-        tokenService.didNotReceive().setTwoFactorToken(Arg.any(), Arg.any()); // Did not save 2FA token
+    //     // Negative tests
+    //     apiService.didNotReceive().postAccountKeys(Arg.any()); // Did not generate new private key pair
+    //     keyConnectorService.didNotReceive().getAndSetKey(Arg.any()); // Did not fetch Key Connector key
+    //     apiService.didNotReceive().postUserKeyToKeyConnector(Arg.any(), Arg.any()); // Did not send key to KC
+    //     tokenService.didNotReceive().setTwoFactorToken(Arg.any(), Arg.any()); // Did not save 2FA token
 
-        // Return result:
-        const expected = newAuthResponse();
-        expect(result).toEqual(expected);
-    });
+    //     // Return result:
+    //     const expected = newAuthResponse();
+    //     expect(result).toEqual(expected);
+    // });
 
-    it('logInSso: gets and sets KeyConnector key for enrolled user', async () => {
-        commonSetup();
-        const tokenResponse = newTokenResponse();
-        tokenResponse.keyConnectorUrl = keyConnectorUrl;
+    // it('logInSso: gets and sets KeyConnector key for enrolled user', async () => {
+    //     commonSetup();
+    //     const tokenResponse = newTokenResponse();
+    //     tokenResponse.keyConnectorUrl = keyConnectorUrl;
 
-        apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
+    //     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-        const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
+    //     const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
 
-        commonSuccessAssertions();
-        keyConnectorService.received(1).getAndSetKey(keyConnectorUrl);
-    });
+    //     commonSuccessAssertions();
+    //     keyConnectorService.received(1).getAndSetKey(keyConnectorUrl);
+    // });
 
-    it('logInSso: new SSO user with Key Connector posts key to the server', async () => {
-        // TODO: get working when SSO works again
-        return;
-        commonSetup();
+    // it('logInSso: new SSO user with Key Connector posts key to the server', async () => {
+    //     // TODO: get working when SSO works again
+    //     return;
+    //     commonSetup();
 
-        const tokenResponse = newTokenResponse();
-        tokenResponse.keyConnectorUrl = keyConnectorUrl;
-        tokenResponse.key = null;
+    //     const tokenResponse = newTokenResponse();
+    //     tokenResponse.keyConnectorUrl = keyConnectorUrl;
+    //     tokenResponse.key = null;
 
-        cryptoService.makeKey(Arg.any(), email, kdf, kdfIterations).resolves(preloginKey);
-        apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
+    //     cryptoService.makeKey(Arg.any(), email, kdf, kdfIterations).resolves(preloginKey);
+    //     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-        const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
+    //     const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
 
-        commonSuccessAssertions();
-        cryptoService.received(1).setKey(preloginKey);
-        cryptoService.received(1).setEncKey(Arg.any());
-        apiService.received(1).postUserKeyToKeyConnector(keyConnectorUrl, Arg.any());
-        apiService.received(1).postSetKeyConnectorKey(Arg.any());
-    });
+    //     commonSuccessAssertions();
+    //     cryptoService.received(1).setKey(preloginKey);
+    //     cryptoService.received(1).setEncKey(Arg.any());
+    //     apiService.received(1).postUserKeyToKeyConnector(keyConnectorUrl, Arg.any());
+    //     apiService.received(1).postSetKeyConnectorKey(Arg.any());
+    // });
 });
