@@ -333,7 +333,6 @@ describe('Cipher Service', () => {
             actual.captchaResponse == null));
 
         // Sets local environment:
-        // TODO: analyse actual behaviour and update
         commonSuccessAssertions();
         cryptoService.received(1).setEncPrivateKey(privateKey);
         cryptoService.received(1).setEncKey(encKey);
@@ -350,6 +349,22 @@ describe('Cipher Service', () => {
         // Return result:
         const expected = newAuthResponse();
         expect(result).toEqual(expected);
+    });
+
+
+    it('logInSso: do not set keys for new SSO user flow', async () => {
+        commonSetup();
+        const tokenResponse = newTokenResponse();
+        tokenResponse.key = null;
+
+        tokenService.getTwoFactorToken(null).resolves(null);
+        apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
+
+        const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
+
+        // Assert
+        cryptoService.didNotReceive().setEncPrivateKey(privateKey);
+        cryptoService.didNotReceive().setEncKey(encKey);
     });
 
     it('logInSso: gets and sets KeyConnector key for enrolled user', async () => {
