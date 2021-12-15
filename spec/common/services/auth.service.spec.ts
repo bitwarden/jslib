@@ -136,7 +136,7 @@ describe('Cipher Service', () => {
         return tokenResponse;
     }
 
-    it('logIn method: simple call: no 2FA, captcha or password reset', async () => {
+    it('logIn: simple call: no 2FA, captcha or password reset', async () => {
         logInSetup();
         commonSetup();
         const tokenResponse = newTokenResponse();
@@ -178,6 +178,30 @@ describe('Cipher Service', () => {
         tokenService.didNotReceive().setTwoFactorToken(Arg.any(), Arg.any()); // Did not save 2FA token
 
         // Return result:
+        expect(result).toEqual(expected);
+    });
+
+
+    it('logIn: bails out if captchaSiteKey is true', async () => {
+        const siteKey = 'CAPTCHA_SITE_KEY';
+
+        logInSetup();
+        commonSetup();
+        const tokenResponse = newTokenResponse();
+        (tokenResponse as any).siteKey = siteKey;
+
+        tokenService.getTwoFactorToken(email).resolves(null);
+        apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
+
+        const expected = new AuthResult();
+        expected.captchaSiteKey = siteKey;
+
+        // Act
+        const result = await authService.logIn(email, masterPassword);
+
+        // Assertions
+        stateService.didNotReceive().addAccount(Arg.any());
+        messagingService.didNotReceive().send(Arg.any());
         expect(result).toEqual(expected);
     });
 });
