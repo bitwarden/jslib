@@ -310,8 +310,10 @@ export class AuthService implements AuthServiceAbstraction {
 
         let request: TokenRequest;
         if (twoFactorToken != null && twoFactorProvider != null) {
+            console.log('creating 2FA request');
             request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, twoFactorProvider,
                 twoFactorToken, remember, captchaToken, deviceRequest);
+            console.log(request);
         } else if (storedTwoFactorToken != null) {
             request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret,
                 TwoFactorProviderType.Remember, storedTwoFactorToken, false, captchaToken, deviceRequest);

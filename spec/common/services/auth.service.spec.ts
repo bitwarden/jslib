@@ -73,6 +73,9 @@ describe('Cipher Service', () => {
     const twoFactorToken = 'TWO_FACTOR_TOKEN';
     const twoFactorRemember = true;
 
+    const apiClientId = 'API_CLIENT_ID';
+    const apiClientSecret = 'API_CLIENT_SECRET';
+
     let authService: AuthService;
 
     beforeEach(() => {
@@ -351,7 +354,6 @@ describe('Cipher Service', () => {
         expect(result).toEqual(expected);
     });
 
-
     it('logInSso: do not set keys for new SSO user flow', async () => {
         commonSetup();
         const tokenResponse = newTokenResponse();
@@ -414,5 +416,62 @@ describe('Cipher Service', () => {
             r.orgIdentifier === ssoOrgId &&
             r.keys.encryptedPrivateKey === privKey.encryptedString &&
             r.keys.publicKey === pubKey));
+    });
+
+    // API
+
+    it('logInApi: user can login with api key', async () => {
+        commonSetup();
+        tokenService.getTwoFactorToken(Arg.any()).resolves(null);
+        const tokenResponse = newTokenResponse();
+        apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
+
+        const result = await authService.logInApiKey(apiClientId, apiClientSecret);
+
+        apiService.received(1).postIdentityToken(Arg.is(actual => 
+            actual.clientId === apiClientId &&
+            actual.clientSecret === apiClientSecret &&
+            actual.device.identifier === deviceId &&
+            actual.provider == null &&
+            actual.token == null &&
+            actual.captchaResponse == null));
+
+        // Sets local environment:
+        stateService.received(1).addAccount({
+            profile: {
+                ...new AccountProfile(),
+                ...{
+                    userId: userId,
+                    email: email,
+                    apiKeyClientId: apiClientId,
+                    apiKeyClientSecret: apiClientSecret,
+                    hasPremiumPersonally: false,
+                    kdfIterations: kdfIterations,
+                    kdfType: kdf,
+                },
+            },
+            tokens: {
+                ...new AccountTokens(),
+                ...{
+                    accessToken: accessToken,
+                    refreshToken: refreshToken,
+                },
+            },
+        })
+        stateService.received(1).setBiometricLocked(false);
+        messagingService.received(1).send('loggedIn');
+
+        cryptoService.received(1).setEncKey(encKey);
+        cryptoService.received(1).setEncPrivateKey(privateKey);
+
+        // Negative tests
+        apiService.didNotReceive().postAccountKeys(Arg.any()); // Did not generate new private key pair
+        keyConnectorService.didNotReceive().getAndSetKey(Arg.any()); // Did not fetch Key Connector key
+        apiService.didNotReceive().postUserKeyToKeyConnector(Arg.any(), Arg.any()); // Did not send key to KC
+        tokenService.didNotReceive().setTwoFactorToken(Arg.any(), Arg.any()); // Did not save 2FA token
+
+        // Return result:
+        const expected = newAuthResponse();
+        expect(result).toEqual(expected);
     });
 });
