@@ -400,6 +400,10 @@ export class AuthService implements AuthServiceAbstraction {
         }
     }
 
+    private isNewSsoUser(code: string, key: string) {
+        return code == null || key != null
+    }
+
     private async logInHelper(email: string, hashedPassword: string, localHashedPassword: string, code: string,
         codeVerifier: string, redirectUrl: string, clientId: string, clientSecret: string, key: SymmetricCryptoKey,
         twoFactorProvider?: TwoFactorProviderType, twoFactorToken?: string, remember?: boolean, captchaToken?: string,
@@ -446,8 +450,7 @@ export class AuthService implements AuthServiceAbstraction {
             }
 
             // Skip this step during SSO new user flow. No key is returned from server.
-            if (code == null || tokenResponse.key != null) {
-
+            if (!this.isNewSsoUser(code, tokenResponse.key)) {
                 if (tokenResponse.keyConnectorUrl != null) {
                     await this.keyConnectorService.getAndSetKey(tokenResponse.keyConnectorUrl);
                 } else if (tokenResponse.apiUseKeyConnector) {
