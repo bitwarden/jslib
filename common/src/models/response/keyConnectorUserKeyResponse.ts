@@ -1,10 +1,10 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class KeyConnectorUserKeyResponse extends BaseResponse {
-    key: string;
+  key: string;
 
-    constructor(response: any) {
-        super(response);
-        this.key = this.getResponseProperty('Key');
-    }
+  constructor(response: any) {
+    super(response);
+    this.key = this.getResponseProperty("Key");
+  }
 }

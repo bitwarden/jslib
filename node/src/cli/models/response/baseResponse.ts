@@ -1,3 +1,3 @@
 export interface BaseResponse {
-    object: string;
+  object: string;
 }

@@ -1,11 +1,11 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class StringResponse implements BaseResponse {
-    object: string;
-    data: string;
+  object: string;
+  data: string;
 
-    constructor(data: string) {
-        this.object = 'string';
-        this.data = data;
-    }
+  constructor(data: string) {
+    this.object = "string";
+    this.data = data;
+  }
 }

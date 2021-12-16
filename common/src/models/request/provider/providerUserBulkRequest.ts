@@ -1,7 +1,7 @@
 export class ProviderUserBulkRequest {
-    ids: string[];
+  ids: string[];
 
-    constructor(ids: string[]) {
-        this.ids = ids == null ? [] : ids;
-    }
+  constructor(ids: string[]) {
+    this.ids = ids == null ? [] : ids;
+  }
 }

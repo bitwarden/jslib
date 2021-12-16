@@ -1,3 +1,3 @@
 export class ProviderUserAcceptRequest {
-    token: string;
+  token: string;
 }

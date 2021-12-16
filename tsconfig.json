@@ -15,18 +15,10 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "jslib-common/*": [
-        "common/src/*"
-      ],
-      "jslib-angular/*": [
-        "angular/src/*"
-      ],
-      "jslib-electron/*": [
-        "electron/src/*"
-      ],
-      "jslib-node/*": [
-        "node/src/*"
-      ]
+      "jslib-common/*": ["common/src/*"],
+      "jslib-angular/*": ["angular/src/*"],
+      "jslib-electron/*": ["electron/src/*"],
+      "jslib-node/*": ["node/src/*"]
     },
     "plugins": [
       {
@@ -34,11 +26,6 @@
       }
     ]
   },
-  "include": [
-    "spec"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["spec"],
+  "exclude": ["node_modules", "dist"]
 }

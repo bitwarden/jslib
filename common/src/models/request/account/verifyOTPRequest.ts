@@ -1,7 +1,7 @@
 export class VerifyOTPRequest {
-    OTP: string;
+  OTP: string;
 
-    constructor(OTP: string) {
-        this.OTP = OTP;
-    }
+  constructor(OTP: string) {
+    this.OTP = OTP;
+  }
 }

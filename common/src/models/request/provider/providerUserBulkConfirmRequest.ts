@@ -1,12 +1,12 @@
 type ProviderUserBulkRequestEntry = {
-    id: string;
-    key: string;
+  id: string;
+  key: string;
 };
 
 export class ProviderUserBulkConfirmRequest {
-    keys: ProviderUserBulkRequestEntry[];
+  keys: ProviderUserBulkRequestEntry[];
 
-    constructor(keys: ProviderUserBulkRequestEntry[]) {
-        this.keys = keys;
-    }
+  constructor(keys: ProviderUserBulkRequestEntry[]) {
+    this.keys = keys;
+  }
 }

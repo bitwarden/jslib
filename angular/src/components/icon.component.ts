@@ -1,45 +1,41 @@
-import {
-    Component,
-    Input,
-    OnChanges,
-} from '@angular/core';
+import { Component, Input, OnChanges } from "@angular/core";
 
-import { CipherType } from 'jslib-common/enums/cipherType';
+import { CipherType } from "jslib-common/enums/cipherType";
 
-import { CipherView } from 'jslib-common/models/view/cipherView';
+import { CipherView } from "jslib-common/models/view/cipherView";
 
-import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
-import { StateService } from 'jslib-common/abstractions/state.service';
+import { EnvironmentService } from "jslib-common/abstractions/environment.service";
+import { StateService } from "jslib-common/abstractions/state.service";
 
-import { Utils } from 'jslib-common/misc/utils';
+import { Utils } from "jslib-common/misc/utils";
 
 import { BitwardenIconsService } from '../services/bitwarden-icons.service';
 
 @Component({
-    selector: 'app-vault-icon',
-    templateUrl: 'icon.component.html',
+  selector: "app-vault-icon",
+  templateUrl: "icon.component.html",
 })
 export class IconComponent implements OnChanges {
-    @Input() cipher: CipherView;
-    icon: string;
-    image: string;
-    fallbackImage: string;
-    imageEnabled: boolean;
+  @Input() cipher: CipherView;
+  icon: string;
+  image: string;
+  fallbackImage: string;
+  imageEnabled: boolean;
 
-    private iconsUrl: string;
+  private iconsUrl: string;
 
-    constructor(environmentService: EnvironmentService, private stateService: StateService) {
-        this.iconsUrl = environmentService.getIconsUrl();
-    }
+  constructor(environmentService: EnvironmentService, private stateService: StateService) {
+    this.iconsUrl = environmentService.getIconsUrl();
+  }
 
-    async ngOnChanges() {
-        // Components may be re-used when using cdk-virtual-scroll. Which puts the component in a weird state,
-        // to avoid this we reset all state variables.
-        this.image = null;
-        this.fallbackImage = null;
-        this.imageEnabled = !(await this.stateService.getDisableFavicon());
-        this.load();
-    }
+  async ngOnChanges() {
+    // Components may be re-used when using cdk-virtual-scroll. Which puts the component in a weird state,
+    // to avoid this we reset all state variables.
+    this.image = null;
+    this.fallbackImage = null;
+    this.imageEnabled = !(await this.stateService.getDisableFavicon());
+    this.load();
+  }
 
     get iconCode(): string {
         return BitwardenIconsService.getIconCode(this.icon);
@@ -64,11 +60,12 @@ export class IconComponent implements OnChanges {
                 break;
         }
     }
+  }
 
-    private setLoginIcon() {
-        if (this.cipher.login.uri) {
-            let hostnameUri = this.cipher.login.uri;
-            let isWebsite = false;
+  private setLoginIcon() {
+    if (this.cipher.login.uri) {
+      let hostnameUri = this.cipher.login.uri;
+      let isWebsite = false;
 
             if (hostnameUri.indexOf('androidapp://') === 0) {
                 this.icon = 'bwi-android';
@@ -83,16 +80,16 @@ export class IconComponent implements OnChanges {
                 isWebsite = hostnameUri.indexOf('http') === 0 && hostnameUri.indexOf('.') > -1;
             }
 
-            if (this.imageEnabled && isWebsite) {
-                try {
-                    this.image = this.iconsUrl + '/' + Utils.getHostname(hostnameUri) + '/icon.png';
-                    this.fallbackImage = 'images/fa-globe.png';
-                } catch (e) {
-                    // Ignore error since the fallback icon will be shown if image is null.
-                }
-            }
-        } else {
-            this.image = null;
+      if (this.imageEnabled && isWebsite) {
+        try {
+          this.image = this.iconsUrl + "/" + Utils.getHostname(hostnameUri) + "/icon.png";
+          this.fallbackImage = "images/fa-globe.png";
+        } catch (e) {
+          // Ignore error since the fallback icon will be shown if image is null.
         }
+      }
+    } else {
+      this.image = null;
     }
+  }
 }

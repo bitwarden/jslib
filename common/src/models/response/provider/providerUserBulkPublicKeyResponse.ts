@@ -1,5 +1,3 @@
-import { OrganizationUserBulkPublicKeyResponse } from '../organizationUserBulkPublicKeyResponse';
+import { OrganizationUserBulkPublicKeyResponse } from "../organizationUserBulkPublicKeyResponse";
 
-export class ProviderUserBulkPublicKeyResponse extends OrganizationUserBulkPublicKeyResponse {
-
-}
+export class ProviderUserBulkPublicKeyResponse extends OrganizationUserBulkPublicKeyResponse {}

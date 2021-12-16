@@ -1,8 +1,8 @@
-import { SelectionReadOnlyRequest } from './selectionReadOnlyRequest';
+import { SelectionReadOnlyRequest } from "./selectionReadOnlyRequest";
 
 export class GroupRequest {
-    name: string;
-    accessAll: boolean;
-    externalId: string;
-    collections: SelectionReadOnlyRequest[] = [];
+  name: string;
+  accessAll: boolean;
+  externalId: string;
+  collections: SelectionReadOnlyRequest[] = [];
 }

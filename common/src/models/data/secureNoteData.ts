@@ -1,15 +1,15 @@
-import { SecureNoteType } from '../../enums/secureNoteType';
+import { SecureNoteType } from "../../enums/secureNoteType";
 
-import { SecureNoteApi } from '../api/secureNoteApi';
+import { SecureNoteApi } from "../api/secureNoteApi";
 
 export class SecureNoteData {
-    type: SecureNoteType;
+  type: SecureNoteType;
 
-    constructor(data?: SecureNoteApi) {
-        if (data == null) {
-            return;
-        }
-
-        this.type = data.type;
+  constructor(data?: SecureNoteApi) {
+    if (data == null) {
+      return;
     }
+
+    this.type = data.type;
+  }
 }

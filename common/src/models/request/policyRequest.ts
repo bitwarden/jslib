@@ -1,7 +1,7 @@
-import { PolicyType } from '../../enums/policyType';
+import { PolicyType } from "../../enums/policyType";
 
 export class PolicyRequest {
-    type: PolicyType;
-    enabled: boolean;
-    data: any;
+  type: PolicyType;
+  enabled: boolean;
+  data: any;
 }
