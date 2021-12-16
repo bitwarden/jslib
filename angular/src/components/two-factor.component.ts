@@ -21,9 +21,10 @@ import { LogService } from 'jslib-common/abstractions/log.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { StateService } from 'jslib-common/abstractions/state.service';
 
-import { TwoFactorProviders } from 'jslib-common/services/auth.service';
+import { TwoFactorProviders } from 'jslib-common/services/twoFactor.service';
 
 import * as DuoWebSDK from 'duo_web_sdk';
+import { TwoFactorService } from 'jslib-common/abstractions/twoFactor.service';
 import { WebAuthnIFrame } from 'jslib-common/misc/webauthn_iframe';
 
 @Directive()
@@ -56,12 +57,13 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         protected i18nService: I18nService, protected apiService: ApiService,
         protected platformUtilsService: PlatformUtilsService, protected win: Window,
         protected environmentService: EnvironmentService, protected stateService: StateService,
-        protected route: ActivatedRoute, protected logService: LogService) {
+        protected route: ActivatedRoute, protected logService: LogService,
+        protected twoFactorService: TwoFactorService) {
         this.webAuthnSupported = this.platformUtilsService.supportsWebAuthn(win);
     }
 
     async ngOnInit() {
-        if (!this.authing || this.authService.twoFactorProvidersData == null) {
+        if (!this.authing || this.twoFactorService.providers == null) {
             this.router.navigate([this.loginRoute]);
             return;
         }
@@ -92,7 +94,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             );
         }
 
-        this.selectedProviderType = this.authService.getDefaultTwoFactorProvider(this.webAuthnSupported);
+        this.selectedProviderType = this.twoFactorService.getDefaultTwoFactorProvider(this.webAuthnSupported);
         await this.init();
     }
 
@@ -109,7 +111,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
 
         this.cleanupWebAuthn();
         this.title = (TwoFactorProviders as any)[this.selectedProviderType].name;
-        const providerData = this.authService.twoFactorProvidersData.get(this.selectedProviderType);
+        const providerData = this.twoFactorService.providers.get(this.selectedProviderType);
         switch (this.selectedProviderType) {
             case TwoFactorProviderType.WebAuthn:
                 if (!this.webAuthnNewTab) {
@@ -137,7 +139,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
                 break;
             case TwoFactorProviderType.Email:
                 this.twoFactorEmail = providerData.Email;
-                if (this.authService.twoFactorProvidersData.size > 1) {
+                if (this.twoFactorService.providers.size > 1) {
                     await this.sendEmail(false);
                 }
                 break;
@@ -225,7 +227,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     }
 
     authWebAuthn() {
-        const providerData = this.authService.twoFactorProvidersData.get(this.selectedProviderType);
+        const providerData = this.twoFactorService.providers.get(this.selectedProviderType);
 
         if (!this.webAuthnSupported || this.webAuthn == null) {
             return;

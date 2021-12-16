@@ -25,6 +25,7 @@ import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKe
 
 import { IdentityTokenResponse } from 'jslib-common/models/response/identityTokenResponse';
 
+import { TwoFactorService } from 'jslib-common/abstractions/twoFactor.service';
 import { HashPurpose } from 'jslib-common/enums/hashPurpose';
 import { TwoFactorProviderType } from 'jslib-common/enums/twoFactorProviderType';
 
@@ -33,15 +34,14 @@ describe('Cipher Service', () => {
     let apiService: SubstituteOf<ApiService>;
     let tokenService: SubstituteOf<TokenService>;
     let appIdService: SubstituteOf<AppIdService>;
-    let i18nService: SubstituteOf<I18nService>;
     let platformUtilsService: SubstituteOf<PlatformUtilsService>;
     let messagingService: SubstituteOf<MessagingService>;
-    let vaultTimeoutService: SubstituteOf<VaultTimeoutService>;
     let logService: SubstituteOf<LogService>;
     let cryptoFunctionService: SubstituteOf<CryptoFunctionService>;
     let environmentService: SubstituteOf<EnvironmentService>;
     let keyConnectorService: SubstituteOf<KeyConnectorService>;
     let stateService: SubstituteOf<StateService>;
+    let twoFactorService: SubstituteOf<TwoFactorService>;
     const setCryptoKeys = true;
 
     const email = 'hello@world.com';
@@ -84,20 +84,18 @@ describe('Cipher Service', () => {
         apiService = Substitute.for<ApiService>();
         tokenService = Substitute.for<TokenService>();
         appIdService = Substitute.for<AppIdService>();
-        i18nService = Substitute.for<I18nService>();
         platformUtilsService = Substitute.for<PlatformUtilsService>();
         messagingService = Substitute.for<MessagingService>();
-        vaultTimeoutService = Substitute.for<VaultTimeoutService>();
         logService = Substitute.for<LogService>();
         cryptoFunctionService = Substitute.for<CryptoFunctionService>();
         environmentService = Substitute.for<EnvironmentService>();
         stateService = Substitute.for<StateService>();
         keyConnectorService = Substitute.for<KeyConnectorService>();
+        twoFactorService = Substitute.for<TwoFactorService>();
 
-        authService = new AuthService(cryptoService, apiService, tokenService, appIdService, i18nService,
-            platformUtilsService, messagingService, vaultTimeoutService, logService, cryptoFunctionService,
-            keyConnectorService, environmentService, stateService, setCryptoKeys);
-        authService.init();
+        authService = new AuthService(cryptoService, apiService, tokenService, appIdService,
+            platformUtilsService, messagingService, logService, cryptoFunctionService,
+            keyConnectorService, environmentService, stateService, twoFactorService, setCryptoKeys);
     });
 
     function logInSetup() {
@@ -237,9 +235,9 @@ describe('Cipher Service', () => {
         apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
         // Re-init authService with setCryptoKeys = false
-        authService = new AuthService(cryptoService, apiService, tokenService, appIdService, i18nService, platformUtilsService, messagingService, vaultTimeoutService, logService, cryptoFunctionService,
-            keyConnectorService, environmentService, stateService, false);
-        authService.init();
+        authService = new AuthService(cryptoService, apiService, tokenService, appIdService, platformUtilsService,
+            messagingService, logService, cryptoFunctionService, keyConnectorService, environmentService, stateService,
+            twoFactorService, false);
 
         // Act
         const result = await authService.logIn(email, masterPassword);

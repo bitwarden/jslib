@@ -2,7 +2,7 @@ import { HashPurpose } from '../enums/hashPurpose';
 import { KdfType } from '../enums/kdfType';
 import { TwoFactorProviderType } from '../enums/twoFactorProviderType';
 
-import { Account, AccountData, AccountProfile, AccountTokens } from '../models/domain/account';
+import { AccountProfile, AccountTokens } from '../models/domain/account';
 import { AuthResult } from '../models/domain/authResult';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
@@ -22,67 +22,15 @@ import { AuthService as AuthServiceAbstraction } from '../abstractions/auth.serv
 import { CryptoService } from '../abstractions/crypto.service';
 import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
 import { EnvironmentService } from '../abstractions/environment.service';
-import { I18nService } from '../abstractions/i18n.service';
 import { KeyConnectorService } from '../abstractions/keyConnector.service';
 import { LogService } from '../abstractions/log.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { StateService } from '../abstractions/state.service';
 import { TokenService } from '../abstractions/token.service';
-import { VaultTimeoutService } from '../abstractions/vaultTimeout.service';
 
+import { TwoFactorService } from '../abstractions/twoFactor.service';
 import { Utils } from '../misc/utils';
-
-export const TwoFactorProviders = {
-    [TwoFactorProviderType.Authenticator]: {
-        type: TwoFactorProviderType.Authenticator,
-        name: null as string,
-        description: null as string,
-        priority: 1,
-        sort: 1,
-        premium: false,
-    },
-    [TwoFactorProviderType.Yubikey]: {
-        type: TwoFactorProviderType.Yubikey,
-        name: null as string,
-        description: null as string,
-        priority: 3,
-        sort: 2,
-        premium: true,
-    },
-    [TwoFactorProviderType.Duo]: {
-        type: TwoFactorProviderType.Duo,
-        name: 'Duo',
-        description: null as string,
-        priority: 2,
-        sort: 3,
-        premium: true,
-    },
-    [TwoFactorProviderType.OrganizationDuo]: {
-        type: TwoFactorProviderType.OrganizationDuo,
-        name: 'Duo (Organization)',
-        description: null as string,
-        priority: 10,
-        sort: 4,
-        premium: false,
-    },
-    [TwoFactorProviderType.Email]: {
-        type: TwoFactorProviderType.Email,
-        name: null as string,
-        description: null as string,
-        priority: 0,
-        sort: 6,
-        premium: false,
-    },
-    [TwoFactorProviderType.WebAuthn]: {
-        type: TwoFactorProviderType.WebAuthn,
-        name: null as string,
-        description: null as string,
-        priority: 4,
-        sort: 5,
-        premium: true,
-    },
-};
 
 export class AuthService implements AuthServiceAbstraction {
     email: string;
@@ -93,45 +41,21 @@ export class AuthService implements AuthServiceAbstraction {
     ssoRedirectUrl: string;
     clientId: string;
     clientSecret: string;
-    twoFactorProvidersData: Map<TwoFactorProviderType, { [key: string]: string; }>;
-    selectedTwoFactorProviderType: TwoFactorProviderType = null;
     captchaToken: string;
 
     private key: SymmetricCryptoKey;
 
     constructor(private cryptoService: CryptoService, protected apiService: ApiService,
         protected tokenService: TokenService, protected appIdService: AppIdService,
-        private i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
-        private messagingService: MessagingService, private vaultTimeoutService: VaultTimeoutService,
+        protected platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
         private logService: LogService, protected cryptoFunctionService: CryptoFunctionService,
         private keyConnectorService: KeyConnectorService, protected environmentService: EnvironmentService,
-        protected stateService: StateService, private setCryptoKeys = true) {
-    }
-
-    init() {
-        TwoFactorProviders[TwoFactorProviderType.Email].name = this.i18nService.t('emailTitle');
-        TwoFactorProviders[TwoFactorProviderType.Email].description = this.i18nService.t('emailDesc');
-
-        TwoFactorProviders[TwoFactorProviderType.Authenticator].name = this.i18nService.t('authenticatorAppTitle');
-        TwoFactorProviders[TwoFactorProviderType.Authenticator].description =
-            this.i18nService.t('authenticatorAppDesc');
-
-        TwoFactorProviders[TwoFactorProviderType.Duo].description = this.i18nService.t('duoDesc');
-
-        TwoFactorProviders[TwoFactorProviderType.OrganizationDuo].name =
-            'Duo (' + this.i18nService.t('organization') + ')';
-        TwoFactorProviders[TwoFactorProviderType.OrganizationDuo].description =
-            this.i18nService.t('duoOrganizationDesc');
-
-        TwoFactorProviders[TwoFactorProviderType.WebAuthn].name = this.i18nService.t('webAuthnTitle');
-        TwoFactorProviders[TwoFactorProviderType.WebAuthn].description = this.i18nService.t('webAuthnDesc');
-
-        TwoFactorProviders[TwoFactorProviderType.Yubikey].name = this.i18nService.t('yubiKeyTitle');
-        TwoFactorProviders[TwoFactorProviderType.Yubikey].description = this.i18nService.t('yubiKeyDesc');
+        protected stateService: StateService, private twoFactorService: TwoFactorService,
+        private setCryptoKeys = true) {
     }
 
     async logIn(email: string, masterPassword: string, captchaToken?: string): Promise<AuthResult> {
-        this.selectedTwoFactorProviderType = null;
+        this.twoFactorService.clearSelectedProvider();
         const key = await this.makePreloginKey(masterPassword, email);
         const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
         const localHashedPassword = await this.cryptoService.hashPassword(masterPassword, key,
@@ -141,13 +65,13 @@ export class AuthService implements AuthServiceAbstraction {
     }
 
     async logInSso(code: string, codeVerifier: string, redirectUrl: string, orgId: string): Promise<AuthResult> {
-        this.selectedTwoFactorProviderType = null;
+        this.twoFactorService.clearSelectedProvider();
         return await this.logInHelper(null, null, null, code, codeVerifier, redirectUrl, null, null,
             null, null, null, null, null, orgId);
     }
 
     async logInApiKey(clientId: string, clientSecret: string): Promise<AuthResult> {
-        this.selectedTwoFactorProviderType = null;
+        this.twoFactorService.clearSelectedProvider();
         return await this.logInHelper(null, null, null, null, null, null, clientId, clientSecret,
             null, null, null, null, null, null);
     }
@@ -161,26 +85,26 @@ export class AuthService implements AuthServiceAbstraction {
 
     async logInComplete(email: string, masterPassword: string, twoFactorProvider: TwoFactorProviderType,
         twoFactorToken: string, remember?: boolean, captchaToken?: string): Promise<AuthResult> {
-        this.selectedTwoFactorProviderType = null;
-        const key = await this.makePreloginKey(masterPassword, email);
-        const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
-        const localHashedPassword = await this.cryptoService.hashPassword(masterPassword, key,
+            this.twoFactorService.clearSelectedProvider();
+            const key = await this.makePreloginKey(masterPassword, email);
+            const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
+            const localHashedPassword = await this.cryptoService.hashPassword(masterPassword, key,
             HashPurpose.LocalAuthorization);
-        return await this.logInHelper(email, hashedPassword, localHashedPassword, null, null, null, null, null, key,
+            return await this.logInHelper(email, hashedPassword, localHashedPassword, null, null, null, null, null, key,
             twoFactorProvider, twoFactorToken, remember, captchaToken, null);
     }
 
     async logInSsoComplete(code: string, codeVerifier: string, redirectUrl: string,
         twoFactorProvider: TwoFactorProviderType, twoFactorToken: string, remember?: boolean): Promise<AuthResult> {
-        this.selectedTwoFactorProviderType = null;
-        return await this.logInHelper(null, null, null, code, codeVerifier, redirectUrl, null,
+            this.twoFactorService.clearSelectedProvider();
+            return await this.logInHelper(null, null, null, code, codeVerifier, redirectUrl, null,
             null, null, twoFactorProvider, twoFactorToken, remember, null, null);
     }
 
     async logInApiKeyComplete(clientId: string, clientSecret: string, twoFactorProvider: TwoFactorProviderType,
         twoFactorToken: string, remember?: boolean): Promise<AuthResult> {
-        this.selectedTwoFactorProviderType = null;
-        return await this.logInHelper(null, null, null, null, null, null, clientId, clientSecret, null,
+            this.twoFactorService.clearSelectedProvider();
+            return await this.logInHelper(null, null, null, null, null, null, clientId, clientSecret, null,
             twoFactorProvider, twoFactorToken, remember, null, null);
     }
 
@@ -189,65 +113,16 @@ export class AuthService implements AuthServiceAbstraction {
         this.messagingService.send('loggedOut');
     }
 
-    getSupportedTwoFactorProviders(win: Window): any[] {
-        const providers: any[] = [];
-        if (this.twoFactorProvidersData == null) {
-            return providers;
-        }
-
-        if (this.twoFactorProvidersData.has(TwoFactorProviderType.OrganizationDuo) &&
-            this.platformUtilsService.supportsDuo()) {
-            providers.push(TwoFactorProviders[TwoFactorProviderType.OrganizationDuo]);
-        }
-
-        if (this.twoFactorProvidersData.has(TwoFactorProviderType.Authenticator)) {
-            providers.push(TwoFactorProviders[TwoFactorProviderType.Authenticator]);
-        }
-
-        if (this.twoFactorProvidersData.has(TwoFactorProviderType.Yubikey)) {
-            providers.push(TwoFactorProviders[TwoFactorProviderType.Yubikey]);
-        }
-
-        if (this.twoFactorProvidersData.has(TwoFactorProviderType.Duo) && this.platformUtilsService.supportsDuo()) {
-            providers.push(TwoFactorProviders[TwoFactorProviderType.Duo]);
-        }
-
-        if (this.twoFactorProvidersData.has(TwoFactorProviderType.WebAuthn) && this.platformUtilsService.supportsWebAuthn(win)) {
-            providers.push(TwoFactorProviders[TwoFactorProviderType.WebAuthn]);
-        }
-
-        if (this.twoFactorProvidersData.has(TwoFactorProviderType.Email)) {
-            providers.push(TwoFactorProviders[TwoFactorProviderType.Email]);
-        }
-
-        return providers;
+    authingWithApiKey(): boolean {
+        return this.clientId != null && this.clientSecret != null;
     }
 
-    getDefaultTwoFactorProvider(webAuthnSupported: boolean): TwoFactorProviderType {
-        if (this.twoFactorProvidersData == null) {
-            return null;
-        }
+    authingWithSso(): boolean {
+        return this.code != null && this.codeVerifier != null && this.ssoRedirectUrl != null;
+    }
 
-        if (this.selectedTwoFactorProviderType != null &&
-            this.twoFactorProvidersData.has(this.selectedTwoFactorProviderType)) {
-            return this.selectedTwoFactorProviderType;
-        }
-
-        let providerType: TwoFactorProviderType = null;
-        let providerPriority = -1;
-        this.twoFactorProvidersData.forEach((_value, type) => {
-            const provider = (TwoFactorProviders as any)[type];
-            if (provider != null && provider.priority > providerPriority) {
-                if (type === TwoFactorProviderType.WebAuthn && !webAuthnSupported) {
-                    return;
-                }
-
-                providerType = type;
-                providerPriority = provider.priority;
-            }
-        });
-
-        return providerType;
+    authingWithPassword(): boolean {
+        return this.email != null && this.masterPasswordHash != null;
     }
 
     async makePreloginKey(masterPassword: string, email: string): Promise<SymmetricCryptoKey> {
@@ -266,18 +141,6 @@ export class AuthService implements AuthServiceAbstraction {
             }
         }
         return this.cryptoService.makeKey(masterPassword, email, kdf, kdfIterations);
-    }
-
-    authingWithApiKey(): boolean {
-        return this.clientId != null && this.clientSecret != null;
-    }
-
-    authingWithSso(): boolean {
-        return this.code != null && this.codeVerifier != null && this.ssoRedirectUrl != null;
-    }
-
-    authingWithPassword(): boolean {
-        return this.email != null && this.masterPasswordHash != null;
     }
     private async createTokenRequest(email: string, hashedPassword: string, code: string, codeVerifier: string, redirectUrl: string,
         clientId: string, clientSecret: string, twoFactorToken: string, twoFactorProvider: TwoFactorProviderType, remember: boolean,
@@ -309,10 +172,8 @@ export class AuthService implements AuthServiceAbstraction {
 
         let request: TokenRequest;
         if (twoFactorToken != null && twoFactorProvider != null) {
-            console.log('creating 2FA request');
             request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, twoFactorProvider,
                 twoFactorToken, remember, captchaToken, deviceRequest);
-            console.log(request);
         } else if (storedTwoFactorToken != null) {
             request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret,
                 TwoFactorProviderType.Remember, storedTwoFactorToken, false, captchaToken, deviceRequest);
@@ -337,7 +198,7 @@ export class AuthService implements AuthServiceAbstraction {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.key = this.setCryptoKeys ? key : null;
-        this.twoFactorProvidersData = twoFactorProviders;
+        this.twoFactorService.setProviders(twoFactorProviders);
     }
 
     private async convertNewUserToKeyConnector(tokenResponse: IdentityTokenResponse, orgId: string) {
@@ -401,7 +262,7 @@ export class AuthService implements AuthServiceAbstraction {
     }
 
     private isNewSsoUser(code: string, key: string) {
-        return code != null && key == null
+        return code != null && key == null;
     }
 
     private async logInHelper(email: string, hashedPassword: string, localHashedPassword: string, code: string,
@@ -426,7 +287,7 @@ export class AuthService implements AuthServiceAbstraction {
         if (result.twoFactor) {
             this.saveState(email, hashedPassword, localHashedPassword, code, codeVerifier, redirectUrl,
                 clientId, clientSecret, key, (response as IdentityTwoFactorResponse).twoFactorProviders2);
-            
+
             result.twoFactorProviders = (response as IdentityTwoFactorResponse).twoFactorProviders2;
             return result;
         }
@@ -487,7 +348,7 @@ export class AuthService implements AuthServiceAbstraction {
         this.ssoRedirectUrl = null;
         this.clientId = null;
         this.clientSecret = null;
-        this.twoFactorProvidersData = null;
-        this.selectedTwoFactorProviderType = null;
+        this.twoFactorService.clearProviders();
+        this.twoFactorService.clearSelectedProvider();
     }
 }

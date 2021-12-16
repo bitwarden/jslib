@@ -11,8 +11,6 @@ export abstract class AuthService {
     ssoRedirectUrl: string;
     clientId: string;
     clientSecret: string;
-    twoFactorProvidersData: Map<TwoFactorProviderType, { [key: string]: string; }>;
-    selectedTwoFactorProviderType: TwoFactorProviderType;
 
     logIn: (email: string, masterPassword: string, captchaToken?: string) => Promise<AuthResult>;
     logInSso: (code: string, codeVerifier: string, redirectUrl: string, orgId: string) => Promise<AuthResult>;
@@ -26,8 +24,6 @@ export abstract class AuthService {
     logInApiKeyComplete: (clientId: string, clientSecret: string, twoFactorProvider: TwoFactorProviderType,
         twoFactorToken: string, remember?: boolean) => Promise<AuthResult>;
     logOut: (callback: Function) => void;
-    getSupportedTwoFactorProviders: (win: Window) => any[];
-    getDefaultTwoFactorProvider: (webAuthnSupported: boolean) => TwoFactorProviderType;
     makePreloginKey: (masterPassword: string, email: string) => Promise<SymmetricCryptoKey>;
     authingWithApiKey: () => boolean;
     authingWithSso: () => boolean;
