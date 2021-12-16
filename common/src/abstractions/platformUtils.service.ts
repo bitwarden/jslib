@@ -1,6 +1,10 @@
 import { DeviceType } from '../enums/deviceType';
 import { ThemeType } from '../enums/themeType';
 
+interface ToastOptions {
+    timeout?: number;
+}
+
 export abstract class PlatformUtilsService {
     identityClientId: string;
     getDevice: () => DeviceType;
@@ -20,7 +24,7 @@ export abstract class PlatformUtilsService {
     supportsWebAuthn: (win: Window) => boolean;
     supportsDuo: () => boolean;
     showToast: (type: 'error' | 'success' | 'warning' | 'info', title: string, text: string | string[],
-        options?: any) => void;
+        options?: ToastOptions) => void;
     showDialog: (body: string, title?: string, confirmText?: string, cancelText?: string,
         type?: string, bodyIsHtml?: boolean) => Promise<boolean>;
     isDev: () => boolean;

@@ -15,11 +15,7 @@ import { ThemeType } from 'jslib-common/enums/themeType';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
-import { StorageService } from 'jslib-common/abstractions/storage.service';
-
-import { ConstantsService } from 'jslib-common/services/constants.service';
-
-import { ElectronConstants } from '../electronConstants';
+import { StateService } from 'jslib-common/abstractions/state.service';
 
 export class ElectronPlatformUtilsService implements PlatformUtilsService {
     identityClientId: string;
@@ -27,7 +23,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     private deviceCache: DeviceType = null;
 
     constructor(protected i18nService: I18nService, private messagingService: MessagingService,
-        private isDesktopApp: boolean, private storageService: StorageService) {
+        private isDesktopApp: boolean, private stateService: StateService) {
         this.identityClientId = isDesktopApp ? 'desktop' : 'connector';
     }
 
@@ -178,8 +174,8 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
         return Promise.resolve(clipboard.readText(type));
     }
 
-    supportsBiometric(): Promise<boolean> {
-        return this.storageService.get(ElectronConstants.enableBiometric);
+    async supportsBiometric(): Promise<boolean> {
+        return await this.stateService.getEnableBiometric();
     }
 
     authenticateBiometric(): Promise<boolean> {
@@ -200,7 +196,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     }
 
     async getEffectiveTheme() {
-        const theme = await this.storageService.get<ThemeType>(ConstantsService.themeKey);
+        const theme = await this.stateService.getTheme();
         if (theme == null || theme === ThemeType.System) {
             return this.getDefaultSystemTheme();
         } else {

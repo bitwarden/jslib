@@ -18,8 +18,8 @@ import { KeyConnectorService } from 'jslib-common/abstractions/keyConnector.serv
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
+import { StateService } from 'jslib-common/abstractions/state.service';
 import { SyncService } from 'jslib-common/abstractions/sync.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { Response } from '../models/response';
 
@@ -49,7 +49,7 @@ export class LoginCommand {
         protected i18nService: I18nService, protected environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
         protected cryptoFunctionService: CryptoFunctionService, protected platformUtilsService: PlatformUtilsService,
-        protected userService: UserService, protected cryptoService: CryptoService,
+        protected stateService: StateService, protected cryptoService: CryptoService,
         protected policyService: PolicyService, clientId: string, private syncService: SyncService,
         protected keyConnectorService: KeyConnectorService) {
         this.clientId = clientId;
@@ -300,7 +300,7 @@ export class LoginCommand {
         }
 
         if (this.email == null || this.email === 'undefined') {
-            this.email = await this.userService.getEmail();
+            this.email = await this.stateService.getEmail();
         }
 
         // Get New Master Password
@@ -350,8 +350,8 @@ export class LoginCommand {
 
         // Retrieve details for key generation
         const enforcedPolicyOptions = await this.policyService.getMasterPasswordPolicyOptions();
-        const kdf = await this.userService.getKdf();
-        const kdfIterations = await this.userService.getKdfIterations();
+        const kdf = await this.stateService.getKdfType();
+        const kdfIterations = await this.stateService.getKdfIterations();
 
         if (enforcedPolicyOptions != null &&
             !this.policyService.evaluateMasterPassword(
