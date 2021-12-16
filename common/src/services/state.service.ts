@@ -847,8 +847,8 @@ export class StateService<TAccount extends Account = Account> implements StateSe
     async getEnvironmentUrls(options?: StorageOptions): Promise<any> {
         return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.settings?.environmentUrls ?? {
             base: null,
-            api: 'localhost:4000',
-            identity: 'http://localhost:33656',
+            api: null,
+            identity: null,
             icons: null,
             notifications: null,
             events: null,
