@@ -29,7 +29,7 @@ We recently migrated to using Prettier as code formatter. All previous branches 
 6. Run `git merge -Xours 193434461dbd9c48fe5dcbad95693470aec422ac`
 7. Push
 
-### Git diff
+### Git blame
 
 We also recommend that you configure git to ignore the prettier revision using:
 
