@@ -8,11 +8,8 @@ import { ApiService } from 'jslib-common/abstractions/api.service';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { KeyConnectorService } from 'jslib-common/abstractions/keyConnector.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
-import { StorageService } from 'jslib-common/abstractions/storage.service';
+import { StateService } from 'jslib-common/abstractions/state.service';
 import { SyncService } from 'jslib-common/abstractions/sync.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
-
-import { ConstantsService } from 'jslib-common/services/constants.service';
 
 import { Organization } from 'jslib-common/models/domain/organization';
 
@@ -27,14 +24,14 @@ export class RemovePasswordComponent implements OnInit {
     organization: Organization;
     email: string;
 
-    constructor(private router: Router, private userService: UserService,
+    constructor(private router: Router, private stateService: StateService,
         private apiService: ApiService, private syncService: SyncService,
         private platformUtilsService: PlatformUtilsService, private i18nService: I18nService,
-        private keyConnectorService: KeyConnectorService, private storageService: StorageService) { }
+        private keyConnectorService: KeyConnectorService) { }
 
     async ngOnInit() {
         this.organization = await this.keyConnectorService.getManagingOrganization();
-        this.email = await this.userService.getEmail();
+        this.email = await this.stateService.getEmail();
         await this.syncService.fullSync(false);
         this.loading = false;
     }

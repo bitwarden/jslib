@@ -26,7 +26,7 @@ export class FSecureFskImporter extends BaseImporter implements Importer {
             cipher.name = this.getValueOrDefault(value.service);
             cipher.notes = this.getValueOrDefault(value.notes);
 
-            if (value.style === 'website') {
+            if (value.style === 'website' || value.style === 'globe') {
                 cipher.login.username = this.getValueOrDefault(value.username);
                 cipher.login.password = this.getValueOrDefault(value.password);
                 cipher.login.uris = this.makeUriArray(value.url);

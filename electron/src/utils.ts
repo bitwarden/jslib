@@ -25,8 +25,12 @@ export function isAppImage() {
     return process.platform === 'linux' && 'APPIMAGE' in process.env;
 }
 
+export function isMac() {
+    return process.platform === 'darwin';
+}
+
 export function isMacAppStore() {
-    return process.platform === 'darwin' && process.mas && process.mas === true;
+    return isMac() && process.mas && process.mas === true;
 }
 
 export function isWindowsStore() {

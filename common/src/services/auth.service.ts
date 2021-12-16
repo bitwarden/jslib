@@ -2,6 +2,7 @@ import { HashPurpose } from '../enums/hashPurpose';
 import { KdfType } from '../enums/kdfType';
 import { TwoFactorProviderType } from '../enums/twoFactorProviderType';
 
+import { Account, AccountData, AccountProfile, AccountTokens } from '../models/domain/account';
 import { AuthResult } from '../models/domain/authResult';
 import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
@@ -26,8 +27,8 @@ import { KeyConnectorService } from '../abstractions/keyConnector.service';
 import { LogService } from '../abstractions/log.service';
 import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
+import { StateService } from '../abstractions/state.service';
 import { TokenService } from '../abstractions/token.service';
-import { UserService } from '../abstractions/user.service';
 import { VaultTimeoutService } from '../abstractions/vaultTimeout.service';
 
 import { Utils } from '../misc/utils';
@@ -99,12 +100,12 @@ export class AuthService implements AuthServiceAbstraction {
     private key: SymmetricCryptoKey;
 
     constructor(private cryptoService: CryptoService, protected apiService: ApiService,
-        private userService: UserService, protected tokenService: TokenService,
-        protected appIdService: AppIdService, private i18nService: I18nService,
-        protected platformUtilsService: PlatformUtilsService, private messagingService: MessagingService,
-        private vaultTimeoutService: VaultTimeoutService, private logService: LogService,
-        private cryptoFunctionService: CryptoFunctionService, private environmentService: EnvironmentService,
-        private keyConnectorService: KeyConnectorService, private setCryptoKeys = true) {
+        protected tokenService: TokenService, protected appIdService: AppIdService,
+        private i18nService: I18nService, protected platformUtilsService: PlatformUtilsService,
+        private messagingService: MessagingService, private vaultTimeoutService: VaultTimeoutService,
+        private logService: LogService, protected cryptoFunctionService: CryptoFunctionService,
+        private keyConnectorService: KeyConnectorService, protected environmentService: EnvironmentService,
+        protected stateService: StateService, private setCryptoKeys = true) {
     }
 
     init() {
@@ -234,7 +235,7 @@ export class AuthService implements AuthServiceAbstraction {
 
         let providerType: TwoFactorProviderType = null;
         let providerPriority = -1;
-        this.twoFactorProvidersData.forEach((value, type) => {
+        this.twoFactorProvidersData.forEach((_value, type) => {
             const provider = (TwoFactorProviders as any)[type];
             if (provider != null && provider.priority > providerPriority) {
                 if (type === TwoFactorProviderType.WebAuthn && !webAuthnSupported) {
@@ -350,13 +351,34 @@ export class AuthService implements AuthServiceAbstraction {
         const tokenResponse = response as IdentityTokenResponse;
         result.resetMasterPassword = tokenResponse.resetMasterPassword;
         result.forcePasswordReset = tokenResponse.forcePasswordReset;
+
+        const accountInformation = await this.tokenService.decodeToken(tokenResponse.accessToken);
+        await this.stateService.addAccount({
+            profile: {
+                ...new AccountProfile(),
+                ...{
+                    userId: accountInformation.sub,
+                    email: accountInformation.email,
+                    apiKeyClientId: clientId,
+                    apiKeyClientSecret: clientSecret,
+                    hasPremiumPersonally: accountInformation.premium,
+                    kdfIterations: tokenResponse.kdfIterations,
+                    kdfType: tokenResponse.kdf,
+                },
+            },
+            tokens: {
+                ...new AccountTokens(),
+                ...{
+                    accessToken: tokenResponse.accessToken,
+                    refreshToken: tokenResponse.refreshToken,
+                },
+            },
+        });
+
         if (tokenResponse.twoFactorToken != null) {
             await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken, email);
         }
 
-        await this.tokenService.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken, clientIdClientSecret);
-        await this.userService.setInformation(this.tokenService.getUserId(), this.tokenService.getEmail(),
-            tokenResponse.kdf, tokenResponse.kdfIterations);
         if (this.setCryptoKeys) {
             if (key != null) {
                 await this.cryptoService.setKey(key);
@@ -392,7 +414,7 @@ export class AuthService implements AuthServiceAbstraction {
             } else if (tokenResponse.keyConnectorUrl != null) {
                 const password = await this.cryptoFunctionService.randomBytes(64);
 
-                const k = await this.cryptoService.makeKey(Utils.fromBufferToB64(password), this.tokenService.getEmail(), tokenResponse.kdf, tokenResponse.kdfIterations);
+                const k = await this.cryptoService.makeKey(Utils.fromBufferToB64(password), await this.tokenService.getEmail(), tokenResponse.kdf, tokenResponse.kdfIterations);
                 const keyConnectorRequest = new KeyConnectorUserKeyRequest(k.encKeyB64);
                 await this.cryptoService.setKey(k);
 
@@ -416,7 +438,7 @@ export class AuthService implements AuthServiceAbstraction {
         }
 
         if (this.vaultTimeoutService != null) {
-            this.vaultTimeoutService.biometricLocked = false;
+            await this.stateService.setBiometricLocked(false);
         }
         this.messagingService.send('loggedIn');
         return result;
