@@ -1,7 +1,7 @@
 export enum ThemeType {
-    System = 'system',
-    Light = 'light',
-    Dark = 'dark',
-    Nord = 'nord',
-    SolarizedDark = 'solarizedDark',
+  System = "system",
+  Light = "light",
+  Dark = "dark",
+  Nord = "nord",
+  SolarizedDark = "solarizedDark",
 }

@@ -1,5 +1,5 @@
-import Domain from './domainBase';
+import Domain from "./domainBase";
 
 export class ResetPasswordPolicyOptions extends Domain {
-    autoEnrollEnabled: boolean = false;
+  autoEnrollEnabled: boolean = false;
 }

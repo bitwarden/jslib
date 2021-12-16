@@ -1,17 +1,12 @@
-import {
-    Directive,
-    ElementRef,
-    HostListener,
-} from '@angular/core';
+import { Directive, ElementRef, HostListener } from "@angular/core";
 
 @Directive({
-    selector: '[appBlurClick]',
+  selector: "[appBlurClick]",
 })
 export class BlurClickDirective {
-    constructor(private el: ElementRef) {
-    }
+  constructor(private el: ElementRef) {}
 
-    @HostListener('click') onClick() {
-        this.el.nativeElement.blur();
-    }
+  @HostListener("click") onClick() {
+    this.el.nativeElement.blur();
+  }
 }

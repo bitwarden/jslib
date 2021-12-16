@@ -1,3 +1,3 @@
 export class EncArrayBuffer {
-    constructor(public buffer: ArrayBuffer) { }
+  constructor(public buffer: ArrayBuffer) {}
 }

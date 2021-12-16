@@ -1,3 +1,3 @@
 export class OrganizationUserConfirmRequest {
-    key: string;
+  key: string;
 }
