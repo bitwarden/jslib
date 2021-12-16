@@ -34,7 +34,7 @@ import { SendData } from '../models/data/sendData';
 
 import { BehaviorSubject } from 'rxjs';
 
-import { StateMigrationService } from './stateMigration.service';
+import { StateMigrationService } from '../abstractions/stateMigration.service';
 
 export class StateService<TAccount extends Account = Account> implements StateServiceAbstraction<TAccount> {
     accounts = new BehaviorSubject<{ [userId: string]: TAccount }>({});
@@ -854,7 +854,7 @@ export class StateService<TAccount extends Account = Account> implements StateSe
             events: null,
             webVault: null,
             keyConnector: null,
-            // todo this is def a bug and we should do something with base instead for the server detail in the account switcher
+            // TODO: this is a bug and we should use base instead for the server detail in the account switcher, otherwise self hosted urls will not show correctly
             server: 'bitwarden.com',
         };
     }
@@ -886,13 +886,13 @@ export class StateService<TAccount extends Account = Account> implements StateSe
     }
 
     async getEverBeenUnlocked(options?: StorageOptions): Promise<boolean> {
-        return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.profile?.everBeenUnlocked ?? false;
+        return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.profile?.everBeenUnlocked ?? false;
     }
 
     async setEverBeenUnlocked(value: boolean, options?: StorageOptions): Promise<void> {
-        const account = await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions));
+        const account = await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()));
         account.profile.everBeenUnlocked = value;
-        await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
+        await this.saveAccount(account, this.reconcileOptions(options, await this.defaultOnDiskOptions()));
     }
 
     async getForcePasswordReset(options?: StorageOptions): Promise<boolean> {
@@ -1242,8 +1242,7 @@ export class StateService<TAccount extends Account = Account> implements StateSe
 
     async getVaultTimeout(options?: StorageOptions): Promise<number> {
         const accountVaultTimeout = (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.settings?.vaultTimeout;
-        const globalVaultTimeout = (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())))?.vaultTimeout;
-        return accountVaultTimeout ?? globalVaultTimeout ?? 15;
+        return accountVaultTimeout;
     }
 
     async setVaultTimeout(value: number, options?: StorageOptions): Promise<void> {
