@@ -1,4 +1,4 @@
 export class EmergencyAccessPasswordRequest {
-    newMasterPasswordHash: string;
-    key: string;
+  newMasterPasswordHash: string;
+  key: string;
 }

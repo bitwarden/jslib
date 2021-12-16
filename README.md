@@ -5,13 +5,14 @@
 Common code referenced across Bitwarden JavaScript projects.
 
 ## Requirements
-* [Node.js](https://nodejs.org) v16.13.1 or greater
-* NPM v8
-* Git
-* node-gyp
+
+- [Node.js](https://nodejs.org) v16.13.1 or greater
+- NPM v8
+- Git
+- node-gyp
 
 ### Windows
 
-* *Microsoft Build Tools 2015* in Visual Studio Installer
-* [Windows 10 SDK 17134](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/)
-either by downloading it seperately or through the Visual Studio Installer.
+- _Microsoft Build Tools 2015_ in Visual Studio Installer
+- [Windows 10 SDK 17134](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/)
+  either by downloading it seperately or through the Visual Studio Installer.

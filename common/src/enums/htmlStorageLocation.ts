@@ -1,5 +1,5 @@
 export enum HtmlStorageLocation {
-    Local = 'local',
-    Memory = 'memory',
-    Session = 'session',
+  Local = "local",
+  Memory = "memory",
+  Session = "session",
 }

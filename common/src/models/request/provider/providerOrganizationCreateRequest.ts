@@ -1,5 +1,8 @@
-import { OrganizationCreateRequest } from '../organizationCreateRequest';
+import { OrganizationCreateRequest } from "../organizationCreateRequest";
 
 export class ProviderOrganizationCreateRequest {
-    constructor(public clientOwnerEmail: string, public organizationCreateRequest: OrganizationCreateRequest) { }
+  constructor(
+    public clientOwnerEmail: string,
+    public organizationCreateRequest: OrganizationCreateRequest
+  ) {}
 }

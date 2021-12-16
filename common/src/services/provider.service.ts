@@ -1,35 +1,34 @@
-import { ProviderService as ProviderServiceAbstraction } from '../abstractions/provider.service';
-import { StateService } from '../abstractions/state.service';
+import { ProviderService as ProviderServiceAbstraction } from "../abstractions/provider.service";
+import { StateService } from "../abstractions/state.service";
 
-import { ProviderData } from '../models/data/providerData';
+import { ProviderData } from "../models/data/providerData";
 
-import { Provider } from '../models/domain/provider';
+import { Provider } from "../models/domain/provider";
 
 export class ProviderService implements ProviderServiceAbstraction {
-    constructor(private stateService: StateService) {
+  constructor(private stateService: StateService) {}
+
+  async get(id: string): Promise<Provider> {
+    const providers = await this.stateService.getProviders();
+    if (providers == null || !providers.hasOwnProperty(id)) {
+      return null;
     }
 
-    async get(id: string): Promise<Provider> {
-        const providers = await this.stateService.getProviders();
-        if (providers == null || !providers.hasOwnProperty(id)) {
-            return null;
-        }
+    return new Provider(providers[id]);
+  }
 
-        return new Provider(providers[id]);
+  async getAll(): Promise<Provider[]> {
+    const providers = await this.stateService.getProviders();
+    const response: Provider[] = [];
+    for (const id in providers) {
+      if (providers.hasOwnProperty(id)) {
+        response.push(new Provider(providers[id]));
+      }
     }
+    return response;
+  }
 
-    async getAll(): Promise<Provider[]> {
-        const providers = await this.stateService.getProviders();
-        const response: Provider[] = [];
-        for (const id in providers) {
-            if (providers.hasOwnProperty(id)) {
-                response.push(new Provider(providers[id]));
-            }
-        }
-        return response;
-    }
-
-    async save(providers: { [id: string]: ProviderData; }) {
-        await this.stateService.setProviders(providers);
-    }
+  async save(providers: { [id: string]: ProviderData }) {
+    await this.stateService.setProviders(providers);
+  }
 }

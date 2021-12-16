@@ -20,7 +20,6 @@ jobs:
       - name: Print lines of code
         run: cloc --include-lang TypeScript,JavaScript,HTML,Sass,CSS --vcs git
 
-
   build:
     name: Build jslib
     runs-on: ${{ matrix.os }}
@@ -33,7 +32,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@46071b5c7a2e0c34e49c3cb8a0e792e86e18d5ea
         with:
-          node-version: '16'
+          node-version: "16"
 
       - name: Install node-gyp
         run: |
@@ -106,7 +105,7 @@ jobs:
           secrets: "devops-alerts-slack-webhook-url"
 
       - name: Notify Slack on failure
-        uses: act10ns/slack@e4e71685b9b239384b0f676a63c32367f59c2522  # v1.2.2
+        uses: act10ns/slack@e4e71685b9b239384b0f676a63c32367f59c2522 # v1.2.2
         if: failure()
         env:
           SLACK_WEBHOOK_URL: ${{ steps.retrieve-secrets.outputs.devops-alerts-slack-webhook-url }}
