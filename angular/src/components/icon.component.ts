@@ -11,8 +11,6 @@ import { CipherView } from 'jslib-common/models/view/cipherView';
 import { EnvironmentService } from 'jslib-common/abstractions/environment.service';
 import { StateService } from 'jslib-common/abstractions/state.service';
 
-import { ConstantsService } from 'jslib-common/services/constants.service';
-
 import { Utils } from 'jslib-common/misc/utils';
 
 const IconMap: any = {
@@ -37,7 +35,7 @@ export class IconComponent implements OnChanges {
 
     private iconsUrl: string;
 
-    constructor(environmentService: EnvironmentService, protected stateService: StateService) {
+    constructor(environmentService: EnvironmentService, private stateService: StateService) {
         this.iconsUrl = environmentService.getIconsUrl();
     }
 
@@ -46,7 +44,7 @@ export class IconComponent implements OnChanges {
         // to avoid this we reset all state variables.
         this.image = null;
         this.fallbackImage = null;
-        this.imageEnabled = !(await this.stateService.get<boolean>(ConstantsService.disableFaviconKey));
+        this.imageEnabled = !(await this.stateService.getDisableFavicon());
         this.load();
     }
 

@@ -1,10 +1,7 @@
 import { MessagingService } from '../abstractions/messaging.service';
 import { PlatformUtilsService } from '../abstractions/platformUtils.service';
-import { StorageService } from '../abstractions/storage.service';
+import { StateService } from '../abstractions/state.service';
 import { SystemService as SystemServiceAbstraction } from '../abstractions/system.service';
-import { VaultTimeoutService } from '../abstractions/vaultTimeout.service';
-
-import { ConstantsService } from './constants.service';
 
 import { Utils } from '../misc/utils';
 
@@ -13,28 +10,27 @@ export class SystemService implements SystemServiceAbstraction {
     private clearClipboardTimeout: any = null;
     private clearClipboardTimeoutFunction: () => Promise<any> = null;
 
-    constructor(private storageService: StorageService, private vaultTimeoutService: VaultTimeoutService,
-        private messagingService: MessagingService, private platformUtilsService: PlatformUtilsService,
-        private reloadCallback: () => Promise<void> = null) {
+    constructor(private messagingService: MessagingService, private platformUtilsService: PlatformUtilsService,
+        private reloadCallback: () => Promise<void> = null, private stateService: StateService) {
     }
 
-    startProcessReload(): void {
-        if (this.vaultTimeoutService.pinProtectedKey != null ||
-            this.vaultTimeoutService.biometricLocked ||
+    async startProcessReload(): Promise<void> {
+        if (await this.stateService.getDecryptedPinProtected() != null ||
+            await this.stateService.getBiometricLocked() ||
             this.reloadInterval != null) {
             return;
         }
         this.cancelProcessReload();
         this.reloadInterval = setInterval(async () => {
             let doRefresh = false;
-            const lastActive = await this.storageService.get<number>(ConstantsService.lastActiveKey);
+            const lastActive = await this.stateService.getLastActive();
             if (lastActive != null) {
                 const diffSeconds = (new Date()).getTime() - lastActive;
                 // Don't refresh if they are still active in the window
                 doRefresh = diffSeconds >= 5000;
             }
             const biometricLockedFingerprintValidated =
-                await this.storageService.get<boolean>(ConstantsService.biometricFingerprintValidated) && this.vaultTimeoutService.biometricLocked;
+                await this.stateService.getBiometricFingerprintValidated() && await this.stateService.getBiometricLocked();
             if (doRefresh && !biometricLockedFingerprintValidated) {
                 clearInterval(this.reloadInterval);
                 this.reloadInterval = null;
@@ -53,7 +49,7 @@ export class SystemService implements SystemServiceAbstraction {
         }
     }
 
-    clearClipboard(clipboardValue: string, timeoutMs: number = null): void {
+    async clearClipboard(clipboardValue: string, timeoutMs: number = null): Promise<void> {
         if (this.clearClipboardTimeout != null) {
             clearTimeout(this.clearClipboardTimeout);
             this.clearClipboardTimeout = null;
@@ -61,7 +57,7 @@ export class SystemService implements SystemServiceAbstraction {
         if (Utils.isNullOrWhitespace(clipboardValue)) {
             return;
         }
-        this.storageService.get<number>(ConstantsService.clearClipboardKey).then(clearSeconds => {
+        await this.stateService.getClearClipboard().then(clearSeconds => {
             if (clearSeconds == null) {
                 return;
             }
