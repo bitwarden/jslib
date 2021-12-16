@@ -1,6 +1,6 @@
-import { ProviderUserType } from '../../../enums/providerUserType';
+import { ProviderUserType } from "../../../enums/providerUserType";
 
 export class ProviderUserInviteRequest {
-    emails: string[] = [];
-    type: ProviderUserType;
+  emails: string[] = [];
+  type: ProviderUserType;
 }

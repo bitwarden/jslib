@@ -1,5 +1,4 @@
-export enum EmergencyAccessType
-{
-    View = 0,
-    Takeover = 1,
+export enum EmergencyAccessType {
+  View = 0,
+  Takeover = 1,
 }

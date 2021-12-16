@@ -1,4 +1,4 @@
 export enum HashPurpose {
-    ServerAuthorization = 1,
-    LocalAuthorization = 2,
+  ServerAuthorization = 1,
+  LocalAuthorization = 2,
 }

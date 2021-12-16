@@ -1,3 +1,3 @@
 export class EmergencyAccessAcceptRequest {
-    token: string;
+  token: string;
 }
