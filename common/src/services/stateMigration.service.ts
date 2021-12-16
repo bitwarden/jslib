@@ -120,7 +120,7 @@ export class StateMigrationService {
     ) {}
 
     async needsMigration(): Promise<boolean> {
-        const currentStateVersion = (await this.storageService.get<State<Account>>('state'))?.globals?.stateVersion;
+        const currentStateVersion = (await this.storageService.get<State<Account>>('state', { htmlStorageLocation: HtmlStorageLocation.Local }))?.globals?.stateVersion;
         return currentStateVersion == null || currentStateVersion < this.latestVersion;
     }
 
