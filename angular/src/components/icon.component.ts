@@ -13,14 +13,7 @@ import { StateService } from 'jslib-common/abstractions/state.service';
 
 import { Utils } from 'jslib-common/misc/utils';
 
-const IconMap: any = {
-    'bwi-globe': String.fromCharCode(0xe909),
-    'bwi-sticky-note': String.fromCharCode(0xe90a),
-    'bwi-id-card': String.fromCharCode(0xe907),
-    'bwi-credit-card': String.fromCharCode(0xe908),
-    'bwi-android': String.fromCharCode(0xe944),
-    'bwi-apple': String.fromCharCode(0xe945),
-};
+import { BitwardenIconsService } from '../services/bitwarden-icons.service';
 
 @Component({
     selector: 'app-vault-icon',
@@ -49,7 +42,7 @@ export class IconComponent implements OnChanges {
     }
 
     get iconCode(): string {
-        return IconMap[this.icon];
+        return BitwardenIconsService.getIconCode(this.icon);
     }
 
     protected load() {
