@@ -324,9 +324,9 @@ export class AuthService implements AuthServiceAbstraction {
         return request;
     }
 
-    private saveState(result: AuthResult, email: string, hashedPassword: string, localHashedPassword: string,
+    private saveState(email: string, hashedPassword: string, localHashedPassword: string,
         code: string, codeVerifier: string, redirectUrl: string, clientId: string, clientSecret: string,
-        key: SymmetricCryptoKey, response: IdentityTwoFactorResponse) {
+        key: SymmetricCryptoKey, twoFactorProviders: Map<TwoFactorProviderType, { [key: string]: string }>) {
 
         this.email = email;
         this.masterPasswordHash = hashedPassword;
@@ -337,7 +337,7 @@ export class AuthService implements AuthServiceAbstraction {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.key = this.setCryptoKeys ? key : null;
-        this.twoFactorProvidersData = response.twoFactorProviders2;
+        this.twoFactorProvidersData = twoFactorProviders;
     }
 
     private async convertNewUserToKeyConnector(tokenResponse: IdentityTokenResponse, orgId: string) {
@@ -424,8 +424,8 @@ export class AuthService implements AuthServiceAbstraction {
 
         result.twoFactor = !!(response as any).twoFactorProviders2;
         if (result.twoFactor) {
-            this.saveState(result, email, hashedPassword, localHashedPassword, code, codeVerifier, redirectUrl,
-                clientId, clientSecret, key, response as IdentityTwoFactorResponse);
+            this.saveState(email, hashedPassword, localHashedPassword, code, codeVerifier, redirectUrl,
+                clientId, clientSecret, key, (response as IdentityTwoFactorResponse).twoFactorProviders2);
             
             result.twoFactorProviders = (response as IdentityTwoFactorResponse).twoFactorProviders2;
             return result;
