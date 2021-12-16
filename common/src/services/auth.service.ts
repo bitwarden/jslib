@@ -324,6 +324,22 @@ export class AuthService implements AuthServiceAbstraction {
         return request;
     }
 
+    private saveState(result: AuthResult, email: string, hashedPassword: string, localHashedPassword: string,
+        code: string, codeVerifier: string, redirectUrl: string, clientId: string, clientSecret: string,
+        key: SymmetricCryptoKey, response: IdentityTwoFactorResponse) {
+
+        this.email = email;
+        this.masterPasswordHash = hashedPassword;
+        this.localMasterPasswordHash = localHashedPassword;
+        this.code = code;
+        this.codeVerifier = codeVerifier;
+        this.ssoRedirectUrl = redirectUrl;
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.key = this.setCryptoKeys ? key : null;
+        this.twoFactorProvidersData = response.twoFactorProviders2;
+    }
+
     private async logInHelper(email: string, hashedPassword: string, localHashedPassword: string, code: string,
         codeVerifier: string, redirectUrl: string, clientId: string, clientSecret: string, key: SymmetricCryptoKey,
         twoFactorProvider?: TwoFactorProviderType, twoFactorToken?: string, remember?: boolean, captchaToken?: string,
@@ -336,27 +352,18 @@ export class AuthService implements AuthServiceAbstraction {
 
         this.clearState();
         const result = new AuthResult();
+
         result.captchaSiteKey = (response as any).siteKey;
         if (!!result.captchaSiteKey) {
             return result;
         }
-        result.twoFactor = !!(response as any).twoFactorProviders2;
 
+        result.twoFactor = !!(response as any).twoFactorProviders2;
         if (result.twoFactor) {
-            // two factor required
-            this.email = email;
-            this.masterPasswordHash = hashedPassword;
-            this.localMasterPasswordHash = localHashedPassword;
-            this.code = code;
-            this.codeVerifier = codeVerifier;
-            this.ssoRedirectUrl = redirectUrl;
-            this.clientId = clientId;
-            this.clientSecret = clientSecret;
-            this.key = this.setCryptoKeys ? key : null;
-            const twoFactorResponse = response as IdentityTwoFactorResponse;
-            this.twoFactorProvidersData = twoFactorResponse.twoFactorProviders2;
-            result.twoFactorProviders = twoFactorResponse.twoFactorProviders2;
-            this.captchaToken = twoFactorResponse.captchaToken;
+            this.saveState(result, email, hashedPassword, localHashedPassword, code, codeVerifier, redirectUrl,
+                clientId, clientSecret, key, response as IdentityTwoFactorResponse);
+            
+            result.twoFactorProviders = (response as IdentityTwoFactorResponse).twoFactorProviders2;
             return result;
         }
 
