@@ -340,6 +340,56 @@ export class AuthService implements AuthServiceAbstraction {
         this.twoFactorProvidersData = response.twoFactorProviders2;
     }
 
+    private async convertNewUserToKeyConnector(tokenResponse: IdentityTokenResponse, orgId: string) {
+        const password = await this.cryptoFunctionService.randomBytes(64);
+
+        const k = await this.cryptoService.makeKey(Utils.fromBufferToB64(password), await this.tokenService.getEmail(), tokenResponse.kdf, tokenResponse.kdfIterations);
+        const keyConnectorRequest = new KeyConnectorUserKeyRequest(k.encKeyB64);
+        await this.cryptoService.setKey(k);
+
+        const encKey = await this.cryptoService.makeEncKey(k);
+        await this.cryptoService.setEncKey(encKey[1].encryptedString);
+
+        const [pubKey, privKey] = await this.cryptoService.makeKeyPair();
+
+        try {
+            await this.apiService.postUserKeyToKeyConnector(tokenResponse.keyConnectorUrl, keyConnectorRequest);
+        } catch (e) {
+            throw new Error('Unable to reach key connector');
+        }
+
+        const keys = new KeysRequest(pubKey, privKey.encryptedString);
+        const setPasswordRequest = new SetKeyConnectorKeyRequest(
+            encKey[1].encryptedString, tokenResponse.kdf, tokenResponse.kdfIterations, orgId, keys
+        );
+        await this.apiService.postSetKeyConnectorKey(setPasswordRequest);
+    }
+
+private async saveAccountInformation(tokenResponse: IdentityTokenResponse, clientId: string, clientSecret: string) {
+    const accountInformation = await this.tokenService.decodeToken(tokenResponse.accessToken);
+    await this.stateService.addAccount({
+        profile: {
+            ...new AccountProfile(),
+            ...{
+                userId: accountInformation.sub,
+                email: accountInformation.email,
+                apiKeyClientId: clientId,
+                apiKeyClientSecret: clientSecret,
+                hasPremiumPersonally: accountInformation.premium,
+                kdfIterations: tokenResponse.kdfIterations,
+                kdfType: tokenResponse.kdf,
+            },
+        },
+        tokens: {
+            ...new AccountTokens(),
+            ...{
+                accessToken: tokenResponse.accessToken,
+                refreshToken: tokenResponse.refreshToken,
+            },
+        },
+        });
+    }
+
     private async logInHelper(email: string, hashedPassword: string, localHashedPassword: string, code: string,
         codeVerifier: string, redirectUrl: string, clientId: string, clientSecret: string, key: SymmetricCryptoKey,
         twoFactorProvider?: TwoFactorProviderType, twoFactorToken?: string, remember?: boolean, captchaToken?: string,
@@ -371,28 +421,7 @@ export class AuthService implements AuthServiceAbstraction {
         result.resetMasterPassword = tokenResponse.resetMasterPassword;
         result.forcePasswordReset = tokenResponse.forcePasswordReset;
 
-        const accountInformation = await this.tokenService.decodeToken(tokenResponse.accessToken);
-        await this.stateService.addAccount({
-            profile: {
-                ...new AccountProfile(),
-                ...{
-                    userId: accountInformation.sub,
-                    email: accountInformation.email,
-                    apiKeyClientId: clientId,
-                    apiKeyClientSecret: clientSecret,
-                    hasPremiumPersonally: accountInformation.premium,
-                    kdfIterations: tokenResponse.kdfIterations,
-                    kdfType: tokenResponse.kdf,
-                },
-            },
-            tokens: {
-                ...new AccountTokens(),
-                ...{
-                    accessToken: tokenResponse.accessToken,
-                    refreshToken: tokenResponse.refreshToken,
-                },
-            },
-        });
+        this.saveAccountInformation(tokenResponse, clientId, clientSecret);
 
         if (tokenResponse.twoFactorToken != null) {
             await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken, email);
@@ -431,28 +460,7 @@ export class AuthService implements AuthServiceAbstraction {
 
                 await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
             } else if (tokenResponse.keyConnectorUrl != null) {
-                const password = await this.cryptoFunctionService.randomBytes(64);
-
-                const k = await this.cryptoService.makeKey(Utils.fromBufferToB64(password), await this.tokenService.getEmail(), tokenResponse.kdf, tokenResponse.kdfIterations);
-                const keyConnectorRequest = new KeyConnectorUserKeyRequest(k.encKeyB64);
-                await this.cryptoService.setKey(k);
-
-                const encKey = await this.cryptoService.makeEncKey(k);
-                await this.cryptoService.setEncKey(encKey[1].encryptedString);
-
-                const [pubKey, privKey] = await this.cryptoService.makeKeyPair();
-
-                try {
-                    await this.apiService.postUserKeyToKeyConnector(tokenResponse.keyConnectorUrl, keyConnectorRequest);
-                } catch (e) {
-                    throw new Error('Unable to reach key connector');
-                }
-
-                const keys = new KeysRequest(pubKey, privKey.encryptedString);
-                const setPasswordRequest = new SetKeyConnectorKeyRequest(
-                    encKey[1].encryptedString, tokenResponse.kdf, tokenResponse.kdfIterations, orgId, keys
-                );
-                await this.apiService.postSetKeyConnectorKey(setPasswordRequest);
+                await this.convertNewUserToKeyConnector(tokenResponse, orgId);
             }
         }
 
