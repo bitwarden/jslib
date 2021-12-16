@@ -11,7 +11,10 @@ import { DeviceRequest } from '../models/request/deviceRequest';
 import { KeyConnectorUserKeyRequest } from '../models/request/keyConnectorUserKeyRequest';
 import { KeysRequest } from '../models/request/keysRequest';
 import { PreloginRequest } from '../models/request/preloginRequest';
-import { TokenRequest } from '../models/request/tokenRequest';
+
+import { ApiTokenRequest } from '../models/request/identityToken/apiTokenRequest';
+import { PasswordTokenRequest } from '../models/request/identityToken/passwordTokenRequest';
+import { SsoTokenRequest } from '../models/request/identityToken/ssoTokenRequest';
 
 import { IdentityTokenResponse } from '../models/response/identityTokenResponse';
 import { IdentityTwoFactorResponse } from '../models/response/identityTwoFactorResponse';
@@ -142,6 +145,7 @@ export class AuthService implements AuthServiceAbstraction {
         }
         return this.cryptoService.makeKey(masterPassword, email, kdf, kdfIterations);
     }
+
     private async logInHelper(email: string, hashedPassword: string, localHashedPassword: string, code: string,
         codeVerifier: string, redirectUrl: string, clientId: string, clientSecret: string, key: SymmetricCryptoKey,
         twoFactorProvider?: TwoFactorProviderType, twoFactorToken?: string, remember?: boolean, captchaToken?: string,
@@ -223,39 +227,31 @@ export class AuthService implements AuthServiceAbstraction {
         const storedTwoFactorToken = await this.tokenService.getTwoFactorToken(email);
         const deviceRequest = new DeviceRequest(appId, this.platformUtilsService);
 
-        let emailPassword: string[] = [];
-        let codeCodeVerifier: string[] = [];
-        let clientIdClientSecret: [string, string] = [null, null];
+        let effectiveToken = null;
+        let effectiveProvider = null;
+        let effectiveRemember = false;
+
+        if (twoFactorToken != null && twoFactorProvider != null) {
+            effectiveToken = twoFactorToken;
+            effectiveProvider = twoFactorProvider;
+            effectiveRemember = remember;
+        } else if (storedTwoFactorToken != null) {
+            effectiveToken = storedTwoFactorToken;
+            effectiveProvider = TwoFactorProviderType.Remember;
+        }
 
         if (email != null && hashedPassword != null) {
-            emailPassword = [email, hashedPassword];
+            return new PasswordTokenRequest(email, hashedPassword, effectiveProvider, effectiveToken,
+                effectiveRemember, captchaToken, deviceRequest);
+        } else if (code != null && codeVerifier != null && redirectUrl != null) {
+            return new SsoTokenRequest(code, codeVerifier, redirectUrl, effectiveProvider, effectiveToken,
+                effectiveRemember, captchaToken, deviceRequest);
+        } else if (clientId != null && clientSecret != null) {
+            return new ApiTokenRequest(clientId, clientSecret, effectiveProvider, effectiveToken, effectiveRemember,
+                captchaToken, deviceRequest);
         } else {
-            emailPassword = null;
+            throw new Error('No credentials provided.');
         }
-        if (code != null && codeVerifier != null && redirectUrl != null) {
-            codeCodeVerifier = [code, codeVerifier, redirectUrl];
-        } else {
-            codeCodeVerifier = null;
-        }
-        if (clientId != null && clientSecret != null) {
-            clientIdClientSecret = [clientId, clientSecret];
-        } else {
-            clientIdClientSecret = null;
-        }
-
-        let request: TokenRequest;
-        if (twoFactorToken != null && twoFactorProvider != null) {
-            request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, twoFactorProvider,
-                twoFactorToken, remember, captchaToken, deviceRequest);
-        } else if (storedTwoFactorToken != null) {
-            request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret,
-                TwoFactorProviderType.Remember, storedTwoFactorToken, false, captchaToken, deviceRequest);
-        } else {
-            request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, null,
-                null, false, captchaToken, deviceRequest);
-        }
-
-        return request;
     }
 
     private async saveAccountInformation(tokenResponse: IdentityTokenResponse, clientId: string, clientSecret: string) {

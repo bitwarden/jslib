@@ -76,7 +76,7 @@ import { SendRequest } from '../models/request/sendRequest';
 import { SetPasswordRequest } from '../models/request/setPasswordRequest';
 import { StorageRequest } from '../models/request/storageRequest';
 import { TaxInfoUpdateRequest } from '../models/request/taxInfoUpdateRequest';
-import { TokenRequest } from '../models/request/tokenRequest';
+import { TokenRequest } from '../models/request/identityToken/tokenRequest';
 import { TwoFactorEmailRequest } from '../models/request/twoFactorEmailRequest';
 import { TwoFactorProviderRequest } from '../models/request/twoFactorProviderRequest';
 import { TwoFactorRecoveryRequest } from '../models/request/twoFactorRecoveryRequest';
@@ -209,7 +209,7 @@ export class ApiService implements ApiServiceAbstraction {
         }
         request.alterIdentityTokenHeaders(headers);
         const response = await this.fetch(new Request(this.environmentService.getIdentityUrl() + '/connect/token', {
-            body: this.qsStringify(request.toIdentityToken(request.clientId ?? this.platformUtilsService.identityClientId)),
+            body: this.qsStringify(request.toIdentityToken(this.platformUtilsService.identityClientId)),
             credentials: this.getCredentials(),
             cache: 'no-store',
             headers: headers,
@@ -226,7 +226,7 @@ export class ApiService implements ApiServiceAbstraction {
                 return new IdentityTokenResponse(responseJson);
             } else if (response.status === 400 && responseJson.TwoFactorProviders2 &&
                 Object.keys(responseJson.TwoFactorProviders2).length) {
-                await this.tokenService.clearTwoFactorToken(request.email);
+                await this.tokenService.clearTwoFactorToken();
                 return new IdentityTwoFactorResponse(responseJson);
             } else if (response.status === 400 && responseJson.HCaptcha_SiteKey &&
                 Object.keys(responseJson.HCaptcha_SiteKey).length) {

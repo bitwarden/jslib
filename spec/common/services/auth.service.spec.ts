@@ -28,6 +28,9 @@ import { IdentityTokenResponse } from 'jslib-common/models/response/identityToke
 import { TwoFactorService } from 'jslib-common/abstractions/twoFactor.service';
 import { HashPurpose } from 'jslib-common/enums/hashPurpose';
 import { TwoFactorProviderType } from 'jslib-common/enums/twoFactorProviderType';
+import { SsoTokenRequest } from 'jslib-common/models/request/identityToken/ssoTokenRequest';
+import { ApiTokenRequest } from 'jslib-common/models/request/identityToken/apiTokenRequest';
+import { PasswordTokenRequest } from 'jslib-common/models/request/identityToken/passwordTokenRequest';
 
 describe('Cipher Service', () => {
     let cryptoService: SubstituteOf<CryptoService>;
@@ -178,13 +181,15 @@ describe('Cipher Service', () => {
 
         // Assert
         // Api call:
-        apiService.received(1).postIdentityToken(Arg.is(actual =>
-            actual.email === email &&
-            actual.masterPasswordHash === hashedPassword &&
-            actual.device.identifier === deviceId &&
-            actual.provider == null &&
-            actual.token == null &&
-            actual.captchaResponse == null));
+        apiService.received(1).postIdentityToken(Arg.is(actual => {
+            const passwordTokenRequest = actual as PasswordTokenRequest;
+            return passwordTokenRequest.email === email &&
+                passwordTokenRequest.masterPasswordHash === hashedPassword &&
+                actual.device.identifier === deviceId &&
+                actual.provider == null &&
+                actual.token == null &&
+                actual.captchaResponse == null
+        }));
 
         // Sets local environment:
         commonSuccessAssertions();
@@ -302,14 +307,16 @@ describe('Cipher Service', () => {
 
         await authService.logInTwoFactor(twoFactorProviderType, twoFactorToken, twoFactorRemember);
 
-        apiService.received(1).postIdentityToken(Arg.is(actual =>
-            actual.email === email &&
-            actual.masterPasswordHash === hashedPassword &&
-            actual.device.identifier === deviceId &&
-            actual.provider === twoFactorProviderType &&
-            actual.token === twoFactorToken &&
-            actual.remember === twoFactorRemember &&
-            actual.captchaResponse == null));
+        apiService.received(1).postIdentityToken(Arg.is(actual => {
+            const passwordTokenRequest = actual as PasswordTokenRequest;
+            return passwordTokenRequest.email === email &&
+                passwordTokenRequest.masterPasswordHash === hashedPassword &&
+                actual.device.identifier === deviceId &&
+                actual.provider === twoFactorProviderType &&
+                actual.token === twoFactorToken &&
+                actual.remember === twoFactorRemember &&
+                actual.captchaResponse == null
+        }));
     });
 
     // SSO
@@ -325,14 +332,16 @@ describe('Cipher Service', () => {
 
         // Assert
         // Api call:
-        apiService.received(1).postIdentityToken(Arg.is(actual =>
-            actual.code === ssoCode &&
-            actual.codeVerifier === ssoCodeVerifier &&
-            actual.redirectUri === ssoRedirectUrl &&
-            actual.device.identifier === deviceId &&
-            actual.provider == null &&
-            actual.token == null &&
-            actual.captchaResponse == null));
+        apiService.received(1).postIdentityToken(Arg.is(actual => {
+            const ssoTokenRequest = actual as SsoTokenRequest;
+            return ssoTokenRequest.code === ssoCode &&
+                ssoTokenRequest.codeVerifier === ssoCodeVerifier &&
+                ssoTokenRequest.redirectUri === ssoRedirectUrl &&
+                actual.device.identifier === deviceId &&
+                actual.provider == null &&
+                actual.token == null &&
+                actual.captchaResponse == null
+        }));
 
         // Sets local environment:
         commonSuccessAssertions();
@@ -427,13 +436,15 @@ describe('Cipher Service', () => {
 
         const result = await authService.logInApiKey(apiClientId, apiClientSecret);
 
-        apiService.received(1).postIdentityToken(Arg.is(actual =>
-            actual.clientId === apiClientId &&
-            actual.clientSecret === apiClientSecret &&
-            actual.device.identifier === deviceId &&
-            actual.provider == null &&
-            actual.token == null &&
-            actual.captchaResponse == null));
+        apiService.received(1).postIdentityToken(Arg.is(actual => {
+            const apiTokenRequest = actual as ApiTokenRequest;
+            return apiTokenRequest.clientId === apiClientId &&
+                apiTokenRequest.clientSecret === apiClientSecret &&
+                actual.device.identifier === deviceId &&
+                actual.provider == null &&
+                actual.token == null &&
+                actual.captchaResponse == null
+        }));
 
         // Sets local environment:
         stateService.received(1).addAccount({

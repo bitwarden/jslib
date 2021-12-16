@@ -11,7 +11,7 @@ export abstract class TokenService {
     toggleTokens: () => Promise<any>;
     setTwoFactorToken: (token: string, email: string) => Promise<any>;
     getTwoFactorToken: (email: string) => Promise<string>;
-    clearTwoFactorToken: (email: string) => Promise<any>;
+    clearTwoFactorToken: () => Promise<any>;
     clearToken: (userId?: string) => Promise<any>;
     decodeToken: (token?: string) => any;
     getTokenExpirationDate: () => Promise<Date>;
