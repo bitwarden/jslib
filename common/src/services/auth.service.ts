@@ -365,29 +365,39 @@ export class AuthService implements AuthServiceAbstraction {
         await this.apiService.postSetKeyConnectorKey(setPasswordRequest);
     }
 
-private async saveAccountInformation(tokenResponse: IdentityTokenResponse, clientId: string, clientSecret: string) {
-    const accountInformation = await this.tokenService.decodeToken(tokenResponse.accessToken);
-    await this.stateService.addAccount({
-        profile: {
-            ...new AccountProfile(),
-            ...{
-                userId: accountInformation.sub,
-                email: accountInformation.email,
-                apiKeyClientId: clientId,
-                apiKeyClientSecret: clientSecret,
-                hasPremiumPersonally: accountInformation.premium,
-                kdfIterations: tokenResponse.kdfIterations,
-                kdfType: tokenResponse.kdf,
+    private async saveAccountInformation(tokenResponse: IdentityTokenResponse, clientId: string, clientSecret: string) {
+        const accountInformation = await this.tokenService.decodeToken(tokenResponse.accessToken);
+        await this.stateService.addAccount({
+            profile: {
+                ...new AccountProfile(),
+                ...{
+                    userId: accountInformation.sub,
+                    email: accountInformation.email,
+                    apiKeyClientId: clientId,
+                    apiKeyClientSecret: clientSecret,
+                    hasPremiumPersonally: accountInformation.premium,
+                    kdfIterations: tokenResponse.kdfIterations,
+                    kdfType: tokenResponse.kdf,
+                },
             },
-        },
-        tokens: {
-            ...new AccountTokens(),
-            ...{
-                accessToken: tokenResponse.accessToken,
-                refreshToken: tokenResponse.refreshToken,
+            tokens: {
+                ...new AccountTokens(),
+                ...{
+                    accessToken: tokenResponse.accessToken,
+                    refreshToken: tokenResponse.refreshToken,
+                },
             },
-        },
         });
+    }
+
+    private async createKeyPair() {
+        try {
+            const keyPair = await this.cryptoService.makeKeyPair();
+            await this.apiService.postAccountKeys(new KeysRequest(keyPair[0], keyPair[1].encryptedString));
+            return keyPair[1].encryptedString;
+        } catch (e) {
+            this.logService.error(e);
+        }
     }
 
     private async logInHelper(email: string, hashedPassword: string, localHashedPassword: string, code: string,
@@ -449,16 +459,11 @@ private async saveAccountInformation(tokenResponse: IdentityTokenResponse, clien
 
                 // User doesn't have a key pair yet (old account), let's generate one for them
                 if (tokenResponse.privateKey == null) {
-                    try {
-                        const keyPair = await this.cryptoService.makeKeyPair();
-                        await this.apiService.postAccountKeys(new KeysRequest(keyPair[0], keyPair[1].encryptedString));
-                        tokenResponse.privateKey = keyPair[1].encryptedString;
-                    } catch (e) {
-                        this.logService.error(e);
-                    }
+                    const newKeyPair = await this.createKeyPair();
+                    await this.cryptoService.setEncPrivateKey(newKeyPair);
+                } else {
+                    await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
                 }
-
-                await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
             } else if (tokenResponse.keyConnectorUrl != null) {
                 await this.convertNewUserToKeyConnector(tokenResponse, orgId);
             }
