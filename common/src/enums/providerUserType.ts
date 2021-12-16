@@ -1,4 +1,4 @@
 export enum ProviderUserType {
-    ProviderAdmin = 0,
-    ServiceUser = 1,
+  ProviderAdmin = 0,
+  ServiceUser = 1,
 }

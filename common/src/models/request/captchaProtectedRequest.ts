@@ -1,3 +1,3 @@
 export abstract class CaptchaProtectedRequest {
-    captchaResponse: string = null;
+  captchaResponse: string = null;
 }

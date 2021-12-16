@@ -15,17 +15,9 @@
     "outDir": "dist",
     "types": [],
     "paths": {
-      "jslib-common/*": [
-        "../common/src/*"
-      ]
+      "jslib-common/*": ["../common/src/*"]
     }
   },
-  "include": [
-    "src",
-    "spec"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src", "spec"],
+  "exclude": ["node_modules", "dist"]
 }
