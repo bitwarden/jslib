@@ -28,33 +28,32 @@ export class CalloutComponent implements OnInit {
       this.enforcedPolicyMessage = this.i18nService.t("masterPasswordPolicyInEffect");
     }
 
-        if (this.type === 'warning' || this.type === 'danger') {
-            if (this.type === 'danger') {
-                this.calloutStyle = 'danger';
-            }
-            if (this.title === undefined) {
-                this.title = this.i18nService.t('warning');
-            }
-            if (this.icon === undefined) {
-                this.icon = 'bwi-exclamation-triangle';
-            }
-        } else if (this.type === 'error') {
-            this.calloutStyle = 'danger';
-            if (this.title === undefined) {
-                this.title = this.i18nService.t('error');
-            }
-            if (this.icon === undefined) {
-                this.icon = 'bwi-bolt';
-            }
-        } else if (this.type === 'tip') {
-            this.calloutStyle = 'success';
-            if (this.title === undefined) {
-                this.title = this.i18nService.t('tip');
-            }
-            if (this.icon === undefined) {
-                this.icon = 'bwi-lightbulb';
-            }
-        }
+    if (this.type === "warning" || this.type === "danger") {
+      if (this.type === "danger") {
+        this.calloutStyle = "danger";
+      }
+      if (this.title === undefined) {
+        this.title = this.i18nService.t("warning");
+      }
+      if (this.icon === undefined) {
+        this.icon = "bwi-exclamation-triangle";
+      }
+    } else if (this.type === "error") {
+      this.calloutStyle = "danger";
+      if (this.title === undefined) {
+        this.title = this.i18nService.t("error");
+      }
+      if (this.icon === undefined) {
+        this.icon = "bwi-bolt";
+      }
+    } else if (this.type === "tip") {
+      this.calloutStyle = "success";
+      if (this.title === undefined) {
+        this.title = this.i18nService.t("tip");
+      }
+      if (this.icon === undefined) {
+        this.icon = "bwi-lightbulb";
+      }
     }
   }
 

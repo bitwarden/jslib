@@ -118,8 +118,6 @@ const IconMap: any = {
 
 @Injectable()
 export class BitwardenIconsService {
-  constructor() {}
-
   static getIconCode(icon: string): string {
     return IconMap[icon];
   }
