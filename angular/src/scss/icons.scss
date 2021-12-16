@@ -1,5 +1,6 @@
 .credit-card-icon {
-  height: 18px;
+  display: block; // Resolves the parent container being slighly to big
+  height: 19px;
   width: 24px;
   background-size: contain;
   background-repeat: no-repeat;
