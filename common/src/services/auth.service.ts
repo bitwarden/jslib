@@ -142,129 +142,6 @@ export class AuthService implements AuthServiceAbstraction {
         }
         return this.cryptoService.makeKey(masterPassword, email, kdf, kdfIterations);
     }
-    private async createTokenRequest(email: string, hashedPassword: string, code: string, codeVerifier: string, redirectUrl: string,
-        clientId: string, clientSecret: string, twoFactorToken: string, twoFactorProvider: TwoFactorProviderType, remember: boolean,
-        captchaToken: string) {
-
-        const appId = await this.appIdService.getAppId();
-        const storedTwoFactorToken = await this.tokenService.getTwoFactorToken(email);
-        const deviceRequest = new DeviceRequest(appId, this.platformUtilsService);
-
-        let emailPassword: string[] = [];
-        let codeCodeVerifier: string[] = [];
-        let clientIdClientSecret: [string, string] = [null, null];
-
-        if (email != null && hashedPassword != null) {
-            emailPassword = [email, hashedPassword];
-        } else {
-            emailPassword = null;
-        }
-        if (code != null && codeVerifier != null && redirectUrl != null) {
-            codeCodeVerifier = [code, codeVerifier, redirectUrl];
-        } else {
-            codeCodeVerifier = null;
-        }
-        if (clientId != null && clientSecret != null) {
-            clientIdClientSecret = [clientId, clientSecret];
-        } else {
-            clientIdClientSecret = null;
-        }
-
-        let request: TokenRequest;
-        if (twoFactorToken != null && twoFactorProvider != null) {
-            request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, twoFactorProvider,
-                twoFactorToken, remember, captchaToken, deviceRequest);
-        } else if (storedTwoFactorToken != null) {
-            request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret,
-                TwoFactorProviderType.Remember, storedTwoFactorToken, false, captchaToken, deviceRequest);
-        } else {
-            request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, null,
-                null, false, captchaToken, deviceRequest);
-        }
-
-        return request;
-    }
-
-    private saveState(email: string, hashedPassword: string, localHashedPassword: string,
-        code: string, codeVerifier: string, redirectUrl: string, clientId: string, clientSecret: string,
-        key: SymmetricCryptoKey, twoFactorProviders: Map<TwoFactorProviderType, { [key: string]: string }>) {
-
-        this.email = email;
-        this.masterPasswordHash = hashedPassword;
-        this.localMasterPasswordHash = localHashedPassword;
-        this.code = code;
-        this.codeVerifier = codeVerifier;
-        this.ssoRedirectUrl = redirectUrl;
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
-        this.key = this.setCryptoKeys ? key : null;
-        this.twoFactorService.setProviders(twoFactorProviders);
-    }
-
-    private async convertNewUserToKeyConnector(tokenResponse: IdentityTokenResponse, orgId: string) {
-        const password = await this.cryptoFunctionService.randomBytes(64);
-
-        const k = await this.cryptoService.makeKey(Utils.fromBufferToB64(password), await this.tokenService.getEmail(), tokenResponse.kdf, tokenResponse.kdfIterations);
-        const keyConnectorRequest = new KeyConnectorUserKeyRequest(k.encKeyB64);
-        await this.cryptoService.setKey(k);
-
-        const encKey = await this.cryptoService.makeEncKey(k);
-        await this.cryptoService.setEncKey(encKey[1].encryptedString);
-
-        const [pubKey, privKey] = await this.cryptoService.makeKeyPair();
-
-        try {
-            await this.apiService.postUserKeyToKeyConnector(tokenResponse.keyConnectorUrl, keyConnectorRequest);
-        } catch (e) {
-            throw new Error('Unable to reach key connector');
-        }
-
-        const keys = new KeysRequest(pubKey, privKey.encryptedString);
-        const setPasswordRequest = new SetKeyConnectorKeyRequest(
-            encKey[1].encryptedString, tokenResponse.kdf, tokenResponse.kdfIterations, orgId, keys
-        );
-        await this.apiService.postSetKeyConnectorKey(setPasswordRequest);
-    }
-
-    private async saveAccountInformation(tokenResponse: IdentityTokenResponse, clientId: string, clientSecret: string) {
-        const accountInformation = await this.tokenService.decodeToken(tokenResponse.accessToken);
-        await this.stateService.addAccount({
-            profile: {
-                ...new AccountProfile(),
-                ...{
-                    userId: accountInformation.sub,
-                    email: accountInformation.email,
-                    apiKeyClientId: clientId,
-                    apiKeyClientSecret: clientSecret,
-                    hasPremiumPersonally: accountInformation.premium,
-                    kdfIterations: tokenResponse.kdfIterations,
-                    kdfType: tokenResponse.kdf,
-                },
-            },
-            tokens: {
-                ...new AccountTokens(),
-                ...{
-                    accessToken: tokenResponse.accessToken,
-                    refreshToken: tokenResponse.refreshToken,
-                },
-            },
-        });
-    }
-
-    private async createKeyPair() {
-        try {
-            const keyPair = await this.cryptoService.makeKeyPair();
-            await this.apiService.postAccountKeys(new KeysRequest(keyPair[0], keyPair[1].encryptedString));
-            return keyPair[1].encryptedString;
-        } catch (e) {
-            this.logService.error(e);
-        }
-    }
-
-    private isNewSsoUser(code: string, key: string) {
-        return code != null && key == null;
-    }
-
     private async logInHelper(email: string, hashedPassword: string, localHashedPassword: string, code: string,
         codeVerifier: string, redirectUrl: string, clientId: string, clientSecret: string, key: SymmetricCryptoKey,
         twoFactorProvider?: TwoFactorProviderType, twoFactorToken?: string, remember?: boolean, captchaToken?: string,
@@ -338,6 +215,125 @@ export class AuthService implements AuthServiceAbstraction {
         return result;
     }
 
+    private async createTokenRequest(email: string, hashedPassword: string, code: string, codeVerifier: string, redirectUrl: string,
+        clientId: string, clientSecret: string, twoFactorToken: string, twoFactorProvider: TwoFactorProviderType, remember: boolean,
+        captchaToken: string) {
+
+        const appId = await this.appIdService.getAppId();
+        const storedTwoFactorToken = await this.tokenService.getTwoFactorToken(email);
+        const deviceRequest = new DeviceRequest(appId, this.platformUtilsService);
+
+        let emailPassword: string[] = [];
+        let codeCodeVerifier: string[] = [];
+        let clientIdClientSecret: [string, string] = [null, null];
+
+        if (email != null && hashedPassword != null) {
+            emailPassword = [email, hashedPassword];
+        } else {
+            emailPassword = null;
+        }
+        if (code != null && codeVerifier != null && redirectUrl != null) {
+            codeCodeVerifier = [code, codeVerifier, redirectUrl];
+        } else {
+            codeCodeVerifier = null;
+        }
+        if (clientId != null && clientSecret != null) {
+            clientIdClientSecret = [clientId, clientSecret];
+        } else {
+            clientIdClientSecret = null;
+        }
+
+        let request: TokenRequest;
+        if (twoFactorToken != null && twoFactorProvider != null) {
+            request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, twoFactorProvider,
+                twoFactorToken, remember, captchaToken, deviceRequest);
+        } else if (storedTwoFactorToken != null) {
+            request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret,
+                TwoFactorProviderType.Remember, storedTwoFactorToken, false, captchaToken, deviceRequest);
+        } else {
+            request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, null,
+                null, false, captchaToken, deviceRequest);
+        }
+
+        return request;
+    }
+
+    private async saveAccountInformation(tokenResponse: IdentityTokenResponse, clientId: string, clientSecret: string) {
+        const accountInformation = await this.tokenService.decodeToken(tokenResponse.accessToken);
+        await this.stateService.addAccount({
+            profile: {
+                ...new AccountProfile(),
+                ...{
+                    userId: accountInformation.sub,
+                    email: accountInformation.email,
+                    apiKeyClientId: clientId,
+                    apiKeyClientSecret: clientSecret,
+                    hasPremiumPersonally: accountInformation.premium,
+                    kdfIterations: tokenResponse.kdfIterations,
+                    kdfType: tokenResponse.kdf,
+                },
+            },
+            tokens: {
+                ...new AccountTokens(),
+                ...{
+                    accessToken: tokenResponse.accessToken,
+                    refreshToken: tokenResponse.refreshToken,
+                },
+            },
+        });
+    }
+
+    private async convertNewUserToKeyConnector(tokenResponse: IdentityTokenResponse, orgId: string) {
+        const password = await this.cryptoFunctionService.randomBytes(64);
+
+        const k = await this.cryptoService.makeKey(Utils.fromBufferToB64(password), await this.tokenService.getEmail(), tokenResponse.kdf, tokenResponse.kdfIterations);
+        const keyConnectorRequest = new KeyConnectorUserKeyRequest(k.encKeyB64);
+        await this.cryptoService.setKey(k);
+
+        const encKey = await this.cryptoService.makeEncKey(k);
+        await this.cryptoService.setEncKey(encKey[1].encryptedString);
+
+        const [pubKey, privKey] = await this.cryptoService.makeKeyPair();
+
+        try {
+            await this.apiService.postUserKeyToKeyConnector(tokenResponse.keyConnectorUrl, keyConnectorRequest);
+        } catch (e) {
+            throw new Error('Unable to reach key connector');
+        }
+
+        const keys = new KeysRequest(pubKey, privKey.encryptedString);
+        const setPasswordRequest = new SetKeyConnectorKeyRequest(
+            encKey[1].encryptedString, tokenResponse.kdf, tokenResponse.kdfIterations, orgId, keys
+        );
+        await this.apiService.postSetKeyConnectorKey(setPasswordRequest);
+    }
+
+    private async createKeyPair() {
+        try {
+            const keyPair = await this.cryptoService.makeKeyPair();
+            await this.apiService.postAccountKeys(new KeysRequest(keyPair[0], keyPair[1].encryptedString));
+            return keyPair[1].encryptedString;
+        } catch (e) {
+            this.logService.error(e);
+        }
+    }
+
+    private saveState(email: string, hashedPassword: string, localHashedPassword: string,
+        code: string, codeVerifier: string, redirectUrl: string, clientId: string, clientSecret: string,
+        key: SymmetricCryptoKey, twoFactorProviders: Map<TwoFactorProviderType, { [key: string]: string }>) {
+
+        this.email = email;
+        this.masterPasswordHash = hashedPassword;
+        this.localMasterPasswordHash = localHashedPassword;
+        this.code = code;
+        this.codeVerifier = codeVerifier;
+        this.ssoRedirectUrl = redirectUrl;
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.key = this.setCryptoKeys ? key : null;
+        this.twoFactorService.setProviders(twoFactorProviders);
+    }
+
     private clearState(): void {
         this.key = null;
         this.email = null;
@@ -350,5 +346,9 @@ export class AuthService implements AuthServiceAbstraction {
         this.clientSecret = null;
         this.twoFactorService.clearProviders();
         this.twoFactorService.clearSelectedProvider();
+    }
+
+    private isNewSsoUser(code: string, key: string) {
+        return code != null && key == null;
     }
 }

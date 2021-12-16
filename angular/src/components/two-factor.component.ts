@@ -94,7 +94,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
             );
         }
 
-        this.selectedProviderType = this.twoFactorService.getDefaultTwoFactorProvider(this.webAuthnSupported);
+        this.selectedProviderType = this.twoFactorService.getDefaultProvider(this.webAuthnSupported);
         await this.init();
     }
 

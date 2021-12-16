@@ -116,7 +116,7 @@ export class TwoFactorService implements TwoFactorServiceAbstraction {
         return providers;
     }
 
-    getDefaultTwoFactorProvider(webAuthnSupported: boolean): TwoFactorProviderType {
+    getDefaultProvider(webAuthnSupported: boolean): TwoFactorProviderType {
         if (this.twoFactorProvidersData == null) {
             return null;
         }
