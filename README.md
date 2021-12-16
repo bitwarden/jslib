@@ -24,12 +24,12 @@ We recently migrated to using Prettier as code formatter. All previous branches 
 1. Check out your local Branch
 2. Run `git merge 8b2dfc6cdcb8ff5b604364c2ea6d343473aee7cd`
 3. Resolve any merge conflicts, commit.
-4. Run `npm prettier`
+4. Run `npm run prettier`
 5. Commit
 6. Run `git merge -Xours 193434461dbd9c48fe5dcbad95693470aec422ac`
 7. Push
 
-### Git diff
+### Git blame
 
 We also recommend that you configure git to ignore the prettier revision using:
 
