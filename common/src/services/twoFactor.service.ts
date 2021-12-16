@@ -55,8 +55,8 @@ export const TwoFactorProviders = {
 };
 
 export class TwoFactorService implements TwoFactorServiceAbstraction {
-    twoFactorProvidersData: Map<TwoFactorProviderType, { [key: string]: string; }>;
-    selectedTwoFactorProviderType: TwoFactorProviderType = null;
+    private twoFactorProvidersData: Map<TwoFactorProviderType, { [key: string]: string; }>;
+    private selectedTwoFactorProviderType: TwoFactorProviderType = null;
 
     constructor(private i18nService: I18nService, private platformUtilsService: PlatformUtilsService) { }
 
