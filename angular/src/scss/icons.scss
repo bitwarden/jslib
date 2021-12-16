@@ -1,3 +1,26 @@
+$card-icons-base: "~@bitwarden/jslib-angular/src/images/cards/";
+$card-icons: (
+  "visa": $card-icons-base + "visa-light.png",
+  "amex": $card-icons-base + "amex-light.png",
+  "diners-club": $card-icons-base + "diners_club-light.png",
+  "discover": $card-icons-base + "discover-light.png",
+  "jcb": $card-icons-base + "jcb-light.png",
+  "maestro": $card-icons-base + "maestro-light.png",
+  "mastercard": $card-icons-base + "mastercard-light.png",
+  "union-pay": $card-icons-base + "union_pay-light.png",
+);
+
+$card-icons-dark: (
+  "visa": $card-icons-base + "visa-dark.png",
+  "amex": $card-icons-base + "amex-dark.png",
+  "diners-club": $card-icons-base + "diners_club-dark.png",
+  "discover": $card-icons-base + "discover-dark.png",
+  "jcb": $card-icons-base + "jcb-dark.png",
+  "maestro": $card-icons-base + "maestro-dark.png",
+  "mastercard": $card-icons-base + "mastercard-dark.png",
+  "union-pay": $card-icons-base + "union_pay-dark.png",
+);
+
 .credit-card-icon {
   display: block; // Resolves the parent container being slighly to big
   height: 19px;
@@ -6,82 +29,16 @@
   background-repeat: no-repeat;
 }
 
-@each $theme in $dark-icon-themes {
-  .#{$theme} .card-visa {
-    background-image: url(~@bitwarden/jslib-angular/src/images/cards/visa-dark.png);
+@each $name, $url in $card-icons {
+  .card-#{$name} {
+    background-image: url("#{$url}");
   }
 }
 
-.card-visa {
-  background-image: url(~@bitwarden/jslib-angular/src/images/cards/visa-light.png);
-}
-
 @each $theme in $dark-icon-themes {
-  .#{$theme} .card-amex {
-    background-image: url(~@bitwarden/jslib-angular/src/images/cards/amex-dark.png);
+  @each $name, $url in $card-icons-dark {
+    .#{$theme} .card-#{$name} {
+      background-image: url("#{$url}");
+    }
   }
-}
-
-.card-amex {
-  background-image: url(~@bitwarden/jslib-angular/src/images/cards/amex-light.png);
-}
-
-@each $theme in $dark-icon-themes {
-  .#{$theme} .card-diners-club {
-    background-image: url(~@bitwarden/jslib-angular/src/images/cards/diners_club-dark.png);
-  }
-}
-
-.card-diners-club {
-  background-image: url(~@bitwarden/jslib-angular/src/images/cards/diners_club-light.png);
-}
-
-@each $theme in $dark-icon-themes {
-  .#{$theme} .card-discover {
-    background-image: url(~@bitwarden/jslib-angular/src/images/cards/discover-dark.png);
-  }
-}
-
-.card-discover {
-  background-image: url(~@bitwarden/jslib-angular/src/images/cards/discover-light.png);
-}
-
-@each $theme in $dark-icon-themes {
-  .#{$theme} .card-jcb {
-    background-image: url(~@bitwarden/jslib-angular/src/images/cards/jcb-dark.png);
-  }
-}
-
-.card-jcb {
-  background-image: url(~@bitwarden/jslib-angular/src/images/cards/jcb-light.png);
-}
-
-@each $theme in $dark-icon-themes {
-  .#{$theme} .card-maestro {
-    background-image: url(~@bitwarden/jslib-angular/src/images/cards/maestro-dark.png);
-  }
-}
-
-.card-maestro {
-  background-image: url(~@bitwarden/jslib-angular/src/images/cards/maestro-light.png);
-}
-
-@each $theme in $dark-icon-themes {
-  .#{$theme} .card-mastercard {
-    background-image: url(~@bitwarden/jslib-angular/src/images/cards/mastercard-dark.png);
-  }
-}
-
-.card-mastercard {
-  background-image: url(~@bitwarden/jslib-angular/src/images/cards/mastercard-light.png);
-}
-
-@each $theme in $dark-icon-themes {
-  .#{$theme} .card-union-pay {
-    background-image: url(~@bitwarden/jslib-angular/src/images/cards/union_pay-dark.png);
-  }
-}
-
-.card-union-pay {
-  background-image: url(~@bitwarden/jslib-angular/src/images/cards/union_pay-light.png);
 }
