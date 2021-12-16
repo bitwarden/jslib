@@ -1,6 +1,6 @@
-import { VerificationType } from '../enums/verificationType';
+import { VerificationType } from "../enums/verificationType";
 
 export type Verification = {
-    type: VerificationType,
-    secret: string,
+  type: VerificationType;
+  secret: string;
 };

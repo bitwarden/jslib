@@ -1,7 +1,7 @@
 export class CipherCollectionsRequest {
-    collectionIds: string[];
+  collectionIds: string[];
 
-    constructor(collectionIds: string[]) {
-        this.collectionIds = collectionIds == null ? [] : collectionIds;
-    }
+  constructor(collectionIds: string[]) {
+    this.collectionIds = collectionIds == null ? [] : collectionIds;
+  }
 }

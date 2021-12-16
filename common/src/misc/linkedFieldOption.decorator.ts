@@ -1,13 +1,13 @@
-import { ItemView } from '../models/view/itemView';
+import { ItemView } from "../models/view/itemView";
 
-import { LinkedIdType } from '../enums/linkedIdType';
+import { LinkedIdType } from "../enums/linkedIdType";
 
 export class LinkedMetadata {
-    constructor(readonly propertyKey: string, private readonly _i18nKey?: string) { }
+  constructor(readonly propertyKey: string, private readonly _i18nKey?: string) {}
 
-    get i18nKey() {
-        return this._i18nKey ?? this.propertyKey;
-    }
+  get i18nKey() {
+    return this._i18nKey ?? this.propertyKey;
+  }
 }
 
 /**
@@ -18,11 +18,11 @@ export class LinkedMetadata {
  *    of the class property will be used as the i18n key.
  */
 export function linkedFieldOption(id: LinkedIdType, i18nKey?: string) {
-    return (prototype: ItemView, propertyKey: string) => {
-        if (prototype.linkedFieldOptions == null) {
-            prototype.linkedFieldOptions = new Map<LinkedIdType, LinkedMetadata>();
-        }
+  return (prototype: ItemView, propertyKey: string) => {
+    if (prototype.linkedFieldOptions == null) {
+      prototype.linkedFieldOptions = new Map<LinkedIdType, LinkedMetadata>();
+    }
 
-        prototype.linkedFieldOptions.set(id, new LinkedMetadata(propertyKey, i18nKey));
-    };
+    prototype.linkedFieldOptions.set(id, new LinkedMetadata(propertyKey, i18nKey));
+  };
 }
