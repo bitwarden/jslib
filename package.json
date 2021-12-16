@@ -18,16 +18,21 @@
     "build:watch": "npm run clean && ttsc -watch",
     "lint": "tslint '*/src/**/*.ts' 'spec/**/*.ts'",
     "lint:fix": "tslint '*/src/**/*.ts' 'spec/**/*.ts' --fix",
+    "prettier": "prettier --write .",
     "test": "karma start ./spec/support/karma.conf.js --single-run",
     "test:watch": "karma start ./spec/support/karma.conf.js",
     "test:node": "npm run build && jasmine",
-    "test:node:watch": "concurrently -k -n TSC,Node -c yellow,cyan \"npm run build:watch\" \"nodemon -w ./dist --delay 500ms --exec jasmine\""
+    "test:node:watch": "concurrently -k -n TSC,Node -c yellow,cyan \"npm run build:watch\" \"nodemon -w ./dist --delay 500ms --exec jasmine\"",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@fluffy-spoon/substitute": "^1.202.0",
     "@types/jasmine": "^3.7.6",
-    "@types/node": "^14.17.1",
+    "@types/node": "^16.11.12",
+    "commander": "7.2.0",
     "concurrently": "^6.1.0",
+    "form-data": "4.0.0",
+    "husky": "^7.0.4",
     "jasmine": "^3.7.0",
     "jasmine-core": "^3.7.1",
     "jasmine-ts-console-reporter": "^3.1.1",
@@ -41,13 +46,16 @@
     "karma-jasmine-html-reporter": "^1.5.4",
     "karma-safari-launcher": "^1.0.0",
     "karma-webpack": "^4.0.2",
+    "lint-staged": "^12.1.2",
     "nodemon": "^2.0.7",
+    "prettier": "2.5.1",
     "rimraf": "^3.0.2",
+    "rxjs": "^7.4.0",
     "ts-loader": "^8.1.0",
     "tslint": "^6.1.3",
     "ttypescript": "^1.5.12",
     "typemoq": "^2.1.0",
-    "typescript": "4.1.5",
+    "typescript": "4.3.5",
     "typescript-transform-paths": "^2.2.3",
     "webpack": "^4.46.0"
   },
@@ -58,7 +66,10 @@
     "@bitwarden/jslib-node": "file:node"
   },
   "engines": {
-    "node": "~14",
-    "npm": "~7"
+    "node": "~16",
+    "npm": "~8"
+  },
+  "lint-staged": {
+    "*.{js,ts,css,scss,md}": "prettier --write"
   }
 }
