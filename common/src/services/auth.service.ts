@@ -401,7 +401,7 @@ export class AuthService implements AuthServiceAbstraction {
     }
 
     private isNewSsoUser(code: string, key: string) {
-        return code == null || key != null
+        return code != null && key == null
     }
 
     private async logInHelper(email: string, hashedPassword: string, localHashedPassword: string, code: string,
@@ -449,7 +449,6 @@ export class AuthService implements AuthServiceAbstraction {
                 await this.cryptoService.setKeyHash(localHashedPassword);
             }
 
-            // Skip this step during SSO new user flow. No key is returned from server.
             if (!this.isNewSsoUser(code, tokenResponse.key)) {
                 if (tokenResponse.keyConnectorUrl != null) {
                     await this.keyConnectorService.getAndSetKey(tokenResponse.keyConnectorUrl);
@@ -472,10 +471,9 @@ export class AuthService implements AuthServiceAbstraction {
             }
         }
 
-        if (this.vaultTimeoutService != null) {
-            await this.stateService.setBiometricLocked(false);
-        }
+        await this.stateService.setBiometricLocked(false);
         this.messagingService.send('loggedIn');
+
         return result;
     }
 
