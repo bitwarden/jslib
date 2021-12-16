@@ -353,7 +353,7 @@ export class AuthService implements AuthServiceAbstraction {
         result.forcePasswordReset = tokenResponse.forcePasswordReset;
 
         const accountInformation = await this.tokenService.decodeToken(tokenResponse.accessToken);
-        await this.stateService.addAccount({
+        await this.stateService.addAccount(new Account({
             profile: {
                 ...new AccountProfile(),
                 ...{
@@ -378,7 +378,7 @@ export class AuthService implements AuthServiceAbstraction {
                     refreshToken: tokenResponse.refreshToken,
                 },
             },
-        });
+        }));
 
         if (tokenResponse.twoFactorToken != null) {
             await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken, email);
