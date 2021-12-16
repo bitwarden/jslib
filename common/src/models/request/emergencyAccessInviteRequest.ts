@@ -1,7 +1,7 @@
-import { EmergencyAccessType } from '../../enums/emergencyAccessType';
+import { EmergencyAccessType } from "../../enums/emergencyAccessType";
 
 export class EmergencyAccessInviteRequest {
-    email: string;
-    type: EmergencyAccessType;
-    waitTimeDays: number;
+  email: string;
+  type: EmergencyAccessType;
+  waitTimeDays: number;
 }

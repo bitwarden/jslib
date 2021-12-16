@@ -1,3 +1,3 @@
 export enum PlanSponsorshipType {
-    FamiliesForEnterprise = 0,
+  FamiliesForEnterprise = 0,
 }

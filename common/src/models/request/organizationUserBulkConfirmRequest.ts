@@ -1,12 +1,12 @@
 type OrganizationUserBulkRequestEntry = {
-    id: string;
-    key: string;
+  id: string;
+  key: string;
 };
 
 export class OrganizationUserBulkConfirmRequest {
-    keys: OrganizationUserBulkRequestEntry[];
+  keys: OrganizationUserBulkRequestEntry[];
 
-    constructor(keys: OrganizationUserBulkRequestEntry[]) {
-        this.keys = keys;
-    }
+  constructor(keys: OrganizationUserBulkRequestEntry[]) {
+    this.keys = keys;
+  }
 }

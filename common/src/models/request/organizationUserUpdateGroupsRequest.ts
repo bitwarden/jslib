@@ -1,3 +1,3 @@
 export class OrganizationUserUpdateGroupsRequest {
-    groupIds: string[] = [];
+  groupIds: string[] = [];
 }

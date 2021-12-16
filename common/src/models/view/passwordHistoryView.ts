@@ -1,16 +1,16 @@
-import { View } from './view';
+import { View } from "./view";
 
-import { Password } from '../domain/password';
+import { Password } from "../domain/password";
 
 export class PasswordHistoryView implements View {
-    password: string = null;
-    lastUsedDate: Date = null;
+  password: string = null;
+  lastUsedDate: Date = null;
 
-    constructor(ph?: Password) {
-        if (!ph) {
-            return;
-        }
-
-        this.lastUsedDate = ph.lastUsedDate;
+  constructor(ph?: Password) {
+    if (!ph) {
+      return;
     }
+
+    this.lastUsedDate = ph.lastUsedDate;
+  }
 }

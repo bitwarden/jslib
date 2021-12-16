@@ -1,7 +1,7 @@
 export function getDomain(host: string): string | null {
-    return null;
+  return null;
 }
 
 export function isValid(host: string): boolean {
-    return true;
+  return true;
 }
