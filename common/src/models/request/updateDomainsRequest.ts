@@ -1,4 +1,4 @@
 export class UpdateDomainsRequest {
-    equivalentDomains: string[][];
-    excludedGlobalEquivalentDomains: number[];
+  equivalentDomains: string[][];
+  excludedGlobalEquivalentDomains: number[];
 }

@@ -1,5 +1,5 @@
 export abstract class PasswordRepromptService {
-    protectedFields: () => string[];
-    showPasswordPrompt: () => Promise<boolean>;
-    enabled: () => Promise<boolean>;
+  protectedFields: () => string[];
+  showPasswordPrompt: () => Promise<boolean>;
+  enabled: () => Promise<boolean>;
 }

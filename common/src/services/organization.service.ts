@@ -1,49 +1,50 @@
-import { OrganizationService as OrganizationServiceAbstraction } from '../abstractions/organization.service';
-import { StateService } from '../abstractions/state.service';
+import { OrganizationService as OrganizationServiceAbstraction } from "../abstractions/organization.service";
+import { StateService } from "../abstractions/state.service";
 
-import { OrganizationData } from '../models/data/organizationData';
+import { OrganizationData } from "../models/data/organizationData";
 
-import { Organization } from '../models/domain/organization';
+import { Organization } from "../models/domain/organization";
 
 export class OrganizationService implements OrganizationServiceAbstraction {
-    constructor(private stateService: StateService) {
+  constructor(private stateService: StateService) {}
+
+  async get(id: string): Promise<Organization> {
+    const organizations = await this.stateService.getOrganizations();
+    if (organizations == null || !organizations.hasOwnProperty(id)) {
+      return null;
     }
 
-    async get(id: string): Promise<Organization> {
-        const organizations = await this.stateService.getOrganizations();
-        if (organizations == null || !organizations.hasOwnProperty(id)) {
-            return null;
-        }
+    return new Organization(organizations[id]);
+  }
 
-        return new Organization(organizations[id]);
+  async getByIdentifier(identifier: string): Promise<Organization> {
+    const organizations = await this.getAll();
+    if (organizations == null || organizations.length === 0) {
+      return null;
     }
 
-    async getByIdentifier(identifier: string): Promise<Organization> {
-        const organizations = await this.getAll();
-        if (organizations == null || organizations.length === 0) {
-            return null;
-        }
+    return organizations.find((o) => o.identifier === identifier);
+  }
 
-        return organizations.find(o => o.identifier === identifier);
+  async getAll(userId?: string): Promise<Organization[]> {
+    const organizations = await this.stateService.getOrganizations({ userId: userId });
+    const response: Organization[] = [];
+    for (const id in organizations) {
+      if (organizations.hasOwnProperty(id) && !organizations[id].isProviderUser) {
+        response.push(new Organization(organizations[id]));
+      }
     }
+    return response;
+  }
 
-    async getAll(userId?: string): Promise<Organization[]> {
-        const organizations = await this.stateService.getOrganizations({ userId: userId });
-        const response: Organization[] = [];
-        for (const id in organizations) {
-            if (organizations.hasOwnProperty(id) && !organizations[id].isProviderUser) {
-                response.push(new Organization(organizations[id]));
-            }
-        }
-        return response;
-    }
+  async save(organizations: { [id: string]: OrganizationData }) {
+    return await this.stateService.setOrganizations(organizations);
+  }
 
-    async save(organizations: {[id: string]: OrganizationData}) {
-        return await this.stateService.setOrganizations(organizations);
-    }
-
-    async canManageSponsorships(): Promise<boolean> {
-        const orgs = await this.getAll();
-        return orgs.some(o => o.familySponsorshipAvailable || o.familySponsorshipFriendlyName !== null);
-    }
+  async canManageSponsorships(): Promise<boolean> {
+    const orgs = await this.getAll();
+    return orgs.some(
+      (o) => o.familySponsorshipAvailable || o.familySponsorshipFriendlyName !== null
+    );
+  }
 }

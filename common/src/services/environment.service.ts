@@ -1,200 +1,202 @@
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject } from "rxjs";
 
-import { EnvironmentUrls } from '../models/domain/environmentUrls';
+import { EnvironmentUrls } from "../models/domain/environmentUrls";
 
-import { EnvironmentService as EnvironmentServiceAbstraction, Urls } from '../abstractions/environment.service';
-import { StateService } from '../abstractions/state.service';
+import {
+  EnvironmentService as EnvironmentServiceAbstraction,
+  Urls,
+} from "../abstractions/environment.service";
+import { StateService } from "../abstractions/state.service";
 
 export class EnvironmentService implements EnvironmentServiceAbstraction {
+  private readonly urlsSubject = new Subject<Urls>();
+  urls: Observable<Urls> = this.urlsSubject; // tslint:disable-line
 
-    private readonly urlsSubject = new Subject<Urls>();
-    urls: Observable<Urls> = this.urlsSubject; // tslint:disable-line
+  private baseUrl: string;
+  private webVaultUrl: string;
+  private apiUrl: string;
+  private identityUrl: string;
+  private iconsUrl: string;
+  private notificationsUrl: string;
+  private eventsUrl: string;
+  private keyConnectorUrl: string;
 
-    private baseUrl: string;
-    private webVaultUrl: string;
-    private apiUrl: string;
-    private identityUrl: string;
-    private iconsUrl: string;
-    private notificationsUrl: string;
-    private eventsUrl: string;
-    private keyConnectorUrl: string;
+  constructor(private stateService: StateService) {}
 
-    constructor(private stateService: StateService) {}
+  hasBaseUrl() {
+    return this.baseUrl != null;
+  }
 
-    hasBaseUrl() {
-        return this.baseUrl != null;
+  getNotificationsUrl() {
+    if (this.notificationsUrl != null) {
+      return this.notificationsUrl;
     }
 
-    getNotificationsUrl() {
-        if (this.notificationsUrl != null) {
-            return this.notificationsUrl;
-        }
-
-        if (this.baseUrl != null) {
-            return this.baseUrl + '/notifications';
-        }
-
-        return 'https://notifications.bitwarden.com';
+    if (this.baseUrl != null) {
+      return this.baseUrl + "/notifications";
     }
 
-    getWebVaultUrl() {
-        if (this.webVaultUrl != null) {
-            return this.webVaultUrl;
-        }
+    return "https://notifications.bitwarden.com";
+  }
 
-        if (this.baseUrl) {
-            return this.baseUrl;
-        }
-        return 'https://vault.bitwarden.com';
+  getWebVaultUrl() {
+    if (this.webVaultUrl != null) {
+      return this.webVaultUrl;
     }
 
-    getSendUrl() {
-        return this.getWebVaultUrl() === 'https://vault.bitwarden.com'
-            ? 'https://send.bitwarden.com/#'
-            : this.getWebVaultUrl() + '/#/send/';
+    if (this.baseUrl) {
+      return this.baseUrl;
+    }
+    return "https://vault.bitwarden.com";
+  }
+
+  getSendUrl() {
+    return this.getWebVaultUrl() === "https://vault.bitwarden.com"
+      ? "https://send.bitwarden.com/#"
+      : this.getWebVaultUrl() + "/#/send/";
+  }
+
+  getIconsUrl() {
+    if (this.iconsUrl != null) {
+      return this.iconsUrl;
     }
 
-    getIconsUrl() {
-        if (this.iconsUrl != null) {
-            return this.iconsUrl;
-        }
-
-        if (this.baseUrl) {
-            return this.baseUrl + '/icons';
-        }
-
-        return 'https://icons.bitwarden.net';
+    if (this.baseUrl) {
+      return this.baseUrl + "/icons";
     }
 
-    getApiUrl() {
-        if (this.apiUrl != null) {
-            return this.apiUrl;
-        }
+    return "https://icons.bitwarden.net";
+  }
 
-        if (this.baseUrl) {
-            return this.baseUrl + '/api';
-        }
-
-        return 'https://api.bitwarden.com';
+  getApiUrl() {
+    if (this.apiUrl != null) {
+      return this.apiUrl;
     }
 
-    getIdentityUrl() {
-        if (this.identityUrl != null) {
-            return this.identityUrl;
-        }
-
-        if (this.baseUrl) {
-            return this.baseUrl + '/identity';
-        }
-
-        return 'https://identity.bitwarden.com';
+    if (this.baseUrl) {
+      return this.baseUrl + "/api";
     }
 
-    getEventsUrl() {
-        if (this.eventsUrl != null) {
-            return this.eventsUrl;
-        }
+    return "https://api.bitwarden.com";
+  }
 
-        if (this.baseUrl) {
-            return this.baseUrl + '/events';
-        }
-
-        return 'https://events.bitwarden.com';
+  getIdentityUrl() {
+    if (this.identityUrl != null) {
+      return this.identityUrl;
     }
 
-    getKeyConnectorUrl() {
-        return this.keyConnectorUrl;
+    if (this.baseUrl) {
+      return this.baseUrl + "/identity";
     }
 
-    async setUrlsFromStorage(): Promise<void> {
-        const urlsObj: any = await this.stateService.getEnvironmentUrls();
-        const urls = urlsObj || {
-            base: null,
-            api: null,
-            identity: null,
-            icons: null,
-            notifications: null,
-            events: null,
-            webVault: null,
-            keyConnector: null,
-        };
+    return "https://identity.bitwarden.com";
+  }
 
-        const envUrls = new EnvironmentUrls();
-
-        if (urls.base) {
-            this.baseUrl = envUrls.base = urls.base;
-            return;
-        }
-
-        this.webVaultUrl = urls.webVault;
-        this.apiUrl = envUrls.api = urls.api;
-        this.identityUrl = envUrls.identity = urls.identity;
-        this.iconsUrl = urls.icons;
-        this.notificationsUrl = urls.notifications;
-        this.eventsUrl = envUrls.events = urls.events;
-        this.keyConnectorUrl = urls.keyConnector;
+  getEventsUrl() {
+    if (this.eventsUrl != null) {
+      return this.eventsUrl;
     }
 
-    async setUrls(urls: Urls, saveSettings: boolean = true): Promise<any> {
-        urls.base = this.formatUrl(urls.base);
-        urls.webVault = this.formatUrl(urls.webVault);
-        urls.api = this.formatUrl(urls.api);
-        urls.identity = this.formatUrl(urls.identity);
-        urls.icons = this.formatUrl(urls.icons);
-        urls.notifications = this.formatUrl(urls.notifications);
-        urls.events = this.formatUrl(urls.events);
-        urls.keyConnector = this.formatUrl(urls.keyConnector);
-
-        if (saveSettings) {
-            await this.stateService.setEnvironmentUrls({
-                base: urls.base,
-                api: urls.api,
-                identity: urls.identity,
-                webVault: urls.webVault,
-                icons: urls.icons,
-                notifications: urls.notifications,
-                events: urls.events,
-                keyConnector: urls.keyConnector,
-            });
-        }
-
-        this.baseUrl = urls.base;
-        this.webVaultUrl = urls.webVault;
-        this.apiUrl = urls.api;
-        this.identityUrl = urls.identity;
-        this.iconsUrl = urls.icons;
-        this.notificationsUrl = urls.notifications;
-        this.eventsUrl = urls.events;
-        this.keyConnectorUrl = urls.keyConnector;
-
-        this.urlsSubject.next(urls);
-
-        return urls;
+    if (this.baseUrl) {
+      return this.baseUrl + "/events";
     }
 
-    getUrls() {
-        return {
-            base: this.baseUrl,
-            webVault: this.webVaultUrl,
-            api: this.apiUrl,
-            identity: this.identityUrl,
-            icons: this.iconsUrl,
-            notifications: this.notificationsUrl,
-            events: this.eventsUrl,
-            keyConnector: this.keyConnectorUrl,
-        };
+    return "https://events.bitwarden.com";
+  }
+
+  getKeyConnectorUrl() {
+    return this.keyConnectorUrl;
+  }
+
+  async setUrlsFromStorage(): Promise<void> {
+    const urlsObj: any = await this.stateService.getEnvironmentUrls();
+    const urls = urlsObj || {
+      base: null,
+      api: null,
+      identity: null,
+      icons: null,
+      notifications: null,
+      events: null,
+      webVault: null,
+      keyConnector: null,
+    };
+
+    const envUrls = new EnvironmentUrls();
+
+    if (urls.base) {
+      this.baseUrl = envUrls.base = urls.base;
+      return;
     }
 
-    private formatUrl(url: string): string {
-        if (url == null || url === '') {
-            return null;
-        }
+    this.webVaultUrl = urls.webVault;
+    this.apiUrl = envUrls.api = urls.api;
+    this.identityUrl = envUrls.identity = urls.identity;
+    this.iconsUrl = urls.icons;
+    this.notificationsUrl = urls.notifications;
+    this.eventsUrl = envUrls.events = urls.events;
+    this.keyConnectorUrl = urls.keyConnector;
+  }
 
-        url = url.replace(/\/+$/g, '');
-        if (!url.startsWith('http://') && !url.startsWith('https://')) {
-            url = 'https://' + url;
-        }
+  async setUrls(urls: Urls, saveSettings: boolean = true): Promise<any> {
+    urls.base = this.formatUrl(urls.base);
+    urls.webVault = this.formatUrl(urls.webVault);
+    urls.api = this.formatUrl(urls.api);
+    urls.identity = this.formatUrl(urls.identity);
+    urls.icons = this.formatUrl(urls.icons);
+    urls.notifications = this.formatUrl(urls.notifications);
+    urls.events = this.formatUrl(urls.events);
+    urls.keyConnector = this.formatUrl(urls.keyConnector);
 
-        return url.trim();
+    if (saveSettings) {
+      await this.stateService.setEnvironmentUrls({
+        base: urls.base,
+        api: urls.api,
+        identity: urls.identity,
+        webVault: urls.webVault,
+        icons: urls.icons,
+        notifications: urls.notifications,
+        events: urls.events,
+        keyConnector: urls.keyConnector,
+      });
     }
+
+    this.baseUrl = urls.base;
+    this.webVaultUrl = urls.webVault;
+    this.apiUrl = urls.api;
+    this.identityUrl = urls.identity;
+    this.iconsUrl = urls.icons;
+    this.notificationsUrl = urls.notifications;
+    this.eventsUrl = urls.events;
+    this.keyConnectorUrl = urls.keyConnector;
+
+    this.urlsSubject.next(urls);
+
+    return urls;
+  }
+
+  getUrls() {
+    return {
+      base: this.baseUrl,
+      webVault: this.webVaultUrl,
+      api: this.apiUrl,
+      identity: this.identityUrl,
+      icons: this.iconsUrl,
+      notifications: this.notificationsUrl,
+      events: this.eventsUrl,
+      keyConnector: this.keyConnectorUrl,
+    };
+  }
+
+  private formatUrl(url: string): string {
+    if (url == null || url === "") {
+      return null;
+    }
+
+    url = url.replace(/\/+$/g, "");
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      url = "https://" + url;
+    }
+
+    return url.trim();
+  }
 }

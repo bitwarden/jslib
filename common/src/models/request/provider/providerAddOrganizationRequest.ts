@@ -1,4 +1,4 @@
 export class ProviderAddOrganizationRequest {
-    organizationId: string;
-    key: string;
+  organizationId: string;
+  key: string;
 }

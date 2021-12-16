@@ -1,19 +1,18 @@
-import { ImportDirectoryRequestGroup } from './importDirectoryRequestGroup';
+import { ImportDirectoryRequestGroup } from "./importDirectoryRequestGroup";
 
 export class OrganizationImportGroupRequest {
-    name: string;
-    externalId: string;
-    memberExternalIds: string[];
+  name: string;
+  externalId: string;
+  memberExternalIds: string[];
 
-    constructor(model: Required<OrganizationImportGroupRequest> | ImportDirectoryRequestGroup) {
-        this.name = model.name;
-        this.externalId = model.externalId;
+  constructor(model: Required<OrganizationImportGroupRequest> | ImportDirectoryRequestGroup) {
+    this.name = model.name;
+    this.externalId = model.externalId;
 
-        if (model instanceof ImportDirectoryRequestGroup) {
-            this.memberExternalIds = model.users;
-        }
-        else {
-            this.memberExternalIds = model.memberExternalIds;
-        }
+    if (model instanceof ImportDirectoryRequestGroup) {
+      this.memberExternalIds = model.users;
+    } else {
+      this.memberExternalIds = model.memberExternalIds;
     }
+  }
 }
