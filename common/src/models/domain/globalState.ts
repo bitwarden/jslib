@@ -21,4 +21,7 @@ export class GlobalState {
   noAutoPromptBiometrics?: boolean;
   noAutoPromptBiometricsText?: string;
   stateVersion: number;
+  environmentUrls?: any = {
+    server: "bitwarden.com",
+  };
 }
