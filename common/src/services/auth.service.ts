@@ -279,13 +279,12 @@ export class AuthService implements AuthServiceAbstraction {
     authingWithPassword(): boolean {
         return this.email != null && this.masterPasswordHash != null;
     }
+    private async createTokenRequest(email: string, hashedPassword: string, code: string, codeVerifier: string, redirectUrl: string,
+        clientId: string, clientSecret: string, twoFactorToken: string, twoFactorProvider: TwoFactorProviderType, remember: boolean,
+        captchaToken: string) {
 
-    private async logInHelper(email: string, hashedPassword: string, localHashedPassword: string, code: string,
-        codeVerifier: string, redirectUrl: string, clientId: string, clientSecret: string, key: SymmetricCryptoKey,
-        twoFactorProvider?: TwoFactorProviderType, twoFactorToken?: string, remember?: boolean, captchaToken?: string,
-        orgId?: string): Promise<AuthResult> {
-        const storedTwoFactorToken = await this.tokenService.getTwoFactorToken(email);
         const appId = await this.appIdService.getAppId();
+        const storedTwoFactorToken = await this.tokenService.getTwoFactorToken(email);
         const deviceRequest = new DeviceRequest(appId, this.platformUtilsService);
 
         let emailPassword: string[] = [];
@@ -321,6 +320,17 @@ export class AuthService implements AuthServiceAbstraction {
             request = new TokenRequest(emailPassword, codeCodeVerifier, clientIdClientSecret, null,
                 null, false, captchaToken, deviceRequest);
         }
+
+        return request;
+    }
+
+    private async logInHelper(email: string, hashedPassword: string, localHashedPassword: string, code: string,
+        codeVerifier: string, redirectUrl: string, clientId: string, clientSecret: string, key: SymmetricCryptoKey,
+        twoFactorProvider?: TwoFactorProviderType, twoFactorToken?: string, remember?: boolean, captchaToken?: string,
+        orgId?: string): Promise<AuthResult> {
+
+        const request = await this.createTokenRequest(email, hashedPassword, code, codeVerifier, redirectUrl,
+            clientId, clientSecret, twoFactorToken, twoFactorProvider, remember, captchaToken);
 
         const response = await this.apiService.postIdentityToken(request);
 
