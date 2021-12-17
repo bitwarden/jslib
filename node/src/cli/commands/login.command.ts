@@ -20,6 +20,7 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { SyncService } from "jslib-common/abstractions/sync.service";
+import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
 import { Response } from "../models/response";
 
@@ -58,7 +59,8 @@ export class LoginCommand {
     protected policyService: PolicyService,
     clientId: string,
     private syncService: SyncService,
-    protected keyConnectorService: KeyConnectorService
+    protected keyConnectorService: KeyConnectorService,
+    protected twoFactorService: TwoFactorService
   ) {
     this.clientId = clientId;
   }
@@ -230,7 +232,7 @@ export class LoginCommand {
         }
         if (response.twoFactor) {
           let selectedProvider: any = null;
-          const twoFactorProviders = this.authService.getSupportedTwoFactorProviders(null);
+          const twoFactorProviders = this.twoFactorService.getSupportedProviders(null);
           if (twoFactorProviders.length === 0) {
             return Response.badRequest("No providers available for this client.");
           }

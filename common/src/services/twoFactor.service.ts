@@ -88,7 +88,7 @@ export class TwoFactorService implements TwoFactorServiceAbstraction {
       this.i18nService.t("yubiKeyDesc");
   }
 
-  getSupportedTwoFactorProviders(win: Window): any[] {
+  getSupportedProviders(win: Window): any[] {
     const providers: any[] = [];
     if (this.twoFactorProvidersData == null) {
       return providers;
