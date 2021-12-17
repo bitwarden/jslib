@@ -1,3 +1,3 @@
 export class OrganizationUserAcceptRequest {
-    token: string;
+  token: string;
 }

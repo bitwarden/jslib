@@ -1,4 +1,4 @@
-import { KeePass2XmlImporter as Importer } from 'jslib-common/importers/keepass2XmlImporter';
+import { KeePass2XmlImporter as Importer } from "jslib-common/importers/keepass2XmlImporter";
 
 const TestData: string = `<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <KeePassFile>
@@ -180,10 +180,10 @@ line2</Value>
 	</Root>
 </KeePassFile>`;
 
-describe('KeePass2 Xml Importer', () => {
-    it('should parse XML data', async () => {
-        const importer = new Importer();
-        const result = await importer.parse(TestData);
-        expect(result != null).toBe(true);
-    });
+describe("KeePass2 Xml Importer", () => {
+  it("should parse XML data", async () => {
+    const importer = new Importer();
+    const result = await importer.parse(TestData);
+    expect(result != null).toBe(true);
+  });
 });

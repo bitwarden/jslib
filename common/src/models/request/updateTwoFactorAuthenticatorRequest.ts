@@ -1,6 +1,6 @@
-import { SecretVerificationRequest } from './secretVerificationRequest';
+import { SecretVerificationRequest } from "./secretVerificationRequest";
 
 export class UpdateTwoFactorAuthenticatorRequest extends SecretVerificationRequest {
-    token: string;
-    key: string;
+  token: string;
+  key: string;
 }

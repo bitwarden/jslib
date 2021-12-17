@@ -1,3 +1,3 @@
 export class StorageRequest {
-    storageGbAdjustment: number;
+  storageGbAdjustment: number;
 }

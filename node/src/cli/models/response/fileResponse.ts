@@ -1,13 +1,13 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class FileResponse implements BaseResponse {
-    object: string;
-    data: Buffer;
-    fileName: string;
+  object: string;
+  data: Buffer;
+  fileName: string;
 
-    constructor(data: Buffer, fileName: string) {
-        this.object = 'file';
-        this.data = data;
-        this.fileName = fileName;
-    }
+  constructor(data: Buffer, fileName: string) {
+    this.object = "file";
+    this.data = data;
+    this.fileName = fileName;
+  }
 }
