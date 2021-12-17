@@ -95,9 +95,6 @@ export class AccountProfile {
   hasPremiumPersonally?: boolean;
   lastActive?: number;
   lastSync?: string;
-  ssoCodeVerifier?: string;
-  ssoOrganizationIdentifier?: string;
-  ssoState?: string;
   userId?: string;
   usesKeyConnector?: boolean;
   keyHash?: string;
