@@ -15,6 +15,7 @@ import { PreloginRequest } from "../models/request/preloginRequest";
 import { ApiTokenRequest } from "../models/request/identityToken/apiTokenRequest";
 import { PasswordTokenRequest } from "../models/request/identityToken/passwordTokenRequest";
 import { SsoTokenRequest } from "../models/request/identityToken/ssoTokenRequest";
+import { TwoFactorData } from "../models/request/identityToken/tokenRequest";
 
 import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
 import { IdentityTwoFactorResponse } from "../models/response/identityTwoFactorResponse";
@@ -386,6 +387,11 @@ export class AuthService implements AuthServiceAbstraction {
     return result;
   }
 
+  private async createDeviceRequest() {
+    const appId = await this.appIdService.getAppId();
+    return new DeviceRequest(appId, this.platformUtilsService);
+  }
+
   private async createTokenRequest(
     email: string,
     hashedPassword: string,
@@ -399,30 +405,29 @@ export class AuthService implements AuthServiceAbstraction {
     remember: boolean,
     captchaToken: string
   ) {
-    const appId = await this.appIdService.getAppId();
+    const deviceRequest = await this.createDeviceRequest();
     const storedTwoFactorToken = await this.tokenService.getTwoFactorToken(email);
-    const deviceRequest = new DeviceRequest(appId, this.platformUtilsService);
 
-    let effectiveToken = null;
-    let effectiveProvider = null;
-    let effectiveRemember = false;
+    const twoFactor: TwoFactorData = {
+      token: null,
+      provider: null,
+      remember: false,
+    };
 
     if (twoFactorToken != null && twoFactorProvider != null) {
-      effectiveToken = twoFactorToken;
-      effectiveProvider = twoFactorProvider;
-      effectiveRemember = remember;
+      twoFactor.token = twoFactorToken;
+      twoFactor.provider = twoFactorProvider;
+      twoFactor.remember = remember;
     } else if (storedTwoFactorToken != null) {
-      effectiveToken = storedTwoFactorToken;
-      effectiveProvider = TwoFactorProviderType.Remember;
+      twoFactor.token = storedTwoFactorToken;
+      twoFactor.provider = TwoFactorProviderType.Remember;
     }
 
     if (email != null && hashedPassword != null) {
       return new PasswordTokenRequest(
         email,
         hashedPassword,
-        effectiveProvider,
-        effectiveToken,
-        effectiveRemember,
+        twoFactor,
         captchaToken,
         deviceRequest
       );
@@ -431,22 +436,12 @@ export class AuthService implements AuthServiceAbstraction {
         code,
         codeVerifier,
         redirectUrl,
-        effectiveProvider,
-        effectiveToken,
-        effectiveRemember,
+        twoFactor,
         captchaToken,
         deviceRequest
       );
     } else if (clientId != null && clientSecret != null) {
-      return new ApiTokenRequest(
-        clientId,
-        clientSecret,
-        effectiveProvider,
-        effectiveToken,
-        effectiveRemember,
-        captchaToken,
-        deviceRequest
-      );
+      return new ApiTokenRequest(clientId, clientSecret, twoFactor, captchaToken, deviceRequest);
     } else {
       throw new Error("No credentials provided.");
     }

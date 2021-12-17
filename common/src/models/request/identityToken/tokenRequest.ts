@@ -3,13 +3,17 @@ import { TwoFactorProviderType } from "../../../enums/twoFactorProviderType";
 import { CaptchaProtectedRequest } from "../captchaProtectedRequest";
 import { DeviceRequest } from "../deviceRequest";
 
+export interface TwoFactorData {
+  provider: TwoFactorProviderType;
+  token: string;
+  remember: boolean;
+}
+
 export abstract class TokenRequest implements CaptchaProtectedRequest {
-  device?: DeviceRequest;
+  protected device?: DeviceRequest;
 
   constructor(
-    public provider: TwoFactorProviderType,
-    public token: string,
-    public remember: boolean,
+    protected twoFactor: TwoFactorData,
     public captchaResponse: string,
     device?: DeviceRequest
   ) {
@@ -30,10 +34,10 @@ export abstract class TokenRequest implements CaptchaProtectedRequest {
       // obj.devicePushToken = this.device.pushToken;
     }
 
-    if (this.token && this.provider != null) {
-      obj.twoFactorToken = this.token;
-      obj.twoFactorProvider = this.provider;
-      obj.twoFactorRemember = this.remember ? "1" : "0";
+    if (this.twoFactor.token && this.twoFactor.provider != null) {
+      obj.twoFactorToken = this.twoFactor.token;
+      obj.twoFactorProvider = this.twoFactor.provider;
+      obj.twoFactorRemember = this.twoFactor.remember ? "1" : "0";
     }
 
     if (this.captchaResponse != null) {

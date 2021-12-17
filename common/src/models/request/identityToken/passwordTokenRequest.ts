@@ -1,25 +1,18 @@
-import { TokenRequest } from "./tokenRequest";
-
-import { TwoFactorProviderType } from "../../../enums/twoFactorProviderType";
+import { TokenRequest, TwoFactorData } from "./tokenRequest";
 
 import { DeviceRequest } from "../deviceRequest";
 
 import { Utils } from "../../../misc/utils";
 
 export class PasswordTokenRequest extends TokenRequest {
-  email: string;
-  masterPasswordHash: string;
-
   constructor(
-    email: string,
-    masterPasswordHash: string,
-    public provider: TwoFactorProviderType,
-    public token: string,
-    public remember: boolean,
-    public captchaResponse: string,
+    private email: string,
+    private masterPasswordHash: string,
+    protected twoFactor: TwoFactorData,
+    captchaResponse: string,
     device?: DeviceRequest
   ) {
-    super(provider, token, remember, captchaResponse, device);
+    super(twoFactor, captchaResponse, device);
 
     this.email = email;
     this.masterPasswordHash = masterPasswordHash;

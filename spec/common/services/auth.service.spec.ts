@@ -5,14 +5,12 @@ import { AppIdService } from "jslib-common/abstractions/appId.service";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { CryptoFunctionService } from "jslib-common/abstractions/cryptoFunction.service";
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
-import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.service";
 import { LogService } from "jslib-common/abstractions/log.service";
 import { MessagingService } from "jslib-common/abstractions/messaging.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
-import { VaultTimeoutService } from "jslib-common/abstractions/vaultTimeout.service";
 
 import { AuthService } from "jslib-common/services/auth.service";
 
@@ -28,9 +26,6 @@ import { IdentityTokenResponse } from "jslib-common/models/response/identityToke
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 import { HashPurpose } from "jslib-common/enums/hashPurpose";
 import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
-import { SsoTokenRequest } from "jslib-common/models/request/identityToken/ssoTokenRequest";
-import { ApiTokenRequest } from "jslib-common/models/request/identityToken/apiTokenRequest";
-import { PasswordTokenRequest } from "jslib-common/models/request/identityToken/passwordTokenRequest";
 
 describe("Cipher Service", () => {
   let cryptoService: SubstituteOf<CryptoService>;
@@ -201,14 +196,14 @@ describe("Cipher Service", () => {
     // Api call:
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {
-        const passwordTokenRequest = actual as PasswordTokenRequest;
+        const passwordTokenRequest = actual as any; // Need to access private fields
         return (
           passwordTokenRequest.email === email &&
           passwordTokenRequest.masterPasswordHash === hashedPassword &&
-          actual.device.identifier === deviceId &&
-          actual.provider == null &&
-          actual.token == null &&
-          actual.captchaResponse == null
+          passwordTokenRequest.device.identifier === deviceId &&
+          passwordTokenRequest.twoFactor.provider == null &&
+          passwordTokenRequest.twoFactor.token == null &&
+          passwordTokenRequest.captchaResponse == null
         );
       })
     );
@@ -341,15 +336,15 @@ describe("Cipher Service", () => {
 
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {
-        const passwordTokenRequest = actual as PasswordTokenRequest;
+        const passwordTokenRequest = actual as any;
         return (
           passwordTokenRequest.email === email &&
           passwordTokenRequest.masterPasswordHash === hashedPassword &&
-          actual.device.identifier === deviceId &&
-          actual.provider === twoFactorProviderType &&
-          actual.token === twoFactorToken &&
-          actual.remember === twoFactorRemember &&
-          actual.captchaResponse == null
+          passwordTokenRequest.device.identifier === deviceId &&
+          passwordTokenRequest.twoFactor.provider == twoFactorProviderType &&
+          passwordTokenRequest.twoFactor.token == twoFactorToken &&
+          passwordTokenRequest.twoFactor.remember == twoFactorRemember &&
+          passwordTokenRequest.captchaResponse == null
         );
       })
     );
@@ -370,14 +365,14 @@ describe("Cipher Service", () => {
     // Api call:
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {
-        const ssoTokenRequest = actual as SsoTokenRequest;
+        const ssoTokenRequest = actual as any;
         return (
           ssoTokenRequest.code === ssoCode &&
           ssoTokenRequest.codeVerifier === ssoCodeVerifier &&
           ssoTokenRequest.redirectUri === ssoRedirectUrl &&
-          actual.device.identifier === deviceId &&
-          actual.provider == null &&
-          actual.token == null &&
+          ssoTokenRequest.device.identifier === deviceId &&
+          ssoTokenRequest.twoFactor.provider == null &&
+          ssoTokenRequest.twoFactor.token == null &&
           actual.captchaResponse == null
         );
       })
@@ -491,14 +486,14 @@ describe("Cipher Service", () => {
 
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {
-        const apiTokenRequest = actual as ApiTokenRequest;
+        const apiTokenRequest = actual as any;
         return (
           apiTokenRequest.clientId === apiClientId &&
           apiTokenRequest.clientSecret === apiClientSecret &&
-          actual.device.identifier === deviceId &&
-          actual.provider == null &&
-          actual.token == null &&
-          actual.captchaResponse == null
+          apiTokenRequest.device.identifier === deviceId &&
+          apiTokenRequest.twoFactor.provider == null &&
+          apiTokenRequest.twoFactor.token == null &&
+          apiTokenRequest.captchaResponse == null
         );
       })
     );

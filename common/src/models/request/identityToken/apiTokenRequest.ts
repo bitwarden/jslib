@@ -1,26 +1,16 @@
-import { TokenRequest } from "./tokenRequest";
-
-import { TwoFactorProviderType } from "../../../enums/twoFactorProviderType";
+import { TokenRequest, TwoFactorData } from "./tokenRequest";
 
 import { DeviceRequest } from "../deviceRequest";
 
 export class ApiTokenRequest extends TokenRequest {
-  clientId: string;
-  clientSecret: string;
-
   constructor(
-    clientId: string,
-    clientSecret: string,
-    public provider: TwoFactorProviderType,
-    public token: string,
-    public remember: boolean,
-    public captchaResponse: string,
+    private clientId: string,
+    private clientSecret: string,
+    protected twoFactor: TwoFactorData,
+    captchaResponse: string,
     device?: DeviceRequest
   ) {
-    super(provider, token, remember, captchaResponse, device);
-
-    this.clientId = clientId;
-    this.clientSecret = clientSecret;
+    super(twoFactor, captchaResponse, device);
   }
 
   toIdentityToken(clientId: string) {

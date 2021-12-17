@@ -1,25 +1,17 @@
-import { TokenRequest } from "./tokenRequest";
-
-import { TwoFactorProviderType } from "../../../enums/twoFactorProviderType";
+import { TokenRequest, TwoFactorData } from "./tokenRequest";
 
 import { DeviceRequest } from "../deviceRequest";
 
 export class SsoTokenRequest extends TokenRequest {
-  code: string;
-  codeVerifier: string;
-  redirectUri: string;
-
   constructor(
-    code: string,
-    codeVerifier: string,
-    redirectUri: string,
-    public provider: TwoFactorProviderType,
-    public token: string,
-    public remember: boolean,
-    public captchaResponse: string,
+    private code: string,
+    private codeVerifier: string,
+    private redirectUri: string,
+    protected twoFactor: TwoFactorData,
+    captchaResponse: string,
     device?: DeviceRequest
   ) {
-    super(provider, token, remember, captchaResponse, device);
+    super(twoFactor, captchaResponse, device);
 
     this.code = code;
     this.codeVerifier = codeVerifier;
