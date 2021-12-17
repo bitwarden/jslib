@@ -1,7 +1,6 @@
-import { TwoFactorProviderType } from "../enums/twoFactorProviderType";
-
 import { AuthResult } from "../models/domain/authResult";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
+import { TwoFactorData } from '../models/request/identityToken/tokenRequest';
 
 export abstract class AuthService {
   email: string;
@@ -12,41 +11,17 @@ export abstract class AuthService {
   clientId: string;
   clientSecret: string;
 
-  logIn: (email: string, masterPassword: string, captchaToken?: string) => Promise<AuthResult>;
+  logIn: (email: string, masterPassword: string, twoFactor: TwoFactorData, captchaToken?: string) => Promise<AuthResult>;
   logInSso: (
     code: string,
     codeVerifier: string,
     redirectUrl: string,
+    twoFactor: TwoFactorData,
     orgId: string
   ) => Promise<AuthResult>;
-  logInApiKey: (clientId: string, clientSecret: string) => Promise<AuthResult>;
+  logInApiKey: (clientId: string, clientSecret: string, twoFactor: TwoFactorData) => Promise<AuthResult>;
   logInTwoFactor: (
-    twoFactorProvider: TwoFactorProviderType,
-    twoFactorToken: string,
-    remember?: boolean
-  ) => Promise<AuthResult>;
-  logInComplete: (
-    email: string,
-    masterPassword: string,
-    twoFactorProvider: TwoFactorProviderType,
-    twoFactorToken: string,
-    remember?: boolean,
-    captchaToken?: string
-  ) => Promise<AuthResult>;
-  logInSsoComplete: (
-    code: string,
-    codeVerifier: string,
-    redirectUrl: string,
-    twoFactorProvider: TwoFactorProviderType,
-    twoFactorToken: string,
-    remember?: boolean
-  ) => Promise<AuthResult>;
-  logInApiKeyComplete: (
-    clientId: string,
-    clientSecret: string,
-    twoFactorProvider: TwoFactorProviderType,
-    twoFactorToken: string,
-    remember?: boolean
+    twoFactor: TwoFactorData
   ) => Promise<AuthResult>;
   logOut: (callback: Function) => void;
   makePreloginKey: (masterPassword: string, email: string) => Promise<SymmetricCryptoKey>;
