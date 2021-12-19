@@ -325,6 +325,53 @@ describe("Cipher Service", () => {
     expect(result).toEqual(expected);
   });
 
+  it("logIn: sends stored 2FA token to server", async () => {
+    commonSetup();
+      logInSetup();
+
+      tokenService.getTwoFactorToken(email).resolves(twoFactorToken);
+
+    await authService.logIn(email, masterPassword, null);
+
+    apiService.received(1).postIdentityToken(
+      Arg.is((actual) => {
+        const passwordTokenRequest = actual as any;
+        return (
+          passwordTokenRequest.email === email &&
+          passwordTokenRequest.masterPasswordHash === hashedPassword &&
+          passwordTokenRequest.device.identifier === deviceId &&
+          passwordTokenRequest.twoFactor.provider == TwoFactorProviderType.Remember &&
+          passwordTokenRequest.twoFactor.token == twoFactorToken &&
+          passwordTokenRequest.twoFactor.remember == false &&
+          passwordTokenRequest.captchaResponse == null
+        );
+      })
+    );
+  });
+
+  it("logIn: sends 2FA token entered by user to server", async () => {
+    commonSetup();
+      logInSetup();
+
+    await authService.logIn(email, masterPassword, { provider: twoFactorProviderType, token: twoFactorToken, remember: twoFactorRemember });
+
+    apiService.received(1).postIdentityToken(
+      Arg.is((actual) => {
+        const passwordTokenRequest = actual as any;
+        return (
+          passwordTokenRequest.email === email &&
+          passwordTokenRequest.masterPasswordHash === hashedPassword &&
+          passwordTokenRequest.device.identifier === deviceId &&
+          passwordTokenRequest.twoFactor.provider == twoFactorProviderType &&
+          passwordTokenRequest.twoFactor.token == twoFactorToken &&
+          passwordTokenRequest.twoFactor.remember == twoFactorRemember &&
+          passwordTokenRequest.captchaResponse == null
+        );
+      })
+    );
+  });
+
+
   it("logInTwoFactor: sends 2FA token to server when using Master Password", async () => {
     commonSetup();
 
