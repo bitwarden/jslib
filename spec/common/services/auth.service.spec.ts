@@ -186,7 +186,7 @@ describe("Cipher Service", () => {
     commonSetup();
     const tokenResponse = newTokenResponse();
 
-    tokenService.getTwoFactorToken(email).resolves(null);
+    tokenService.getTwoFactorToken().resolves(null);
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
     const expected = newAuthResponse();
@@ -221,7 +221,7 @@ describe("Cipher Service", () => {
     apiService.didNotReceive().postAccountKeys(Arg.any()); // Did not generate new private key pair
     keyConnectorService.didNotReceive().getAndSetKey(Arg.any()); // Did not fetch Key Connector key
     apiService.didNotReceive().postUserKeyToKeyConnector(Arg.any(), Arg.any()); // Did not send key to KC
-    tokenService.didNotReceive().setTwoFactorToken(Arg.any(), Arg.any()); // Did not save 2FA token
+    tokenService.didNotReceive().setTwoFactorToken(Arg.any()); // Did not save 2FA token
 
     // Return result:
     expect(result).toEqual(expected);
@@ -235,7 +235,7 @@ describe("Cipher Service", () => {
     const tokenResponse = newTokenResponse();
     (tokenResponse as any).siteKey = siteKey;
 
-    tokenService.getTwoFactorToken(email).resolves(null);
+    tokenService.getTwoFactorToken().resolves(null);
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
     const expected = new AuthResult();
@@ -255,7 +255,7 @@ describe("Cipher Service", () => {
     commonSetup();
     const tokenResponse = newTokenResponse();
 
-    tokenService.getTwoFactorToken(email).resolves(null);
+    tokenService.getTwoFactorToken().resolves(null);
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
     // Re-init authService with setCryptoKeys = false
@@ -292,7 +292,7 @@ describe("Cipher Service", () => {
     const tokenResponse = newTokenResponse();
     tokenResponse.privateKey = null;
 
-    tokenService.getTwoFactorToken(email).resolves(null);
+    tokenService.getTwoFactorToken().resolves(null);
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
     const result = await authService.logIn(email, masterPassword);
@@ -311,7 +311,7 @@ describe("Cipher Service", () => {
     const tokenResponse = newTokenResponse();
     (tokenResponse as any).twoFactorProviders2 = twoFactorProviders;
 
-    tokenService.getTwoFactorToken(email).resolves(null);
+    tokenService.getTwoFactorToken().resolves(null);
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
     const expected = new AuthResult();
@@ -331,7 +331,7 @@ describe("Cipher Service", () => {
     commonSetup();
     logInSetup();
 
-    tokenService.getTwoFactorToken(email).resolves(twoFactorToken);
+    tokenService.getTwoFactorToken().resolves(twoFactorToken);
 
     await authService.logIn(email, masterPassword);
 
@@ -385,7 +385,6 @@ describe("Cipher Service", () => {
     } as DeviceRequest);
 
     (authService as any).localMasterPasswordHash = localHashedPassword;
-    (authService as any).email = email;
     (authService as any).savedTokenRequest = tokenRequest;
 
     await authService.logInTwoFactor({
@@ -416,7 +415,7 @@ describe("Cipher Service", () => {
     commonSetup();
     const tokenResponse = newTokenResponse();
 
-    tokenService.getTwoFactorToken(null).resolves(null);
+    tokenService.getTwoFactorToken().resolves(null);
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
     const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
@@ -450,7 +449,7 @@ describe("Cipher Service", () => {
     apiService.didNotReceive().postAccountKeys(Arg.any()); // Did not generate new private key pair
     keyConnectorService.didNotReceive().getAndSetKey(Arg.any()); // Did not fetch Key Connector key
     apiService.didNotReceive().postUserKeyToKeyConnector(Arg.any(), Arg.any()); // Did not send key to KC
-    tokenService.didNotReceive().setTwoFactorToken(Arg.any(), Arg.any()); // Did not save 2FA token
+    tokenService.didNotReceive().setTwoFactorToken(Arg.any()); // Did not save 2FA token
 
     // Return result:
     const expected = newAuthResponse();
@@ -462,7 +461,7 @@ describe("Cipher Service", () => {
     const tokenResponse = newTokenResponse();
     tokenResponse.key = null;
 
-    tokenService.getTwoFactorToken(null).resolves(null);
+    tokenService.getTwoFactorToken().resolves(null);
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
     const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
@@ -538,7 +537,7 @@ describe("Cipher Service", () => {
 
   it("logInApi: user can login with api key", async () => {
     commonSetup();
-    tokenService.getTwoFactorToken(Arg.any()).resolves(null);
+    tokenService.getTwoFactorToken().resolves(null);
     const tokenResponse = newTokenResponse();
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
@@ -590,7 +589,7 @@ describe("Cipher Service", () => {
     apiService.didNotReceive().postAccountKeys(Arg.any()); // Did not generate new private key pair
     keyConnectorService.didNotReceive().getAndSetKey(Arg.any()); // Did not fetch Key Connector key
     apiService.didNotReceive().postUserKeyToKeyConnector(Arg.any(), Arg.any()); // Did not send key to KC
-    tokenService.didNotReceive().setTwoFactorToken(Arg.any(), Arg.any()); // Did not save 2FA token
+    tokenService.didNotReceive().setTwoFactorToken(Arg.any()); // Did not save 2FA token
 
     // Return result:
     const expected = newAuthResponse();

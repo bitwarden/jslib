@@ -86,7 +86,6 @@ export class AuthService implements AuthServiceAbstraction {
 
     const result = await this.processTokenResponse(
       response,
-      email,
       localHashedPassword,
       null,
       null,
@@ -124,7 +123,6 @@ export class AuthService implements AuthServiceAbstraction {
     const result = await this.processTokenResponse(
       response,
       null,
-      null,
       code,
       null,
       null,
@@ -159,7 +157,6 @@ export class AuthService implements AuthServiceAbstraction {
       response,
       null,
       null,
-      null,
       clientId,
       clientSecret,
       null,
@@ -179,7 +176,6 @@ export class AuthService implements AuthServiceAbstraction {
 
     return await this.processTokenResponse(
       response,
-      (this.savedTokenRequest as PasswordTokenRequest).email,
       this.localMasterPasswordHash,
       (this.savedTokenRequest as SsoTokenRequest).code,
       (this.savedTokenRequest as ApiTokenRequest).clientId,
@@ -229,7 +225,6 @@ export class AuthService implements AuthServiceAbstraction {
 
   private async processTokenResponse(
     response: IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse,
-    email: string,
     localHashedPassword: string,
     code: string,
     clientId: string,
@@ -258,7 +253,7 @@ export class AuthService implements AuthServiceAbstraction {
     this.saveAccountInformation(tokenResponse, clientId, clientSecret);
 
     if (tokenResponse.twoFactorToken != null) {
-      await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken, email);
+      await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken);
     }
 
     if (this.setCryptoKeys) {
