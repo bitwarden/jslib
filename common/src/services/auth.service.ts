@@ -78,7 +78,7 @@ export class AuthService implements AuthServiceAbstraction {
     const tokenRequest = new PasswordTokenRequest(
       email,
       hashedPassword,
-      await this.createTwoFactorData(twoFactor, email),
+      await this.createTwoFactorData(twoFactor),
       captchaToken,
       await this.createDeviceRequest()
     );
@@ -114,7 +114,7 @@ export class AuthService implements AuthServiceAbstraction {
       code,
       codeVerifier,
       redirectUrl,
-      await this.createTwoFactorData(twoFactor, null),
+      await this.createTwoFactorData(twoFactor),
       null,
       await this.createDeviceRequest()
     );
@@ -147,7 +147,7 @@ export class AuthService implements AuthServiceAbstraction {
     const tokenRequest = new ApiTokenRequest(
       clientId,
       clientSecret,
-      await this.createTwoFactorData(twoFactor, null),
+      await this.createTwoFactorData(twoFactor),
       null,
       await this.createDeviceRequest()
     );
@@ -297,9 +297,9 @@ export class AuthService implements AuthServiceAbstraction {
     return new DeviceRequest(appId, this.platformUtilsService);
   }
 
-  private async createTwoFactorData(twoFactor: TwoFactorData, email: string) {
+  private async createTwoFactorData(twoFactor: TwoFactorData) {
     if (twoFactor == null) {
-      const storedTwoFactorToken = await this.tokenService.getTwoFactorToken(email);
+      const storedTwoFactorToken = await this.tokenService.getTwoFactorToken();
       if (storedTwoFactorToken != null) {
         twoFactor = {
           token: storedTwoFactorToken,
