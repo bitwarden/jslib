@@ -4,18 +4,14 @@ import { DeviceRequest } from "../deviceRequest";
 
 export class SsoTokenRequest extends TokenRequest {
   constructor(
-    private code: string,
-    private codeVerifier: string,
-    private redirectUri: string,
+    public code: string,
+    public codeVerifier: string,
+    public redirectUri: string,
     protected twoFactor: TwoFactorData,
     captchaResponse: string,
     device?: DeviceRequest
   ) {
     super(twoFactor, captchaResponse, device);
-
-    this.code = code;
-    this.codeVerifier = codeVerifier;
-    this.redirectUri = redirectUri;
   }
 
   toIdentityToken(clientId: string) {

@@ -3,14 +3,6 @@ import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 import { TwoFactorData } from '../models/request/identityToken/tokenRequest';
 
 export abstract class AuthService {
-  email: string;
-  masterPasswordHash: string;
-  code: string;
-  codeVerifier: string;
-  ssoRedirectUrl: string;
-  clientId: string;
-  clientSecret: string;
-
   logIn: (email: string, masterPassword: string, twoFactor?: TwoFactorData, captchaToken?: string) => Promise<AuthResult>;
   logInSso: (
     code: string,

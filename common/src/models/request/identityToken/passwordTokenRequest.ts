@@ -6,16 +6,13 @@ import { Utils } from "../../../misc/utils";
 
 export class PasswordTokenRequest extends TokenRequest {
   constructor(
-    private email: string,
-    private masterPasswordHash: string,
+    public email: string,
+    public masterPasswordHash: string,
     protected twoFactor: TwoFactorData,
     captchaResponse: string,
     device?: DeviceRequest
   ) {
     super(twoFactor, captchaResponse, device);
-
-    this.email = email;
-    this.masterPasswordHash = masterPasswordHash;
   }
 
   toIdentityToken(clientId: string) {

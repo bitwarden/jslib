@@ -26,6 +26,8 @@ import { IdentityTokenResponse } from "jslib-common/models/response/identityToke
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 import { HashPurpose } from "jslib-common/enums/hashPurpose";
 import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
+import { PasswordTokenRequest } from "jslib-common/models/request/identityToken/passwordTokenRequest";
+import { DeviceRequest } from "jslib-common/models/request/deviceRequest";
 
 describe("Cipher Service", () => {
   let cryptoService: SubstituteOf<CryptoService>;
@@ -327,9 +329,9 @@ describe("Cipher Service", () => {
 
   it("logIn: sends stored 2FA token to server", async () => {
     commonSetup();
-      logInSetup();
+    logInSetup();
 
-      tokenService.getTwoFactorToken(email).resolves(twoFactorToken);
+    tokenService.getTwoFactorToken(email).resolves(twoFactorToken);
 
     await authService.logIn(email, masterPassword);
 
@@ -351,9 +353,13 @@ describe("Cipher Service", () => {
 
   it("logIn: sends 2FA token entered by user to server", async () => {
     commonSetup();
-      logInSetup();
+    logInSetup();
 
-    await authService.logIn(email, masterPassword, { provider: twoFactorProviderType, token: twoFactorToken, remember: twoFactorRemember });
+    await authService.logIn(email, masterPassword, {
+      provider: twoFactorProviderType,
+      token: twoFactorToken,
+      remember: twoFactorRemember,
+    });
 
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {
@@ -371,15 +377,22 @@ describe("Cipher Service", () => {
     );
   });
 
-
   it("logInTwoFactor: sends 2FA token to server when using Master Password", async () => {
     commonSetup();
 
-    authService.email = email;
-    authService.masterPasswordHash = hashedPassword;
-    authService.localMasterPasswordHash = localHashedPassword;
+    const tokenRequest = new PasswordTokenRequest(email, hashedPassword, null, null, {
+      identifier: deviceId,
+    } as DeviceRequest);
 
-      await authService.logInTwoFactor({ provider: twoFactorProviderType, token: twoFactorToken, remember: twoFactorRemember });
+    (authService as any).localMasterPasswordHash = localHashedPassword;
+    (authService as any).email = email;
+    (authService as any).savedTokenRequest = tokenRequest;
+
+    await authService.logInTwoFactor({
+      provider: twoFactorProviderType,
+      token: twoFactorToken,
+      remember: twoFactorRemember,
+    });
 
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {

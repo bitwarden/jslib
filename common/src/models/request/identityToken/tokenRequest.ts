@@ -50,4 +50,8 @@ export abstract class TokenRequest implements CaptchaProtectedRequest {
   alterIdentityTokenHeaders(headers: Headers) {
     // Implemented in subclass if required
   }
+
+    setTwoFactor(twoFactor: TwoFactorData) {
+        this.twoFactor = twoFactor;
+    }
 }

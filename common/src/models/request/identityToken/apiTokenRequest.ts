@@ -4,8 +4,8 @@ import { DeviceRequest } from "../deviceRequest";
 
 export class ApiTokenRequest extends TokenRequest {
   constructor(
-    private clientId: string,
-    private clientSecret: string,
+    public clientId: string,
+    public clientSecret: string,
     protected twoFactor: TwoFactorData,
     captchaResponse: string,
     device?: DeviceRequest
