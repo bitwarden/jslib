@@ -11,15 +11,15 @@ export abstract class AuthService {
   clientId: string;
   clientSecret: string;
 
-  logIn: (email: string, masterPassword: string, twoFactor: TwoFactorData, captchaToken?: string) => Promise<AuthResult>;
+  logIn: (email: string, masterPassword: string, twoFactor?: TwoFactorData, captchaToken?: string) => Promise<AuthResult>;
   logInSso: (
     code: string,
     codeVerifier: string,
     redirectUrl: string,
-    twoFactor: TwoFactorData,
-    orgId: string
+    orgId: string,
+    twoFactor?: TwoFactorData,
   ) => Promise<AuthResult>;
-  logInApiKey: (clientId: string, clientSecret: string, twoFactor: TwoFactorData) => Promise<AuthResult>;
+  logInApiKey: (clientId: string, clientSecret: string, twoFactor?: TwoFactorData) => Promise<AuthResult>;
   logInTwoFactor: (
     twoFactor: TwoFactorData
   ) => Promise<AuthResult>;

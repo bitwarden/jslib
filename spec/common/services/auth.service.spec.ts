@@ -190,7 +190,7 @@ describe("Cipher Service", () => {
     const expected = newAuthResponse();
 
     // Act
-    const result = await authService.logIn(email, masterPassword, null);
+    const result = await authService.logIn(email, masterPassword);
 
     // Assert
     // Api call:
@@ -240,7 +240,7 @@ describe("Cipher Service", () => {
     expected.captchaSiteKey = siteKey;
 
     // Act
-    const result = await authService.logIn(email, masterPassword, null);
+    const result = await authService.logIn(email, masterPassword);
 
     // Assertions
     stateService.didNotReceive().addAccount(Arg.any());
@@ -274,7 +274,7 @@ describe("Cipher Service", () => {
     );
 
     // Act
-    const result = await authService.logIn(email, masterPassword, null);
+    const result = await authService.logIn(email, masterPassword);
 
     // Assertions
     commonSuccessAssertions();
@@ -293,7 +293,7 @@ describe("Cipher Service", () => {
     tokenService.getTwoFactorToken(email).resolves(null);
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-    const result = await authService.logIn(email, masterPassword, null);
+    const result = await authService.logIn(email, masterPassword);
 
     commonSuccessAssertions();
     apiService.received(1).postAccountKeys(Arg.any());
@@ -317,7 +317,7 @@ describe("Cipher Service", () => {
     expected.twoFactorProviders = twoFactorProviders;
     expected.captchaSiteKey = undefined;
 
-    const result = await authService.logIn(email, masterPassword, null);
+    const result = await authService.logIn(email, masterPassword);
 
     stateService.didNotReceive().addAccount(Arg.any());
     messagingService.didNotReceive().send(Arg.any());
@@ -331,7 +331,7 @@ describe("Cipher Service", () => {
 
       tokenService.getTwoFactorToken(email).resolves(twoFactorToken);
 
-    await authService.logIn(email, masterPassword, null);
+    await authService.logIn(email, masterPassword);
 
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {
@@ -406,7 +406,7 @@ describe("Cipher Service", () => {
     tokenService.getTwoFactorToken(null).resolves(null);
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-    const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, null, ssoOrgId);
+    const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
 
     // Assert
     // Api call:
@@ -452,7 +452,7 @@ describe("Cipher Service", () => {
     tokenService.getTwoFactorToken(null).resolves(null);
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-    const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, null, ssoOrgId);
+    const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
 
     // Assert
     cryptoService.didNotReceive().setEncPrivateKey(privateKey);
@@ -466,7 +466,7 @@ describe("Cipher Service", () => {
 
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-    const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, null, ssoOrgId);
+    const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
 
     commonSuccessAssertions();
     keyConnectorService.received(1).getAndSetKey(keyConnectorUrl);
@@ -500,7 +500,7 @@ describe("Cipher Service", () => {
 
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-    const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, null, ssoOrgId);
+    const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
 
     commonSuccessAssertions();
     cryptoService.received(1).setKey(preloginKey);
@@ -529,7 +529,7 @@ describe("Cipher Service", () => {
     const tokenResponse = newTokenResponse();
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-    const result = await authService.logInApiKey(apiClientId, apiClientSecret, null);
+    const result = await authService.logInApiKey(apiClientId, apiClientSecret);
 
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {

@@ -65,7 +65,7 @@ export class AuthService implements AuthServiceAbstraction {
     private setCryptoKeys = true
   ) {}
 
-  async logIn(email: string, masterPassword: string, twoFactor: TwoFactorData, captchaToken?: string): Promise<AuthResult> {
+  async logIn(email: string, masterPassword: string, twoFactor?: TwoFactorData, captchaToken?: string): Promise<AuthResult> {
     this.twoFactorService.clearSelectedProvider();
     const key = await this.makePreloginKey(masterPassword, email);
     const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
@@ -94,8 +94,8 @@ export class AuthService implements AuthServiceAbstraction {
     code: string,
     codeVerifier: string,
     redirectUrl: string,
-    twoFactor: TwoFactorData,
-    orgId: string
+    orgId: string,
+    twoFactor?: TwoFactorData,
   ): Promise<AuthResult> {
     this.twoFactorService.clearSelectedProvider();
     return await this.logInHelper(
@@ -114,7 +114,7 @@ export class AuthService implements AuthServiceAbstraction {
     );
   }
 
-  async logInApiKey(clientId: string, clientSecret: string, twoFactor: TwoFactorData): Promise<AuthResult> {
+  async logInApiKey(clientId: string, clientSecret: string, twoFactor?: TwoFactorData): Promise<AuthResult> {
     this.twoFactorService.clearSelectedProvider();
     return await this.logInHelper(
       null,
