@@ -114,6 +114,23 @@ const IconMap: any = {
   "bwi-youtube": String.fromCharCode(0xe966),
   "bwi-windows": String.fromCharCode(0xe964),
   "bwi-apple": String.fromCharCode(0xe945),
+  "bwi-safari": String.fromCharCode(0xe974),
+  "bwi-opera": String.fromCharCode(0xe975),
+  "bwi-firefox": String.fromCharCode(0xe976),
+  "bwi-edge": String.fromCharCode(0xe977),
+  "bwi-chrome": String.fromCharCode(0xe978),
+  "bwi-star-f": String.fromCharCode(0xe979),
+  "bwi-arrow-circle-up": String.fromCharCode(0xe97a),
+  "bwi-arrow-circle-right": String.fromCharCode(0xe97b),
+  "bwi-arrow-circle-left": String.fromCharCode(0xe97c),
+  "bwi-arrow-circle-down": String.fromCharCode(0xe97d),
+  "bwi-undo": String.fromCharCode(0xe97e),
+  "bwi-bolt": String.fromCharCode(0xe97f),
+  "bwi-puzzle": String.fromCharCode(0xe980),
+  "bwi-rss": String.fromCharCode(0xe973),
+  "bwi-dbl-angle-left": String.fromCharCode(0xe970),
+  "bwi-dbl-angle-right": String.fromCharCode(0xe971),
+  "bwi-hamburger": String.fromCharCode(0xe972),
 };
 
 @Injectable()
