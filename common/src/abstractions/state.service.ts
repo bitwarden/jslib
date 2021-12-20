@@ -24,11 +24,11 @@ import { CollectionView } from "../models/view/collectionView";
 import { FolderView } from "../models/view/folderView";
 import { SendView } from "../models/view/sendView";
 
-export abstract class StateService {
-  accounts: BehaviorSubject<{ [userId: string]: Account }>;
+export abstract class StateService<T extends Account = Account> {
+  accounts: BehaviorSubject<{ [userId: string]: T }>;
   activeAccount: BehaviorSubject<string>;
 
-  addAccount: (account: Account) => Promise<void>;
+  addAccount: (account: T) => Promise<void>;
   setActiveUser: (userId: string) => Promise<void>;
   clean: (options?: StorageOptions) => Promise<void>;
   init: () => Promise<void>;
