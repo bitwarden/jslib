@@ -270,12 +270,12 @@ export class AuthService implements AuthServiceAbstraction {
     const result = new AuthResult();
 
     result.captchaSiteKey = (response as any).siteKey;
-    if (!!result.captchaSiteKey) {
+    if (result.requiresCaptcha) {
       return result;
     }
 
-    result.twoFactor = !!(response as any).twoFactorProviders2;
-    if (result.twoFactor) {
+    result.twoFactor = (response as any).twoFactorProviders2 != null;
+    if (result.requiresTwoFactor) {
       result.twoFactorProviders = (response as IdentityTwoFactorResponse).twoFactorProviders2;
       return result;
     }

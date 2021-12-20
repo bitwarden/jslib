@@ -155,7 +155,7 @@ describe("Cipher Service", () => {
 
   function newTokenResponse() {
     const tokenResponse = new IdentityTokenResponse({});
-    (tokenResponse as any).twoFactorProviders2 = false;
+    (tokenResponse as any).twoFactorProviders2 = null;
     (tokenResponse as any).siteKey = undefined;
     tokenResponse.resetMasterPassword = false;
     tokenResponse.forcePasswordReset = false;
