@@ -197,6 +197,12 @@ export class AuthService implements AuthServiceAbstraction {
       return result;
     }
 
+    const tokenResponse = response as IdentityTokenResponse;
+    if (tokenResponse.apiUseKeyConnector) {
+      const keyConnectorUrl = this.environmentService.getKeyConnectorUrl();
+      await this.keyConnectorService.getAndSetKey(keyConnectorUrl);
+    }
+
     await this.completeLogIn();
     return result;
   }
@@ -286,11 +292,6 @@ export class AuthService implements AuthServiceAbstraction {
 
     if (this.setCryptoKeys) {
       if (!this.isNewSsoUser(code, tokenResponse.key)) {
-        if (tokenResponse.apiUseKeyConnector) {
-          const keyConnectorUrl = this.environmentService.getKeyConnectorUrl();
-          await this.keyConnectorService.getAndSetKey(keyConnectorUrl);
-        }
-
         await this.cryptoService.setEncKey(tokenResponse.key);
 
         // User doesn't have a key pair yet (old account), let's generate one for them
