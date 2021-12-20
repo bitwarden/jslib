@@ -220,7 +220,7 @@ describe("Cipher Service", () => {
     // Negative tests
     apiService.didNotReceive().postAccountKeys(Arg.any()); // Did not generate new private key pair
     keyConnectorService.didNotReceive().getAndSetKey(Arg.any()); // Did not fetch Key Connector key
-    apiService.didNotReceive().postUserKeyToKeyConnector(Arg.any(), Arg.any()); // Did not send key to KC
+    keyConnectorService.didNotReceive().convertNewSsoUserToKeyConnector(Arg.all()); // Did not send key to KC
     tokenService.didNotReceive().setTwoFactorToken(Arg.any()); // Did not save 2FA token
 
     // Return result:
@@ -447,7 +447,7 @@ describe("Cipher Service", () => {
     cryptoService.didNotReceive().setKeyHash(localHashedPassword);
     apiService.didNotReceive().postAccountKeys(Arg.any()); // Did not generate new private key pair
     keyConnectorService.didNotReceive().getAndSetKey(Arg.any()); // Did not fetch Key Connector key
-    apiService.didNotReceive().postUserKeyToKeyConnector(Arg.any(), Arg.any()); // Did not send key to KC
+    keyConnectorService.didNotReceive().convertNewSsoUserToKeyConnector(Arg.all()); // Did not send key to KC
     tokenService.didNotReceive().setTwoFactorToken(Arg.any()); // Did not save 2FA token
 
     // Return result:
@@ -514,22 +514,7 @@ describe("Cipher Service", () => {
     const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
 
     commonSuccessAssertions();
-    cryptoService.received(1).setKey(preloginKey);
-    cryptoService.received(1).setEncKey(Arg.any());
-    apiService.received(1).postUserKeyToKeyConnector(keyConnectorUrl, Arg.any());
-    apiService
-      .received(1)
-      .postSetKeyConnectorKey(
-        Arg.is(
-          (r) =>
-            r.kdf === kdf &&
-            r.kdfIterations === kdfIterations &&
-            r.key === realEncKey[1].encryptedString &&
-            r.orgIdentifier === ssoOrgId &&
-            r.keys.encryptedPrivateKey === privKey.encryptedString &&
-            r.keys.publicKey === pubKey
-        )
-      );
+    keyConnectorService.received(1).convertNewSsoUserToKeyConnector(kdf, kdfIterations, keyConnectorUrl, ssoOrgId);
   });
 
   // API
@@ -587,7 +572,7 @@ describe("Cipher Service", () => {
     // Negative tests
     apiService.didNotReceive().postAccountKeys(Arg.any()); // Did not generate new private key pair
     keyConnectorService.didNotReceive().getAndSetKey(Arg.any()); // Did not fetch Key Connector key
-    apiService.didNotReceive().postUserKeyToKeyConnector(Arg.any(), Arg.any()); // Did not send key to KC
+    keyConnectorService.didNotReceive().convertNewSsoUserToKeyConnector(Arg.all()); // Did not send key to KC
     tokenService.didNotReceive().setTwoFactorToken(Arg.any()); // Did not save 2FA token
 
     // Return result:
