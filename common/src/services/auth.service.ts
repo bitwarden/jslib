@@ -88,7 +88,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
-    const result = await this.processTokenResponse(response, null, null, null);
+    const result = await this.processTokenResponse(response, null);
 
     if (!!result.captchaSiteKey) {
       return result;
@@ -133,7 +133,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
-    const result = await this.processTokenResponse(response, code, null, null);
+    const result = await this.processTokenResponse(response, code);
 
     if (!!result.captchaSiteKey) {
       return result;
@@ -186,7 +186,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
-    const result = await this.processTokenResponse(response, null, clientId, clientSecret);
+    const result = await this.processTokenResponse(response, null);
 
     if (!!result.captchaSiteKey) {
       return result;
@@ -196,6 +196,9 @@ export class AuthService implements AuthServiceAbstraction {
       this.saveState(tokenRequest, result.twoFactorProviders);
       return result;
     }
+
+    await this.stateService.setApiKeyClientId(clientId);
+    await this.stateService.setApiKeyClientSecret(clientSecret);
 
     const tokenResponse = response as IdentityTokenResponse;
     if (tokenResponse.apiUseKeyConnector) {
@@ -263,8 +266,6 @@ export class AuthService implements AuthServiceAbstraction {
   private async processTokenResponse(
     response: IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse,
     code: string,
-    clientId: string,
-    clientSecret: string,
   ): Promise<AuthResult> {
     this.clearState();
     const result = new AuthResult();
@@ -284,23 +285,21 @@ export class AuthService implements AuthServiceAbstraction {
     result.resetMasterPassword = tokenResponse.resetMasterPassword;
     result.forcePasswordReset = tokenResponse.forcePasswordReset;
 
-    this.saveAccountInformation(tokenResponse, clientId, clientSecret);
+    this.saveAccountInformation(tokenResponse);
 
     if (tokenResponse.twoFactorToken != null) {
       await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken);
     }
 
-    if (this.setCryptoKeys) {
-      if (!this.isNewSsoUser(code, tokenResponse.key)) {
-        await this.cryptoService.setEncKey(tokenResponse.key);
+    if (this.setCryptoKeys && !this.isNewSsoUser(code, tokenResponse.key)) {
+      await this.cryptoService.setEncKey(tokenResponse.key);
 
-        // User doesn't have a key pair yet (old account), let's generate one for them
-        if (tokenResponse.privateKey == null) {
-          const newKeyPair = await this.createKeyPair();
-          await this.cryptoService.setEncPrivateKey(newKeyPair);
-        } else {
-          await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
-        }
+      // User doesn't have a key pair yet (old account), let's generate one for them
+      if (tokenResponse.privateKey == null) {
+        const newKeyPair = await this.createKeyPair();
+        await this.cryptoService.setEncPrivateKey(newKeyPair);
+      } else {
+        await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
       }
     }
 
@@ -337,11 +336,7 @@ export class AuthService implements AuthServiceAbstraction {
     return twoFactor;
   }
 
-  private async saveAccountInformation(
-    tokenResponse: IdentityTokenResponse,
-    clientId: string,
-    clientSecret: string
-  ) {
+  private async saveAccountInformation(tokenResponse: IdentityTokenResponse) {
     const accountInformation = await this.tokenService.decodeToken(tokenResponse.accessToken);
     await this.stateService.addAccount({
       profile: {
@@ -349,8 +344,6 @@ export class AuthService implements AuthServiceAbstraction {
         ...{
           userId: accountInformation.sub,
           email: accountInformation.email,
-          apiKeyClientId: clientId,
-          apiKeyClientSecret: clientSecret,
           hasPremiumPersonally: accountInformation.premium,
           kdfIterations: tokenResponse.kdfIterations,
           kdfType: tokenResponse.kdf,

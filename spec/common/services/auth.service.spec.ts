@@ -136,8 +136,6 @@ describe("Cipher Service", () => {
         ...{
           userId: userId,
           email: email,
-          apiKeyClientId: null,
-          apiKeyClientSecret: null,
           hasPremiumPersonally: false,
           kdfIterations: kdfIterations,
           kdfType: kdf,
@@ -539,30 +537,11 @@ describe("Cipher Service", () => {
       })
     );
 
+
     // Sets local environment:
-    stateService.received(1).addAccount({
-      profile: {
-        ...new AccountProfile(),
-        ...{
-          userId: userId,
-          email: email,
-          apiKeyClientId: apiClientId,
-          apiKeyClientSecret: apiClientSecret,
-          hasPremiumPersonally: false,
-          kdfIterations: kdfIterations,
-          kdfType: kdf,
-        },
-      },
-      tokens: {
-        ...new AccountTokens(),
-        ...{
-          accessToken: accessToken,
-          refreshToken: refreshToken,
-        },
-      },
-    });
-    stateService.received(1).setBiometricLocked(false);
-    messagingService.received(1).send("loggedIn");
+      stateService.received(1).setApiKeyClientId(apiClientId);
+      stateService.received(1).setApiKeyClientSecret(apiClientSecret);
+      commonSuccessAssertions();
 
     cryptoService.received(1).setEncKey(encKey);
     cryptoService.received(1).setEncPrivateKey(privateKey);
