@@ -88,12 +88,13 @@ export class AuthService implements AuthServiceAbstraction {
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
-    const result = await this.processTokenResponse(response, false, async () => {
+    const successCallback = async () => {
       if (this.setCryptoKeys) {
         await this.cryptoService.setKey(key);
         await this.cryptoService.setKeyHash(localHashedPassword);
       }
-    });
+    }
+    const result = await this.processTokenResponse(response, false, successCallback);
 
     if (result.requiresTwoFactor) {
       this.saveState(tokenRequest, result.twoFactorProviders, localHashedPassword, key);
@@ -128,7 +129,7 @@ export class AuthService implements AuthServiceAbstraction {
     const tokenResponse = response as IdentityTokenResponse;
 
     const newSsoUser = tokenResponse.key == null;
-    const result = await this.processTokenResponse(response, newSsoUser, async () => {
+    const successCallback = async () => {
       if (this.setCryptoKeys && tokenResponse.keyConnectorUrl != null) {
         if (!newSsoUser) {
           await this.keyConnectorService.getAndSetKey(tokenResponse.keyConnectorUrl);
@@ -141,7 +142,9 @@ export class AuthService implements AuthServiceAbstraction {
           );
         }
       }
-    });
+    }
+
+    const result = await this.processTokenResponse(response, newSsoUser, successCallback);
 
     if (result.requiresTwoFactor) {
       this.saveState(tokenRequest, result.twoFactorProviders);
@@ -171,7 +174,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
-    const result = await this.processTokenResponse(response, false, async () => {
+    const successCallback = async () => {
       await this.stateService.setApiKeyClientId(clientId);
       await this.stateService.setApiKeyClientSecret(clientSecret);
 
@@ -180,7 +183,9 @@ export class AuthService implements AuthServiceAbstraction {
         const keyConnectorUrl = this.environmentService.getKeyConnectorUrl();
         await this.keyConnectorService.getAndSetKey(keyConnectorUrl);
       }
-    });
+    }
+
+    const result = await this.processTokenResponse(response, false, successCallback);
 
     if (result.requiresTwoFactor) {
       this.saveState(tokenRequest, result.twoFactorProviders);
