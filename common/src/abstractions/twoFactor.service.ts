@@ -1,6 +1,7 @@
 import { TwoFactorProviderType } from "../enums/twoFactorProviderType";
 
 export abstract class TwoFactorService {
+  init: () => void;
   getSupportedProviders: (win: Window) => any[];
   getDefaultProvider: (webAuthnSupported: boolean) => TwoFactorProviderType;
   clearSelectedProvider: () => void;

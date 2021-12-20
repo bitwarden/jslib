@@ -113,11 +113,10 @@ import { ValidationService } from "./validation.service";
         PlatformUtilsServiceAbstraction,
         MessagingServiceAbstraction,
         LogService,
-        CryptoFunctionServiceAbstraction,
         KeyConnectorServiceAbstraction,
         EnvironmentServiceAbstraction,
-        TwoFactorServiceAbstraction,
         StateServiceAbstraction,
+        TwoFactorServiceAbstraction,
       ],
     },
     {
@@ -430,6 +429,7 @@ import { ValidationService } from "./validation.service";
         TokenServiceAbstraction,
         LogService,
         OrganizationServiceAbstraction,
+        CryptoFunctionServiceAbstraction,
       ],
     },
     {

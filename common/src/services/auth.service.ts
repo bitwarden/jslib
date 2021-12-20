@@ -219,6 +219,14 @@ export class AuthService implements AuthServiceAbstraction {
     return this.savedTokenRequest instanceof PasswordTokenRequest;
   }
 
+    get email(): string {
+        return (this.savedTokenRequest as PasswordTokenRequest).email;
+  }
+
+    get masterPasswordHash(): string {
+        return (this.savedTokenRequest as PasswordTokenRequest).masterPasswordHash;
+    }
+
   async makePreloginKey(masterPassword: string, email: string): Promise<SymmetricCryptoKey> {
     email = email.trim().toLowerCase();
     let kdf: KdfType = null;
@@ -259,7 +267,7 @@ export class AuthService implements AuthServiceAbstraction {
     result.resetMasterPassword = tokenResponse.resetMasterPassword;
     result.forcePasswordReset = tokenResponse.forcePasswordReset;
 
-    this.saveAccountInformation(tokenResponse);
+    await this.saveAccountInformation(tokenResponse);
 
     if (tokenResponse.twoFactorToken != null) {
       await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken);

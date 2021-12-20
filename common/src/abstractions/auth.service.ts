@@ -3,6 +3,8 @@ import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 import { TokenRequestTwoFactor } from "../models/request/identityToken/tokenRequest";
 
 export abstract class AuthService {
+  masterPasswordHash: string;
+  email: string;
   logIn: (
     email: string,
     masterPassword: string,
