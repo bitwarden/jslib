@@ -7,10 +7,9 @@ export class ApiTokenRequest extends TokenRequest {
     public clientId: string,
     public clientSecret: string,
     protected twoFactor: TwoFactorData,
-    captchaResponse: string,
     device?: DeviceRequest
   ) {
-    super(twoFactor, captchaResponse, device);
+    super(twoFactor, device);
   }
 
   toIdentityToken(clientId: string) {

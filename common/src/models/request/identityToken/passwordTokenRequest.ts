@@ -1,18 +1,19 @@
 import { TokenRequest, TwoFactorData } from "./tokenRequest";
 
+import { CaptchaProtectedRequest } from '../captchaProtectedRequest';
 import { DeviceRequest } from "../deviceRequest";
 
 import { Utils } from "../../../misc/utils";
 
-export class PasswordTokenRequest extends TokenRequest {
+export class PasswordTokenRequest extends TokenRequest implements CaptchaProtectedRequest {
   constructor(
     public email: string,
-    public masterPasswordHash: string,
+    private masterPasswordHash: string,
+    public captchaResponse: string,
     protected twoFactor: TwoFactorData,
-    captchaResponse: string,
     device?: DeviceRequest
   ) {
-    super(twoFactor, captchaResponse, device);
+    super(twoFactor, device);
   }
 
   toIdentityToken(clientId: string) {
@@ -21,6 +22,10 @@ export class PasswordTokenRequest extends TokenRequest {
     obj.grant_type = "password";
     obj.username = this.email;
     obj.password = this.masterPasswordHash;
+
+    if (this.captchaResponse != null) {
+      obj.captchaResponse = this.captchaResponse;
+    }
 
     return obj;
   }

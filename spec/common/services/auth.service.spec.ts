@@ -426,8 +426,7 @@ describe("Cipher Service", () => {
           ssoTokenRequest.redirectUri === ssoRedirectUrl &&
           ssoTokenRequest.device.identifier === deviceId &&
           ssoTokenRequest.twoFactor.provider == null &&
-          ssoTokenRequest.twoFactor.token == null &&
-          actual.captchaResponse == null
+          ssoTokenRequest.twoFactor.token == null
         );
       })
     );

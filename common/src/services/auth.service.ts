@@ -76,8 +76,8 @@ export class AuthService implements AuthServiceAbstraction {
       tokenRequest = new PasswordTokenRequest(
         email,
         hashedPassword,
-        await this.createTwoFactorData(twoFactor),
         captchaToken,
+        await this.createTwoFactorData(twoFactor),
         await this.createDeviceRequest()
       );
     } else {
@@ -124,7 +124,6 @@ export class AuthService implements AuthServiceAbstraction {
         codeVerifier,
         redirectUrl,
         await this.createTwoFactorData(twoFactor),
-        null,
         await this.createDeviceRequest()
       );
     } else {
@@ -178,7 +177,6 @@ export class AuthService implements AuthServiceAbstraction {
         clientId,
         clientSecret,
         await this.createTwoFactorData(twoFactor),
-        null,
         await this.createDeviceRequest()
       );
     } else {
@@ -266,7 +264,7 @@ export class AuthService implements AuthServiceAbstraction {
 
   private async processTokenResponse(
     response: IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse,
-    newSsoUser?: boolean,
+    newSsoUser: boolean = false,
   ): Promise<AuthResult> {
     this.clearState();
     const result = new AuthResult();
@@ -392,9 +390,5 @@ export class AuthService implements AuthServiceAbstraction {
 
     this.localHashedPassword = null;
     this.key = null;
-  }
-
-  private isNewSsoUser(code: string, key: string) {
-    return code != null && key == null;
   }
 }

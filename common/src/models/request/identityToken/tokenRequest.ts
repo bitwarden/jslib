@@ -9,12 +9,11 @@ export interface TwoFactorData {
   remember: boolean;
 }
 
-export abstract class TokenRequest implements CaptchaProtectedRequest {
+export abstract class TokenRequest {
   protected device?: DeviceRequest;
 
   constructor(
     protected twoFactor: TwoFactorData,
-    public captchaResponse: string,
     device?: DeviceRequest
   ) {
     this.device = device != null ? device : null;
@@ -38,10 +37,6 @@ export abstract class TokenRequest implements CaptchaProtectedRequest {
       obj.twoFactorToken = this.twoFactor.token;
       obj.twoFactorProvider = this.twoFactor.provider;
       obj.twoFactorRemember = this.twoFactor.remember ? "1" : "0";
-    }
-
-    if (this.captchaResponse != null) {
-      obj.captchaResponse = this.captchaResponse;
     }
 
     return obj;

@@ -8,10 +8,9 @@ export class SsoTokenRequest extends TokenRequest {
     public codeVerifier: string,
     public redirectUri: string,
     protected twoFactor: TwoFactorData,
-    captchaResponse: string,
     device?: DeviceRequest
   ) {
-    super(twoFactor, captchaResponse, device);
+    super(twoFactor, device);
   }
 
   toIdentityToken(clientId: string) {
