@@ -145,15 +145,16 @@ export class AuthService implements AuthServiceAbstraction {
     }
 
     const tokenResponse = response as IdentityTokenResponse;
-
-    if (tokenResponse.key == null && tokenResponse.keyConnectorUrl != null) {
-      // user onboarded using SSO needs conversion to key connector
-      await this.keyConnectorService.convertNewSsoUserToKeyConnector(
-        tokenResponse.kdf,
-        tokenResponse.kdfIterations,
-        tokenResponse.keyConnectorUrl,
-        orgId
-      );
+    if (this.setCryptoKeys) {
+      if (tokenResponse.key == null && tokenResponse.keyConnectorUrl != null) {
+        // user onboarded using SSO needs conversion to key connector
+        await this.keyConnectorService.convertNewSsoUserToKeyConnector(
+          tokenResponse.kdf,
+          tokenResponse.kdfIterations,
+          tokenResponse.keyConnectorUrl,
+          orgId
+        );
+      }
     }
 
     await this.completeLogIn();
