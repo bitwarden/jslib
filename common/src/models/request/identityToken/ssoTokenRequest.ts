@@ -1,4 +1,4 @@
-import { TokenRequest, TwoFactorData } from "./tokenRequest";
+import { TokenRequest, TokenRequestTwoFactor } from "./tokenRequest";
 
 import { DeviceRequest } from "../deviceRequest";
 
@@ -7,7 +7,7 @@ export class SsoTokenRequest extends TokenRequest {
     public code: string,
     public codeVerifier: string,
     public redirectUri: string,
-    protected twoFactor: TwoFactorData,
+    protected twoFactor: TokenRequestTwoFactor,
     device?: DeviceRequest
   ) {
     super(twoFactor, device);

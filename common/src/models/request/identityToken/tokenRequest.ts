@@ -1,9 +1,8 @@
 import { TwoFactorProviderType } from "../../../enums/twoFactorProviderType";
 
-import { CaptchaProtectedRequest } from "../captchaProtectedRequest";
 import { DeviceRequest } from "../deviceRequest";
 
-export interface TwoFactorData {
+export interface TokenRequestTwoFactor {
   provider: TwoFactorProviderType;
   token: string;
   remember: boolean;
@@ -12,7 +11,7 @@ export interface TwoFactorData {
 export abstract class TokenRequest {
   protected device?: DeviceRequest;
 
-  constructor(protected twoFactor: TwoFactorData, device?: DeviceRequest) {
+  constructor(protected twoFactor: TokenRequestTwoFactor, device?: DeviceRequest) {
     this.device = device != null ? device : null;
   }
 
@@ -43,7 +42,7 @@ export abstract class TokenRequest {
     // Implemented in subclass if required
   }
 
-  setTwoFactor(twoFactor: TwoFactorData) {
+  setTwoFactor(twoFactor: TokenRequestTwoFactor) {
     this.twoFactor = twoFactor;
   }
 }

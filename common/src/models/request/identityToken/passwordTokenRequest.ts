@@ -1,4 +1,4 @@
-import { TokenRequest, TwoFactorData } from "./tokenRequest";
+import { TokenRequest, TokenRequestTwoFactor } from "./tokenRequest";
 
 import { CaptchaProtectedRequest } from "../captchaProtectedRequest";
 import { DeviceRequest } from "../deviceRequest";
@@ -10,7 +10,7 @@ export class PasswordTokenRequest extends TokenRequest implements CaptchaProtect
     public email: string,
     private masterPasswordHash: string,
     public captchaResponse: string,
-    protected twoFactor: TwoFactorData,
+    protected twoFactor: TokenRequestTwoFactor,
     device?: DeviceRequest
   ) {
     super(twoFactor, device);

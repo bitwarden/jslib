@@ -13,7 +13,7 @@ import { PreloginRequest } from "../models/request/preloginRequest";
 import { ApiTokenRequest } from "../models/request/identityToken/apiTokenRequest";
 import { PasswordTokenRequest } from "../models/request/identityToken/passwordTokenRequest";
 import { SsoTokenRequest } from "../models/request/identityToken/ssoTokenRequest";
-import { TwoFactorData } from "../models/request/identityToken/tokenRequest";
+import { TokenRequestTwoFactor } from "../models/request/identityToken/tokenRequest";
 
 import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
 import { IdentityTwoFactorResponse } from "../models/response/identityTwoFactorResponse";
@@ -56,7 +56,7 @@ export class AuthService implements AuthServiceAbstraction {
   async logIn(
     email: string,
     masterPassword: string,
-    twoFactor?: TwoFactorData,
+    twoFactor?: TokenRequestTwoFactor,
     captchaToken?: string
   ): Promise<AuthResult> {
     this.twoFactorService.clearSelectedProvider();
@@ -81,8 +81,8 @@ export class AuthService implements AuthServiceAbstraction {
         email,
         hashedPassword,
         captchaToken,
-        await this.createTwoFactorData(twoFactor),
-        await this.createDeviceRequest()
+        await this.buildTwoFactor(twoFactor),
+        await this.buildDeviceRequest()
       );
     } 
 
@@ -108,7 +108,7 @@ export class AuthService implements AuthServiceAbstraction {
     codeVerifier: string,
     redirectUrl: string,
     orgId: string,
-    twoFactor?: TwoFactorData
+    twoFactor?: TokenRequestTwoFactor
   ): Promise<AuthResult> {
     this.twoFactorService.clearSelectedProvider();
 
@@ -116,8 +116,8 @@ export class AuthService implements AuthServiceAbstraction {
       code,
       codeVerifier,
       redirectUrl,
-      await this.createTwoFactorData(twoFactor),
-      await this.createDeviceRequest()
+      await this.buildTwoFactor(twoFactor),
+      await this.buildDeviceRequest()
     );
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
@@ -151,15 +151,15 @@ export class AuthService implements AuthServiceAbstraction {
   async logInApiKey(
     clientId: string,
     clientSecret: string,
-    twoFactor?: TwoFactorData
+    twoFactor?: TokenRequestTwoFactor
   ): Promise<AuthResult> {
     this.twoFactorService.clearSelectedProvider();
 
     const tokenRequest = this.savedTokenRequest ?? new ApiTokenRequest(
       clientId,
       clientSecret,
-      await this.createTwoFactorData(twoFactor),
-      await this.createDeviceRequest()
+      await this.buildTwoFactor(twoFactor),
+      await this.buildDeviceRequest()
     );
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
@@ -184,7 +184,7 @@ export class AuthService implements AuthServiceAbstraction {
     return result;
   }
 
-  async logInTwoFactor(twoFactor: TwoFactorData): Promise<AuthResult> {
+  async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
     this.savedTokenRequest.setTwoFactor(twoFactor);
 
     if (this.authingWithPassword) {
@@ -278,12 +278,12 @@ export class AuthService implements AuthServiceAbstraction {
     return result;
   }
 
-  private async createDeviceRequest() {
+  private async buildDeviceRequest() {
     const appId = await this.appIdService.getAppId();
     return new DeviceRequest(appId, this.platformUtilsService);
   }
 
-  private async createTwoFactorData(userProvidedTwoFactor: TwoFactorData) {
+  private async buildTwoFactor(userProvidedTwoFactor: TokenRequestTwoFactor) {
     if (userProvidedTwoFactor != null) {
       return userProvidedTwoFactor;
     }

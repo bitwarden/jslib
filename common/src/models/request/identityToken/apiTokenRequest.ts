@@ -1,4 +1,4 @@
-import { TokenRequest, TwoFactorData } from "./tokenRequest";
+import { TokenRequest, TokenRequestTwoFactor } from "./tokenRequest";
 
 import { DeviceRequest } from "../deviceRequest";
 
@@ -6,7 +6,7 @@ export class ApiTokenRequest extends TokenRequest {
   constructor(
     public clientId: string,
     public clientSecret: string,
-    protected twoFactor: TwoFactorData,
+    protected twoFactor: TokenRequestTwoFactor,
     device?: DeviceRequest
   ) {
     super(twoFactor, device);
