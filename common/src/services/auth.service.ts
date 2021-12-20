@@ -95,11 +95,9 @@ export class AuthService implements AuthServiceAbstraction {
 
     const result = await this.processTokenResponse(
       response,
-      localHashedPassword,
       null,
       null,
       null,
-      key,
       null
     );
 
@@ -140,9 +138,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     const result = await this.processTokenResponse(
       response,
-      null,
       code,
-      null,
       null,
       null,
       orgId
@@ -180,10 +176,8 @@ export class AuthService implements AuthServiceAbstraction {
     const result = await this.processTokenResponse(
       response,
       null,
-      null,
       clientId,
       clientSecret,
-      null,
       null
     );
 
@@ -249,11 +243,9 @@ export class AuthService implements AuthServiceAbstraction {
 
   private async processTokenResponse(
     response: IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse,
-    localHashedPassword: string,
     code: string,
     clientId: string,
     clientSecret: string,
-    key: SymmetricCryptoKey,
     orgId?: string
   ): Promise<AuthResult> {
     this.clearState();
