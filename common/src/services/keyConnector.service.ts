@@ -1,6 +1,6 @@
 import { ApiService } from "../abstractions/api.service";
 import { CryptoService } from "../abstractions/crypto.service";
-import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
+import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
 import { KeyConnectorService as KeyConnectorServiceAbstraction } from "../abstractions/keyConnector.service";
 import { LogService } from "../abstractions/log.service";
 import { OrganizationService } from "../abstractions/organization.service";
@@ -12,10 +12,10 @@ import { OrganizationUserType } from "../enums/organizationUserType";
 import { Utils } from "../misc/utils";
 
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-import { SetKeyConnectorKeyRequest } from '../models/request/account/setKeyConnectorKeyRequest';
+import { SetKeyConnectorKeyRequest } from "../models/request/account/setKeyConnectorKeyRequest";
 
 import { KeyConnectorUserKeyRequest } from "../models/request/keyConnectorUserKeyRequest";
-import { KeysRequest } from '../models/request/keysRequest';
+import { KeysRequest } from "../models/request/keysRequest";
 
 export class KeyConnectorService implements KeyConnectorServiceAbstraction {
   constructor(
@@ -25,7 +25,7 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
     private tokenService: TokenService,
     private logService: LogService,
     private organizationService: OrganizationService,
-    private cryptoFunctionService: CryptoFunctionService,
+    private cryptoFunctionService: CryptoFunctionService
   ) {}
 
   setUsesKeyConnector(usesKeyConnector: boolean) {
@@ -84,7 +84,12 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
     );
   }
 
-  async convertNewSsoUserToKeyConnector(kdf: number, kdfIterations: number, url: string, orgId: string) {
+  async convertNewSsoUserToKeyConnector(
+    kdf: number,
+    kdfIterations: number,
+    url: string,
+    orgId: string
+  ) {
     const password = await this.cryptoFunctionService.randomBytes(64);
 
     const k = await this.cryptoService.makeKey(
@@ -102,10 +107,7 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
     const [pubKey, privKey] = await this.cryptoService.makeKeyPair();
 
     try {
-      await this.apiService.postUserKeyToKeyConnector(
-        url,
-        keyConnectorRequest
-      );
+      await this.apiService.postUserKeyToKeyConnector(url, keyConnectorRequest);
     } catch (e) {
       throw new Error("Unable to reach key connector");
     }

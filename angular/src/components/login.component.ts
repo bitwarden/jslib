@@ -93,7 +93,12 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
     }
 
     try {
-      this.formPromise = this.authService.logIn(this.email, this.masterPassword, null, this.captchaToken);
+      this.formPromise = this.authService.logIn(
+        this.email,
+        this.masterPassword,
+        null,
+        this.captchaToken
+      );
       const response = await this.formPromise;
       if (this.rememberEmail) {
         await this.stateService.setRememberedEmail(this.email);

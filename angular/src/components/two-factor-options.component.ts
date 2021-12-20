@@ -6,7 +6,7 @@ import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType"
 import { AuthService } from "jslib-common/abstractions/auth.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
-import { TwoFactorService } from 'jslib-common/abstractions/twoFactor.service';
+import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
 @Directive()
 export class TwoFactorOptionsComponent implements OnInit {

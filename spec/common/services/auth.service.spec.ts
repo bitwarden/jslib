@@ -507,7 +507,9 @@ describe("Cipher Service", () => {
     const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
 
     commonSuccessAssertions();
-    keyConnectorService.received(1).convertNewSsoUserToKeyConnector(kdf, kdfIterations, keyConnectorUrl, ssoOrgId);
+    keyConnectorService
+      .received(1)
+      .convertNewSsoUserToKeyConnector(kdf, kdfIterations, keyConnectorUrl, ssoOrgId);
   });
 
   // API
@@ -534,11 +536,10 @@ describe("Cipher Service", () => {
       })
     );
 
-
     // Sets local environment:
-      stateService.received(1).setApiKeyClientId(apiClientId);
-      stateService.received(1).setApiKeyClientSecret(apiClientSecret);
-      commonSuccessAssertions();
+    stateService.received(1).setApiKeyClientId(apiClientId);
+    stateService.received(1).setApiKeyClientSecret(apiClientSecret);
+    commonSuccessAssertions();
 
     cryptoService.received(1).setEncKey(encKey);
     cryptoService.received(1).setEncPrivateKey(privateKey);

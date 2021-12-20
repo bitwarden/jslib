@@ -192,13 +192,11 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
   }
 
   async doSubmit() {
-    this.formPromise = this.authService.logInTwoFactor(
-        {
-            provider: this.selectedProviderType,
-            token: this.token,
-            remember: this.remember
-        }
-    );
+    this.formPromise = this.authService.logInTwoFactor({
+      provider: this.selectedProviderType,
+      token: this.token,
+      remember: this.remember,
+    });
     const response: AuthResult = await this.formPromise;
     const disableFavicon = await this.stateService.getDisableFavicon();
     await this.stateService.setDisableFavicon(!!disableFavicon);

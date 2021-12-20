@@ -157,15 +157,11 @@ export class LoginCommand {
 
       let response: AuthResult = null;
       if (clientId != null && clientSecret != null) {
-        response = await this.authService.logInApiKey(
-          clientId,
-          clientSecret,
-          {
-            provider: twoFactorMethod,
-            token: twoFactorToken,
-            remember: false
-          }
-        );
+        response = await this.authService.logInApiKey(clientId, clientSecret, {
+          provider: twoFactorMethod,
+          token: twoFactorToken,
+          remember: false,
+        });
       } else if (ssoCode != null && ssoCodeVerifier != null) {
         response = await this.authService.logInSso(
           ssoCode,
@@ -175,19 +171,15 @@ export class LoginCommand {
           {
             provider: twoFactorMethod,
             token: twoFactorToken,
-            remember: false
-          }
-        );
-      } else {
-        response = await this.authService.logIn(
-          email,
-          password,
-          {
-            provider: twoFactorMethod,
-            token: twoFactorToken,
             remember: false,
           }
         );
+      } else {
+        response = await this.authService.logIn(email, password, {
+          provider: twoFactorMethod,
+          token: twoFactorToken,
+          remember: false,
+        });
       }
       if (response.captchaSiteKey) {
         const badCaptcha = Response.badRequest(

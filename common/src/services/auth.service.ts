@@ -264,7 +264,7 @@ export class AuthService implements AuthServiceAbstraction {
 
   private async processTokenResponse(
     response: IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse,
-    newSsoUser: boolean = false,
+    newSsoUser: boolean = false
   ): Promise<AuthResult> {
     this.clearState();
     const result = new AuthResult();

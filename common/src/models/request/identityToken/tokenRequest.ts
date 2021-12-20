@@ -12,10 +12,7 @@ export interface TwoFactorData {
 export abstract class TokenRequest {
   protected device?: DeviceRequest;
 
-  constructor(
-    protected twoFactor: TwoFactorData,
-    device?: DeviceRequest
-  ) {
+  constructor(protected twoFactor: TwoFactorData, device?: DeviceRequest) {
     this.device = device != null ? device : null;
   }
 
@@ -46,7 +43,7 @@ export abstract class TokenRequest {
     // Implemented in subclass if required
   }
 
-    setTwoFactor(twoFactor: TwoFactorData) {
-        this.twoFactor = twoFactor;
-    }
+  setTwoFactor(twoFactor: TwoFactorData) {
+    this.twoFactor = twoFactor;
+  }
 }

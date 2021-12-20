@@ -1,6 +1,6 @@
 import { TokenRequest, TwoFactorData } from "./tokenRequest";
 
-import { CaptchaProtectedRequest } from '../captchaProtectedRequest';
+import { CaptchaProtectedRequest } from "../captchaProtectedRequest";
 import { DeviceRequest } from "../deviceRequest";
 
 import { Utils } from "../../../misc/utils";

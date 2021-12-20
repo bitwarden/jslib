@@ -6,7 +6,12 @@ export abstract class KeyConnectorService {
   getUsesKeyConnector: () => Promise<boolean>;
   migrateUser: () => Promise<void>;
   userNeedsMigration: () => Promise<boolean>;
-  convertNewSsoUserToKeyConnector: (kdf: number, kdfIterations: number, url: string, orgId: string) => void;
+  convertNewSsoUserToKeyConnector: (
+    kdf: number,
+    kdfIterations: number,
+    url: string,
+    orgId: string
+  ) => void;
   setUsesKeyConnector: (enabled: boolean) => Promise<void>;
   setConvertAccountRequired: (status: boolean) => Promise<void>;
   getConvertAccountRequired: () => Promise<boolean>;
