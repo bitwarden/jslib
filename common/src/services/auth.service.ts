@@ -105,6 +105,9 @@ export class AuthService implements AuthServiceAbstraction {
 
     if (result.twoFactor) {
       this.saveState(tokenRequest, result.twoFactorProviders, localHashedPassword, key);
+    } else if (this.setCryptoKeys) {
+        await this.cryptoService.setKey(key);
+        await this.cryptoService.setKeyHash(localHashedPassword);
     }
 
     return result;
@@ -206,7 +209,7 @@ export class AuthService implements AuthServiceAbstraction {
       return await this.logInSso(null, null, null, null);
     }
 
-    throw new Error("Error: Could not find login in progress.");
+    throw new Error("Error: Could not find stored login state.");
   }
 
   logOut(callback: Function) {
@@ -278,13 +281,6 @@ export class AuthService implements AuthServiceAbstraction {
     }
 
     if (this.setCryptoKeys) {
-      if (key != null) {
-        await this.cryptoService.setKey(key);
-      }
-      if (localHashedPassword != null) {
-        await this.cryptoService.setKeyHash(localHashedPassword);
-      }
-
       if (!this.isNewSsoUser(code, tokenResponse.key)) {
         if (tokenResponse.keyConnectorUrl != null) {
           await this.keyConnectorService.getAndSetKey(tokenResponse.keyConnectorUrl);
