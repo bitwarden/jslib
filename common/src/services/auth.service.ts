@@ -267,14 +267,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     if (this.setCryptoKeys && !newSsoUser) {
       await this.cryptoService.setEncKey(tokenResponse.key);
-
-      // User doesn't have a key pair yet (old account), let's generate one for them
-      if (tokenResponse.privateKey == null) {
-        const newKeyPair = await this.createKeyPair();
-        await this.cryptoService.setEncPrivateKey(newKeyPair);
-      } else {
-        await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
-      }
+      await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey ?? await this.createKeyPairForOldAccount());
     }
 
     await onSuccess();
@@ -290,24 +283,25 @@ export class AuthService implements AuthServiceAbstraction {
     return new DeviceRequest(appId, this.platformUtilsService);
   }
 
-  private async createTwoFactorData(twoFactor: TwoFactorData) {
-    if (twoFactor == null) {
-      const storedTwoFactorToken = await this.tokenService.getTwoFactorToken();
-      if (storedTwoFactorToken != null) {
-        twoFactor = {
-          token: storedTwoFactorToken,
-          provider: TwoFactorProviderType.Remember,
-          remember: false,
-        };
-      } else {
-        twoFactor = {
-          token: null,
-          provider: null,
-          remember: false,
-        };
-      }
+  private async createTwoFactorData(userProvidedTwoFactor: TwoFactorData) {
+    if (userProvidedTwoFactor != null) {
+      return userProvidedTwoFactor;
     }
-    return twoFactor;
+
+    const storedTwoFactorToken = await this.tokenService.getTwoFactorToken();
+    if (storedTwoFactorToken != null) {
+      return {
+        token: storedTwoFactorToken,
+        provider: TwoFactorProviderType.Remember,
+        remember: false,
+      };
+    }
+
+    return {
+      token: null,
+      provider: null,
+      remember: false,
+    };
   }
 
   private async saveAccountInformation(tokenResponse: IdentityTokenResponse) {
@@ -333,7 +327,7 @@ export class AuthService implements AuthServiceAbstraction {
     });
   }
 
-  private async createKeyPair() {
+  private async createKeyPairForOldAccount() {
     try {
       const keyPair = await this.cryptoService.makeKeyPair();
       await this.apiService.postAccountKeys(
