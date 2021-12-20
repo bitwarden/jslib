@@ -11,7 +11,7 @@ export abstract class KeyConnectorService {
     kdfIterations: number,
     url: string,
     orgId: string
-  ) => void;
+  ) => Promise<void>;
   setUsesKeyConnector: (enabled: boolean) => Promise<void>;
   setConvertAccountRequired: (status: boolean) => Promise<void>;
   getConvertAccountRequired: () => Promise<boolean>;
