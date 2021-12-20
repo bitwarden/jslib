@@ -88,7 +88,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
-    const result = await this.processTokenResponse(response, null);
+    const result = await this.processTokenResponse(response);
 
     if (!!result.captchaSiteKey) {
       return result;
@@ -132,8 +132,10 @@ export class AuthService implements AuthServiceAbstraction {
     }
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
+    const tokenResponse = response as IdentityTokenResponse;
 
-    const result = await this.processTokenResponse(response, code);
+    const newSsoUser = tokenResponse.key == null;
+    const result = await this.processTokenResponse(response, newSsoUser);
 
     if (!!result.captchaSiteKey) {
       return result;
@@ -144,9 +146,8 @@ export class AuthService implements AuthServiceAbstraction {
       return result;
     }
 
-    const tokenResponse = response as IdentityTokenResponse;
     if (this.setCryptoKeys && tokenResponse.keyConnectorUrl != null) {
-      if (tokenResponse.key != null) {
+      if (!newSsoUser) {
         // Existing SSO user that uses Key Connector
         await this.keyConnectorService.getAndSetKey(tokenResponse.keyConnectorUrl);
       } else {
@@ -186,7 +187,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
-    const result = await this.processTokenResponse(response, null);
+    const result = await this.processTokenResponse(response);
 
     if (!!result.captchaSiteKey) {
       return result;
@@ -265,7 +266,7 @@ export class AuthService implements AuthServiceAbstraction {
 
   private async processTokenResponse(
     response: IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse,
-    code: string,
+    newSsoUser?: boolean,
   ): Promise<AuthResult> {
     this.clearState();
     const result = new AuthResult();
@@ -291,7 +292,7 @@ export class AuthService implements AuthServiceAbstraction {
       await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken);
     }
 
-    if (this.setCryptoKeys && !this.isNewSsoUser(code, tokenResponse.key)) {
+    if (this.setCryptoKeys && !newSsoUser) {
       await this.cryptoService.setEncKey(tokenResponse.key);
 
       // User doesn't have a key pair yet (old account), let's generate one for them
