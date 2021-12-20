@@ -18,6 +18,21 @@ const IconMap: any = {
   "fa-apple": String.fromCharCode(0xf179),
 };
 
+/**
+ * Provides a mapping from supported card brands to
+ * the filenames of icon that should be present in images/cards folder of clients.
+ */
+const cardIcons: Record<string, string> = {
+  Visa: "card-visa",
+  Mastercard: "card-mastercard",
+  Amex: "card-amex",
+  Discover: "card-discover",
+  "Diners Club": "card-diners-club",
+  JCB: "card-jcb",
+  Maestro: "card-maestro",
+  UnionPay: "card-union-pay",
+};
+
 @Component({
   selector: "app-vault-icon",
   templateUrl: "icon.component.html",
@@ -59,6 +74,7 @@ export class IconComponent implements OnChanges {
         break;
       case CipherType.Card:
         this.icon = "fa-credit-card";
+        this.setCardIcon();
         break;
       case CipherType.Identity:
         this.icon = "fa-id-card-o";
@@ -100,6 +116,13 @@ export class IconComponent implements OnChanges {
       }
     } else {
       this.image = null;
+    }
+  }
+
+  private setCardIcon() {
+    const brand = this.cipher.card.brand;
+    if (this.imageEnabled && brand in cardIcons) {
+      this.icon = "credit-card-icon " + cardIcons[brand];
     }
   }
 }
