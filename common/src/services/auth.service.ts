@@ -88,13 +88,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
-    const result = await this.processTokenResponse(
-      response,
-      null,
-      null,
-      null,
-      null
-    );
+    const result = await this.processTokenResponse(response, null, null, null, null);
 
     if (!!result.captchaSiteKey) {
       return result;
@@ -106,8 +100,8 @@ export class AuthService implements AuthServiceAbstraction {
     }
 
     if (this.setCryptoKeys) {
-        await this.cryptoService.setKey(key);
-        await this.cryptoService.setKeyHash(localHashedPassword);
+      await this.cryptoService.setKey(key);
+      await this.cryptoService.setKeyHash(localHashedPassword);
     }
 
     await this.completeLogIn();
@@ -123,7 +117,7 @@ export class AuthService implements AuthServiceAbstraction {
   ): Promise<AuthResult> {
     this.twoFactorService.clearSelectedProvider();
 
-    let tokenRequest: SsoTokenRequest
+    let tokenRequest: SsoTokenRequest;
     if (this.savedTokenRequest == null) {
       tokenRequest = new SsoTokenRequest(
         code,
@@ -139,13 +133,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
-    const result = await this.processTokenResponse(
-      response,
-      code,
-      null,
-      null,
-      orgId
-    );
+    const result = await this.processTokenResponse(response, code, null, null, orgId);
 
     if (!!result.captchaSiteKey) {
       return result;
@@ -154,6 +142,18 @@ export class AuthService implements AuthServiceAbstraction {
     if (result.twoFactor) {
       this.saveState(tokenRequest, result.twoFactorProviders);
       return result;
+    }
+
+    const tokenResponse = response as IdentityTokenResponse;
+
+    if (tokenResponse.key == null && tokenResponse.keyConnectorUrl != null) {
+      // user onboarded using SSO needs conversion to key connector
+      await this.keyConnectorService.convertNewSsoUserToKeyConnector(
+        tokenResponse.kdf,
+        tokenResponse.kdfIterations,
+        tokenResponse.keyConnectorUrl,
+        orgId
+      );
     }
 
     await this.completeLogIn();
@@ -182,13 +182,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
-    const result = await this.processTokenResponse(
-      response,
-      null,
-      clientId,
-      clientSecret,
-      null
-    );
+    const result = await this.processTokenResponse(response, null, clientId, clientSecret, null);
 
     if (!!result.captchaSiteKey) {
       return result;
@@ -305,8 +299,6 @@ export class AuthService implements AuthServiceAbstraction {
         } else {
           await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
         }
-      } else if (tokenResponse.keyConnectorUrl != null) {
-        await this.keyConnectorService.convertNewSsoUserToKeyConnector(tokenResponse.kdf, tokenResponse.kdfIterations, tokenResponse.keyConnectorUrl, orgId);
       }
     }
 
@@ -388,7 +380,7 @@ export class AuthService implements AuthServiceAbstraction {
     tokenRequest: ApiTokenRequest | PasswordTokenRequest | SsoTokenRequest,
     twoFactorProviders: Map<TwoFactorProviderType, { [key: string]: string }>,
     localhashedPassword?: string,
-    key?: SymmetricCryptoKey,
+    key?: SymmetricCryptoKey
   ) {
     this.savedTokenRequest = tokenRequest;
     this.twoFactorService.setProviders(twoFactorProviders);
