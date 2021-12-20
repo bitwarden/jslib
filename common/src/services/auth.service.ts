@@ -88,23 +88,17 @@ export class AuthService implements AuthServiceAbstraction {
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
-    const result = await this.processTokenResponse(response);
-
-    if (!!result.captchaSiteKey) {
-      return result;
-    }
+    const result = await this.processTokenResponse(response, false, async () => {
+      if (this.setCryptoKeys) {
+        await this.cryptoService.setKey(key);
+        await this.cryptoService.setKeyHash(localHashedPassword);
+      }
+    });
 
     if (result.requiresTwoFactor) {
       this.saveState(tokenRequest, result.twoFactorProviders, localHashedPassword, key);
-      return result;
     }
 
-    if (this.setCryptoKeys) {
-      await this.cryptoService.setKey(key);
-      await this.cryptoService.setKeyHash(localHashedPassword);
-    }
-
-    await this.completeLogIn();
     return result;
   }
 
@@ -134,33 +128,25 @@ export class AuthService implements AuthServiceAbstraction {
     const tokenResponse = response as IdentityTokenResponse;
 
     const newSsoUser = tokenResponse.key == null;
-    const result = await this.processTokenResponse(response, newSsoUser);
-
-    if (!!result.captchaSiteKey) {
-      return result;
-    }
+    const result = await this.processTokenResponse(response, newSsoUser, async () => {
+      if (this.setCryptoKeys && tokenResponse.keyConnectorUrl != null) {
+        if (!newSsoUser) {
+          await this.keyConnectorService.getAndSetKey(tokenResponse.keyConnectorUrl);
+        } else {
+          await this.keyConnectorService.convertNewSsoUserToKeyConnector(
+            tokenResponse.kdf,
+            tokenResponse.kdfIterations,
+            tokenResponse.keyConnectorUrl,
+            orgId
+          );
+        }
+      }
+    });
 
     if (result.requiresTwoFactor) {
       this.saveState(tokenRequest, result.twoFactorProviders);
-      return result;
     }
 
-    if (this.setCryptoKeys && tokenResponse.keyConnectorUrl != null) {
-      if (!newSsoUser) {
-        // Existing SSO user that uses Key Connector
-        await this.keyConnectorService.getAndSetKey(tokenResponse.keyConnectorUrl);
-      } else {
-        // User onboarded using SSO needs conversion to key connector
-        await this.keyConnectorService.convertNewSsoUserToKeyConnector(
-          tokenResponse.kdf,
-          tokenResponse.kdfIterations,
-          tokenResponse.keyConnectorUrl,
-          orgId
-        );
-      }
-    }
-
-    await this.completeLogIn();
     return result;
   }
 
@@ -185,27 +171,22 @@ export class AuthService implements AuthServiceAbstraction {
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
-    const result = await this.processTokenResponse(response);
+    const result = await this.processTokenResponse(response, false, async () => {
+      await this.stateService.setApiKeyClientId(clientId);
+      await this.stateService.setApiKeyClientSecret(clientSecret);
 
-    if (!!result.captchaSiteKey) {
-      return result;
-    }
+      const tokenResponse = response as IdentityTokenResponse;
+      if (tokenResponse.apiUseKeyConnector) {
+        const keyConnectorUrl = this.environmentService.getKeyConnectorUrl();
+        await this.keyConnectorService.getAndSetKey(keyConnectorUrl);
+      }
+    });
 
     if (result.requiresTwoFactor) {
       this.saveState(tokenRequest, result.twoFactorProviders);
       return result;
     }
 
-    await this.stateService.setApiKeyClientId(clientId);
-    await this.stateService.setApiKeyClientSecret(clientSecret);
-
-    const tokenResponse = response as IdentityTokenResponse;
-    if (tokenResponse.apiUseKeyConnector) {
-      const keyConnectorUrl = this.environmentService.getKeyConnectorUrl();
-      await this.keyConnectorService.getAndSetKey(keyConnectorUrl);
-    }
-
-    await this.completeLogIn();
     return result;
   }
 
@@ -264,7 +245,8 @@ export class AuthService implements AuthServiceAbstraction {
 
   private async processTokenResponse(
     response: IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse,
-    newSsoUser: boolean = false
+    newSsoUser: boolean = false,
+    successCallback: () => any
   ): Promise<AuthResult> {
     this.clearState();
     const result = new AuthResult();
@@ -301,12 +283,12 @@ export class AuthService implements AuthServiceAbstraction {
       }
     }
 
-    return result;
-  }
+    await successCallback();
 
-  private async completeLogIn() {
     await this.stateService.setBiometricLocked(false);
     this.messagingService.send("loggedIn");
+
+    return result;
   }
 
   private async createDeviceRequest() {
