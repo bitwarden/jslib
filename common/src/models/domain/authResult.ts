@@ -3,7 +3,6 @@ import { TwoFactorProviderType } from "../../enums/twoFactorProviderType";
 import { Utils } from "../../misc/utils";
 
 export class AuthResult {
-  twoFactor: boolean = false;
   captchaSiteKey: string = "";
   resetMasterPassword: boolean = false;
   forcePasswordReset: boolean = false;
@@ -14,6 +13,6 @@ export class AuthResult {
   }
 
   get requiresTwoFactor() {
-    return this.twoFactor;
+    return this.twoFactorProviders != null;
   }
 }

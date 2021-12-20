@@ -172,7 +172,6 @@ describe("Cipher Service", () => {
     const expected = new AuthResult();
     expected.forcePasswordReset = false;
     expected.resetMasterPassword = false;
-    expected.twoFactor = false;
     expected.twoFactorProviders = null;
     expected.captchaSiteKey = undefined;
     return expected;
@@ -311,7 +310,6 @@ describe("Cipher Service", () => {
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
     const expected = new AuthResult();
-    expected.twoFactor = true;
     expected.twoFactorProviders = twoFactorProviders;
     expected.captchaSiteKey = undefined;
 

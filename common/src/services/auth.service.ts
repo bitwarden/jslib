@@ -94,7 +94,7 @@ export class AuthService implements AuthServiceAbstraction {
       return result;
     }
 
-    if (result.twoFactor) {
+    if (result.requiresTwoFactor) {
       this.saveState(tokenRequest, result.twoFactorProviders, localHashedPassword, key);
       return result;
     }
@@ -140,7 +140,7 @@ export class AuthService implements AuthServiceAbstraction {
       return result;
     }
 
-    if (result.twoFactor) {
+    if (result.requiresTwoFactor) {
       this.saveState(tokenRequest, result.twoFactorProviders);
       return result;
     }
@@ -191,7 +191,7 @@ export class AuthService implements AuthServiceAbstraction {
       return result;
     }
 
-    if (result.twoFactor) {
+    if (result.requiresTwoFactor) {
       this.saveState(tokenRequest, result.twoFactorProviders);
       return result;
     }
@@ -274,10 +274,8 @@ export class AuthService implements AuthServiceAbstraction {
       return result;
     }
 
-    const twoFactorResponse = response as IdentityTwoFactorResponse;
-    result.twoFactor = twoFactorResponse.twoFactorProviders2 != null;
+    result.twoFactorProviders = (response as IdentityTwoFactorResponse).twoFactorProviders2;
     if (result.requiresTwoFactor) {
-      result.twoFactorProviders = twoFactorResponse.twoFactorProviders2;
       return result;
     }
 
