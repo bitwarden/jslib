@@ -384,7 +384,6 @@ describe("Cipher Service", () => {
       identifier: deviceId,
     } as DeviceRequest);
 
-    (authService as any).localMasterPasswordHash = localHashedPassword;
     (authService as any).savedTokenRequest = tokenRequest;
 
     await authService.logInTwoFactor({
