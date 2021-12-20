@@ -88,7 +88,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
-    const result = await this.processTokenResponse(response, null, null, null, null);
+    const result = await this.processTokenResponse(response, null, null, null);
 
     if (!!result.captchaSiteKey) {
       return result;
@@ -133,7 +133,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
-    const result = await this.processTokenResponse(response, code, null, null, orgId);
+    const result = await this.processTokenResponse(response, code, null, null);
 
     if (!!result.captchaSiteKey) {
       return result;
@@ -183,7 +183,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
-    const result = await this.processTokenResponse(response, null, clientId, clientSecret, null);
+    const result = await this.processTokenResponse(response, null, clientId, clientSecret);
 
     if (!!result.captchaSiteKey) {
       return result;
@@ -256,7 +256,6 @@ export class AuthService implements AuthServiceAbstraction {
     code: string,
     clientId: string,
     clientSecret: string,
-    orgId?: string
   ): Promise<AuthResult> {
     this.clearState();
     const result = new AuthResult();
