@@ -101,13 +101,21 @@ export class AuthService implements AuthServiceAbstraction {
       null
     );
 
+    if (!!result.captchaSiteKey) {
+      return result;
+    }
+
     if (result.twoFactor) {
       this.saveState(tokenRequest, result.twoFactorProviders, localHashedPassword, key);
-    } else if (this.setCryptoKeys) {
+      return result;
+    }
+
+    if (this.setCryptoKeys) {
         await this.cryptoService.setKey(key);
         await this.cryptoService.setKeyHash(localHashedPassword);
     }
 
+    await this.completeLogIn();
     return result;
   }
 
@@ -144,10 +152,16 @@ export class AuthService implements AuthServiceAbstraction {
       orgId
     );
 
-    if (result.twoFactor) {
-      this.saveState(tokenRequest, result.twoFactorProviders);
+    if (!!result.captchaSiteKey) {
+      return result;
     }
 
+    if (result.twoFactor) {
+      this.saveState(tokenRequest, result.twoFactorProviders);
+      return result;
+    }
+
+    await this.completeLogIn();
     return result;
   }
 
@@ -181,10 +195,16 @@ export class AuthService implements AuthServiceAbstraction {
       null
     );
 
-    if (result.twoFactor) {
-      this.saveState(tokenRequest, result.twoFactorProviders);
+    if (!!result.captchaSiteKey) {
+      return result;
     }
 
+    if (result.twoFactor) {
+      this.saveState(tokenRequest, result.twoFactorProviders);
+      return result;
+    }
+
+    await this.completeLogIn();
     return result;
   }
 
@@ -295,10 +315,12 @@ export class AuthService implements AuthServiceAbstraction {
       }
     }
 
+    return result;
+  }
+
+  private async completeLogIn() {
     await this.stateService.setBiometricLocked(false);
     this.messagingService.send("loggedIn");
-
-    return result;
   }
 
   private async createDeviceRequest() {
