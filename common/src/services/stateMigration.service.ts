@@ -192,6 +192,15 @@ export class StateMigrationService {
               ),
               openAtLogin: await this.storageService.get<boolean>(v1Keys.openAtLogin, options),
               organizationInvitation: await this.storageService.get<string>("", options),
+              ssoCodeVerifier: await this.storageService.get<string>(
+                v1Keys.ssoCodeVerifier,
+                options
+              ),
+              ssoOrganizationIdentifier: await this.storageService.get<string>(
+                v1Keys.ssoIdentifier,
+                options
+              ),
+              ssoState: null,
               rememberedEmail: await this.storageService.get<string>(
                 v1Keys.rememberedEmail,
                 options
@@ -327,15 +336,6 @@ export class StateMigrationService {
                   keyHash: await this.storageService.get<string>(v1Keys.keyHash, options),
                   lastActive: await this.storageService.get<number>(v1Keys.lastActive, options),
                   lastSync: null,
-                  ssoCodeVerifier: await this.storageService.get<string>(
-                    v1Keys.ssoCodeVerifier,
-                    options
-                  ),
-                  ssoOrganizationIdentifier: await this.storageService.get<string>(
-                    v1Keys.ssoIdentifier,
-                    options
-                  ),
-                  ssoState: null,
                   userId: userId,
                   usesKeyConnector: null,
                 },
