@@ -145,9 +145,12 @@ export class AuthService implements AuthServiceAbstraction {
     }
 
     const tokenResponse = response as IdentityTokenResponse;
-    if (this.setCryptoKeys) {
-      if (tokenResponse.key == null && tokenResponse.keyConnectorUrl != null) {
-        // user onboarded using SSO needs conversion to key connector
+    if (this.setCryptoKeys && tokenResponse.keyConnectorUrl != null) {
+      if (tokenResponse.key != null) {
+        // Existing SSO user that uses Key Connector
+        await this.keyConnectorService.getAndSetKey(tokenResponse.keyConnectorUrl);
+      } else {
+        // User onboarded using SSO needs conversion to key connector
         await this.keyConnectorService.convertNewSsoUserToKeyConnector(
           tokenResponse.kdf,
           tokenResponse.kdfIterations,
@@ -283,9 +286,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     if (this.setCryptoKeys) {
       if (!this.isNewSsoUser(code, tokenResponse.key)) {
-        if (tokenResponse.keyConnectorUrl != null) {
-          await this.keyConnectorService.getAndSetKey(tokenResponse.keyConnectorUrl);
-        } else if (tokenResponse.apiUseKeyConnector) {
+        if (tokenResponse.apiUseKeyConnector) {
           const keyConnectorUrl = this.environmentService.getKeyConnectorUrl();
           await this.keyConnectorService.getAndSetKey(keyConnectorUrl);
         }
