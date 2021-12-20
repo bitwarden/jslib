@@ -216,7 +216,7 @@ export class LoginCommand {
           }
         }
       }
-      if (response.twoFactor) {
+      if (response.requiresTwoFactor) {
         let selectedProvider: any = null;
         const twoFactorProviders = this.twoFactorService.getSupportedProviders(null);
         if (twoFactorProviders.length === 0) {
@@ -291,7 +291,7 @@ export class LoginCommand {
         });
       }
 
-      if (response.twoFactor) {
+      if (response.requiresTwoFactor) {
         return Response.error("Login failed.");
       }
 

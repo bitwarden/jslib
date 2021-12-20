@@ -178,7 +178,7 @@ export class SsoComponent {
         orgIdFromState
       );
       const response = await this.formPromise;
-      if (response.twoFactor) {
+      if (response.requiresTwoFactor) {
         if (this.onSuccessfulLoginTwoFactorNavigate != null) {
           this.onSuccessfulLoginTwoFactorNavigate();
         } else {

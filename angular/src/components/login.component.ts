@@ -107,7 +107,7 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
       }
       if (this.handleCaptchaRequired(response)) {
         return;
-      } else if (response.twoFactor) {
+      } else if (response.requiresTwoFactor) {
         if (this.onSuccessfulLoginTwoFactorNavigate != null) {
           this.onSuccessfulLoginTwoFactorNavigate();
         } else {
