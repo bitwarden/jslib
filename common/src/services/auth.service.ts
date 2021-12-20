@@ -6,9 +6,7 @@ import { AccountProfile, AccountTokens } from "../models/domain/account";
 import { AuthResult } from "../models/domain/authResult";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 
-import { SetKeyConnectorKeyRequest } from "../models/request/account/setKeyConnectorKeyRequest";
 import { DeviceRequest } from "../models/request/deviceRequest";
-import { KeyConnectorUserKeyRequest } from "../models/request/keyConnectorUserKeyRequest";
 import { KeysRequest } from "../models/request/keysRequest";
 import { PreloginRequest } from "../models/request/preloginRequest";
 
@@ -24,7 +22,6 @@ import { ApiService } from "../abstractions/api.service";
 import { AppIdService } from "../abstractions/appId.service";
 import { AuthService as AuthServiceAbstraction } from "../abstractions/auth.service";
 import { CryptoService } from "../abstractions/crypto.service";
-import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
 import { EnvironmentService } from "../abstractions/environment.service";
 import { KeyConnectorService } from "../abstractions/keyConnector.service";
 import { LogService } from "../abstractions/log.service";
@@ -34,7 +31,6 @@ import { StateService } from "../abstractions/state.service";
 import { TokenService } from "../abstractions/token.service";
 
 import { TwoFactorService } from "../abstractions/twoFactor.service";
-import { Utils } from "../misc/utils";
 import { IdentityCaptchaResponse } from "../models/response/identityCaptchaResponse";
 
 export class AuthService implements AuthServiceAbstraction {
@@ -50,7 +46,6 @@ export class AuthService implements AuthServiceAbstraction {
     protected platformUtilsService: PlatformUtilsService,
     private messagingService: MessagingService,
     private logService: LogService,
-    protected cryptoFunctionService: CryptoFunctionService,
     private keyConnectorService: KeyConnectorService,
     protected environmentService: EnvironmentService,
     protected stateService: StateService,
