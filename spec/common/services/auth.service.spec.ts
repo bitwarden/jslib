@@ -24,8 +24,8 @@ import { IdentityTokenResponse } from "jslib-common/models/response/identityToke
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 import { HashPurpose } from "jslib-common/enums/hashPurpose";
 import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
-import { PasswordTokenRequest } from "jslib-common/models/request/identityToken/passwordTokenRequest";
 import { DeviceRequest } from "jslib-common/models/request/deviceRequest";
+import { PasswordTokenRequest } from "jslib-common/models/request/identityToken/passwordTokenRequest";
 
 describe("Cipher Service", () => {
   let cryptoService: SubstituteOf<CryptoService>;
@@ -110,7 +110,6 @@ describe("Cipher Service", () => {
 
     appIdService.getAppId().resolves(deviceId);
     tokenService.decodeToken(accessToken).resolves(decodedToken);
-    console.log('foo');
   });
 
   describe("Master Password authentication", () => {
@@ -383,9 +382,9 @@ describe("Cipher Service", () => {
             passwordTokenRequest.email === email &&
             passwordTokenRequest.masterPasswordHash === hashedPassword &&
             passwordTokenRequest.device.identifier === deviceId &&
-            passwordTokenRequest.twoFactor.provider == TwoFactorProviderType.Remember &&
-            passwordTokenRequest.twoFactor.token == twoFactorToken &&
-            passwordTokenRequest.twoFactor.remember == false &&
+            passwordTokenRequest.twoFactor.provider === TwoFactorProviderType.Remember &&
+            passwordTokenRequest.twoFactor.token === twoFactorToken &&
+            passwordTokenRequest.twoFactor.remember === false &&
             passwordTokenRequest.captchaResponse == null
           );
         })
@@ -408,9 +407,9 @@ describe("Cipher Service", () => {
             passwordTokenRequest.email === email &&
             passwordTokenRequest.masterPasswordHash === hashedPassword &&
             passwordTokenRequest.device.identifier === deviceId &&
-            passwordTokenRequest.twoFactor.provider == twoFactorProviderType &&
-            passwordTokenRequest.twoFactor.token == twoFactorToken &&
-            passwordTokenRequest.twoFactor.remember == twoFactorRemember &&
+            passwordTokenRequest.twoFactor.provider === twoFactorProviderType &&
+            passwordTokenRequest.twoFactor.token === twoFactorToken &&
+            passwordTokenRequest.twoFactor.remember === twoFactorRemember &&
             passwordTokenRequest.captchaResponse == null
           );
         })
@@ -435,9 +434,9 @@ describe("Cipher Service", () => {
             passwordTokenRequest.email === email &&
             passwordTokenRequest.masterPasswordHash === hashedPassword &&
             passwordTokenRequest.device.identifier === deviceId &&
-            passwordTokenRequest.twoFactor.provider == twoFactorProviderType &&
-            passwordTokenRequest.twoFactor.token == twoFactorToken &&
-            passwordTokenRequest.twoFactor.remember == twoFactorRemember &&
+            passwordTokenRequest.twoFactor.provider === twoFactorProviderType &&
+            passwordTokenRequest.twoFactor.token === twoFactorToken &&
+            passwordTokenRequest.twoFactor.remember === twoFactorRemember &&
             passwordTokenRequest.captchaResponse == null
           );
         })
