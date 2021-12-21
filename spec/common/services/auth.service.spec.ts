@@ -345,7 +345,7 @@ describe("Cipher Service", () => {
       const expected = buildAuthResponse();
       expect(result).toEqual(expected);
     });
-  })
+  });
 
   describe("Two-factor authentication", () => {
     beforeEach(() => {
@@ -417,9 +417,15 @@ describe("Cipher Service", () => {
     });
 
     it("logInTwoFactor: uses 2FA token entered by user from the 2FA page", async () => {
-      (authService as any).savedTokenRequest = new PasswordTokenRequest(email, hashedPassword, null, null, {
+      (authService as any).savedTokenRequest = new PasswordTokenRequest(
+        email,
+        hashedPassword,
+        null,
+        null,
+        {
           identifier: deviceId,
-        } as DeviceRequest);
+        } as DeviceRequest
+      );
 
       await authService.logInTwoFactor({
         provider: twoFactorProviderType,
