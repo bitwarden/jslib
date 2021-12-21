@@ -53,6 +53,14 @@ export class AuthService implements AuthServiceAbstraction {
     private setCryptoKeys = true
   ) {}
 
+  get email(): string {
+    return (this.savedTokenRequest as PasswordTokenRequest).email;
+  }
+
+  get masterPasswordHash(): string {
+    return (this.savedTokenRequest as PasswordTokenRequest).masterPasswordHash;
+  }
+
   async logIn(
     email: string,
     masterPassword: string,
@@ -88,19 +96,17 @@ export class AuthService implements AuthServiceAbstraction {
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
-    const onSuccess = async () => {
+    const onSuccessfulLogin = async () => {
       if (this.setCryptoKeys) {
         await this.cryptoService.setKey(key);
         await this.cryptoService.setKeyHash(localHashedPassword);
       }
     };
-    const result = await this.processTokenResponse(response, false, onSuccess);
+    const saveStateCallback = (tempResult: AuthResult) => {
+      this.saveState(tokenRequest, tempResult.twoFactorProviders, localHashedPassword, key);
+    };
 
-    if (result.requiresTwoFactor) {
-      this.saveState(tokenRequest, result.twoFactorProviders, localHashedPassword, key);
-    }
-
-    return result;
+    return await this.processTokenResponse(response, false, onSuccessfulLogin, saveStateCallback);
   }
 
   async logInSso(
@@ -126,7 +132,7 @@ export class AuthService implements AuthServiceAbstraction {
     const tokenResponse = response as IdentityTokenResponse;
 
     const newSsoUser = tokenResponse.key == null;
-    const onSuccess = async () => {
+    const onSuccessfulLogin = async () => {
       if (this.setCryptoKeys && tokenResponse.keyConnectorUrl != null) {
         if (!newSsoUser) {
           await this.keyConnectorService.getAndSetKey(tokenResponse.keyConnectorUrl);
@@ -140,14 +146,16 @@ export class AuthService implements AuthServiceAbstraction {
         }
       }
     };
+    const saveStateCallback = (tempResult: AuthResult) => {
+      this.saveState(tokenRequest, tempResult.twoFactorProviders);
+    };
 
-    const result = await this.processTokenResponse(response, newSsoUser, onSuccess);
-
-    if (result.requiresTwoFactor) {
-      this.saveState(tokenRequest, result.twoFactorProviders);
-    }
-
-    return result;
+    return await this.processTokenResponse(
+      response,
+      newSsoUser,
+      onSuccessfulLogin,
+      saveStateCallback
+    );
   }
 
   async logInApiKey(
@@ -168,7 +176,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
-    const onSuccess = async () => {
+    const onSuccessfulLogin = async () => {
       await this.stateService.setApiKeyClientId(clientId);
       await this.stateService.setApiKeyClientSecret(clientSecret);
 
@@ -178,14 +186,11 @@ export class AuthService implements AuthServiceAbstraction {
         await this.keyConnectorService.getAndSetKey(keyConnectorUrl);
       }
     };
+    const saveStateCallback = (tempResult: AuthResult) => {
+      this.saveState(tokenRequest, tempResult.twoFactorProviders);
+    };
 
-    const result = await this.processTokenResponse(response, false, onSuccess);
-
-    if (result.requiresTwoFactor) {
-      this.saveState(tokenRequest, result.twoFactorProviders);
-    }
-
-    return result;
+    return await this.processTokenResponse(response, false, onSuccessfulLogin, saveStateCallback);
   }
 
   async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
@@ -223,14 +228,6 @@ export class AuthService implements AuthServiceAbstraction {
     return this.savedTokenRequest instanceof PasswordTokenRequest;
   }
 
-  get email(): string {
-    return (this.savedTokenRequest as PasswordTokenRequest).email;
-  }
-
-  get masterPasswordHash(): string {
-    return (this.savedTokenRequest as PasswordTokenRequest).masterPasswordHash;
-  }
-
   async makePreloginKey(masterPassword: string, email: string): Promise<SymmetricCryptoKey> {
     email = email.trim().toLowerCase();
     let kdf: KdfType = null;
@@ -252,7 +249,8 @@ export class AuthService implements AuthServiceAbstraction {
   private async processTokenResponse(
     response: IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse,
     newSsoUser: boolean = false,
-    onSuccess: () => Promise<void>
+    onSuccessfulLogin: () => Promise<void>,
+    saveStateCallback: (tempResult: AuthResult) => void
   ): Promise<AuthResult> {
     this.clearState();
     const result = new AuthResult();
@@ -264,6 +262,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     result.twoFactorProviders = (response as IdentityTwoFactorResponse).twoFactorProviders2;
     if (result.requiresTwoFactor) {
+      saveStateCallback(result);
       return result;
     }
 
@@ -284,7 +283,7 @@ export class AuthService implements AuthServiceAbstraction {
       );
     }
 
-    await onSuccess();
+    await onSuccessfulLogin();
 
     await this.stateService.setBiometricLocked(false);
     this.messagingService.send("loggedIn");
