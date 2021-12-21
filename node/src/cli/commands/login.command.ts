@@ -150,6 +150,14 @@ export class LoginCommand {
       return Response.error("Invalid two-step login method.");
     }
 
+    const twoFactor = twoFactorToken == null
+      ? null
+      : {
+          provider: twoFactorMethod,
+          token: twoFactorToken,
+          remember: false,
+        }
+
     try {
       if (this.validatedParams != null) {
         await this.validatedParams();
@@ -157,29 +165,17 @@ export class LoginCommand {
 
       let response: AuthResult = null;
       if (clientId != null && clientSecret != null) {
-        response = await this.authService.logInApiKey(clientId, clientSecret, {
-          provider: twoFactorMethod,
-          token: twoFactorToken,
-          remember: false,
-        });
+        response = await this.authService.logInApiKey(clientId, clientSecret, twoFactor);
       } else if (ssoCode != null && ssoCodeVerifier != null) {
         response = await this.authService.logInSso(
           ssoCode,
           ssoCodeVerifier,
           this.ssoRedirectUri,
           orgIdentifier,
-          {
-            provider: twoFactorMethod,
-            token: twoFactorToken,
-            remember: false,
-          }
+          twoFactor,
         );
       } else {
-        response = await this.authService.logIn(email, password, {
-          provider: twoFactorMethod,
-          token: twoFactorToken,
-          remember: false,
-        });
+        response = await this.authService.logIn(email, password, twoFactor);
       }
       if (response.captchaSiteKey) {
         const badCaptcha = Response.badRequest(
