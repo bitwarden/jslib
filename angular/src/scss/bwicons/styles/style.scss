@@ -9,23 +9,6 @@
   font-display: block;
 }
 
-// Base class
-.bwi {
-  /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: "#{$icomoon-font-family}" !important;
-  speak: never;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
-  display: inline-block;
-
-  /* Better Font Rendering =========== */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
 // Fixed Width Icons
 .bwi-fw {
   width: (18em / 14);
@@ -95,648 +78,162 @@
 }
 
 // Updated font sheet? Copy the new styles and replace the items below
-.bwi-safari {
-  &:before {
-    content: $bwi-safari;
-  }
-}
-.bwi-opera {
-  &:before {
-    content: $bwi-opera;
-  }
-}
-.bwi-firefox {
-  &:before {
-    content: $bwi-firefox;
-  }
-}
-.bwi-edge {
-  &:before {
-    content: $bwi-edge;
-  }
-}
-.bwi-chrome {
-  &:before {
-    content: $bwi-chrome;
-  }
-}
-.bwi-star-f {
-  &:before {
-    content: $bwi-star-f;
-  }
-}
-.bwi-arrow-circle-up {
-  &:before {
-    content: $bwi-arrow-circle-up;
-  }
-}
-.bwi-arrow-circle-right {
-  &:before {
-    content: $bwi-arrow-circle-right;
-  }
-}
-.bwi-arrow-circle-left {
-  &:before {
-    content: $bwi-arrow-circle-left;
-  }
-}
-.bwi-arrow-circle-down {
-  &:before {
-    content: $bwi-arrow-circle-down;
-  }
-}
-.bwi-undo {
-  &:before {
-    content: $bwi-undo;
-  }
-}
-.bwi-bolt {
-  &:before {
-    content: $bwi-bolt;
-  }
-}
-.bwi-puzzle {
-  &:before {
-    content: $bwi-puzzle;
-  }
-}
-.bwi-rss {
-  &:before {
-    content: $bwi-rss;
-  }
-}
-.bwi-dbl-angle-left {
-  &:before {
-    content: $bwi-dbl-angle-left;
-  }
-}
-.bwi-dbl-angle-right {
-  &:before {
-    content: $bwi-dbl-angle-right;
-  }
-}
-.bwi-hamburger {
-  &:before {
-    content: $bwi-hamburger;
-  }
-}
-.bwi-bw-folder-open-f {
-  &:before {
-    content: $bwi-bw-folder-open-f;
-  }
-}
-.bwi-desktop {
-  &:before {
-    content: $bwi-desktop;
-  }
-}
-.bwi-angle-left {
-  &:before {
-    content: $bwi-angle-left;
-  }
-}
-.bwi-user {
-  &:before {
-    content: $bwi-user;
-  }
-}
-.bwi-user-f {
-  &:before {
-    content: $bwi-user-f;
-  }
-}
-.bwi-key {
-  &:before {
-    content: $bwi-key;
-  }
-}
-.bwi-share-square {
-  &:before {
-    content: $bwi-share-square;
-  }
-}
-.bwi-hashtag {
-  &:before {
-    content: $bwi-hashtag;
-  }
-}
-.bwi-clone {
-  &:before {
-    content: $bwi-clone;
-  }
-}
-.bwi-list-alt {
-  &:before {
-    content: $bwi-list-alt;
-  }
-}
-.bwi-id-card {
-  &:before {
-    content: $bwi-id-card;
-  }
-}
-.bwi-credit-card {
-  &:before {
-    content: $bwi-credit-card;
-  }
-}
-.bwi-globe {
-  &:before {
-    content: $bwi-globe;
-  }
-}
-.bwi-sticky-note {
-  &:before {
-    content: $bwi-sticky-note;
-  }
-}
-.bwi-folder {
-  &:before {
-    content: $bwi-folder;
-  }
-}
-.bwi-lock {
-  &:before {
-    content: $bwi-lock;
-  }
-}
-.bwi-lock-f {
-  &:before {
-    content: $bwi-lock-f;
-  }
-}
-.bwi-generate {
-  &:before {
-    content: $bwi-generate;
-  }
-}
-.bwi-generate-f {
-  &:before {
-    content: $bwi-generate-f;
-  }
-}
-.bwi-cog {
-  &:before {
-    content: $bwi-cog;
-  }
-}
-.bwi-cog-f {
-  &:before {
-    content: $bwi-cog-f;
-  }
-}
-.bwi-check-circle {
-  &:before {
-    content: $bwi-check-circle;
-  }
-}
-.bwi-eye-2 {
-  &:before {
-    content: $bwi-eye-2;
-  }
-}
-.bwi-pencil-square {
-  &:before {
-    content: $bwi-pencil-square;
-  }
-}
-.bwi-bookmark {
-  &:before {
-    content: $bwi-bookmark;
-  }
-}
-.bwi-files {
-  &:before {
-    content: $bwi-files;
-  }
-}
-.bwi-trash {
-  &:before {
-    content: $bwi-trash;
-  }
-}
-.bwi-plus {
-  &:before {
-    content: $bwi-plus;
-  }
-}
-.bwi-star {
-  &:before {
-    content: $bwi-star;
-  }
-}
-.bwi-list {
-  &:before {
-    content: $bwi-list;
-  }
-}
-.bwi-angle-right {
-  &:before {
-    content: $bwi-angle-right;
-  }
-}
-.bwi-external-link {
-  &:before {
-    content: $bwi-external-link;
-  }
-}
-.bwi-refresh {
-  &:before {
-    content: $bwi-refresh;
-  }
-}
-.bwi-search {
-  &:before {
-    content: $bwi-search;
-  }
-}
-.bwi-filter {
-  &:before {
-    content: $bwi-filter;
-  }
-}
-.bwi-plus-circle {
-  &:before {
-    content: $bwi-plus-circle;
-  }
-}
-.bwi-user-circle {
-  &:before {
-    content: $bwi-user-circle;
-  }
-}
-.bwi-question-circle {
-  &:before {
-    content: $bwi-question-circle;
-  }
-}
-.bwi-cogs {
-  &:before {
-    content: $bwi-cogs;
-  }
-}
-.bwi-minus-circle {
-  &:before {
-    content: $bwi-minus-circle;
-  }
-}
-.bwi-send {
-  &:before {
-    content: $bwi-send;
-  }
-}
-.bwi-send-f {
-  &:before {
-    content: $bwi-send-f;
-  }
-}
-.bwi-download {
-  &:before {
-    content: $bwi-download;
-  }
-}
-.bwi-pencil {
-  &:before {
-    content: $bwi-pencil;
-  }
-}
-.bwi-sign-out {
-  &:before {
-    content: $bwi-sign-out;
-  }
-}
-.bwi-share {
-  &:before {
-    content: $bwi-share;
-  }
-}
-.bwi-clock {
-  &:before {
-    content: $bwi-clock;
-  }
-}
-.bwi-angle-down {
-  &:before {
-    content: $bwi-angle-down;
-  }
-}
-.bwi-caret-down {
-  &:before {
-    content: $bwi-caret-down;
-  }
-}
-.bwi-square {
-  &:before {
-    content: $bwi-square;
-  }
-}
-.bwi-collection {
-  &:before {
-    content: $bwi-collection;
-  }
-}
-.bwi-bank {
-  &:before {
-    content: $bwi-bank;
-  }
-}
-.bwi-shield {
-  &:before {
-    content: $bwi-shield;
-  }
-}
-.bwi-stop {
-  &:before {
-    content: $bwi-stop;
-  }
-}
-.bwi-plus-square {
-  &:before {
-    content: $bwi-plus-square;
-  }
-}
-.bwi-save {
-  &:before {
-    content: $bwi-save;
-  }
-}
-.bwi-sign-in {
-  &:before {
-    content: $bwi-sign-in;
-  }
-}
-.bwi-spinner {
-  &:before {
-    content: $bwi-spinner;
-  }
-}
-.bwi-dollar {
-  &:before {
-    content: $bwi-dollar;
-  }
-}
-.bwi-check {
-  &:before {
-    content: $bwi-check;
-  }
-}
-.bwi-check-square {
-  &:before {
-    content: $bwi-check-square;
-  }
-}
-.bwi-minus-square {
-  &:before {
-    content: $bwi-minus-square;
-  }
-}
-.bwi-close {
-  &:before {
-    content: $bwi-close;
-  }
-}
-.bwi-share-arrow {
-  &:before {
-    content: $bwi-share-arrow;
-  }
-}
-.bwi-paperclip {
-  &:before {
-    content: $bwi-paperclip;
-  }
-}
-.bwi-bitcoin {
-  &:before {
-    content: $bwi-bitcoin;
-  }
-}
-.bwi-cut {
-  &:before {
-    content: $bwi-cut;
-  }
-}
-.bwi-frown {
-  &:before {
-    content: $bwi-frown;
-  }
-}
-.bwi-folder-open {
-  &:before {
-    content: $bwi-folder-open;
-  }
-}
-.bwi-bug {
-  &:before {
-    content: $bwi-bug;
-  }
-}
-.bwi-chain-broken {
-  &:before {
-    content: $bwi-chain-broken;
-  }
-}
-.bwi-dashboard {
-  &:before {
-    content: $bwi-dashboard;
-  }
-}
-.bwi-envelope {
-  &:before {
-    content: $bwi-envelope;
-  }
-}
-.bwi-exclamation-circle {
-  &:before {
-    content: $bwi-exclamation-circle;
-  }
-}
-.bwi-exclamation-triangle {
-  &:before {
-    content: $bwi-exclamation-triangle;
-  }
-}
-.bwi-caret-right {
-  &:before {
-    content: $bwi-caret-right;
-  }
-}
-.bwi-file-pdf {
-  &:before {
-    content: $bwi-file-pdf;
-  }
-}
-.bwi-file-text {
-  &:before {
-    content: $bwi-file-text;
-  }
-}
-.bwi-info-circle {
-  &:before {
-    content: $bwi-info-circle;
-  }
-}
-.bwi-lightbulb {
-  &:before {
-    content: $bwi-lightbulb;
-  }
-}
-.bwi-link {
-  &:before {
-    content: $bwi-link;
-  }
-}
-.bwi-linux {
-  &:before {
-    content: $bwi-linux;
-  }
-}
-.bwi-long-arrow-right {
-  &:before {
-    content: $bwi-long-arrow-right;
-  }
-}
-.bwi-money {
-  &:before {
-    content: $bwi-money;
-  }
-}
-.bwi-play {
-  &:before {
-    content: $bwi-play;
-  }
-}
-.bwi-reddit {
-  &:before {
-    content: $bwi-reddit;
-  }
-}
-.bwi-refresh-tab {
-  &:before {
-    content: $bwi-refresh-tab;
-  }
-}
-.bwi-sitemap {
-  &:before {
-    content: $bwi-sitemap;
-  }
-}
-.bwi-sliders {
-  &:before {
-    content: $bwi-sliders;
-  }
-}
-.bwi-tag {
-  &:before {
-    content: $bwi-tag;
-  }
-}
-.bwi-thumb-tack {
-  &:before {
-    content: $bwi-thumb-tack;
-  }
-}
-.bwi-thumbs-up {
-  &:before {
-    content: $bwi-thumbs-up;
-  }
-}
-.bwi-unlock {
-  &:before {
-    content: $bwi-unlock;
-  }
-}
-.bwi-users {
-  &:before {
-    content: $bwi-users;
-  }
-}
-.bwi-wrench {
-  &:before {
-    content: $bwi-wrench;
-  }
-}
-.bwi-ban {
-  &:before {
-    content: $bwi-ban;
-  }
-}
-.bwi-camera {
-  &:before {
-    content: $bwi-camera;
-  }
-}
-.bwi-chevron-up {
-  &:before {
-    content: $bwi-chevron-up;
-  }
-}
-.bwi-eye-slash-2 {
-  &:before {
-    content: $bwi-eye-slash-2;
-  }
-}
-.bwi-file {
-  &:before {
-    content: $bwi-file;
-  }
-}
-.bwi-paste {
-  &:before {
-    content: $bwi-paste;
-  }
-}
-.bwi-github {
-  &:before {
-    content: $bwi-github;
-  }
-}
-.bwi-facebook {
-  &:before {
-    content: $bwi-facebook;
-  }
-}
-.bwi-paypal {
-  &:before {
-    content: $bwi-paypal;
-  }
-}
-.bwi-google {
-  &:before {
-    content: $bwi-google;
-  }
-}
-.bwi-linkedin {
-  &:before {
-    content: $bwi-linkedin;
-  }
-}
-.bwi-discourse {
-  &:before {
-    content: $bwi-discourse;
-  }
-}
-.bwi-twitter {
-  &:before {
-    content: $bwi-twitter;
-  }
-}
-.bwi-youtube {
-  &:before {
-    content: $bwi-youtube;
-  }
-}
-.bwi-windows {
-  &:before {
-    content: $bwi-windows;
-  }
-}
-.bwi-apple {
-  &:before {
-    content: $bwi-apple;
-  }
-}
-.bwi-android {
-  &:before {
-    content: $bwi-android;
+$icomoon-font-family: "bwi-font" !default;
+$icomoon-font-path: "fonts" !default;
+
+$icons: (
+  "safari": "\e974",
+  "opera": "\e975",
+  "firefox": "\e976",
+  "edge": "\e977",
+  "chrome": "\e978",
+  "star-f": "\e979",
+  "arrow-circle-up": "\e97a",
+  "arrow-circle-right": "\e97b",
+  "arrow-circle-left": "\e97c",
+  "arrow-circle-down": "\e97d",
+  "undo": "\e97e",
+  "bolt": "\e97f",
+  "puzzle": "\e980",
+  "rss": "\e973",
+  "dbl-angle-left": "\e970",
+  "dbl-angle-right": "\e971",
+  "hamburger": "\e972",
+  "bw-folder-open-f": "\e93e",
+  "desktop": "\e96a",
+  "angle-left": "\e96b",
+  "user": "\e900",
+  "user-f": "\e901",
+  "key": "\e902",
+  "share-square": "\e903",
+  "hashtag": "\e904",
+  "clone": "\e905",
+  "list-alt": "\e906",
+  "id-card": "\e907",
+  "credit-card": "\e908",
+  "globe": "\e909",
+  "sticky-note": "\e90a",
+  "folder": "\e90b",
+  "lock": "\e90c",
+  "lock-f": "\e90d",
+  "generate": "\e90e",
+  "generate-f": "\e90f",
+  "cog": "\e910",
+  "cog-f": "\e911",
+  "check-circle": "\e912",
+  "eye-2": "\e913",
+  "pencil-square": "\e914",
+  "bookmark": "\e915",
+  "files": "\e916",
+  "trash": "\e917",
+  "plus": "\e918",
+  "star": "\e919",
+  "list": "\e91a",
+  "angle-right": "\e91b",
+  "external-link": "\e91c",
+  "refresh": "\e91d",
+  "search": "\e91f",
+  "filter": "\e920",
+  "plus-circle": "\e921",
+  "user-circle": "\e922",
+  "question-circle": "\e923",
+  "cogs": "\e924",
+  "minus-circle": "\e925",
+  "send": "\e926",
+  "send-f": "\e927",
+  "download": "\e928",
+  "pencil": "\e929",
+  "sign-out": "\e92a",
+  "share": "\e92b",
+  "clock": "\e92c",
+  "angle-down": "\e92d",
+  "caret-down": "\e92e",
+  "square": "\e92f",
+  "collection": "\e930",
+  "bank": "\e931",
+  "shield": "\e932",
+  "stop": "\e933",
+  "plus-square": "\e934",
+  "save": "\e935",
+  "sign-in": "\e936",
+  "spinner": "\e937",
+  "dollar": "\e939",
+  "check": "\e93a",
+  "check-square": "\e93b",
+  "minus-square": "\e93c",
+  "close": "\e93d",
+  "share-arrow": "\e96c",
+  "paperclip": "\e93f",
+  "bitcoin": "\e940",
+  "cut": "\e941",
+  "frown": "\e942",
+  "folder-open": "\e943",
+  "bug": "\e946",
+  "chain-broken": "\e947",
+  "dashboard": "\e948",
+  "envelope": "\e949",
+  "exclamation-circle": "\e94a",
+  "exclamation-triangle": "\e94b",
+  "caret-right": "\e94c",
+  "file-pdf": "\e94e",
+  "file-text": "\e94f",
+  "info-circle": "\e952",
+  "lightbulb": "\e953",
+  "link": "\e954",
+  "linux": "\e956",
+  "long-arrow-right": "\e957",
+  "money": "\e958",
+  "play": "\e959",
+  "reddit": "\e95a",
+  "refresh-tab": "\e95b",
+  "sitemap": "\e95c",
+  "sliders": "\e95d",
+  "tag": "\e95e",
+  "thumb-tack": "\e95f",
+  "thumbs-up": "\e960",
+  "unlock": "\e962",
+  "users": "\e963",
+  "wrench": "\e965",
+  "ban": "\e967",
+  "camera": "\e968",
+  "chevron-up": "\e969",
+  "eye-slash-2": "\e96d",
+  "file": "\e96e",
+  "paste": "\e96f",
+  "github": "\e950",
+  "facebook": "\e94d",
+  "paypal": "\e938",
+  "google": "\e951",
+  "linkedin": "\e955",
+  "discourse": "\e91e",
+  "twitter": "\e961",
+  "youtube": "\e966",
+  "windows": "\e964",
+  "apple": "\e945",
+  "android": "\e944",
+);
+
+@each $name, $glyph in $icons {
+  .bwi-#{$name}:before {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: "#{$icomoon-font-family}" !important;
+    speak: never;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    display: inline-block;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    content: $glyph;
+  }
+}
+
+:export {
+  @each $name, $glyph in $icons {
+    #{$name}: $glyph;
   }
 }
