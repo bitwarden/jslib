@@ -2,7 +2,7 @@ import { HashPurpose } from "../enums/hashPurpose";
 import { KdfType } from "../enums/kdfType";
 import { TwoFactorProviderType } from "../enums/twoFactorProviderType";
 
-import { AccountProfile, AccountTokens } from "../models/domain/account";
+import { Account, AccountProfile, AccountTokens } from "../models/domain/account";
 import { AuthResult } from "../models/domain/authResult";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 
@@ -84,7 +84,7 @@ export class AuthService implements AuthServiceAbstraction {
         await this.buildTwoFactor(twoFactor),
         await this.buildDeviceRequest()
       );
-    } 
+    }
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
@@ -93,7 +93,7 @@ export class AuthService implements AuthServiceAbstraction {
         await this.cryptoService.setKey(key);
         await this.cryptoService.setKeyHash(localHashedPassword);
       }
-    }
+    };
     const result = await this.processTokenResponse(response, false, onSuccess);
 
     if (result.requiresTwoFactor) {
@@ -112,13 +112,15 @@ export class AuthService implements AuthServiceAbstraction {
   ): Promise<AuthResult> {
     this.twoFactorService.clearSelectedProvider();
 
-    const tokenRequest = this.savedTokenRequest ?? new SsoTokenRequest(
-      code,
-      codeVerifier,
-      redirectUrl,
-      await this.buildTwoFactor(twoFactor),
-      await this.buildDeviceRequest()
-    );
+    const tokenRequest =
+      this.savedTokenRequest ??
+      new SsoTokenRequest(
+        code,
+        codeVerifier,
+        redirectUrl,
+        await this.buildTwoFactor(twoFactor),
+        await this.buildDeviceRequest()
+      );
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
     const tokenResponse = response as IdentityTokenResponse;
@@ -137,7 +139,7 @@ export class AuthService implements AuthServiceAbstraction {
           );
         }
       }
-    }
+    };
 
     const result = await this.processTokenResponse(response, newSsoUser, onSuccess);
 
@@ -155,12 +157,14 @@ export class AuthService implements AuthServiceAbstraction {
   ): Promise<AuthResult> {
     this.twoFactorService.clearSelectedProvider();
 
-    const tokenRequest = this.savedTokenRequest ?? new ApiTokenRequest(
-      clientId,
-      clientSecret,
-      await this.buildTwoFactor(twoFactor),
-      await this.buildDeviceRequest()
-    );
+    const tokenRequest =
+      this.savedTokenRequest ??
+      new ApiTokenRequest(
+        clientId,
+        clientSecret,
+        await this.buildTwoFactor(twoFactor),
+        await this.buildDeviceRequest()
+      );
 
     const response = await this.apiService.postIdentityToken(tokenRequest);
 
@@ -173,7 +177,7 @@ export class AuthService implements AuthServiceAbstraction {
         const keyConnectorUrl = this.environmentService.getKeyConnectorUrl();
         await this.keyConnectorService.getAndSetKey(keyConnectorUrl);
       }
-    }
+    };
 
     const result = await this.processTokenResponse(response, false, onSuccess);
 
@@ -219,6 +223,14 @@ export class AuthService implements AuthServiceAbstraction {
     return this.savedTokenRequest instanceof PasswordTokenRequest;
   }
 
+  get email(): string {
+    return (this.savedTokenRequest as PasswordTokenRequest).email;
+  }
+
+  get masterPasswordHash(): string {
+    return (this.savedTokenRequest as PasswordTokenRequest).masterPasswordHash;
+  }
+
   async makePreloginKey(masterPassword: string, email: string): Promise<SymmetricCryptoKey> {
     email = email.trim().toLowerCase();
     let kdf: KdfType = null;
@@ -259,7 +271,7 @@ export class AuthService implements AuthServiceAbstraction {
     result.resetMasterPassword = tokenResponse.resetMasterPassword;
     result.forcePasswordReset = tokenResponse.forcePasswordReset;
 
-    this.saveAccountInformation(tokenResponse);
+    await this.saveAccountInformation(tokenResponse);
 
     if (tokenResponse.twoFactorToken != null) {
       await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken);
@@ -267,7 +279,9 @@ export class AuthService implements AuthServiceAbstraction {
 
     if (this.setCryptoKeys && !newSsoUser) {
       await this.cryptoService.setEncKey(tokenResponse.key);
-      await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey ?? await this.createKeyPairForOldAccount());
+      await this.cryptoService.setEncPrivateKey(
+        tokenResponse.privateKey ?? (await this.createKeyPairForOldAccount())
+      );
     }
 
     await onSuccess();
@@ -306,25 +320,27 @@ export class AuthService implements AuthServiceAbstraction {
 
   private async saveAccountInformation(tokenResponse: IdentityTokenResponse) {
     const accountInformation = await this.tokenService.decodeToken(tokenResponse.accessToken);
-    await this.stateService.addAccount({
-      profile: {
-        ...new AccountProfile(),
-        ...{
-          userId: accountInformation.sub,
-          email: accountInformation.email,
-          hasPremiumPersonally: accountInformation.premium,
-          kdfIterations: tokenResponse.kdfIterations,
-          kdfType: tokenResponse.kdf,
+    await this.stateService.addAccount(
+      new Account({
+        profile: {
+          ...new AccountProfile(),
+          ...{
+            userId: accountInformation.sub,
+            email: accountInformation.email,
+            hasPremiumPersonally: accountInformation.premium,
+            kdfIterations: tokenResponse.kdfIterations,
+            kdfType: tokenResponse.kdf,
+          },
         },
-      },
-      tokens: {
-        ...new AccountTokens(),
-        ...{
-          accessToken: tokenResponse.accessToken,
-          refreshToken: tokenResponse.refreshToken,
+        tokens: {
+          ...new AccountTokens(),
+          ...{
+            accessToken: tokenResponse.accessToken,
+            refreshToken: tokenResponse.refreshToken,
+          },
         },
-      },
-    });
+      })
+    );
   }
 
   private async createKeyPairForOldAccount() {

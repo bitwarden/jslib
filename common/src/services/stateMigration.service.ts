@@ -114,19 +114,22 @@ export class StateMigrationService {
   readonly latestVersion: number = 2;
 
   constructor(
-    private storageService: StorageService,
-    private secureStorageService: StorageService
+    protected storageService: StorageService,
+    protected secureStorageService: StorageService
   ) {}
 
   async needsMigration(): Promise<boolean> {
-    const currentStateVersion = (await this.storageService.get<State>("state"))?.globals
-      ?.stateVersion;
+    const currentStateVersion = (
+      await this.storageService.get<State<Account>>("state", {
+        htmlStorageLocation: HtmlStorageLocation.Local,
+      })
+    )?.globals?.stateVersion;
     return currentStateVersion == null || currentStateVersion < this.latestVersion;
   }
 
   async migrate(): Promise<void> {
     let currentStateVersion =
-      (await this.storageService.get<State>("state"))?.globals?.stateVersion ?? 1;
+      (await this.storageService.get<State<Account>>("state"))?.globals?.stateVersion ?? 1;
     while (currentStateVersion < this.latestVersion) {
       switch (currentStateVersion) {
         case 1:
@@ -138,10 +141,10 @@ export class StateMigrationService {
     }
   }
 
-  private async migrateStateFrom1To2(): Promise<void> {
+  protected async migrateStateFrom1To2(): Promise<void> {
     const options: StorageOptions = { htmlStorageLocation: HtmlStorageLocation.Local };
     const userId = await this.storageService.get<string>("userId");
-    const initialState: State =
+    const initialState: State<Account> =
       userId == null
         ? {
             globals: {
@@ -174,6 +177,7 @@ export class StateMigrationService {
                 v1Keys.enableBiometric,
                 options
               ),
+              environmentUrls: await this.storageService.get<any>(v1Keys.environmentUrls, options),
               installedVersion: await this.storageService.get<string>(
                 v1Keys.installedVersion,
                 options
@@ -439,10 +443,6 @@ export class StateMigrationService {
                     options
                   ),
                   enableTray: await this.storageService.get<boolean>(v1Keys.enableTray, options),
-                  environmentUrls: await this.storageService.get<any>(
-                    v1Keys.environmentUrls,
-                    options
-                  ),
                   equivalentDomains: await this.storageService.get<any>(
                     v1Keys.equivalentDomains,
                     options

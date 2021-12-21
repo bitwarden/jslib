@@ -86,10 +86,10 @@ module.exports = (config) => {
 
         var githubAction =
           process.env.GITHUB_WORKFLOW != null && process.env.GITHUB_WORKFLOW !== "";
-        // if (githubAction) {
-        removeBrowser("Firefox");
-        removeBrowser("Safari");
-        // }
+        if (githubAction) {
+          removeBrowser("Firefox");
+          removeBrowser("Safari");
+        }
 
         return result;
       },

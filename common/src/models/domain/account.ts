@@ -130,9 +130,6 @@ export class AccountSettings {
   enableMinimizeToTray?: boolean;
   enableStartToTray?: boolean;
   enableTray?: boolean;
-  environmentUrls?: any = {
-    server: "bitwarden.com",
-  };
   equivalentDomains?: any;
   minimizeOnCopyToClipboard?: boolean;
   neverDomains?: { [id: string]: any };

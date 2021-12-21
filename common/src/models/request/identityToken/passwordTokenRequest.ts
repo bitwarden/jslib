@@ -8,7 +8,7 @@ import { Utils } from "../../../misc/utils";
 export class PasswordTokenRequest extends TokenRequest implements CaptchaProtectedRequest {
   constructor(
     public email: string,
-    private masterPasswordHash: string,
+    public masterPasswordHash: string,
     public captchaResponse: string,
     protected twoFactor: TokenRequestTwoFactor,
     device?: DeviceRequest

@@ -159,6 +159,10 @@ export class TwoFactorService implements TwoFactorServiceAbstraction {
     return providerType;
   }
 
+  setSelectedProvider(type: TwoFactorProviderType) {
+    this.selectedTwoFactorProviderType = type;
+  }
+
   clearSelectedProvider() {
     this.selectedTwoFactorProviderType = null;
   }
@@ -171,7 +175,7 @@ export class TwoFactorService implements TwoFactorServiceAbstraction {
     this.twoFactorProvidersData = null;
   }
 
-  get providers() {
+  getProviders() {
     return this.twoFactorProvidersData;
   }
 }

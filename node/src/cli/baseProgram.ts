@@ -9,7 +9,7 @@ import { StringResponse } from "./models/response/stringResponse";
 
 export abstract class BaseProgram {
   constructor(
-    private stateService: StateService,
+    protected stateService: StateService,
     private writeLn: (s: string, finalLine: boolean, error: boolean) => void
   ) {}
 
