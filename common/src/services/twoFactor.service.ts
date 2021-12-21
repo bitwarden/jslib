@@ -175,7 +175,7 @@ export class TwoFactorService implements TwoFactorServiceAbstraction {
     this.twoFactorProvidersData = null;
   }
 
-  get providers() {
+  getProviders() {
     return this.twoFactorProvidersData;
   }
 }
