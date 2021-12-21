@@ -150,13 +150,14 @@ export class LoginCommand {
       return Response.error("Invalid two-step login method.");
     }
 
-    const twoFactor = twoFactorToken == null
-      ? null
-      : {
-          provider: twoFactorMethod,
-          token: twoFactorToken,
-          remember: false,
-        }
+    const twoFactor =
+      twoFactorToken == null
+        ? null
+        : {
+            provider: twoFactorMethod,
+            token: twoFactorToken,
+            remember: false,
+          };
 
     try {
       if (this.validatedParams != null) {
@@ -172,7 +173,7 @@ export class LoginCommand {
           ssoCodeVerifier,
           this.ssoRedirectUri,
           orgIdentifier,
-          twoFactor,
+          twoFactor
         );
       } else {
         response = await this.authService.logIn(email, password, twoFactor);
