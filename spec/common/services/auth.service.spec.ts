@@ -16,7 +16,7 @@ import { AuthService } from "jslib-common/services/auth.service";
 
 import { Utils } from "jslib-common/misc/utils";
 
-import { AccountProfile, AccountTokens } from "jslib-common/models/domain/account";
+import { Account, AccountProfile, AccountTokens } from "jslib-common/models/domain/account";
 import { AuthResult } from "jslib-common/models/domain/authResult";
 import { EncString } from "jslib-common/models/domain/encString";
 import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
@@ -130,25 +130,27 @@ describe("Cipher Service", () => {
   }
 
   function commonSuccessAssertions() {
-    stateService.received(1).addAccount({
-      profile: {
-        ...new AccountProfile(),
-        ...{
-          userId: userId,
-          email: email,
-          hasPremiumPersonally: false,
-          kdfIterations: kdfIterations,
-          kdfType: kdf,
+    stateService.received(1).addAccount(
+      new Account({
+        profile: {
+          ...new AccountProfile(),
+          ...{
+            userId: userId,
+            email: email,
+            hasPremiumPersonally: false,
+            kdfIterations: kdfIterations,
+            kdfType: kdf,
+          },
         },
-      },
-      tokens: {
-        ...new AccountTokens(),
-        ...{
-          accessToken: accessToken,
-          refreshToken: refreshToken,
+        tokens: {
+          ...new AccountTokens(),
+          ...{
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+          },
         },
-      },
-    });
+      })
+    );
     stateService.received(1).setBiometricLocked(false);
     messagingService.received(1).send("loggedIn");
   }
