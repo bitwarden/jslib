@@ -67,7 +67,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    if (!this.authing || this.twoFactorService.providers == null) {
+    if (!this.authing || this.twoFactorService.getProviders() == null) {
       this.router.navigate([this.loginRoute]);
       return;
     }
@@ -122,7 +122,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
 
     this.cleanupWebAuthn();
     this.title = (TwoFactorProviders as any)[this.selectedProviderType].name;
-    const providerData = this.twoFactorService.providers.get(this.selectedProviderType);
+    const providerData = this.twoFactorService.getProviders().get(this.selectedProviderType);
     switch (this.selectedProviderType) {
       case TwoFactorProviderType.WebAuthn:
         if (!this.webAuthnNewTab) {
@@ -150,7 +150,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         break;
       case TwoFactorProviderType.Email:
         this.twoFactorEmail = providerData.Email;
-        if (this.twoFactorService.providers.size > 1) {
+        if (this.twoFactorService.getProviders().size > 1) {
           await this.sendEmail(false);
         }
         break;
@@ -250,7 +250,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
   }
 
   authWebAuthn() {
-    const providerData = this.twoFactorService.providers.get(this.selectedProviderType);
+    const providerData = this.twoFactorService.getProviders().get(this.selectedProviderType);
 
     if (!this.webAuthnSupported || this.webAuthn == null) {
       return;

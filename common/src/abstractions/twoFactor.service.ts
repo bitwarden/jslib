@@ -4,8 +4,10 @@ export abstract class TwoFactorService {
   init: () => void;
   getSupportedProviders: (win: Window) => any[];
   getDefaultProvider: (webAuthnSupported: boolean) => TwoFactorProviderType;
+  setSelectedProvider: (type: TwoFactorProviderType) => void;
   clearSelectedProvider: () => void;
+
   setProviders: (data: any) => void;
   clearProviders: () => void;
-  providers: Map<TwoFactorProviderType, { [key: string]: string }>;
+  getProviders: () => Map<TwoFactorProviderType, { [key: string]: string }>;
 }
