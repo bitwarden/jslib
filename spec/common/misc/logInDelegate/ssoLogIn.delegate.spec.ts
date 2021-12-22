@@ -12,7 +12,7 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
 
-import { SsoLogInDelegate } from "jslib-common/services/logInDelegate/ssoLogin.delegate";
+import { SsoLogInDelegate } from "jslib-common/misc/logInDelegate/ssoLogin.delegate";
 
 import { Utils } from "jslib-common/misc/utils";
 

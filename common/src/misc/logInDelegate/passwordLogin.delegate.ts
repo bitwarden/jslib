@@ -5,18 +5,18 @@ import { TokenRequestTwoFactor } from "../../models/request/identityToken/tokenR
 
 import { ApiService } from "../../abstractions/api.service";
 import { AppIdService } from "../../abstractions/appId.service";
-import { AuthService } from '../../abstractions/auth.service';
+import { AuthService } from "../../abstractions/auth.service";
 import { CryptoService } from "../../abstractions/crypto.service";
 import { LogService } from "../../abstractions/log.service";
 import { MessagingService } from "../../abstractions/messaging.service";
 import { PlatformUtilsService } from "../../abstractions/platformUtils.service";
 import { StateService } from "../../abstractions/state.service";
 import { TokenService } from "../../abstractions/token.service";
-import { TwoFactorService } from '../../abstractions/twoFactor.service';
+import { TwoFactorService } from "../../abstractions/twoFactor.service";
 
-import { SymmetricCryptoKey } from '../../models/domain/symmetricCryptoKey';
+import { SymmetricCryptoKey } from "../../models/domain/symmetricCryptoKey";
 
-import { HashPurpose } from '../../enums/hashPurpose';
+import { HashPurpose } from "../../enums/hashPurpose";
 
 export class PasswordLogInDelegate extends LogInDelegate {
   tokenRequest: PasswordTokenRequest;
@@ -35,18 +35,34 @@ export class PasswordLogInDelegate extends LogInDelegate {
     stateService: StateService,
     setCryptoKeys = true,
     twoFactorService: TwoFactorService,
-    private authService: AuthService,
+    private authService: AuthService
   ) {
-    super(cryptoService, apiService, tokenService, appIdService, platformUtilsService, messagingService, logService,
-      stateService, twoFactorService, setCryptoKeys);
+    super(
+      cryptoService,
+      apiService,
+      tokenService,
+      appIdService,
+      platformUtilsService,
+      messagingService,
+      logService,
+      stateService,
+      twoFactorService,
+      setCryptoKeys
+    );
   }
 
-  async init(email: string, masterPassword: string, captchaToken?: string, twoFactor?: TokenRequestTwoFactor) {
+  async init(
+    email: string,
+    masterPassword: string,
+    captchaToken?: string,
+    twoFactor?: TokenRequestTwoFactor
+  ) {
     this.key = await this.authService.makePreloginKey(masterPassword, email);
     this.localHashedPassword = await this.cryptoService.hashPassword(
       masterPassword,
       this.key,
-      HashPurpose.LocalAuthorization);
+      HashPurpose.LocalAuthorization
+    );
 
     const hashedPassword = await this.cryptoService.hashPassword(masterPassword, this.key);
     this.tokenRequest = new PasswordTokenRequest(

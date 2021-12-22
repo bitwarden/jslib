@@ -12,7 +12,7 @@ import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
-import { ApiLogInDelegate } from "jslib-common/services/logInDelegate/apiLogin.delegate";
+import { ApiLogInDelegate } from "jslib-common/misc/logInDelegate/apiLogin.delegate";
 
 import { Utils } from "jslib-common/misc/utils";
 

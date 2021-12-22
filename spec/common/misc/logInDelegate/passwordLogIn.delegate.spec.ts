@@ -11,7 +11,7 @@ import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
-import { PasswordLogInDelegate } from "jslib-common/services/logInDelegate/passwordLogin.delegate";
+import { PasswordLogInDelegate } from "jslib-common/misc/logInDelegate/passwordLogin.delegate";
 
 import { Utils } from "jslib-common/misc/utils";
 

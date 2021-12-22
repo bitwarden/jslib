@@ -1,9 +1,9 @@
 import { KdfType } from "../enums/kdfType";
 
-import { ApiLogInDelegate } from './logInDelegate/apiLogin.delegate';
+import { ApiLogInDelegate } from "../misc/logInDelegate/apiLogin.delegate";
 import { AuthResult } from "../models/domain/authResult";
-import { PasswordLogInDelegate } from './logInDelegate/passwordLogin.delegate';
-import { SsoLogInDelegate } from './logInDelegate/ssoLogin.delegate';
+import { PasswordLogInDelegate } from "../misc/logInDelegate/passwordLogin.delegate";
+import { SsoLogInDelegate } from "../misc/logInDelegate/ssoLogin.delegate";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 
 import { PreloginRequest } from "../models/request/preloginRequest";
@@ -22,7 +22,7 @@ import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import { StateService } from "../abstractions/state.service";
 import { TokenService } from "../abstractions/token.service";
 import { TwoFactorService } from "../abstractions/twoFactor.service";
-import { LogInDelegate } from './logInDelegate/logIn.delegate';
+import { LogInDelegate } from "../misc/logInDelegate/logIn.delegate";
 
 export class AuthService implements AuthServiceAbstraction {
   private logInService: LogInDelegate;
@@ -43,9 +43,7 @@ export class AuthService implements AuthServiceAbstraction {
   ) {}
 
   get email(): string {
-    return this.logInService instanceof PasswordLogInDelegate
-      ? this.logInService.email
-      : null;
+    return this.logInService instanceof PasswordLogInDelegate ? this.logInService.email : null;
   }
 
   get masterPasswordHash(): string {
@@ -60,12 +58,22 @@ export class AuthService implements AuthServiceAbstraction {
     twoFactor?: TokenRequestTwoFactor,
     captchaToken?: string
   ): Promise<AuthResult> {
-    const passwordLogInService = new PasswordLogInDelegate(this.cryptoService, this.apiService, this.tokenService,
-      this.appIdService, this.platformUtilsService, this.messagingService, this.logService, this.stateService,
-      this.setCryptoKeys, this.twoFactorService, this);
+    const passwordLogInService = new PasswordLogInDelegate(
+      this.cryptoService,
+      this.apiService,
+      this.tokenService,
+      this.appIdService,
+      this.platformUtilsService,
+      this.messagingService,
+      this.logService,
+      this.stateService,
+      this.setCryptoKeys,
+      this.twoFactorService,
+      this
+    );
 
     await passwordLogInService.init(email, masterPassword, captchaToken, twoFactor);
-    
+
     this.logInService = passwordLogInService;
     return this.logInService.logIn();
   }
@@ -77,10 +85,20 @@ export class AuthService implements AuthServiceAbstraction {
     orgId: string,
     twoFactor?: TokenRequestTwoFactor
   ): Promise<AuthResult> {
-    const ssoLogInService = new SsoLogInDelegate(this.cryptoService, this.apiService, this.tokenService,
-      this.appIdService, this.platformUtilsService, this.messagingService, this.logService, this.stateService,
-      this.setCryptoKeys, this.twoFactorService, this.keyConnectorService);
-    
+    const ssoLogInService = new SsoLogInDelegate(
+      this.cryptoService,
+      this.apiService,
+      this.tokenService,
+      this.appIdService,
+      this.platformUtilsService,
+      this.messagingService,
+      this.logService,
+      this.stateService,
+      this.setCryptoKeys,
+      this.twoFactorService,
+      this.keyConnectorService
+    );
+
     await ssoLogInService.init(code, codeVerifier, redirectUrl, orgId, twoFactor);
 
     this.logInService = ssoLogInService;
@@ -92,9 +110,20 @@ export class AuthService implements AuthServiceAbstraction {
     clientSecret: string,
     twoFactor?: TokenRequestTwoFactor
   ): Promise<AuthResult> {
-    const apiLogInService = new ApiLogInDelegate(this.cryptoService, this.apiService, this.tokenService, this.appIdService,
-      this.platformUtilsService, this.messagingService, this.logService, this.stateService, this.setCryptoKeys,
-      this.twoFactorService, this.environmentService, this.keyConnectorService);
+    const apiLogInService = new ApiLogInDelegate(
+      this.cryptoService,
+      this.apiService,
+      this.tokenService,
+      this.appIdService,
+      this.platformUtilsService,
+      this.messagingService,
+      this.logService,
+      this.stateService,
+      this.setCryptoKeys,
+      this.twoFactorService,
+      this.environmentService,
+      this.keyConnectorService
+    );
 
     await apiLogInService.init(clientId, clientSecret, twoFactor);
 

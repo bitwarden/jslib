@@ -24,7 +24,7 @@ import { StateService } from "../../abstractions/state.service";
 import { TokenService } from "../../abstractions/token.service";
 
 import { IdentityCaptchaResponse } from "../../models/response/identityCaptchaResponse";
-import { TwoFactorService } from '../../abstractions/twoFactor.service';
+import { TwoFactorService } from "../../abstractions/twoFactor.service";
 
 export abstract class LogInDelegate {
   protected abstract tokenRequest: ApiTokenRequest | PasswordTokenRequest | SsoTokenRequest;
@@ -42,7 +42,9 @@ export abstract class LogInDelegate {
     protected setCryptoKeys = true
   ) {}
 
-  abstract onSuccessfulLogin(response: IdentityTokenResponse | IdentityTwoFactorResponse | IdentityTokenResponse): Promise<void>;
+  abstract onSuccessfulLogin(
+    response: IdentityTokenResponse | IdentityTwoFactorResponse | IdentityTokenResponse
+  ): Promise<void>;
 
   async logIn(): Promise<AuthResult> {
     this.twoFactorService.clearSelectedProvider();
