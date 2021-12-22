@@ -50,7 +50,7 @@ export abstract class LogInDelegate {
     const response = await this.apiService.postIdentityToken(this.tokenRequest);
 
     try {
-      return await this.processTokenResponse(response, false);
+      return await this.processTokenResponse(response);
     } catch {
       this.clearState();
     }
@@ -62,10 +62,8 @@ export abstract class LogInDelegate {
   }
 
   protected async processTokenResponse(
-    response: IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse,
-    newSsoUser: boolean = false
+    response: IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse
   ): Promise<AuthResult> {
-    this.clearState();
     const result = new AuthResult();
 
     result.captchaSiteKey = (response as IdentityCaptchaResponse).siteKey;
@@ -89,6 +87,7 @@ export abstract class LogInDelegate {
       await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken);
     }
 
+    const newSsoUser = tokenResponse.key == null;
     if (this.setCryptoKeys && !newSsoUser) {
       await this.cryptoService.setEncKey(tokenResponse.key);
       await this.cryptoService.setEncPrivateKey(

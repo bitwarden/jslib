@@ -2,6 +2,7 @@ import { Arg, Substitute, SubstituteOf } from "@fluffy-spoon/substitute";
 
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { AppIdService } from "jslib-common/abstractions/appId.service";
+import { AuthService } from "jslib-common/abstractions/auth.service";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.service";
@@ -11,7 +12,9 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
 
-import { AuthService } from "jslib-common/services/auth.service";
+import { PasswordLogInDelegate } from 'jslib-common/services/logInDelegate/passwordLogin.delegate';
+import { ApiLogInDelegate } from 'jslib-common/services/logInDelegate/apiLogin.delegate';
+import { SsoLogInDelegate } from 'jslib-common/services/logInDelegate/ssoLogin.delegate';
 
 import { Utils } from "jslib-common/misc/utils";
 
@@ -24,10 +27,8 @@ import { IdentityTokenResponse } from "jslib-common/models/response/identityToke
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 import { HashPurpose } from "jslib-common/enums/hashPurpose";
 import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
-import { DeviceRequest } from "jslib-common/models/request/deviceRequest";
-import { PasswordTokenRequest } from "jslib-common/models/request/identityToken/passwordTokenRequest";
 
-describe("Cipher Service", () => {
+describe("LogInDelegates", () => {
   let cryptoService: SubstituteOf<CryptoService>;
   let apiService: SubstituteOf<ApiService>;
   let tokenService: SubstituteOf<TokenService>;
@@ -39,9 +40,12 @@ describe("Cipher Service", () => {
   let keyConnectorService: SubstituteOf<KeyConnectorService>;
   let stateService: SubstituteOf<StateService>;
   let twoFactorService: SubstituteOf<TwoFactorService>;
+  let authService: SubstituteOf<AuthService>;
   const setCryptoKeys = true;
 
-  let authService: AuthService;
+  let passwordLogInDelegate: PasswordLogInDelegate;
+  let apiLogInDelegate: ApiLogInDelegate;
+  let ssoLogInDelegate: SsoLogInDelegate;
 
   const email = "hello@world.com";
   const masterPassword = "password";
@@ -92,21 +96,11 @@ describe("Cipher Service", () => {
     stateService = Substitute.for<StateService>();
     keyConnectorService = Substitute.for<KeyConnectorService>();
     twoFactorService = Substitute.for<TwoFactorService>();
+    authService = Substitute.for<AuthService>();
 
-    authService = new AuthService(
-      cryptoService,
-      apiService,
-      tokenService,
-      appIdService,
-      platformUtilsService,
-      messagingService,
-      logService,
-      keyConnectorService,
-      environmentService,
-      stateService,
-      twoFactorService,
-      setCryptoKeys
-    );
+    passwordLogInDelegate = new PasswordLogInDelegate(cryptoService, apiService, tokenService, appIdService, platformUtilsService, messagingService, logService, stateService, setCryptoKeys, twoFactorService, authService);
+    apiLogInDelegate = new ApiLogInDelegate(cryptoService, apiService, tokenService, appIdService, platformUtilsService, messagingService, logService, stateService, setCryptoKeys, twoFactorService, environmentService, keyConnectorService);
+    ssoLogInDelegate = new SsoLogInDelegate(cryptoService, apiService, tokenService, appIdService, platformUtilsService, messagingService, logService, stateService, setCryptoKeys, twoFactorService, keyConnectorService);
 
     appIdService.getAppId().resolves(deviceId);
     tokenService.decodeToken(accessToken).resolves(decodedToken);
@@ -123,7 +117,8 @@ describe("Cipher Service", () => {
       tokenService.getTwoFactorToken().resolves(null);
 
       // Act
-      const result = await authService.logIn(email, masterPassword);
+      await passwordLogInDelegate.init(email, masterPassword);
+      const result = await passwordLogInDelegate.logIn();
 
       // Assert
       // Api call:
@@ -168,7 +163,8 @@ describe("Cipher Service", () => {
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
       // Act
-      const result = await authService.logIn(email, masterPassword);
+      await passwordLogInDelegate.init(email, masterPassword);
+      const result = await passwordLogInDelegate.logIn();
 
       // Assert
       stateService.didNotReceive().addAccount(Arg.any());
@@ -183,24 +179,12 @@ describe("Cipher Service", () => {
       // Arrange
       apiService.postIdentityToken(Arg.any()).resolves(newTokenResponse());
 
-      // Re-init authService with setCryptoKeys = false
-      authService = new AuthService(
-        cryptoService,
-        apiService,
-        tokenService,
-        appIdService,
-        platformUtilsService,
-        messagingService,
-        logService,
-        keyConnectorService,
-        environmentService,
-        stateService,
-        twoFactorService,
-        false
-      );
+      // Re-init setCryptoKeys = false
+      passwordLogInDelegate = new PasswordLogInDelegate(cryptoService, apiService, tokenService, appIdService, platformUtilsService, messagingService, logService, stateService, false, twoFactorService, authService);
 
       // Act
-      await authService.logIn(email, masterPassword);
+      await passwordLogInDelegate.init(email, masterPassword);
+      await passwordLogInDelegate.logIn();
 
       // Assertions
       commonSuccessAssertions();
@@ -216,7 +200,8 @@ describe("Cipher Service", () => {
 
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-      await authService.logIn(email, masterPassword);
+      await passwordLogInDelegate.init(email, masterPassword);
+      await passwordLogInDelegate.logIn();
 
       commonSuccessAssertions();
       apiService.received(1).postAccountKeys(Arg.any());
@@ -231,7 +216,8 @@ describe("Cipher Service", () => {
       tokenService.getTwoFactorToken().resolves(null);
 
       // Act
-      const result = await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
+      await ssoLogInDelegate.init(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
+      const result = await ssoLogInDelegate.logIn();
 
       // Assert
       // Api call:
@@ -272,7 +258,8 @@ describe("Cipher Service", () => {
       tokenResponse.key = null;
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-      await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
+      await ssoLogInDelegate.init(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
+      await ssoLogInDelegate.logIn();
 
       cryptoService.didNotReceive().setEncPrivateKey(privateKey);
       cryptoService.didNotReceive().setEncKey(encKey);
@@ -284,7 +271,8 @@ describe("Cipher Service", () => {
 
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-      await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
+      await ssoLogInDelegate.init(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
+      await ssoLogInDelegate.logIn();
 
       commonSuccessAssertions();
       keyConnectorService.received(1).getAndSetKey(keyConnectorUrl);
@@ -297,7 +285,8 @@ describe("Cipher Service", () => {
 
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-      await authService.logInSso(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
+      await ssoLogInDelegate.init(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
+      await ssoLogInDelegate.logIn();
 
       commonSuccessAssertions();
       keyConnectorService
@@ -311,7 +300,8 @@ describe("Cipher Service", () => {
       apiService.postIdentityToken(Arg.any()).resolves(newTokenResponse());
       tokenService.getTwoFactorToken().resolves(null);
 
-      const result = await authService.logInApiKey(apiClientId, apiClientSecret);
+      await apiLogInDelegate.init(apiClientId, apiClientSecret);
+      const result = await apiLogInDelegate.logIn();
 
       apiService.received(1).postIdentityToken(
         Arg.is((actual) => {
@@ -359,7 +349,8 @@ describe("Cipher Service", () => {
 
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-      const result = await authService.logIn(email, masterPassword);
+      await passwordLogInDelegate.init(email, masterPassword);
+      const result = await passwordLogInDelegate.logIn();
 
       stateService.didNotReceive().addAccount(Arg.any());
       messagingService.didNotReceive().send(Arg.any());
@@ -373,7 +364,8 @@ describe("Cipher Service", () => {
     it("uses stored 2FA token", async () => {
       tokenService.getTwoFactorToken().resolves(twoFactorToken);
 
-      await authService.logIn(email, masterPassword);
+      await passwordLogInDelegate.init(email, masterPassword);
+      await passwordLogInDelegate.logIn();
 
       apiService.received(1).postIdentityToken(
         Arg.is((actual) => {
@@ -394,11 +386,8 @@ describe("Cipher Service", () => {
     it("uses 2FA token entered by user at the same time as the Master Password", async () => {
       passwordLogInSetup();
 
-      await authService.logIn(email, masterPassword, {
-        provider: twoFactorProviderType,
-        token: twoFactorToken,
-        remember: twoFactorRemember,
-      });
+      await passwordLogInDelegate.init(email, masterPassword, null, { provider: twoFactorProviderType, token: twoFactorToken, remember: twoFactorRemember, });
+      await passwordLogInDelegate.logIn();
 
       apiService.received(1).postIdentityToken(
         Arg.is((actual) => {
@@ -417,17 +406,8 @@ describe("Cipher Service", () => {
     });
 
     it("logInTwoFactor: uses 2FA token entered by user from the 2FA page", async () => {
-      (authService as any).savedTokenRequest = new PasswordTokenRequest(
-        email,
-        hashedPassword,
-        null,
-        null,
-        {
-          identifier: deviceId,
-        } as DeviceRequest
-      );
-
-      await authService.logInTwoFactor({
+      await passwordLogInDelegate.init(email, masterPassword);
+      await passwordLogInDelegate.logInTwoFactor({
         provider: twoFactorProviderType,
         token: twoFactorToken,
         remember: twoFactorRemember,
@@ -453,7 +433,7 @@ describe("Cipher Service", () => {
   // Helper functions
 
   function passwordLogInSetup() {
-    cryptoService.makeKey(masterPassword, email, Arg.any(), Arg.any()).resolves(preloginKey);
+    authService.makePreloginKey(Arg.any(), Arg.any()).resolves(preloginKey);
     cryptoService.hashPassword(masterPassword, Arg.any()).resolves(hashedPassword);
     cryptoService
       .hashPassword(masterPassword, Arg.any(), HashPurpose.LocalAuthorization)
