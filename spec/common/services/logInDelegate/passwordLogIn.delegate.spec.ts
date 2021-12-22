@@ -11,6 +11,7 @@ import { MessagingService } from "jslib-common/abstractions/messaging.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
+import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
 import { PasswordLogInDelegate } from "jslib-common/services/logInDelegate/passwordLogin.delegate";
 
@@ -18,10 +19,20 @@ import { Utils } from "jslib-common/misc/utils";
 
 import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
 
-import { IdentityTokenResponse } from "jslib-common/models/response/identityTokenResponse";
-
-import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 import { HashPurpose } from "jslib-common/enums/hashPurpose";
+
+import { tokenResponseFactory } from "./logIn.delegate.spec";
+
+const email = "hello@world.com";
+const masterPassword = "password";
+const hashedPassword = "HASHED_PASSWORD";
+const localHashedPassword = "LOCAL_HASHED_PASSWORD";
+const preloginKey = new SymmetricCryptoKey(
+  Utils.fromB64ToArray(
+    "N2KWjlLpfi5uHjv+YcfUKIpZ1l+W+6HRensmIqD+BFYBf6N/dvFpJfWwYnVBdgFCK2tJTAIMLhqzIQQEUmGFgg=="
+  )
+);
+const deviceId = Utils.newGuid();
 
 describe("PasswordLogInDelegate", () => {
   let cryptoService: SubstituteOf<CryptoService>;
@@ -39,24 +50,6 @@ describe("PasswordLogInDelegate", () => {
   const setCryptoKeys = true;
 
   let passwordLogInDelegate: PasswordLogInDelegate;
-
-  const email = "hello@world.com";
-  const masterPassword = "password";
-  const hashedPassword = "HASHED_PASSWORD";
-  const localHashedPassword = "LOCAL_HASHED_PASSWORD";
-  const preloginKey = new SymmetricCryptoKey(
-    Utils.fromB64ToArray(
-      "N2KWjlLpfi5uHjv+YcfUKIpZ1l+W+6HRensmIqD+BFYBf6N/dvFpJfWwYnVBdgFCK2tJTAIMLhqzIQQEUmGFgg=="
-    )
-  );
-  const deviceId = Utils.newGuid();
-  const accessToken = "ACCESS_TOKEN";
-  const refreshToken = "REFRESH_TOKEN";
-  const encKey = "ENC_KEY";
-  const privateKey = "PRIVATE_KEY";
-  const kdf = 0;
-  const kdfIterations = 10000;
-  const userId = Utils.newGuid();
 
   beforeEach(() => {
     cryptoService = Substitute.for<CryptoService>();
@@ -119,7 +112,7 @@ describe("PasswordLogInDelegate", () => {
   });
 
   it("sets the local environment after a successful login", async () => {
-    apiService.postIdentityToken(Arg.any()).resolves(newTokenResponse());
+    apiService.postIdentityToken(Arg.any()).resolves(tokenResponseFactory());
     tokenService.getTwoFactorToken().resolves(null);
 
     await passwordLogInDelegate.init(email, masterPassword);
@@ -128,19 +121,4 @@ describe("PasswordLogInDelegate", () => {
     cryptoService.received(1).setKey(preloginKey);
     cryptoService.received(1).setKeyHash(localHashedPassword);
   });
-
-  function newTokenResponse() {
-    const tokenResponse = new IdentityTokenResponse({});
-    (tokenResponse as any).twoFactorProviders2 = null;
-    (tokenResponse as any).siteKey = undefined;
-    tokenResponse.resetMasterPassword = false;
-    tokenResponse.forcePasswordReset = false;
-    tokenResponse.accessToken = accessToken;
-    tokenResponse.refreshToken = refreshToken;
-    tokenResponse.kdf = kdf;
-    tokenResponse.kdfIterations = kdfIterations;
-    tokenResponse.key = encKey;
-    tokenResponse.privateKey = privateKey;
-    return tokenResponse;
-  }
 });

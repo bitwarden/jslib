@@ -2,7 +2,6 @@ import { Arg, Substitute, SubstituteOf } from "@fluffy-spoon/substitute";
 
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { AppIdService } from "jslib-common/abstractions/appId.service";
-import { AuthService } from "jslib-common/abstractions/auth.service";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.service";
@@ -11,14 +10,13 @@ import { MessagingService } from "jslib-common/abstractions/messaging.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
+import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
 import { ApiLogInDelegate } from "jslib-common/services/logInDelegate/apiLogin.delegate";
 
 import { Utils } from "jslib-common/misc/utils";
 
-import { IdentityTokenResponse } from "jslib-common/models/response/identityTokenResponse";
-
-import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
+import { tokenResponseFactory } from "./logIn.delegate.spec";
 
 describe("ApiLogInDelegate", () => {
   let cryptoService: SubstituteOf<CryptoService>;
@@ -32,29 +30,12 @@ describe("ApiLogInDelegate", () => {
   let keyConnectorService: SubstituteOf<KeyConnectorService>;
   let stateService: SubstituteOf<StateService>;
   let twoFactorService: SubstituteOf<TwoFactorService>;
-  let authService: SubstituteOf<AuthService>;
   const setCryptoKeys = true;
 
   let apiLogInDelegate: ApiLogInDelegate;
 
-  const email = "hello@world.com";
-
   const deviceId = Utils.newGuid();
-  const accessToken = "ACCESS_TOKEN";
-  const refreshToken = "REFRESH_TOKEN";
-  const encKey = "ENC_KEY";
-  const privateKey = "PRIVATE_KEY";
   const keyConnectorUrl = "KEY_CONNECTOR_URL";
-  const kdf = 0;
-  const kdfIterations = 10000;
-  const userId = Utils.newGuid();
-
-  const decodedToken = {
-    sub: userId,
-    email: email,
-    premium: false,
-  };
-
   const apiClientId = "API_CLIENT_ID";
   const apiClientSecret = "API_CLIENT_SECRET";
 
@@ -70,7 +51,6 @@ describe("ApiLogInDelegate", () => {
     stateService = Substitute.for<StateService>();
     keyConnectorService = Substitute.for<KeyConnectorService>();
     twoFactorService = Substitute.for<TwoFactorService>();
-    authService = Substitute.for<AuthService>();
 
     apiLogInDelegate = new ApiLogInDelegate(
       cryptoService,
@@ -112,7 +92,7 @@ describe("ApiLogInDelegate", () => {
   });
 
   it("sets the local environment after a successful login", async () => {
-    apiService.postIdentityToken(Arg.any()).resolves(newTokenResponse());
+    apiService.postIdentityToken(Arg.any()).resolves(tokenResponseFactory());
     tokenService.getTwoFactorToken().resolves(null);
 
     await apiLogInDelegate.init(apiClientId, apiClientSecret);
@@ -124,7 +104,7 @@ describe("ApiLogInDelegate", () => {
   });
 
   it("gets and sets the Key Connector key if required", async () => {
-    const tokenResponse = newTokenResponse();
+    const tokenResponse = tokenResponseFactory();
     tokenResponse.apiUseKeyConnector = true;
 
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
@@ -136,21 +116,4 @@ describe("ApiLogInDelegate", () => {
 
     keyConnectorService.received(1).getAndSetKey(keyConnectorUrl);
   });
-
-  // Helper functions
-
-  function newTokenResponse() {
-    const tokenResponse = new IdentityTokenResponse({});
-    (tokenResponse as any).twoFactorProviders2 = null;
-    (tokenResponse as any).siteKey = undefined;
-    tokenResponse.resetMasterPassword = false;
-    tokenResponse.forcePasswordReset = false;
-    tokenResponse.accessToken = accessToken;
-    tokenResponse.refreshToken = refreshToken;
-    tokenResponse.kdf = kdf;
-    tokenResponse.kdfIterations = kdfIterations;
-    tokenResponse.key = encKey;
-    tokenResponse.privateKey = privateKey;
-    return tokenResponse;
-  }
 });

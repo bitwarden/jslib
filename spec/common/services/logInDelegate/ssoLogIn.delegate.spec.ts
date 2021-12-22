@@ -12,18 +12,13 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
 
-import { PasswordLogInDelegate } from "jslib-common/services/logInDelegate/passwordLogin.delegate";
-import { ApiLogInDelegate } from "jslib-common/services/logInDelegate/apiLogin.delegate";
 import { SsoLogInDelegate } from "jslib-common/services/logInDelegate/ssoLogin.delegate";
 
 import { Utils } from "jslib-common/misc/utils";
 
-import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
-
-import { IdentityTokenResponse } from "jslib-common/models/response/identityTokenResponse";
-
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
-import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
+
+import { tokenResponseFactory } from "./logIn.delegate.spec";
 
 describe("SsoLogInDelegate", () => {
   let cryptoService: SubstituteOf<CryptoService>;
@@ -42,16 +37,12 @@ describe("SsoLogInDelegate", () => {
 
   let ssoLogInDelegate: SsoLogInDelegate;
 
-  const email = "hello@world.com";
   const deviceId = Utils.newGuid();
-  const accessToken = "ACCESS_TOKEN";
-  const refreshToken = "REFRESH_TOKEN";
   const encKey = "ENC_KEY";
   const privateKey = "PRIVATE_KEY";
   const keyConnectorUrl = "KEY_CONNECTOR_URL";
   const kdf = 0;
   const kdfIterations = 10000;
-  const userId = Utils.newGuid();
 
   const ssoCode = "SSO_CODE";
   const ssoCodeVerifier = "SSO_CODE_VERIFIER";
@@ -111,7 +102,7 @@ describe("SsoLogInDelegate", () => {
   });
 
   it("does not set keys for new SSO user flow", async () => {
-    const tokenResponse = newTokenResponse();
+    const tokenResponse = tokenResponseFactory();
     tokenResponse.key = null;
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
@@ -123,7 +114,7 @@ describe("SsoLogInDelegate", () => {
   });
 
   it("gets and sets KeyConnector key for enrolled user", async () => {
-    const tokenResponse = newTokenResponse();
+    const tokenResponse = tokenResponseFactory();
     tokenResponse.keyConnectorUrl = keyConnectorUrl;
 
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
@@ -135,7 +126,7 @@ describe("SsoLogInDelegate", () => {
   });
 
   it("converts new SSO user to Key Connector on first login", async () => {
-    const tokenResponse = newTokenResponse();
+    const tokenResponse = tokenResponseFactory();
     tokenResponse.keyConnectorUrl = keyConnectorUrl;
     tokenResponse.key = null;
 
@@ -148,20 +139,4 @@ describe("SsoLogInDelegate", () => {
       .received(1)
       .convertNewSsoUserToKeyConnector(kdf, kdfIterations, keyConnectorUrl, ssoOrgId);
   });
-
-  // Helper functions
-  function newTokenResponse() {
-    const tokenResponse = new IdentityTokenResponse({});
-    (tokenResponse as any).twoFactorProviders2 = null;
-    (tokenResponse as any).siteKey = undefined;
-    tokenResponse.resetMasterPassword = false;
-    tokenResponse.forcePasswordReset = false;
-    tokenResponse.accessToken = accessToken;
-    tokenResponse.refreshToken = refreshToken;
-    tokenResponse.kdf = kdf;
-    tokenResponse.kdfIterations = kdfIterations;
-    tokenResponse.key = encKey;
-    tokenResponse.privateKey = privateKey;
-    return tokenResponse;
-  }
 });
