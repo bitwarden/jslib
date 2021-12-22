@@ -131,6 +131,7 @@ const IconMap: any = {
   "bwi-dbl-angle-left": String.fromCharCode(0xe970),
   "bwi-dbl-angle-right": String.fromCharCode(0xe971),
   "bwi-hamburger": String.fromCharCode(0xe972),
+  "bwi-error": String.fromCharCode(0xe981),
 };
 
 @Injectable()
