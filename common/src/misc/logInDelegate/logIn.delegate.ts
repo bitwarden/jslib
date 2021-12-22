@@ -108,6 +108,8 @@ export abstract class LogInDelegate {
 
   protected clearState() {
     this.tokenRequest = null;
+    this.twoFactorService.clearProviders();
+    this.twoFactorService.clearSelectedProvider();
   }
 
   protected async buildDeviceRequest() {
