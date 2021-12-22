@@ -1,22 +1,14 @@
-import { HashPurpose } from "../enums/hashPurpose";
 import { KdfType } from "../enums/kdfType";
-import { TwoFactorProviderType } from "../enums/twoFactorProviderType";
 
-import { Account, AccountProfile, AccountTokens } from "../models/domain/account";
+import { ApiLogInDelegate } from './logInDelegate/apiLogin.delegate';
 import { AuthResult } from "../models/domain/authResult";
+import { PasswordLogInDelegate } from './logInDelegate/passwordLogin.delegate';
+import { SsoLogInDelegate } from './logInDelegate/ssoLogin.delegate';
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 
-import { DeviceRequest } from "../models/request/deviceRequest";
-import { KeysRequest } from "../models/request/keysRequest";
 import { PreloginRequest } from "../models/request/preloginRequest";
 
-import { ApiTokenRequest } from "../models/request/identityToken/apiTokenRequest";
-import { PasswordTokenRequest } from "../models/request/identityToken/passwordTokenRequest";
-import { SsoTokenRequest } from "../models/request/identityToken/ssoTokenRequest";
 import { TokenRequestTwoFactor } from "../models/request/identityToken/tokenRequest";
-
-import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
-import { IdentityTwoFactorResponse } from "../models/response/identityTwoFactorResponse";
 
 import { ApiService } from "../abstractions/api.service";
 import { AppIdService } from "../abstractions/appId.service";
@@ -29,14 +21,11 @@ import { MessagingService } from "../abstractions/messaging.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import { StateService } from "../abstractions/state.service";
 import { TokenService } from "../abstractions/token.service";
-
 import { TwoFactorService } from "../abstractions/twoFactor.service";
-import { IdentityCaptchaResponse } from "../models/response/identityCaptchaResponse";
+import { LogInDelegate } from './logInDelegate/logIn.delegate';
 
 export class AuthService implements AuthServiceAbstraction {
-  private savedTokenRequest: ApiTokenRequest | PasswordTokenRequest | SsoTokenRequest;
-  private localHashedPassword: string;
-  private key: SymmetricCryptoKey;
+  private logInService: LogInDelegate;
 
   constructor(
     private cryptoService: CryptoService,
@@ -54,11 +43,15 @@ export class AuthService implements AuthServiceAbstraction {
   ) {}
 
   get email(): string {
-    return (this.savedTokenRequest as PasswordTokenRequest).email;
+    return this.logInService instanceof PasswordLogInDelegate
+      ? this.logInService.email
+      : null;
   }
 
   get masterPasswordHash(): string {
-    return (this.savedTokenRequest as PasswordTokenRequest).masterPasswordHash;
+    return this.logInService instanceof PasswordLogInDelegate
+      ? this.logInService.masterPasswordHash
+      : null;
   }
 
   async logIn(
@@ -67,46 +60,14 @@ export class AuthService implements AuthServiceAbstraction {
     twoFactor?: TokenRequestTwoFactor,
     captchaToken?: string
   ): Promise<AuthResult> {
-    this.twoFactorService.clearSelectedProvider();
+    const passwordLogInService = new PasswordLogInDelegate(this.cryptoService, this.apiService, this.tokenService,
+      this.appIdService, this.platformUtilsService, this.messagingService, this.logService, this.stateService,
+      this.setCryptoKeys, this.twoFactorService, this);
 
-    let tokenRequest: PasswordTokenRequest;
-    let key: SymmetricCryptoKey;
-    let localHashedPassword: string;
-
-    if (this.savedTokenRequest != null) {
-      tokenRequest = this.savedTokenRequest as PasswordTokenRequest;
-      key = this.key;
-      localHashedPassword = this.localHashedPassword;
-    } else {
-      key = await this.makePreloginKey(masterPassword, email);
-      localHashedPassword = await this.cryptoService.hashPassword(
-        masterPassword,
-        key,
-        HashPurpose.LocalAuthorization
-      );
-      const hashedPassword = await this.cryptoService.hashPassword(masterPassword, key);
-      tokenRequest = new PasswordTokenRequest(
-        email,
-        hashedPassword,
-        captchaToken,
-        await this.buildTwoFactor(twoFactor),
-        await this.buildDeviceRequest()
-      );
-    }
-
-    const response = await this.apiService.postIdentityToken(tokenRequest);
-
-    const onSuccessfulLogin = async () => {
-      if (this.setCryptoKeys) {
-        await this.cryptoService.setKey(key);
-        await this.cryptoService.setKeyHash(localHashedPassword);
-      }
-    };
-    const saveStateCallback = (tempResult: AuthResult) => {
-      this.saveState(tokenRequest, tempResult.twoFactorProviders, localHashedPassword, key);
-    };
-
-    return await this.processTokenResponse(response, false, onSuccessfulLogin, saveStateCallback);
+    await passwordLogInService.init(email, masterPassword, captchaToken, twoFactor);
+    
+    this.logInService = passwordLogInService;
+    return this.logInService.logIn();
   }
 
   async logInSso(
@@ -116,46 +77,14 @@ export class AuthService implements AuthServiceAbstraction {
     orgId: string,
     twoFactor?: TokenRequestTwoFactor
   ): Promise<AuthResult> {
-    this.twoFactorService.clearSelectedProvider();
+    const ssoLogInService = new SsoLogInDelegate(this.cryptoService, this.apiService, this.tokenService,
+      this.appIdService, this.platformUtilsService, this.messagingService, this.logService, this.stateService,
+      this.setCryptoKeys, this.twoFactorService, this.keyConnectorService);
+    
+    await ssoLogInService.init(code, codeVerifier, redirectUrl, orgId, twoFactor);
 
-    const tokenRequest =
-      this.savedTokenRequest ??
-      new SsoTokenRequest(
-        code,
-        codeVerifier,
-        redirectUrl,
-        await this.buildTwoFactor(twoFactor),
-        await this.buildDeviceRequest()
-      );
-
-    const response = await this.apiService.postIdentityToken(tokenRequest);
-    const tokenResponse = response as IdentityTokenResponse;
-
-    const newSsoUser = tokenResponse.key == null;
-    const onSuccessfulLogin = async () => {
-      if (this.setCryptoKeys && tokenResponse.keyConnectorUrl != null) {
-        if (!newSsoUser) {
-          await this.keyConnectorService.getAndSetKey(tokenResponse.keyConnectorUrl);
-        } else {
-          await this.keyConnectorService.convertNewSsoUserToKeyConnector(
-            tokenResponse.kdf,
-            tokenResponse.kdfIterations,
-            tokenResponse.keyConnectorUrl,
-            orgId
-          );
-        }
-      }
-    };
-    const saveStateCallback = (tempResult: AuthResult) => {
-      this.saveState(tokenRequest, tempResult.twoFactorProviders);
-    };
-
-    return await this.processTokenResponse(
-      response,
-      newSsoUser,
-      onSuccessfulLogin,
-      saveStateCallback
-    );
+    this.logInService = ssoLogInService;
+    return this.logInService.logIn();
   }
 
   async logInApiKey(
@@ -163,52 +92,18 @@ export class AuthService implements AuthServiceAbstraction {
     clientSecret: string,
     twoFactor?: TokenRequestTwoFactor
   ): Promise<AuthResult> {
-    this.twoFactorService.clearSelectedProvider();
+    const apiLogInService = new ApiLogInDelegate(this.cryptoService, this.apiService, this.tokenService, this.appIdService,
+      this.platformUtilsService, this.messagingService, this.logService, this.stateService, this.setCryptoKeys,
+      this.twoFactorService, this.environmentService, this.keyConnectorService);
 
-    const tokenRequest =
-      this.savedTokenRequest ??
-      new ApiTokenRequest(
-        clientId,
-        clientSecret,
-        await this.buildTwoFactor(twoFactor),
-        await this.buildDeviceRequest()
-      );
+    await apiLogInService.init(clientId, clientSecret, twoFactor);
 
-    const response = await this.apiService.postIdentityToken(tokenRequest);
-
-    const onSuccessfulLogin = async () => {
-      await this.stateService.setApiKeyClientId(clientId);
-      await this.stateService.setApiKeyClientSecret(clientSecret);
-
-      const tokenResponse = response as IdentityTokenResponse;
-      if (tokenResponse.apiUseKeyConnector) {
-        const keyConnectorUrl = this.environmentService.getKeyConnectorUrl();
-        await this.keyConnectorService.getAndSetKey(keyConnectorUrl);
-      }
-    };
-    const saveStateCallback = (tempResult: AuthResult) => {
-      this.saveState(tokenRequest, tempResult.twoFactorProviders);
-    };
-
-    return await this.processTokenResponse(response, false, onSuccessfulLogin, saveStateCallback);
+    this.logInService = apiLogInService;
+    return this.logInService.logIn();
   }
 
   async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
-    this.savedTokenRequest.setTwoFactor(twoFactor);
-
-    if (this.authingWithPassword) {
-      return await this.logIn(null, null);
-    }
-
-    if (this.authingWithApiKey) {
-      return await this.logInApiKey(null, null);
-    }
-
-    if (this.authingWithSso) {
-      return await this.logInSso(null, null, null, null);
-    }
-
-    throw new Error("Error: Could not find stored login state.");
+    return this.logInService.logInTwoFactor(twoFactor);
   }
 
   logOut(callback: Function) {
@@ -217,15 +112,15 @@ export class AuthService implements AuthServiceAbstraction {
   }
 
   authingWithApiKey(): boolean {
-    return this.savedTokenRequest instanceof ApiTokenRequest;
+    return this.logInService instanceof ApiLogInDelegate;
   }
 
   authingWithSso(): boolean {
-    return this.savedTokenRequest instanceof SsoTokenRequest;
+    return this.logInService instanceof SsoLogInDelegate;
   }
 
   authingWithPassword(): boolean {
-    return this.savedTokenRequest instanceof PasswordTokenRequest;
+    return this.logInService instanceof PasswordLogInDelegate;
   }
 
   async makePreloginKey(masterPassword: string, email: string): Promise<SymmetricCryptoKey> {
@@ -244,135 +139,5 @@ export class AuthService implements AuthServiceAbstraction {
       }
     }
     return this.cryptoService.makeKey(masterPassword, email, kdf, kdfIterations);
-  }
-
-  private async processTokenResponse(
-    response: IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse,
-    newSsoUser: boolean = false,
-    onSuccessfulLogin: () => Promise<void>,
-    saveStateCallback: (tempResult: AuthResult) => void
-  ): Promise<AuthResult> {
-    this.clearState();
-    const result = new AuthResult();
-
-    result.captchaSiteKey = (response as IdentityCaptchaResponse).siteKey;
-    if (result.requiresCaptcha) {
-      return result;
-    }
-
-    result.twoFactorProviders = (response as IdentityTwoFactorResponse).twoFactorProviders2;
-    if (result.requiresTwoFactor) {
-      saveStateCallback(result);
-      return result;
-    }
-
-    const tokenResponse = response as IdentityTokenResponse;
-    result.resetMasterPassword = tokenResponse.resetMasterPassword;
-    result.forcePasswordReset = tokenResponse.forcePasswordReset;
-
-    await this.saveAccountInformation(tokenResponse);
-
-    if (tokenResponse.twoFactorToken != null) {
-      await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken);
-    }
-
-    if (this.setCryptoKeys && !newSsoUser) {
-      await this.cryptoService.setEncKey(tokenResponse.key);
-      await this.cryptoService.setEncPrivateKey(
-        tokenResponse.privateKey ?? (await this.createKeyPairForOldAccount())
-      );
-    }
-
-    await onSuccessfulLogin();
-
-    await this.stateService.setBiometricLocked(false);
-    this.messagingService.send("loggedIn");
-
-    return result;
-  }
-
-  private async buildDeviceRequest() {
-    const appId = await this.appIdService.getAppId();
-    return new DeviceRequest(appId, this.platformUtilsService);
-  }
-
-  private async buildTwoFactor(userProvidedTwoFactor: TokenRequestTwoFactor) {
-    if (userProvidedTwoFactor != null) {
-      return userProvidedTwoFactor;
-    }
-
-    const storedTwoFactorToken = await this.tokenService.getTwoFactorToken();
-    if (storedTwoFactorToken != null) {
-      return {
-        token: storedTwoFactorToken,
-        provider: TwoFactorProviderType.Remember,
-        remember: false,
-      };
-    }
-
-    return {
-      token: null,
-      provider: null,
-      remember: false,
-    };
-  }
-
-  private async saveAccountInformation(tokenResponse: IdentityTokenResponse) {
-    const accountInformation = await this.tokenService.decodeToken(tokenResponse.accessToken);
-    await this.stateService.addAccount(
-      new Account({
-        profile: {
-          ...new AccountProfile(),
-          ...{
-            userId: accountInformation.sub,
-            email: accountInformation.email,
-            hasPremiumPersonally: accountInformation.premium,
-            kdfIterations: tokenResponse.kdfIterations,
-            kdfType: tokenResponse.kdf,
-          },
-        },
-        tokens: {
-          ...new AccountTokens(),
-          ...{
-            accessToken: tokenResponse.accessToken,
-            refreshToken: tokenResponse.refreshToken,
-          },
-        },
-      })
-    );
-  }
-
-  private async createKeyPairForOldAccount() {
-    try {
-      const keyPair = await this.cryptoService.makeKeyPair();
-      await this.apiService.postAccountKeys(
-        new KeysRequest(keyPair[0], keyPair[1].encryptedString)
-      );
-      return keyPair[1].encryptedString;
-    } catch (e) {
-      this.logService.error(e);
-    }
-  }
-
-  private saveState(
-    tokenRequest: ApiTokenRequest | PasswordTokenRequest | SsoTokenRequest,
-    twoFactorProviders: Map<TwoFactorProviderType, { [key: string]: string }>,
-    localhashedPassword?: string,
-    key?: SymmetricCryptoKey
-  ) {
-    this.savedTokenRequest = tokenRequest;
-    this.twoFactorService.setProviders(twoFactorProviders);
-
-    this.localHashedPassword = localhashedPassword;
-    this.key = key;
-  }
-
-  private clearState(): void {
-    this.savedTokenRequest = null;
-    this.twoFactorService.clearProviders();
-    this.twoFactorService.clearSelectedProvider();
-
-    this.localHashedPassword = null;
-    this.key = null;
   }
 }
