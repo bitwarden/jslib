@@ -23,8 +23,8 @@ import { IdentityTokenResponse } from "jslib-common/models/response/identityToke
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 import { HashPurpose } from "jslib-common/enums/hashPurpose";
 import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
-import { IdentityTwoFactorResponse } from "jslib-common/models/response/identityTwoFactorResponse";
 import { IdentityCaptchaResponse } from "jslib-common/models/response/identityCaptchaResponse";
+import { IdentityTwoFactorResponse } from "jslib-common/models/response/identityTwoFactorResponse";
 
 const email = "hello@world.com";
 const masterPassword = "password";

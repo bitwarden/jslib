@@ -13,8 +13,8 @@ import { StateService } from "../../abstractions/state.service";
 import { TokenService } from "../../abstractions/token.service";
 import { TwoFactorService } from "../../abstractions/twoFactor.service";
 
-import { ApiTokenRequest } from "../../models/request/identityToken/apiTokenRequest";
 import { KeyConnectorService } from "../../abstractions/keyConnector.service";
+import { ApiTokenRequest } from "../../models/request/identityToken/apiTokenRequest";
 import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
 
 export class ApiLogInDelegate extends LogInDelegate {

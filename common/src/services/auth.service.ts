@@ -1,9 +1,9 @@
 import { KdfType } from "../enums/kdfType";
 
 import { ApiLogInDelegate } from "../misc/logInDelegate/apiLogin.delegate";
-import { AuthResult } from "../models/domain/authResult";
 import { PasswordLogInDelegate } from "../misc/logInDelegate/passwordLogin.delegate";
 import { SsoLogInDelegate } from "../misc/logInDelegate/ssoLogin.delegate";
+import { AuthResult } from "../models/domain/authResult";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 
 import { PreloginRequest } from "../models/request/preloginRequest";

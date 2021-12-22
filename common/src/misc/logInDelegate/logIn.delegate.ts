@@ -23,8 +23,8 @@ import { PlatformUtilsService } from "../../abstractions/platformUtils.service";
 import { StateService } from "../../abstractions/state.service";
 import { TokenService } from "../../abstractions/token.service";
 
-import { IdentityCaptchaResponse } from "../../models/response/identityCaptchaResponse";
 import { TwoFactorService } from "../../abstractions/twoFactor.service";
+import { IdentityCaptchaResponse } from "../../models/response/identityCaptchaResponse";
 
 export abstract class LogInDelegate {
   protected abstract tokenRequest: ApiTokenRequest | PasswordTokenRequest | SsoTokenRequest;

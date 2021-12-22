@@ -12,9 +12,9 @@ import { StateService } from "../../abstractions/state.service";
 import { TokenService } from "../../abstractions/token.service";
 import { TwoFactorService } from "../../abstractions/twoFactor.service";
 
+import { KeyConnectorService } from "../../abstractions/keyConnector.service";
 import { SsoTokenRequest } from "../../models/request/identityToken/ssoTokenRequest";
 import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
-import { KeyConnectorService } from "../../abstractions/keyConnector.service";
 
 export class SsoLogInDelegate extends LogInDelegate {
   tokenRequest: SsoTokenRequest;
