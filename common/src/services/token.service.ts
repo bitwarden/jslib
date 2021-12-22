@@ -209,7 +209,7 @@ export class TokenService implements TokenServiceAbstraction {
 
   async getIsExternal(): Promise<boolean> {
     const decoded = await this.decodeToken();
-    if (Array.isArray(decoded.scope) && decoded.scope.includes('api.organization')) {
+    if (Array.isArray(decoded.scope) && decoded.scope.includes("api.organization")) {
       return false;
     }
 
