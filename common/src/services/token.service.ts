@@ -209,6 +209,10 @@ export class TokenService implements TokenServiceAbstraction {
 
   async getIsExternal(): Promise<boolean> {
     const decoded = await this.decodeToken();
+    if (Array.isArray(decoded.scope) && decoded.scope.includes('api.organization')) {
+      return false;
+    }
+
     if (!Array.isArray(decoded.amr)) {
       throw new Error("No amr found");
     }
