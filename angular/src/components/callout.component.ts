@@ -44,7 +44,7 @@ export class CalloutComponent implements OnInit {
         this.title = this.i18nService.t("error");
       }
       if (this.icon === undefined) {
-        this.icon = "bwi-bolt";
+        this.icon = "bwi-error";
       }
     } else if (this.type === "tip") {
       this.calloutStyle = "success";
