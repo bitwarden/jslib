@@ -4,8 +4,6 @@ import { ApiService } from "jslib-common/abstractions/api.service";
 import { AppIdService } from "jslib-common/abstractions/appId.service";
 import { AuthService } from "jslib-common/abstractions/auth.service";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
-import { EnvironmentService } from "jslib-common/abstractions/environment.service";
-import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.service";
 import { LogService } from "jslib-common/abstractions/log.service";
 import { MessagingService } from "jslib-common/abstractions/messaging.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
@@ -42,8 +40,6 @@ describe("PasswordLogInDelegate", () => {
   let platformUtilsService: SubstituteOf<PlatformUtilsService>;
   let messagingService: SubstituteOf<MessagingService>;
   let logService: SubstituteOf<LogService>;
-  let environmentService: SubstituteOf<EnvironmentService>;
-  let keyConnectorService: SubstituteOf<KeyConnectorService>;
   let stateService: SubstituteOf<StateService>;
   let twoFactorService: SubstituteOf<TwoFactorService>;
   let authService: SubstituteOf<AuthService>;
@@ -59,9 +55,7 @@ describe("PasswordLogInDelegate", () => {
     platformUtilsService = Substitute.for<PlatformUtilsService>();
     messagingService = Substitute.for<MessagingService>();
     logService = Substitute.for<LogService>();
-    environmentService = Substitute.for<EnvironmentService>();
     stateService = Substitute.for<StateService>();
-    keyConnectorService = Substitute.for<KeyConnectorService>();
     twoFactorService = Substitute.for<TwoFactorService>();
     authService = Substitute.for<AuthService>();
 
