@@ -3,7 +3,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({ name: 'creditCardNumber' })
 export class CreditCardNumberPipe implements PipeTransform {
     transform(creditCardNumber: string, brand: string): string {
-        
+
         // See https://baymard.com/checkout-usability/credit-card-patterns for
         // all possible credit card spacing patterns. For now, we just handle
         // the below.
@@ -18,7 +18,7 @@ export class CreditCardNumberPipe implements PipeTransform {
             ].join('-');
         }
         // Check for MasterCard #### #### #### #### (4-4-4-4)
-        if (creditCardNumber.length === 16 && (this.inRange(creditCardNumber.substring(0,2),51,55) || this.inRange(creditCardNumber.substring(0,6),222100,272099))) {
+        if (creditCardNumber.length === 16 && brand === 'MasterCard' && (this.inRange(creditCardNumber.substring(0,2),51,55) || this.inRange(creditCardNumber.substring(0,6),222100,272099))) {
             return [
                 creditCardNumber.slice(0, 4),
                 creditCardNumber.slice(4, 8),
@@ -28,7 +28,7 @@ export class CreditCardNumberPipe implements PipeTransform {
         }
 
         // Check for Maestro #### #### ##### (4-4-5) #### ###### ##### (4-6-5) #### #### #### #### (4-4-4-4) #### #### #### #### ### (4-4-4-4-3)
-        if ((this.inRange(creditCardNumber.substring(0,6),500000,509999) || this.inRange(creditCardNumber.substring(0,6),560000,589999) || this.inRange(creditCardNumber.substring(0,6),600000,699999))) {
+        if (brand === 'Maestro' && (this.inRange(creditCardNumber.substring(0,6),500000,509999) || this.inRange(creditCardNumber.substring(0,6),560000,589999) || this.inRange(creditCardNumber.substring(0,6),600000,699999))) {
             if (creditCardNumber.length === 13) {
                 return [
                     creditCardNumber.slice(0,4),
@@ -43,7 +43,7 @@ export class CreditCardNumberPipe implements PipeTransform {
                     creditCardNumber.slice(10),
                 ].join('-');
             }
-            if (creditCardNumber.length === 16) {    
+            if (creditCardNumber.length === 16) {
             return [
                 creditCardNumber.slice(0, 4),
                 creditCardNumber.slice(4, 8),
@@ -51,7 +51,7 @@ export class CreditCardNumberPipe implements PipeTransform {
                 creditCardNumber.slice(12),
             ].join('-');
             }
-            if (creditCardNumber.length === 19) {    
+            if (creditCardNumber.length === 19) {
                 return [
                     creditCardNumber.slice(0, 4),
                     creditCardNumber.slice(4, 8),
@@ -128,7 +128,7 @@ export class CreditCardNumberPipe implements PipeTransform {
     }
 
     /**
-     * 
+     *
      * @param x this is the card number value that you want to compare to see if it fits the range.
      * @param min The minimum value, greater than or equal to.
      * @param max The maximum value, less than or equal to.
@@ -143,6 +143,6 @@ export class CreditCardNumberPipe implements PipeTransform {
             return false;
         }
 
-        
+
     }
 }
