@@ -545,7 +545,7 @@ export class AuthService implements AuthServiceAbstraction {
 
     const accountInformation = await this.tokenService.decodeToken(tokenResponse.accessToken);
     await this.stateService.addAccount(
-      new Account({
+      new Account(new Account({
         profile: {
           ...new AccountProfile(),
           ...{
@@ -570,7 +570,7 @@ export class AuthService implements AuthServiceAbstraction {
             refreshToken: tokenResponse.refreshToken,
           },
         },
-      })
+      }))
     );
 
     if (tokenResponse.twoFactorToken != null) {
