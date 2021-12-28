@@ -545,32 +545,34 @@ export class AuthService implements AuthServiceAbstraction {
 
     const accountInformation = await this.tokenService.decodeToken(tokenResponse.accessToken);
     await this.stateService.addAccount(
-      new Account(new Account({
-        profile: {
-          ...new AccountProfile(),
-          ...{
-            userId: accountInformation.sub,
-            email: accountInformation.email,
-            apiKeyClientId: clientId,
-            hasPremiumPersonally: accountInformation.premium,
-            kdfIterations: tokenResponse.kdfIterations,
-            kdfType: tokenResponse.kdf,
+      new Account(
+        new Account({
+          profile: {
+            ...new AccountProfile(),
+            ...{
+              userId: accountInformation.sub,
+              email: accountInformation.email,
+              apiKeyClientId: clientId,
+              hasPremiumPersonally: accountInformation.premium,
+              kdfIterations: tokenResponse.kdfIterations,
+              kdfType: tokenResponse.kdf,
+            },
           },
-        },
-        keys: {
-          ...new AccountKeys(),
-          ...{
-            apiKeyClientSecret: clientSecret,
+          keys: {
+            ...new AccountKeys(),
+            ...{
+              apiKeyClientSecret: clientSecret,
+            },
           },
-        },
-        tokens: {
-          ...new AccountTokens(),
-          ...{
-            accessToken: tokenResponse.accessToken,
-            refreshToken: tokenResponse.refreshToken,
+          tokens: {
+            ...new AccountTokens(),
+            ...{
+              accessToken: tokenResponse.accessToken,
+              refreshToken: tokenResponse.refreshToken,
+            },
           },
-        },
-      }))
+        })
+      )
     );
 
     if (tokenResponse.twoFactorToken != null) {
