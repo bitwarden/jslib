@@ -17,6 +17,7 @@ import { SendData } from "../models/data/sendData";
 
 import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 import { KdfType } from "../enums/kdfType";
+import { StateVersion } from "../enums/stateVersion";
 
 // Originally (before January 2022) storage was handled as a flat key/value pair store.
 // With the move to a typed object for state storage these keys should no longer be in use anywhere outside of this migration.
@@ -125,12 +126,13 @@ export class StateMigrationService {
         htmlStorageLocation: HtmlStorageLocation.Local,
       })
     )?.globals?.stateVersion;
-    return currentStateVersion == null || currentStateVersion < this.latestVersion;
+    return currentStateVersion == null || currentStateVersion < StateVersion.Latest;
   }
 
   async migrate(): Promise<void> {
     let currentStateVersion =
-      (await this.storageService.get<State<Account>>("state"))?.globals?.stateVersion ?? 1;
+      (await this.storageService.get<State<Account>>("state"))?.globals?.stateVersion ??
+      StateVersion.One;
     while (currentStateVersion < this.latestVersion) {
       switch (currentStateVersion) {
         case 1:
@@ -208,7 +210,7 @@ export class StateMigrationService {
                 v1Keys.rememberedEmail,
                 options
               ),
-              stateVersion: 2,
+              stateVersion: StateVersion.Two,
               theme: await this.storageService.get<string>(v1Keys.theme, options),
               twoFactorToken: await this.storageService.get<string>(
                 v1KeyPrefixes.twoFactorToken + userId,

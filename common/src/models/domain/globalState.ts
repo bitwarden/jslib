@@ -1,3 +1,5 @@
+import { StateVersion } from "../../enums/stateVersion";
+
 export class GlobalState {
   enableAlwaysOnTop?: boolean;
   installedVersion?: string;
@@ -23,7 +25,7 @@ export class GlobalState {
   biometricText?: string;
   noAutoPromptBiometrics?: boolean;
   noAutoPromptBiometricsText?: string;
-  stateVersion: number = 2;
+  stateVersion: number = StateVersion.Latest;
   environmentUrls?: any = {
     server: "bitwarden.com",
   };
