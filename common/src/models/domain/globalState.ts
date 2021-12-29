@@ -2,14 +2,14 @@ export class GlobalState {
   enableAlwaysOnTop?: boolean;
   installedVersion?: string;
   lastActive?: number;
-  locale?: string;
+  locale?: string = "en";
   openAtLogin?: boolean;
   organizationInvitation?: any;
   ssoCodeVerifier?: string;
   ssoOrganizationIdentifier?: string;
   ssoState?: string;
   rememberedEmail?: string;
-  theme?: string;
+  theme?: string = "light";
   window?: Map<string, any> = new Map<string, any>();
   twoFactorToken?: string;
   disableFavicon?: boolean;
@@ -23,7 +23,7 @@ export class GlobalState {
   biometricText?: string;
   noAutoPromptBiometrics?: boolean;
   noAutoPromptBiometricsText?: string;
-  stateVersion: number;
+  stateVersion: number = 2;
   environmentUrls?: any = {
     server: "bitwarden.com",
   };

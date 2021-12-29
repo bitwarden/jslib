@@ -2,6 +2,7 @@ import { StorageService } from "../abstractions/storage.service";
 
 import { Account } from "../models/domain/account";
 import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
+import { GlobalState } from "../models/domain/globalState";
 import { State } from "../models/domain/state";
 import { StorageOptions } from "../models/domain/storageOptions";
 
@@ -147,9 +148,7 @@ export class StateMigrationService {
     const initialState: State<Account> =
       userId == null
         ? {
-            globals: {
-              stateVersion: 2,
-            },
+            globals: new GlobalState(),
             accounts: {},
             activeUserId: null,
           }
