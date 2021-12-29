@@ -113,8 +113,6 @@ const v1KeyPrefixes = {
 };
 
 export class StateMigrationService {
-  readonly latestVersion: number = 2;
-
   constructor(
     protected storageService: StorageService,
     protected secureStorageService: StorageService
@@ -133,9 +131,9 @@ export class StateMigrationService {
     let currentStateVersion =
       (await this.storageService.get<State<Account>>("state"))?.globals?.stateVersion ??
       StateVersion.One;
-    while (currentStateVersion < this.latestVersion) {
+    while (currentStateVersion < StateVersion.Latest) {
       switch (currentStateVersion) {
-        case 1:
+        case StateVersion.One:
           await this.migrateStateFrom1To2();
           break;
       }

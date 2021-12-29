@@ -25,7 +25,7 @@ export class GlobalState {
   biometricText?: string;
   noAutoPromptBiometrics?: boolean;
   noAutoPromptBiometricsText?: string;
-  stateVersion: number = StateVersion.Latest;
+  stateVersion: StateVersion = StateVersion.Latest;
   environmentUrls?: any = {
     server: "bitwarden.com",
   };
