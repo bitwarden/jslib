@@ -2,10 +2,10 @@ export interface ExportData {
   accounts?: AccountsEntity[] | null;
 }
 export interface AccountsEntity {
-  attrs: AcctountAttributes;
+  attrs: AccountAttributes;
   vaults?: VaultsEntity[] | null;
 }
-export interface AcctountAttributes {
+export interface AccountAttributes {
   accountName: string;
   name: string;
   avatar: string;
