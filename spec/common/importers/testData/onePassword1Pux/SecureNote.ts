@@ -32,7 +32,7 @@ export const SecureNoteData: ExportData = {
                 details: {
                   loginFields: [],
                   notesPlain:
-                    "This is my secure note. Lorem ipsum expecto patronum. The quick brown fox jumped over the lazy dog. ",
+                    "This is my secure note. \n\nLorem ipsum expecto patronum. \nThe quick brown fox jumped over the lazy dog. ",
                   sections: [],
                   passwordHistory: [],
                 },

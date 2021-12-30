@@ -12,6 +12,7 @@ import { IdentityData } from "./testData/onePassword1Pux/IdentityData";
 import { LoginData } from "./testData/onePassword1Pux/LoginData";
 import { SanitizedExport } from "./testData/onePassword1Pux/SanitizedExport";
 import { SecureNoteData } from "./testData/onePassword1Pux/SecureNote";
+import { SecureNoteType } from "jslib-common/enums/secureNoteType";
 
 function validateCustomField(fields: FieldView[], fieldName: string, expectedValue: any) {
   expect(fields).toBeDefined();
@@ -188,10 +189,12 @@ describe("1Password 1Pux Importer", async () => {
     const result = await importer.parse(SecureNoteDataJson);
     expect(result != null).toBe(true);
     const cipher = result.ciphers.shift();
+
     expect(cipher.name).toEqual("Secure Note #1");
     expect(cipher.notes).toEqual(
-      "This is my secure note. Lorem ipsum expecto patronum. The quick brown fox jumped over the lazy dog."
+      "This is my secure note. \n\nLorem ipsum expecto patronum. \nThe quick brown fox jumped over the lazy dog."
     );
+    expect(cipher.secureNote.type).toEqual(SecureNoteType.Generic);
   });
 
   it("should create folders", async () => {

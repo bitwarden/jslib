@@ -8,10 +8,12 @@ import { CipherView } from "../../models/view/cipherView";
 import { IdentityView } from "../../models/view/identityView";
 import { LoginView } from "../../models/view/loginView";
 import { PasswordHistoryView } from "../../models/view/passwordHistoryView";
+import { SecureNoteView } from "../../models/view/secureNoteView";
 
 import { CipherRepromptType } from "../../enums/cipherRepromptType";
 import { CipherType } from "../../enums/cipherType";
 import { FieldType } from "../../enums/fieldType";
+import { SecureNoteType } from "../../enums/secureNoteType";
 
 import {
   ExportData,
@@ -59,6 +61,8 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
             break;
           case "003":
             cipher.type = CipherType.SecureNote;
+            cipher.secureNote = new SecureNoteView();
+            cipher.secureNote.type = SecureNoteType.Generic;
             break;
           case "004":
           case "103": // Drivers license
