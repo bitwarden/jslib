@@ -7,146 +7,76 @@ import { CardView } from "../../models/view/cardView";
 import { CipherView } from "../../models/view/cipherView";
 import { IdentityView } from "../../models/view/identityView";
 import { PasswordHistoryView } from "../../models/view/passwordHistoryView";
-import { SecureNoteView } from "../../models/view/secureNoteView";
 
 import { CipherType } from "../../enums/cipherType";
 import { FieldType } from "../../enums/fieldType";
-import { SecureNoteType } from "../../enums/secureNoteType";
 
-type ExportAttributes = {
-  version: string;
-  description: string;
-  createdAt: string;
-};
-
-type AccountAttributes = {
-  accountName: string;
-  name: string;
-  avatar: string;
-  email: string;
-  uuid: string;
-  domain: string;
-};
-
-type Account = {
-  attrs: AccountAttributes;
-};
-
-enum VaultAttributeTypeEnum {
-  Personal = "P",
-  Everyone = "E",
-  UserCreated = "U",
-}
-
-type VaultAttributes = {
-  uuid: string;
-  desc: string;
-  avatar: string;
-  name: string;
-  type: VaultAttributeTypeEnum;
-};
-
-interface VaultItem {
-  uuid: string;
-  favIndex: number;
-  createdAt: number;
-  updatedAt: number;
-  trashed: boolean;
-  categoryUuid: string;
-  details: ItemDetails;
-  notesPlain: string;
-  sections: Section[];
-  passwordHistory: PasswordHistory[];
-  overview: ItemOverview;
-}
-
-interface ItemDetails {
-  loginFields: LoginField[];
-  notesPlain: string;
-  sections: Section[];
-  passwordHistory: PasswordHistory[];
-}
-
-interface LoginField {
-  value: string;
-  id: string;
-  name: string;
-  fieldType: string;
-  designation: string;
-}
-
-interface PasswordHistory {
-  value: string;
-  time: number;
-}
-
-interface Section {
-  title: string;
-  name: string;
-  fields: Field[];
-}
-
-interface Field {
-  title: string;
-  id: string;
-  value: Value;
-  indexAtSource: number;
-  guarded: boolean;
-  multiline: boolean;
-  dontGenerate: boolean;
-  inputTraits: InputTraits;
-}
-
-interface InputTraits {
-  keyboard: string;
-  correction: string;
-  capitalization: string;
-}
-
-interface Value {
-  concealed: string;
-}
-
-interface ItemOverview {
-  subtitle: string;
-  urls: URL[];
-  title: string;
-  url: string;
-  ps: number;
-  pbe: number;
-  pgrng: boolean;
-}
-
-interface URL {
-  label: string;
-  url: string;
-}
-
-type Vault = {
-  attrs: VaultAttributes;
-  items: VaultItem[];
-};
-
-type ExportData = {
-  accounts: Account[];
-  vaults: Vault[];
-  createdAt: string;
-};
+import {
+  ExportData,
+  AccountsEntity,
+  AcctountAttributes,
+  VaultsEntity,
+  VaultAttributes,
+  ItemCollection,
+  Item,
+  Details,
+  LoginFieldTypeEnum,
+  LoginFieldsEntity,
+  SectionsEntity,
+  FieldsEntity,
+  Value,
+  Address,
+  InputTraits,
+  PasswordHistoryEntity,
+  DocumentAttributes,
+  Overview,
+  UrlsEntity,
+} from "./types/onepassword1PuxImporterTypes";
+import { CipherRepromptType } from "../../enums/cipherRepromptType";
+import { LoginView } from "../../models/view/loginView";
 
 export class OnePassword1PuxImporter extends BaseImporter implements Importer {
   result = new ImportResult();
 
   parse(data: string): Promise<ImportResult> {
     const exportData: ExportData = JSON.parse(data);
-    // const personalVaults = exportData.vaults[0].filter((v) => v.attrs.type === VaultAttributeTypeEnum.Personal);
-    const personalVaults = [exportData.vaults[0]];
-    personalVaults.forEach((vault) => {
-      vault.items.forEach((item) => {
+
+    const account = exportData.accounts[0];
+    // TODO Add handling of multiple vaults
+    // const personalVaults = account.vaults[0].filter((v) => v.attrs.type === VaultAttributeTypeEnum.Personal);
+    account.vaults.forEach((vault: VaultsEntity) => {
+      vault.items.forEach((itemCollection: ItemCollection) => {
+        const item: Item = itemCollection.item;
         if (item.trashed === true) {
           return;
         }
 
         const cipher = this.initLoginCipher();
+
+        switch (item.categoryUuid) {
+          case "001": // Login
+          case "101": // Bank accounts?
+          case "102": // DB credentials
+          case "110": // custom login
+            cipher.type = CipherType.Login;
+            cipher.login = new LoginView();
+            break;
+          case "002": // CreditCards
+            cipher.type = CipherType.Card;
+            cipher.card = new CardView();
+            break;
+          case "003":
+            cipher.type = CipherType.SecureNote;
+            break;
+          case "004":
+          case "103": // Drivers license
+            cipher.type = CipherType.Identity;
+            cipher.identity = new IdentityView();
+            break;
+          // case "006": // Attachment?
+          default:
+            break;
+        }
 
         this.processVaultItem(item, cipher);
 
@@ -156,106 +86,262 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
       });
     });
 
+    if (this.organization) {
+      this.moveFoldersToCollections(this.result);
+    }
+
     this.result.success = true;
     return Promise.resolve(this.result);
   }
 
-  private processVaultItem(item: VaultItem, cipher: CipherView) {
+  private processVaultItem(item: Item, cipher: CipherView) {
     cipher.favorite = item.favIndex === 1 ? true : false;
 
-    this.processOverview(item, cipher);
+    this.processOverview(item.overview, cipher);
 
-    if (item.details.loginFields != null) {
-      this.processLoginFields(item, cipher);
-    }
+    this.processLoginFields(item, cipher);
 
-    if (item.details.sections != null) {
-      this.processSections(item.details.sections, cipher);
-    }
+    this.parsePasswordHistory(item.details.passwordHistory, cipher);
 
-    if (item.details.passwordHistory != null) {
-      this.parsePasswordHistory(item.details.passwordHistory, cipher);
-    }
-
-    // if (!this.isNullOrWhitespace(item.details.ccnum) || !this.isNullOrWhitespace(item.details.cvv)) {
-    //   cipher.type = CipherType.Card;
-    //   cipher.card = new CardView();
-    // } else if (!this.isNullOrWhitespace(item.details.firstname) || !this.isNullOrWhitespace(item.details.address1)) {
-    //   cipher.type = CipherType.Identity;
-    //   cipher.identity = new IdentityView();
-    // }
-
-    // if (cipher.type === CipherType.Login && !this.isNullOrWhitespace(item.details.password)) {
-    //   cipher.login.password = item.details. .password;
-    // }
+    this.processSections(item.details.sections, cipher);
 
     if (!this.isNullOrWhitespace(item.details.notesPlain)) {
       cipher.notes = item.details.notesPlain.split(this.newLineRegex).join("\n") + "\n";
     }
-    // if (item.details.loginFields != null) {
-    //   this.parseFields(item.details.loginFields, cipher, "designation", "value", "name");
-    // }
   }
 
-  private processOverview(item: VaultItem, cipher: CipherView) {
-    if (item.overview == null) {
+  private processOverview(overview: Overview, cipher: CipherView) {
+    if (overview == null) {
       return;
     }
 
-    cipher.name = this.getValueOrDefault(item.overview.title);
+    cipher.name = this.getValueOrDefault(overview.title);
 
-    if (item.overview.urls != null) {
+    if (overview.urls != null) {
       const urls: string[] = [];
-      item.overview.urls.forEach((url: URL) => {
+      overview.urls.forEach((url: UrlsEntity) => {
         if (!this.isNullOrWhitespace(url.url)) {
           urls.push(url.url);
         }
       });
       cipher.login.uris = this.makeUriArray(urls);
     }
+
+    if (overview.tags != null && overview.tags.length > 0) {
+      const folderName = this.capitalize(overview.tags[0]);
+      this.processFolder(this.result, folderName);
+    }
   }
 
-  private processLoginFields(item: VaultItem, cipher: CipherView) {
-    if (item.details.loginFields == null) {
+  private capitalize(string: string) {
+    return string.trim().replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()));
+  }
+
+  private processLoginFields(item: Item, cipher: CipherView) {
+    if (item.details == null) {
       return;
     }
 
-    if (item.details.loginFields.length == 0) {
+    if (item.details.loginFields == null || item.details.loginFields.length === 0) {
       return;
     }
 
     item.details.loginFields.forEach((loginField) => {
-      if (
-        (loginField.fieldType == "T" || loginField.designation == "username") &&
-        loginField.value != ""
-      ) {
+      if (loginField.designation == "username" && loginField.value != "") {
         cipher.type = CipherType.Login;
         cipher.login.username = loginField.value;
-      } else if (
-        (loginField.fieldType == "P" || loginField.designation == "password") &&
-        loginField.value != ""
-      ) {
+      } else if (loginField.designation == "password" && loginField.value != "") {
         cipher.type = CipherType.Login;
         cipher.login.password = loginField.value;
+      } else {
+        let fieldValue = loginField.value;
+        let fieldType: FieldType = FieldType.Text;
+        switch (loginField.fieldType) {
+          case LoginFieldTypeEnum.Password:
+            fieldType = FieldType.Hidden;
+            break;
+          case LoginFieldTypeEnum.CheckBox:
+            fieldValue = loginField.value !== "" ? "true" : "false";
+            fieldType = FieldType.Boolean;
+            break;
+          default:
+            break;
+        }
+        this.processKvp(cipher, loginField.name, fieldValue, fieldType);
       }
     });
   }
 
-  private processSections(sections: Section[], cipher: CipherView) {
-    if (sections == null) {
+  private processSections(sections: SectionsEntity[], cipher: CipherView) {
+    if (sections == null || sections.length === 0) {
       return;
     }
 
-    // sections.forEach((section: Section) => {
-    //   if (section.fields != null) {
-    //     this.parseFields(section.fields, cipher, "n", "v", "t");
-    //   }
-    // });
+    sections.forEach((section: SectionsEntity) => {
+      if (section.fields != null) {
+        this.parseSectionFields(section.fields, cipher);
+      }
+    });
   }
 
-  private parsePasswordHistory(items: PasswordHistory[], cipher: CipherView) {
-    const maxSize = items.length > 5 ? 5 : items.length;
-    cipher.passwordHistory = items
+  private parseSectionFields(fields: FieldsEntity[], cipher: CipherView) {
+    fields.forEach((field: FieldsEntity) => {
+      const valueKey = Object.keys(field.value)[0];
+      const anyField = field as any;
+
+      if (
+        anyField.value == null ||
+        anyField.value[valueKey] == null ||
+        anyField.value[valueKey] === ""
+      ) {
+        return;
+      }
+
+      const fieldName = this.getFieldName(field.id, field.title);
+      const fieldValue = this.extractValue(field.value, valueKey);
+
+      if (cipher.type === CipherType.Login) {
+        if (this.isNullOrWhitespace(cipher.login.username) && fieldName === "username") {
+          cipher.login.username = fieldValue;
+          return;
+        } else if (this.isNullOrWhitespace(cipher.login.password) && fieldName === "password") {
+          cipher.login.password = fieldValue;
+          return;
+        } else if (
+          this.isNullOrWhitespace(cipher.login.totp) &&
+          field.id != null &&
+          field.id.startsWith("TOTP_")
+        ) {
+          cipher.login.totp = fieldValue;
+          return;
+        }
+      } else if (cipher.type === CipherType.Card) {
+        if (this.isNullOrWhitespace(cipher.card.number) && field.id === "ccnum") {
+          cipher.card.number = fieldValue;
+          cipher.card.brand = this.getCardBrand(fieldValue);
+          return;
+        } else if (this.isNullOrWhitespace(cipher.card.code) && field.id === "cvv") {
+          cipher.card.code = fieldValue;
+          return;
+        } else if (
+          this.isNullOrWhitespace(cipher.card.cardholderName) &&
+          field.id === "cardholder"
+        ) {
+          cipher.card.cardholderName = fieldValue;
+          return;
+        } else if (this.isNullOrWhitespace(cipher.card.expiration) && field.id === "expiry") {
+          const monthYear: string = fieldValue.toString().trim();
+          cipher.card.expMonth = monthYear.substring(4, 6);
+          if (cipher.card.expMonth[0] === "0") {
+            cipher.card.expMonth = cipher.card.expMonth.substring(1, 2);
+          }
+          cipher.card.expYear = monthYear.substring(0, 4);
+          return;
+        } else if (field.id === "type") {
+          // Skip since brand was determined from number above
+          return;
+        }
+      } else if (cipher.type === CipherType.Identity) {
+        const identity = cipher.identity;
+        if (this.isNullOrWhitespace(identity.firstName) && field.id === "firstname") {
+          identity.firstName = fieldValue;
+          return;
+        } else if (this.isNullOrWhitespace(identity.lastName) && field.id === "lastname") {
+          identity.lastName = fieldValue;
+          return;
+        } else if (this.isNullOrWhitespace(identity.middleName) && field.id === "initial") {
+          identity.middleName = fieldValue;
+          return;
+        } else if (this.isNullOrWhitespace(identity.phone) && field.id === "defphone") {
+          identity.phone = fieldValue;
+          return;
+        } else if (this.isNullOrWhitespace(identity.company) && field.id === "company") {
+          identity.company = fieldValue;
+          return;
+        } else if (this.isNullOrWhitespace(identity.email) && field.id === "email") {
+          identity.email = fieldValue;
+          return;
+        } else if (this.isNullOrWhitespace(identity.username) && field.id === "username") {
+          identity.username = fieldValue;
+          return;
+        } else if (valueKey === "address") {
+          // fieldValue is an object casted into a string, so access the plain value instead
+          const { street, city, country, zip, state } = field.value.address;
+          identity.address1 = this.getValueOrDefault(street);
+          identity.city = this.getValueOrDefault(city);
+          if (!this.isNullOrWhitespace(country)) {
+            identity.country = country.toUpperCase();
+          }
+          identity.postalCode = this.getValueOrDefault(zip);
+          identity.state = this.getValueOrDefault(state);
+          return;
+        }
+      }
+
+      // Do not include a password field if it's already in the history
+      if (
+        field.title === "password" &&
+        cipher.passwordHistory != null &&
+        cipher.passwordHistory.some((h) => h.password === fieldValue)
+      ) {
+        return;
+      }
+
+      // TODO ?? If one of the fields is marked as guarded, then activate Password-Reprompt for the entire item
+      if (field.guarded && cipher.reprompt === CipherRepromptType.None) {
+        cipher.reprompt = CipherRepromptType.Password;
+      }
+
+      const fieldType = valueKey === "concealed" ? FieldType.Hidden : FieldType.Text;
+      this.processKvp(cipher, fieldName, fieldValue, fieldType);
+    });
+  }
+
+  private getFieldName(id: string, title: string): string {
+    if (this.isNullOrWhitespace(title)) {
+      return id;
+    }
+
+    // Naive approach of checking if the fields id is usable
+    if (id.length > 25 && RegExp(/[0-9]{2}[A-Z]{2}/, "i").test(id)) {
+      return title;
+    }
+    return id;
+  }
+
+  // totp?: string | null;
+  // date?: number | null;
+  // string?: string | null;
+  // concealed?: string | null;
+  // email?: string | null;
+  // phone?: string | null;
+  // menu?: string | null;
+  // gender?: string | null;
+  // monthYear?: number | null;
+  // url?: string | null;
+  // address?: Address | null;
+  // creditCardType?: string | null;
+  // creditCardNumber?: string | null;
+  // reference?: string | null;
+  private extractValue(value: Value, valueKey: string): string {
+    if (valueKey === "date") {
+      return new Date(value.date * 1000).toUTCString();
+    }
+
+    if (valueKey === "monthYear") {
+      return value.monthYear.toString();
+    }
+
+    return (value as any)[valueKey];
+  }
+
+  private parsePasswordHistory(historyItems: PasswordHistoryEntity[], cipher: CipherView) {
+    if (historyItems == null || historyItems.length === 0) {
+      return;
+    }
+
+    const maxSize = historyItems.length > 5 ? 5 : historyItems.length;
+    cipher.passwordHistory = historyItems
       .filter((h: any) => !this.isNullOrWhitespace(h.value) && h.time != null)
       .sort((a, b) => b.time - a.time)
       .slice(0, maxSize)
@@ -266,121 +352,4 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
         return ph;
       });
   }
-
-  // private parseFields(
-  //   fields: Field[],
-  //   cipher: CipherView,
-  //   designationKey: string,
-  //   valueKey: string,
-  //   nameKey: string
-  // ) {
-  //   fields.forEach((field: Field) => {
-  //     if (field[valueKey] == null || field[valueKey].toString().trim() === "") {
-  //       return;
-  //     }
-
-  //     // TODO: when date FieldType exists, store this as a date field type instead of formatted Text if k is 'date'
-  //     const fieldValue =
-  //       field.k === "date"
-  //         ? new Date(field[valueKey] * 1000).toUTCString()
-  //         : field[valueKey].toString();
-  //     const fieldDesignation =
-  //       field[designationKey] != null ? field[designationKey].toString() : null;
-
-  //     if (cipher.type === CipherType.Login) {
-  //       if (this.isNullOrWhitespace(cipher.login.username) && fieldDesignation === "username") {
-  //         cipher.login.username = fieldValue;
-  //         return;
-  //       } else if (
-  //         this.isNullOrWhitespace(cipher.login.password) &&
-  //         fieldDesignation === "password"
-  //       ) {
-  //         cipher.login.password = fieldValue;
-  //         return;
-  //       } else if (
-  //         this.isNullOrWhitespace(cipher.login.totp) &&
-  //         fieldDesignation != null &&
-  //         fieldDesignation.startsWith("TOTP_")
-  //       ) {
-  //         cipher.login.totp = fieldValue;
-  //         return;
-  //       }
-  //     } else if (cipher.type === CipherType.Card) {
-  //       if (this.isNullOrWhitespace(cipher.card.number) && fieldDesignation === "ccnum") {
-  //         cipher.card.number = fieldValue;
-  //         cipher.card.brand = this.getCardBrand(fieldValue);
-  //         return;
-  //       } else if (this.isNullOrWhitespace(cipher.card.code) && fieldDesignation === "cvv") {
-  //         cipher.card.code = fieldValue;
-  //         return;
-  //       } else if (
-  //         this.isNullOrWhitespace(cipher.card.cardholderName) &&
-  //         fieldDesignation === "cardholder"
-  //       ) {
-  //         cipher.card.cardholderName = fieldValue;
-  //         return;
-  //       } else if (
-  //         this.isNullOrWhitespace(cipher.card.expiration) &&
-  //         fieldDesignation === "expiry" &&
-  //         fieldValue.length === 6
-  //       ) {
-  //         cipher.card.expMonth = (fieldValue as string).substr(4, 2);
-  //         if (cipher.card.expMonth[0] === "0") {
-  //           cipher.card.expMonth = cipher.card.expMonth.substr(1, 1);
-  //         }
-  //         cipher.card.expYear = (fieldValue as string).substr(0, 4);
-  //         return;
-  //       } else if (fieldDesignation === "type") {
-  //         // Skip since brand was determined from number above
-  //         return;
-  //       }
-  //     } else if (cipher.type === CipherType.Identity) {
-  //       const identity = cipher.identity;
-  //       if (this.isNullOrWhitespace(identity.firstName) && fieldDesignation === "firstname") {
-  //         identity.firstName = fieldValue;
-  //         return;
-  //       } else if (this.isNullOrWhitespace(identity.lastName) && fieldDesignation === "lastname") {
-  //         identity.lastName = fieldValue;
-  //         return;
-  //       } else if (this.isNullOrWhitespace(identity.middleName) && fieldDesignation === "initial") {
-  //         identity.middleName = fieldValue;
-  //         return;
-  //       } else if (this.isNullOrWhitespace(identity.phone) && fieldDesignation === "defphone") {
-  //         identity.phone = fieldValue;
-  //         return;
-  //       } else if (this.isNullOrWhitespace(identity.company) && fieldDesignation === "company") {
-  //         identity.company = fieldValue;
-  //         return;
-  //       } else if (this.isNullOrWhitespace(identity.email) && fieldDesignation === "email") {
-  //         identity.email = fieldValue;
-  //         return;
-  //       } else if (this.isNullOrWhitespace(identity.username) && fieldDesignation === "username") {
-  //         identity.username = fieldValue;
-  //         return;
-  //       } else if (fieldDesignation === "address") {
-  //         // fieldValue is an object casted into a string, so access the plain value instead
-  //         const { street, city, country, zip } = field[valueKey];
-  //         identity.address1 = this.getValueOrDefault(street);
-  //         identity.city = this.getValueOrDefault(city);
-  //         if (!this.isNullOrWhitespace(country)) {
-  //           identity.country = country.toUpperCase();
-  //         }
-  //         identity.postalCode = this.getValueOrDefault(zip);
-  //         return;
-  //       }
-  //     }
-
-  //     const fieldName = this.isNullOrWhitespace(field[nameKey]) ? "no_name" : field[nameKey];
-  //     if (
-  //       fieldName === "password" &&
-  //       cipher.passwordHistory != null &&
-  //       cipher.passwordHistory.some((h) => h.password === fieldValue)
-  //     ) {
-  //       return;
-  //     }
-
-  //     const fieldType = field.guarded === true ? FieldType.Hidden : FieldType.Text;
-  //     this.processKvp(cipher, fieldName, fieldValue, fieldType);
-  //   });
-  // }
 }
