@@ -1,77 +1,74 @@
-export type ExportAttributes = {
-  version: string;
-  description: string;
-  createdAt: string;
-};
-
-export type AccountAttributes = {
+export interface ExportData {
+  accounts?: AccountsEntity[] | null;
+}
+export interface AccountsEntity {
+  attrs: AcctountAttributes;
+  vaults?: VaultsEntity[] | null;
+}
+export interface AcctountAttributes {
   accountName: string;
   name: string;
   avatar: string;
   email: string;
   uuid: string;
   domain: string;
-};
-
-type Account = {
-  attrs: AccountAttributes;
-};
-
-enum VaultAttributeTypeEnum {
-  Personal = "P",
-  Everyone = "E",
-  UserCreated = "U",
 }
-
-type VaultAttributes = {
+export interface VaultsEntity {
+  attrs: VaultAttributes;
+  items?: ItemCollection[] | null;
+}
+export interface VaultAttributes {
   uuid: string;
   desc: string;
   avatar: string;
   name: string;
-  type: VaultAttributeTypeEnum;
-};
-
-interface VaultItem {
+  type: string;
+}
+export interface ItemCollection {
+  item: Item;
+}
+export interface Item {
   uuid: string;
   favIndex: number;
   createdAt: number;
   updatedAt: number;
   trashed: boolean;
   categoryUuid: string;
-  details: ItemDetails;
-  notesPlain: string;
-  sections: Section[];
-  passwordHistory: PasswordHistory[];
-  overview: ItemOverview;
+  details: Details;
+  overview: Overview;
+}
+export interface Details {
+  loginFields?: (LoginFieldsEntity | null)[] | null;
+  notesPlain?: string | null;
+  sections?: (SectionsEntity | null)[] | null;
+  passwordHistory?: (PasswordHistoryEntity | null)[] | null;
+  documentAttributes?: DocumentAttributes | null;
+  password?: string | null;
 }
 
-interface ItemDetails {
-  loginFields: LoginField[];
-  notesPlain: string;
-  sections: Section[];
-  passwordHistory: PasswordHistory[];
+export enum LoginFieldTypeEnum {
+  TextOrHtml = "T",
+  EmailAddress = "E",
+  URL = "U",
+  Number = "N",
+  Password = "P",
+  TextArea = "A",
+  PhoneNumber = "T",
+  CheckBox = "C",
 }
-
-interface LoginField {
+export interface LoginFieldsEntity {
   value: string;
   id: string;
   name: string;
-  fieldType: string;
-  designation: string;
+  fieldType: LoginFieldTypeEnum | string;
+  designation?: string | null;
 }
-
-interface PasswordHistory {
-  value: string;
-  time: number;
-}
-
-interface Section {
+export interface SectionsEntity {
   title: string;
-  name: string;
-  fields: Field[];
+  name?: string | null;
+  fields?: FieldsEntity[] | null;
 }
-
-interface Field {
+export interface FieldsEntity {
   title: string;
   id: string;
   value: Value;
@@ -80,40 +77,56 @@ interface Field {
   multiline: boolean;
   dontGenerate: boolean;
   inputTraits: InputTraits;
+  clipboardFilter?: string | null;
 }
-
-interface InputTraits {
+export interface Value {
+  totp?: string | null;
+  date?: number | null;
+  string?: string | null;
+  concealed?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  menu?: string | null;
+  gender?: string | null;
+  monthYear?: number | null;
+  url?: string | null;
+  address?: Address | null;
+  creditCardType?: string | null;
+  creditCardNumber?: string | null;
+  reference?: string | null;
+}
+export interface Address {
+  street: string;
+  city: string;
+  country: string;
+  zip: string;
+  state: string;
+}
+export interface InputTraits {
   keyboard: string;
   correction: string;
   capitalization: string;
 }
-
-interface Value {
-  concealed: string;
+export interface PasswordHistoryEntity {
+  value: string;
+  time: number;
 }
-
-interface ItemOverview {
+export interface DocumentAttributes {
+  fileName: string;
+  documentId: string;
+  decryptedSize: number;
+}
+export interface Overview {
   subtitle: string;
-  urls: URL[];
   title: string;
   url: string;
-  ps: number;
-  pbe: number;
-  pgrng: boolean;
+  urls?: UrlsEntity[] | null;
+  ps?: number | null;
+  pbe?: number | null;
+  pgrng?: boolean | null;
+  tags?: string[] | null;
 }
-
-interface URL {
+export interface UrlsEntity {
   label: string;
   url: string;
 }
-
-type Vault = {
-  attrs: VaultAttributes;
-  items: VaultItem[];
-};
-
-type ExportData = {
-  accounts: Account[];
-  vaults: Vault[];
-  createdAt: string;
-};
