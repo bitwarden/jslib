@@ -6,34 +6,26 @@ import { ImportResult } from "../../models/domain/importResult";
 import { CardView } from "../../models/view/cardView";
 import { CipherView } from "../../models/view/cipherView";
 import { IdentityView } from "../../models/view/identityView";
+import { LoginView } from "../../models/view/loginView";
 import { PasswordHistoryView } from "../../models/view/passwordHistoryView";
 
+import { CipherRepromptType } from "../../enums/cipherRepromptType";
 import { CipherType } from "../../enums/cipherType";
 import { FieldType } from "../../enums/fieldType";
 
 import {
   ExportData,
-  AccountsEntity,
-  AcctountAttributes,
-  VaultsEntity,
-  VaultAttributes,
-  ItemCollection,
-  Item,
-  Details,
-  LoginFieldTypeEnum,
-  LoginFieldsEntity,
-  SectionsEntity,
   FieldsEntity,
-  Value,
-  Address,
-  InputTraits,
-  PasswordHistoryEntity,
-  DocumentAttributes,
+  Item,
+  ItemCollection,
+  LoginFieldTypeEnum,
   Overview,
+  PasswordHistoryEntity,
+  SectionsEntity,
   UrlsEntity,
+  Value,
+  VaultsEntity,
 } from "./types/onepassword1PuxImporterTypes";
-import { CipherRepromptType } from "../../enums/cipherRepromptType";
-import { LoginView } from "../../models/view/loginView";
 
 export class OnePassword1PuxImporter extends BaseImporter implements Importer {
   result = new ImportResult();
@@ -133,8 +125,8 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
     }
   }
 
-  private capitalize(string: string) {
-    return string.trim().replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()));
+  private capitalize(inputString: string): string {
+    return inputString.trim().replace(/\w\S*/g, (w) => w.replace(/^\w/, (c) => c.toUpperCase()));
   }
 
   private processLoginFields(item: Item, cipher: CipherView) {
@@ -147,10 +139,10 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
     }
 
     item.details.loginFields.forEach((loginField) => {
-      if (loginField.designation == "username" && loginField.value != "") {
+      if (loginField.designation === "username" && loginField.value !== "") {
         cipher.type = CipherType.Login;
         cipher.login.username = loginField.value;
-      } else if (loginField.designation == "password" && loginField.value != "") {
+      } else if (loginField.designation === "password" && loginField.value !== "") {
         cipher.type = CipherType.Login;
         cipher.login.password = loginField.value;
       } else {

@@ -1,14 +1,17 @@
 import { FieldType } from "jslib-common/enums/fieldType";
+
+import { FieldView } from "jslib-common/models/view/fieldView";
+
+import { Utils } from "jslib-common/misc/utils";
+
 import { OnePassword1PuxImporter as Importer } from "jslib-common/importers/onepasswordImporters/onepassword1PuxImporter";
 
 import { OnePuxExampleFile } from "./testData/onePassword1Pux/1pux_example";
-import { LoginData } from "./testData/onePassword1Pux/LoginData";
 import { CreditCardData } from "./testData/onePassword1Pux/CreditCard";
 import { IdentityData } from "./testData/onePassword1Pux/IdentityData";
-import { SecureNoteData } from "./testData/onePassword1Pux/SecureNote";
+import { LoginData } from "./testData/onePassword1Pux/LoginData";
 import { SanitizedExport } from "./testData/onePassword1Pux/SanitizedExport";
-import { FieldView } from "jslib-common/models/view/fieldView";
-import { Utils } from "jslib-common/misc/utils";
+import { SecureNoteData } from "./testData/onePassword1Pux/SecureNote";
 
 function validateCustomField(fields: FieldView[], fieldName: string, expectedValue: any) {
   expect(fields).toBeDefined();
