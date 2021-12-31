@@ -139,7 +139,7 @@ export class AccountSettings {
   protectedPin?: string;
   settings?: any; // TODO: Merge whatever is going on here into the AccountSettings model properly
   vaultTimeout?: number;
-  vaultTimeoutAction?: string;
+  vaultTimeoutAction?: string = "lock";
 }
 
 export class AccountTokens {

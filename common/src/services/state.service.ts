@@ -74,7 +74,6 @@ export class StateService<TAccount extends Account = Account>
       );
       this.state = diskState;
       await this.pruneInMemoryAccounts();
-      await this.saveStateToStorage(this.state, await this.defaultOnDiskMemoryOptions());
       await this.pushAccounts();
     }
   }
