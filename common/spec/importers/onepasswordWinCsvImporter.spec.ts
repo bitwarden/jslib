@@ -1,9 +1,9 @@
-import { OnePasswordWinCsvImporter as Importer } from '../../src/importers/onepasswordImporters/onepasswordWinCsvImporter';
+import { OnePasswordWinCsvImporter as Importer } from 'src/importers/onepasswordImporters/onepasswordWinCsvImporter';
 
-import { CipherType } from '../../src/enums/cipherType';
-import { FieldType } from '../../src/enums/fieldType';
-import { CipherView } from '../../src/models/view/cipherView';
-import { FieldView } from '../../src/models/view/fieldView';
+import { CipherType } from 'src/enums/cipherType';
+import { FieldType } from 'src/enums/fieldType';
+import { CipherView } from 'src/models/view/cipherView';
+import { FieldView } from 'src/models/view/fieldView';
 
 import { data as creditCardData } from './testData/onePasswordCsv/creditCard.windows.csv';
 import { data as identityData } from './testData/onePasswordCsv/identity.windows.csv';

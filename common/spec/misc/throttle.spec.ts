@@ -1,5 +1,5 @@
-import { sequentialize } from '../../src/misc/sequentialize';
-import { throttle } from '../../src/misc/throttle';
+import { sequentialize } from 'src/misc/sequentialize';
+import { throttle } from 'src/misc/throttle';
 
 describe('throttle decorator', () => {
     it('should call the function once at a time', async () => {

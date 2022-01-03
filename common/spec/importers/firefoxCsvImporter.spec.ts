@@ -1,8 +1,8 @@
-import { FirefoxCsvImporter as Importer } from '../../src/importers/firefoxCsvImporter';
+import { FirefoxCsvImporter as Importer } from 'src/importers/firefoxCsvImporter';
 
-import { CipherView } from '../../src/models/view/cipherView';
-import { LoginUriView } from '../../src/models/view/loginUriView';
-import { LoginView } from '../../src/models/view/loginView';
+import { CipherView } from 'src/models/view/cipherView';
+import { LoginUriView } from 'src/models/view/loginUriView';
+import { LoginView } from 'src/models/view/loginView';
 
 import { data as firefoxAccountsData } from './testData/firefoxCsv/firefoxAccountsData.csv';
 import { data as simplePasswordData } from './testData/firefoxCsv/simplePasswordData.csv';

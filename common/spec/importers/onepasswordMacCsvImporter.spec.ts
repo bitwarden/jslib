@@ -1,7 +1,7 @@
-import { OnePasswordMacCsvImporter as Importer } from '../../src/importers/onepasswordImporters/onepasswordMacCsvImporter';
+import { OnePasswordMacCsvImporter as Importer } from 'src/importers/onepasswordImporters/onepasswordMacCsvImporter';
 
-import { CipherType } from '../../src/enums/cipherType';
-import { CipherView } from '../../src/models/view/cipherView';
+import { CipherType } from 'src/enums/cipherType';
+import { CipherView } from 'src/models/view/cipherView';
 
 import { data as creditCardData } from './testData/onePasswordCsv/creditCard.mac.csv';
 import { data as identityData } from './testData/onePasswordCsv/identity.mac.csv';

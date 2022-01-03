@@ -1,21 +1,21 @@
 import { Arg, Substitute, SubstituteOf } from '@fluffy-spoon/substitute';
 
-import { ApiService } from '../../src/abstractions/api.service';
-import { CryptoService } from '../../src/abstractions/crypto.service';
-import { FileUploadService } from '../../src/abstractions/fileUpload.service';
-import { I18nService } from '../../src/abstractions/i18n.service';
-import { LogService } from '../../src/abstractions/log.service';
-import { SearchService } from '../../src/abstractions/search.service';
-import { SettingsService } from '../../src/abstractions/settings.service';
-import { StorageService } from '../../src/abstractions/storage.service';
-import { UserService } from '../../src/abstractions/user.service';
-import { Utils } from '../../src/misc/utils';
-import { Cipher } from '../../src/models/domain/cipher';
-import { EncArrayBuffer } from '../../src/models/domain/encArrayBuffer';
-import { EncString } from '../../src/models/domain/encString';
-import { SymmetricCryptoKey } from '../../src/models/domain/symmetricCryptoKey';
+import { ApiService } from 'src/abstractions/api.service';
+import { CryptoService } from 'src/abstractions/crypto.service';
+import { FileUploadService } from 'src/abstractions/fileUpload.service';
+import { I18nService } from 'src/abstractions/i18n.service';
+import { LogService } from 'src/abstractions/log.service';
+import { SearchService } from 'src/abstractions/search.service';
+import { SettingsService } from 'src/abstractions/settings.service';
+import { StorageService } from 'src/abstractions/storage.service';
+import { UserService } from 'src/abstractions/user.service';
+import { Utils } from 'src/misc/utils';
+import { Cipher } from 'src/models/domain/cipher';
+import { EncArrayBuffer } from 'src/models/domain/encArrayBuffer';
+import { EncString } from 'src/models/domain/encString';
+import { SymmetricCryptoKey } from 'src/models/domain/symmetricCryptoKey';
 
-import { CipherService } from '../../src/services/cipher.service';
+import { CipherService } from 'src/services/cipher.service';
 
 const ENCRYPTED_TEXT = 'This data has been encrypted';
 const ENCRYPTED_BYTES = new EncArrayBuffer(Utils.fromUtf8ToArray(ENCRYPTED_TEXT).buffer);

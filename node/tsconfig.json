@@ -16,6 +16,9 @@
     "paths": {
       "jslib-common/*": [
         "../common/src/*"
+      ],
+      "src/*": [
+        "./src/*"
       ]
     },
     "plugins": [

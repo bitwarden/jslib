@@ -1,11 +1,11 @@
-import { LastPassCsvImporter as Importer } from '../../src/importers/lastpassCsvImporter';
+import { LastPassCsvImporter as Importer } from 'src/importers/lastpassCsvImporter';
 
-import { ImportResult } from '../../src/models/domain/importResult';
-import { CipherView } from '../../src/models/view/cipherView';
-import { FieldView } from '../../src/models/view/fieldView';
+import { ImportResult } from 'src/models/domain/importResult';
+import { CipherView } from 'src/models/view/cipherView';
+import { FieldView } from 'src/models/view/fieldView';
 
-import { CipherType } from '../../src/enums/cipherType';
-import { FieldType } from '../../src/enums/fieldType';
+import { CipherType } from 'src/enums/cipherType';
+import { FieldType } from 'src/enums/fieldType';
 
 function baseExcept(result: ImportResult) {
     expect(result).not.toBeNull();

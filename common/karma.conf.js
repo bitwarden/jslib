@@ -1,3 +1,4 @@
+const path = require('path');
 const webpack = require('webpack');
 
 module.exports = (config) => {
@@ -57,6 +58,9 @@ module.exports = (config) => {
                 fallback: {
                     "util": require.resolve("util/"),
                     "url": require.resolve("url/"),
+                },
+                alias: {
+                    src: path.resolve(__dirname, 'src/'),
                 },
             },
             plugins: [

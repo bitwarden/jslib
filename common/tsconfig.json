@@ -14,7 +14,17 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "declarationDir": "dist/types",
-    "outDir": "dist"
+    "outDir": "dist",
+    "paths": {
+      "src/*": [
+        "./src/*"
+      ]
+    },
+    "plugins": [
+      {
+        "transform": "typescript-transform-paths"
+      }
+    ]
   },
   "include": [
     "src",

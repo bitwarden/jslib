@@ -1,20 +1,20 @@
 import { Substitute, SubstituteOf } from '@fluffy-spoon/substitute';
 
-import { ApiService } from '../../src/abstractions/api.service';
-import { CipherService } from '../../src/abstractions/cipher.service';
-import { CryptoService } from '../../src/abstractions/crypto.service';
-import { FolderService } from '../../src/abstractions/folder.service';
+import { ApiService } from 'src/abstractions/api.service';
+import { CipherService } from 'src/abstractions/cipher.service';
+import { CryptoService } from 'src/abstractions/crypto.service';
+import { FolderService } from 'src/abstractions/folder.service';
 
-import { ExportService } from '../../src/services/export.service';
+import { ExportService } from 'src/services/export.service';
 
-import { Cipher } from '../../src/models/domain/cipher';
-import { EncString } from '../../src/models/domain/encString';
-import { Login } from '../../src/models/domain/login';
-import { CipherWithIds as CipherExport } from '../../src/models/export/cipherWithIds';
+import { Cipher } from 'src/models/domain/cipher';
+import { EncString } from 'src/models/domain/encString';
+import { Login } from 'src/models/domain/login';
+import { CipherWithIds as CipherExport } from 'src/models/export/cipherWithIds';
 
-import { CipherType } from '../../src/enums/cipherType';
-import { CipherView } from '../../src/models/view/cipherView';
-import { LoginView } from '../../src/models/view/loginView';
+import { CipherType } from 'src/enums/cipherType';
+import { CipherView } from 'src/models/view/cipherView';
+import { LoginView } from 'src/models/view/loginView';
 
 import { BuildTestObject, GetUniqueString } from '../utils';
 
