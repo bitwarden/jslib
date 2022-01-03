@@ -34,15 +34,25 @@ describe("1Password 1Pux Importer", async () => {
 
   it("should parse login data", async () => {
     const importer = new Importer();
-    const result = await importer.parse(OnePuxExampleFileJson);
+    const result = await importer.parse(LoginDataJson);
     expect(result != null).toBe(true);
 
     const cipher = result.ciphers.shift();
-    expect(cipher.name).toEqual("Dropbox");
-    expect(cipher.login.password).toEqual("most-secure-password-ever!");
+
+    expect(cipher.type).toEqual(CipherType.Login);
+    expect(cipher.name).toEqual("eToro");
+
+    expect(cipher.login.username).toEqual("username123123123@gmail.com");
+    expect(cipher.login.password).toEqual("password!");
     expect(cipher.login.uris.length).toEqual(1);
-    const uriView = cipher.login.uris.shift();
-    expect(uriView.uri).toEqual("https://www.dropbox.com/");
+    expect(cipher.login.uri).toEqual("https://www.fakesite.com");
+    expect(cipher.login.totp).toEqual("otpseed777");
+
+    // remaining fields as custom fields
+    expect(cipher.fields.length).toEqual(3);
+    validateCustomField(cipher.fields, "terms", "false");
+    validateCustomField(cipher.fields, "policies", "true");
+    validateCustomField(cipher.fields, "cyqyggt2otns6tbbqtsl6w2ceu", "username123123");
   });
 
   it("should parse notes", async () => {

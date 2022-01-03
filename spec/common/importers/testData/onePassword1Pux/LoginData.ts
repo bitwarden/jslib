@@ -79,6 +79,22 @@ export const LoginData: ExportData = {
                             capitalization: "default",
                           },
                         },
+                        {
+                          title: "one-time password",
+                          id: "TOTP_564mvwqapphpsjetnnuovmuxum",
+                          value: {
+                            totp: "otpseed777",
+                          },
+                          indexAtSource: 0,
+                          guarded: false,
+                          multiline: false,
+                          dontGenerate: false,
+                          inputTraits: {
+                            keyboard: "default",
+                            correction: "default",
+                            capitalization: "default",
+                          },
+                        },
                       ],
                     },
                   ],
