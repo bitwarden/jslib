@@ -76,6 +76,7 @@ export interface FieldsEntity {
   guarded: boolean;
   multiline: boolean;
   dontGenerate: boolean;
+  placeholder?: string;
   inputTraits: InputTraits;
   clipboardFilter?: string | null;
 }
