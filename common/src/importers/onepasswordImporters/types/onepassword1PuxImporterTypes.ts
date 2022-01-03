@@ -27,6 +27,30 @@ export interface VaultAttributes {
 export interface ItemCollection {
   item: Item;
 }
+
+export enum CategoryEnum {
+  Login = "001",
+  CreditCard = "002",
+  SecureNote = "003",
+  Identity = "004",
+  Password = "005",
+  Document = "006",
+  SoftwareLicense = "100",
+  BankAccount = "101",
+  Database = "102",
+  DriversLicense = "103",
+  OutdoorLicense = "104",
+  Membership = "105",
+  Passport = "106",
+  RewardsProgram = "107",
+  SocialSecurityNumber = "108",
+  WirelessRouter = "109",
+  Server = "110",
+  EmailAccount = "111",
+  API_Credential = "112",
+  MedicalRecord = "113",
+}
+
 export interface Item {
   uuid: string;
   favIndex: number;

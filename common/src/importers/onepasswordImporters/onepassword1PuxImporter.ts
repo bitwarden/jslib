@@ -16,6 +16,8 @@ import { FieldType } from "../../enums/fieldType";
 import { SecureNoteType } from "../../enums/secureNoteType";
 
 import {
+  CategoryEnum,
+  Details,
   ExportData,
   FieldsEntity,
   Item,
@@ -47,29 +49,41 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
 
         const cipher = this.initLoginCipher();
 
-        switch (item.categoryUuid) {
-          case "001": // Login
-          case "101": // Bank accounts?
-          case "102": // DB credentials
-          case "110": // custom login
+        const category = item.categoryUuid as CategoryEnum;
+        switch (category) {
+          case CategoryEnum.Login:
+          case CategoryEnum.Database:
+          case CategoryEnum.Password:
+          case CategoryEnum.WirelessRouter:
+          case CategoryEnum.Server:
+          case CategoryEnum.API_Credential:
             cipher.type = CipherType.Login;
             cipher.login = new LoginView();
             break;
-          case "002": // CreditCards
+          case CategoryEnum.CreditCard:
+          case CategoryEnum.BankAccount:
             cipher.type = CipherType.Card;
             cipher.card = new CardView();
             break;
-          case "003":
+          case CategoryEnum.SecureNote:
+          // case CategoryEnum.Document:
+          case CategoryEnum.SoftwareLicense:
+          case CategoryEnum.EmailAccount:
+          case CategoryEnum.MedicalRecord:
             cipher.type = CipherType.SecureNote;
             cipher.secureNote = new SecureNoteView();
             cipher.secureNote.type = SecureNoteType.Generic;
             break;
-          case "004":
-          case "103": // Drivers license
+          case CategoryEnum.Identity:
+          case CategoryEnum.DriversLicense:
+          case CategoryEnum.OutdoorLicense:
+          case CategoryEnum.Membership:
+          case CategoryEnum.Passport:
+          case CategoryEnum.RewardsProgram:
+          case CategoryEnum.SocialSecurityNumber:
             cipher.type = CipherType.Identity;
             cipher.identity = new IdentityView();
             break;
-          // case "006": // Attachment?
           default:
             break;
         }
