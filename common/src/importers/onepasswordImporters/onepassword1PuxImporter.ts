@@ -249,11 +249,7 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
               return;
             }
             break;
-          case CategoryEnum.Password:
-            throw console.error(`Category ${category} - Not implemented`);
-            break;
           default:
-            throw console.error(`Category ${category} - Not implemented`);
             break;
         }
       } else if (cipher.type === CipherType.Card) {
@@ -286,11 +282,6 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
         switch (category) {
           case CategoryEnum.Identity:
             break;
-          // case CategoryEnum.SoftwareLicense:
-          //   if (this.fillSoftwareLicense(field, fieldValue, cipher)) {
-          //     return;
-          //   }
-          //   break;
           case CategoryEnum.DriversLicense:
             if (this.fillDriversLicense(field, fieldValue, cipher)) {
               return;
@@ -322,7 +313,6 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
             }
             break;
           default:
-            throw console.error(`Category ${category} - Not implemented`);
             break;
         }
       }
