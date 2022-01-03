@@ -14,8 +14,14 @@
     "declarationDir": "dist/types",
     "outDir": "dist",
     "paths": {
-      "jslib-common/*": ["../common/src/*"]
-    }
+      "jslib-common/*": ["../common/src/*"],
+      "src/*": ["./src/*"]
+    },
+    "plugins": [
+      {
+        "transform": "typescript-transform-paths"
+      }
+    ]
   },
   "include": ["src", "spec"],
   "exclude": ["node_modules", "dist"]
