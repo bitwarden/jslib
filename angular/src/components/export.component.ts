@@ -20,7 +20,7 @@ export class ExportComponent implements OnInit {
   formPromise: Promise<string>;
   disabledByPolicy: boolean = false;
 
-  exportForm = this.fb.group({
+  exportForm = this.formBuilder.group({
     format: ["json"],
     secret: [""],
   });
@@ -41,7 +41,7 @@ export class ExportComponent implements OnInit {
     protected win: Window,
     private logService: LogService,
     private userVerificationService: UserVerificationService,
-    private fb: FormBuilder
+    private formBuilder: FormBuilder
   ) {}
 
   async ngOnInit() {
