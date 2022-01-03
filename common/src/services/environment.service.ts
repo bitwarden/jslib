@@ -109,18 +109,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
   }
 
   async setUrlsFromStorage(): Promise<void> {
-    const urlsObj: any = await this.stateService.getEnvironmentUrls();
-    const urls = urlsObj || {
-      base: null,
-      api: null,
-      identity: null,
-      icons: null,
-      notifications: null,
-      events: null,
-      webVault: null,
-      keyConnector: null,
-    };
-
+    const urls: any = await this.stateService.getEnvironmentUrls();
     const envUrls = new EnvironmentUrls();
 
     if (urls.base) {

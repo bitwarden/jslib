@@ -95,9 +95,6 @@ export class AccountProfile {
   hasPremiumPersonally?: boolean;
   lastActive?: number;
   lastSync?: string;
-  ssoCodeVerifier?: string;
-  ssoOrganizationIdentifier?: string;
-  ssoState?: string;
   userId?: string;
   usesKeyConnector?: boolean;
   keyHash?: string;
@@ -133,9 +130,6 @@ export class AccountSettings {
   enableMinimizeToTray?: boolean;
   enableStartToTray?: boolean;
   enableTray?: boolean;
-  environmentUrls?: any = {
-    server: "bitwarden.com",
-  };
   equivalentDomains?: any;
   minimizeOnCopyToClipboard?: boolean;
   neverDomains?: { [id: string]: any };
@@ -145,7 +139,7 @@ export class AccountSettings {
   protectedPin?: string;
   settings?: any; // TODO: Merge whatever is going on here into the AccountSettings model properly
   vaultTimeout?: number;
-  vaultTimeoutAction?: string;
+  vaultTimeoutAction?: string = "lock";
 }
 
 export class AccountTokens {

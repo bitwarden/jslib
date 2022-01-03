@@ -476,6 +476,19 @@ describe("1Password 1Pif Importer", () => {
 
     // remaining fields as custom fields
     expect(cipher.fields.length).toEqual(6);
+    const fields = cipher.fields;
+    expect(fields[0].name).toEqual("sex");
+    expect(fields[0].value).toEqual("male");
+    expect(fields[1].name).toEqual("birth date");
+    expect(fields[1].value).toEqual("Mon, 11 Mar 2019 12:01:00 GMT");
+    expect(fields[2].name).toEqual("occupation");
+    expect(fields[2].value).toEqual("Engineer");
+    expect(fields[3].name).toEqual("department");
+    expect(fields[3].value).toEqual("IT");
+    expect(fields[4].name).toEqual("job title");
+    expect(fields[4].value).toEqual("Developer");
+    expect(fields[5].name).toEqual("home");
+    expect(fields[5].value).toEqual("+49 333 222 111");
   });
 
   it("should create password history", async () => {
