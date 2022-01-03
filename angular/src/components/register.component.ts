@@ -141,7 +141,7 @@ export class RegisterComponent extends CaptchaProtectedComponent implements OnIn
         const request = new RegisterRequest(this.email, this.name, hashedPassword,
             this.hint, encKey[1].encryptedString, kdf, kdfIterations, this.referenceData, this.captchaToken);
         request.keys = new KeysRequest(keys[0], keys[1].encryptedString);
-        const orgInvite = await this.stateService.get<any>('orgInvitation');
+        const orgInvite = await this.stateService.getOrganizationInvitation();
         if (orgInvite != null && orgInvite.token != null && orgInvite.organizationUserId != null) {
             request.token = orgInvite.token;
             request.organizationUserId = orgInvite.organizationUserId;

@@ -1,22 +1,20 @@
 import { ipcMain } from 'electron';
 import forceFocus from 'forcefocus';
 
-import { ElectronConstants } from './electronConstants';
 import { WindowMain } from './window.main';
 
 import { BiometricMain } from 'jslib-common/abstractions/biometric.main';
 import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { LogService } from 'jslib-common/abstractions/log.service';
-import { StorageService } from 'jslib-common/abstractions/storage.service';
-import { ConstantsService } from 'jslib-common/services/constants.service';
+import { StateService } from 'jslib-common/abstractions/state.service';
 
 export default class BiometricWindowsMain implements BiometricMain {
     isError: boolean = false;
 
     private windowsSecurityCredentialsUiModule: any;
 
-    constructor(private storageService: StorageService, private i18nservice: I18nService, private windowMain: WindowMain,
-        private logService: LogService) { }
+    constructor(private i18nservice: I18nService, private windowMain: WindowMain,
+        private stateService: StateService, private logService: LogService) { }
 
     async init() {
         this.windowsSecurityCredentialsUiModule = this.getWindowsSecurityCredentialsUiModule();
@@ -27,9 +25,9 @@ export default class BiometricWindowsMain implements BiometricMain {
             // store error state so we can let the user know on the settings page
             this.isError = true;
         }
-        this.storageService.save(ElectronConstants.enableBiometric, supportsBiometric);
-        this.storageService.save(ConstantsService.biometricText, 'unlockWithWindowsHello');
-        this.storageService.save(ElectronConstants.noAutoPromptBiometricsText, 'noAutoPromptWindowsHello');
+        await this.stateService.setEnableBiometric(supportsBiometric);
+        await this.stateService.setBiometricText('unlockWithWindowsHello');
+        await this.stateService.setNoAutoPromptBiometricsText('noAutoPromptWindowsHello');
 
         ipcMain.on('biometric', async (event: any, message: any) => {
             event.returnValue = await this.authenticateBiometric();

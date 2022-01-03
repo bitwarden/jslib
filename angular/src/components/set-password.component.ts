@@ -13,8 +13,8 @@ import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
+import { StateService } from 'jslib-common/abstractions/state.service';
 import { SyncService } from 'jslib-common/abstractions/sync.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { EncString } from 'jslib-common/models/domain/encString';
 import { SymmetricCryptoKey } from 'jslib-common/models/domain/symmetricCryptoKey';
@@ -42,12 +42,13 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
     onSuccessfulChangePassword: () => Promise<any>;
     successRoute = 'vault';
 
-    constructor(i18nService: I18nService, cryptoService: CryptoService, messagingService: MessagingService,
-        userService: UserService, passwordGenerationService: PasswordGenerationService,
-        platformUtilsService: PlatformUtilsService, policyService: PolicyService, protected router: Router,
-        private apiService: ApiService, private syncService: SyncService, private route: ActivatedRoute) {
-        super(i18nService, cryptoService, messagingService, userService, passwordGenerationService,
-            platformUtilsService, policyService);
+    constructor(i18nService: I18nService, cryptoService: CryptoService,
+        messagingService: MessagingService, passwordGenerationService: PasswordGenerationService,
+        platformUtilsService: PlatformUtilsService, policyService: PolicyService,
+        protected router: Router, private apiService: ApiService,
+        private syncService: SyncService, private route: ActivatedRoute, stateService: StateService) {
+        super(i18nService, cryptoService, messagingService, passwordGenerationService,
+            platformUtilsService, policyService, stateService);
     }
 
     async ngOnInit() {
@@ -102,7 +103,7 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
                     if (response == null) {
                         throw new Error(this.i18nService.t('resetPasswordOrgKeysError'));
                     }
-                    const userId = await this.userService.getUserId();
+                    const userId = await this.stateService.getUserId();
                     const publicKey = Utils.fromB64ToArray(response.publicKey);
 
                     // RSA Encrypt user's encKey.key with organization public key
@@ -138,8 +139,8 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
     }
 
     private async onSetPasswordSuccess(key: SymmetricCryptoKey, encKey: [SymmetricCryptoKey, EncString], keys: [string, EncString]) {
-        await this.userService.setInformation(await this.userService.getUserId(), await this.userService.getEmail(),
-            this.kdf, this.kdfIterations);
+        await this.stateService.setKdfType(this.kdf);
+        await this.stateService.setKdfIterations(this.kdfIterations);
         await this.cryptoService.setKey(key);
         await this.cryptoService.setEncKey(encKey[1].encryptedString);
         await this.cryptoService.setEncPrivateKey(keys[1].encryptedString);

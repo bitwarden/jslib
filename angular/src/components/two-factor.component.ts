@@ -20,10 +20,8 @@ import { I18nService } from 'jslib-common/abstractions/i18n.service';
 import { LogService } from 'jslib-common/abstractions/log.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { StateService } from 'jslib-common/abstractions/state.service';
-import { StorageService } from 'jslib-common/abstractions/storage.service';
 
 import { TwoFactorProviders } from 'jslib-common/services/auth.service';
-import { ConstantsService } from 'jslib-common/services/constants.service';
 
 import * as DuoWebSDK from 'duo_web_sdk';
 import { WebAuthnIFrame } from 'jslib-common/misc/webauthn_iframe';
@@ -58,8 +56,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
         protected i18nService: I18nService, protected apiService: ApiService,
         protected platformUtilsService: PlatformUtilsService, protected win: Window,
         protected environmentService: EnvironmentService, protected stateService: StateService,
-        protected storageService: StorageService, protected route: ActivatedRoute,
-        protected logService: LogService) {
+        protected route: ActivatedRoute, protected logService: LogService) {
         this.webAuthnSupported = this.platformUtilsService.supportsWebAuthn(win);
     }
 
@@ -179,8 +176,8 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     async doSubmit() {
         this.formPromise = this.authService.logInTwoFactor(this.selectedProviderType, this.token, this.remember);
         const response: AuthResult = await this.formPromise;
-        const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
-        await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
+        const disableFavicon = await this.stateService.getDisableFavicon();
+        await this.stateService.setDisableFavicon(!!disableFavicon);
         if (this.onSuccessfulLogin != null) {
             this.onSuccessfulLogin();
         }
