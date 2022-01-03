@@ -8,15 +8,11 @@ module.exports = (config) => {
 
         // frameworks to use
         // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-        frameworks: ['jasmine', 'webpack'],
+        frameworks: ['jasmine', 'webpack', 'detectBrowsers'],
 
         // list of files / patterns to load in the browser
         files: [
             { pattern: 'spec/**/*.spec.ts', watched: false },
-        ],
-
-        browsers: [
-            'Chrome'
         ],
 
         // list of files to exclude
@@ -83,5 +79,28 @@ module.exports = (config) => {
                 errorDetails: true,
             },
         },
+        detectBrowsers: {
+            usePhantomJS: false,
+            postDetection: (availableBrowsers) => {
+                const result = availableBrowsers;
+                function removeBrowser(browser) {
+                    if (availableBrowsers.length > 1 && availableBrowsers.indexOf(browser) > -1) {
+                        result.splice(result.indexOf(browser), 1);
+                    }
+                }
+
+                removeBrowser('IE');
+                removeBrowser('Opera');
+                removeBrowser('SafariTechPreview');
+
+                var githubAction = process.env.GITHUB_WORKFLOW != null && process.env.GITHUB_WORKFLOW !== '';
+                if (githubAction) {
+                    removeBrowser('Firefox');
+                    removeBrowser('Safari');
+                }
+
+                return result;
+            }
+        }
     })
 }
