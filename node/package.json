@@ -27,6 +27,7 @@
     "@types/lowdb": "^1.0.10",
     "@types/node": "^16.11.12",
     "@types/node-fetch": "^2.5.10",
+    "@types/node-forge": "^0.10.10",
     "jasmine": "^3.10.0",
     "jasmine-core": "^3.10.1",
     "jasmine-ts-console-reporter": "^3.1.1",
@@ -38,12 +39,15 @@
   },
   "dependencies": {
     "@bitwarden/jslib-common": "file:../common",
+    "browser-hrtime": "^1.1.8",
     "chalk": "^4.1.1",
     "commander": "7.2.0",
     "form-data": "4.0.0",
     "https-proxy-agent": "5.0.0",
     "inquirer": "8.0.0",
     "lowdb": "1.0.0",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "node-forge": "^0.10.0",
+    "tldjs": "^2.3.1"
   }
 }
