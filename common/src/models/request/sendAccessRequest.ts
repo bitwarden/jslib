@@ -1,3 +1,3 @@
 export class SendAccessRequest {
-    password: string;
+  password: string;
 }

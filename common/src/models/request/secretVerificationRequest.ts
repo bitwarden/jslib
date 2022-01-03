@@ -1,4 +1,4 @@
 export class SecretVerificationRequest {
-    masterPasswordHash: string;
-    otp: string;
+  masterPasswordHash: string;
+  otp: string;
 }

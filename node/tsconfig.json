@@ -14,12 +14,8 @@
     "declarationDir": "dist/types",
     "outDir": "dist",
     "paths": {
-      "jslib-common/*": [
-        "../common/src/*"
-      ],
-      "src/*": [
-        "./src/*"
-      ]
+      "jslib-common/*": ["../common/src/*"],
+      "src/*": ["./src/*"]
     },
     "plugins": [
       {
@@ -27,12 +23,6 @@
       }
     ]
   },
-  "include": [
-    "src",
-    "spec"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src", "spec"],
+  "exclude": ["node_modules", "dist"]
 }

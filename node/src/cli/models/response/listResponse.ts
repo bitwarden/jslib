@@ -1,11 +1,11 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class ListResponse implements BaseResponse {
-    object: string;
-    data: BaseResponse[];
+  object: string;
+  data: BaseResponse[];
 
-    constructor(data: BaseResponse[]) {
-        this.object = 'list';
-        this.data = data;
-    }
+  constructor(data: BaseResponse[]) {
+    this.object = "list";
+    this.data = data;
+  }
 }

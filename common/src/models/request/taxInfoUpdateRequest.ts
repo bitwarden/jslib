@@ -1,4 +1,4 @@
 export class TaxInfoUpdateRequest {
-    country: string;
-    postalCode: string;
+  country: string;
+  postalCode: string;
 }

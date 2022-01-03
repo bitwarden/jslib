@@ -1,10 +1,10 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class IdentityCaptchaResponse extends BaseResponse {
-    siteKey: string;
+  siteKey: string;
 
-    constructor(response: any) {
-        super(response);
-        this.siteKey = this.getResponseProperty('HCaptcha_SiteKey');
-    }
+  constructor(response: any) {
+    super(response);
+    this.siteKey = this.getResponseProperty("HCaptcha_SiteKey");
+  }
 }

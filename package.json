@@ -14,10 +14,12 @@
   "license": "GPL-3.0",
   "scripts": {
     "build": "npm run build --workspaces",
-    "lint": "tslint '*/src/**/*.ts' 'spec/**/*.ts'",
-    "lint:fix": "tslint '*/src/**/*.ts' 'spec/**/*.ts' --fix",
+    "lint": "tslint '*/src/**/*.ts' '*/spec/**/*.ts'",
+    "lint:fix": "tslint '*/src/**/*.ts' '*/spec/**/*.ts' --fix",
+    "prettier": "prettier --write .",
     "test": "npm run test --workspaces",
-    "test:node": "npm run test:node --workspaces"
+    "test:node": "npm run test:node --workspaces",
+    "prepare": "husky install"
   },
   "workspaces": [
     "common",
@@ -25,11 +27,17 @@
     "electron",
     "node"
   ],
+  "devDependencies": {
+    "husky": "^7.0.4",
+    "lint-staged": "^12.1.5",
+    "prettier": "^2.5.1",
+    "tslint": "^6.1.3"
+  },
+  "lint-staged": {
+    "*.{js,css,md}": "prettier --write"
+  },
   "engines": {
     "node": "~16",
     "npm": "~8"
-  },
-  "devDependencies": {
-    "tslint": "^6.1.3"
   }
 }

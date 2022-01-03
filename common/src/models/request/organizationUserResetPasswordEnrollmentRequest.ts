@@ -1,3 +1,3 @@
 export class OrganizationUserResetPasswordEnrollmentRequest {
-    resetPasswordKey: string;
+  resetPasswordKey: string;
 }

@@ -1,3 +1,3 @@
 export class EmergencyAccessConfirmRequest {
-    key: string;
+  key: string;
 }
