@@ -9,18 +9,19 @@ import { MessagingService } from "jslib-common/abstractions/messaging.service";
 import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { PolicyService } from "jslib-common/abstractions/policy.service";
-import { UserVerificationService } from "jslib-common/abstractions/userVerification.service";
 import { StateService } from "jslib-common/abstractions/state.service";
+import { UserVerificationService } from "jslib-common/abstractions/userVerification.service";
 
 import { ChangePasswordComponent as BaseChangePasswordComponent } from "./change-password.component";
 
 import { EncString } from "jslib-common/models/domain/encString";
 import { MasterPasswordPolicyOptions } from "jslib-common/models/domain/masterPasswordPolicyOptions";
-import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
-
 import { PasswordRequest } from "jslib-common/models/request/passwordRequest";
+
 import { VerificationType } from "jslib-common/enums/verificationType";
 import { Verification } from "jslib-common/types/verification";
+
+import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
 
 @Directive()
 export class UpdatePasswordComponent extends BaseChangePasswordComponent {
@@ -33,7 +34,7 @@ export class UpdatePasswordComponent extends BaseChangePasswordComponent {
   onSuccessfulChangePassword: () => Promise<any>;
 
   constructor(
-    protected router:Router,
+    protected router: Router,
     i18nService: I18nService,
     platformUtilsService: PlatformUtilsService,
     passwordGenerationService: PasswordGenerationService,
@@ -79,19 +80,14 @@ export class UpdatePasswordComponent extends BaseChangePasswordComponent {
 
     const secret: Verification = {
       type: VerificationType.MasterPassword,
-      secret: this.currentMasterPassword
+      secret: this.currentMasterPassword,
     };
     try {
       await this.userVerificationService.verifyUser(secret);
     } catch (e) {
-      this.platformUtilsService.showToast(
-        "error",
-        this.i18nService.t("errorOccurred"),
-        e.message
-      );
+      this.platformUtilsService.showToast("error", this.i18nService.t("errorOccurred"), e.message);
       return false;
     }
-
 
     this.kdf = await this.stateService.getKdfType();
     this.kdfIterations = await this.stateService.getKdfIterations();
@@ -113,8 +109,8 @@ export class UpdatePasswordComponent extends BaseChangePasswordComponent {
       request.newMasterPasswordHash = masterPasswordHash;
       request.key = encKey[1].encryptedString;
 
-      //Update user's password
-       var k = this.apiService.postPassword(request);
+      // Update user's password
+      this.apiService.postPassword(request);
 
       this.platformUtilsService.showToast(
         "success",
