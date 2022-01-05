@@ -1361,18 +1361,6 @@ export class StateService<TAccount extends Account = Account>
   async getEnvironmentUrls(options?: StorageOptions): Promise<any> {
     return (
       (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.environmentUrls ?? {
-        base: null,
-        api: null,
-        identity: null,
-        icons: null,
-        notifications: null,
-        events: null,
-        webVault: null,
-        keyConnector: null,
-        // TODO: this is a bug and we should use base instead for the server detail in the account switcher, otherwise self hosted urls will not show correctly
-        server: "bitwarden.com",
-      }
     );
   }
 
