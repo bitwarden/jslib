@@ -520,16 +520,16 @@ describe("1Password 1Pux Importer", async () => {
 
     expect(cipher.fields.length).toEqual(17);
     validateCustomField(cipher.fields, "pop_type", "either");
-    validateCustomField(cipher.fields, "pop_username", "mscottscarn@nullvalue.test");
+    validateCustomField(cipher.fields, "pop_username", "someuser@nullvalue.test");
     validateCustomField(cipher.fields, "pop_server", "mailserver.nullvalue.test");
     validateCustomField(cipher.fields, "pop_port", "587");
-    validateCustomField(cipher.fields, "pop_password", "uajsf*UI*&YU&^T");
+    validateCustomField(cipher.fields, "pop_password", "u1jsf<UI*&YU&^T");
     validateCustomField(cipher.fields, "pop_security", "TLS");
     validateCustomField(cipher.fields, "pop_authentication", "kerberos_v5");
     validateCustomField(cipher.fields, "smtp_server", "mailserver.nullvalue.test");
     validateCustomField(cipher.fields, "smtp_port", "589");
-    validateCustomField(cipher.fields, "smtp_username", "mscottscarn@nullvalue.test");
-    validateCustomField(cipher.fields, "smtp_password", "(*UJUTT%^UIUJ*UI(IUI8u98uyy");
+    validateCustomField(cipher.fields, "smtp_username", "someuser@nullvalue.test");
+    validateCustomField(cipher.fields, "smtp_password", "(*1674%^UIUJ*UI(IUI8u98uyy");
     validateCustomField(cipher.fields, "smtp_security", "TLS");
     validateCustomField(cipher.fields, "smtp_authentication", "password");
     validateCustomField(cipher.fields, "provider", "Telum");

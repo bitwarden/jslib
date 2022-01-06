@@ -56,7 +56,7 @@ export const EmailAccountData: ExportData = {
                           title: "username",
                           id: "pop_username",
                           value: {
-                            string: "mscottscarn@nullvalue.test",
+                            string: "someuser@nullvalue.test",
                           },
                           indexAtSource: 1,
                           guarded: false,
@@ -104,7 +104,7 @@ export const EmailAccountData: ExportData = {
                           title: "password",
                           id: "pop_password",
                           value: {
-                            concealed: "uajsf*UI*&YU&^T",
+                            concealed: "u1jsf<UI*&YU&^T",
                           },
                           indexAtSource: 4,
                           guarded: false,
@@ -190,7 +190,7 @@ export const EmailAccountData: ExportData = {
                           title: "username",
                           id: "smtp_username",
                           value: {
-                            string: "mscottscarn@nullvalue.test",
+                            string: "someuser@nullvalue.test",
                           },
                           indexAtSource: 2,
                           guarded: false,
@@ -206,7 +206,7 @@ export const EmailAccountData: ExportData = {
                           title: "password",
                           id: "smtp_password",
                           value: {
-                            concealed: "(*UJUTT%^UIUJ*UI(IUI8u98uyy",
+                            concealed: "(*1674%^UIUJ*UI(IUI8u98uyy",
                           },
                           indexAtSource: 3,
                           guarded: false,
@@ -326,7 +326,7 @@ export const EmailAccountData: ExportData = {
                   passwordHistory: [],
                 },
                 overview: {
-                  subtitle: "mscottscarn@nullvalue.test",
+                  subtitle: "someuser@nullvalue.test",
                   title: "Email Config",
                   url: "",
                   ps: 0,
