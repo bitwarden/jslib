@@ -2277,7 +2277,7 @@ export class StateService<TAccount extends Account = Account>
     return {
       storageLocation: StorageLocation.Disk,
       htmlStorageLocation: HtmlStorageLocation.Session,
-      userId: await this.getActiveUserIdFromStorage(),
+      userId: this.state.activeUserId ?? (await this.getActiveUserIdFromStorage()),
       useSecureStorage: false,
     };
   }
@@ -2286,7 +2286,7 @@ export class StateService<TAccount extends Account = Account>
     return {
       storageLocation: StorageLocation.Disk,
       htmlStorageLocation: HtmlStorageLocation.Local,
-      userId: await this.getActiveUserIdFromStorage(),
+      userId: this.state.activeUserId ?? (await this.getActiveUserIdFromStorage()),
       useSecureStorage: false,
     };
   }
@@ -2295,7 +2295,7 @@ export class StateService<TAccount extends Account = Account>
     return {
       storageLocation: StorageLocation.Disk,
       htmlStorageLocation: HtmlStorageLocation.Memory,
-      userId: await this.getUserId(),
+      userId: this.state.activeUserId ?? (await this.getUserId()),
       useSecureStorage: false,
     };
   }
@@ -2304,7 +2304,7 @@ export class StateService<TAccount extends Account = Account>
     return {
       storageLocation: StorageLocation.Disk,
       useSecureStorage: true,
-      userId: await this.getActiveUserIdFromStorage(),
+      userId: this.state.activeUserId ?? (await this.getActiveUserIdFromStorage()),
     };
   }
 
