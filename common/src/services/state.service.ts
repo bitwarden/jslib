@@ -2184,7 +2184,6 @@ export class StateService<TAccount extends Account = Account>
     state.accounts[account.profile.userId] = account;
 
     await storageLocation.save("state", state, options);
-    await this.pushAccounts();
   }
 
   protected async saveAccountToMemory(account: TAccount): Promise<void> {
