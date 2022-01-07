@@ -444,7 +444,11 @@ export class StateService<TAccount extends Account = Account>
     if (options?.userId == null) {
       return;
     }
-    await this.secureStorageService.save(`${options.userId}_masterkey_auto`, value, options);
+
+    const key = `${options.userId}_masterkey_auto`;
+    value == null
+      ? await this.secureStorageService.remove(key, options)
+      : await this.secureStorageService.save(key, value, options);
   }
 
   async getCryptoMasterKeyB64(options?: StorageOptions): Promise<string> {
@@ -460,7 +464,10 @@ export class StateService<TAccount extends Account = Account>
     if (options?.userId == null) {
       return;
     }
-    await this.secureStorageService.save(`${options.userId}_masterkey`, value, options);
+    const key = `${options.userId}_masterkey`;
+    value == null
+      ? await this.secureStorageService.remove(key, options)
+      : await this.secureStorageService.save(key, value, options);
   }
 
   async getCryptoMasterKeyBiometric(options?: StorageOptions): Promise<string> {
@@ -493,7 +500,10 @@ export class StateService<TAccount extends Account = Account>
     if (options?.userId == null) {
       return;
     }
-    await this.secureStorageService.save(`${options.userId}_masterkey_biometric`, value, options);
+    const key = `${options.userId}_masterkey_biometric`;
+    value == null
+      ? await this.secureStorageService.remove(key, options)
+      : await this.secureStorageService.save(key, value, options);
   }
 
   async getDecodedToken(options?: StorageOptions): Promise<any> {
