@@ -21,6 +21,7 @@ import { FolderData } from "../data/folderData";
 import { PolicyData } from "../data/policyData";
 import { ProviderData } from "../data/providerData";
 import { SendData } from "../data/sendData";
+import { EnvironmentUrls } from "./environmentUrls";
 
 export class EncryptionPair<TEncrypted, TDecrypted> {
   encrypted?: TEncrypted;
@@ -130,6 +131,7 @@ export class AccountSettings {
   enableMinimizeToTray?: boolean;
   enableStartToTray?: boolean;
   enableTray?: boolean;
+  environmentUrls: EnvironmentUrls = new EnvironmentUrls();
   equivalentDomains?: any;
   minimizeOnCopyToClipboard?: boolean;
   neverDomains?: { [id: string]: any };
