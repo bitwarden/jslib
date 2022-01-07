@@ -2155,14 +2155,10 @@ export class StateService<TAccount extends Account = Account>
       return null;
     }
 
-    const state = options?.useSecureStorage
-      ? (await this.secureStorageService.get<State<TAccount>>("state", options)) ??
-        (await this.storageService.get<State<TAccount>>(
-          "state",
-          this.reconcileOptions(options, { htmlStorageLocation: HtmlStorageLocation.Local })
-        ))
-      : await this.storageService.get<State<TAccount>>("state", options);
-
+    const storageLocation = options?.useSecureStorage ?
+        this.secureStorageService ?? this.storageService:
+        this.storageService;
+    const state = await storageLocation.get<State<TAccount>>("state", options);
     return state?.accounts[options?.userId ?? this.state.activeUserId];
   }
 
