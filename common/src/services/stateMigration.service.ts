@@ -1,6 +1,7 @@
 import { StorageService } from "../abstractions/storage.service";
 
 import { Account } from "../models/domain/account";
+import { EnvironmentUrls } from "../models/domain/environmentUrls";
 import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
 import { GlobalState } from "../models/domain/globalState";
 import { State } from "../models/domain/state";
@@ -17,8 +18,8 @@ import { SendData } from "../models/data/sendData";
 
 import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 import { KdfType } from "../enums/kdfType";
+import { KeySuffixOptions } from "../enums/keySuffixOptions";
 import { StateVersion } from "../enums/stateVersion";
-import { EnvironmentUrls } from "../models/domain/environmentUrls";
 
 // Originally (before January 2022) storage was handled as a flat key/value pair store.
 // With the move to a typed object for state storage these keys should no longer be in use anywhere outside of this migration.
@@ -491,22 +492,22 @@ export class StateMigrationService {
 
     await this.storageService.save("state", initialState, options);
 
-    if (await this.secureStorageService.has(v1Keys.key, { keySuffix: "biometric" })) {
+    if (await this.secureStorageService.has(v1Keys.key, { keySuffix: KeySuffixOptions.Biometric })) {
       await this.secureStorageService.save(
         `${userId}_masterkey_biometric`,
-        await this.secureStorageService.get(v1Keys.key, { keySuffix: "biometric" }),
+        await this.secureStorageService.get(v1Keys.key, { keySuffix: KeySuffixOptions.Biometric }),
         { keySuffix: "biometric" }
       );
-      await this.secureStorageService.remove(v1Keys.key, { keySuffix: "biometric" });
+      await this.secureStorageService.remove(v1Keys.key, { keySuffix: KeySuffixOptions.Biometric });
     }
 
-    if (await this.secureStorageService.has(v1Keys.key, { keySuffix: "auto" })) {
+    if (await this.secureStorageService.has(v1Keys.key, { keySuffix: KeySuffixOptions.Auto })) {
       await this.secureStorageService.save(
         `${userId}_masterkey_auto`,
-        await this.secureStorageService.get(v1Keys.key, { keySuffix: "auto" }),
+        await this.secureStorageService.get(v1Keys.key, { keySuffix: KeySuffixOptions.Auto }),
         { keySuffix: "auto" }
       );
-      await this.secureStorageService.remove(v1Keys.key, { keySuffix: "auto" });
+      await this.secureStorageService.remove(v1Keys.key, { keySuffix: KeySuffixOptions.Auto });
     }
 
     if (await this.secureStorageService.has(v1Keys.key)) {

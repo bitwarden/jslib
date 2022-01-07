@@ -416,7 +416,7 @@ export class StateService<TAccount extends Account = Account>
 
   async getCryptoMasterKeyAuto(options?: StorageOptions): Promise<string> {
     options = this.reconcileOptions(
-      this.reconcileOptions(options, { keySuffix: "auto" }),
+      this.reconcileOptions(options, { keySuffix: KeySuffixOptions.Auto }),
       await this.defaultSecureStorageOptions()
     );
     if (options?.userId == null) {
@@ -438,7 +438,7 @@ export class StateService<TAccount extends Account = Account>
 
   async setCryptoMasterKeyAuto(value: string, options?: StorageOptions): Promise<void> {
     options = this.reconcileOptions(
-      this.reconcileOptions(options, { keySuffix: "auto" }),
+      this.reconcileOptions(options, { keySuffix: KeySuffixOptions.Auto }),
       await this.defaultSecureStorageOptions()
     );
     if (options?.userId == null) {
@@ -465,7 +465,7 @@ export class StateService<TAccount extends Account = Account>
 
   async getCryptoMasterKeyBiometric(options?: StorageOptions): Promise<string> {
     options = this.reconcileOptions(
-      this.reconcileOptions(options, { keySuffix: "biometric" }),
+      this.reconcileOptions(options, { keySuffix: KeySuffixOptions.Biometric }),
       await this.defaultSecureStorageOptions()
     );
     if (options?.userId == null) {
@@ -476,7 +476,7 @@ export class StateService<TAccount extends Account = Account>
 
   async hasCryptoMasterKeyBiometric(options?: StorageOptions): Promise<boolean> {
     options = this.reconcileOptions(
-      this.reconcileOptions(options, { keySuffix: "biometric" }),
+      this.reconcileOptions(options, { keySuffix: KeySuffixOptions.Biometric }),
       await this.defaultSecureStorageOptions()
     );
     if (options?.userId == null) {
@@ -487,7 +487,7 @@ export class StateService<TAccount extends Account = Account>
 
   async setCryptoMasterKeyBiometric(value: string, options?: StorageOptions): Promise<void> {
     options = this.reconcileOptions(
-      this.reconcileOptions(options, { keySuffix: "biometric" }),
+      this.reconcileOptions(options, { keySuffix: KeySuffixOptions.Biometric }),
       await this.defaultSecureStorageOptions()
     );
     if (options?.userId == null) {
