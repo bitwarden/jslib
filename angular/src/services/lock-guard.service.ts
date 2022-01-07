@@ -19,7 +19,7 @@ export class LockGuardService implements CanActivate {
       return true;
     }
 
-    let redirectUrl = (await this.stateService.getIsAuthenticated())
+    const redirectUrl = (await this.stateService.getIsAuthenticated())
       ? [this.homepage]
       : [this.loginpage];
 
