@@ -1364,7 +1364,7 @@ export class StateService<TAccount extends Account = Account>
   async getEnvironmentUrls(options?: StorageOptions): Promise<any> {
     options = this.reconcileOptions(options, await this.defaultOnDiskOptions());
     if (this.state.activeUserId == null) {
-        return (await this.getGlobals(options)).environmentUrls ?? new EnvironmentUrls();
+      return (await this.getGlobals(options)).environmentUrls ?? new EnvironmentUrls();
     }
     return (await this.getAccount(options))?.settings?.environmentUrls ?? new EnvironmentUrls();
   }
