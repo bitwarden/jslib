@@ -101,6 +101,7 @@ export class StateService<TAccount extends Account = Account>
 
   async clean(options?: StorageOptions): Promise<void> {
     // Find and set the next active user if any exists
+    await this.setAccessToken(null, { userId: options?.userId });
     if (options?.userId == null || options.userId === (await this.getUserId())) {
       for (const userId in this.state.accounts) {
         if (userId == null) {
