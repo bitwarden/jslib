@@ -41,6 +41,7 @@ import { SendData } from "../models/data/sendData";
 import { BehaviorSubject } from "rxjs";
 
 import { StateMigrationService } from "../abstractions/stateMigration.service";
+import { EnvironmentUrls } from "../models/domain/environmentUrls";
 
 export class StateService<TAccount extends Account = Account>
   implements StateServiceAbstraction<TAccount>
@@ -79,6 +80,7 @@ export class StateService<TAccount extends Account = Account>
   }
 
   async addAccount(account: TAccount) {
+    await this.setAccountEnvironmentUrls(account);
     this.state.accounts[account.profile.userId] = account;
     await this.scaffoldNewAccountStorage(account);
     await this.setActiveUser(account.profile.userId);
@@ -1359,12 +1361,16 @@ export class StateService<TAccount extends Account = Account>
   }
 
   async getEnvironmentUrls(options?: StorageOptions): Promise<any> {
-    return (
-      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-    );
+    options = this.reconcileOptions(options, await this.defaultOnDiskOptions());
+    if (this.state.activeUserId == null) {
+        return (await this.getGlobals(options)).environmentUrls ?? new EnvironmentUrls();
+    }
+    return (await this.getAccount(options))?.settings?.environmentUrls ?? new EnvironmentUrls();
   }
 
   async setEnvironmentUrls(value: any, options?: StorageOptions): Promise<void> {
+    // Global values are set on each change and the current global settings are passed to any newly authed accounts.
+    // This is to allow setting environement values before an account is active, while still allowing individual accounts to have their own environments.
     const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
@@ -2367,6 +2373,11 @@ export class StateService<TAccount extends Account = Account>
     account.keys = new AccountKeys();
     account.profile = new AccountProfile();
     account.tokens = new AccountTokens();
+    return account;
+  }
+
+  protected async setAccountEnvironmentUrls(account: TAccount): Promise<TAccount> {
+    account.settings.environmentUrls = await this.getEnvironmentUrls();
     return account;
   }
 }
