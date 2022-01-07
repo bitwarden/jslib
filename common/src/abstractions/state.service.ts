@@ -68,6 +68,7 @@ export abstract class StateService<T extends Account = Account> {
   setCryptoMasterKey: (value: SymmetricCryptoKey, options?: StorageOptions) => Promise<void>;
   getCryptoMasterKeyAuto: (options?: StorageOptions) => Promise<string>;
   setCryptoMasterKeyAuto: (value: string, options?: StorageOptions) => Promise<void>;
+  hasCryptoMasterKeyAuto: (options?: StorageOptions) => Promise<boolean>;
   getCryptoMasterKeyB64: (options?: StorageOptions) => Promise<string>;
   setCryptoMasterKeyB64: (value: string, options?: StorageOptions) => Promise<void>;
   getCryptoMasterKeyBiometric: (options?: StorageOptions) => Promise<string>;

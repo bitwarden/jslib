@@ -13,6 +13,7 @@ import { StorageService } from "../abstractions/storage.service";
 
 import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 import { KdfType } from "../enums/kdfType";
+import { KeySuffixOptions } from "../enums/keySuffixOptions";
 import { StorageLocation } from "../enums/storageLocation";
 import { UriMatchType } from "../enums/uriMatchType";
 
@@ -422,6 +423,17 @@ export class StateService<TAccount extends Account = Account>
       return null;
     }
     return await this.secureStorageService.get(`${options.userId}_masterkey_auto`, options);
+  }
+
+  async hasCryptoMasterKeyAuto(options?: StorageOptions): Promise<boolean> {
+    options = this.reconcileOptions(
+      this.reconcileOptions(options, { keySuffix: KeySuffixOptions.Auto }),
+      await this.defaultSecureStorageOptions()
+    );
+    if (options?.userId == null) {
+      return false;
+    }
+    return await this.secureStorageService.has(`${options.userId}_masterkey_auto`, options);
   }
 
   async setCryptoMasterKeyAuto(value: string, options?: StorageOptions): Promise<void> {
