@@ -2165,9 +2165,9 @@ export class StateService<TAccount extends Account = Account>
       return null;
     }
 
-    const storageLocation = options?.useSecureStorage ?
-        this.secureStorageService ?? this.storageService:
-        this.storageService;
+    const storageLocation = options?.useSecureStorage
+      ? this.secureStorageService ?? this.storageService
+      : this.storageService;
     const state = await storageLocation.get<State<TAccount>>("state", options);
     return state?.accounts[options?.userId ?? this.state.activeUserId];
   }

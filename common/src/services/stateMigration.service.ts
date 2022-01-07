@@ -492,7 +492,9 @@ export class StateMigrationService {
 
     await this.storageService.save("state", initialState, options);
 
-    if (await this.secureStorageService.has(v1Keys.key, { keySuffix: KeySuffixOptions.Biometric })) {
+    if (
+      await this.secureStorageService.has(v1Keys.key, { keySuffix: KeySuffixOptions.Biometric })
+    ) {
       await this.secureStorageService.save(
         `${userId}_masterkey_biometric`,
         await this.secureStorageService.get(v1Keys.key, { keySuffix: KeySuffixOptions.Biometric }),
