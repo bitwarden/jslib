@@ -2,7 +2,13 @@ import { HashPurpose } from "../enums/hashPurpose";
 import { KdfType } from "../enums/kdfType";
 import { TwoFactorProviderType } from "../enums/twoFactorProviderType";
 
-import { Account, AccountData, AccountProfile, AccountTokens } from "../models/domain/account";
+import {
+  Account,
+  AccountData,
+  AccountKeys,
+  AccountProfile,
+  AccountTokens,
+} from "../models/domain/account";
 import { AuthResult } from "../models/domain/authResult";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 
@@ -538,27 +544,34 @@ export class AuthService implements AuthServiceAbstraction {
     result.forcePasswordReset = tokenResponse.forcePasswordReset;
 
     const accountInformation = await this.tokenService.decodeToken(tokenResponse.accessToken);
-    await this.stateService.addAccount({
-      profile: {
-        ...new AccountProfile(),
-        ...{
-          userId: accountInformation.sub,
-          email: accountInformation.email,
-          apiKeyClientId: clientId,
-          apiKeyClientSecret: clientSecret,
-          hasPremiumPersonally: accountInformation.premium,
-          kdfIterations: tokenResponse.kdfIterations,
-          kdfType: tokenResponse.kdf,
+    await this.stateService.addAccount(
+      new Account({
+        profile: {
+          ...new AccountProfile(),
+          ...{
+            userId: accountInformation.sub,
+            email: accountInformation.email,
+            apiKeyClientId: clientId,
+            hasPremiumPersonally: accountInformation.premium,
+            kdfIterations: tokenResponse.kdfIterations,
+            kdfType: tokenResponse.kdf,
+          },
         },
-      },
-      tokens: {
-        ...new AccountTokens(),
-        ...{
-          accessToken: tokenResponse.accessToken,
-          refreshToken: tokenResponse.refreshToken,
+        keys: {
+          ...new AccountKeys(),
+          ...{
+            apiKeyClientSecret: clientSecret,
+          },
         },
-      },
-    });
+        tokens: {
+          ...new AccountTokens(),
+          ...{
+            accessToken: tokenResponse.accessToken,
+            refreshToken: tokenResponse.refreshToken,
+          },
+        },
+      })
+    );
 
     if (tokenResponse.twoFactorToken != null) {
       await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken, email);
