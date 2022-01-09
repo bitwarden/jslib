@@ -18,6 +18,7 @@ import { SendData } from "../models/data/sendData";
 import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 import { KdfType } from "../enums/kdfType";
 import { StateVersion } from "../enums/stateVersion";
+import { EnvironmentUrls } from "../models/domain/environmentUrls";
 
 // Originally (before January 2022) storage was handled as a flat key/value pair store.
 // With the move to a typed object for state storage these keys should no longer be in use anywhere outside of this migration.
@@ -31,8 +32,8 @@ const v1Keys = {
   biometricText: "biometricText",
   biometricUnlock: "biometric",
   clearClipboard: "clearClipboardKey",
-  clientId: "clientId",
-  clientSecret: "clientSecret",
+  clientId: "apikey_clientId",
+  clientSecret: "apikey_clientSecret",
   collapsedGroupings: "collapsedGroupings",
   convertAccountToKeyConnector: "convertAccountToKeyConnector",
   defaultUriMatch: "defaultUriMatch",
@@ -176,7 +177,9 @@ export class StateMigrationService {
                 v1Keys.enableBiometric,
                 options
               ),
-              environmentUrls: await this.storageService.get<any>(v1Keys.environmentUrls, options),
+              environmentUrls:
+                (await this.storageService.get<EnvironmentUrls>(v1Keys.environmentUrls, options)) ??
+                new EnvironmentUrls(),
               installedVersion: await this.storageService.get<string>(
                 v1Keys.installedVersion,
                 options
@@ -442,6 +445,11 @@ export class StateMigrationService {
                     options
                   ),
                   enableTray: await this.storageService.get<boolean>(v1Keys.enableTray, options),
+                  environmentUrls:
+                    (await this.storageService.get<EnvironmentUrls>(
+                      v1Keys.environmentUrls,
+                      options
+                    )) ?? new EnvironmentUrls(),
                   equivalentDomains: await this.storageService.get<any>(
                     v1Keys.equivalentDomains,
                     options

@@ -1,4 +1,5 @@
 import { StateVersion } from "../../enums/stateVersion";
+import { EnvironmentUrls } from "./environmentUrls";
 
 export class GlobalState {
   enableAlwaysOnTop?: boolean;
@@ -26,7 +27,5 @@ export class GlobalState {
   noAutoPromptBiometrics?: boolean;
   noAutoPromptBiometricsText?: string;
   stateVersion: StateVersion = StateVersion.Latest;
-  environmentUrls?: any = {
-    server: "bitwarden.com",
-  };
+  environmentUrls: EnvironmentUrls = new EnvironmentUrls();
 }

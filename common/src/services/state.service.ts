@@ -41,6 +41,7 @@ import { SendData } from "../models/data/sendData";
 import { BehaviorSubject } from "rxjs";
 
 import { StateMigrationService } from "../abstractions/stateMigration.service";
+import { EnvironmentUrls } from "../models/domain/environmentUrls";
 
 export class StateService<TAccount extends Account = Account>
   implements StateServiceAbstraction<TAccount>
@@ -79,6 +80,7 @@ export class StateService<TAccount extends Account = Account>
   }
 
   async addAccount(account: TAccount) {
+    await this.setAccountEnvironmentUrls(account);
     this.state.accounts[account.profile.userId] = account;
     await this.scaffoldNewAccountStorage(account);
     await this.setActiveUser(account.profile.userId);
@@ -99,6 +101,7 @@ export class StateService<TAccount extends Account = Account>
 
   async clean(options?: StorageOptions): Promise<void> {
     // Find and set the next active user if any exists
+    await this.setAccessToken(null, { userId: options?.userId });
     if (options?.userId == null || options.userId === (await this.getUserId())) {
       for (const userId in this.state.accounts) {
         if (userId == null) {
@@ -1359,24 +1362,16 @@ export class StateService<TAccount extends Account = Account>
   }
 
   async getEnvironmentUrls(options?: StorageOptions): Promise<any> {
-    return (
-      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.environmentUrls ?? {
-        base: null,
-        api: null,
-        identity: null,
-        icons: null,
-        notifications: null,
-        events: null,
-        webVault: null,
-        keyConnector: null,
-        // TODO: this is a bug and we should use base instead for the server detail in the account switcher, otherwise self hosted urls will not show correctly
-        server: "bitwarden.com",
-      }
-    );
+    options = this.reconcileOptions(options, await this.defaultOnDiskOptions());
+    if (this.state.activeUserId == null) {
+      return (await this.getGlobals(options)).environmentUrls ?? new EnvironmentUrls();
+    }
+    return (await this.getAccount(options))?.settings?.environmentUrls ?? new EnvironmentUrls();
   }
 
   async setEnvironmentUrls(value: any, options?: StorageOptions): Promise<void> {
+    // Global values are set on each change and the current global settings are passed to any newly authed accounts.
+    // This is to allow setting environement values before an account is active, while still allowing individual accounts to have their own environments.
     const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
@@ -2189,7 +2184,6 @@ export class StateService<TAccount extends Account = Account>
     state.accounts[account.profile.userId] = account;
 
     await storageLocation.save("state", state, options);
-    await this.pushAccounts();
   }
 
   protected async saveAccountToMemory(account: TAccount): Promise<void> {
@@ -2283,7 +2277,7 @@ export class StateService<TAccount extends Account = Account>
     return {
       storageLocation: StorageLocation.Disk,
       htmlStorageLocation: HtmlStorageLocation.Session,
-      userId: await this.getActiveUserIdFromStorage(),
+      userId: this.state.activeUserId ?? (await this.getActiveUserIdFromStorage()),
       useSecureStorage: false,
     };
   }
@@ -2292,7 +2286,7 @@ export class StateService<TAccount extends Account = Account>
     return {
       storageLocation: StorageLocation.Disk,
       htmlStorageLocation: HtmlStorageLocation.Local,
-      userId: await this.getActiveUserIdFromStorage(),
+      userId: this.state.activeUserId ?? (await this.getActiveUserIdFromStorage()),
       useSecureStorage: false,
     };
   }
@@ -2301,7 +2295,7 @@ export class StateService<TAccount extends Account = Account>
     return {
       storageLocation: StorageLocation.Disk,
       htmlStorageLocation: HtmlStorageLocation.Memory,
-      userId: await this.getUserId(),
+      userId: this.state.activeUserId ?? (await this.getUserId()),
       useSecureStorage: false,
     };
   }
@@ -2310,7 +2304,7 @@ export class StateService<TAccount extends Account = Account>
     return {
       storageLocation: StorageLocation.Disk,
       useSecureStorage: true,
-      userId: await this.getActiveUserIdFromStorage(),
+      userId: this.state.activeUserId ?? (await this.getActiveUserIdFromStorage()),
     };
   }
 
@@ -2379,6 +2373,11 @@ export class StateService<TAccount extends Account = Account>
     account.keys = new AccountKeys();
     account.profile = new AccountProfile();
     account.tokens = new AccountTokens();
+    return account;
+  }
+
+  protected async setAccountEnvironmentUrls(account: TAccount): Promise<TAccount> {
+    account.settings.environmentUrls = await this.getEnvironmentUrls();
     return account;
   }
 }
