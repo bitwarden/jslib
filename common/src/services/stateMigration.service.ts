@@ -2,6 +2,7 @@ import { StorageService } from "../abstractions/storage.service";
 
 import { Account } from "../models/domain/account";
 import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
+import { GlobalState } from "../models/domain/globalState";
 import { State } from "../models/domain/state";
 import { StorageOptions } from "../models/domain/storageOptions";
 
@@ -16,6 +17,8 @@ import { SendData } from "../models/data/sendData";
 
 import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 import { KdfType } from "../enums/kdfType";
+import { StateVersion } from "../enums/stateVersion";
+import { EnvironmentUrls } from "../models/domain/environmentUrls";
 
 // Originally (before January 2022) storage was handled as a flat key/value pair store.
 // With the move to a typed object for state storage these keys should no longer be in use anywhere outside of this migration.
@@ -29,8 +32,8 @@ const v1Keys = {
   biometricText: "biometricText",
   biometricUnlock: "biometric",
   clearClipboard: "clearClipboardKey",
-  clientId: "clientId",
-  clientSecret: "clientSecret",
+  clientId: "apikey_clientId",
+  clientSecret: "apikey_clientSecret",
   collapsedGroupings: "collapsedGroupings",
   convertAccountToKeyConnector: "convertAccountToKeyConnector",
   defaultUriMatch: "defaultUriMatch",
@@ -111,8 +114,6 @@ const v1KeyPrefixes = {
 };
 
 export class StateMigrationService {
-  readonly latestVersion: number = 2;
-
   constructor(
     protected storageService: StorageService,
     protected secureStorageService: StorageService
@@ -124,15 +125,16 @@ export class StateMigrationService {
         htmlStorageLocation: HtmlStorageLocation.Local,
       })
     )?.globals?.stateVersion;
-    return currentStateVersion == null || currentStateVersion < this.latestVersion;
+    return currentStateVersion == null || currentStateVersion < StateVersion.Latest;
   }
 
   async migrate(): Promise<void> {
     let currentStateVersion =
-      (await this.storageService.get<State<Account>>("state"))?.globals?.stateVersion ?? 1;
-    while (currentStateVersion < this.latestVersion) {
+      (await this.storageService.get<State<Account>>("state"))?.globals?.stateVersion ??
+      StateVersion.One;
+    while (currentStateVersion < StateVersion.Latest) {
       switch (currentStateVersion) {
-        case 1:
+        case StateVersion.One:
           await this.migrateStateFrom1To2();
           break;
       }
@@ -147,9 +149,7 @@ export class StateMigrationService {
     const initialState: State<Account> =
       userId == null
         ? {
-            globals: {
-              stateVersion: 2,
-            },
+            globals: new GlobalState(),
             accounts: {},
             activeUserId: null,
           }
@@ -177,7 +177,9 @@ export class StateMigrationService {
                 v1Keys.enableBiometric,
                 options
               ),
-              environmentUrls: await this.storageService.get<any>(v1Keys.environmentUrls, options),
+              environmentUrls:
+                (await this.storageService.get<EnvironmentUrls>(v1Keys.environmentUrls, options)) ??
+                new EnvironmentUrls(),
               installedVersion: await this.storageService.get<string>(
                 v1Keys.installedVersion,
                 options
@@ -209,7 +211,7 @@ export class StateMigrationService {
                 v1Keys.rememberedEmail,
                 options
               ),
-              stateVersion: 2,
+              stateVersion: StateVersion.Two,
               theme: await this.storageService.get<string>(v1Keys.theme, options),
               twoFactorToken: await this.storageService.get<string>(
                 v1KeyPrefixes.twoFactorToken + userId,
@@ -443,6 +445,11 @@ export class StateMigrationService {
                     options
                   ),
                   enableTray: await this.storageService.get<boolean>(v1Keys.enableTray, options),
+                  environmentUrls:
+                    (await this.storageService.get<EnvironmentUrls>(
+                      v1Keys.environmentUrls,
+                      options
+                    )) ?? new EnvironmentUrls(),
                   equivalentDomains: await this.storageService.get<any>(
                     v1Keys.equivalentDomains,
                     options

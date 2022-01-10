@@ -1,15 +1,18 @@
+import { StateVersion } from "../../enums/stateVersion";
+import { EnvironmentUrls } from "./environmentUrls";
+
 export class GlobalState {
   enableAlwaysOnTop?: boolean;
   installedVersion?: string;
   lastActive?: number;
-  locale?: string;
+  locale?: string = "en";
   openAtLogin?: boolean;
   organizationInvitation?: any;
   ssoCodeVerifier?: string;
   ssoOrganizationIdentifier?: string;
   ssoState?: string;
   rememberedEmail?: string;
-  theme?: string;
+  theme?: string = "light";
   window?: Map<string, any> = new Map<string, any>();
   twoFactorToken?: string;
   disableFavicon?: boolean;
@@ -23,8 +26,6 @@ export class GlobalState {
   biometricText?: string;
   noAutoPromptBiometrics?: boolean;
   noAutoPromptBiometricsText?: string;
-  stateVersion: number;
-  environmentUrls?: any = {
-    server: "bitwarden.com",
-  };
+  stateVersion: StateVersion = StateVersion.Latest;
+  environmentUrls: EnvironmentUrls = new EnvironmentUrls();
 }
