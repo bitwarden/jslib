@@ -16,7 +16,7 @@
     "clean": "rimraf dist/**/*",
     "build": "npm run clean && ttsc",
     "build:watch": "npm run clean && ttsc -watch",
-    "lint": "tslint '*/src/**/*.ts' 'spec/**/*.ts'",
+    "lint": "tslint '*/src/**/*.ts' 'spec/**/*.ts' && prettier --check .",
     "lint:fix": "tslint '*/src/**/*.ts' 'spec/**/*.ts' --fix",
     "prettier": "prettier --write .",
     "test": "karma start ./spec/support/karma.conf.js --single-run",
