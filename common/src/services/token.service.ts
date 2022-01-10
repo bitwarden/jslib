@@ -210,7 +210,7 @@ export class TokenService implements TokenServiceAbstraction {
   async getIsExternal(): Promise<boolean> {
     const decoded = await this.decodeToken();
 
-    return Array.isArray(decoded.amr) ? decoded.amr.includes("external") : null;
+    return Array.isArray(decoded.amr) && decoded.amr.includes("external");
   }
 
   private async skipTokenStorage(): Promise<boolean> {
