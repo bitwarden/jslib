@@ -3,9 +3,9 @@ import { CryptoService } from '../abstractions/crypto.service';
 import { I18nService } from '../abstractions/i18n.service';
 import { KeyConnectorService as KeyConnectorServiceAbstraction } from '../abstractions/keyConnector.service';
 import { LogService } from '../abstractions/log.service';
-import { StorageService } from '../abstractions/storage.service';
+import { OrganizationService } from '../abstractions/organization.service';
+import { StateService } from '../abstractions/state.service';
 import { TokenService } from '../abstractions/token.service';
-import { UserService } from '../abstractions/user.service';
 
 import { OrganizationUserType } from '../enums/organizationUserType';
 import { CMEIFrame } from '../misc/cme_iframe';
@@ -16,25 +16,17 @@ import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 
 import { KeyConnectorUserKeyRequest } from '../models/request/keyConnectorUserKeyRequest';
 
-const Keys = {
-    usesKeyConnector: 'usesKeyConnector',
-    convertAccountToKeyConnector: 'convertAccountToKeyConnector',
-};
-
 export class KeyConnectorService implements KeyConnectorServiceAbstraction {
-    private usesKeyConnector?: boolean = null;
-
-    constructor(private storageService: StorageService, private userService: UserService,
-        private cryptoService: CryptoService, private apiService: ApiService,
-        private tokenService: TokenService, private logService: LogService) { }
+    constructor(private stateService: StateService, private cryptoService: CryptoService,
+        private apiService: ApiService, private tokenService: TokenService,
+        private logService: LogService, private organizationService: OrganizationService) { }
 
     setUsesKeyConnector(usesKeyConnector: boolean) {
-        this.usesKeyConnector = usesKeyConnector;
-        return this.storageService.save(Keys.usesKeyConnector, usesKeyConnector);
+        return this.stateService.setUsesKeyConnector(usesKeyConnector);
     }
 
     async getUsesKeyConnector(): Promise<boolean> {
-        return this.usesKeyConnector ??= await this.storageService.get<boolean>(Keys.usesKeyConnector);
+        return await this.stateService.getUsesKeyConnector();
     }
 
     async userNeedsMigration() {
@@ -97,7 +89,7 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
     }
 
     async getManagingOrganization() {
-        const orgs = await this.userService.getAllOrganizations();
+        const orgs = await this.organizationService.getAll();
         return orgs.find(o =>
             o.keyConnectorEnabled &&
             o.type !== OrganizationUserType.Admin &&
@@ -106,15 +98,15 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
     }
 
     async setConvertAccountRequired(status: boolean) {
-        await this.storageService.save(Keys.convertAccountToKeyConnector, status);
+        await this.stateService.setConvertAccountToKeyConnector(status);
     }
 
     async getConvertAccountRequired(): Promise<boolean> {
-        return await this.storageService.get(Keys.convertAccountToKeyConnector);
+        return await this.stateService.getConvertAccountToKeyConnector();
     }
 
     async removeConvertAccountRequired() {
-        await this.storageService.remove(Keys.convertAccountToKeyConnector);
+        await this.stateService.setConvertAccountToKeyConnector(null);
     }
 
     async clear() {

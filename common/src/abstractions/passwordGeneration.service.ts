@@ -12,7 +12,7 @@ export abstract class PasswordGenerationService {
     saveOptions: (options: any) => Promise<any>;
     getHistory: () => Promise<GeneratedPasswordHistory[]>;
     addHistory: (password: string) => Promise<any>;
-    clear: () => Promise<any>;
+    clear: (userId?: string) => Promise<any>;
     passwordStrength: (password: string, userInputs?: string[]) => zxcvbn.ZXCVBNResult;
     normalizeOptions: (options: any, enforcedPolicyOptions: PasswordGeneratorPolicyOptions) => void;
 }

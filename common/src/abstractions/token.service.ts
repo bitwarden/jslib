@@ -1,7 +1,4 @@
 export abstract class TokenService {
-    token: string;
-    decodedToken: any;
-    refreshToken: string;
     setTokens: (accessToken: string, refreshToken: string, clientIdClientSecret: [string, string]) => Promise<any>;
     setToken: (token: string) => Promise<any>;
     getToken: () => Promise<string>;
@@ -15,16 +12,16 @@ export abstract class TokenService {
     setTwoFactorToken: (token: string, email: string) => Promise<any>;
     getTwoFactorToken: (email: string) => Promise<string>;
     clearTwoFactorToken: (email: string) => Promise<any>;
-    clearToken: () => Promise<any>;
-    decodeToken: () => any;
-    getTokenExpirationDate: () => Date;
-    tokenSecondsRemaining: (offsetSeconds?: number) => number;
-    tokenNeedsRefresh: (minutes?: number) => boolean;
-    getUserId: () => string;
-    getEmail: () => string;
-    getEmailVerified: () => boolean;
-    getName: () => string;
-    getPremium: () => boolean;
-    getIssuer: () => string;
-    getIsExternal: () => boolean;
+    clearToken: (userId?: string) => Promise<any>;
+    decodeToken: (token?: string) => any;
+    getTokenExpirationDate: () => Promise<Date>;
+    tokenSecondsRemaining: (offsetSeconds?: number) => Promise<number>;
+    tokenNeedsRefresh: (minutes?: number) => Promise<boolean>;
+    getUserId: () => Promise<string>;
+    getEmail: () => Promise<string>;
+    getEmailVerified: () => Promise<boolean>;
+    getName: () => Promise<string>;
+    getPremium: () => Promise<boolean>;
+    getIssuer: () => Promise<string>;
+    getIsExternal: () => Promise<boolean>;
 }

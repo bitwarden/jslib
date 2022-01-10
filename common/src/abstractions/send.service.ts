@@ -7,9 +7,7 @@ import { SymmetricCryptoKey } from '../models/domain/symmetricCryptoKey';
 import { SendView } from '../models/view/sendView';
 
 export abstract class SendService {
-    decryptedSendCache: SendView[];
-
-    clearCache: () => void;
+    clearCache: () => Promise<void>;
     encrypt: (model: SendView, file: File | ArrayBuffer, password: string, key?: SymmetricCryptoKey) => Promise<[Send, EncArrayBuffer]>;
     get: (id: string) => Promise<Send>;
     getAll: () => Promise<Send[]>;

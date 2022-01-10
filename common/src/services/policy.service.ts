@@ -1,6 +1,6 @@
+import { OrganizationService } from '../abstractions/organization.service';
 import { PolicyService as PolicyServiceAbstraction } from '../abstractions/policy.service';
-import { StorageService } from '../abstractions/storage.service';
-import { UserService } from '../abstractions/user.service';
+import { StateService } from '../abstractions/state.service';
 
 import { PolicyData } from '../models/data/policyData';
 
@@ -17,43 +17,40 @@ import { ApiService } from '../abstractions/api.service';
 import { ListResponse } from '../models/response/listResponse';
 import { PolicyResponse } from '../models/response/policyResponse';
 
-const Keys = {
-    policiesPrefix: 'policies_',
-};
-
 export class PolicyService implements PolicyServiceAbstraction {
     policyCache: Policy[];
 
-    constructor(private userService: UserService, private storageService: StorageService,
+    constructor(private stateService: StateService, private organizationService: OrganizationService,
         private apiService: ApiService) {
     }
 
-    clearCache(): void {
-        this.policyCache = null;
+    async clearCache(): Promise<void> {
+        await this.stateService.setDecryptedPolicies(null);
     }
 
-    async getAll(type?: PolicyType): Promise<Policy[]> {
-        if (this.policyCache == null) {
-            const userId = await this.userService.getUserId();
-            const policies = await this.storageService.get<{ [id: string]: PolicyData; }>(
-                Keys.policiesPrefix + userId);
-            const response: Policy[] = [];
-            for (const id in policies) {
-                if (policies.hasOwnProperty(id)) {
-                    response.push(new Policy(policies[id]));
+    async getAll(type?: PolicyType, userId?: string): Promise<Policy[]> {
+        let response: Policy[] = [];
+        const decryptedPolicies = await this.stateService.getDecryptedPolicies({ userId: userId });
+        if (decryptedPolicies != null) {
+            response = decryptedPolicies;
+        } else {
+            const diskPolicies = await this.stateService.getEncryptedPolicies({ userId: userId });
+            for (const id in diskPolicies) {
+                if (diskPolicies.hasOwnProperty(id)) {
+                    response.push(new Policy(diskPolicies[id]));
                 }
             }
-            this.policyCache = response;
+            await this.stateService.setDecryptedPolicies(response, { userId: userId });
         }
         if (type != null) {
-            return this.policyCache.filter(p => p.type === type);
+            return response.filter(policy => policy.type === type);
         } else {
-            return this.policyCache;
+            return response;
         }
     }
 
     async getPolicyForOrganization(policyType: PolicyType, organizationId: string): Promise<Policy> {
-        const org = await this.userService.getOrganization(organizationId);
+        const org = await this.organizationService.get(organizationId);
         if (org?.isProviderUser) {
             const orgPolicies = await this.apiService.getPolicies(organizationId);
             const policy = orgPolicies.data.find(p => p.organizationId === organizationId);
@@ -70,14 +67,13 @@ export class PolicyService implements PolicyServiceAbstraction {
     }
 
     async replace(policies: { [id: string]: PolicyData; }): Promise<any> {
-        const userId = await this.userService.getUserId();
-        await this.storageService.save(Keys.policiesPrefix + userId, policies);
-        this.policyCache = null;
+        await this.stateService.setDecryptedPolicies(null);
+        await this.stateService.setEncryptedPolicies(policies);
     }
 
-    async clear(userId: string): Promise<any> {
-        await this.storageService.remove(Keys.policiesPrefix + userId);
-        this.policyCache = null;
+    async clear(userId?: string): Promise<any> {
+        await this.stateService.setDecryptedPolicies(null, { userId: userId });
+        await this.stateService.setEncryptedPolicies(null, { userId: userId });
     }
 
     async getMasterPasswordPolicyOptions(policies?: Policy[]): Promise<MasterPasswordPolicyOptions> {
@@ -187,9 +183,9 @@ export class PolicyService implements PolicyServiceAbstraction {
         return policiesData.map(p => new Policy(p));
     }
 
-    async policyAppliesToUser(policyType: PolicyType, policyFilter?: (policy: Policy) => boolean) {
-        const policies = await this.getAll(policyType);
-        const organizations = await this.userService.getAllOrganizations();
+    async policyAppliesToUser(policyType: PolicyType, policyFilter?: (policy: Policy) => boolean, userId?: string) {
+        const policies = await this.getAll(policyType, userId);
+        const organizations = await this.organizationService.getAll(userId);
         let filteredPolicies;
 
         if (policyFilter != null) {
