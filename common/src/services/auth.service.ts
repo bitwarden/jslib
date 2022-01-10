@@ -25,7 +25,7 @@ import { TwoFactorService } from "../abstractions/twoFactor.service";
 import { LogInDelegate } from "../misc/logInDelegate/logIn.delegate";
 
 export class AuthService implements AuthServiceAbstraction {
-  private logInService: LogInDelegate;
+  private logInDelegate: LogInDelegate;
 
   constructor(
     private cryptoService: CryptoService,
@@ -43,12 +43,12 @@ export class AuthService implements AuthServiceAbstraction {
   ) {}
 
   get email(): string {
-    return this.logInService instanceof PasswordLogInDelegate ? this.logInService.email : null;
+    return this.logInDelegate instanceof PasswordLogInDelegate ? this.logInDelegate.email : null;
   }
 
   get masterPasswordHash(): string {
-    return this.logInService instanceof PasswordLogInDelegate
-      ? this.logInService.masterPasswordHash
+    return this.logInDelegate instanceof PasswordLogInDelegate
+      ? this.logInDelegate.masterPasswordHash
       : null;
   }
 
@@ -58,7 +58,7 @@ export class AuthService implements AuthServiceAbstraction {
     twoFactor?: TokenRequestTwoFactor,
     captchaToken?: string
   ): Promise<AuthResult> {
-    const passwordLogInService = new PasswordLogInDelegate(
+    const passwordLogInDelegate = new PasswordLogInDelegate(
       this.cryptoService,
       this.apiService,
       this.tokenService,
@@ -72,10 +72,9 @@ export class AuthService implements AuthServiceAbstraction {
       this
     );
 
-    await passwordLogInService.init(email, masterPassword, captchaToken, twoFactor);
+    await passwordLogInDelegate.init(email, masterPassword, captchaToken, twoFactor);
 
-    this.logInService = passwordLogInService;
-    return this.logInService.logIn();
+    return this.startLogin(passwordLogInDelegate);
   }
 
   async logInSso(
@@ -85,7 +84,7 @@ export class AuthService implements AuthServiceAbstraction {
     orgId: string,
     twoFactor?: TokenRequestTwoFactor
   ): Promise<AuthResult> {
-    const ssoLogInService = new SsoLogInDelegate(
+    const ssoLogInDelegate = new SsoLogInDelegate(
       this.cryptoService,
       this.apiService,
       this.tokenService,
@@ -99,10 +98,9 @@ export class AuthService implements AuthServiceAbstraction {
       this.keyConnectorService
     );
 
-    await ssoLogInService.init(code, codeVerifier, redirectUrl, orgId, twoFactor);
+    await ssoLogInDelegate.init(code, codeVerifier, redirectUrl, orgId, twoFactor);
 
-    this.logInService = ssoLogInService;
-    return this.logInService.logIn();
+    return this.startLogin(ssoLogInDelegate);
   }
 
   async logInApiKey(
@@ -110,7 +108,7 @@ export class AuthService implements AuthServiceAbstraction {
     clientSecret: string,
     twoFactor?: TokenRequestTwoFactor
   ): Promise<AuthResult> {
-    const apiLogInService = new ApiLogInDelegate(
+    const apiLogInDelegate = new ApiLogInDelegate(
       this.cryptoService,
       this.apiService,
       this.tokenService,
@@ -125,14 +123,29 @@ export class AuthService implements AuthServiceAbstraction {
       this.keyConnectorService
     );
 
-    await apiLogInService.init(clientId, clientSecret, twoFactor);
+    await apiLogInDelegate.init(clientId, clientSecret, twoFactor);
 
-    this.logInService = apiLogInService;
-    return this.logInService.logIn();
+    return this.startLogin(apiLogInDelegate);
+  }
+
+  private async startLogin(
+    delegate: ApiLogInDelegate | SsoLogInDelegate | PasswordLogInDelegate
+  ): Promise<AuthResult> {
+    this.logInDelegate = null;
+    const result = await delegate.logIn();
+    if (result.requiresTwoFactor) {
+      this.logInDelegate = delegate;
+    }
+
+    return result;
   }
 
   async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
-    return this.logInService.logInTwoFactor(twoFactor);
+    try {
+      return await this.logInDelegate.logInTwoFactor(twoFactor);
+    } finally {
+      this.logInDelegate = null;
+    }
   }
 
   logOut(callback: Function) {
@@ -141,15 +154,15 @@ export class AuthService implements AuthServiceAbstraction {
   }
 
   authingWithApiKey(): boolean {
-    return this.logInService instanceof ApiLogInDelegate;
+    return this.logInDelegate instanceof ApiLogInDelegate;
   }
 
   authingWithSso(): boolean {
-    return this.logInService instanceof SsoLogInDelegate;
+    return this.logInDelegate instanceof SsoLogInDelegate;
   }
 
   authingWithPassword(): boolean {
-    return this.logInService instanceof PasswordLogInDelegate;
+    return this.logInDelegate instanceof PasswordLogInDelegate;
   }
 
   async makePreloginKey(masterPassword: string, email: string): Promise<SymmetricCryptoKey> {

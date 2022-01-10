@@ -80,9 +80,4 @@ export class SsoLogInDelegate extends LogInDelegate {
       }
     }
   }
-
-  clearState() {
-    this.orgId = null;
-    super.clearState();
-  }
 }

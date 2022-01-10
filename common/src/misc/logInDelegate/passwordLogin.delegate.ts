@@ -81,12 +81,6 @@ export class PasswordLogInDelegate extends LogInDelegate {
     }
   }
 
-  clearState() {
-    this.localHashedPassword = null;
-    this.key = null;
-    super.clearState();
-  }
-
   get email() {
     return this.tokenRequest.email;
   }

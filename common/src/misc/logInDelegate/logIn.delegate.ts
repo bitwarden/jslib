@@ -51,11 +51,7 @@ export abstract class LogInDelegate {
 
     const response = await this.apiService.postIdentityToken(this.tokenRequest);
 
-    try {
-      return await this.processTokenResponse(response);
-    } catch {
-      this.clearState();
-    }
+    return this.processTokenResponse(response);
   }
 
   async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
@@ -102,14 +98,7 @@ export abstract class LogInDelegate {
     await this.stateService.setBiometricLocked(false);
     this.messagingService.send("loggedIn");
 
-    this.clearState();
     return result;
-  }
-
-  protected clearState() {
-    this.tokenRequest = null;
-    this.twoFactorService.clearProviders();
-    this.twoFactorService.clearSelectedProvider();
   }
 
   protected async buildDeviceRequest() {
