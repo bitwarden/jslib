@@ -172,7 +172,11 @@ export class OnePassword1PifImporter extends BaseImporter implements Importer {
         return;
       }
 
-      const fieldValue = field[valueKey].toString();
+      // TODO: when date FieldType exists, store this as a date field type instead of formatted Text if k is 'date'
+      const fieldValue =
+        field.k === "date"
+          ? new Date(field[valueKey] * 1000).toUTCString()
+          : field[valueKey].toString();
       const fieldDesignation =
         field[designationKey] != null ? field[designationKey].toString() : null;
 

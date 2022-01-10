@@ -1047,6 +1047,20 @@ export class ApiService implements ApiServiceAbstraction {
     return new ListResponse(r, PolicyResponse);
   }
 
+  async getPoliciesByInvitedUser(
+    organizationId: string,
+    userId: string
+  ): Promise<ListResponse<PolicyResponse>> {
+    const r = await this.send(
+      "GET",
+      "/organizations/" + organizationId + "/policies/invited-user?" + "userId=" + userId,
+      null,
+      false,
+      true
+    );
+    return new ListResponse(r, PolicyResponse);
+  }
+
   async putPolicy(
     organizationId: string,
     type: PolicyType,
