@@ -1,12 +1,12 @@
-import { BaseResponse } from './baseResponse';
+import { BaseResponse } from "./baseResponse";
 
 export class TwoFactorAuthenticatorResponse extends BaseResponse {
-    enabled: boolean;
-    key: string;
+  enabled: boolean;
+  key: string;
 
-    constructor(response: any) {
-        super(response);
-        this.enabled = this.getResponseProperty('Enabled');
-        this.key = this.getResponseProperty('Key');
-    }
+  constructor(response: any) {
+    super(response);
+    this.enabled = this.getResponseProperty("Enabled");
+    this.key = this.getResponseProperty("Key");
+  }
 }

@@ -1,4 +1,4 @@
 export enum SendType {
-    Text = 0,
-    File = 1,
+  Text = 0,
+  File = 1,
 }

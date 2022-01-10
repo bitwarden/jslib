@@ -1,5 +1,5 @@
 export enum StorageLocation {
-    Both = 'both',
-    Disk = 'disk',
-    Memory = 'memory',
+  Both = "both",
+  Disk = "disk",
+  Memory = "memory",
 }
