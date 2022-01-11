@@ -11,7 +11,6 @@ import { SsoConfigView } from "../view/ssoConfigView";
 
 export class SsoConfigApi extends BaseResponse {
   static fromView(view: SsoConfigView, api = new SsoConfigApi()) {
-    // TODO: then we can just give it the form value cast as SsoConfigView
     api.configType = view.configType;
 
     api.keyConnectorEnabled = view.keyConnectorEnabled;
