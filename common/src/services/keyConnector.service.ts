@@ -137,11 +137,11 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
     await this.removeConvertAccountRequired();
   }
 
-  getUserKeyFromKeyConnector(url: string) {
+  protected getUserKeyFromKeyConnector(url: string) {
     return this.apiService.getUserKeyFromKeyConnector(url);
   }
 
-  postUserKeyToKeyConnector(url: string, request: KeyConnectorUserKeyRequest) {
+  protected postUserKeyToKeyConnector(url: string, request: KeyConnectorUserKeyRequest) {
     return this.apiService.postUserKeyToKeyConnector(url, request);
   }
 }
