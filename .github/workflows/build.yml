@@ -33,11 +33,10 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@46071b5c7a2e0c34e49c3cb8a0e792e86e18d5ea
         with:
-          node-version: '14'
+          node-version: '16'
 
-      - name: Update NPM
+      - name: Install node-gyp
         run: |
-          npm install -g npm@7
           npm install -g node-gyp
           node-gyp install $(node -v)
 
@@ -52,8 +51,8 @@ jobs:
       - name: Install Node dependencies
         run: npm install
 
-      - name: Run linter
-        run: npm run lint
+      # - name: Run linter
+      #   run: npm run lint
 
       - name: Build
         run: npm run build

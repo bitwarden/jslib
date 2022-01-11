@@ -8,8 +8,8 @@ import { MessagingService } from 'jslib-common/abstractions/messaging.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { PolicyService } from 'jslib-common/abstractions/policy.service';
+import { StateService } from 'jslib-common/abstractions/state.service';
 import { SyncService } from 'jslib-common/abstractions/sync.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
 
 import { ChangePasswordComponent as BaseChangePasswordComponent } from './change-password.component';
 
@@ -30,11 +30,11 @@ export class UpdateTempPasswordComponent extends BaseChangePasswordComponent {
 
     constructor(i18nService: I18nService, platformUtilsService: PlatformUtilsService,
         passwordGenerationService: PasswordGenerationService, policyService: PolicyService,
-        cryptoService: CryptoService, userService: UserService,
-        messagingService: MessagingService, private apiService: ApiService,
+        cryptoService: CryptoService, messagingService: MessagingService,
+        private apiService: ApiService, stateService: StateService,
         private syncService: SyncService, private logService: LogService) {
-        super(i18nService, cryptoService, messagingService, userService, passwordGenerationService,
-            platformUtilsService, policyService);
+        super(i18nService, cryptoService, messagingService, passwordGenerationService,
+            platformUtilsService, policyService, stateService);
     }
 
     async ngOnInit() {
@@ -49,9 +49,9 @@ export class UpdateTempPasswordComponent extends BaseChangePasswordComponent {
 
     async setupSubmitActions(): Promise<boolean> {
         this.enforcedPolicyOptions = await this.policyService.getMasterPasswordPolicyOptions();
-        this.email = await this.userService.getEmail();
-        this.kdf = await this.userService.getKdf();
-        this.kdfIterations = await this.userService.getKdfIterations();
+        this.email = await this.stateService.getEmail();
+        this.kdf = await this.stateService.getKdfType();
+        this.kdfIterations = await this.stateService.getKdfIterations();
         return true;
     }
 

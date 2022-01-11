@@ -19,18 +19,10 @@ import { LogService } from 'jslib-common/abstractions/log.service';
 import { PasswordGenerationService } from 'jslib-common/abstractions/passwordGeneration.service';
 import { PlatformUtilsService } from 'jslib-common/abstractions/platformUtils.service';
 import { StateService } from 'jslib-common/abstractions/state.service';
-import { StorageService } from 'jslib-common/abstractions/storage.service';
-
-import { ConstantsService } from 'jslib-common/services/constants.service';
 
 import { Utils } from 'jslib-common/misc/utils';
 
 import { CaptchaProtectedComponent } from './captchaProtected.component';
-
-const Keys = {
-    rememberedEmail: 'rememberedEmail',
-    rememberEmail: 'rememberEmail',
-};
 
 @Directive()
 export class LoginComponent extends CaptchaProtectedComponent implements OnInit {
@@ -53,22 +45,19 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
         platformUtilsService: PlatformUtilsService, i18nService: I18nService,
         protected stateService: StateService, environmentService: EnvironmentService,
         protected passwordGenerationService: PasswordGenerationService,
-        protected cryptoFunctionService: CryptoFunctionService, private storageService: StorageService,
-        protected logService: LogService, protected ngZone: NgZone) {
+        protected cryptoFunctionService: CryptoFunctionService, protected logService: LogService,
+        protected ngZone: NgZone) {
         super(environmentService, i18nService, platformUtilsService);
     }
 
     async ngOnInit() {
         if (this.email == null || this.email === '') {
-            this.email = await this.storageService.get<string>(Keys.rememberedEmail);
+            this.email = await this.stateService.getRememberedEmail();
             if (this.email == null) {
                 this.email = '';
             }
         }
-        this.rememberEmail = await this.storageService.get<boolean>(Keys.rememberEmail);
-        if (this.rememberEmail == null) {
-            this.rememberEmail = true;
-        }
+        this.rememberEmail = await this.stateService.getRememberedEmail() != null;
         if (Utils.isBrowser && !Utils.isNode) {
             this.focusInput();
         }
@@ -96,11 +85,10 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
         try {
             this.formPromise = this.authService.logIn(this.email, this.masterPassword, this.captchaToken);
             const response = await this.formPromise;
-            await this.storageService.save(Keys.rememberEmail, this.rememberEmail);
             if (this.rememberEmail) {
-                await this.storageService.save(Keys.rememberedEmail, this.email);
+                await this.stateService.setRememberedEmail(this.email);
             } else {
-                await this.storageService.remove(Keys.rememberedEmail);
+                await this.stateService.setRememberedEmail(null);
             }
             if (this.handleCaptchaRequired(response)) {
                 return;
@@ -117,8 +105,8 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
                     this.router.navigate([this.forcePasswordResetRoute]);
                 }
             } else {
-                const disableFavicon = await this.storageService.get<boolean>(ConstantsService.disableFaviconKey);
-                await this.stateService.save(ConstantsService.disableFaviconKey, !!disableFavicon);
+                const disableFavicon = await this.stateService.getDisableFavicon();
+                await this.stateService.setDisableFavicon(!!disableFavicon);
                 if (this.onSuccessfulLogin != null) {
                     this.onSuccessfulLogin();
                 }
@@ -158,8 +146,8 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
         const codeChallenge = Utils.fromBufferToUrlB64(codeVerifierHash);
 
         // Save sso params
-        await this.storageService.save(ConstantsService.ssoStateKey, state);
-        await this.storageService.save(ConstantsService.ssoCodeVerifierKey, ssoCodeVerifier);
+        await this.stateService.setSsoState(state);
+        await this.stateService.setSsoCodeVerifier(ssoCodeVerifier);
 
         // Build URI
         const webUrl = this.environmentService.getWebVaultUrl();

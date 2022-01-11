@@ -8,16 +8,17 @@ import {
 
 import { KeyConnectorService } from 'jslib-common/abstractions/keyConnector.service';
 import { MessagingService } from 'jslib-common/abstractions/messaging.service';
-import { UserService } from 'jslib-common/abstractions/user.service';
+import { StateService } from 'jslib-common/abstractions/state.service';
 import { VaultTimeoutService } from 'jslib-common/abstractions/vaultTimeout.service';
 
 @Injectable()
 export class AuthGuardService implements CanActivate {
-    constructor(private vaultTimeoutService: VaultTimeoutService, private userService: UserService,
-        private router: Router, private messagingService: MessagingService, private keyConnectorService: KeyConnectorService) { }
+    constructor(private vaultTimeoutService: VaultTimeoutService, private router: Router,
+        private messagingService: MessagingService, private keyConnectorService: KeyConnectorService,
+        private stateService: StateService) { }
 
     async canActivate(route: ActivatedRouteSnapshot, routerState: RouterStateSnapshot) {
-        const isAuthed = await this.userService.isAuthenticated();
+        const isAuthed = await this.stateService.getIsAuthenticated();
         if (!isAuthed) {
             this.messagingService.send('authBlocked');
             return false;
