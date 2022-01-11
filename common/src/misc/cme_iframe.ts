@@ -22,7 +22,7 @@ export class CMEIFrame extends IFrameComponent {
     );
   }
 
-  init(token: string, url: string): void {
+  initGet(token: string, url: string): void {
     super.initComponent(
       this.createParams(
         {
