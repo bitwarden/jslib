@@ -1,20 +1,14 @@
-import {
-    Directive,
-    ElementRef,
-    HostListener,
-    Input,
-} from '@angular/core';
+import { Directive, ElementRef, HostListener, Input } from "@angular/core";
 
 @Directive({
-    selector: '[appFallbackSrc]',
+  selector: "[appFallbackSrc]",
 })
 export class FallbackSrcDirective {
-    @Input('appFallbackSrc') appFallbackSrc: string;
+  @Input("appFallbackSrc") appFallbackSrc: string;
 
-    constructor(private el: ElementRef) {
-    }
+  constructor(private el: ElementRef) {}
 
-    @HostListener('error') onError() {
-        this.el.nativeElement.src = this.appFallbackSrc;
-    }
+  @HostListener("error") onError() {
+    this.el.nativeElement.src = this.appFallbackSrc;
+  }
 }

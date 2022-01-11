@@ -1,3 +1,3 @@
 export class DeleteRecoverRequest {
-    email: string;
+  email: string;
 }

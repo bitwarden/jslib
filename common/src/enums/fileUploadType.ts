@@ -1,4 +1,4 @@
 export enum FileUploadType {
-    Direct = 0,
-    Azure = 1,
+  Direct = 0,
+  Azure = 1,
 }

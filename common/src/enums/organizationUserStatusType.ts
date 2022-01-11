@@ -1,5 +1,5 @@
 export enum OrganizationUserStatusType {
-    Invited = 0,
-    Accepted = 1,
-    Confirmed = 2,
+  Invited = 0,
+  Accepted = 1,
+  Confirmed = 2,
 }

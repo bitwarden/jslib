@@ -1,4 +1,4 @@
 export class PasswordHistoryRequest {
-    password: string;
-    lastUsedDate: Date;
+  password: string;
+  lastUsedDate: Date;
 }

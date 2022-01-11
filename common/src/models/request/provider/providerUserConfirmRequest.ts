@@ -1,3 +1,3 @@
 export class ProviderUserConfirmRequest {
-    key: string;
+  key: string;
 }

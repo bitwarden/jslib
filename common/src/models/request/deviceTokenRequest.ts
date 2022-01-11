@@ -1,7 +1,7 @@
 export class DeviceTokenRequest {
-    pushToken: string;
+  pushToken: string;
 
-    constructor() {
-        this.pushToken = null;
-    }
+  constructor() {
+    this.pushToken = null;
+  }
 }

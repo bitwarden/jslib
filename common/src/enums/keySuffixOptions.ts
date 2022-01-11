@@ -1,4 +1,4 @@
 export enum KeySuffixOptions {
-    Auto = 'auto',
-    Biometric = 'biometric',
+  Auto = "auto",
+  Biometric = "biometric",
 }
