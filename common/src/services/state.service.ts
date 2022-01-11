@@ -355,8 +355,12 @@ export class StateService<TAccount extends Account = Account>
 
   async getClearClipboard(options?: StorageOptions): Promise<number> {
     return (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
-    )?.settings?.clearClipboard ?? null;
+      (
+        await this.getAccount(
+          this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
+        )
+      )?.settings?.clearClipboard ?? null
+    );
   }
 
   async setClearClipboard(value: number, options?: StorageOptions): Promise<void> {
@@ -1603,8 +1607,12 @@ export class StateService<TAccount extends Account = Account>
 
   async getLocale(options?: StorageOptions): Promise<string> {
     return (
-      await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
-    )?.locale ?? null;
+      (
+        await this.getGlobals(
+          this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
+        )
+      )?.locale ?? null
+    );
   }
 
   async setLocale(value: string, options?: StorageOptions): Promise<void> {
@@ -1945,8 +1953,12 @@ export class StateService<TAccount extends Account = Account>
 
   async getTheme(options?: StorageOptions): Promise<string> {
     return (
-      await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
-    )?.theme ?? null;
+      (
+        await this.getGlobals(
+          this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
+        )
+      )?.theme ?? null
+    );
   }
 
   async setTheme(value: string, options?: StorageOptions): Promise<void> {
