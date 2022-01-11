@@ -34,4 +34,18 @@ export class CMEIFrame extends IFrameComponent {
       )
     );
   }
+
+  initPost(token: string, url: string, key: string): void {
+    super.initComponent(
+      this.createParams(
+        {
+          url: url,
+          token: token,
+          operation: "post",
+          key: key,
+        },
+        1
+      )
+    );
+  }
 }

@@ -611,40 +611,12 @@ export class AuthService implements AuthServiceAbstraction {
 
         await this.cryptoService.setEncPrivateKey(tokenResponse.privateKey);
       } else if (tokenResponse.keyConnectorUrl != null) {
-        const password = await this.cryptoFunctionService.randomBytes(64);
-
-        const k = await this.cryptoService.makeKey(
-          Utils.fromBufferToB64(password),
-          await this.tokenService.getEmail(),
-          tokenResponse.kdf,
-          tokenResponse.kdfIterations
-        );
-        const keyConnectorRequest = new KeyConnectorUserKeyRequest(k.encKeyB64);
-        await this.cryptoService.setKey(k);
-
-        const encKey = await this.cryptoService.makeEncKey(k);
-        await this.cryptoService.setEncKey(encKey[1].encryptedString);
-
-        const [pubKey, privKey] = await this.cryptoService.makeKeyPair();
-
-        try {
-          await this.apiService.postUserKeyToKeyConnector(
-            tokenResponse.keyConnectorUrl,
-            keyConnectorRequest
-          );
-        } catch (e) {
-          throw new Error("Unable to reach key connector");
-        }
-
-        const keys = new KeysRequest(pubKey, privKey.encryptedString);
-        const setPasswordRequest = new SetKeyConnectorKeyRequest(
-          encKey[1].encryptedString,
+        await this.keyConnectorService.postAndSetKey(
+          tokenResponse.keyConnectorUrl,
           tokenResponse.kdf,
           tokenResponse.kdfIterations,
-          orgId,
-          keys
+          orgId
         );
-        await this.apiService.postSetKeyConnectorKey(setPasswordRequest);
       }
     }
 
