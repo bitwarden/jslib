@@ -1,4 +1,3 @@
-import { I18nService } from "../abstractions/i18n.service";
 import { IFrameComponent } from "./iframe_component";
 
 export class CMEIFrame extends IFrameComponent {
@@ -18,12 +17,7 @@ export class CMEIFrame extends IFrameComponent {
       errorCallback,
       (message: string) => {
         const parsedMessage = JSON.parse(message);
-        if (typeof parsedMessage !== "string") {
-          this.iframe.height = parsedMessage.height.toString();
-          this.iframe.width = parsedMessage.width.toString();
-        } else {
-          infoCallback(parsedMessage);
-        }
+        infoCallback(parsedMessage);
       }
     );
   }

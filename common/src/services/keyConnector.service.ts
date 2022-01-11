@@ -19,10 +19,10 @@ import { KeyConnectorUserKeyRequest } from "../models/request/keyConnectorUserKe
 export class KeyConnectorService implements KeyConnectorServiceAbstraction {
   constructor(
     private stateService: StateService,
-    private cryptoService: CryptoService,
-    private apiService: ApiService,
+    protected cryptoService: CryptoService,
+    protected apiService: ApiService,
     private tokenService: TokenService,
-    private logService: LogService,
+    protected logService: LogService,
     private organizationService: OrganizationService
   ) {}
 
@@ -59,46 +59,16 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
     await this.apiService.postConvertToKeyConnector();
   }
 
-  async getAndSetKey(url: string) {
-    return new Promise(async (resolve) => {
-      const el = document.createElement("iframe");
-      el.id = "cme_iframe";
-      document.body.appendChild(el);
-
-      const iframe = new CMEIFrame(
-        window,
-        "https://localhost:8080",
-        (key: string) => {
-          const keyArr = Utils.fromB64ToArray(key);
-          const k = new SymmetricCryptoKey(keyArr);
-          this.cryptoService.setKey(k).then(resolve);
-        },
-        (error: string) => {
-          debugger;
-        },
-        (info: string) => {
-          debugger;
-        }
-      );
-
-      iframe.init(await this.apiService.getActiveBearerToken(), url);
-    });
-  }
-
-  base64Encode(str: string): string {
-    return btoa(
-      encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => {
-        return String.fromCharCode(("0x" + p1) as any);
-      })
-    );
-  }
-
-  protected createParams(data: any, version: number) {
-    return new URLSearchParams({
-      data: this.base64Encode(JSON.stringify(data)),
-      parent: encodeURIComponent(document.location.href),
-      v: version.toString(),
-    });
+  async getAndSetKey(url: string): Promise<void> {
+    try {
+      const userKeyResponse = await this.apiService.getUserKeyFromKeyConnector(url);
+      const keyArr = Utils.fromB64ToArray(userKeyResponse.key);
+      const k = new SymmetricCryptoKey(keyArr);
+      await this.cryptoService.setKey(k);
+    } catch (e) {
+      this.logService.error(e);
+      throw new Error("Unable to reach key connector");
+    }
   }
 
   async getManagingOrganization() {
