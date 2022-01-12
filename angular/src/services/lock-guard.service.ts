@@ -7,7 +7,7 @@ import { VaultTimeoutService } from "jslib-common/abstractions/vaultTimeout.serv
 @Injectable()
 export class LockGuardService implements CanActivate {
   protected homepage = "vault";
-  protected loginpage = "";
+  protected loginpage = "login";
   constructor(
     private vaultTimeoutService: VaultTimeoutService,
     private router: Router,
