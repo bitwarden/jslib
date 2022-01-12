@@ -14,6 +14,7 @@ import { SendData } from "../models/data/sendData";
 
 import { Account } from "../models/domain/account";
 import { EncString } from "../models/domain/encString";
+import { EnvironmentUrls } from "../models/domain/environmentUrls";
 import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
 import { Policy } from "../models/domain/policy";
 import { StorageOptions } from "../models/domain/storageOptions";
@@ -24,11 +25,11 @@ import { CollectionView } from "../models/view/collectionView";
 import { FolderView } from "../models/view/folderView";
 import { SendView } from "../models/view/sendView";
 
-export abstract class StateService {
-  accounts: BehaviorSubject<{ [userId: string]: Account }>;
+export abstract class StateService<T extends Account = Account> {
+  accounts: BehaviorSubject<{ [userId: string]: T }>;
   activeAccount: BehaviorSubject<string>;
 
-  addAccount: (account: Account) => Promise<void>;
+  addAccount: (account: T) => Promise<void>;
   setActiveUser: (userId: string) => Promise<void>;
   clean: (options?: StorageOptions) => Promise<void>;
   init: () => Promise<void>;
@@ -213,8 +214,8 @@ export abstract class StateService {
   setEntityId: (value: string, options?: StorageOptions) => Promise<void>;
   getEntityType: (options?: StorageOptions) => Promise<any>;
   setEntityType: (value: string, options?: StorageOptions) => Promise<void>;
-  getEnvironmentUrls: (options?: StorageOptions) => Promise<any>;
-  setEnvironmentUrls: (value: any, options?: StorageOptions) => Promise<void>;
+  getEnvironmentUrls: (options?: StorageOptions) => Promise<EnvironmentUrls>;
+  setEnvironmentUrls: (value: EnvironmentUrls, options?: StorageOptions) => Promise<void>;
   getEquivalentDomains: (options?: StorageOptions) => Promise<any>;
   setEquivalentDomains: (value: string, options?: StorageOptions) => Promise<void>;
   getEventCollection: (options?: StorageOptions) => Promise<EventData[]>;

@@ -761,13 +761,13 @@ export class CryptoService implements CryptoServiceAbstraction {
 
   // Helpers
   protected async storeKey(key: SymmetricCryptoKey, userId?: string) {
-    if (
-      (await this.shouldStoreKey(KeySuffixOptions.Auto, userId)) ||
-      (await this.shouldStoreKey(KeySuffixOptions.Biometric, userId))
-    ) {
-      await this.stateService.setCryptoMasterKeyB64(key.keyB64, { userId: userId });
+    if (await this.shouldStoreKey(KeySuffixOptions.Auto, userId)) {
+      await this.stateService.setCryptoMasterKeyAuto(key.keyB64, { userId: userId });
+    } else if (await this.shouldStoreKey(KeySuffixOptions.Biometric, userId)) {
+      await this.stateService.setCryptoMasterKeyBiometric(key.keyB64, { userId: userId });
     } else {
-      await this.stateService.setCryptoMasterKeyB64(null, { userId: userId });
+      await this.stateService.setCryptoMasterKeyAuto(null, { userId: userId });
+      await this.stateService.setCryptoMasterKeyBiometric(null, { userId: userId });
     }
   }
 

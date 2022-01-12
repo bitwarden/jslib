@@ -15,6 +15,7 @@ export abstract class PolicyService {
   getPolicyForOrganization: (policyType: PolicyType, organizationId: string) => Promise<Policy>;
   replace: (policies: { [id: string]: PolicyData }) => Promise<any>;
   clear: (userId?: string) => Promise<any>;
+  getMasterPasswordPoliciesForInvitedUsers: (orgId: string) => Promise<MasterPasswordPolicyOptions>;
   getMasterPasswordPolicyOptions: (policies?: Policy[]) => Promise<MasterPasswordPolicyOptions>;
   evaluateMasterPassword: (
     passwordStrength: number,

@@ -53,7 +53,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
   async isLocked(userId?: string): Promise<boolean> {
     const neverLock =
       (await this.cryptoService.hasKeyStored(KeySuffixOptions.Auto, userId)) &&
-      !(await this.stateService.getEverBeenUnlocked({ userId: userId }));
+      (await this.stateService.getEverBeenUnlocked({ userId: userId }));
     if (neverLock) {
       // TODO: This also _sets_ the key so when we check memory in the next line it finds a key.
       // We should refactor here.

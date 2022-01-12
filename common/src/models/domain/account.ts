@@ -21,6 +21,7 @@ import { FolderData } from "../data/folderData";
 import { PolicyData } from "../data/policyData";
 import { ProviderData } from "../data/providerData";
 import { SendData } from "../data/sendData";
+import { EnvironmentUrls } from "./environmentUrls";
 
 export class EncryptionPair<TEncrypted, TDecrypted> {
   encrypted?: TEncrypted;
@@ -95,9 +96,6 @@ export class AccountProfile {
   hasPremiumPersonally?: boolean;
   lastActive?: number;
   lastSync?: string;
-  ssoCodeVerifier?: string;
-  ssoOrganizationIdentifier?: string;
-  ssoState?: string;
   userId?: string;
   usesKeyConnector?: boolean;
   keyHash?: string;
@@ -133,9 +131,7 @@ export class AccountSettings {
   enableMinimizeToTray?: boolean;
   enableStartToTray?: boolean;
   enableTray?: boolean;
-  environmentUrls?: any = {
-    server: "bitwarden.com",
-  };
+  environmentUrls: EnvironmentUrls = new EnvironmentUrls();
   equivalentDomains?: any;
   minimizeOnCopyToClipboard?: boolean;
   neverDomains?: { [id: string]: any };
@@ -145,7 +141,7 @@ export class AccountSettings {
   protectedPin?: string;
   settings?: any; // TODO: Merge whatever is going on here into the AccountSettings model properly
   vaultTimeout?: number;
-  vaultTimeoutAction?: string;
+  vaultTimeoutAction?: string = "lock";
 }
 
 export class AccountTokens {
