@@ -19,6 +19,7 @@ export type PayPalConfig = {
 export abstract class EnvironmentService {
   urls: Observable<Urls>;
 
+  init: () => void;
   hasBaseUrl: () => boolean;
   getNotificationsUrl: () => string;
   getWebVaultUrl: () => string;

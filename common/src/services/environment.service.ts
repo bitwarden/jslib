@@ -21,7 +21,9 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
   private eventsUrl: string;
   private keyConnectorUrl: string;
 
-  constructor(private stateService: StateService) {
+  constructor(private stateService: StateService) {}
+
+  init() {
     this.stateService.activeAccount.subscribe(async (_userId) => {
       await this.setUrlsFromStorage();
     });
