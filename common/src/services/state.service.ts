@@ -1607,12 +1607,8 @@ export class StateService<TAccount extends Account = Account>
 
   async getLocale(options?: StorageOptions): Promise<string> {
     return (
-      (
-        await this.getGlobals(
-          this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
-        )
-      )?.locale ?? null
-    );
+      await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
+    )?.locale;
   }
 
   async setLocale(value: string, options?: StorageOptions): Promise<void> {
@@ -1953,12 +1949,8 @@ export class StateService<TAccount extends Account = Account>
 
   async getTheme(options?: StorageOptions): Promise<string> {
     return (
-      (
-        await this.getGlobals(
-          this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
-        )
-      )?.theme ?? null
-    );
+      await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
+    )?.theme;
   }
 
   async setTheme(value: string, options?: StorageOptions): Promise<void> {
