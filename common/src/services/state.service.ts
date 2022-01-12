@@ -355,8 +355,12 @@ export class StateService<TAccount extends Account = Account>
 
   async getClearClipboard(options?: StorageOptions): Promise<number> {
     return (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
-    )?.settings?.clearClipboard;
+      (
+        await this.getAccount(
+          this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
+        )
+      )?.settings?.clearClipboard ?? null
+    );
   }
 
   async setClearClipboard(value: number, options?: StorageOptions): Promise<void> {
