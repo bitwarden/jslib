@@ -25,7 +25,7 @@ export class LowdbStorageService implements StorageService {
     this.defaults = defaults;
   }
 
-  @sequentialize(() => 'lowdbStorageInit')
+  @sequentialize(() => "lowdbStorageInit")
   async init() {
     if (this.ready) {
       return;
