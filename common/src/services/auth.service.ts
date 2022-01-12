@@ -25,6 +25,15 @@ import { TwoFactorService } from "../abstractions/twoFactor.service";
 import { LogInDelegate } from "../misc/logInDelegate/logIn.delegate";
 
 export class AuthService implements AuthServiceAbstraction {
+  get email(): string {
+    return this.logInDelegate instanceof PasswordLogInDelegate ? this.logInDelegate.email : null;
+  }
+
+  get masterPasswordHash(): string {
+    return this.logInDelegate instanceof PasswordLogInDelegate
+      ? this.logInDelegate.masterPasswordHash
+      : null;
+  }
   private logInDelegate: LogInDelegate;
 
   constructor(
@@ -41,16 +50,6 @@ export class AuthService implements AuthServiceAbstraction {
     private twoFactorService: TwoFactorService,
     private setCryptoKeys = true
   ) {}
-
-  get email(): string {
-    return this.logInDelegate instanceof PasswordLogInDelegate ? this.logInDelegate.email : null;
-  }
-
-  get masterPasswordHash(): string {
-    return this.logInDelegate instanceof PasswordLogInDelegate
-      ? this.logInDelegate.masterPasswordHash
-      : null;
-  }
 
   async logIn(
     email: string,
@@ -128,18 +127,6 @@ export class AuthService implements AuthServiceAbstraction {
     return this.startLogin(apiLogInDelegate);
   }
 
-  private async startLogin(
-    delegate: ApiLogInDelegate | SsoLogInDelegate | PasswordLogInDelegate
-  ): Promise<AuthResult> {
-    this.logInDelegate = null;
-    const result = await delegate.logIn();
-    if (result.requiresTwoFactor) {
-      this.logInDelegate = delegate;
-    }
-
-    return result;
-  }
-
   async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
     try {
       return await this.logInDelegate.logInTwoFactor(twoFactor);
@@ -181,5 +168,17 @@ export class AuthService implements AuthServiceAbstraction {
       }
     }
     return this.cryptoService.makeKey(masterPassword, email, kdf, kdfIterations);
+  }
+
+  private async startLogin(
+    delegate: ApiLogInDelegate | SsoLogInDelegate | PasswordLogInDelegate
+  ): Promise<AuthResult> {
+    this.logInDelegate = null;
+    const result = await delegate.logIn();
+    if (result.requiresTwoFactor) {
+      this.logInDelegate = delegate;
+    }
+
+    return result;
   }
 }
