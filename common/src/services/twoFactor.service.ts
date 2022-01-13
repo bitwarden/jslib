@@ -1,58 +1,62 @@
 import { I18nService } from "../abstractions/i18n.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";
-import { TwoFactorService as TwoFactorServiceAbstraction } from "../abstractions/twoFactor.service";
+import {
+  TwoFactorService as TwoFactorServiceAbstraction,
+  TwoFactorProviderDetails,
+} from "../abstractions/twoFactor.service";
 import { TwoFactorProviderType } from "../enums/twoFactorProviderType";
 
-export const TwoFactorProviders = {
-  [TwoFactorProviderType.Authenticator]: {
-    type: TwoFactorProviderType.Authenticator,
-    name: null as string,
-    description: null as string,
-    priority: 1,
-    sort: 1,
-    premium: false,
-  },
-  [TwoFactorProviderType.Yubikey]: {
-    type: TwoFactorProviderType.Yubikey,
-    name: null as string,
-    description: null as string,
-    priority: 3,
-    sort: 2,
-    premium: true,
-  },
-  [TwoFactorProviderType.Duo]: {
-    type: TwoFactorProviderType.Duo,
-    name: "Duo",
-    description: null as string,
-    priority: 2,
-    sort: 3,
-    premium: true,
-  },
-  [TwoFactorProviderType.OrganizationDuo]: {
-    type: TwoFactorProviderType.OrganizationDuo,
-    name: "Duo (Organization)",
-    description: null as string,
-    priority: 10,
-    sort: 4,
-    premium: false,
-  },
-  [TwoFactorProviderType.Email]: {
-    type: TwoFactorProviderType.Email,
-    name: null as string,
-    description: null as string,
-    priority: 0,
-    sort: 6,
-    premium: false,
-  },
-  [TwoFactorProviderType.WebAuthn]: {
-    type: TwoFactorProviderType.WebAuthn,
-    name: null as string,
-    description: null as string,
-    priority: 4,
-    sort: 5,
-    premium: true,
-  },
-};
+export const TwoFactorProviders: Partial<Record<TwoFactorProviderType, TwoFactorProviderDetails>> =
+  {
+    [TwoFactorProviderType.Authenticator]: {
+      type: TwoFactorProviderType.Authenticator,
+      name: null as string,
+      description: null as string,
+      priority: 1,
+      sort: 1,
+      premium: false,
+    },
+    [TwoFactorProviderType.Yubikey]: {
+      type: TwoFactorProviderType.Yubikey,
+      name: null as string,
+      description: null as string,
+      priority: 3,
+      sort: 2,
+      premium: true,
+    },
+    [TwoFactorProviderType.Duo]: {
+      type: TwoFactorProviderType.Duo,
+      name: "Duo",
+      description: null as string,
+      priority: 2,
+      sort: 3,
+      premium: true,
+    },
+    [TwoFactorProviderType.OrganizationDuo]: {
+      type: TwoFactorProviderType.OrganizationDuo,
+      name: "Duo (Organization)",
+      description: null as string,
+      priority: 10,
+      sort: 4,
+      premium: false,
+    },
+    [TwoFactorProviderType.Email]: {
+      type: TwoFactorProviderType.Email,
+      name: null as string,
+      description: null as string,
+      priority: 0,
+      sort: 6,
+      premium: false,
+    },
+    [TwoFactorProviderType.WebAuthn]: {
+      type: TwoFactorProviderType.WebAuthn,
+      name: null as string,
+      description: null as string,
+      priority: 4,
+      sort: 5,
+      premium: true,
+    },
+  };
 
 export class TwoFactorService implements TwoFactorServiceAbstraction {
   private twoFactorProvidersData: Map<TwoFactorProviderType, { [key: string]: string }>;
@@ -88,7 +92,7 @@ export class TwoFactorService implements TwoFactorServiceAbstraction {
       this.i18nService.t("yubiKeyDesc");
   }
 
-  getSupportedProviders(win: Window): any[] {
+  getSupportedProviders(win: Window): TwoFactorProviderDetails[] {
     const providers: any[] = [];
     if (this.twoFactorProvidersData == null) {
       return providers;
