@@ -1,8 +1,8 @@
 import { I18nService } from "../abstractions/i18n.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import {
-  TwoFactorService as TwoFactorServiceAbstraction,
   TwoFactorProviderDetails,
+  TwoFactorService as TwoFactorServiceAbstraction,
 } from "../abstractions/twoFactor.service";
 import { TwoFactorProviderType } from "../enums/twoFactorProviderType";
 
