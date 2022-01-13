@@ -7,12 +7,14 @@ import { ApiService } from "../abstractions/api.service";
 import { AppIdService } from "../abstractions/appId.service";
 import { EnvironmentService } from "../abstractions/environment.service";
 import { LogService } from "../abstractions/log.service";
+import { MessagingService } from "../abstractions/messaging.service";
 import { NotificationsService as NotificationsServiceAbstraction } from "../abstractions/notifications.service";
 import { StateService } from "../abstractions/state.service";
 import { SyncService } from "../abstractions/sync.service";
 import { VaultTimeoutService } from "../abstractions/vaultTimeout.service";
 
 import {
+  AuthRequestNotification,
   NotificationResponse,
   SyncCipherNotification,
   SyncFolderNotification,
@@ -35,7 +37,8 @@ export class NotificationsService implements NotificationsServiceAbstraction {
     private environmentService: EnvironmentService,
     private logoutCallback: () => Promise<void>,
     private logService: LogService,
-    private stateService: StateService
+    private stateService: StateService,
+    private messagingService: MessagingService,
   ) {
     this.environmentService.urls.subscribe(() => {
       if (!this.inited) {
@@ -182,6 +185,13 @@ export class NotificationsService implements NotificationsServiceAbstraction {
         break;
       case NotificationType.SyncSendDelete:
         await this.syncService.syncDeleteSend(notification.payload as SyncSendNotification);
+        break;
+      case NotificationType.AuthRequest:
+        const authReqPayload = notification.payload as AuthRequestNotification;
+        this.messagingService.send('authRequest', { id: authReqPayload.id });
+      case NotificationType.AuthRequestResponse:
+        const authReqResponsePayload = notification.payload as AuthRequestNotification;
+        this.messagingService.send('authRequestResponse', { id: authReqResponsePayload.id });
       default:
         break;
     }

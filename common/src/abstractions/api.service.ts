@@ -3,6 +3,8 @@ import { SetKeyConnectorKeyRequest } from "../models/request/account/setKeyConne
 import { VerifyOTPRequest } from "../models/request/account/verifyOTPRequest";
 
 import { AttachmentRequest } from "../models/request/attachmentRequest";
+import { AuthRequestCreateRequest } from "../models/request/authRequestCreateRequest";
+import { AuthRequestUpdateRequest } from "../models/request/authRequestUpdateRequest";
 
 import { BitPayInvoiceRequest } from "../models/request/bitPayInvoiceRequest";
 import { CipherBulkDeleteRequest } from "../models/request/cipherBulkDeleteRequest";
@@ -96,6 +98,7 @@ import { VerifyEmailRequest } from "../models/request/verifyEmailRequest";
 import { ApiKeyResponse } from "../models/response/apiKeyResponse";
 import { AttachmentResponse } from "../models/response/attachmentResponse";
 import { AttachmentUploadDataResponse } from "../models/response/attachmentUploadDataResponse";
+import { AuthRequestResponse } from "../models/response/authRequestResponse";
 import { BillingResponse } from "../models/response/billingResponse";
 import { BreachAccountResponse } from "../models/response/breachAccountResponse";
 import { CipherResponse } from "../models/response/cipherResponse";
@@ -174,6 +177,10 @@ export abstract class ApiService {
     request: TokenRequest
   ) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse>;
   refreshIdentityToken: () => Promise<any>;
+  getAuthRequest: (id: string) => Promise<AuthRequestResponse>;
+  getAuthRequestResponse: (id: string, code: string) => Promise<AuthRequestResponse>;
+  postAuthRequest: (request: AuthRequestCreateRequest) => Promise<AuthRequestResponse>;
+  putAuthRequest: (id: string, request: AuthRequestUpdateRequest) => Promise<AuthRequestResponse>;
 
   getProfile: () => Promise<ProfileResponse>;
   getUserBilling: () => Promise<BillingResponse>;

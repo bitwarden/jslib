@@ -23,7 +23,8 @@ export class TokenRequest implements CaptchaProtectedRequest {
     public token: string,
     public remember: boolean,
     public captchaResponse: string,
-    device?: DeviceRequest
+    device?: DeviceRequest,
+    private authRequestId?: string,
   ) {
     if (credentials != null && credentials.length > 1) {
       this.email = credentials[0];
@@ -78,6 +79,10 @@ export class TokenRequest implements CaptchaProtectedRequest {
 
     if (this.captchaResponse != null) {
       obj.captchaResponse = this.captchaResponse;
+    }
+
+    if (this.authRequestId != null) {
+      obj.authRequest = this.authRequestId;
     }
 
     return obj;

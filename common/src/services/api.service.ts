@@ -7,6 +7,8 @@ import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import { TokenService } from "../abstractions/token.service";
 
 import { AttachmentRequest } from "../models/request/attachmentRequest";
+import { AuthRequestCreateRequest } from "../models/request/authRequestCreateRequest";
+import { AuthRequestUpdateRequest } from "../models/request/authRequestUpdateRequest";
 import { BitPayInvoiceRequest } from "../models/request/bitPayInvoiceRequest";
 import { CipherBulkDeleteRequest } from "../models/request/cipherBulkDeleteRequest";
 import { CipherBulkMoveRequest } from "../models/request/cipherBulkMoveRequest";
@@ -99,6 +101,7 @@ import { Utils } from "../misc/utils";
 import { ApiKeyResponse } from "../models/response/apiKeyResponse";
 import { AttachmentResponse } from "../models/response/attachmentResponse";
 import { AttachmentUploadDataResponse } from "../models/response/attachmentUploadDataResponse";
+import { AuthRequestResponse } from "../models/response/authRequestResponse";
 import { BillingResponse } from "../models/response/billingResponse";
 import { BreachAccountResponse } from "../models/response/breachAccountResponse";
 import { CipherResponse } from "../models/response/cipherResponse";
@@ -264,6 +267,26 @@ export class ApiService implements ApiServiceAbstraction {
     } catch (e) {
       return Promise.reject(null);
     }
+  }
+
+  async getAuthRequest(id: string): Promise<AuthRequestResponse> {
+    const r = await this.send("GET", "/auth-requests/" + id, null, true, true);
+    return new AuthRequestResponse(r);
+  }
+
+  async getAuthRequestResponse(id: string, code: string): Promise<AuthRequestResponse> {
+    const r = await this.send("GET", "/auth-requests/" + id + "/response?code=" + code, null, false, true);
+    return new AuthRequestResponse(r);
+  }
+
+  async postAuthRequest(request: AuthRequestCreateRequest): Promise<AuthRequestResponse> {
+    const r = await this.send("POST", "/auth-requests", request, false, true);
+    return new AuthRequestResponse(r);
+  }
+
+  async putAuthRequest(id: string, request: AuthRequestUpdateRequest): Promise<AuthRequestResponse> {
+    const r = await this.send("PUT", "/auth-requests/" + id, request, true, true);
+    return new AuthRequestResponse(r);
   }
 
   // Account APIs

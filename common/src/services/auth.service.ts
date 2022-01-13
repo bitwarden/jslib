@@ -174,6 +174,31 @@ export class AuthService implements AuthServiceAbstraction {
     );
   }
 
+
+  async logInAuthRequest(email: string, accessCode: string, authRequestId: string, masterKey: ArrayBuffer,
+    masterPasswordHash: ArrayBuffer, captchaToken?: string): Promise<AuthResult> {
+    this.selectedTwoFactorProviderType = null;
+    const key = new SymmetricCryptoKey(masterKey);
+    const localHashedPassword = Utils.fromBufferToB64(masterPasswordHash);
+    return await this.logInHelper(
+      email,
+      accessCode,
+      localHashedPassword,
+      null,
+      null,
+      null,
+      null,
+      null,
+      key,
+      null,
+      null,
+      null,
+      captchaToken,
+      null,
+      authRequestId
+    );
+  }
+
   async logInSso(
     code: string,
     codeVerifier: string,
@@ -273,6 +298,39 @@ export class AuthService implements AuthServiceAbstraction {
       remember,
       captchaToken,
       null
+    );
+  }
+
+  async logInAuthRequestComplete(
+    email: string,
+    accessCode: string,
+    authRequestId: string,
+    masterKey: ArrayBuffer,
+    masterPasswordHash: ArrayBuffer,
+    twoFactorProvider: TwoFactorProviderType,
+    twoFactorToken: string,
+    remember?: boolean,
+    captchaToken?: string
+  ): Promise<AuthResult> {
+    this.selectedTwoFactorProviderType = null;
+    const key = new SymmetricCryptoKey(masterKey);
+    const localHashedPassword = Utils.fromBufferToB64(masterPasswordHash);
+    return await this.logInHelper(
+      email,
+      accessCode,
+      localHashedPassword,
+      null,
+      null,
+      null,
+      null,
+      null,
+      key,
+      twoFactorProvider,
+      twoFactorToken,
+      remember,
+      captchaToken,
+      null,
+      authRequestId
     );
   }
 
@@ -449,7 +507,8 @@ export class AuthService implements AuthServiceAbstraction {
     twoFactorToken?: string,
     remember?: boolean,
     captchaToken?: string,
-    orgId?: string
+    orgId?: string,
+    authRequestId?: string,
   ): Promise<AuthResult> {
     const storedTwoFactorToken = await this.tokenService.getTwoFactorToken(email);
     const appId = await this.appIdService.getAppId();
@@ -485,7 +544,8 @@ export class AuthService implements AuthServiceAbstraction {
         twoFactorToken,
         remember,
         captchaToken,
-        deviceRequest
+        deviceRequest,
+        authRequestId
       );
     } else if (storedTwoFactorToken != null) {
       request = new TokenRequest(
@@ -496,7 +556,8 @@ export class AuthService implements AuthServiceAbstraction {
         storedTwoFactorToken,
         false,
         captchaToken,
-        deviceRequest
+        deviceRequest,
+        authRequestId
       );
     } else {
       request = new TokenRequest(
@@ -507,7 +568,8 @@ export class AuthService implements AuthServiceAbstraction {
         null,
         false,
         captchaToken,
-        deviceRequest
+        deviceRequest,
+        authRequestId
       );
     }
 

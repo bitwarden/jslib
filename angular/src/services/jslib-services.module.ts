@@ -373,7 +373,8 @@ import { ValidationService } from "./validation.service";
           environmentService,
           async () => messagingService.send("logout", { expired: true }),
           logService,
-          stateService
+          stateService,
+          messagingService,
         ),
       deps: [
         SyncServiceAbstraction,

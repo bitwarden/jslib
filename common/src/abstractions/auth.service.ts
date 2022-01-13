@@ -15,6 +15,8 @@ export abstract class AuthService {
   selectedTwoFactorProviderType: TwoFactorProviderType;
 
   logIn: (email: string, masterPassword: string, captchaToken?: string) => Promise<AuthResult>;
+  logInAuthRequest: (email: string, accessCode: string, authRequestId: string, masterKey: ArrayBuffer,
+    masterPasswordHash: ArrayBuffer, captchaToken?: string) => Promise<AuthResult>;
   logInSso: (
     code: string,
     codeVerifier: string,
@@ -30,6 +32,17 @@ export abstract class AuthService {
   logInComplete: (
     email: string,
     masterPassword: string,
+    twoFactorProvider: TwoFactorProviderType,
+    twoFactorToken: string,
+    remember?: boolean,
+    captchaToken?: string
+  ) => Promise<AuthResult>;
+  logInAuthRequestComplete: (
+    email: string,
+    accessCode: string,
+    authRequestId: string,
+    masterKey: ArrayBuffer,
+    masterPasswordHash: ArrayBuffer,
     twoFactorProvider: TwoFactorProviderType,
     twoFactorToken: string,
     remember?: boolean,
