@@ -160,7 +160,6 @@ export abstract class BaseImporter {
     if (result.errors != null && result.errors.length > 0) {
       result.errors.forEach((e) => {
         if (e.row != null) {
-          // tslint:disable-next-line
           this.logService.warning("Error parsing row " + e.row + ": " + e.message);
         }
       });

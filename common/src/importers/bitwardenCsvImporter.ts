@@ -62,7 +62,7 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
           10
         );
       } catch (e) {
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.error("Unable to parse reprompt value", e);
         cipher.reprompt = CipherRepromptType.None;
       }

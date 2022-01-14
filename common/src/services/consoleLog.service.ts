@@ -38,19 +38,19 @@ export class ConsoleLogService implements LogServiceAbstraction {
 
     switch (level) {
       case LogLevelType.Debug:
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.log(message);
         break;
       case LogLevelType.Info:
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.log(message);
         break;
       case LogLevelType.Warning:
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.warn(message);
         break;
       case LogLevelType.Error:
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.error(message);
         break;
       default:

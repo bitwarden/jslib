@@ -139,7 +139,6 @@ export class SearchService implements SearchServiceAbstraction {
         this.logService.error(e);
       }
     } else {
-      // tslint:disable-next-line
       const soWild = lunr.Query.wildcard.LEADING | lunr.Query.wildcard.TRAILING;
       searchResults = index.query((q) => {
         lunr.tokenizer(query).forEach((token) => {

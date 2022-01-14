@@ -1123,7 +1123,6 @@ export class CipherService implements CipherServiceAbstraction {
         continue;
       }
 
-      // tslint:disable-next-line
       (function (theProp, theObj) {
         const p = Promise.resolve()
           .then(() => {

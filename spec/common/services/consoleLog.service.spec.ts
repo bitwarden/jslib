@@ -7,15 +7,15 @@ declare var console: any;
 
 export function interceptConsole(interceptions: any): object {
   console = {
-    // tslint:disable-next-line
+    // eslint-disable-next-line
     log: function () {
       interceptions.log = arguments;
     },
-    // tslint:disable-next-line
+    // eslint-disable-next-line
     warn: function () {
       interceptions.warn = arguments;
     },
-    // tslint:disable-next-line
+    // eslint-disable-next-line
     error: function () {
       interceptions.error = arguments;
     },

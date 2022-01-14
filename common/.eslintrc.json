@@ -16,7 +16,8 @@
       {
         "allowedNames": ["self"]
       }
-    ]
+    ],
+    "no-console": "warn"
     // "sort-imports": ["error"] // TODO: Figure out this rule, it requires manual interaction
   }
 }

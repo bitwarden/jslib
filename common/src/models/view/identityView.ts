@@ -40,11 +40,9 @@ export class IdentityView extends ItemView {
   @linkedFieldOption(LinkedId.LicenseNumber)
   licenseNumber: string = null;
 
-  // tslint:disable
   private _firstName: string = null;
   private _lastName: string = null;
   private _subTitle: string = null;
-  // tslint:enable
 
   constructor() {
     super();

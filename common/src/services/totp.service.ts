@@ -88,7 +88,6 @@ export class TotpService implements TotpServiceAbstraction {
 
     let otp = "";
     if (isSteamAuth) {
-      // tslint:disable-next-line
       let fullCode = binary & 0x7fffffff;
       for (let i = 0; i < digits; i++) {
         otp += SteamChars[fullCode % SteamChars.length];

@@ -14,11 +14,9 @@ export class CardView extends ItemView {
   @linkedFieldOption(LinkedId.Code, "securityCode")
   code: string = null;
 
-  // tslint:disable
   private _brand: string = null;
   private _number: string = null;
   private _subTitle: string = null;
-  // tslint:enable
 
   constructor() {
     super();

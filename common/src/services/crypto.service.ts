@@ -731,7 +731,6 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     // Use & to apply the mask and reduce the number of recursive lookups
-    // tslint:disable-next-line
     rval = rval & mask;
 
     if (rval >= range) {

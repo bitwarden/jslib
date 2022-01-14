@@ -10,7 +10,7 @@ import { StateService } from "../abstractions/state.service";
 
 export class EnvironmentService implements EnvironmentServiceAbstraction {
   private readonly urlsSubject = new Subject<Urls>();
-  urls: Observable<Urls> = this.urlsSubject; // tslint:disable-line
+  urls: Observable<Urls> = this.urlsSubject;
 
   private baseUrl: string;
   private webVaultUrl: string;
