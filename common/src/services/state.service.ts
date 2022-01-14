@@ -355,8 +355,12 @@ export class StateService<TAccount extends Account = Account>
 
   async getClearClipboard(options?: StorageOptions): Promise<number> {
     return (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
-    )?.settings?.clearClipboard;
+      (
+        await this.getAccount(
+          this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
+        )
+      )?.settings?.clearClipboard ?? null
+    );
   }
 
   async setClearClipboard(value: number, options?: StorageOptions): Promise<void> {
@@ -1361,15 +1365,15 @@ export class StateService<TAccount extends Account = Account>
     );
   }
 
-  async getEnvironmentUrls(options?: StorageOptions): Promise<any> {
-    options = this.reconcileOptions(options, await this.defaultOnDiskOptions());
+  async getEnvironmentUrls(options?: StorageOptions): Promise<EnvironmentUrls> {
     if (this.state.activeUserId == null) {
-      return (await this.getGlobals(options)).environmentUrls ?? new EnvironmentUrls();
+      return await this.getGlobalEnvironmentUrls(options);
     }
+    options = this.reconcileOptions(options, await this.defaultOnDiskOptions());
     return (await this.getAccount(options))?.settings?.environmentUrls ?? new EnvironmentUrls();
   }
 
-  async setEnvironmentUrls(value: any, options?: StorageOptions): Promise<void> {
+  async setEnvironmentUrls(value: EnvironmentUrls, options?: StorageOptions): Promise<void> {
     // Global values are set on each change and the current global settings are passed to any newly authed accounts.
     // This is to allow setting environement values before an account is active, while still allowing individual accounts to have their own environments.
     const globals = await this.getGlobals(
@@ -2377,7 +2381,12 @@ export class StateService<TAccount extends Account = Account>
   }
 
   protected async setAccountEnvironmentUrls(account: TAccount): Promise<TAccount> {
-    account.settings.environmentUrls = await this.getEnvironmentUrls();
+    account.settings.environmentUrls = await this.getGlobalEnvironmentUrls();
     return account;
+  }
+
+  protected async getGlobalEnvironmentUrls(options?: StorageOptions): Promise<EnvironmentUrls> {
+    options = this.reconcileOptions(options, await this.defaultOnDiskOptions());
+    return (await this.getGlobals(options)).environmentUrls ?? new EnvironmentUrls();
   }
 }

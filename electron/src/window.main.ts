@@ -120,6 +120,7 @@ export class WindowMain {
       backgroundColor: "#fff",
       alwaysOnTop: this.enableAlwaysOnTop,
       webPreferences: {
+        spellcheck: false,
         nodeIntegration: true,
         backgroundThrottling: false,
         contextIsolation: false,
