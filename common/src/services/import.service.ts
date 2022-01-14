@@ -147,9 +147,10 @@ const regularImportOptions = [
   { id: "nordpasscsv", name: "Nordpass (csv)" },
 ] as const;
 
-export type ImportType = typeof featuredImportOptions[number]["id"] |
-  typeof regularImportOptions[number]["id"] |
-  "bitwardenpasswordprotected";
+export type ImportType =
+  | typeof featuredImportOptions[number]["id"]
+  | typeof regularImportOptions[number]["id"]
+  | "bitwardenpasswordprotected";
 
 export class ImportService implements ImportServiceAbstraction {
   featuredImportOptions = featuredImportOptions as readonly ImportOption[];
@@ -207,7 +208,11 @@ export class ImportService implements ImportServiceAbstraction {
     }
   }
 
-  getImporter(format: ImportType, organizationId: string = null, password: string = null): Importer {
+  getImporter(
+    format: ImportType,
+    organizationId: string = null,
+    password: string = null
+  ): Importer {
     const importer = this.getImporterInstance(format, password);
     if (importer == null) {
       return null;

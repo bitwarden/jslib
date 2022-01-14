@@ -3,7 +3,7 @@ import { Arg, Substitute, SubstituteOf } from "@fluffy-spoon/substitute";
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { CipherService } from "jslib-common/abstractions/cipher.service";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
-import { CryptoFunctionService } from 'jslib-common/abstractions/cryptoFunction.service';
+import { CryptoFunctionService } from "jslib-common/abstractions/cryptoFunction.service";
 import { FolderService } from "jslib-common/abstractions/folder.service";
 
 import { ExportService } from "jslib-common/services/export.service";
@@ -14,7 +14,7 @@ import { Login } from "jslib-common/models/domain/login";
 import { CipherWithIds as CipherExport } from "jslib-common/models/export/cipherWithIds";
 
 import { CipherType } from "jslib-common/enums/cipherType";
-import { Utils } from 'jslib-common/misc/utils';
+import { Utils } from "jslib-common/misc/utils";
 import { CipherView } from "jslib-common/models/view/cipherView";
 import { LoginView } from "jslib-common/models/view/loginView";
 
@@ -102,7 +102,13 @@ describe("ExportService", () => {
     folderService.getAllDecrypted().resolves([]);
     folderService.getAll().resolves([]);
 
-    exportService = new ExportService(folderService, cipherService, apiService, cryptoService, cryptoFunctionService);
+    exportService = new ExportService(
+      folderService,
+      cipherService,
+      apiService,
+      cryptoService,
+      cryptoFunctionService
+    );
   });
 
   it("exports unecrypted user ciphers", async () => {
@@ -153,7 +159,6 @@ describe("ExportService", () => {
         mac.encryptedString = "mac";
         data.encryptedString = "encData";
 
-
         spyOn(Utils, "fromBufferToB64").and.returnValue(salt);
         cipherService.getAllDecrypted().resolves(UserCipherViews.slice(0, 1));
 
@@ -174,7 +179,6 @@ describe("ExportService", () => {
       });
 
       it("specifies salt", () => {
-
         expect(exportObject.salt).toEqual("salt");
       });
 
