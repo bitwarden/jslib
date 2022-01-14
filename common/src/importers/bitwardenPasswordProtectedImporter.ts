@@ -4,17 +4,12 @@ import { Importer } from "./importer";
 import { EncString } from "../models/domain/encString";
 import { ImportResult } from "../models/domain/importResult";
 
-import { CipherWithIds } from "../models/export/cipherWithIds";
-import { CollectionWithId } from "../models/export/collectionWithId";
-import { FolderWithId } from "../models/export/folderWithId";
 
 import { CryptoService } from "../abstractions/crypto.service";
 import { I18nService } from "../abstractions/i18n.service";
-import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
-import { BitwardenCsvImporter } from "./bitwardenCsvImporter";
-import { BitwardenJsonImporter } from "./bitwardenJsonImporter";
 import { KdfType } from "../enums/kdfType";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
+import { ImportService } from '../abstractions/import.service';
 
 class BitwardenPasswordProtectedFileFormat {
   encrypted: boolean;
@@ -33,6 +28,7 @@ export class BitwardenPasswordProtectedImporter extends BaseImporter implements 
   private key: SymmetricCryptoKey;
 
   constructor(
+    private importService: ImportService,
     private cryptoService: CryptoService,
     private i18nService: I18nService,
     private password: string
@@ -88,7 +84,7 @@ export class BitwardenPasswordProtectedImporter extends BaseImporter implements 
       !jdoc.passwordProtected ||
       !(jdoc.format === "csv" || jdoc.format === "json" || jdoc.format == "encrypted_json") ||
       !jdoc.salt ||
-      !jdoc.kdfIterations ||
+      !jdoc.kdfIterations || typeof jdoc.kdfIterations !== 'number' ||
       !jdoc.encKeyValidation_DO_NOT_EDIT ||
       !jdoc.data
     ) {
@@ -100,7 +96,7 @@ export class BitwardenPasswordProtectedImporter extends BaseImporter implements 
   private setInnerImporter(format: "csv" | "json" | "encrypted_json") {
     this.innerImporter =
       format === "csv"
-        ? new BitwardenCsvImporter()
-        : new BitwardenJsonImporter(this.cryptoService, this.i18nService);
+        ? this.importService.getImporter("bitwardencsv", this.organizationId)
+        : this.importService.getImporter("bitwardenjson", this.organizationId);
   }
 }
