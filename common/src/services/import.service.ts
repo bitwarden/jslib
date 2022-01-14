@@ -32,6 +32,7 @@ import { AvastJsonImporter } from "../importers/avastJsonImporter";
 import { AviraCsvImporter } from "../importers/aviraCsvImporter";
 import { BitwardenCsvImporter } from "../importers/bitwardenCsvImporter";
 import { BitwardenJsonImporter } from "../importers/bitwardenJsonImporter";
+import { BitwardenPasswordProtectedImporter } from '../importers/bitwardenPasswordProtectedImporter';
 import { BlackBerryCsvImporter } from "../importers/blackBerryCsvImporter";
 import { BlurCsvImporter } from "../importers/blurCsvImporter";
 import { ButtercupCsvImporter } from "../importers/buttercupCsvImporter";
@@ -155,7 +156,7 @@ export class ImportService implements ImportServiceAbstraction {
     private collectionService: CollectionService,
     private platformUtilsService: PlatformUtilsService,
     private cryptoService: CryptoService
-  ) {}
+  ) { }
 
   getImportOptions(): ImportOption[] {
     return this.featuredImportOptions.concat(this.regularImportOptions);
@@ -198,8 +199,8 @@ export class ImportService implements ImportServiceAbstraction {
     }
   }
 
-  getImporter(format: string, organizationId: string = null): Importer {
-    const importer = this.getImporterInstance(format);
+  getImporter(format: string, organizationId: string = null, password: string = null): Importer {
+    const importer = this.getImporterInstance(format, password);
     if (importer == null) {
       return null;
     }
@@ -207,122 +208,124 @@ export class ImportService implements ImportServiceAbstraction {
     return importer;
   }
 
-  private getImporterInstance(format: string) {
-    if (format == null || format === "") {
+  private getImporterInstance(format: string, password: string) {
+    if (format == null || format === '') {
       return null;
     }
 
     switch (format) {
-      case "bitwardencsv":
+      case 'bitwardencsv':
         return new BitwardenCsvImporter();
-      case "bitwardenjson":
+      case 'bitwardenjson':
         return new BitwardenJsonImporter(this.cryptoService, this.i18nService);
-      case "lastpasscsv":
-      case "passboltcsv":
+      case 'bitwardenPasswordProtected':
+        return new BitwardenPasswordProtectedImporter(this.cryptoService, this.i18nService, password);
+      case 'lastpasscsv':
+      case 'passboltcsv':
         return new LastPassCsvImporter();
-      case "keepassxcsv":
+      case 'keepassxcsv':
         return new KeePassXCsvImporter();
-      case "aviracsv":
+      case 'aviracsv':
         return new AviraCsvImporter();
-      case "blurcsv":
+      case 'blurcsv':
         return new BlurCsvImporter();
-      case "safeincloudxml":
+      case 'safeincloudxml':
         return new SafeInCloudXmlImporter();
-      case "padlockcsv":
+      case 'padlockcsv':
         return new PadlockCsvImporter();
-      case "keepass2xml":
+      case 'keepass2xml':
         return new KeePass2XmlImporter();
-      case "chromecsv":
-      case "operacsv":
-      case "vivaldicsv":
+      case 'chromecsv':
+      case 'operacsv':
+      case 'vivaldicsv':
         return new ChromeCsvImporter();
-      case "firefoxcsv":
+      case 'firefoxcsv':
         return new FirefoxCsvImporter();
-      case "upmcsv":
+      case 'upmcsv':
         return new UpmCsvImporter();
-      case "saferpasscsv":
+      case 'saferpasscsv':
         return new SaferPassCsvImporter();
-      case "safaricsv":
+      case 'safaricsv':
         return new SafariCsvImporter();
-      case "meldiumcsv":
+      case 'meldiumcsv':
         return new MeldiumCsvImporter();
-      case "1password1pif":
+      case '1password1pif':
         return new OnePassword1PifImporter();
-      case "1passwordwincsv":
+      case '1passwordwincsv':
         return new OnePasswordWinCsvImporter();
-      case "1passwordmaccsv":
+      case '1passwordmaccsv':
         return new OnePasswordMacCsvImporter();
-      case "keepercsv":
+      case 'keepercsv':
         return new KeeperCsvImporter();
       case "keeperjson":
         return new KeeperJsonImporter();
       case "passworddragonxml":
         return new PasswordDragonXmlImporter();
-      case "enpasscsv":
+      case 'enpasscsv':
         return new EnpassCsvImporter();
-      case "enpassjson":
+      case 'enpassjson':
         return new EnpassJsonImporter();
-      case "pwsafexml":
+      case 'pwsafexml':
         return new PasswordSafeXmlImporter();
-      case "dashlanejson":
+      case 'dashlanejson':
         return new DashlaneJsonImporter();
-      case "msecurecsv":
+      case 'msecurecsv':
         return new MSecureCsvImporter();
-      case "stickypasswordxml":
+      case 'stickypasswordxml':
         return new StickyPasswordXmlImporter();
-      case "truekeycsv":
+      case 'truekeycsv':
         return new TrueKeyCsvImporter();
-      case "clipperzhtml":
+      case 'clipperzhtml':
         return new ClipperzHtmlImporter();
-      case "roboformcsv":
+      case 'roboformcsv':
         return new RoboFormCsvImporter();
-      case "ascendocsv":
+      case 'ascendocsv':
         return new AscendoCsvImporter();
-      case "passwordbossjson":
+      case 'passwordbossjson':
         return new PasswordBossJsonImporter();
-      case "zohovaultcsv":
+      case 'zohovaultcsv':
         return new ZohoVaultCsvImporter();
-      case "splashidcsv":
+      case 'splashidcsv':
         return new SplashIdCsvImporter();
-      case "passkeepcsv":
+      case 'passkeepcsv':
         return new PassKeepCsvImporter();
-      case "gnomejson":
+      case 'gnomejson':
         return new GnomeJsonImporter();
-      case "passwordagentcsv":
+      case 'passwordagentcsv':
         return new PasswordAgentCsvImporter();
-      case "passpackcsv":
+      case 'passpackcsv':
         return new PasspackCsvImporter();
-      case "passmanjson":
+      case 'passmanjson':
         return new PassmanJsonImporter();
-      case "avastcsv":
+      case 'avastcsv':
         return new AvastCsvImporter();
-      case "avastjson":
+      case 'avastjson':
         return new AvastJsonImporter();
-      case "fsecurefsk":
+      case 'fsecurefsk':
         return new FSecureFskImporter();
-      case "kasperskytxt":
+      case 'kasperskytxt':
         return new KasperskyTxtImporter();
-      case "remembearcsv":
+      case 'remembearcsv':
         return new RememBearCsvImporter();
-      case "passwordwallettxt":
+      case 'passwordwallettxt':
         return new PasswordWalletTxtImporter();
-      case "mykicsv":
+      case 'mykicsv':
         return new MykiCsvImporter();
-      case "securesafecsv":
+      case 'securesafecsv':
         return new SecureSafeCsvImporter();
-      case "logmeoncecsv":
+      case 'logmeoncecsv':
         return new LogMeOnceCsvImporter();
-      case "blackberrycsv":
+      case 'blackberrycsv':
         return new BlackBerryCsvImporter();
-      case "buttercupcsv":
+      case 'buttercupcsv':
         return new ButtercupCsvImporter();
-      case "codebookcsv":
+      case 'codebookcsv':
         return new CodebookCsvImporter();
-      case "encryptrcsv":
+      case 'encryptrcsv':
         return new EncryptrCsvImporter();
-      case "yoticsv":
+      case 'yoticsv':
         return new YotiCsvImporter();
-      case "nordpasscsv":
+      case 'nordpasscsv':
         return new NordPassCsvImporter();
       default:
         return null;
