@@ -62,7 +62,7 @@ export class Identity extends Domain {
 
   decrypt(orgId: string, encKey?: SymmetricCryptoKey): Promise<IdentityView> {
     return this.decryptObj(
-      new IdentityView(this),
+      new IdentityView(),
       {
         title: null,
         firstName: null,

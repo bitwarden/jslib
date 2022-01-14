@@ -38,7 +38,7 @@ export class Card extends Domain {
 
   decrypt(orgId: string, encKey?: SymmetricCryptoKey): Promise<CardView> {
     return this.decryptObj(
-      new CardView(this),
+      new CardView(),
       {
         cardholderName: null,
         brand: null,

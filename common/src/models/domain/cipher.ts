@@ -81,7 +81,7 @@ export class Cipher extends Domain {
         this.login = new Login(obj.login, alreadyEncrypted);
         break;
       case CipherType.SecureNote:
-        this.secureNote = new SecureNote(obj.secureNote, alreadyEncrypted);
+        this.secureNote = new SecureNote(obj.secureNote);
         break;
       case CipherType.Card:
         this.card = new Card(obj.card, alreadyEncrypted);

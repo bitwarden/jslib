@@ -62,7 +62,6 @@ export default class Domain {
         continue;
       }
 
-      // tslint:disable-next-line
       (function (theProp) {
         const p = Promise.resolve()
           .then(() => {
