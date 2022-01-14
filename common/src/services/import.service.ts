@@ -49,7 +49,7 @@ import { Importer } from "../importers/importer";
 import { KasperskyTxtImporter } from "../importers/kasperskyTxtImporter";
 import { KeePass2XmlImporter } from "../importers/keepass2XmlImporter";
 import { KeePassXCsvImporter } from "../importers/keepassxCsvImporter";
-import { KeeperCsvImporter } from "../importers/keeperCsvImporter";
+import { KeeperCsvImporter } from "../importers/keeperImporters/keeperCsvImporter";
 import { KeeperJsonImporter } from "../importers/keeperImporters/keeperJsonImporter";
 import { LastPassCsvImporter } from "../importers/lastpassCsvImporter";
 import { LogMeOnceCsvImporter } from "../importers/logMeOnceCsvImporter";
