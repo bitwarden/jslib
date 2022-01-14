@@ -75,7 +75,8 @@ export class BitwardenPasswordProtectedImporter extends BaseImporter implements 
   }
 
   private cannotParseFile(jdoc: BitwardenPasswordProtectedFileFormat): boolean {
-    return !jdoc ||
+    return (
+      !jdoc ||
       !jdoc.encrypted ||
       !jdoc.passwordProtected ||
       !(jdoc.format === "csv" || jdoc.format === "json" || jdoc.format == "encrypted_json") ||
@@ -84,6 +85,7 @@ export class BitwardenPasswordProtectedImporter extends BaseImporter implements 
       typeof jdoc.kdfIterations !== "number" ||
       !jdoc.encKeyValidation_DO_NOT_EDIT ||
       !jdoc.data
+    );
   }
 
   private setInnerImporter(format: "csv" | "json" | "encrypted_json") {
