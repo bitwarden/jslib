@@ -5,8 +5,8 @@ import { KdfType } from "../enums/kdfType";
 
 import { ApiService } from "../abstractions/api.service";
 import { CipherService } from "../abstractions/cipher.service";
-import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
 import { CryptoService } from "../abstractions/crypto.service";
+import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
 import { ExportService as ExportServiceAbstraction } from "../abstractions/export.service";
 import { FolderService } from "../abstractions/folder.service";
 
@@ -89,7 +89,6 @@ export class ExportService implements ExportServiceAbstraction {
       return this.getOrganizationEncryptedExport(organizationId);
     } else {
       return this.getOrganizationDecryptedExport(organizationId, format);
-      ``;
     }
   }
 

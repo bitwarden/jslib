@@ -6,9 +6,9 @@ import { ImportResult } from "../models/domain/importResult";
 
 import { CryptoService } from "../abstractions/crypto.service";
 import { I18nService } from "../abstractions/i18n.service";
+import { ImportService } from "../abstractions/import.service";
 import { KdfType } from "../enums/kdfType";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-import { ImportService } from "../abstractions/import.service";
 
 class BitwardenPasswordProtectedFileFormat {
   encrypted: boolean;
@@ -16,6 +16,7 @@ class BitwardenPasswordProtectedFileFormat {
   format: "json" | "csv" | "encrypted_json";
   salt: string;
   kdfIterations: number;
+  // tslint:disable-next-line
   encKeyValidation_DO_NOT_EDIT: string;
   data: string;
 }
@@ -79,7 +80,7 @@ export class BitwardenPasswordProtectedImporter extends BaseImporter implements 
       !jdoc ||
       !jdoc.encrypted ||
       !jdoc.passwordProtected ||
-      !(jdoc.format === "csv" || jdoc.format === "json" || jdoc.format == "encrypted_json") ||
+      !(jdoc.format === "csv" || jdoc.format === "json" || jdoc.format === "encrypted_json") ||
       !jdoc.salt ||
       !jdoc.kdfIterations ||
       typeof jdoc.kdfIterations !== "number" ||
