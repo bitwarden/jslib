@@ -1595,7 +1595,7 @@ export class ApiService implements ApiServiceAbstraction {
     id: string,
     request: EmergencyAccessPasswordRequest
   ): Promise<any> {
-    const r = await this.send("POST", "/emergency-access/" + id + "/password", request, true, true);
+    await this.send("POST", "/emergency-access/" + id + "/password", request, true, true);
   }
 
   async postEmergencyAccessView(id: string): Promise<EmergencyAccessViewResponse> {

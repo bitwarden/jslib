@@ -1,8 +1,8 @@
+/* eslint-disable no-useless-escape */
 import * as tldjs from "tldjs";
 
 import { I18nService } from "../abstractions/i18n.service";
 
-// tslint:disable-next-line
 const nodeURL = typeof window === "undefined" ? require("url") : null;
 
 export class Utils {

@@ -22,11 +22,12 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
       return Promise.resolve(result);
     }
 
-    results.forEach((value, index) => {
+    results.forEach((value) => {
       const cipherIndex = result.ciphers.length;
       let folderIndex = result.folders.length;
       let grouping = value.grouping;
       if (grouping != null) {
+        // eslint-disable-next-line
         grouping = grouping.replace(/\\/g, "/").replace(/[\x00-\x1F\x7F-\x9F]/g, "");
       }
       const hasFolder = this.getValueOrDefault(grouping, "(none)") !== "(none)";
@@ -90,6 +91,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
 
   private buildBaseCipher(value: any) {
     const cipher = new CipherView();
+    // eslint-disable-next-line
     if (value.hasOwnProperty("profilename") && value.hasOwnProperty("profilelanguage")) {
       // form fill
       cipher.favorite = false;
@@ -272,6 +274,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
           cipher.notes = val;
         }
         processingNotes = true;
+        // eslint-disable-next-line
       } else if (map.hasOwnProperty(key)) {
         dataObj[map[key]] = val;
       } else {

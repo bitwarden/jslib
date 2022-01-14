@@ -53,6 +53,7 @@ export class DashlaneJsonImporter extends BaseImporter implements Importer {
     }
 
     for (const key in results) {
+      // eslint-disable-next-line
       if (results.hasOwnProperty(key) && !HandledResults.has(key)) {
         this.processNote(results[key], null, "Generic Note");
       }
@@ -161,6 +162,7 @@ export class DashlaneJsonImporter extends BaseImporter implements Importer {
         cipher.name = this.getValueOrDefault(obj[nameProperty]);
       }
       for (const key in obj) {
+        // eslint-disable-next-line
         if (obj.hasOwnProperty(key) && key !== nameProperty) {
           this.processKvp(cipher, key, obj[key].toString());
         }

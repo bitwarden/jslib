@@ -15,7 +15,6 @@ import { FolderView } from "../models/view/folderView";
 import { LoginView } from "../models/view/loginView";
 import { SecureNoteView } from "../models/view/secureNoteView";
 
-import { CipherRepromptType } from "../enums/cipherRepromptType";
 import { CipherType } from "../enums/cipherType";
 import { FieldType } from "../enums/fieldType";
 import { SecureNoteType } from "../enums/secureNoteType";

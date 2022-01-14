@@ -17,6 +17,7 @@ export class FSecureFskImporter extends BaseImporter implements Importer {
     }
 
     for (const key in results.data) {
+      // eslint-disable-next-line
       if (!results.data.hasOwnProperty(key)) {
         continue;
       }

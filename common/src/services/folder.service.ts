@@ -46,6 +46,7 @@ export class FolderService implements FolderServiceAbstraction {
 
   async get(id: string): Promise<Folder> {
     const folders = await this.stateService.getEncryptedFolders();
+    // eslint-disable-next-line
     if (folders == null || !folders.hasOwnProperty(id)) {
       return null;
     }
@@ -57,6 +58,7 @@ export class FolderService implements FolderServiceAbstraction {
     const folders = await this.stateService.getEncryptedFolders();
     const response: Folder[] = [];
     for (const id in folders) {
+      // eslint-disable-next-line
       if (folders.hasOwnProperty(id)) {
         response.push(new Folder(folders[id]));
       }

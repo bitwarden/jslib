@@ -70,7 +70,7 @@ export class TrueKeyCsvImporter extends BaseImporter implements Importer {
         }
         for (const property in value) {
           if (
-            value.hasOwnProperty(property) &&
+            value.hasOwnProperty(property) && // eslint-disable-line
             PropertiesToIgnore.indexOf(property.toLowerCase()) < 0 &&
             !this.isNullOrWhitespace(value[property])
           ) {

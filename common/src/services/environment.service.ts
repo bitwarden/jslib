@@ -22,7 +22,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
   private keyConnectorUrl: string;
 
   constructor(private stateService: StateService) {
-    this.stateService.activeAccount.subscribe(async (_userId) => {
+    this.stateService.activeAccount.subscribe(async () => {
       await this.setUrlsFromStorage();
     });
   }

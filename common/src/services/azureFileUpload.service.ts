@@ -56,6 +56,7 @@ export class AzureFileUploadService {
       );
     }
 
+    // eslint-disable-next-line
     try {
       while (blockIndex < numBlocks) {
         url = await this.renewUrlIfNecessary(url, renewalCallback);

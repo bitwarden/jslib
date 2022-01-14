@@ -4,7 +4,6 @@ import { Importer } from "./importer";
 import { ImportResult } from "../models/domain/importResult";
 
 import { CollectionView } from "../models/view/collectionView";
-import { FolderView } from "../models/view/folderView";
 
 export class PadlockCsvImporter extends BaseImporter implements Importer {
   parse(data: string): Promise<ImportResult> {

@@ -13,6 +13,7 @@ export default class Domain {
     notEncList: any[] = []
   ) {
     for (const prop in map) {
+      // eslint-disable-next-line
       if (!map.hasOwnProperty(prop)) {
         continue;
       }
@@ -32,6 +33,7 @@ export default class Domain {
     notEncStringList: any[] = []
   ) {
     for (const prop in map) {
+      // eslint-disable-next-line
       if (!map.hasOwnProperty(prop)) {
         continue;
       }
@@ -55,6 +57,7 @@ export default class Domain {
     const self: any = this;
 
     for (const prop in map) {
+      // eslint-disable-next-line
       if (!map.hasOwnProperty(prop)) {
         continue;
       }

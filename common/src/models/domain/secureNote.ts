@@ -10,7 +10,7 @@ import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 export class SecureNote extends Domain {
   type: SecureNoteType;
 
-  constructor(obj?: SecureNoteData, alreadyEncrypted = false) {
+  constructor(obj?: SecureNoteData) {
     super();
     if (obj == null) {
       return;
@@ -19,6 +19,7 @@ export class SecureNote extends Domain {
     this.type = obj.type;
   }
 
+  // eslint-disable-next-line
   decrypt(orgId: string, encKey?: SymmetricCryptoKey): Promise<SecureNoteView> {
     return Promise.resolve(new SecureNoteView(this));
   }

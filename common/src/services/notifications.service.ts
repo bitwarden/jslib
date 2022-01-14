@@ -77,6 +77,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
     this.signalrConnection.on("ReceiveMessage", (data: any) =>
       this.processNotification(new NotificationResponse(data))
     );
+    // eslint-disable-next-line
     this.signalrConnection.on("Heartbeat", (data: any) => {
       /*console.log('Heartbeat!');*/
     });
@@ -182,6 +183,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
         break;
       case NotificationType.SyncSendDelete:
         await this.syncService.syncDeleteSend(notification.payload as SyncSendNotification);
+        break;
       default:
         break;
     }

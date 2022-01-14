@@ -2,13 +2,7 @@ import { HashPurpose } from "../enums/hashPurpose";
 import { KdfType } from "../enums/kdfType";
 import { TwoFactorProviderType } from "../enums/twoFactorProviderType";
 
-import {
-  Account,
-  AccountData,
-  AccountKeys,
-  AccountProfile,
-  AccountTokens,
-} from "../models/domain/account";
+import { Account, AccountKeys, AccountProfile, AccountTokens } from "../models/domain/account";
 import { AuthResult } from "../models/domain/authResult";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 
@@ -329,7 +323,7 @@ export class AuthService implements AuthServiceAbstraction {
     );
   }
 
-  logOut(callback: Function) {
+  logOut(callback: () => void) {
     callback();
     this.messagingService.send("loggedOut");
   }

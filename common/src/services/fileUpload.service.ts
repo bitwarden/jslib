@@ -41,7 +41,7 @@ export class FileUploadService implements FileUploadServiceAbstraction {
               )
           );
           break;
-        case FileUploadType.Azure:
+        case FileUploadType.Azure: {
           const renewalCallback = async () => {
             const renewalResponse = await this.apiService.renewSendFileUploadUrl(
               uploadData.sendResponse.id,
@@ -55,6 +55,7 @@ export class FileUploadService implements FileUploadServiceAbstraction {
             renewalCallback
           );
           break;
+        }
         default:
           throw new Error("Unknown file upload type");
       }
@@ -80,7 +81,7 @@ export class FileUploadService implements FileUploadServiceAbstraction {
             (fd) => this.apiService.postAttachmentFile(response.id, uploadData.attachmentId, fd)
           );
           break;
-        case FileUploadType.Azure:
+        case FileUploadType.Azure: {
           const renewalCallback = async () => {
             const renewalResponse = await this.apiService.renewAttachmentUploadUrl(
               response.id,
@@ -94,6 +95,7 @@ export class FileUploadService implements FileUploadServiceAbstraction {
             renewalCallback
           );
           break;
+        }
         default:
           throw new Error("Unknown file upload type.");
       }

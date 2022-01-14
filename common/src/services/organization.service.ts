@@ -10,6 +10,7 @@ export class OrganizationService implements OrganizationServiceAbstraction {
 
   async get(id: string): Promise<Organization> {
     const organizations = await this.stateService.getOrganizations();
+    // eslint-disable-next-line
     if (organizations == null || !organizations.hasOwnProperty(id)) {
       return null;
     }
@@ -30,6 +31,7 @@ export class OrganizationService implements OrganizationServiceAbstraction {
     const organizations = await this.stateService.getOrganizations({ userId: userId });
     const response: Organization[] = [];
     for (const id in organizations) {
+      // eslint-disable-next-line
       if (organizations.hasOwnProperty(id) && !organizations[id].isProviderUser) {
         response.push(new Organization(organizations[id]));
       }

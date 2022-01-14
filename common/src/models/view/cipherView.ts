@@ -8,7 +8,6 @@ import { AttachmentView } from "./attachmentView";
 import { CardView } from "./cardView";
 import { FieldView } from "./fieldView";
 import { IdentityView } from "./identityView";
-import { ItemView } from "./itemView";
 import { LoginView } from "./loginView";
 import { PasswordHistoryView } from "./passwordHistoryView";
 import { SecureNoteView } from "./secureNoteView";

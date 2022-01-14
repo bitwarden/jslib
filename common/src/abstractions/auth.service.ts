@@ -50,7 +50,7 @@ export abstract class AuthService {
     twoFactorToken: string,
     remember?: boolean
   ) => Promise<AuthResult>;
-  logOut: (callback: Function) => void;
+  logOut: (callback: () => void) => void;
   getSupportedTwoFactorProviders: (win: Window) => any[];
   getDefaultTwoFactorProvider: (webAuthnSupported: boolean) => TwoFactorProviderType;
   makePreloginKey: (masterPassword: string, email: string) => Promise<SymmetricCryptoKey>;

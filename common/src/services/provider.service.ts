@@ -10,6 +10,7 @@ export class ProviderService implements ProviderServiceAbstraction {
 
   async get(id: string): Promise<Provider> {
     const providers = await this.stateService.getProviders();
+    // eslint-disable-next-line
     if (providers == null || !providers.hasOwnProperty(id)) {
       return null;
     }
@@ -21,6 +22,7 @@ export class ProviderService implements ProviderServiceAbstraction {
     const providers = await this.stateService.getProviders();
     const response: Provider[] = [];
     for (const id in providers) {
+      // eslint-disable-next-line
       if (providers.hasOwnProperty(id)) {
         response.push(new Provider(providers[id]));
       }

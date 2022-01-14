@@ -36,6 +36,7 @@ export class NotificationResponse extends BaseResponse {
       case NotificationType.SyncSendUpdate:
       case NotificationType.SyncSendDelete:
         this.payload = new SyncSendNotification(payload);
+        break;
       default:
         break;
     }

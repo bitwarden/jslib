@@ -95,6 +95,7 @@ export class SendService implements SendServiceAbstraction {
 
   async get(id: string): Promise<Send> {
     const sends = await this.stateService.getEncryptedSends();
+    // eslint-disable-next-line
     if (sends == null || !sends.hasOwnProperty(id)) {
       return null;
     }
@@ -106,6 +107,7 @@ export class SendService implements SendServiceAbstraction {
     const sends = await this.stateService.getEncryptedSends();
     const response: Send[] = [];
     for (const id in sends) {
+      // eslint-disable-next-line
       if (sends.hasOwnProperty(id)) {
         response.push(new Send(sends[id]));
       }

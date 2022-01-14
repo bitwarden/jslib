@@ -25,6 +25,7 @@ export class ButtercupCsvImporter extends BaseImporter implements Importer {
 
       let processingCustomFields = false;
       for (const prop in value) {
+        // eslint-disable-next-line
         if (value.hasOwnProperty(prop)) {
           if (!processingCustomFields && OfficialProps.indexOf(prop) === -1) {
             processingCustomFields = true;

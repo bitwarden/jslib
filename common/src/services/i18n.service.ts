@@ -103,8 +103,10 @@ export class I18nService implements I18nServiceAbstraction {
 
   translate(id: string, p1?: string, p2?: string, p3?: string): string {
     let result: string;
+    // eslint-disable-next-line
     if (this.localeMessages.hasOwnProperty(id) && this.localeMessages[id]) {
       result = this.localeMessages[id];
+      // eslint-disable-next-line
     } else if (this.defaultMessages.hasOwnProperty(id) && this.defaultMessages[id]) {
       result = this.defaultMessages[id];
     } else {
@@ -130,6 +132,7 @@ export class I18nService implements I18nServiceAbstraction {
     const formattedLocale = locale.replace("-", "_");
     const locales = await this.getLocalesJson(formattedLocale);
     for (const prop in locales) {
+      // eslint-disable-next-line
       if (!locales.hasOwnProperty(prop)) {
         continue;
       }
@@ -138,7 +141,7 @@ export class I18nService implements I18nServiceAbstraction {
       if (locales[prop].placeholders) {
         for (const placeProp in locales[prop].placeholders) {
           if (
-            !locales[prop].placeholders.hasOwnProperty(placeProp) ||
+            !locales[prop].placeholders.hasOwnProperty(placeProp) || // eslint-disable-line
             !locales[prop].placeholders[placeProp].content
           ) {
             continue;

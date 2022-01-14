@@ -1,7 +1,5 @@
 import { ItemView } from "./itemView";
 
-import { Card } from "../domain/card";
-
 import { CardLinkedId as LinkedId } from "../../enums/linkedIdType";
 
 import { linkedFieldOption } from "../../misc/linkedFieldOption.decorator";
@@ -22,7 +20,7 @@ export class CardView extends ItemView {
   private _subTitle: string = null;
   // tslint:enable
 
-  constructor(c?: Card) {
+  constructor() {
     super();
   }
 

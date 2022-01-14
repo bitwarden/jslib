@@ -308,6 +308,7 @@ export class CipherService implements CipherServiceAbstraction {
 
   async get(id: string): Promise<Cipher> {
     const ciphers = await this.stateService.getEncryptedCiphers();
+    // eslint-disable-next-line
     if (ciphers == null || !ciphers.hasOwnProperty(id)) {
       return null;
     }
@@ -321,6 +322,7 @@ export class CipherService implements CipherServiceAbstraction {
     const ciphers = await this.stateService.getEncryptedCiphers();
     const response: Cipher[] = [];
     for (const id in ciphers) {
+      // eslint-disable-next-line
       if (ciphers.hasOwnProperty(id)) {
         response.push(new Cipher(ciphers[id], false, localData ? localData[id] : null));
       }
@@ -448,12 +450,13 @@ export class CipherService implements CipherServiceAbstraction {
                 }
               }
               break;
-            case UriMatchType.Host:
+            case UriMatchType.Host: {
               const urlHost = Utils.getHost(url);
               if (urlHost != null && urlHost === Utils.getHost(u.uri)) {
                 return true;
               }
               break;
+            }
             case UriMatchType.Exact:
               if (url === u.uri) {
                 return true;
@@ -684,7 +687,7 @@ export class CipherService implements CipherServiceAbstraction {
           reject(e);
         }
       };
-      reader.onerror = (_evt) => {
+      reader.onerror = () => {
         reject("Error reading file.");
       };
     });
@@ -839,6 +842,7 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     ids.forEach((id) => {
+      // eslint-disable-next-line
       if (ciphers.hasOwnProperty(id)) {
         ciphers[id].folderId = folderId;
       }
@@ -882,6 +886,7 @@ export class CipherService implements CipherServiceAbstraction {
   async deleteAttachment(id: string, attachmentId: string): Promise<void> {
     const ciphers = await this.stateService.getEncryptedCiphers();
 
+    // eslint-disable-next-line
     if (ciphers == null || !ciphers.hasOwnProperty(id) || ciphers[id].attachments == null) {
       return;
     }
@@ -1113,6 +1118,7 @@ export class CipherService implements CipherServiceAbstraction {
     const self = this;
 
     for (const prop in map) {
+      // eslint-disable-next-line
       if (!map.hasOwnProperty(prop)) {
         continue;
       }

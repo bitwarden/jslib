@@ -6,7 +6,6 @@ import { ImportResult } from "../models/domain/importResult";
 import { CipherView } from "../models/view/cipherView";
 import { CollectionView } from "../models/view/collectionView";
 import { FieldView } from "../models/view/fieldView";
-import { FolderView } from "../models/view/folderView";
 import { LoginView } from "../models/view/loginView";
 import { SecureNoteView } from "../models/view/secureNoteView";
 
@@ -102,7 +101,7 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
           cipher.secureNote = new SecureNoteView();
           cipher.secureNote.type = SecureNoteType.Generic;
           break;
-        default:
+        default: {
           cipher.type = CipherType.Login;
           cipher.login = new LoginView();
           cipher.login.totp = this.getValueOrDefault(value.login_totp || value.totp);
@@ -111,6 +110,7 @@ export class BitwardenCsvImporter extends BaseImporter implements Importer {
           const uris = this.parseSingleRowCsv(value.login_uri || value.uri);
           cipher.login.uris = this.makeUriArray(uris);
           break;
+        }
       }
 
       result.ciphers.push(cipher);

@@ -1,7 +1,5 @@
 import { ItemView } from "./itemView";
 
-import { Identity } from "../domain/identity";
-
 import { Utils } from "../../misc/utils";
 
 import { IdentityLinkedId as LinkedId } from "../../enums/linkedIdType";
@@ -48,7 +46,7 @@ export class IdentityView extends ItemView {
   private _subTitle: string = null;
   // tslint:enable
 
-  constructor(i?: Identity) {
+  constructor() {
     super();
   }
 

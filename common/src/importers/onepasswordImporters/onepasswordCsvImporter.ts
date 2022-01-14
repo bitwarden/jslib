@@ -68,6 +68,7 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
 
       let altUsername: string = null;
       for (const property in value) {
+        // eslint-disable-next-line
         if (!value.hasOwnProperty(property) || this.isNullOrWhitespace(value[property])) {
           continue;
         }

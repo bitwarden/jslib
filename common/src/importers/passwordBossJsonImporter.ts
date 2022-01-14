@@ -52,6 +52,7 @@ export class PasswordBossJsonImporter extends BaseImporter implements Importer {
       }
 
       for (const property in value.identifiers) {
+        // eslint-disable-next-line
         if (!value.identifiers.hasOwnProperty(property)) {
           continue;
         }

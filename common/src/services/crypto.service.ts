@@ -260,6 +260,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     let setKey = false;
 
     for (const orgId in encOrgKeys) {
+      // eslint-disable-next-line
       if (!encOrgKeys.hasOwnProperty(orgId)) {
         continue;
       }
@@ -305,6 +306,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     let setKey = false;
 
     for (const orgId in encProviderKeys) {
+      // eslint-disable-next-line
       if (!encProviderKeys.hasOwnProperty(orgId)) {
         continue;
       }
@@ -605,8 +607,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     switch (encType) {
       case EncryptionType.Rsa2048_OaepSha256_B64:
       case EncryptionType.Rsa2048_OaepSha1_B64:
-      // HmacSha256 types are deprecated
-      case EncryptionType.Rsa2048_OaepSha256_HmacSha256_B64:
+      case EncryptionType.Rsa2048_OaepSha256_HmacSha256_B64: // HmacSha256 types are deprecated
       case EncryptionType.Rsa2048_OaepSha1_HmacSha256_B64:
         break;
       default:

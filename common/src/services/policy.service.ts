@@ -38,6 +38,7 @@ export class PolicyService implements PolicyServiceAbstraction {
     } else {
       const diskPolicies = await this.stateService.getEncryptedPolicies({ userId: userId });
       for (const id in diskPolicies) {
+        // eslint-disable-next-line
         if (diskPolicies.hasOwnProperty(id)) {
           response.push(new Policy(diskPolicies[id]));
         }
@@ -178,6 +179,7 @@ export class PolicyService implements PolicyServiceAbstraction {
       return false;
     }
 
+    // eslint-disable-next-line
     if (enforcedPolicyOptions.requireSpecial && !/[!@#$%\^&*]/g.test(newPassword)) {
       return false;
     }

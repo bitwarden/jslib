@@ -10,6 +10,12 @@
       {
         "accessibility": "no-public"
       }
+    ],
+    "@typescript-eslint/no-this-alias": [
+      "error",
+      {
+        "allowedNames": ["self"]
+      }
     ]
     // "sort-imports": ["error"] // TODO: Figure out this rule, it requires manual interaction
   }
