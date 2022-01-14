@@ -21,8 +21,6 @@ class BitwardenPasswordProtectedFileFormat {
 }
 
 export class BitwardenPasswordProtectedImporter extends BaseImporter implements Importer {
-  private results: BitwardenPasswordProtectedFileFormat;
-  private result: ImportResult;
   private innerImporter: Importer;
   private key: SymmetricCryptoKey;
 
@@ -36,22 +34,22 @@ export class BitwardenPasswordProtectedImporter extends BaseImporter implements 
   }
 
   async parse(data: string): Promise<ImportResult> {
-    this.result = new ImportResult();
-    this.results = JSON.parse(data);
-    if (!this.canParseFile(this.results)) {
-      this.result.success = false;
-      return this.result;
+    const result = new ImportResult();
+    const parsedData = JSON.parse(data);
+    if (this.cannotParseFile(parsedData)) {
+      result.success = false;
+      return result;
     }
 
-    this.setInnerImporter(this.results.format);
+    this.setInnerImporter(parsedData.format);
 
-    if (!(await this.checkPassword(this.results))) {
-      this.result.success = false;
-      this.result.errorMessage = this.i18nService.t("importEncKeyError");
-      return this.result;
+    if (!(await this.checkPassword(parsedData))) {
+      result.success = false;
+      result.errorMessage = this.i18nService.t("importEncKeyError");
+      return result;
     }
 
-    const encData = new EncString(this.results.data);
+    const encData = new EncString(parsedData.data);
     const clearTextData = await this.cryptoService.decryptToUtf8(encData, this.key);
     return this.innerImporter.parse(clearTextData);
   }
@@ -64,7 +62,7 @@ export class BitwardenPasswordProtectedImporter extends BaseImporter implements 
       jdoc.kdfIterations
     );
 
-    const encKeyValidation = new EncString(this.results.encKeyValidation_DO_NOT_EDIT);
+    const encKeyValidation = new EncString(jdoc.encKeyValidation_DO_NOT_EDIT);
 
     const encKeyValidationDecrypt = await this.cryptoService.decryptToUtf8(
       encKeyValidation,
@@ -76,9 +74,8 @@ export class BitwardenPasswordProtectedImporter extends BaseImporter implements 
     return true;
   }
 
-  private canParseFile(jdoc: BitwardenPasswordProtectedFileFormat): boolean {
-    if (
-      !jdoc ||
+  private cannotParseFile(jdoc: BitwardenPasswordProtectedFileFormat): boolean {
+    return !jdoc ||
       !jdoc.encrypted ||
       !jdoc.passwordProtected ||
       !(jdoc.format === "csv" || jdoc.format === "json" || jdoc.format == "encrypted_json") ||
@@ -87,10 +84,6 @@ export class BitwardenPasswordProtectedImporter extends BaseImporter implements 
       typeof jdoc.kdfIterations !== "number" ||
       !jdoc.encKeyValidation_DO_NOT_EDIT ||
       !jdoc.data
-    ) {
-      return false;
-    }
-    return true;
   }
 
   private setInnerImporter(format: "csv" | "json" | "encrypted_json") {
