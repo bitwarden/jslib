@@ -359,7 +359,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     return (await this.stateService.getEncryptedCryptoSymmetricKey()) != null;
   }
 
-  async clearKey(clearSecretStorage: boolean = true, userId?: string): Promise<any> {
+  async clearKey(clearSecretStorage = true, userId?: string): Promise<any> {
     await this.stateService.setCryptoMasterKey(null, { userId: userId });
     await this.stateService.setLegacyEtmKey(null, { userId: userId });
     if (clearSecretStorage) {
@@ -925,7 +925,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     return new SymmetricCryptoKey(newKey.buffer);
   }
 
-  private async hashPhrase(hash: ArrayBuffer, minimumEntropy: number = 64) {
+  private async hashPhrase(hash: ArrayBuffer, minimumEntropy = 64) {
     const entropyPerWord = Math.log(EEFLongWordList.length) / Math.log(2);
     let numWords = Math.ceil(minimumEntropy / entropyPerWord);
 

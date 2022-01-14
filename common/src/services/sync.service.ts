@@ -36,7 +36,7 @@ import { ProfileResponse } from "../models/response/profileResponse";
 import { SendResponse } from "../models/response/sendResponse";
 
 export class SyncService implements SyncServiceAbstraction {
-  syncInProgress: boolean = false;
+  syncInProgress = false;
 
   constructor(
     private apiService: ApiService,

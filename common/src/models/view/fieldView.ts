@@ -9,8 +9,8 @@ export class FieldView implements View {
   name: string = null;
   value: string = null;
   type: FieldType = null;
-  newField: boolean = false; // Marks if the field is new and hasn't been saved
-  showValue: boolean = false;
+  newField = false; // Marks if the field is new and hasn't been saved
+  showValue = false;
   linkedId: LinkedIdType = null;
 
   constructor(f?: Field) {

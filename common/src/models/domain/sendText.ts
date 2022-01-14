@@ -10,7 +10,7 @@ export class SendText extends Domain {
   text: EncString;
   hidden: boolean;
 
-  constructor(obj?: SendTextData, alreadyEncrypted: boolean = false) {
+  constructor(obj?: SendTextData, alreadyEncrypted = false) {
     super();
     if (obj == null) {
       return;

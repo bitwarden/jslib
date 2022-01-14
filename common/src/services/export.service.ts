@@ -59,7 +59,7 @@ export class ExportService implements ExportServiceAbstraction {
     return papa.unparse(events.map((e) => new Event(e)));
   }
 
-  getFileName(prefix: string = null, extension: string = "csv"): string {
+  getFileName(prefix: string = null, extension = "csv"): string {
     const now = new Date();
     const dateString =
       now.getFullYear() +
@@ -353,7 +353,7 @@ export class ExportService implements ExportServiceAbstraction {
     return JSON.stringify(jsonDoc, null, "  ");
   }
 
-  private padNumber(num: number, width: number, padCharacter: string = "0"): string {
+  private padNumber(num: number, width: number, padCharacter = "0"): string {
     const numString = num.toString();
     return numString.length >= width
       ? numString

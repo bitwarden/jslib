@@ -14,7 +14,7 @@ export class Card extends Domain {
   expYear: EncString;
   code: EncString;
 
-  constructor(obj?: CardData, alreadyEncrypted: boolean = false) {
+  constructor(obj?: CardData, alreadyEncrypted = false) {
     super();
     if (obj == null) {
       return;

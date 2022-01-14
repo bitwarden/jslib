@@ -18,7 +18,7 @@ export class Attachment extends Domain {
   key: EncString;
   fileName: EncString;
 
-  constructor(obj?: AttachmentData, alreadyEncrypted: boolean = false) {
+  constructor(obj?: AttachmentData, alreadyEncrypted = false) {
     super();
     if (obj == null) {
       return;

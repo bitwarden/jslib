@@ -32,7 +32,7 @@ export class Send extends Domain {
   disabled: boolean;
   hideEmail: boolean;
 
-  constructor(obj?: SendData, alreadyEncrypted: boolean = false) {
+  constructor(obj?: SendData, alreadyEncrypted = false) {
     super();
     if (obj == null) {
       return;

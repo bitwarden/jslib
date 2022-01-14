@@ -138,7 +138,7 @@ export class TokenService implements TokenServiceAbstraction {
     return d;
   }
 
-  async tokenSecondsRemaining(offsetSeconds: number = 0): Promise<number> {
+  async tokenSecondsRemaining(offsetSeconds = 0): Promise<number> {
     const d = await this.getTokenExpirationDate();
     if (d == null) {
       return 0;
@@ -148,7 +148,7 @@ export class TokenService implements TokenServiceAbstraction {
     return Math.round(msRemaining / 1000);
   }
 
-  async tokenNeedsRefresh(minutes: number = 5): Promise<boolean> {
+  async tokenNeedsRefresh(minutes = 5): Promise<boolean> {
     const sRemaining = await this.tokenSecondsRemaining();
     return sRemaining < 60 * minutes;
   }

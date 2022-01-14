@@ -16,7 +16,7 @@ export class Login extends Domain {
   totp: EncString;
   autofillOnPageLoad: boolean;
 
-  constructor(obj?: LoginData, alreadyEncrypted: boolean = false) {
+  constructor(obj?: LoginData, alreadyEncrypted = false) {
     super();
     if (obj == null) {
       return;

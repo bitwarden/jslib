@@ -58,13 +58,13 @@ export class ConsoleLogService implements LogServiceAbstraction {
     }
   }
 
-  time(label: string = "default") {
+  time(label = "default") {
     if (!this.timersMap.has(label)) {
       this.timersMap.set(label, hrtime());
     }
   }
 
-  timeEnd(label: string = "default"): [number, number] {
+  timeEnd(label = "default"): [number, number] {
     const elapsed = hrtime(this.timersMap.get(label));
     this.timersMap.delete(label);
     this.write(LogLevelType.Info, `${label}: ${elapsed[0] * 1000 + elapsed[1] / 10e6}ms`);

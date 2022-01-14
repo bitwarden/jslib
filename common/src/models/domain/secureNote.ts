@@ -10,7 +10,7 @@ import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 export class SecureNote extends Domain {
   type: SecureNoteType;
 
-  constructor(obj?: SecureNoteData, alreadyEncrypted: boolean = false) {
+  constructor(obj?: SecureNoteData, alreadyEncrypted = false) {
     super();
     if (obj == null) {
       return;

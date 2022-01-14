@@ -359,10 +359,7 @@ export class CipherService implements CipherServiceAbstraction {
     return decCiphers;
   }
 
-  async getAllDecryptedForGrouping(
-    groupingId: string,
-    folder: boolean = true
-  ): Promise<CipherView[]> {
+  async getAllDecryptedForGrouping(groupingId: string, folder = true): Promise<CipherView[]> {
     const ciphers = await this.getAllDecrypted();
 
     return ciphers.filter((cipher) => {
@@ -506,14 +503,11 @@ export class CipherService implements CipherServiceAbstraction {
     }
   }
 
-  async getLastUsedForUrl(url: string, autofillOnPageLoad: boolean = false): Promise<CipherView> {
+  async getLastUsedForUrl(url: string, autofillOnPageLoad = false): Promise<CipherView> {
     return this.getCipherForUrl(url, true, false, autofillOnPageLoad);
   }
 
-  async getLastLaunchedForUrl(
-    url: string,
-    autofillOnPageLoad: boolean = false
-  ): Promise<CipherView> {
+  async getLastLaunchedForUrl(url: string, autofillOnPageLoad = false): Promise<CipherView> {
     return this.getCipherForUrl(url, false, true, autofillOnPageLoad);
   }
 

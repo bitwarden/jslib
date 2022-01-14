@@ -40,7 +40,7 @@ export class Cipher extends Domain {
   deletedDate: Date;
   reprompt: CipherRepromptType;
 
-  constructor(obj?: CipherData, alreadyEncrypted: boolean = false, localData: any = null) {
+  constructor(obj?: CipherData, alreadyEncrypted = false, localData: any = null) {
     super();
     if (obj == null) {
       return;

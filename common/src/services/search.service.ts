@@ -162,7 +162,7 @@ export class SearchService implements SearchServiceAbstraction {
     return results;
   }
 
-  searchCiphersBasic(ciphers: CipherView[], query: string, deleted: boolean = false) {
+  searchCiphersBasic(ciphers: CipherView[], query: string, deleted = false) {
     query = query.trim().toLowerCase();
     return ciphers.filter((c) => {
       if (deleted !== c.isDeleted) {
