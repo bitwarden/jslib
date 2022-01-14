@@ -5,4 +5,5 @@ export class State<TAccount extends Account = Account> {
   accounts: { [userId: string]: TAccount } = {};
   globals: GlobalState = new GlobalState();
   activeUserId: string;
+  authenticatedAccounts: string[] = [];
 }
