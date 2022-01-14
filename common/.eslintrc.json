@@ -10,8 +10,7 @@
       {
         "accessibility": "no-public"
       }
-    ],
-    "@typescript-eslint/prefer-for-of": ["error"]
+    ]
     // "sort-imports": ["error"] // TODO: Figure out this rule, it requires manual interaction
   }
 }
