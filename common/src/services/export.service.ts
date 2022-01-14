@@ -1,14 +1,14 @@
 import * as papa from "papaparse";
 
-import { CipherType } from '../enums/cipherType';
-import { KdfType } from '../enums/kdfType';
+import { CipherType } from "../enums/cipherType";
+import { KdfType } from "../enums/kdfType";
 
-import { ApiService } from '../abstractions/api.service';
-import { CipherService } from '../abstractions/cipher.service';
-import { CryptoFunctionService } from '../abstractions/cryptoFunction.service';
-import { CryptoService } from '../abstractions/crypto.service';
-import { ExportService as ExportServiceAbstraction } from '../abstractions/export.service';
-import { FolderService } from '../abstractions/folder.service';
+import { ApiService } from "../abstractions/api.service";
+import { CipherService } from "../abstractions/cipher.service";
+import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
+import { CryptoService } from "../abstractions/crypto.service";
+import { ExportService as ExportServiceAbstraction } from "../abstractions/export.service";
+import { FolderService } from "../abstractions/folder.service";
 
 import { CipherView } from "../models/view/cipherView";
 import { CollectionView } from "../models/view/collectionView";
@@ -31,26 +31,39 @@ import { EventView } from "../models/view/eventView";
 import { Utils } from "../misc/utils";
 
 export class ExportService implements ExportServiceAbstraction {
-  constructor(private folderService: FolderService, private cipherService: CipherService,
-    private apiService: ApiService, private cryptoService: CryptoService,
-    private cryptoFunctionService: CryptoFunctionService) { }
+  constructor(
+    private folderService: FolderService,
+    private cipherService: CipherService,
+    private apiService: ApiService,
+    private cryptoService: CryptoService,
+    private cryptoFunctionService: CryptoFunctionService
+  ) {}
 
-  async getExport(format: 'csv' | 'json' | 'encrypted_json' = 'csv'): Promise<string> {
-    if (format === 'encrypted_json') {
+  async getExport(format: "csv" | "json" | "encrypted_json" = "csv"): Promise<string> {
+    if (format === "encrypted_json") {
       return this.getEncryptedExport();
     } else {
       return this.getDecryptedExport(format);
     }
   }
 
-  async getPasswordProtectedExport(password: string, format: 'csv' | 'json' | 'encrypted_json' = 'csv', organizationId?: string): Promise<string> {
-    const clearText = organizationId ?
-      await this.getOrganizationExport(organizationId, format) :
-      await this.getExport(format);
+  async getPasswordProtectedExport(
+    password: string,
+    format: "csv" | "json" | "encrypted_json" = "csv",
+    organizationId?: string
+  ): Promise<string> {
+    const clearText = organizationId
+      ? await this.getOrganizationExport(organizationId, format)
+      : await this.getExport(format);
 
     const salt = Utils.fromBufferToB64(await this.cryptoFunctionService.randomBytes(16));
     const kdfIterations = 100000;
-    const key = await this.cryptoService.makePinKey(password, salt, KdfType.PBKDF2_SHA256, kdfIterations);
+    const key = await this.cryptoService.makePinKey(
+      password,
+      salt,
+      KdfType.PBKDF2_SHA256,
+      kdfIterations
+    );
 
     const encKeyValidation = await this.cryptoService.encrypt(Utils.newGuid(), key);
     const encText = await this.cryptoService.encrypt(clearText, key);
@@ -62,18 +75,21 @@ export class ExportService implements ExportServiceAbstraction {
       salt: salt,
       kdfIterations: kdfIterations,
       encKeyValidation_DO_NOT_EDIT: encKeyValidation.encryptedString,
-      data: encText.encryptedString
+      data: encText.encryptedString,
     };
 
-    return JSON.stringify(jsonDoc, null, '  ');
+    return JSON.stringify(jsonDoc, null, "  ");
   }
 
-  async getOrganizationExport(organizationId: string,
-    format: 'csv' | 'json' | 'encrypted_json' = 'csv'): Promise<string> {
-    if (format === 'encrypted_json') {
+  async getOrganizationExport(
+    organizationId: string,
+    format: "csv" | "json" | "encrypted_json" = "csv"
+  ): Promise<string> {
+    if (format === "encrypted_json") {
       return this.getOrganizationEncryptedExport(organizationId);
     } else {
-      return this.getOrganizationDecryptedExport(organizationId, format); ``;
+      return this.getOrganizationDecryptedExport(organizationId, format);
+      ``;
     }
   }
 
