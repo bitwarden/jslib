@@ -16,7 +16,7 @@
 
 // Sizing Changes
 .bwi-sm {
-  font-size: .875em;
+  font-size: 0.875em;
 }
 
 .bwi-lg {
@@ -90,8 +90,8 @@
 .bwi-rotate-270 {
   -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=3)";
   -webkit-transform: rotate(270deg);
-      -ms-transform: rotate(270deg);
-          transform: rotate(270deg);
+  -ms-transform: rotate(270deg);
+  transform: rotate(270deg);
 }
 
 // For new icons - add their glyph name and value to the map below
