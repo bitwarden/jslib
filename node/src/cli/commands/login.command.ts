@@ -24,13 +24,14 @@ import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
 import { Response } from "../models/response";
 
-import { KeyConnectorUserKeyRequest } from "jslib-common/models/request/keyConnectorUserKeyRequest";
 import { UpdateTempPasswordRequest } from "jslib-common/models/request/updateTempPasswordRequest";
 
 import { MessageResponse } from "../models/response/messageResponse";
 
 import { NodeUtils } from "jslib-common/misc/nodeUtils";
 import { Utils } from "jslib-common/misc/utils";
+
+import Separator from 'inquirer/lib/objects/separator';
 
 // tslint:disable-next-line
 const open = require("open");
@@ -232,7 +233,7 @@ export class LoginCommand {
           if (twoFactorProviders.length === 1) {
             selectedProvider = twoFactorProviders[0];
           } else if (this.canInteract) {
-            const twoFactorOptions = twoFactorProviders.map((p) => p.name);
+            const twoFactorOptions: (string | Separator)[] = twoFactorProviders.map((p) => p.name);
             twoFactorOptions.push(new inquirer.Separator());
             twoFactorOptions.push("Cancel");
             const answer: inquirer.Answers = await inquirer.createPromptModule({
