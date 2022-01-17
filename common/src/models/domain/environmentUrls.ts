@@ -1,10 +1,10 @@
 export class EnvironmentUrls {
-  base: string;
-  api: string;
-  identity: string;
-  icons: string;
-  notifications: string;
-  events: string;
-  webVault: string;
-  keyConnector: string;
+  base: string = null;
+  api: string = null;
+  identity: string = null;
+  icons: string = null;
+  notifications: string = null;
+  events: string = null;
+  webVault: string = null;
+  keyConnector: string = null;
 }
