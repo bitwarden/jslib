@@ -31,7 +31,7 @@ import { MessageResponse } from "../models/response/messageResponse";
 import { NodeUtils } from "jslib-common/misc/nodeUtils";
 import { Utils } from "jslib-common/misc/utils";
 
-import Separator from 'inquirer/lib/objects/separator';
+import Separator from "inquirer/lib/objects/separator";
 
 // tslint:disable-next-line
 const open = require("open");
