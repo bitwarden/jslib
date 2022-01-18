@@ -190,9 +190,7 @@ export class StateMigrationService {
                 v1Keys.enableBiometric,
                 options
               ),
-              environmentUrls:
-                (await this.storageService.get<EnvironmentUrls>(v1Keys.environmentUrls, options)) ??
-                new EnvironmentUrls(),
+              environmentUrls: null,
               installedVersion: await this.storageService.get<string>(
                 v1Keys.installedVersion,
                 options
@@ -502,6 +500,9 @@ export class StateMigrationService {
             },
           };
 
+    initialState.globals.environmentUrls =
+      (await this.storageService.get<EnvironmentUrls>(v1Keys.environmentUrls, options)) ??
+      new EnvironmentUrls();
     await this.storageService.save(keys.global, initialState.globals, options);
     await this.storageService.save(keys.activeUserId, initialState.activeUserId, options);
     if (initialState.activeUserId != null) {
