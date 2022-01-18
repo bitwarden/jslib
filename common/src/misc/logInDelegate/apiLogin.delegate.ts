@@ -65,8 +65,8 @@ export class ApiLogInDelegate extends LogInDelegate {
   }
 
   async saveAccountInformation(tokenResponse: IdentityTokenResponse) {
+    await super.saveAccountInformation(tokenResponse);
     await this.stateService.setApiKeyClientId(this.tokenRequest.clientId);
     await this.stateService.setApiKeyClientSecret(this.tokenRequest.clientSecret);
-    super.saveAccountInformation(tokenResponse);
   }
 }
