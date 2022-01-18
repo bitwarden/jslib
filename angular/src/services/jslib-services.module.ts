@@ -1,5 +1,6 @@
 import { Injector, LOCALE_ID, NgModule } from "@angular/core";
 
+import { TestService } from "jslib-common/services/test.service";
 import { ApiService } from "jslib-common/services/api.service";
 import { AppIdService } from "jslib-common/services/appId.service";
 import { AuditService } from "jslib-common/services/audit.service";
@@ -447,6 +448,7 @@ import { ValidationService } from "./validation.service";
       useClass: ProviderService,
       deps: [StateServiceAbstraction],
     },
+    /* featureFlag: Test */ TestService, // endFeatureFlag
   ],
 })
 export class JslibServicesModule {}
