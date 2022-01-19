@@ -43,9 +43,9 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
   async migrateUser() {
     const organization = await this.getManagingOrganization();
     const key = await this.cryptoService.getKey();
+    const keyConnectorRequest = new KeyConnectorUserKeyRequest(key.encKeyB64);
 
     try {
-      const keyConnectorRequest = new KeyConnectorUserKeyRequest(key.encKeyB64);
       await this.apiService.postUserKeyToKeyConnector(
         organization.keyConnectorUrl,
         keyConnectorRequest
