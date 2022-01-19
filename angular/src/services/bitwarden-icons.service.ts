@@ -132,6 +132,16 @@ const IconMap: any = {
   "bwi-dbl-angle-right": String.fromCharCode(0xe971),
   "bwi-hamburger": String.fromCharCode(0xe972),
   "bwi-error": String.fromCharCode(0xe981),
+  "bwi-save-changes": String.fromCharCode(0xe981),
+  "bwi-browser": String.fromCharCode(0xe985),
+  "bwi-mobile": String.fromCharCode(0xe986),
+  "bwi-cli": String.fromCharCode(0xe987),
+  "bwi-providers": String.fromCharCode(0xe983),
+  "bwi-vault": String.fromCharCode(0xe984),
+  "bwi-folder-closed-f": String.fromCharCode(0xe982),
+  "bwi-rocket": String.fromCharCode(0xe9ee),
+  "bwi-ellipsis-h": String.fromCharCode(0xe9ef),
+  "bwi-ellipsis-v": String.fromCharCode(0xe9f0),
 };
 
 @Injectable()
