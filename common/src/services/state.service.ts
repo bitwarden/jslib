@@ -1545,7 +1545,9 @@ export class StateService<TAccount extends Account = Account>
   }
 
   async getLastActive(options?: StorageOptions): Promise<number> {
-    return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.profile?.lastActive;
+    return (
+      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
+    )?.profile?.lastActive;
   }
 
   async setLastActive(value: number, options?: StorageOptions): Promise<void> {
@@ -2199,11 +2201,10 @@ export class StateService<TAccount extends Account = Account>
   // TODO: There is a tech debt item for splitting up these methods - only Web uses multiple storage locations in its storageService.
   // For now these methods exist with some redundancy to facilitate this special web requirement.
   protected async scaffoldNewAccountLocalStorage(account: TAccount): Promise<void> {
-    const storedAccount =
-      (await this.storageService.get<TAccount>(
-        account.profile.userId,
-        await this.defaultOnDiskLocalOptions()
-      ));
+    const storedAccount = await this.storageService.get<TAccount>(
+      account.profile.userId,
+      await this.defaultOnDiskLocalOptions()
+    );
     if (storedAccount?.settings != null) {
       // EnvironmentUrls are set before authenticating and should override whatever is stored from last session
       storedAccount.settings.environmentUrls = account.settings.environmentUrls;
@@ -2217,11 +2218,10 @@ export class StateService<TAccount extends Account = Account>
   }
 
   protected async scaffoldNewAccountMemoryStorage(account: TAccount): Promise<void> {
-    const storedAccount =
-      (await this.storageService.get<TAccount>(
-        account.profile.userId,
-        await this.defaultOnDiskMemoryOptions()
-      ));
+    const storedAccount = await this.storageService.get<TAccount>(
+      account.profile.userId,
+      await this.defaultOnDiskMemoryOptions()
+    );
     if (storedAccount?.settings != null) {
       storedAccount.settings.environmentUrls = account.settings.environmentUrls;
       account.settings = storedAccount.settings;
@@ -2234,11 +2234,10 @@ export class StateService<TAccount extends Account = Account>
   }
 
   protected async scaffoldNewAccountSessionStorage(account: TAccount): Promise<void> {
-    const storedAccount =
-      (await this.storageService.get<TAccount>(
-        account.profile.userId,
-        await this.defaultOnDiskOptions()
-      ));
+    const storedAccount = await this.storageService.get<TAccount>(
+      account.profile.userId,
+      await this.defaultOnDiskOptions()
+    );
     if (storedAccount?.settings != null) {
       storedAccount.settings.environmentUrls = account.settings.environmentUrls;
       account.settings = storedAccount.settings;
