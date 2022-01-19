@@ -99,7 +99,7 @@ export class StateService<TAccount extends Account = Account>
   }
 
   async addAccount(account: TAccount) {
-    await this.setAccountEnvironmentUrls(account);
+    account = await this.setAccountEnvironmentUrls(account);
     this.state.authenticatedAccounts.push(account.profile.userId);
     this.storageService.save(keys.authenticatedAccounts, this.state.authenticatedAccounts);
     this.state.accounts[account.profile.userId] = account;
@@ -2212,13 +2212,17 @@ export class StateService<TAccount extends Account = Account>
     await this.scaffoldNewAccountMemoryStorage(account);
   }
 
+  // TODO: There is a tech debt item for splitting up these methods - only Web uses multiple storage locations in its storageService.
+  // For now these methods exist with some redundancy to facilitate this special web requirement.
   protected async scaffoldNewAccountLocalStorage(account: TAccount): Promise<void> {
     const storedAccount =
       (await this.storageService.get<TAccount>(
         account.profile.userId,
         await this.defaultOnDiskLocalOptions()
-      )) ?? this.createAccount();
-    if (storedAccount.settings != null) {
+      ));
+    if (storedAccount?.settings != null) {
+      // EnvironmentUrls are set before authenticating and should override whatever is stored from last session
+      storedAccount.settings.environmentUrls = account.settings.environmentUrls;
       account.settings = storedAccount.settings;
     }
     await this.storageService.save(
@@ -2233,8 +2237,9 @@ export class StateService<TAccount extends Account = Account>
       (await this.storageService.get<TAccount>(
         account.profile.userId,
         await this.defaultOnDiskMemoryOptions()
-      )) ?? this.createAccount();
-    if (storedAccount != null) {
+      ));
+    if (storedAccount?.settings != null) {
+      storedAccount.settings.environmentUrls = account.settings.environmentUrls;
       account.settings = storedAccount.settings;
     }
     await this.storageService.save(
@@ -2249,8 +2254,9 @@ export class StateService<TAccount extends Account = Account>
       (await this.storageService.get<TAccount>(
         account.profile.userId,
         await this.defaultOnDiskOptions()
-      )) ?? this.createAccount();
-    if (storedAccount != null) {
+      ));
+    if (storedAccount?.settings != null) {
+      storedAccount.settings.environmentUrls = account.settings.environmentUrls;
       account.settings = storedAccount.settings;
     }
     await this.storageService.save(
@@ -2259,6 +2265,7 @@ export class StateService<TAccount extends Account = Account>
       await this.defaultOnDiskOptions()
     );
   }
+  //
 
   protected async pushAccounts(): Promise<void> {
     await this.pruneInMemoryAccounts();
