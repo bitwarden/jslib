@@ -14,12 +14,13 @@ import { Login } from "jslib-common/models/domain/login";
 import { CipherWithIds as CipherExport } from "jslib-common/models/export/cipherWithIds";
 
 import { CipherType } from "jslib-common/enums/cipherType";
+import { KdfType } from "jslib-common/enums/kdfType";
+
 import { Utils } from "jslib-common/misc/utils";
 import { CipherView } from "jslib-common/models/view/cipherView";
 import { LoginView } from "jslib-common/models/view/loginView";
 
 import { BuildTestObject, GetUniqueString } from "../../utils";
-import { KdfType } from 'jslib-common/enums/kdfType';
 
 const UserCipherViews = [
   generateCipherView(false),

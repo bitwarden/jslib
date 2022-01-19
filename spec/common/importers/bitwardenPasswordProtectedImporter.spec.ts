@@ -3,7 +3,8 @@ import Substitute, { Arg, SubstituteOf } from "@fluffy-spoon/substitute";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { ImportService } from "jslib-common/abstractions/import.service";
-import { KdfType } from 'jslib-common/enums/kdfType';
+
+import { KdfType } from "jslib-common/enums/kdfType";
 
 import { BitwardenPasswordProtectedImporter } from "jslib-common/importers/bitwardenPasswordProtectedImporter";
 import { Importer } from "jslib-common/importers/importer";
