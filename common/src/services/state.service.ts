@@ -1545,14 +1545,7 @@ export class StateService<TAccount extends Account = Account>
   }
 
   async getLastActive(options?: StorageOptions): Promise<number> {
-    const lastActive = (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
-    )?.profile?.lastActive;
-    return (
-      lastActive ??
-      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.lastActive
-    );
+    return (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))?.profile?.lastActive;
   }
 
   async setLastActive(value: number, options?: StorageOptions): Promise<void> {
@@ -1566,15 +1559,6 @@ export class StateService<TAccount extends Account = Account>
         this.reconcileOptions(options, await this.defaultOnDiskOptions())
       );
     }
-
-    const globals = await this.getGlobals(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
-    globals.lastActive = value;
-    await this.saveGlobals(
-      globals,
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
   }
 
   async getLastSync(options?: StorageOptions): Promise<string> {
