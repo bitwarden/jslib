@@ -76,6 +76,8 @@ import { PasswordRepromptService } from "./passwordReprompt.service";
 import { UnauthGuardService } from "./unauth-guard.service";
 import { ValidationService } from "./validation.service";
 
+import { Account, AccountFactory } from "jslib-common/models/domain/account";
+
 @NgModule({
   declarations: [],
   providers: [
@@ -325,7 +327,19 @@ import { ValidationService } from "./validation.service";
     },
     {
       provide: StateServiceAbstraction,
-      useClass: StateService,
+      useFactory: (
+        storageService: StorageServiceAbstraction,
+        secureStorageService: StorageServiceAbstraction,
+        logService: LogService,
+        stateMigrationService: StateMigrationServiceAbstraction
+      ) =>
+        new StateService(
+          storageService,
+          secureStorageService,
+          logService,
+          stateMigrationService,
+          new AccountFactory(Account)
+        ),
       deps: [
         StorageServiceAbstraction,
         "SECURE_STORAGE",

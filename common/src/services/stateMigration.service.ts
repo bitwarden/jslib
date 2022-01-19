@@ -113,6 +113,18 @@ const v1KeyPrefixes = {
   settings: "settings_",
 };
 
+const keys = {
+  global: "global",
+  authenticatedAccounts: "authenticatedAccounts",
+  activeUserId: "activeUserId",
+};
+
+const partialKeys = {
+  autoKey: "_masterkey_auto",
+  biometricKey: "_masterkey_biometric",
+  masterKey: "_masterkey",
+};
+
 export class StateMigrationService {
   constructor(
     protected storageService: StorageService,
@@ -121,17 +133,16 @@ export class StateMigrationService {
 
   async needsMigration(): Promise<boolean> {
     const currentStateVersion = (
-      await this.storageService.get<State<Account>>("state", {
+      await this.storageService.get<GlobalState>(keys.global, {
         htmlStorageLocation: HtmlStorageLocation.Local,
       })
-    )?.globals?.stateVersion;
+    )?.stateVersion;
     return currentStateVersion == null || currentStateVersion < StateVersion.Latest;
   }
 
   async migrate(): Promise<void> {
     let currentStateVersion =
-      (await this.storageService.get<State<Account>>("state"))?.globals?.stateVersion ??
-      StateVersion.One;
+      (await this.storageService.get<GlobalState>(keys.global))?.stateVersion ?? StateVersion.One;
     while (currentStateVersion < StateVersion.Latest) {
       switch (currentStateVersion) {
         case StateVersion.One:
@@ -152,8 +163,10 @@ export class StateMigrationService {
             globals: new GlobalState(),
             accounts: {},
             activeUserId: null,
+            authenticatedAccounts: [],
           }
         : {
+            authenticatedAccounts: [userId],
             activeUserId: userId,
             globals: {
               biometricAwaitingAcceptance: await this.storageService.get<boolean>(
@@ -182,7 +195,6 @@ export class StateMigrationService {
                 v1Keys.installedVersion,
                 options
               ),
-              lastActive: await this.storageService.get<number>(v1Keys.lastActive, options),
               locale: await this.storageService.get<string>(v1Keys.locale, options),
               loginRedirect: null,
               mainWindowSize: null,
@@ -490,12 +502,19 @@ export class StateMigrationService {
     initialState.globals.environmentUrls =
       (await this.storageService.get<EnvironmentUrls>(v1Keys.environmentUrls, options)) ??
       new EnvironmentUrls();
-
-    await this.storageService.save("state", initialState, options);
+    await this.storageService.save(keys.global, initialState.globals, options);
+    await this.storageService.save(keys.activeUserId, initialState.activeUserId, options);
+    if (initialState.activeUserId != null) {
+      await this.storageService.save(
+        initialState.activeUserId,
+        initialState.accounts[initialState.activeUserId]
+      );
+    }
+    await this.storageService.save(keys.authenticatedAccounts, initialState.authenticatedAccounts);
 
     if (await this.secureStorageService.has(v1Keys.key, { keySuffix: "biometric" })) {
       await this.secureStorageService.save(
-        `${userId}_masterkey_biometric`,
+        `${userId}${partialKeys.biometricKey}`,
         await this.secureStorageService.get(v1Keys.key, { keySuffix: "biometric" }),
         { keySuffix: "biometric" }
       );
@@ -504,7 +523,7 @@ export class StateMigrationService {
 
     if (await this.secureStorageService.has(v1Keys.key, { keySuffix: "auto" })) {
       await this.secureStorageService.save(
-        `${userId}_masterkey_auto`,
+        `${userId}${partialKeys.autoKey}`,
         await this.secureStorageService.get(v1Keys.key, { keySuffix: "auto" }),
         { keySuffix: "auto" }
       );
@@ -513,7 +532,7 @@ export class StateMigrationService {
 
     if (await this.secureStorageService.has(v1Keys.key)) {
       await this.secureStorageService.save(
-        `${userId}_masterkey`,
+        `${userId}${partialKeys.masterKey}`,
         await this.secureStorageService.get(v1Keys.key)
       );
       await this.secureStorageService.remove(v1Keys.key);
