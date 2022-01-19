@@ -18,6 +18,7 @@ import { PasswordGenerationService } from "jslib-common/abstractions/passwordGen
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
+import { SyncService } from "jslib-common/abstractions/sync.service";
 
 import { Response } from "../models/response";
 
@@ -33,6 +34,7 @@ const open = require("open");
 
 export class LoginCommand {
   protected validatedParams: () => Promise<any>;
+  protected success: () => Promise<MessageResponse>;
   protected logout: () => Promise<void>;
   protected canInteract: boolean;
   protected clientId: string;
@@ -53,6 +55,7 @@ export class LoginCommand {
     protected cryptoService: CryptoService,
     protected policyService: PolicyService,
     clientId: string,
+    protected syncService: SyncService
   ) {
     this.clientId = clientId;
   }
@@ -314,15 +317,20 @@ export class LoginCommand {
         return await this.updateTempPassword();
       }
 
-      return await this.onSuccessfulLogin();
+      return await this.handleSuccessResponse();
     } catch (e) {
       return Response.error(e);
     }
   }
 
-  protected async onSuccessfulLogin(): Promise<Response> {
-    const res = new MessageResponse("You are logged in!", null);
-    return Response.success(res);
+  private async handleSuccessResponse(): Promise<Response> {
+    if (this.success != null) {
+      const res = await this.success();
+      return Response.success(res);
+    } else {
+      const res = new MessageResponse("You are logged in!", null);
+      return Response.success(res);
+    }
   }
 
   private async updateTempPassword(error?: string): Promise<Response> {
@@ -435,7 +443,7 @@ export class LoginCommand {
 
       // Update user's password
       await this.apiService.putUpdateTempPassword(request);
-      return this.onSuccessfulLogin();
+      return this.handleSuccessResponse();
     } catch (e) {
       await this.logout();
       this.authService.logOut(() => {
