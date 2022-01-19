@@ -4,7 +4,6 @@ import { EnvironmentUrls } from "./environmentUrls";
 export class GlobalState {
   enableAlwaysOnTop?: boolean;
   installedVersion?: string;
-  lastActive?: number;
   locale?: string = "en";
   openAtLogin?: boolean;
   organizationInvitation?: any;

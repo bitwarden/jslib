@@ -195,7 +195,6 @@ export class StateMigrationService {
                 v1Keys.installedVersion,
                 options
               ),
-              lastActive: await this.storageService.get<number>(v1Keys.lastActive, options),
               locale: await this.storageService.get<string>(v1Keys.locale, options),
               loginRedirect: null,
               mainWindowSize: null,
