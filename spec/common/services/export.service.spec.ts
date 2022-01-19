@@ -19,6 +19,7 @@ import { CipherView } from "jslib-common/models/view/cipherView";
 import { LoginView } from "jslib-common/models/view/loginView";
 
 import { BuildTestObject, GetUniqueString } from "../../utils";
+import { KdfType } from 'jslib-common/enums/kdfType';
 
 const UserCipherViews = [
   generateCipherView(false),
@@ -184,6 +185,10 @@ describe("ExportService", () => {
 
       it("specifies kdfIterations", () => {
         expect(exportObject.kdfIterations).toEqual(100000);
+      });
+
+      it("has kdfType", () => {
+        expect(exportObject.kdfType).toEqual(KdfType.PBKDF2_SHA256);
       });
 
       it("has a mac property", () => {

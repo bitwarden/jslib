@@ -3,6 +3,7 @@ import Substitute, { Arg, SubstituteOf } from "@fluffy-spoon/substitute";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { ImportService } from "jslib-common/abstractions/import.service";
+import { KdfType } from 'jslib-common/enums/kdfType';
 
 import { BitwardenPasswordProtectedImporter } from "jslib-common/importers/bitwardenPasswordProtectedImporter";
 import { Importer } from "jslib-common/importers/importer";
@@ -24,6 +25,7 @@ describe("BitwardenPasswordProtectedImporter", () => {
     format?: string;
     salt?: string;
     kdfIterations?: any;
+    kdfType?: any;
     encKeyValidation_DO_NOT_EDIT?: string;
     data?: string;
   };
@@ -40,6 +42,7 @@ describe("BitwardenPasswordProtectedImporter", () => {
       format: "csv",
       salt: "c2FsdA==",
       kdfIterations: 100000,
+      kdfType: KdfType.PBKDF2_SHA256,
       encKeyValidation_DO_NOT_EDIT: Utils.newGuid(),
       data: Utils.newGuid(),
     };
@@ -117,6 +120,21 @@ describe("BitwardenPasswordProtectedImporter", () => {
 
     it("fails if kdfIterations is not a number", async () => {
       jDoc.kdfIterations = "not a number";
+      expect((await importer.parse(JSON.stringify(jDoc))).success).toEqual(false);
+    });
+
+    it("fails if kdfType === null", async () => {
+      jDoc.kdfType = null;
+      expect((await importer.parse(JSON.stringify(jDoc))).success).toEqual(false);
+    });
+
+    it("fails if kdfType is not a string", async () => {
+      jDoc.kdfType = "not a valid kdf type";
+      expect((await importer.parse(JSON.stringify(jDoc))).success).toEqual(false);
+    });
+
+    it("fails if kdfType is not a known kdfType", async () => {
+      jDoc.kdfType = -1;
       expect((await importer.parse(JSON.stringify(jDoc))).success).toEqual(false);
     });
 

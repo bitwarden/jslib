@@ -16,6 +16,7 @@ class BitwardenPasswordProtectedFileFormat {
   format: "json" | "csv" | "encrypted_json";
   salt: string;
   kdfIterations: number;
+  kdfType: number;
   // tslint:disable-next-line
   encKeyValidation_DO_NOT_EDIT: string;
   data: string;
@@ -84,6 +85,8 @@ export class BitwardenPasswordProtectedImporter extends BaseImporter implements 
       !jdoc.salt ||
       !jdoc.kdfIterations ||
       typeof jdoc.kdfIterations !== "number" ||
+      jdoc.kdfType == null ||
+      KdfType[jdoc.kdfType] == null ||
       !jdoc.encKeyValidation_DO_NOT_EDIT ||
       !jdoc.data
     );

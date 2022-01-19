@@ -74,6 +74,7 @@ export class ExportService implements ExportServiceAbstraction {
       format: format,
       salt: salt,
       kdfIterations: kdfIterations,
+      kdfType: KdfType.PBKDF2_SHA256,
       encKeyValidation_DO_NOT_EDIT: encKeyValidation.encryptedString,
       data: encText.encryptedString,
     };
