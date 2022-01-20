@@ -33,7 +33,7 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
   }
 
   async userNeedsMigration() {
-    const loggedInUsingSso = this.tokenService.getIsExternal();
+    const loggedInUsingSso = await this.tokenService.getIsExternal();
     const requiredByOrganization = (await this.getManagingOrganization()) != null;
     const userIsNotUsingKeyConnector = !(await this.getUsesKeyConnector());
 
@@ -43,9 +43,9 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
   async migrateUser() {
     const organization = await this.getManagingOrganization();
     const key = await this.cryptoService.getKey();
+    const keyConnectorRequest = new KeyConnectorUserKeyRequest(key.encKeyB64);
 
     try {
-      const keyConnectorRequest = new KeyConnectorUserKeyRequest(key.encKeyB64);
       await this.apiService.postUserKeyToKeyConnector(
         organization.keyConnectorUrl,
         keyConnectorRequest
