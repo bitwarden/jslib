@@ -176,7 +176,6 @@ export class StateMigrationService {
       mainWindowSize: null,
       noAutoPromptBiometrics: await this.get<boolean>(v1Keys.disableAutoBiometricsPrompt),
       noAutoPromptBiometricsText: await this.get<string>(v1Keys.noAutoPromptBiometricsText),
-      openAtLogin: await this.get<boolean>(v1Keys.openAtLogin),
       organizationInvitation: null,
       ssoCodeVerifier: await this.get<string>(v1Keys.ssoCodeVerifier),
       ssoOrganizationIdentifier: await this.get<string>(v1Keys.ssoIdentifier),
@@ -186,6 +185,12 @@ export class StateMigrationService {
       vaultTimeout: await this.get<number>(v1Keys.vaultTimeout),
       vaultTimeoutAction: await this.get<string>(v1Keys.vaultTimeoutAction),
       window: null,
+      enableTray: await this.get<boolean>(v1Keys.enableTray),
+      enableMinimizeToTray: await this.get<boolean>(v1Keys.enableMinimizeToTray),
+      enableCloseToTray: await this.get<boolean>(v1Keys.enableCloseToTray),
+      enableStartToTray: await this.get<boolean>(v1Keys.enableStartToTray),
+      openAtLogin: await this.get<boolean>(v1Keys.openAtLogin),
+      alwaysShowDock: await this.get<boolean>(v1Keys.alwaysShowDock),
     };
 
     const userId = await this.get<string>(v1Keys.userId);
@@ -194,7 +199,6 @@ export class StateMigrationService {
     // (userId != null) = we have a currently authed user (so known userId) with encrypted data and other key settings we can move, no need to temporarily store account settings
     if (userId == null) {
       await this.set(keys.tempAccountSettings, {
-        alwaysShowDock: await this.get<boolean>(v1Keys.alwaysShowDock),
         autoConfirmFingerPrints: await this.get<boolean>(v1Keys.autoConfirmFingerprints),
         autoFillOnPageLoadDefault: await this.get<boolean>(v1Keys.autoFillOnPageLoadDefault),
         biometricLocked: null,
@@ -219,17 +223,12 @@ export class StateMigrationService {
         enableBrowserIntegrationFingerprint: await this.get<boolean>(
           v1Keys.enableBrowserIntegrationFingerprint
         ),
-        enableCloseToTray: await this.get<boolean>(v1Keys.enableCloseToTray),
         enableFullWidth: await this.get<boolean>(v1Keys.enableFullWidth),
         enableGravitars: await this.get<boolean>(v1Keys.enableGravatars),
-        enableMinimizeToTray: await this.get<boolean>(v1Keys.enableMinimizeToTray),
-        enableStartToTray: await this.get<boolean>(v1Keys.enableStartToTray),
-        enableTray: await this.get<boolean>(v1Keys.enableTray),
         environmentUrls: globals.environmentUrls,
         equivalentDomains: await this.get<any>(v1Keys.equivalentDomains),
         minimizeOnCopyToClipboard: await this.get<boolean>(v1Keys.minimizeOnCopyToClipboard),
         neverDomains: await this.get<any>(v1Keys.neverDomains),
-        openAtLogin: await this.get<boolean>(v1Keys.openAtLogin),
         passwordGenerationOptions: await this.get<any>(v1Keys.passwordGenerationOptions),
         pinProtected: {
           decrypted: null,
@@ -331,7 +330,6 @@ export class StateMigrationService {
         usesKeyConnector: null,
       },
       settings: {
-        alwaysShowDock: await this.get<boolean>(v1Keys.alwaysShowDock),
         autoConfirmFingerPrints: await this.get<boolean>(v1Keys.autoConfirmFingerprints),
         autoFillOnPageLoadDefault: await this.get<boolean>(v1Keys.autoFillOnPageLoadDefault),
         biometricLocked: null,
@@ -356,17 +354,12 @@ export class StateMigrationService {
         enableBrowserIntegrationFingerprint: await this.get<boolean>(
           v1Keys.enableBrowserIntegrationFingerprint
         ),
-        enableCloseToTray: await this.get<boolean>(v1Keys.enableCloseToTray),
         enableFullWidth: await this.get<boolean>(v1Keys.enableFullWidth),
         enableGravitars: await this.get<boolean>(v1Keys.enableGravatars),
-        enableMinimizeToTray: await this.get<boolean>(v1Keys.enableMinimizeToTray),
-        enableStartToTray: await this.get<boolean>(v1Keys.enableStartToTray),
-        enableTray: await this.get<boolean>(v1Keys.enableTray),
         environmentUrls: globals.environmentUrls,
         equivalentDomains: await this.get<any>(v1Keys.equivalentDomains),
         minimizeOnCopyToClipboard: await this.get<boolean>(v1Keys.minimizeOnCopyToClipboard),
         neverDomains: await this.get<any>(v1Keys.neverDomains),
-        openAtLogin: await this.get<boolean>(v1Keys.openAtLogin),
         passwordGenerationOptions: await this.get<any>(v1Keys.passwordGenerationOptions),
         pinProtected: {
           decrypted: null,

@@ -5,7 +5,6 @@ export class GlobalState {
   enableAlwaysOnTop?: boolean;
   installedVersion?: string;
   locale?: string = "en";
-  openAtLogin?: boolean;
   organizationInvitation?: any;
   ssoCodeVerifier?: string;
   ssoOrganizationIdentifier?: string;
@@ -27,4 +26,10 @@ export class GlobalState {
   noAutoPromptBiometricsText?: string;
   stateVersion: StateVersion = StateVersion.One;
   environmentUrls: EnvironmentUrls = new EnvironmentUrls();
+  enableTray?: boolean;
+  enableMinimizeToTray?: boolean;
+  enableCloseToTray?: boolean;
+  enableStartToTray?: boolean;
+  openAtLogin?: boolean;
+  alwaysShowDock?: boolean;
 }

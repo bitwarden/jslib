@@ -161,18 +161,18 @@ export class StateService<TAccount extends Account = Account>
 
   async getAlwaysShowDock(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.alwaysShowDock ?? false
+      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
+        ?.alwaysShowDock ?? false
     );
   }
 
   async setAlwaysShowDock(value: boolean, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
+    const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.settings.alwaysShowDock = value;
-    await this.saveAccount(
-      account,
+    globals.alwaysShowDock = value;
+    await this.saveGlobals(
+      globals,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
   }
@@ -1027,18 +1027,18 @@ export class StateService<TAccount extends Account = Account>
 
   async getEnableCloseToTray(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.enableCloseToTray ?? false
+      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
+        ?.enableCloseToTray ?? false
     );
   }
 
   async setEnableCloseToTray(value: boolean, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
+    const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.settings.enableCloseToTray = value;
-    await this.saveAccount(
-      account,
+    globals.enableCloseToTray = value;
+    await this.saveGlobals(
+      globals,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
   }
@@ -1087,54 +1087,54 @@ export class StateService<TAccount extends Account = Account>
 
   async getEnableMinimizeToTray(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.enableMinimizeToTray ?? false
+      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
+        ?.enableMinimizeToTray ?? false
     );
   }
 
   async setEnableMinimizeToTray(value: boolean, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
+    const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.settings.enableMinimizeToTray = value;
-    await this.saveAccount(
-      account,
+    globals.enableMinimizeToTray = value;
+    await this.saveGlobals(
+      globals,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
   }
 
   async getEnableStartToTray(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings.enableStartToTray ?? false
+      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
+        ?.enableStartToTray ?? false
     );
   }
 
   async setEnableStartToTray(value: boolean, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
+    const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.settings.enableStartToTray = value;
-    await this.saveAccount(
-      account,
+    globals.enableStartToTray = value;
+    await this.saveGlobals(
+      globals,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
   }
 
   async getEnableTray(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.enableTray ?? false
+      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
+        ?.enableTray ?? false
     );
   }
 
   async setEnableTray(value: boolean, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
+    const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.settings.enableTray = value;
-    await this.saveAccount(
-      account,
+    globals.enableTray = value;
+    await this.saveGlobals(
+      globals,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
   }
