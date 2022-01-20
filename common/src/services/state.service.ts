@@ -1993,16 +1993,20 @@ export class StateService<TAccount extends Account = Account>
   }
 
   async getUsesKeyConnector(options?: StorageOptions): Promise<boolean> {
-    return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))
-      ?.profile?.usesKeyConnector;
+    return (
+      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
+    )?.profile?.usesKeyConnector;
   }
 
   async setUsesKeyConnector(value: boolean, options?: StorageOptions): Promise<void> {
     const account = await this.getAccount(
-      this.reconcileOptions(options, this.defaultInMemoryOptions)
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
     account.profile.usesKeyConnector = value;
-    await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+    );
   }
 
   async getVaultTimeout(options?: StorageOptions): Promise<number> {
