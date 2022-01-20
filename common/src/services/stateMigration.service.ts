@@ -193,7 +193,8 @@ export class StateMigrationService {
       alwaysShowDock: await this.get<boolean>(v1Keys.alwaysShowDock),
     };
 
-    const userId = await this.get<string>(v1Keys.userId);
+    const userId =
+      (await this.get<string>(v1Keys.userId)) ?? (await this.get<string>(v1Keys.entityId));
 
     // (userId == null) = no logged in user (so no known userId) and we need to temporarily store account specific settings in state to migrate on first auth
     // (userId != null) = we have a currently authed user (so known userId) with encrypted data and other key settings we can move, no need to temporarily store account settings
