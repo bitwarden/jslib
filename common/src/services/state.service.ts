@@ -41,6 +41,7 @@ const keys = {
   global: "global",
   authenticatedAccounts: "authenticatedAccounts",
   activeUserId: "activeUserId",
+  tempAccountSettings: "tempAccountSettings", // used to hold account specific settings (i.e clear clipboard) between initial migration and first account authentication
 };
 
 const partialKeys = {
@@ -2213,6 +2214,9 @@ export class StateService<TAccount extends Account = Account>
       // EnvironmentUrls are set before authenticating and should override whatever is stored from last session
       storedAccount.settings.environmentUrls = account.settings.environmentUrls;
       account.settings = storedAccount.settings;
+    } else if (await this.storageService.has(keys.tempAccountSettings)) {
+      account.settings = await this.storageService.get<any>(keys.tempAccountSettings);
+      await this.storageService.remove(keys.tempAccountSettings);
     }
     await this.storageService.save(
       account.profile.userId,
