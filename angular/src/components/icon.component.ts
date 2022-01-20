@@ -7,9 +7,8 @@ import { CipherView } from "jslib-common/models/view/cipherView";
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 
+import { BitwardenIcons } from "jslib-common/misc/bitwardenIcons";
 import { Utils } from "jslib-common/misc/utils";
-
-import { BitwardenIconsService } from "../services/bitwarden-icons.service";
 
 /**
  * Provides a mapping from supported card brands to
@@ -53,7 +52,7 @@ export class IconComponent implements OnChanges {
   }
 
   get iconCode(): string {
-    return BitwardenIconsService.getIconCode(this.icon);
+    return BitwardenIcons.CharCodeMap[this.icon];
   }
 
   protected load() {
