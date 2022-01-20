@@ -18,7 +18,6 @@ import { PasswordGenerationService } from "jslib-common/abstractions/passwordGen
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-import { SyncService } from "jslib-common/abstractions/sync.service";
 
 import { Response } from "../models/response";
 
@@ -54,8 +53,7 @@ export class LoginCommand {
     protected stateService: StateService,
     protected cryptoService: CryptoService,
     protected policyService: PolicyService,
-    clientId: string,
-    protected syncService: SyncService
+    clientId: string
   ) {
     this.clientId = clientId;
   }
