@@ -334,6 +334,7 @@ export class SyncService implements SyncServiceAbstraction {
     ]);
 
     if (await this.keyConnectorService.userNeedsMigration()) {
+      await this.keyConnectorService.setConvertAccountRequired(true);
       this.messagingService.send("convertAccountToKeyConnector");
     } else {
       this.keyConnectorService.removeConvertAccountRequired();
