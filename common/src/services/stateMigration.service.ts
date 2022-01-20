@@ -409,26 +409,26 @@ export class StateMigrationService {
     }
   }
 
-  private get options(): StorageOptions {
+  protected get options(): StorageOptions {
     return { htmlStorageLocation: HtmlStorageLocation.Local };
   }
 
-  private get<T>(key: string): Promise<T> {
+  protected get<T>(key: string): Promise<T> {
     return this.storageService.get<T>(key, this.options);
   }
 
-  private set(key: string, value: any): Promise<any> {
+  protected set(key: string, value: any): Promise<any> {
     if (value == null) {
       return this.storageService.remove(key, this.options);
     }
     return this.storageService.save(key, value, this.options);
   }
 
-  private async getGlobals(): Promise<GlobalState> {
+  protected async getGlobals(): Promise<GlobalState> {
     return await this.get<GlobalState>(keys.global);
   }
 
-  private async getCurrentStateVersion(): Promise<StateVersion> {
+  protected async getCurrentStateVersion(): Promise<StateVersion> {
     return (await this.getGlobals())?.stateVersion;
   }
 }
