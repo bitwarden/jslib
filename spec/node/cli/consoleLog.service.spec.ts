@@ -20,8 +20,8 @@ describe("CLI Console log service", () => {
     process.env.BW_RESPONSE = "true";
 
     logService.debug("this is a debug message");
-    expect(caughtMessage).toEqual({
-      error: jasmine.arrayWithExactContents(["this is a debug message"]),
+    expect(caughtMessage).toMatchObject({
+      error: { "0": "this is a debug message" },
     });
   });
 
@@ -33,10 +33,10 @@ describe("CLI Console log service", () => {
     logService.warning("warning");
     logService.error("error");
 
-    expect(caughtMessage).toEqual({
-      log: jasmine.arrayWithExactContents(["info"]),
-      warn: jasmine.arrayWithExactContents(["warning"]),
-      error: jasmine.arrayWithExactContents(["error"]),
+    expect(caughtMessage).toMatchObject({
+      log: { "0": "info" },
+      warn: { "0": "warning" },
+      error: { "0": "error" },
     });
   });
 });

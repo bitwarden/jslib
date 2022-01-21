@@ -13,7 +13,7 @@ function expectIdentity(cipher: CipherView) {
   expect(cipher.type).toBe(CipherType.Identity);
 
   expect(cipher.identity).toEqual(
-    jasmine.objectContaining({
+    expect.objectContaining({
       firstName: "first name",
       middleName: "mi",
       lastName: "last name",
@@ -25,7 +25,7 @@ function expectIdentity(cipher: CipherView) {
   );
 
   expect(cipher.fields).toEqual(
-    jasmine.arrayContaining([
+    expect.arrayContaining([
       Object.assign(new FieldView(), {
         type: FieldType.Text,
         name: "address",
@@ -39,7 +39,7 @@ function expectCreditCard(cipher: CipherView) {
   expect(cipher.type).toBe(CipherType.Card);
 
   expect(cipher.card).toEqual(
-    jasmine.objectContaining({
+    expect.objectContaining({
       number: "4111111111111111",
       code: "111",
       cardholderName: "test",

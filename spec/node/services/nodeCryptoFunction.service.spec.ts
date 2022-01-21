@@ -100,7 +100,7 @@ describe("NodeCrypto Function Service", () => {
         32,
         "sha256"
       );
-      await expectAsync(f).toBeRejectedWith(new Error("prk is too small."));
+      await expect(f).rejects.toEqual(new Error("prk is too small."));
     });
 
     it("should fail with outputByteSize is too large", async () => {
@@ -111,7 +111,7 @@ describe("NodeCrypto Function Service", () => {
         8161,
         "sha256"
       );
-      await expectAsync(f).toBeRejectedWith(new Error("outputByteSize is too large."));
+      await expect(f).rejects.toEqual(new Error("outputByteSize is too large."));
     });
   });
 
