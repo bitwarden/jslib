@@ -2219,6 +2219,7 @@ export class StateService<TAccount extends Account = Account>
       await this.storageService.remove(keys.tempAccountSettings);
     }
     account.settings.environmentUrls = environmentUrls;
+    Object.assign(account.settings, this.createAccount().settings);
     await this.storageService.save(
       account.profile.userId,
       account,

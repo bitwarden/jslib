@@ -193,6 +193,12 @@ export class StateMigrationService {
       alwaysShowDock: await this.get<boolean>(v1Keys.alwaysShowDock),
     };
 
+    // Some processes, like biometrics, may have already defined a value before migrations are run
+    const existingGlobals = await this.get<GlobalState>(keys.global);
+    if (existingGlobals != null) {
+        Object.assign(globals, existingGlobals);
+    }
+
     const userId =
       (await this.get<string>(v1Keys.userId)) ?? (await this.get<string>(v1Keys.entityId));
 
