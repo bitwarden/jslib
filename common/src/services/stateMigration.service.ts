@@ -196,7 +196,7 @@ export class StateMigrationService {
     // Some processes, like biometrics, may have already defined a value before migrations are run
     const existingGlobals = await this.get<GlobalState>(keys.global);
     if (existingGlobals != null) {
-        Object.assign(globals, existingGlobals);
+      Object.assign(globals, existingGlobals);
     }
 
     const userId =
