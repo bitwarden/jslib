@@ -22,7 +22,7 @@
     "test": "karma start ./spec/support/karma.conf.js --single-run",
     "test:watch": "karma start ./spec/support/karma.conf.js",
     "test:node": "jasmine-ts -r tsconfig-paths/register",
-    "test:node:watch": "nodemon -w ./dist --delay 500ms --exec jasmine-ts -r tsconfig-paths/register",
+    "test:node:watch": "nodemon -w ./angular -w ./common -w ./electron -w ./node -w ./shared -w ./spec --ext \"ts,js,mjs,json\" --exec jasmine-ts -r tsconfig-paths/register",
     "prepare": "husky install"
   },
   "devDependencies": {
