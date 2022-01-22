@@ -7,7 +7,6 @@ import { CipherView } from "jslib-common/models/view/cipherView";
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 
-import { BitwardenIcons } from "jslib-common/misc/bitwardenIcons";
 import { Utils } from "jslib-common/misc/utils";
 
 /**
@@ -49,10 +48,6 @@ export class IconComponent implements OnChanges {
     this.fallbackImage = null;
     this.imageEnabled = !(await this.stateService.getDisableFavicon());
     this.load();
-  }
-
-  get iconCode(): string {
-    return BitwardenIcons.CharCodeMap[this.icon];
   }
 
   protected load() {
