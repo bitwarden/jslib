@@ -167,32 +167,45 @@ export class StateMigrationService {
       }
     };
 
-    // Some processes, like biometrics, may have already defined a value before migrations are run. 
+    // Some processes, like biometrics, may have already defined a value before migrations are run.
     // We don't want to null out those values if they don't exist in the old storage scheme (like for new installs)
     // So, the OOO for migration is that we:
     // 1. Check for an existing storage value from the old storage structure OR
     // 2. Check for a value already set by processes that run before migration OR
     // 3. Assign the default value
-    let globals = await this.get<GlobalState>(keys.global) ?? new GlobalState();
-    globals.stateVersion = StateVersion.Two,
-    globals.environmentUrls = (await this.get<EnvironmentUrls>(v1Keys.environmentUrls)) ?? globals.environmentUrls,
-    globals.locale = await this.get<string>(v1Keys.locale) ?? globals.locale;
-    globals.noAutoPromptBiometrics = await this.get<boolean>(v1Keys.disableAutoBiometricsPrompt) ?? globals.noAutoPromptBiometrics,
-    globals.noAutoPromptBiometricsText = await this.get<string>(v1Keys.noAutoPromptBiometricsText) ?? globals.noAutoPromptBiometricsText,
-    globals.ssoCodeVerifier = await this.get<string>(v1Keys.ssoCodeVerifier) ?? globals.ssoCodeVerifier;
-    globals.ssoOrganizationIdentifier = await this.get<string>(v1Keys.ssoIdentifier) ?? globals.ssoOrganizationIdentifier;
-    globals.ssoState = await this.get<any>(v1Keys.ssoState) ?? globals.ssoState,
-    globals.rememberedEmail = await this.get<string>(v1Keys.rememberedEmail) ?? globals.rememberedEmail;
-    globals.theme = await this.get<string>(v1Keys.theme) ?? globals.theme;
-    globals.vaultTimeout = await this.get<number>(v1Keys.vaultTimeout) ?? globals.vaultTimeout;
-    globals.vaultTimeoutAction = await this.get<string>(v1Keys.vaultTimeoutAction) ?? globals.vaultTimeoutAction,
-    globals.window = await this.get<any>(v1Keys.mainWindowSize) ?? globals.window;
-    globals.enableTray = await this.get<boolean>(v1Keys.enableTray) ?? globals.enableTray;
-    globals.enableMinimizeToTray = await this.get<boolean>(v1Keys.enableMinimizeToTray) ?? globals.enableMinimizeToTray;
-    globals.enableCloseToTray = await this.get<boolean>(v1Keys.enableCloseToTray) ?? globals.enableCloseToTray;
-    globals.enableStartToTray = await this.get<boolean>(v1Keys.enableStartToTray) ?? globals.enableStartToTray;
-    globals.openAtLogin = await this.get<boolean>(v1Keys.openAtLogin) ?? globals.openAtLogin;
-    globals.alwaysShowDock = await this.get<boolean>(v1Keys.alwaysShowDock) ?? globals.alwaysShowDock;
+    const globals = (await this.get<GlobalState>(keys.global)) ?? new GlobalState();
+    globals.stateVersion = StateVersion.Two;
+    globals.environmentUrls =
+      (await this.get<EnvironmentUrls>(v1Keys.environmentUrls)) ?? globals.environmentUrls;
+    globals.locale = (await this.get<string>(v1Keys.locale)) ?? globals.locale;
+    globals.noAutoPromptBiometrics =
+      (await this.get<boolean>(v1Keys.disableAutoBiometricsPrompt)) ??
+      globals.noAutoPromptBiometrics;
+    globals.noAutoPromptBiometricsText =
+      (await this.get<string>(v1Keys.noAutoPromptBiometricsText)) ??
+      globals.noAutoPromptBiometricsText;
+    globals.ssoCodeVerifier =
+      (await this.get<string>(v1Keys.ssoCodeVerifier)) ?? globals.ssoCodeVerifier;
+    globals.ssoOrganizationIdentifier =
+      (await this.get<string>(v1Keys.ssoIdentifier)) ?? globals.ssoOrganizationIdentifier;
+    globals.ssoState = (await this.get<any>(v1Keys.ssoState)) ?? globals.ssoState;
+    globals.rememberedEmail =
+      (await this.get<string>(v1Keys.rememberedEmail)) ?? globals.rememberedEmail;
+    globals.theme = (await this.get<string>(v1Keys.theme)) ?? globals.theme;
+    globals.vaultTimeout = (await this.get<number>(v1Keys.vaultTimeout)) ?? globals.vaultTimeout;
+    globals.vaultTimeoutAction =
+      (await this.get<string>(v1Keys.vaultTimeoutAction)) ?? globals.vaultTimeoutAction;
+    globals.window = (await this.get<any>(v1Keys.mainWindowSize)) ?? globals.window;
+    globals.enableTray = (await this.get<boolean>(v1Keys.enableTray)) ?? globals.enableTray;
+    globals.enableMinimizeToTray =
+      (await this.get<boolean>(v1Keys.enableMinimizeToTray)) ?? globals.enableMinimizeToTray;
+    globals.enableCloseToTray =
+      (await this.get<boolean>(v1Keys.enableCloseToTray)) ?? globals.enableCloseToTray;
+    globals.enableStartToTray =
+      (await this.get<boolean>(v1Keys.enableStartToTray)) ?? globals.enableStartToTray;
+    globals.openAtLogin = (await this.get<boolean>(v1Keys.openAtLogin)) ?? globals.openAtLogin;
+    globals.alwaysShowDock =
+      (await this.get<boolean>(v1Keys.alwaysShowDock)) ?? globals.alwaysShowDock;
 
     const userId =
       (await this.get<string>(v1Keys.userId)) ?? (await this.get<string>(v1Keys.entityId));
