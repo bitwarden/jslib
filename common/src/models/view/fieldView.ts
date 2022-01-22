@@ -10,6 +10,8 @@ export class FieldView implements View {
   value: string = null;
   type: FieldType = null;
   newField: boolean = false; // Marks if the field is new and hasn't been saved
+  showActionButtons: boolean = false;
+  showCount: boolean = false;
   showValue: boolean = false;
   linkedId: LinkedIdType = null;
 
