@@ -2210,14 +2210,16 @@ export class StateService<TAccount extends Account = Account>
       account.profile.userId,
       await this.defaultOnDiskLocalOptions()
     );
+    // EnvironmentUrls are set before authenticating and should override whatever is stored from any previous session
+    const environmentUrls = account.settings.environmentUrls;
     if (storedAccount?.settings != null) {
-      // EnvironmentUrls are set before authenticating and should override whatever is stored from last session
-      storedAccount.settings.environmentUrls = account.settings.environmentUrls;
       account.settings = storedAccount.settings;
     } else if (await this.storageService.has(keys.tempAccountSettings)) {
       account.settings = await this.storageService.get<any>(keys.tempAccountSettings);
       await this.storageService.remove(keys.tempAccountSettings);
     }
+    Object.assign(account.settings, this.createAccount().settings);
+    account.settings.environmentUrls = environmentUrls;
     await this.storageService.save(
       account.profile.userId,
       account,

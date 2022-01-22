@@ -193,7 +193,14 @@ export class StateMigrationService {
       alwaysShowDock: await this.get<boolean>(v1Keys.alwaysShowDock),
     };
 
-    const userId = await this.get<string>(v1Keys.userId);
+    // Some processes, like biometrics, may have already defined a value before migrations are run
+    const existingGlobals = await this.get<GlobalState>(keys.global);
+    if (existingGlobals != null) {
+      Object.assign(globals, existingGlobals);
+    }
+
+    const userId =
+      (await this.get<string>(v1Keys.userId)) ?? (await this.get<string>(v1Keys.entityId));
 
     // (userId == null) = no logged in user (so no known userId) and we need to temporarily store account specific settings in state to migrate on first auth
     // (userId != null) = we have a currently authed user (so known userId) with encrypted data and other key settings we can move, no need to temporarily store account settings
@@ -409,26 +416,26 @@ export class StateMigrationService {
     }
   }
 
-  private get options(): StorageOptions {
+  protected get options(): StorageOptions {
     return { htmlStorageLocation: HtmlStorageLocation.Local };
   }
 
-  private get<T>(key: string): Promise<T> {
+  protected get<T>(key: string): Promise<T> {
     return this.storageService.get<T>(key, this.options);
   }
 
-  private set(key: string, value: any): Promise<any> {
+  protected set(key: string, value: any): Promise<any> {
     if (value == null) {
       return this.storageService.remove(key, this.options);
     }
     return this.storageService.save(key, value, this.options);
   }
 
-  private async getGlobals(): Promise<GlobalState> {
+  protected async getGlobals(): Promise<GlobalState> {
     return await this.get<GlobalState>(keys.global);
   }
 
-  private async getCurrentStateVersion(): Promise<StateVersion> {
+  protected async getCurrentStateVersion(): Promise<StateVersion> {
     return (await this.getGlobals())?.stateVersion;
   }
 }
