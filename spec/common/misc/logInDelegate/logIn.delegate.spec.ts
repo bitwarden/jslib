@@ -17,6 +17,7 @@ import { Utils } from "jslib-common/misc/utils";
 
 import { Account, AccountProfile, AccountTokens } from "jslib-common/models/domain/account";
 import { AuthResult } from "jslib-common/models/domain/authResult";
+import { EncString } from "jslib-common/models/domain/encString";
 
 import { IdentityCaptchaResponse } from "jslib-common/models/response/identityCaptchaResponse";
 import { IdentityTokenResponse } from "jslib-common/models/response/identityTokenResponse";
@@ -186,6 +187,7 @@ describe("LogInDelegate", () => {
     it("makes a new public and private key for an old account", async () => {
       const tokenResponse = tokenResponseFactory();
       tokenResponse.privateKey = null;
+      cryptoService.makeKeyPair(Arg.any()).resolves(["PUBLIC_KEY", new EncString("PRIVATE_KEY")]);
 
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
