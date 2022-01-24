@@ -249,7 +249,6 @@ describe("LogInDelegate", () => {
     });
 
     it("sends stored 2FA token to server", async () => {
-      passwordLogInSetup();
       tokenService.getTwoFactorToken().resolves(twoFactorToken);
 
       await passwordLogInDelegate.init(email, masterPassword);
@@ -259,13 +258,9 @@ describe("LogInDelegate", () => {
         Arg.is((actual) => {
           const passwordTokenRequest = actual as any;
           return (
-            passwordTokenRequest.email === email &&
-            passwordTokenRequest.masterPasswordHash === hashedPassword &&
-            passwordTokenRequest.device.identifier === deviceId &&
             passwordTokenRequest.twoFactor.provider === TwoFactorProviderType.Remember &&
             passwordTokenRequest.twoFactor.token === twoFactorToken &&
-            passwordTokenRequest.twoFactor.remember === false &&
-            passwordTokenRequest.captchaResponse == null
+            passwordTokenRequest.twoFactor.remember === false
           );
         })
       );
@@ -273,8 +268,6 @@ describe("LogInDelegate", () => {
 
     it("sends 2FA token provided by user to server (single step)", async () => {
       // This occurs if the user enters the 2FA code as an argument in the CLI
-
-      passwordLogInSetup();
       await passwordLogInDelegate.init(email, masterPassword, null, {
         provider: twoFactorProviderType,
         token: twoFactorToken,
@@ -286,20 +279,15 @@ describe("LogInDelegate", () => {
         Arg.is((actual) => {
           const passwordTokenRequest = actual as any;
           return (
-            passwordTokenRequest.email === email &&
-            passwordTokenRequest.masterPasswordHash === hashedPassword &&
-            passwordTokenRequest.device.identifier === deviceId &&
             passwordTokenRequest.twoFactor.provider === twoFactorProviderType &&
             passwordTokenRequest.twoFactor.token === twoFactorToken &&
-            passwordTokenRequest.twoFactor.remember === twoFactorRemember &&
-            passwordTokenRequest.captchaResponse == null
+            passwordTokenRequest.twoFactor.remember === twoFactorRemember
           );
         })
       );
     });
 
     it("sends 2FA token provided by user to server (two-step)", async () => {
-      passwordLogInSetup();
       await passwordLogInDelegate.init(email, masterPassword);
       await passwordLogInDelegate.logInTwoFactor({
         provider: twoFactorProviderType,
@@ -311,24 +299,12 @@ describe("LogInDelegate", () => {
         Arg.is((actual) => {
           const passwordTokenRequest = actual as any;
           return (
-            passwordTokenRequest.email === email &&
-            passwordTokenRequest.masterPasswordHash === hashedPassword &&
-            passwordTokenRequest.device.identifier === deviceId &&
             passwordTokenRequest.twoFactor.provider === twoFactorProviderType &&
             passwordTokenRequest.twoFactor.token === twoFactorToken &&
-            passwordTokenRequest.twoFactor.remember === twoFactorRemember &&
-            passwordTokenRequest.captchaResponse == null
+            passwordTokenRequest.twoFactor.remember === twoFactorRemember
           );
         })
       );
     });
   });
-
-  function passwordLogInSetup() {
-    authService.makePreloginKey(Arg.any(), Arg.any()).resolves(preloginKey);
-    cryptoService.hashPassword(masterPassword, Arg.any()).resolves(hashedPassword);
-    cryptoService
-      .hashPassword(masterPassword, Arg.any(), HashPurpose.LocalAuthorization)
-      .resolves(localHashedPassword);
-  }
 });
