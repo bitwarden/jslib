@@ -26,7 +26,7 @@ export class KeeperJsonImporter extends BaseImporter implements Importer {
       cipher.notes = record.notes;
 
       let customfieldKeys = Object.keys(record.custom_fields);
-      if (customfieldKeys.includes("TFC:Keeper") && record.custom_fields["TFC:Keeper"] != null) {
+      if (record.custom_fields["TFC:Keeper"] != null) {
         customfieldKeys = customfieldKeys.filter((item) => item !== "TFC:Keeper");
         cipher.login.totp = record.custom_fields["TFC:Keeper"];
       }
