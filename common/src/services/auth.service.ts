@@ -57,7 +57,7 @@ export class AuthService implements AuthServiceAbstraction {
     twoFactor?: TokenRequestTwoFactor,
     captchaToken?: string
   ): Promise<AuthResult> {
-    const passwordLogInDelegate = new PasswordLogInDelegate(
+    const passwordLogInDelegate = await PasswordLogInDelegate.new(
       this.cryptoService,
       this.apiService,
       this.tokenService,
@@ -68,10 +68,12 @@ export class AuthService implements AuthServiceAbstraction {
       this.stateService,
       this.setCryptoKeys,
       this.twoFactorService,
-      this
+      this,
+      email,
+      masterPassword,
+      captchaToken,
+      twoFactor
     );
-
-    await passwordLogInDelegate.init(email, masterPassword, captchaToken, twoFactor);
 
     return this.startLogin(passwordLogInDelegate);
   }
@@ -83,7 +85,7 @@ export class AuthService implements AuthServiceAbstraction {
     orgId: string,
     twoFactor?: TokenRequestTwoFactor
   ): Promise<AuthResult> {
-    const ssoLogInDelegate = new SsoLogInDelegate(
+    const ssoLogInDelegate = await SsoLogInDelegate.new(
       this.cryptoService,
       this.apiService,
       this.tokenService,
@@ -94,10 +96,13 @@ export class AuthService implements AuthServiceAbstraction {
       this.stateService,
       this.setCryptoKeys,
       this.twoFactorService,
-      this.keyConnectorService
+      this.keyConnectorService,
+      code,
+      codeVerifier,
+      redirectUrl,
+      orgId,
+      twoFactor
     );
-
-    await ssoLogInDelegate.init(code, codeVerifier, redirectUrl, orgId, twoFactor);
 
     return this.startLogin(ssoLogInDelegate);
   }
