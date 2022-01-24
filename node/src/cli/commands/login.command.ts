@@ -14,12 +14,10 @@ import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { CryptoFunctionService } from "jslib-common/abstractions/cryptoFunction.service";
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
-import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.service";
 import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-import { SyncService } from "jslib-common/abstractions/sync.service";
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
 import { Response } from "../models/response";
@@ -58,10 +56,8 @@ export class LoginCommand {
     protected stateService: StateService,
     protected cryptoService: CryptoService,
     protected policyService: PolicyService,
+    protected twoFactorService: TwoFactorService,
     clientId: string,
-    private syncService: SyncService,
-    protected keyConnectorService: KeyConnectorService,
-    protected twoFactorService: TwoFactorService
   ) {
     this.clientId = clientId;
   }
@@ -300,14 +296,6 @@ export class LoginCommand {
         );
       }
 
-      // Full sync required for the reset password and key connector checks
-      await this.syncService.fullSync(true);
-
-      // Handle converting to Key Connector if required
-      if (await this.keyConnectorService.userNeedsMigration()) {
-        return await this.migrateToKeyConnector();
-      }
-
       // Handle Updating Temp Password if NOT using an API Key for authentication
       if (response.forcePasswordReset && clientId == null && clientSecret == null) {
         return await this.updateTempPassword();
@@ -462,68 +450,6 @@ export class LoginCommand {
       );
     }
     return userInput;
-  }
-
-  private async migrateToKeyConnector() {
-    // If no interaction available, alert user to use web vault
-    if (!this.canInteract) {
-      await this.logout();
-      this.authService.logOut(() => {
-        /* Do nothing */
-      });
-      return Response.error(
-        new MessageResponse(
-          "An organization you are a member of is using Key Connector. " +
-            "In order to access the vault, you must opt-in to Key Connector now via the web vault. You have been logged out.",
-          null
-        )
-      );
-    }
-
-    const organization = await this.keyConnectorService.getManagingOrganization();
-
-    const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-      type: "list",
-      name: "convert",
-      message:
-        organization.name +
-        " is using a self-hosted key server. A master password is no longer required to log in for members of this organization. ",
-      choices: [
-        {
-          name: "Remove master password and log in",
-          value: "remove",
-        },
-        {
-          name: "Leave organization and log in",
-          value: "leave",
-        },
-        {
-          name: "Exit",
-          value: "exit",
-        },
-      ],
-    });
-
-    if (answer.convert === "remove") {
-      await this.keyConnectorService.migrateUser();
-
-      // Update environment URL - required for api key login
-      const urls = this.environmentService.getUrls();
-      urls.keyConnector = organization.keyConnectorUrl;
-      await this.environmentService.setUrls(urls, true);
-
-      return await this.handleSuccessResponse();
-    } else if (answer.convert === "leave") {
-      await this.apiService.postLeaveOrganization(organization.id);
-      await this.syncService.fullSync(true);
-      return await this.handleSuccessResponse();
-    } else {
-      await this.logout();
-      this.authService.logOut(() => {
-        /* Do nothing */
-      });
-      return Response.error("You have been logged out.");
-    }
   }
 
   private async apiClientId(): Promise<string> {

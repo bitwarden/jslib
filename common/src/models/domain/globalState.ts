@@ -4,9 +4,7 @@ import { EnvironmentUrls } from "./environmentUrls";
 export class GlobalState {
   enableAlwaysOnTop?: boolean;
   installedVersion?: string;
-  lastActive?: number;
   locale?: string = "en";
-  openAtLogin?: boolean;
   organizationInvitation?: any;
   ssoCodeVerifier?: string;
   ssoOrganizationIdentifier?: string;
@@ -26,6 +24,14 @@ export class GlobalState {
   biometricText?: string;
   noAutoPromptBiometrics?: boolean;
   noAutoPromptBiometricsText?: string;
-  stateVersion: StateVersion = StateVersion.Latest;
+  stateVersion: StateVersion = StateVersion.One;
   environmentUrls: EnvironmentUrls = new EnvironmentUrls();
+  enableTray?: boolean;
+  enableMinimizeToTray?: boolean;
+  enableCloseToTray?: boolean;
+  enableStartToTray?: boolean;
+  openAtLogin?: boolean;
+  alwaysShowDock?: boolean;
+  enableBrowserIntegration?: boolean;
+  enableBrowserIntegrationFingerprint?: boolean;
 }

@@ -355,7 +355,7 @@ export class CipherService implements CipherServiceAbstraction {
 
     await Promise.all(promises);
     decCiphers.sort(this.getLocaleSortingFunction());
-    await this.stateService.setDecryptedCiphers(decCiphers);
+    await this.setDecryptedCipherCache(decCiphers);
     return decCiphers;
   }
 
