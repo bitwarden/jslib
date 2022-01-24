@@ -7,8 +7,12 @@ import { testData as TestData } from "./testData/keeperJson/testData";
 describe("Keeper Json Importer", () => {
   const testDataJson = JSON.stringify(TestData);
 
+  let importer: Importer;
+  beforeEach(() => {
+    importer = new Importer();
+  });
+
   it("should parse login data", async () => {
-    const importer = new Importer();
     const result = await importer.parse(testDataJson);
     expect(result != null).toBe(true);
 
@@ -32,7 +36,6 @@ describe("Keeper Json Importer", () => {
   });
 
   it("should import TOTP when present", async () => {
-    const importer = new Importer();
     const result = await importer.parse(testDataJson);
     expect(result != null).toBe(true);
 
@@ -47,7 +50,6 @@ describe("Keeper Json Importer", () => {
   });
 
   it("should parse custom fields", async () => {
-    const importer = new Importer();
     const result = await importer.parse(testDataJson);
     expect(result != null).toBe(true);
 
@@ -67,7 +69,6 @@ describe("Keeper Json Importer", () => {
   });
 
   it("should create folders and assigned ciphers to them", async () => {
-    const importer = new Importer();
     const result = await importer.parse(testDataJson);
     expect(result != null).toBe(true);
 
@@ -82,7 +83,6 @@ describe("Keeper Json Importer", () => {
   });
 
   it("should create collections if part of an organization", async () => {
-    const importer = new Importer();
     importer.organizationId = Utils.newGuid();
     const result = await importer.parse(testDataJson);
     expect(result != null).toBe(true);
