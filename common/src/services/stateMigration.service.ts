@@ -206,6 +206,12 @@ export class StateMigrationService {
     globals.openAtLogin = (await this.get<boolean>(v1Keys.openAtLogin)) ?? globals.openAtLogin;
     globals.alwaysShowDock =
       (await this.get<boolean>(v1Keys.alwaysShowDock)) ?? globals.alwaysShowDock;
+    globals.enableBrowserIntegration =
+      (await this.get<boolean>(v1Keys.enableBrowserIntegration)) ??
+      globals.enableBrowserIntegration;
+    globals.enableBrowserIntegrationFingerprint =
+      (await this.get<boolean>(v1Keys.enableBrowserIntegrationFingerprint)) ??
+      globals.enableBrowserIntegrationFingerprint;
 
     const userId =
       (await this.get<string>(v1Keys.userId)) ?? (await this.get<string>(v1Keys.entityId));
@@ -234,10 +240,6 @@ export class StateMigrationService {
         enableAlwaysOnTop: await this.get<boolean>(v1Keys.enableAlwaysOnTop),
         enableAutoFillOnPageLoad: await this.get<boolean>(v1Keys.enableAutoFillOnPageLoad),
         enableBiometric: await this.get<boolean>(v1Keys.enableBiometric),
-        enableBrowserIntegration: await this.get<boolean>(v1Keys.enableBrowserIntegration),
-        enableBrowserIntegrationFingerprint: await this.get<boolean>(
-          v1Keys.enableBrowserIntegrationFingerprint
-        ),
         enableFullWidth: await this.get<boolean>(v1Keys.enableFullWidth),
         enableGravitars: await this.get<boolean>(v1Keys.enableGravatars),
         environmentUrls: globals.environmentUrls,
@@ -365,10 +367,6 @@ export class StateMigrationService {
         enableAlwaysOnTop: await this.get<boolean>(v1Keys.enableAlwaysOnTop),
         enableAutoFillOnPageLoad: await this.get<boolean>(v1Keys.enableAutoFillOnPageLoad),
         enableBiometric: await this.get<boolean>(v1Keys.enableBiometric),
-        enableBrowserIntegration: await this.get<boolean>(v1Keys.enableBrowserIntegration),
-        enableBrowserIntegrationFingerprint: await this.get<boolean>(
-          v1Keys.enableBrowserIntegrationFingerprint
-        ),
         enableFullWidth: await this.get<boolean>(v1Keys.enableFullWidth),
         enableGravitars: await this.get<boolean>(v1Keys.enableGravatars),
         environmentUrls: globals.environmentUrls,

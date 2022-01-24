@@ -32,4 +32,6 @@ export class GlobalState {
   enableStartToTray?: boolean;
   openAtLogin?: boolean;
   alwaysShowDock?: boolean;
+  enableBrowserIntegration?: boolean;
+  enableBrowserIntegrationFingerprint?: boolean;
 }
