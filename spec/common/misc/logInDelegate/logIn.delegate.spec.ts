@@ -21,10 +21,10 @@ import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKe
 import { IdentityTokenResponse } from "jslib-common/models/response/identityTokenResponse";
 
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
-import { HashPurpose } from "jslib-common/enums/hashPurpose";
 import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
 import { IdentityCaptchaResponse } from "jslib-common/models/response/identityCaptchaResponse";
 import { IdentityTwoFactorResponse } from "jslib-common/models/response/identityTwoFactorResponse";
+import { TokenRequestTwoFactor } from "jslib-common/models/request/identityToken/tokenRequest";
 
 const email = "hello@world.com";
 const masterPassword = "password";
@@ -82,7 +82,6 @@ describe("LogInDelegate", () => {
   let stateService: SubstituteOf<StateService>;
   let twoFactorService: SubstituteOf<TwoFactorService>;
   let authService: SubstituteOf<AuthService>;
-  const setCryptoKeys = true;
 
   let passwordLogInDelegate: PasswordLogInDelegate;
 
@@ -100,27 +99,14 @@ describe("LogInDelegate", () => {
 
     tokenService.getTwoFactorToken().resolves(null);
 
-    // The base class is abstract so we test it via PasswordLogInDelegate
-    passwordLogInDelegate = await PasswordLogInDelegate.new(
-      cryptoService,
-      apiService,
-      tokenService,
-      appIdService,
-      platformUtilsService,
-      messagingService,
-      logService,
-      stateService,
-      setCryptoKeys,
-      twoFactorService,
-      authService,
-      email,
-      masterPassword
-    );
-
     appIdService.getAppId().resolves(deviceId);
   });
 
   describe("base class", () => {
+    beforeEach(async () => {
+      await setupLogInDelegate();
+    });
+
     it("sets the local environment after a successful login", async () => {
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponseFactory());
       tokenService.decodeToken(accessToken).resolves(decodedToken);
@@ -191,22 +177,7 @@ describe("LogInDelegate", () => {
 
     it("does not set crypto keys if setCryptoKeys is false", async () => {
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponseFactory());
-
-      passwordLogInDelegate = await PasswordLogInDelegate.new(
-        cryptoService,
-        apiService,
-        tokenService,
-        appIdService,
-        platformUtilsService,
-        messagingService,
-        logService,
-        stateService,
-        false,
-        twoFactorService,
-        authService,
-        email,
-        masterPassword
-      );
+      await setupLogInDelegate(false);
 
       await passwordLogInDelegate.logIn();
 
@@ -230,6 +201,7 @@ describe("LogInDelegate", () => {
 
   describe("Two-factor authentication", () => {
     it("rejects login if 2FA is required", async () => {
+      await setupLogInDelegate();
       const tokenResponse = tokenResponseFactory();
       (tokenResponse as any).twoFactorProviders2 = twoFactorProviders;
 
@@ -247,25 +219,9 @@ describe("LogInDelegate", () => {
     });
 
     it("sends stored 2FA token to server", async () => {
-      // TODO: refactor duplicate tokenService setup
       tokenService = Substitute.for<TokenService>();
       tokenService.getTwoFactorToken().resolves(twoFactorToken);
-
-      passwordLogInDelegate = await PasswordLogInDelegate.new(
-        cryptoService,
-        apiService,
-        tokenService,
-        appIdService,
-        platformUtilsService,
-        messagingService,
-        logService,
-        stateService,
-        setCryptoKeys,
-        twoFactorService,
-        authService,
-        email,
-        masterPassword
-      );
+      await setupLogInDelegate();
 
       await passwordLogInDelegate.logIn();
 
@@ -283,28 +239,11 @@ describe("LogInDelegate", () => {
 
     it("sends 2FA token provided by user to server (single step)", async () => {
       // This occurs if the user enters the 2FA code as an argument in the CLI
-
-      passwordLogInDelegate = await PasswordLogInDelegate.new(
-        cryptoService,
-        apiService,
-        tokenService,
-        appIdService,
-        platformUtilsService,
-        messagingService,
-        logService,
-        stateService,
-        setCryptoKeys,
-        twoFactorService,
-        authService,
-        email,
-        masterPassword,
-        null,
-        {
-          provider: twoFactorProviderType,
-          token: twoFactorToken,
-          remember: twoFactorRemember,
-        }
-      );
+      await setupLogInDelegate(true, {
+        provider: twoFactorProviderType,
+        token: twoFactorToken,
+        remember: twoFactorRemember,
+      });
 
       await passwordLogInDelegate.logIn();
 
@@ -321,6 +260,8 @@ describe("LogInDelegate", () => {
     });
 
     it("sends 2FA token provided by user to server (two-step)", async () => {
+      await setupLogInDelegate();
+
       await passwordLogInDelegate.logInTwoFactor({
         provider: twoFactorProviderType,
         token: twoFactorToken,
@@ -339,4 +280,25 @@ describe("LogInDelegate", () => {
       );
     });
   });
+
+  async function setupLogInDelegate(setCryptoKeys = true, twoFactor: TokenRequestTwoFactor = null) {
+    // The base class is abstract so we test it via PasswordLogInDelegate
+    passwordLogInDelegate = await PasswordLogInDelegate.new(
+      cryptoService,
+      apiService,
+      tokenService,
+      appIdService,
+      platformUtilsService,
+      messagingService,
+      logService,
+      stateService,
+      setCryptoKeys,
+      twoFactorService,
+      authService,
+      email,
+      masterPassword,
+      null,
+      twoFactor
+    );
+  }
 });
