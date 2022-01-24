@@ -17,9 +17,6 @@ import { SsoTokenRequest } from "../../models/request/identityToken/ssoTokenRequ
 import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
 
 export class SsoLogInDelegate extends LogInDelegate {
-  tokenRequest: SsoTokenRequest;
-  orgId: string;
-
   static async new(
     cryptoService: CryptoService,
     apiService: ApiService,
@@ -54,6 +51,8 @@ export class SsoLogInDelegate extends LogInDelegate {
     await delegate.init(code, codeVerifier, redirectUrl, orgId, twoFactor);
     return delegate;
   }
+  tokenRequest: SsoTokenRequest;
+  orgId: string;
 
   private constructor(
     cryptoService: CryptoService,
@@ -82,23 +81,6 @@ export class SsoLogInDelegate extends LogInDelegate {
     );
   }
 
-  private async init(
-    code: string,
-    codeVerifier: string,
-    redirectUrl: string,
-    orgId: string,
-    twoFactor?: TokenRequestTwoFactor
-  ) {
-    this.orgId = orgId;
-    this.tokenRequest = new SsoTokenRequest(
-      code,
-      codeVerifier,
-      redirectUrl,
-      await this.buildTwoFactor(twoFactor),
-      await this.buildDeviceRequest()
-    );
-  }
-
   async onSuccessfulLogin(tokenResponse: IdentityTokenResponse) {
     const newSsoUser = tokenResponse.key == null;
 
@@ -114,5 +96,22 @@ export class SsoLogInDelegate extends LogInDelegate {
         );
       }
     }
+  }
+
+  private async init(
+    code: string,
+    codeVerifier: string,
+    redirectUrl: string,
+    orgId: string,
+    twoFactor?: TokenRequestTwoFactor
+  ) {
+    this.orgId = orgId;
+    this.tokenRequest = new SsoTokenRequest(
+      code,
+      codeVerifier,
+      redirectUrl,
+      await this.buildTwoFactor(twoFactor),
+      await this.buildDeviceRequest()
+    );
   }
 }

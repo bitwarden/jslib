@@ -18,8 +18,6 @@ import { ApiTokenRequest } from "../../models/request/identityToken/apiTokenRequ
 import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
 
 export class ApiLogInDelegate extends LogInDelegate {
-  tokenRequest: ApiTokenRequest;
-
   static async new(
     cryptoService: CryptoService,
     apiService: ApiService,
@@ -54,6 +52,7 @@ export class ApiLogInDelegate extends LogInDelegate {
     await delegate.init(clientId, clientSecret, twoFactor);
     return delegate;
   }
+  tokenRequest: ApiTokenRequest;
 
   private constructor(
     cryptoService: CryptoService,
@@ -83,15 +82,6 @@ export class ApiLogInDelegate extends LogInDelegate {
     );
   }
 
-  private async init(clientId: string, clientSecret: string, twoFactor?: TokenRequestTwoFactor) {
-    this.tokenRequest = new ApiTokenRequest(
-      clientId,
-      clientSecret,
-      await this.buildTwoFactor(twoFactor),
-      await this.buildDeviceRequest()
-    );
-  }
-
   async onSuccessfulLogin(tokenResponse: IdentityTokenResponse) {
     if (tokenResponse.apiUseKeyConnector) {
       const keyConnectorUrl = this.environmentService.getKeyConnectorUrl();
@@ -103,5 +93,14 @@ export class ApiLogInDelegate extends LogInDelegate {
     await super.saveAccountInformation(tokenResponse);
     await this.stateService.setApiKeyClientId(this.tokenRequest.clientId);
     await this.stateService.setApiKeyClientSecret(this.tokenRequest.clientSecret);
+  }
+
+  private async init(clientId: string, clientSecret: string, twoFactor?: TokenRequestTwoFactor) {
+    this.tokenRequest = new ApiTokenRequest(
+      clientId,
+      clientSecret,
+      await this.buildTwoFactor(twoFactor),
+      await this.buildDeviceRequest()
+    );
   }
 }

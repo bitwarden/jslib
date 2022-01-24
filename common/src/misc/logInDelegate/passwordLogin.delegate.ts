@@ -19,10 +19,13 @@ import { SymmetricCryptoKey } from "../../models/domain/symmetricCryptoKey";
 import { HashPurpose } from "../../enums/hashPurpose";
 
 export class PasswordLogInDelegate extends LogInDelegate {
-  tokenRequest: PasswordTokenRequest;
+  get email() {
+    return this.tokenRequest.email;
+  }
 
-  private localHashedPassword: string;
-  private key: SymmetricCryptoKey;
+  get masterPasswordHash() {
+    return this.tokenRequest.masterPasswordHash;
+  }
 
   static async new(
     cryptoService: CryptoService,
@@ -57,6 +60,10 @@ export class PasswordLogInDelegate extends LogInDelegate {
     await delegate.init(email, masterPassword, captchaToken, twoFactor);
     return delegate;
   }
+  tokenRequest: PasswordTokenRequest;
+
+  private localHashedPassword: string;
+  private key: SymmetricCryptoKey;
 
   private constructor(
     cryptoService: CryptoService,
@@ -85,6 +92,13 @@ export class PasswordLogInDelegate extends LogInDelegate {
     );
   }
 
+  async onSuccessfulLogin() {
+    if (this.setCryptoKeys) {
+      await this.cryptoService.setKey(this.key);
+      await this.cryptoService.setKeyHash(this.localHashedPassword);
+    }
+  }
+
   private async init(
     email: string,
     masterPassword: string,
@@ -106,20 +120,5 @@ export class PasswordLogInDelegate extends LogInDelegate {
       await this.buildTwoFactor(twoFactor),
       await this.buildDeviceRequest()
     );
-  }
-
-  async onSuccessfulLogin() {
-    if (this.setCryptoKeys) {
-      await this.cryptoService.setKey(this.key);
-      await this.cryptoService.setKeyHash(this.localHashedPassword);
-    }
-  }
-
-  get email() {
-    return this.tokenRequest.email;
-  }
-
-  get masterPasswordHash() {
-    return this.tokenRequest.masterPasswordHash;
   }
 }

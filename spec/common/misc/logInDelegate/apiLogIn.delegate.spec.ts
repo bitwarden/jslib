@@ -79,9 +79,6 @@ describe("ApiLogInDelegate", () => {
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {
         const apiTokenRequest = actual as any;
-        console.log(apiTokenRequest.device.identifier);
-        console.log(apiTokenRequest.twoFactor.provider);
-        console.log(apiTokenRequest.twoFactor.token);
         return (
           apiTokenRequest.clientId === apiClientId &&
           apiTokenRequest.clientSecret === apiClientSecret &&
