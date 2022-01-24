@@ -988,26 +988,26 @@ export class StateService<TAccount extends Account = Account>
 
   async getEnableBrowserIntegration(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.enableBrowserIntegration ?? false
+      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
+        ?.enableBrowserIntegration ?? false
     );
   }
 
   async setEnableBrowserIntegration(value: boolean, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
+    const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.settings.enableBrowserIntegration = value;
-    await this.saveAccount(
-      account,
+    globals.enableBrowserIntegration = value;
+    await this.saveGlobals(
+      globals,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
   }
 
   async getEnableBrowserIntegrationFingerprint(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.enableBrowserIntegrationFingerprint ?? false
+      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
+        ?.enableBrowserIntegrationFingerprint ?? false
     );
   }
 
@@ -1015,12 +1015,12 @@ export class StateService<TAccount extends Account = Account>
     value: boolean,
     options?: StorageOptions
   ): Promise<void> {
-    const account = await this.getAccount(
+    const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.settings.enableBrowserIntegrationFingerprint = value;
-    await this.saveAccount(
-      account,
+    globals.enableBrowserIntegrationFingerprint = value;
+    await this.saveGlobals(
+      globals,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
   }
