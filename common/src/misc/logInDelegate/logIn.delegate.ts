@@ -154,9 +154,9 @@ export abstract class LogInDelegate {
 
   private async createKeyPairForOldAccount() {
     try {
-      const keyPair = await this.cryptoService.makeKeyPair();
+      const [publicKey, privateKey] = await this.cryptoService.makeKeyPair();
       await this.apiService.postAccountKeys(
-        new KeysRequest(keyPair[0], keyPair[1].encryptedString)
+        new KeysRequest(publicKey, privateKey.encryptedString)
       );
       return keyPair[1].encryptedString;
     } catch (e) {
