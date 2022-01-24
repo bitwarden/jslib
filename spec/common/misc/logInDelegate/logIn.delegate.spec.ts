@@ -95,7 +95,7 @@ describe("LogInDelegate", () => {
 
     appIdService.getAppId().resolves(deviceId);
 
-    // PasswordLogInDelegate must be initialized by each describe block
+    passwordLogInDelegate = null; // PasswordLogInDelegate must be initialized by each describe block
   });
 
   describe("base class", () => {
