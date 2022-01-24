@@ -58,6 +58,8 @@ export class StateService<TAccount extends Account = Account>
 
   protected state: State<TAccount> = new State<TAccount>();
 
+  private hasBeenInited: boolean = false;
+
   constructor(
     protected storageService: StorageService,
     protected secureStorageService: StorageService,
@@ -67,11 +69,16 @@ export class StateService<TAccount extends Account = Account>
   ) {}
 
   async init(): Promise<void> {
+    if (this.hasBeenInited) {
+      return;
+    }
+
     if (await this.stateMigrationService.needsMigration()) {
       await this.stateMigrationService.migrate();
     }
 
     await this.initAccountState();
+    this.hasBeenInited = true;
   }
 
   async initAccountState() {
