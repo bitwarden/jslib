@@ -9,6 +9,7 @@ import { MessagingService } from "jslib-common/abstractions/messaging.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
+import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
 import { PasswordLogInDelegate } from "jslib-common/misc/logInDelegate/passwordLogin.delegate";
 
@@ -16,25 +17,18 @@ import { Utils } from "jslib-common/misc/utils";
 
 import { Account, AccountProfile, AccountTokens } from "jslib-common/models/domain/account";
 import { AuthResult } from "jslib-common/models/domain/authResult";
-import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
 
-import { IdentityTokenResponse } from "jslib-common/models/response/identityTokenResponse";
-
-import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
-import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
 import { IdentityCaptchaResponse } from "jslib-common/models/response/identityCaptchaResponse";
+import { IdentityTokenResponse } from "jslib-common/models/response/identityTokenResponse";
 import { IdentityTwoFactorResponse } from "jslib-common/models/response/identityTwoFactorResponse";
+
 import { TokenRequestTwoFactor } from "jslib-common/models/request/identityToken/tokenRequest";
+
+import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
 
 const email = "hello@world.com";
 const masterPassword = "password";
-const hashedPassword = "HASHED_PASSWORD";
-const localHashedPassword = "LOCAL_HASHED_PASSWORD";
-const preloginKey = new SymmetricCryptoKey(
-  Utils.fromB64ToArray(
-    "N2KWjlLpfi5uHjv+YcfUKIpZ1l+W+6HRensmIqD+BFYBf6N/dvFpJfWwYnVBdgFCK2tJTAIMLhqzIQQEUmGFgg=="
-  )
-);
+
 const deviceId = Utils.newGuid();
 const accessToken = "ACCESS_TOKEN";
 const refreshToken = "REFRESH_TOKEN";
@@ -100,6 +94,8 @@ describe("LogInDelegate", () => {
     tokenService.getTwoFactorToken().resolves(null);
 
     appIdService.getAppId().resolves(deviceId);
+
+    // PasswordLogInDelegate must be initialized by each describe block
   });
 
   describe("base class", () => {
