@@ -20,7 +20,42 @@ import { IdentityTokenResponse } from "../../models/response/identityTokenRespon
 export class ApiLogInDelegate extends LogInDelegate {
   tokenRequest: ApiTokenRequest;
 
-  constructor(
+  static async new(
+    cryptoService: CryptoService,
+    apiService: ApiService,
+    tokenService: TokenService,
+    appIdService: AppIdService,
+    platformUtilsService: PlatformUtilsService,
+    messagingService: MessagingService,
+    logService: LogService,
+    stateService: StateService,
+    setCryptoKeys = true,
+    twoFactorService: TwoFactorService,
+    environmentService: EnvironmentService,
+    keyConnectorService: KeyConnectorService,
+    clientId: string,
+    clientSecret: string,
+    twoFactor?: TokenRequestTwoFactor
+  ): Promise<ApiLogInDelegate> {
+    const delegate = new ApiLogInDelegate(
+      cryptoService,
+      apiService,
+      tokenService,
+      appIdService,
+      platformUtilsService,
+      messagingService,
+      logService,
+      stateService,
+      setCryptoKeys,
+      twoFactorService,
+      environmentService,
+      keyConnectorService
+    );
+    await delegate.init(clientId, clientSecret, twoFactor);
+    return delegate;
+  }
+
+  private constructor(
     cryptoService: CryptoService,
     apiService: ApiService,
     tokenService: TokenService,
@@ -48,7 +83,7 @@ export class ApiLogInDelegate extends LogInDelegate {
     );
   }
 
-  async init(clientId: string, clientSecret: string, twoFactor?: TokenRequestTwoFactor) {
+  private async init(clientId: string, clientSecret: string, twoFactor?: TokenRequestTwoFactor) {
     this.tokenRequest = new ApiTokenRequest(
       clientId,
       clientSecret,

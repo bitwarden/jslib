@@ -20,7 +20,42 @@ export class SsoLogInDelegate extends LogInDelegate {
   tokenRequest: SsoTokenRequest;
   orgId: string;
 
-  constructor(
+  static async new(
+    cryptoService: CryptoService,
+    apiService: ApiService,
+    tokenService: TokenService,
+    appIdService: AppIdService,
+    platformUtilsService: PlatformUtilsService,
+    messagingService: MessagingService,
+    logService: LogService,
+    stateService: StateService,
+    setCryptoKeys = true,
+    twoFactorService: TwoFactorService,
+    keyConnectorService: KeyConnectorService,
+    code: string,
+    codeVerifier: string,
+    redirectUrl: string,
+    orgId: string,
+    twoFactor?: TokenRequestTwoFactor
+  ): Promise<SsoLogInDelegate> {
+    const delegate = new SsoLogInDelegate(
+      cryptoService,
+      apiService,
+      tokenService,
+      appIdService,
+      platformUtilsService,
+      messagingService,
+      logService,
+      stateService,
+      setCryptoKeys,
+      twoFactorService,
+      keyConnectorService
+    );
+    await delegate.init(code, codeVerifier, redirectUrl, orgId, twoFactor);
+    return delegate;
+  }
+
+  private constructor(
     cryptoService: CryptoService,
     apiService: ApiService,
     tokenService: TokenService,
@@ -47,7 +82,7 @@ export class SsoLogInDelegate extends LogInDelegate {
     );
   }
 
-  async init(
+  private async init(
     code: string,
     codeVerifier: string,
     redirectUrl: string,

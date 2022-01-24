@@ -39,7 +39,7 @@ describe("ApiLogInDelegate", () => {
   const apiClientId = "API_CLIENT_ID";
   const apiClientSecret = "API_CLIENT_SECRET";
 
-  beforeEach(() => {
+  beforeEach(async () => {
     cryptoService = Substitute.for<CryptoService>();
     apiService = Substitute.for<ApiService>();
     tokenService = Substitute.for<TokenService>();
@@ -52,7 +52,10 @@ describe("ApiLogInDelegate", () => {
     keyConnectorService = Substitute.for<KeyConnectorService>();
     twoFactorService = Substitute.for<TwoFactorService>();
 
-    apiLogInDelegate = new ApiLogInDelegate(
+    appIdService.getAppId().resolves(deviceId);
+    tokenService.getTwoFactorToken().resolves(null);
+
+    apiLogInDelegate = await ApiLogInDelegate.new(
       cryptoService,
       apiService,
       tokenService,
@@ -64,21 +67,21 @@ describe("ApiLogInDelegate", () => {
       setCryptoKeys,
       twoFactorService,
       environmentService,
-      keyConnectorService
+      keyConnectorService,
+      apiClientId,
+      apiClientSecret
     );
-
-    appIdService.getAppId().resolves(deviceId);
   });
 
   it("sends api key credentials to the server", async () => {
-    tokenService.getTwoFactorToken().resolves(null);
-
-    await apiLogInDelegate.init(apiClientId, apiClientSecret);
     await apiLogInDelegate.logIn();
 
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {
         const apiTokenRequest = actual as any;
+        console.log(apiTokenRequest.device.identifier);
+        console.log(apiTokenRequest.twoFactor.provider);
+        console.log(apiTokenRequest.twoFactor.token);
         return (
           apiTokenRequest.clientId === apiClientId &&
           apiTokenRequest.clientSecret === apiClientSecret &&
@@ -93,9 +96,7 @@ describe("ApiLogInDelegate", () => {
 
   it("sets the local environment after a successful login", async () => {
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponseFactory());
-    tokenService.getTwoFactorToken().resolves(null);
 
-    await apiLogInDelegate.init(apiClientId, apiClientSecret);
     await apiLogInDelegate.logIn();
 
     stateService.received(1).setApiKeyClientId(apiClientId);
@@ -108,10 +109,8 @@ describe("ApiLogInDelegate", () => {
     tokenResponse.apiUseKeyConnector = true;
 
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
-    tokenService.getTwoFactorToken().resolves(null);
     environmentService.getKeyConnectorUrl().returns(keyConnectorUrl);
 
-    await apiLogInDelegate.init(apiClientId, apiClientSecret);
     await apiLogInDelegate.logIn();
 
     keyConnectorService.received(1).getAndSetKey(keyConnectorUrl);

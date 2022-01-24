@@ -24,7 +24,41 @@ export class PasswordLogInDelegate extends LogInDelegate {
   private localHashedPassword: string;
   private key: SymmetricCryptoKey;
 
-  constructor(
+  static async new(
+    cryptoService: CryptoService,
+    apiService: ApiService,
+    tokenService: TokenService,
+    appIdService: AppIdService,
+    platformUtilsService: PlatformUtilsService,
+    messagingService: MessagingService,
+    logService: LogService,
+    stateService: StateService,
+    setCryptoKeys = true,
+    twoFactorService: TwoFactorService,
+    authService: AuthService,
+    email: string,
+    masterPassword: string,
+    captchaToken?: string,
+    twoFactor?: TokenRequestTwoFactor
+  ): Promise<PasswordLogInDelegate> {
+    const delegate = new PasswordLogInDelegate(
+      cryptoService,
+      apiService,
+      tokenService,
+      appIdService,
+      platformUtilsService,
+      messagingService,
+      logService,
+      stateService,
+      setCryptoKeys,
+      twoFactorService,
+      authService
+    );
+    await delegate.init(email, masterPassword, captchaToken, twoFactor);
+    return delegate;
+  }
+
+  private constructor(
     cryptoService: CryptoService,
     apiService: ApiService,
     tokenService: TokenService,
@@ -51,7 +85,7 @@ export class PasswordLogInDelegate extends LogInDelegate {
     );
   }
 
-  async init(
+  private async init(
     email: string,
     masterPassword: string,
     captchaToken?: string,

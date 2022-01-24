@@ -49,7 +49,7 @@ describe("SsoLogInDelegate", () => {
   const ssoRedirectUrl = "SSO_REDIRECT_URL";
   const ssoOrgId = "SSO_ORG_ID";
 
-  beforeEach(() => {
+  beforeEach(async () => {
     cryptoService = Substitute.for<CryptoService>();
     apiService = Substitute.for<ApiService>();
     tokenService = Substitute.for<TokenService>();
@@ -63,7 +63,10 @@ describe("SsoLogInDelegate", () => {
     twoFactorService = Substitute.for<TwoFactorService>();
     authService = Substitute.for<AuthService>();
 
-    ssoLogInDelegate = new SsoLogInDelegate(
+    tokenService.getTwoFactorToken().resolves(null);
+    appIdService.getAppId().resolves(deviceId);
+
+    ssoLogInDelegate = await SsoLogInDelegate.new(
       cryptoService,
       apiService,
       tokenService,
@@ -74,16 +77,15 @@ describe("SsoLogInDelegate", () => {
       stateService,
       setCryptoKeys,
       twoFactorService,
-      keyConnectorService
+      keyConnectorService,
+      ssoCode,
+      ssoCodeVerifier,
+      ssoRedirectUrl,
+      ssoOrgId
     );
-
-    appIdService.getAppId().resolves(deviceId);
   });
 
   it("sends SSO information to server", async () => {
-    tokenService.getTwoFactorToken().resolves(null);
-
-    await ssoLogInDelegate.init(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
     await ssoLogInDelegate.logIn();
 
     apiService.received(1).postIdentityToken(
@@ -106,7 +108,6 @@ describe("SsoLogInDelegate", () => {
     tokenResponse.key = null;
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-    await ssoLogInDelegate.init(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
     await ssoLogInDelegate.logIn();
 
     cryptoService.didNotReceive().setEncPrivateKey(privateKey);
@@ -119,7 +120,6 @@ describe("SsoLogInDelegate", () => {
 
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-    await ssoLogInDelegate.init(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
     await ssoLogInDelegate.logIn();
 
     keyConnectorService.received(1).getAndSetKey(keyConnectorUrl);
@@ -132,7 +132,6 @@ describe("SsoLogInDelegate", () => {
 
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-    await ssoLogInDelegate.init(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
     await ssoLogInDelegate.logIn();
 
     keyConnectorService

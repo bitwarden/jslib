@@ -47,7 +47,7 @@ describe("PasswordLogInDelegate", () => {
 
   let passwordLogInDelegate: PasswordLogInDelegate;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     cryptoService = Substitute.for<CryptoService>();
     apiService = Substitute.for<ApiService>();
     tokenService = Substitute.for<TokenService>();
@@ -59,7 +59,16 @@ describe("PasswordLogInDelegate", () => {
     twoFactorService = Substitute.for<TwoFactorService>();
     authService = Substitute.for<AuthService>();
 
-    passwordLogInDelegate = new PasswordLogInDelegate(
+    appIdService.getAppId().resolves(deviceId);
+    tokenService.getTwoFactorToken().resolves(null);
+
+    authService.makePreloginKey(Arg.any(), Arg.any()).resolves(preloginKey);
+    cryptoService.hashPassword(masterPassword, Arg.any()).resolves(hashedPassword);
+    cryptoService
+      .hashPassword(masterPassword, Arg.any(), HashPurpose.LocalAuthorization)
+      .resolves(localHashedPassword);
+
+    passwordLogInDelegate = await PasswordLogInDelegate.new(
       cryptoService,
       apiService,
       tokenService,
@@ -70,24 +79,13 @@ describe("PasswordLogInDelegate", () => {
       stateService,
       setCryptoKeys,
       twoFactorService,
-      authService
+      authService,
+      email,
+      masterPassword
     );
-
-    appIdService.getAppId().resolves(deviceId);
-  });
-
-  beforeEach(() => {
-    authService.makePreloginKey(Arg.any(), Arg.any()).resolves(preloginKey);
-    cryptoService.hashPassword(masterPassword, Arg.any()).resolves(hashedPassword);
-    cryptoService
-      .hashPassword(masterPassword, Arg.any(), HashPurpose.LocalAuthorization)
-      .resolves(localHashedPassword);
   });
 
   it("sends master password credentials to the server", async () => {
-    tokenService.getTwoFactorToken().resolves(null);
-
-    await passwordLogInDelegate.init(email, masterPassword);
     const result = await passwordLogInDelegate.logIn();
 
     apiService.received(1).postIdentityToken(
@@ -107,9 +105,6 @@ describe("PasswordLogInDelegate", () => {
 
   it("sets the local environment after a successful login", async () => {
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponseFactory());
-    tokenService.getTwoFactorToken().resolves(null);
-
-    await passwordLogInDelegate.init(email, masterPassword);
     await passwordLogInDelegate.logIn();
 
     cryptoService.received(1).setKey(preloginKey);

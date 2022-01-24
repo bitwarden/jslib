@@ -107,7 +107,7 @@ export class AuthService implements AuthServiceAbstraction {
     clientSecret: string,
     twoFactor?: TokenRequestTwoFactor
   ): Promise<AuthResult> {
-    const apiLogInDelegate = new ApiLogInDelegate(
+    const apiLogInDelegate = await ApiLogInDelegate.new(
       this.cryptoService,
       this.apiService,
       this.tokenService,
@@ -119,10 +119,11 @@ export class AuthService implements AuthServiceAbstraction {
       this.setCryptoKeys,
       this.twoFactorService,
       this.environmentService,
-      this.keyConnectorService
+      this.keyConnectorService,
+      clientId,
+      clientSecret,
+      twoFactor
     );
-
-    await apiLogInDelegate.init(clientId, clientSecret, twoFactor);
 
     return this.startLogin(apiLogInDelegate);
   }
