@@ -63,6 +63,8 @@ describe("PasswordLogInDelegate", () => {
     tokenService.getTwoFactorToken().resolves(null);
 
     authService.makePreloginKey(Arg.any(), Arg.any()).resolves(preloginKey);
+
+    // Hash the password early so we don't persist it in memory in plaintext
     cryptoService.hashPassword(masterPassword, Arg.any()).resolves(hashedPassword);
     cryptoService
       .hashPassword(masterPassword, Arg.any(), HashPurpose.LocalAuthorization)
