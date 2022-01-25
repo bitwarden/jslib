@@ -7,14 +7,15 @@ import { AppIdService } from "../../abstractions/appId.service";
 import { CryptoService } from "../../abstractions/crypto.service";
 import { EnvironmentService } from "../../abstractions/environment.service";
 import { LogService } from "../../abstractions/log.service";
+import { KeyConnectorService } from "../../abstractions/keyConnector.service";
 import { MessagingService } from "../../abstractions/messaging.service";
 import { PlatformUtilsService } from "../../abstractions/platformUtils.service";
 import { StateService } from "../../abstractions/state.service";
 import { TokenService } from "../../abstractions/token.service";
 import { TwoFactorService } from "../../abstractions/twoFactor.service";
 
-import { KeyConnectorService } from "../../abstractions/keyConnector.service";
 import { ApiTokenRequest } from "../../models/request/identityToken/apiTokenRequest";
+
 import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
 
 export class ApiLogInDelegate extends LogInDelegate {
@@ -54,7 +55,7 @@ export class ApiLogInDelegate extends LogInDelegate {
   }
   tokenRequest: ApiTokenRequest;
 
-  private constructor(
+  protected constructor(
     cryptoService: CryptoService,
     apiService: ApiService,
     tokenService: TokenService,
@@ -89,7 +90,7 @@ export class ApiLogInDelegate extends LogInDelegate {
     }
   }
 
-  async saveAccountInformation(tokenResponse: IdentityTokenResponse) {
+  protected async saveAccountInformation(tokenResponse: IdentityTokenResponse) {
     await super.saveAccountInformation(tokenResponse);
     await this.stateService.setApiKeyClientId(this.tokenRequest.clientId);
     await this.stateService.setApiKeyClientSecret(this.tokenRequest.clientSecret);

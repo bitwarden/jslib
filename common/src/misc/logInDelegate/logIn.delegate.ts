@@ -35,8 +35,8 @@ export abstract class LogInDelegate {
     protected tokenService: TokenService,
     protected appIdService: AppIdService,
     protected platformUtilsService: PlatformUtilsService,
-    private messagingService: MessagingService,
-    private logService: LogService,
+    protected messagingService: MessagingService,
+    protected logService: LogService,
     protected stateService: StateService,
     protected twoFactorService: TwoFactorService,
     protected setCryptoKeys = true
@@ -131,7 +131,7 @@ export abstract class LogInDelegate {
     return result;
   }
 
-  private async processTokenResponse(response: IdentityTokenResponse): Promise<AuthResult> {
+  protected async processTokenResponse(response: IdentityTokenResponse): Promise<AuthResult> {
     const result = new AuthResult();
     result.resetMasterPassword = response.resetMasterPassword;
     result.forcePasswordReset = response.forcePasswordReset;

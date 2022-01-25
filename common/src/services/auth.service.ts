@@ -37,18 +37,18 @@ export class AuthService implements AuthServiceAbstraction {
   private logInDelegate: LogInDelegate;
 
   constructor(
-    private cryptoService: CryptoService,
+    protected cryptoService: CryptoService,
     protected apiService: ApiService,
     protected tokenService: TokenService,
     protected appIdService: AppIdService,
     protected platformUtilsService: PlatformUtilsService,
-    private messagingService: MessagingService,
-    private logService: LogService,
-    private keyConnectorService: KeyConnectorService,
+    protected messagingService: MessagingService,
+    protected logService: LogService,
+    protected keyConnectorService: KeyConnectorService,
     protected environmentService: EnvironmentService,
     protected stateService: StateService,
-    private twoFactorService: TwoFactorService,
-    private setCryptoKeys = true
+    protected twoFactorService: TwoFactorService,
+    protected setCryptoKeys = true
   ) {}
 
   async logIn(
@@ -176,7 +176,7 @@ export class AuthService implements AuthServiceAbstraction {
     return this.cryptoService.makeKey(masterPassword, email, kdf, kdfIterations);
   }
 
-  private async startLogin(
+  protected async startLogin(
     delegate: ApiLogInDelegate | SsoLogInDelegate | PasswordLogInDelegate
   ): Promise<AuthResult> {
     this.logInDelegate = null;
