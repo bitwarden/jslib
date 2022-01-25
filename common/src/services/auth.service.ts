@@ -48,7 +48,6 @@ export class AuthService implements AuthServiceAbstraction {
     protected environmentService: EnvironmentService,
     protected stateService: StateService,
     protected twoFactorService: TwoFactorService,
-    protected setCryptoKeys = true
   ) {}
 
   async logIn(
@@ -66,7 +65,6 @@ export class AuthService implements AuthServiceAbstraction {
       this.messagingService,
       this.logService,
       this.stateService,
-      this.setCryptoKeys,
       this.twoFactorService,
       this,
       email,
@@ -94,7 +92,6 @@ export class AuthService implements AuthServiceAbstraction {
       this.messagingService,
       this.logService,
       this.stateService,
-      this.setCryptoKeys,
       this.twoFactorService,
       this.keyConnectorService,
       code,
@@ -121,7 +118,6 @@ export class AuthService implements AuthServiceAbstraction {
       this.messagingService,
       this.logService,
       this.stateService,
-      this.setCryptoKeys,
       this.twoFactorService,
       this.environmentService,
       this.keyConnectorService,
