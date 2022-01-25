@@ -60,6 +60,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
       await this.cryptoService.getKey(KeySuffixOptions.Auto, userId);
     }
 
+    console.debug(userId, await this.cryptoService.hasKeyInMemory(userId));
     return !(await this.cryptoService.hasKeyInMemory(userId));
   }
 
@@ -77,7 +78,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
 
   async lock(allowSoftLock = false, userId?: string): Promise<void> {
     const authed = await this.stateService.getIsAuthenticated({ userId: userId });
-    if (!authed) {
+    if (!authed || await this.isLocked(userId)) {
       return;
     }
 
