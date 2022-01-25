@@ -24,8 +24,8 @@ export interface RecordsEntity {
   login: string;
   password: string;
   login_url: string;
-  notes: string;
-  custom_fields: CustomFields;
+  notes?: string;
+  custom_fields?: CustomFields;
   folders?: FoldersEntity[] | null;
 }
 
