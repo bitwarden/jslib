@@ -88,12 +88,7 @@ export class SsoLogInDelegate extends LogInDelegate {
       if (!newSsoUser) {
         await this.keyConnectorService.getAndSetKey(tokenResponse.keyConnectorUrl);
       } else {
-        await this.keyConnectorService.convertNewSsoUserToKeyConnector(
-          tokenResponse.kdf,
-          tokenResponse.kdfIterations,
-          tokenResponse.keyConnectorUrl,
-          this.orgId
-        );
+        await this.keyConnectorService.convertNewSsoUserToKeyConnector(tokenResponse, this.orgId);
       }
     }
   }

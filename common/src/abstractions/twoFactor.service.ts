@@ -1,5 +1,7 @@
 import { TwoFactorProviderType } from "../enums/twoFactorProviderType";
 
+import { AuthResult } from "../models/domain/authResult";
+
 export interface TwoFactorProviderDetails {
   type: TwoFactorProviderType;
   name: string;
@@ -16,7 +18,7 @@ export abstract class TwoFactorService {
   setSelectedProvider: (type: TwoFactorProviderType) => void;
   clearSelectedProvider: () => void;
 
-  setProviders: (data: any) => void;
+  setProviders: (authResult: AuthResult) => void;
   clearProviders: () => void;
   getProviders: () => Map<TwoFactorProviderType, { [key: string]: string }>;
 }

@@ -136,8 +136,6 @@ describe("SsoLogInDelegate", () => {
 
     await ssoLogInDelegate.logIn();
 
-    keyConnectorService
-      .received(1)
-      .convertNewSsoUserToKeyConnector(kdf, kdfIterations, keyConnectorUrl, ssoOrgId);
+    keyConnectorService.received(1).convertNewSsoUserToKeyConnector(tokenResponse, ssoOrgId);
   });
 });

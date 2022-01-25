@@ -1,5 +1,7 @@
 import { Organization } from "../models/domain/organization";
 
+import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
+
 export abstract class KeyConnectorService {
   getAndSetKey: (url?: string) => Promise<void>;
   getManagingOrganization: () => Promise<Organization>;
@@ -7,9 +9,7 @@ export abstract class KeyConnectorService {
   migrateUser: () => Promise<void>;
   userNeedsMigration: () => Promise<boolean>;
   convertNewSsoUserToKeyConnector: (
-    kdf: number,
-    kdfIterations: number,
-    url: string,
+    tokenResponse: IdentityTokenResponse,
     orgId: string
   ) => Promise<void>;
   setUsesKeyConnector: (enabled: boolean) => Promise<void>;

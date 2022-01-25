@@ -16,6 +16,7 @@ import { SetKeyConnectorKeyRequest } from "../models/request/account/setKeyConne
 
 import { KeyConnectorUserKeyRequest } from "../models/request/keyConnectorUserKeyRequest";
 import { KeysRequest } from "../models/request/keysRequest";
+import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
 
 export class KeyConnectorService implements KeyConnectorServiceAbstraction {
   constructor(
@@ -84,12 +85,8 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
     );
   }
 
-  async convertNewSsoUserToKeyConnector(
-    kdf: number,
-    kdfIterations: number,
-    url: string,
-    orgId: string
-  ) {
+  async convertNewSsoUserToKeyConnector(tokenResponse: IdentityTokenResponse, orgId: string) {
+    const { kdf, kdfIterations, keyConnectorUrl } = tokenResponse;
     const password = await this.cryptoFunctionService.randomBytes(64);
 
     const k = await this.cryptoService.makeKey(
@@ -107,7 +104,7 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
     const [pubKey, privKey] = await this.cryptoService.makeKeyPair();
 
     try {
-      await this.apiService.postUserKeyToKeyConnector(url, keyConnectorRequest);
+      await this.apiService.postUserKeyToKeyConnector(keyConnectorUrl, keyConnectorRequest);
     } catch (e) {
       throw new Error("Unable to reach key connector");
     }

@@ -121,7 +121,7 @@ export abstract class LogInDelegate {
   private async processTwoFactorResponse(response: IdentityTwoFactorResponse): Promise<AuthResult> {
     const result = new AuthResult();
     result.twoFactorProviders = response.twoFactorProviders2;
-    this.twoFactorService.setProviders(result.twoFactorProviders);
+    this.twoFactorService.setProviders(result);
     return result;
   }
 
@@ -139,7 +139,7 @@ export abstract class LogInDelegate {
     await this.saveAccountInformation(response);
 
     if (response.twoFactorToken != null) {
-      await this.tokenService.setTwoFactorToken(response.twoFactorToken);
+      await this.tokenService.setTwoFactorToken(response);
     }
 
     const newSsoUser = response.key == null;
