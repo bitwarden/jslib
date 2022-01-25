@@ -57,7 +57,7 @@ export class LoginCommand {
     protected cryptoService: CryptoService,
     protected policyService: PolicyService,
     protected twoFactorService: TwoFactorService,
-    clientId: string,
+    clientId: string
   ) {
     this.clientId = clientId;
   }
