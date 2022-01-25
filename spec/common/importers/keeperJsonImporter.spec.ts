@@ -38,7 +38,6 @@ describe("Keeper Json Importer", () => {
     expect(cipher3.name).toEqual("Some Account");
     expect(cipher3.login.username).toEqual("someUserName");
     expect(cipher3.login.password).toEqual("w4k4k1wergf$^&@#*%2");
-    expect(cipher3.login.hasUris).toBeFalse;
     expect(cipher3.notes).toBeNull();
     expect(cipher3.fields).toBeNull();
     expect(cipher3.login.uris.length).toEqual(1);
