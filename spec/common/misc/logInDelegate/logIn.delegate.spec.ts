@@ -175,18 +175,6 @@ describe("LogInDelegate", () => {
       expect(result).toEqual(expected);
     });
 
-    it("does not set crypto keys if setCryptoKeys is false", async () => {
-      await setupLogInDelegate(false);
-      apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
-
-      await passwordLogInDelegate.logIn();
-
-      cryptoService.didNotReceive().setKey(Arg.any());
-      cryptoService.didNotReceive().setKeyHash(Arg.any());
-      cryptoService.didNotReceive().setEncKey(Arg.any());
-      cryptoService.didNotReceive().setEncPrivateKey(Arg.any());
-    });
-
     it("makes a new public and private key for an old account", async () => {
       const tokenResponse = identityTokenResponseFactory();
       tokenResponse.privateKey = null;
@@ -291,7 +279,7 @@ describe("LogInDelegate", () => {
     });
   });
 
-  async function setupLogInDelegate(setCryptoKeys = true, twoFactor: TokenRequestTwoFactor = null) {
+  async function setupLogInDelegate(twoFactor: TokenRequestTwoFactor = null) {
     // The base class is abstract so we test it via PasswordLogInDelegate
     passwordLogInDelegate = await PasswordLogInDelegate.new(
       cryptoService,
@@ -302,7 +290,6 @@ describe("LogInDelegate", () => {
       messagingService,
       logService,
       stateService,
-      setCryptoKeys,
       twoFactorService,
       authService,
       email,

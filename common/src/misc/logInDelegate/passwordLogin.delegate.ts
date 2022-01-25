@@ -36,7 +36,6 @@ export class PasswordLogInDelegate extends LogInDelegate {
     messagingService: MessagingService,
     logService: LogService,
     stateService: StateService,
-    setCryptoKeys = true,
     twoFactorService: TwoFactorService,
     authService: AuthService,
     email: string,
@@ -53,7 +52,6 @@ export class PasswordLogInDelegate extends LogInDelegate {
       messagingService,
       logService,
       stateService,
-      setCryptoKeys,
       twoFactorService,
       authService
     );
@@ -74,7 +72,6 @@ export class PasswordLogInDelegate extends LogInDelegate {
     messagingService: MessagingService,
     logService: LogService,
     stateService: StateService,
-    setCryptoKeys = true,
     twoFactorService: TwoFactorService,
     private authService: AuthService
   ) {
@@ -88,15 +85,12 @@ export class PasswordLogInDelegate extends LogInDelegate {
       logService,
       stateService,
       twoFactorService,
-      setCryptoKeys
     );
   }
 
   async onSuccessfulLogin() {
-    if (this.setCryptoKeys) {
-      await this.cryptoService.setKey(this.key);
-      await this.cryptoService.setKeyHash(this.localHashedPassword);
-    }
+    await this.cryptoService.setKey(this.key);
+    await this.cryptoService.setKeyHash(this.localHashedPassword);
   }
 
   private async init(

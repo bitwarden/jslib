@@ -38,8 +38,7 @@ export abstract class LogInDelegate {
     protected messagingService: MessagingService,
     protected logService: LogService,
     protected stateService: StateService,
-    protected twoFactorService: TwoFactorService,
-    protected setCryptoKeys = true
+    protected twoFactorService: TwoFactorService
   ) {}
 
   protected onSuccessfulLogin(response: IdentityTokenResponse): Promise<void> {
@@ -144,7 +143,7 @@ export abstract class LogInDelegate {
     }
 
     const newSsoUser = response.key == null;
-    if (this.setCryptoKeys && !newSsoUser) {
+    if (!newSsoUser) {
       await this.cryptoService.setEncKey(response.key);
       await this.cryptoService.setEncPrivateKey(
         response.privateKey ?? (await this.createKeyPairForOldAccount())

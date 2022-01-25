@@ -30,7 +30,6 @@ describe("ApiLogInDelegate", () => {
   let keyConnectorService: SubstituteOf<KeyConnectorService>;
   let stateService: SubstituteOf<StateService>;
   let twoFactorService: SubstituteOf<TwoFactorService>;
-  const setCryptoKeys = true;
 
   let apiLogInDelegate: ApiLogInDelegate;
 
@@ -64,7 +63,6 @@ describe("ApiLogInDelegate", () => {
       messagingService,
       logService,
       stateService,
-      setCryptoKeys,
       twoFactorService,
       environmentService,
       keyConnectorService,

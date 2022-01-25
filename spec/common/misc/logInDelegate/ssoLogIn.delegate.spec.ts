@@ -33,7 +33,6 @@ describe("SsoLogInDelegate", () => {
   let stateService: SubstituteOf<StateService>;
   let twoFactorService: SubstituteOf<TwoFactorService>;
   let authService: SubstituteOf<AuthService>;
-  const setCryptoKeys = true;
 
   let ssoLogInDelegate: SsoLogInDelegate;
 
@@ -75,7 +74,6 @@ describe("SsoLogInDelegate", () => {
       messagingService,
       logService,
       stateService,
-      setCryptoKeys,
       twoFactorService,
       keyConnectorService,
       ssoCode,

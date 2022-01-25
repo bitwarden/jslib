@@ -26,7 +26,6 @@ export class SsoLogInDelegate extends LogInDelegate {
     messagingService: MessagingService,
     logService: LogService,
     stateService: StateService,
-    setCryptoKeys = true,
     twoFactorService: TwoFactorService,
     keyConnectorService: KeyConnectorService,
     code: string,
@@ -44,7 +43,6 @@ export class SsoLogInDelegate extends LogInDelegate {
       messagingService,
       logService,
       stateService,
-      setCryptoKeys,
       twoFactorService,
       keyConnectorService
     );
@@ -63,7 +61,6 @@ export class SsoLogInDelegate extends LogInDelegate {
     messagingService: MessagingService,
     logService: LogService,
     stateService: StateService,
-    setCryptoKeys = true,
     twoFactorService: TwoFactorService,
     private keyConnectorService: KeyConnectorService
   ) {
@@ -77,14 +74,13 @@ export class SsoLogInDelegate extends LogInDelegate {
       logService,
       stateService,
       twoFactorService,
-      setCryptoKeys
     );
   }
 
   async onSuccessfulLogin(tokenResponse: IdentityTokenResponse) {
     const newSsoUser = tokenResponse.key == null;
 
-    if (this.setCryptoKeys && tokenResponse.keyConnectorUrl != null) {
+    if (tokenResponse.keyConnectorUrl != null) {
       if (!newSsoUser) {
         await this.keyConnectorService.getAndSetKey(tokenResponse.keyConnectorUrl);
       } else {

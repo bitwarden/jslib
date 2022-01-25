@@ -28,7 +28,6 @@ export class ApiLogInDelegate extends LogInDelegate {
     messagingService: MessagingService,
     logService: LogService,
     stateService: StateService,
-    setCryptoKeys = true,
     twoFactorService: TwoFactorService,
     environmentService: EnvironmentService,
     keyConnectorService: KeyConnectorService,
@@ -45,7 +44,6 @@ export class ApiLogInDelegate extends LogInDelegate {
       messagingService,
       logService,
       stateService,
-      setCryptoKeys,
       twoFactorService,
       environmentService,
       keyConnectorService
@@ -64,7 +62,6 @@ export class ApiLogInDelegate extends LogInDelegate {
     messagingService: MessagingService,
     logService: LogService,
     stateService: StateService,
-    setCryptoKeys = true,
     twoFactorService: TwoFactorService,
     private environmentService: EnvironmentService,
     private keyConnectorService: KeyConnectorService
@@ -79,7 +76,6 @@ export class ApiLogInDelegate extends LogInDelegate {
       logService,
       stateService,
       twoFactorService,
-      setCryptoKeys
     );
   }
 

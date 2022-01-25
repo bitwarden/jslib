@@ -43,7 +43,6 @@ describe("PasswordLogInDelegate", () => {
   let stateService: SubstituteOf<StateService>;
   let twoFactorService: SubstituteOf<TwoFactorService>;
   let authService: SubstituteOf<AuthService>;
-  const setCryptoKeys = true;
 
   let passwordLogInDelegate: PasswordLogInDelegate;
 
@@ -78,7 +77,6 @@ describe("PasswordLogInDelegate", () => {
       messagingService,
       logService,
       stateService,
-      setCryptoKeys,
       twoFactorService,
       authService,
       email,
