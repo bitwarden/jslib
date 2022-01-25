@@ -27,6 +27,7 @@ import { TwoFactorService } from "../../abstractions/twoFactor.service";
 import { IdentityCaptchaResponse } from "../../models/response/identityCaptchaResponse";
 
 export abstract class LogInDelegate {
+;
   protected abstract tokenRequest: ApiTokenRequest | PasswordTokenRequest | SsoTokenRequest;
 
   constructor(
@@ -40,11 +41,6 @@ export abstract class LogInDelegate {
     protected stateService: StateService,
     protected twoFactorService: TwoFactorService
   ) {}
-
-  protected onSuccessfulLogin(response: IdentityTokenResponse): Promise<void> {
-    // Implemented in subclass if required
-    return null;
-  };
 
   async logIn(): Promise<AuthResult> {
     this.twoFactorService.clearSelectedProvider();
@@ -67,6 +63,10 @@ export abstract class LogInDelegate {
     return this.logIn();
   }
 
+  protected onSuccessfulLogin(response: IdentityTokenResponse): Promise<void> {
+    // Implemented in subclass if required
+    return null;
+  }
   protected async buildDeviceRequest() {
     const appId = await this.appIdService.getAppId();
     return new DeviceRequest(appId, this.platformUtilsService);
@@ -118,19 +118,6 @@ export abstract class LogInDelegate {
     );
   }
 
-  private async processTwoFactorResponse(response: IdentityTwoFactorResponse): Promise<AuthResult> {
-    const result = new AuthResult();
-    result.twoFactorProviders = response.twoFactorProviders2;
-    this.twoFactorService.setProviders(response);
-    return result;
-  }
-
-  private async processCaptchaResponse(response: IdentityCaptchaResponse): Promise<AuthResult> {
-    const result = new AuthResult();
-    result.captchaSiteKey = response.siteKey;
-    return result;
-  }
-
   protected async processTokenResponse(response: IdentityTokenResponse): Promise<AuthResult> {
     const result = new AuthResult();
     result.resetMasterPassword = response.resetMasterPassword;
@@ -155,6 +142,19 @@ export abstract class LogInDelegate {
     await this.stateService.setBiometricLocked(false);
     this.messagingService.send("loggedIn");
 
+    return result;
+  }
+
+  private async processTwoFactorResponse(response: IdentityTwoFactorResponse): Promise<AuthResult> {
+    const result = new AuthResult();
+    result.twoFactorProviders = response.twoFactorProviders2;
+    this.twoFactorService.setProviders(response);
+    return result;
+  }
+
+  private async processCaptchaResponse(response: IdentityCaptchaResponse): Promise<AuthResult> {
+    const result = new AuthResult();
+    result.captchaSiteKey = response.siteKey;
     return result;
   }
 
