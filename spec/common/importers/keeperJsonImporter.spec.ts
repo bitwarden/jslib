@@ -33,6 +33,17 @@ describe("Keeper Json Importer", () => {
     const uriView2 = cipher2.login.uris.shift();
     expect(uriView2.uri).toEqual("https://amex.com");
     expect(cipher2.notes).toEqual("Some great information here.");
+
+    const cipher3 = result.ciphers.shift();
+    expect(cipher3.name).toEqual("Some Account");
+    expect(cipher3.login.username).toEqual("someUserName");
+    expect(cipher3.login.password).toEqual("w4k4k1wergf$^&@#*%2");
+    expect(cipher3.login.hasUris).toBeFalse;
+    expect(cipher3.notes).toBeNull();
+    expect(cipher3.fields).toBeNull();
+    expect(cipher3.login.uris.length).toEqual(1);
+    const uriView3 = cipher3.login.uris.shift();
+    expect(uriView3.uri).toEqual("https://example.com");
   });
 
   it("should import TOTP when present", async () => {

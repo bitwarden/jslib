@@ -80,5 +80,11 @@ export const testData: KeeperJsonExport = {
         },
       ],
     },
+    {
+      title: "Some Account",
+      login: "someUserName",
+      password: "w4k4k1wergf$^&@#*%2",
+      login_url: "https://example.com",
+    },
   ],
 };
