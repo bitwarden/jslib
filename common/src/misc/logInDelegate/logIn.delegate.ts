@@ -67,46 +67,6 @@ export abstract class LogInDelegate {
     return this.logIn();
   }
 
-  private async processTwoFactorResponse(response: IdentityTwoFactorResponse): Promise<AuthResult> {
-    const result = new AuthResult();
-    result.twoFactorProviders = response.twoFactorProviders2;
-    this.twoFactorService.setProviders(result.twoFactorProviders);
-    return result;
-  }
-
-  private async processCaptchaResponse(response: IdentityCaptchaResponse): Promise<AuthResult> {
-    const result = new AuthResult();
-    result.captchaSiteKey = response.siteKey;
-    return result;
-  }
-
-  private async processTokenResponse(response: IdentityTokenResponse): Promise<AuthResult> {
-    const result = new AuthResult();
-    result.resetMasterPassword = response.resetMasterPassword;
-    result.forcePasswordReset = response.forcePasswordReset;
-
-    await this.saveAccountInformation(response);
-
-    if (response.twoFactorToken != null) {
-      await this.tokenService.setTwoFactorToken(response.twoFactorToken);
-    }
-
-    const newSsoUser = response.key == null;
-    if (this.setCryptoKeys && !newSsoUser) {
-      await this.cryptoService.setEncKey(response.key);
-      await this.cryptoService.setEncPrivateKey(
-        response.privateKey ?? (await this.createKeyPairForOldAccount())
-      );
-    }
-
-    await this.onSuccessfulLogin(response);
-
-    await this.stateService.setBiometricLocked(false);
-    this.messagingService.send("loggedIn");
-
-    return result;
-  }
-
   protected async buildDeviceRequest() {
     const appId = await this.appIdService.getAppId();
     return new DeviceRequest(appId, this.platformUtilsService);
@@ -156,6 +116,46 @@ export abstract class LogInDelegate {
         },
       })
     );
+  }
+
+  private async processTwoFactorResponse(response: IdentityTwoFactorResponse): Promise<AuthResult> {
+    const result = new AuthResult();
+    result.twoFactorProviders = response.twoFactorProviders2;
+    this.twoFactorService.setProviders(result.twoFactorProviders);
+    return result;
+  }
+
+  private async processCaptchaResponse(response: IdentityCaptchaResponse): Promise<AuthResult> {
+    const result = new AuthResult();
+    result.captchaSiteKey = response.siteKey;
+    return result;
+  }
+
+  private async processTokenResponse(response: IdentityTokenResponse): Promise<AuthResult> {
+    const result = new AuthResult();
+    result.resetMasterPassword = response.resetMasterPassword;
+    result.forcePasswordReset = response.forcePasswordReset;
+
+    await this.saveAccountInformation(response);
+
+    if (response.twoFactorToken != null) {
+      await this.tokenService.setTwoFactorToken(response.twoFactorToken);
+    }
+
+    const newSsoUser = response.key == null;
+    if (this.setCryptoKeys && !newSsoUser) {
+      await this.cryptoService.setEncKey(response.key);
+      await this.cryptoService.setEncPrivateKey(
+        response.privateKey ?? (await this.createKeyPairForOldAccount())
+      );
+    }
+
+    await this.onSuccessfulLogin(response);
+
+    await this.stateService.setBiometricLocked(false);
+    this.messagingService.send("loggedIn");
+
+    return result;
   }
 
   private async createKeyPairForOldAccount() {
