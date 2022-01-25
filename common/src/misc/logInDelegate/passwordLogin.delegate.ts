@@ -106,13 +106,15 @@ export class PasswordLogInDelegate extends LogInDelegate {
     twoFactor?: TokenRequestTwoFactor
   ) {
     this.key = await this.authService.makePreloginKey(masterPassword, email);
+
+    // Hash the password early (before authentication) so we don't persist it in memory in plaintext
     this.localHashedPassword = await this.cryptoService.hashPassword(
       masterPassword,
       this.key,
       HashPurpose.LocalAuthorization
     );
-
     const hashedPassword = await this.cryptoService.hashPassword(masterPassword, this.key);
+
     this.tokenRequest = new PasswordTokenRequest(
       email,
       hashedPassword,
