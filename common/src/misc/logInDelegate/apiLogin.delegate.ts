@@ -75,7 +75,7 @@ export class ApiLogInDelegate extends LogInDelegate {
       messagingService,
       logService,
       stateService,
-      twoFactorService,
+      twoFactorService
     );
   }
 

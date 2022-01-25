@@ -73,7 +73,7 @@ export class SsoLogInDelegate extends LogInDelegate {
       messagingService,
       logService,
       stateService,
-      twoFactorService,
+      twoFactorService
     );
   }
 

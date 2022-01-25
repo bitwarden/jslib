@@ -84,7 +84,7 @@ export class PasswordLogInDelegate extends LogInDelegate {
       messagingService,
       logService,
       stateService,
-      twoFactorService,
+      twoFactorService
     );
   }
 
