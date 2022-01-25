@@ -51,7 +51,15 @@ export abstract class LogInDelegate {
 
     const response = await this.apiService.postIdentityToken(this.tokenRequest);
 
-    return this.processTokenResponse(response);
+    if (response instanceof IdentityTwoFactorResponse) {
+      return this.processTwoFactorResponse(response);
+    } else if (response instanceof IdentityCaptchaResponse) {
+      return this.processCaptchaResponse(response);
+    } else if (response instanceof IdentityTokenResponse) {
+      return this.processIdentityTokenResponse(response);
+    }
+
+    throw new Error("Invalid response object.");
   }
 
   async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
@@ -59,41 +67,39 @@ export abstract class LogInDelegate {
     return this.logIn();
   }
 
-  protected async processTokenResponse(
-    response: IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse
-  ): Promise<AuthResult> {
+  private async processTwoFactorResponse(response: IdentityTwoFactorResponse): Promise<AuthResult> {
     const result = new AuthResult();
+    result.twoFactorProviders = response.twoFactorProviders2;
+    this.twoFactorService.setProviders(result.twoFactorProviders);
+    return result;
+  }
 
-    result.captchaSiteKey = (response as IdentityCaptchaResponse).siteKey;
-    if (result.requiresCaptcha) {
-      return result;
+  private async processCaptchaResponse(response: IdentityCaptchaResponse): Promise<AuthResult> {
+    const result = new AuthResult();
+    result.captchaSiteKey = response.siteKey;
+    return result;
+  }
+
+  private async processIdentityTokenResponse(response: IdentityTokenResponse): Promise<AuthResult> {
+    const result = new AuthResult();
+    result.resetMasterPassword = response.resetMasterPassword;
+    result.forcePasswordReset = response.forcePasswordReset;
+
+    await this.saveAccountInformation(response);
+
+    if (response.twoFactorToken != null) {
+      await this.tokenService.setTwoFactorToken(response.twoFactorToken);
     }
 
-    result.twoFactorProviders = (response as IdentityTwoFactorResponse).twoFactorProviders2;
-    if (result.requiresTwoFactor) {
-      this.twoFactorService.setProviders(result.twoFactorProviders);
-      return result;
-    }
-
-    const tokenResponse = response as IdentityTokenResponse;
-    result.resetMasterPassword = tokenResponse.resetMasterPassword;
-    result.forcePasswordReset = tokenResponse.forcePasswordReset;
-
-    await this.saveAccountInformation(tokenResponse);
-
-    if (tokenResponse.twoFactorToken != null) {
-      await this.tokenService.setTwoFactorToken(tokenResponse.twoFactorToken);
-    }
-
-    const newSsoUser = tokenResponse.key == null;
+    const newSsoUser = response.key == null;
     if (this.setCryptoKeys && !newSsoUser) {
-      await this.cryptoService.setEncKey(tokenResponse.key);
+      await this.cryptoService.setEncKey(response.key);
       await this.cryptoService.setEncPrivateKey(
-        tokenResponse.privateKey ?? (await this.createKeyPairForOldAccount())
+        response.privateKey ?? (await this.createKeyPairForOldAccount())
       );
     }
 
-    await this.onSuccessfulLogin(tokenResponse);
+    await this.onSuccessfulLogin(response);
 
     await this.stateService.setBiometricLocked(false);
     this.messagingService.send("loggedIn");

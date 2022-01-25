@@ -18,7 +18,7 @@ import { Utils } from "jslib-common/misc/utils";
 
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
-import { tokenResponseFactory } from "./logIn.delegate.spec";
+import { identityTokenResponseFactory } from "./logIn.delegate.spec";
 
 describe("SsoLogInDelegate", () => {
   let cryptoService: SubstituteOf<CryptoService>;
@@ -86,6 +86,8 @@ describe("SsoLogInDelegate", () => {
   });
 
   it("sends SSO information to server", async () => {
+    apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
+
     await ssoLogInDelegate.logIn();
 
     apiService.received(1).postIdentityToken(
@@ -104,7 +106,7 @@ describe("SsoLogInDelegate", () => {
   });
 
   it("does not set keys for new SSO user flow", async () => {
-    const tokenResponse = tokenResponseFactory();
+    const tokenResponse = identityTokenResponseFactory();
     tokenResponse.key = null;
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
@@ -115,7 +117,7 @@ describe("SsoLogInDelegate", () => {
   });
 
   it("gets and sets KeyConnector key for enrolled user", async () => {
-    const tokenResponse = tokenResponseFactory();
+    const tokenResponse = identityTokenResponseFactory();
     tokenResponse.keyConnectorUrl = keyConnectorUrl;
 
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
@@ -126,7 +128,7 @@ describe("SsoLogInDelegate", () => {
   });
 
   it("converts new SSO user to Key Connector on first login", async () => {
-    const tokenResponse = tokenResponseFactory();
+    const tokenResponse = identityTokenResponseFactory();
     tokenResponse.keyConnectorUrl = keyConnectorUrl;
     tokenResponse.key = null;
 

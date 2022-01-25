@@ -49,21 +49,21 @@ const decodedToken = {
 const twoFactorProviderType = TwoFactorProviderType.Authenticator;
 const twoFactorToken = "TWO_FACTOR_TOKEN";
 const twoFactorRemember = true;
-const twoFactorProviders = new Map<number, null>([[1, null]]);
 
-export function tokenResponseFactory() {
-  const tokenResponse = new IdentityTokenResponse({});
-  (tokenResponse as any).twoFactorProviders2 = null;
-  (tokenResponse as any).siteKey = undefined;
-  tokenResponse.resetMasterPassword = false;
-  tokenResponse.forcePasswordReset = false;
-  tokenResponse.accessToken = accessToken;
-  tokenResponse.refreshToken = refreshToken;
-  tokenResponse.kdf = kdf;
-  tokenResponse.kdfIterations = kdfIterations;
-  tokenResponse.key = encKey;
-  tokenResponse.privateKey = privateKey;
-  return tokenResponse;
+export function identityTokenResponseFactory() {
+  return new IdentityTokenResponse({
+    ForcePasswordReset: false,
+    Kdf: kdf,
+    KdfIterations: kdfIterations,
+    Key: encKey,
+    PrivateKey: privateKey,
+    ResetMasterPassword: false,
+    access_token: accessToken,
+    expires_in: 3600,
+    refresh_token: refreshToken,
+    scope: "api offline_access",
+    token_type: "Bearer",
+  });
 }
 
 describe("LogInDelegate", () => {
@@ -105,7 +105,7 @@ describe("LogInDelegate", () => {
     });
 
     it("sets the local environment after a successful login", async () => {
-      apiService.postIdentityToken(Arg.any()).resolves(tokenResponseFactory());
+      apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
       tokenService.decodeToken(accessToken).resolves(decodedToken);
 
       await passwordLogInDelegate.logIn();
@@ -139,11 +139,9 @@ describe("LogInDelegate", () => {
     });
 
     it("builds AuthResult", async () => {
-      const tokenResponse = tokenResponseFactory();
+      const tokenResponse = identityTokenResponseFactory();
       tokenResponse.forcePasswordReset = true;
       tokenResponse.resetMasterPassword = true;
-      (tokenResponse as any as IdentityTwoFactorResponse).twoFactorProviders2 = null;
-      (tokenResponse as any as IdentityCaptchaResponse).siteKey = null;
 
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
@@ -153,13 +151,18 @@ describe("LogInDelegate", () => {
       expected.forcePasswordReset = true;
       expected.resetMasterPassword = true;
       expected.twoFactorProviders = null;
-      expected.captchaSiteKey = null;
+      expected.captchaSiteKey = "";
       expect(result).toEqual(expected);
     });
 
     it("rejects login if CAPTCHA is required", async () => {
-      const tokenResponse = tokenResponseFactory();
-      (tokenResponse as any).siteKey = captchaSiteKey;
+      // Sample CAPTCHA response
+      const tokenResponse = new IdentityCaptchaResponse({
+        error: "invalid_grant",
+        error_description: "Captcha required.",
+        HCaptcha_SiteKey: captchaSiteKey,
+      });
+
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
       const result = await passwordLogInDelegate.logIn();
@@ -173,8 +176,8 @@ describe("LogInDelegate", () => {
     });
 
     it("does not set crypto keys if setCryptoKeys is false", async () => {
-      apiService.postIdentityToken(Arg.any()).resolves(tokenResponseFactory());
       await setupLogInDelegate(false);
+      apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
 
       await passwordLogInDelegate.logIn();
 
@@ -185,7 +188,7 @@ describe("LogInDelegate", () => {
     });
 
     it("makes a new public and private key for an old account", async () => {
-      const tokenResponse = tokenResponseFactory();
+      const tokenResponse = identityTokenResponseFactory();
       tokenResponse.privateKey = null;
       cryptoService.makeKeyPair(Arg.any()).resolves(["PUBLIC_KEY", new EncString("PRIVATE_KEY")]);
 
@@ -200,8 +203,14 @@ describe("LogInDelegate", () => {
   describe("Two-factor authentication", () => {
     it("rejects login if 2FA is required", async () => {
       await setupLogInDelegate();
-      const tokenResponse = tokenResponseFactory();
-      (tokenResponse as any).twoFactorProviders2 = twoFactorProviders;
+
+      // Sample response where TOTP 2FA required
+      const tokenResponse = new IdentityTwoFactorResponse({
+        TwoFactorProviders: ["0"],
+        TwoFactorProviders2: { 0: null },
+        error: "invalid_grant",
+        error_description: "Two factor required.",
+      });
 
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
@@ -211,8 +220,8 @@ describe("LogInDelegate", () => {
       messagingService.didNotReceive().send(Arg.any());
 
       const expected = new AuthResult();
-      expected.twoFactorProviders = twoFactorProviders;
-      expected.captchaSiteKey = undefined;
+      expected.twoFactorProviders = new Map<TwoFactorProviderType, { [key: string]: string }>();
+      expected.twoFactorProviders.set(0, null);
       expect(result).toEqual(expected);
     });
 
@@ -220,6 +229,7 @@ describe("LogInDelegate", () => {
       tokenService = Substitute.for<TokenService>();
       tokenService.getTwoFactorToken().resolves(twoFactorToken);
       await setupLogInDelegate();
+      apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
 
       await passwordLogInDelegate.logIn();
 
@@ -242,6 +252,7 @@ describe("LogInDelegate", () => {
         token: twoFactorToken,
         remember: twoFactorRemember,
       });
+      apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
 
       await passwordLogInDelegate.logIn();
 
@@ -259,6 +270,7 @@ describe("LogInDelegate", () => {
 
     it("sends 2FA token provided by user to server (two-step)", async () => {
       await setupLogInDelegate();
+      apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
 
       await passwordLogInDelegate.logInTwoFactor({
         provider: twoFactorProviderType,

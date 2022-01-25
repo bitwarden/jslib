@@ -16,7 +16,7 @@ import { ApiLogInDelegate } from "jslib-common/misc/logInDelegate/apiLogin.deleg
 
 import { Utils } from "jslib-common/misc/utils";
 
-import { tokenResponseFactory } from "./logIn.delegate.spec";
+import { identityTokenResponseFactory } from "./logIn.delegate.spec";
 
 describe("ApiLogInDelegate", () => {
   let cryptoService: SubstituteOf<CryptoService>;
@@ -74,6 +74,7 @@ describe("ApiLogInDelegate", () => {
   });
 
   it("sends api key credentials to the server", async () => {
+    apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
     await apiLogInDelegate.logIn();
 
     apiService.received(1).postIdentityToken(
@@ -92,7 +93,7 @@ describe("ApiLogInDelegate", () => {
   });
 
   it("sets the local environment after a successful login", async () => {
-    apiService.postIdentityToken(Arg.any()).resolves(tokenResponseFactory());
+    apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
 
     await apiLogInDelegate.logIn();
 
@@ -101,8 +102,8 @@ describe("ApiLogInDelegate", () => {
     stateService.received(1).addAccount(Arg.any());
   });
 
-  it("gets and sets the Key Connector key if required", async () => {
-    const tokenResponse = tokenResponseFactory();
+  it("gets and sets the Key Connector key from environmentUrl", async () => {
+    const tokenResponse = identityTokenResponseFactory();
     tokenResponse.apiUseKeyConnector = true;
 
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);

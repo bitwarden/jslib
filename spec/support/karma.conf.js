@@ -86,7 +86,7 @@ module.exports = (config) => {
 
         var githubAction =
           process.env.GITHUB_WORKFLOW != null && process.env.GITHUB_WORKFLOW !== "";
-        if (githubAction) {
+        if (true) {
           removeBrowser("Firefox");
           removeBrowser("Safari");
         }

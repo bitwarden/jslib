@@ -19,7 +19,7 @@ import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKe
 
 import { HashPurpose } from "jslib-common/enums/hashPurpose";
 
-import { tokenResponseFactory } from "./logIn.delegate.spec";
+import { identityTokenResponseFactory } from "./logIn.delegate.spec";
 
 const email = "hello@world.com";
 const masterPassword = "password";
@@ -83,6 +83,8 @@ describe("PasswordLogInDelegate", () => {
       email,
       masterPassword
     );
+
+    apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
   });
 
   it("sends master password credentials to the server", async () => {
@@ -104,7 +106,6 @@ describe("PasswordLogInDelegate", () => {
   });
 
   it("sets the local environment after a successful login", async () => {
-    apiService.postIdentityToken(Arg.any()).resolves(tokenResponseFactory());
     await passwordLogInDelegate.logIn();
 
     cryptoService.received(1).setKey(preloginKey);
