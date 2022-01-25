@@ -235,7 +235,7 @@ describe("LogInDelegate", () => {
 
     it("sends 2FA token provided by user to server (single step)", async () => {
       // This occurs if the user enters the 2FA code as an argument in the CLI
-      await setupLogInDelegate(true, {
+      await setupLogInDelegate({
         provider: twoFactorProviderType,
         token: twoFactorToken,
         remember: twoFactorRemember,
