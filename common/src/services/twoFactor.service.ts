@@ -7,7 +7,7 @@ import {
 
 import { TwoFactorProviderType } from "../enums/twoFactorProviderType";
 
-import { AuthResult } from "../models/domain/authResult";
+import { IdentityTwoFactorResponse } from "../models/response/identityTwoFactorResponse";
 
 export const TwoFactorProviders: Partial<Record<TwoFactorProviderType, TwoFactorProviderDetails>> =
   {
@@ -174,8 +174,8 @@ export class TwoFactorService implements TwoFactorServiceAbstraction {
     this.selectedTwoFactorProviderType = null;
   }
 
-  setProviders(authResult: AuthResult) {
-    this.twoFactorProvidersData = authResult.twoFactorProviders;
+  setProviders(response: IdentityTwoFactorResponse) {
+    this.twoFactorProvidersData = response.twoFactorProviders2;
   }
 
   clearProviders() {

@@ -121,7 +121,7 @@ export abstract class LogInDelegate {
   private async processTwoFactorResponse(response: IdentityTwoFactorResponse): Promise<AuthResult> {
     const result = new AuthResult();
     result.twoFactorProviders = response.twoFactorProviders2;
-    this.twoFactorService.setProviders(result);
+    this.twoFactorService.setProviders(response);
     return result;
   }
 
