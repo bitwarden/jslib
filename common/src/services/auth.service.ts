@@ -47,7 +47,7 @@ export class AuthService implements AuthServiceAbstraction {
     protected keyConnectorService: KeyConnectorService,
     protected environmentService: EnvironmentService,
     protected stateService: StateService,
-    protected twoFactorService: TwoFactorService,
+    protected twoFactorService: TwoFactorService
   ) {}
 
   async logIn(
