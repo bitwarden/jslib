@@ -13,10 +13,10 @@ export class ApiTokenRequest extends TokenRequest {
   }
 
   toIdentityToken(clientId: string) {
-    const obj = super.toIdentityToken(clientId);
+    // Use the api clientId provided by the user in the TokenRequest instead of the method argument
+    const obj = super.toIdentityToken(this.clientId);
 
-    obj.client_id = this.clientId;
-    obj.scope = clientId.startsWith("organization") ? "api.organization" : "api";
+    obj.scope = this.clientId.startsWith("organization") ? "api.organization" : "api";
     obj.grant_type = "client_credentials";
     obj.client_secret = this.clientSecret;
 
