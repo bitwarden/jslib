@@ -42,9 +42,10 @@ export abstract class LogInDelegate {
     protected setCryptoKeys = true
   ) {}
 
-  abstract onSuccessfulLogin(
-    response: IdentityTokenResponse | IdentityTwoFactorResponse | IdentityTokenResponse
-  ): Promise<void>;
+  protected onSuccessfulLogin(response: IdentityTokenResponse): Promise<void> {
+    // Implemented in subclass if required
+    return null;
+  };
 
   async logIn(): Promise<AuthResult> {
     this.twoFactorService.clearSelectedProvider();
