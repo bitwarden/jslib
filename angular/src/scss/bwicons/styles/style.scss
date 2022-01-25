@@ -1,3 +1,6 @@
+$icomoon-font-family: "bwi-font" !default;
+$icomoon-font-path: "fonts" !default;
+
 // New font sheet? Update the font-face information below
 @font-face {
   font-family: "#{$icomoon-font-family}";
@@ -6,6 +9,22 @@
   font-weight: normal;
   font-style: normal;
   font-display: block;
+}
+
+// Base Class
+.bwi {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "#{$icomoon-font-family}" !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  display: inline-block;
+  /* Better Font Rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 // Fixed Width Icons
@@ -95,9 +114,6 @@
 }
 
 // For new icons - add their glyph name and value to the map below
-$icomoon-font-family: "bwi-font" !default;
-$icomoon-font-path: "fonts" !default;
-
 $icons: (
   "save-changes": "\e988",
   "browser": "\e985",
@@ -243,19 +259,6 @@ $icons: (
 
 @each $name, $glyph in $icons {
   .bwi-#{$name}:before {
-    /* use !important to prevent issues with browser extensions that change fonts */
-    font-family: "#{$icomoon-font-family}" !important;
-    speak: never;
-    font-style: normal;
-    font-weight: normal;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1;
-    display: inline-block;
-
-    /* Better Font Rendering =========== */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     content: $glyph;
   }
 }
