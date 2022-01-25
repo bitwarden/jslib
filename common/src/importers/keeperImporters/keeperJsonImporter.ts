@@ -25,15 +25,17 @@ export class KeeperJsonImporter extends BaseImporter implements Importer {
       cipher.login.uris = this.makeUriArray(record.login_url);
       cipher.notes = record.notes;
 
-      let customfieldKeys = Object.keys(record.custom_fields);
-      if (record.custom_fields["TFC:Keeper"] != null) {
-        customfieldKeys = customfieldKeys.filter((item) => item !== "TFC:Keeper");
-        cipher.login.totp = record.custom_fields["TFC:Keeper"];
-      }
+      if (record.custom_fields != null) {
+        let customfieldKeys = Object.keys(record.custom_fields);
+        if (record.custom_fields["TFC:Keeper"] != null) {
+          customfieldKeys = customfieldKeys.filter((item) => item !== "TFC:Keeper");
+          cipher.login.totp = record.custom_fields["TFC:Keeper"];
+        }
 
-      customfieldKeys.forEach((key) => {
-        this.processKvp(cipher, key, record.custom_fields[key]);
-      });
+        customfieldKeys.forEach((key) => {
+          this.processKvp(cipher, key, record.custom_fields[key]);
+        });
+      }
 
       this.convertToNoteIfNeeded(cipher);
       this.cleanupCipher(cipher);
