@@ -79,6 +79,9 @@ import { UnauthGuardService } from "./unauth-guard.service";
 import { ValidationService } from "./validation.service";
 
 import { Account, AccountFactory } from "jslib-common/models/domain/account";
+import { TokenRequestTwoFactor } from "jslib-common/models/request/identityToken/tokenRequest";
+
+import { PasswordLogInDelegate, PasswordLogInDelegateFactory } from "jslib-common/misc/logInDelegate/passwordLogin.delegate";
 
 @NgModule({
   declarations: [],
@@ -110,15 +113,8 @@ import { Account, AccountFactory } from "jslib-common/models/domain/account";
       deps: [
         CryptoServiceAbstraction,
         ApiServiceAbstraction,
-        TokenServiceAbstraction,
-        AppIdServiceAbstraction,
-        PlatformUtilsServiceAbstraction,
         MessagingServiceAbstraction,
-        LogService,
-        KeyConnectorServiceAbstraction,
-        EnvironmentServiceAbstraction,
-        StateServiceAbstraction,
-        TwoFactorServiceAbstraction,
+        "PASSWORD_LOG_IN_DELEGATE_FACTORY"
       ],
     },
     {
@@ -466,6 +462,44 @@ import { Account, AccountFactory } from "jslib-common/models/domain/account";
       provide: TwoFactorServiceAbstraction,
       useClass: TwoFactorService,
       deps: [I18nServiceAbstraction, PlatformUtilsServiceAbstraction],
+    },
+    {
+      provide: "PASSWORD_LOG_IN_DELEGATE_FACTORY",
+      useFactory:
+        (
+          cryptoService: CryptoServiceAbstraction,
+          apiService: ApiServiceAbstraction,
+          tokenService: TokenServiceAbstraction,
+          appIdService: AppIdServiceAbstraction,
+          platformUtilsService: PlatformUtilsServiceAbstraction,
+          messagingService: MessagingServiceAbstraction,
+          logService: LogService,
+          stateService: StateServiceAbstraction,
+          twoFactorService: TwoFactorServiceAbstraction,
+          authService: AuthServiceAbstraction
+        ): PasswordLogInDelegateFactory =>
+          async (
+            email: string,
+            masterPassword: string,
+            captchaToken?: string,
+            twoFactor?: TokenRequestTwoFactor
+          ) => {
+            const delegate = new PasswordLogInDelegate(
+              cryptoService,
+              apiService,
+              tokenService,
+              appIdService,
+              platformUtilsService,
+              messagingService,
+              logService,
+              stateService,
+              twoFactorService,
+              authService,
+            );
+            await delegate.init(email, masterPassword, captchaToken, twoFactor);
+            return delegate;
+          }
+
     },
   ],
 })
