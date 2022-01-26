@@ -498,8 +498,19 @@ import { PasswordLogInDelegate, PasswordLogInDelegateFactory } from "jslib-commo
             );
             await delegate.init(email, masterPassword, captchaToken, twoFactor);
             return delegate;
-          }
-
+          },
+      deps: [
+        CryptoServiceAbstraction,
+        ApiServiceAbstraction,
+        TokenServiceAbstraction,
+        AppIdServiceAbstraction,
+        PlatformUtilsServiceAbstraction,
+        MessagingServiceAbstraction,
+        LogService,
+        StateServiceAbstraction,
+        TwoFactorServiceAbstraction,
+        AuthServiceAbstraction
+      ]
     },
   ],
 })
