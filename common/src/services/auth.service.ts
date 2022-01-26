@@ -172,9 +172,7 @@ export class AuthService implements AuthServiceAbstraction {
     return this.cryptoService.makeKey(masterPassword, email, kdf, kdfIterations);
   }
 
-  protected async startLogin(
-    delegate: ApiLogInDelegate | SsoLogInDelegate | PasswordLogInDelegate
-  ): Promise<AuthResult> {
+  protected async startLogin(delegate: LogInDelegate): Promise<AuthResult> {
     this.logInDelegate = null;
     const result = await delegate.logIn();
     if (result.requiresTwoFactor) {
