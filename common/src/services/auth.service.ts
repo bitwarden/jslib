@@ -1,7 +1,7 @@
 import { KdfType } from "../enums/kdfType";
 
 import { ApiLogInDelegate } from "../misc/logInDelegate/apiLogin.delegate";
-import { PasswordLogInDelegate } from "../misc/logInDelegate/passwordLogin.delegate";
+import { PasswordLogInDelegate, PasswordLogInDelegateFactory } from "../misc/logInDelegate/passwordLogin.delegate";
 import { SsoLogInDelegate } from "../misc/logInDelegate/ssoLogin.delegate";
 import { AuthResult } from "../models/domain/authResult";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
@@ -11,17 +11,10 @@ import { PreloginRequest } from "../models/request/preloginRequest";
 import { TokenRequestTwoFactor } from "../models/request/identityToken/tokenRequest";
 
 import { ApiService } from "../abstractions/api.service";
-import { AppIdService } from "../abstractions/appId.service";
 import { AuthService as AuthServiceAbstraction } from "../abstractions/auth.service";
 import { CryptoService } from "../abstractions/crypto.service";
-import { EnvironmentService } from "../abstractions/environment.service";
-import { KeyConnectorService } from "../abstractions/keyConnector.service";
-import { LogService } from "../abstractions/log.service";
 import { MessagingService } from "../abstractions/messaging.service";
-import { PlatformUtilsService } from "../abstractions/platformUtils.service";
-import { StateService } from "../abstractions/state.service";
-import { TokenService } from "../abstractions/token.service";
-import { TwoFactorService } from "../abstractions/twoFactor.service";
+
 import { LogInDelegate } from "../misc/logInDelegate/logIn.delegate";
 
 export class AuthService implements AuthServiceAbstraction {
@@ -37,17 +30,10 @@ export class AuthService implements AuthServiceAbstraction {
   private logInDelegate: LogInDelegate;
 
   constructor(
-    protected cryptoService: CryptoService,
-    protected apiService: ApiService,
-    protected tokenService: TokenService,
-    protected appIdService: AppIdService,
-    protected platformUtilsService: PlatformUtilsService,
-    protected messagingService: MessagingService,
-    protected logService: LogService,
-    protected keyConnectorService: KeyConnectorService,
-    protected environmentService: EnvironmentService,
-    protected stateService: StateService,
-    protected twoFactorService: TwoFactorService
+    private cryptoService: CryptoService,
+    private apiService: ApiService,
+    private messagingService: MessagingService,
+    private passwordLogInDelegateFactory: PasswordLogInDelegateFactory
   ) {}
 
   async logIn(
@@ -56,24 +42,14 @@ export class AuthService implements AuthServiceAbstraction {
     twoFactor?: TokenRequestTwoFactor,
     captchaToken?: string
   ): Promise<AuthResult> {
-    const passwordLogInDelegate = await PasswordLogInDelegate.new(
-      this.cryptoService,
-      this.apiService,
-      this.tokenService,
-      this.appIdService,
-      this.platformUtilsService,
-      this.messagingService,
-      this.logService,
-      this.stateService,
-      this.twoFactorService,
-      this,
+    const delegate = await this.passwordLogInDelegateFactory(
       email,
       masterPassword,
       captchaToken,
       twoFactor
     );
 
-    return this.startLogin(passwordLogInDelegate);
+    return this.startLogin(delegate);
   }
 
   async logInSso(
@@ -83,25 +59,26 @@ export class AuthService implements AuthServiceAbstraction {
     orgId: string,
     twoFactor?: TokenRequestTwoFactor
   ): Promise<AuthResult> {
-    const ssoLogInDelegate = await SsoLogInDelegate.new(
-      this.cryptoService,
-      this.apiService,
-      this.tokenService,
-      this.appIdService,
-      this.platformUtilsService,
-      this.messagingService,
-      this.logService,
-      this.stateService,
-      this.twoFactorService,
-      this.keyConnectorService,
-      code,
-      codeVerifier,
-      redirectUrl,
-      orgId,
-      twoFactor
-    );
+    // const ssoLogInDelegate = await SsoLogInDelegate.new(
+    //   this.cryptoService,
+    //   this.apiService,
+    //   this.tokenService,
+    //   this.appIdService,
+    //   this.platformUtilsService,
+    //   this.messagingService,
+    //   this.logService,
+    //   this.stateService,
+    //   this.twoFactorService,
+    //   this.keyConnectorService,
+    //   code,
+    //   codeVerifier,
+    //   redirectUrl,
+    //   orgId,
+    //   twoFactor
+    // );
 
-    return this.startLogin(ssoLogInDelegate);
+    // return this.startLogin(ssoLogInDelegate);
+    return null;
   }
 
   async logInApiKey(
@@ -109,24 +86,25 @@ export class AuthService implements AuthServiceAbstraction {
     clientSecret: string,
     twoFactor?: TokenRequestTwoFactor
   ): Promise<AuthResult> {
-    const apiLogInDelegate = await ApiLogInDelegate.new(
-      this.cryptoService,
-      this.apiService,
-      this.tokenService,
-      this.appIdService,
-      this.platformUtilsService,
-      this.messagingService,
-      this.logService,
-      this.stateService,
-      this.twoFactorService,
-      this.environmentService,
-      this.keyConnectorService,
-      clientId,
-      clientSecret,
-      twoFactor
-    );
+    // const apiLogInDelegate = await ApiLogInDelegate.new(
+    //   this.cryptoService,
+    //   this.apiService,
+    //   this.tokenService,
+    //   this.appIdService,
+    //   this.platformUtilsService,
+    //   this.messagingService,
+    //   this.logService,
+    //   this.stateService,
+    //   this.twoFactorService,
+    //   this.environmentService,
+    //   this.keyConnectorService,
+    //   clientId,
+    //   clientSecret,
+    //   twoFactor
+    // );
 
-    return this.startLogin(apiLogInDelegate);
+    // return this.startLogin(apiLogInDelegate);
+    return null;
   }
 
   async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
