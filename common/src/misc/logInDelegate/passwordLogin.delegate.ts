@@ -18,15 +18,6 @@ import { SymmetricCryptoKey } from "../../models/domain/symmetricCryptoKey";
 
 import { HashPurpose } from "../../enums/hashPurpose";
 
-export interface PasswordLogInDelegateFactory {
-  (
-    email: string,
-    masterPassword: string,
-    captchaToken?: string,
-    twoFactor?: TokenRequestTwoFactor
-  ): Promise<PasswordLogInDelegate>
-}
-
 export class PasswordLogInDelegate extends LogInDelegate {
   get email() {
     return this.tokenRequest.email;
@@ -36,12 +27,43 @@ export class PasswordLogInDelegate extends LogInDelegate {
     return this.tokenRequest.masterPasswordHash;
   }
 
+  static async new(
+    cryptoService: CryptoService,
+    apiService: ApiService,
+    tokenService: TokenService,
+    appIdService: AppIdService,
+    platformUtilsService: PlatformUtilsService,
+    messagingService: MessagingService,
+    logService: LogService,
+    stateService: StateService,
+    twoFactorService: TwoFactorService,
+    authService: AuthService,
+    email: string,
+    masterPassword: string,
+    captchaToken?: string,
+    twoFactor?: TokenRequestTwoFactor
+  ): Promise<PasswordLogInDelegate> {
+    const delegate = new PasswordLogInDelegate(
+      cryptoService,
+      apiService,
+      tokenService,
+      appIdService,
+      platformUtilsService,
+      messagingService,
+      logService,
+      stateService,
+      twoFactorService,
+      authService
+    );
+    await delegate.init(email, masterPassword, captchaToken, twoFactor);
+    return delegate;
+  }
   tokenRequest: PasswordTokenRequest;
 
   private localHashedPassword: string;
   private key: SymmetricCryptoKey;
 
-  constructor(
+  private constructor(
     cryptoService: CryptoService,
     apiService: ApiService,
     tokenService: TokenService,
@@ -71,7 +93,7 @@ export class PasswordLogInDelegate extends LogInDelegate {
     await this.cryptoService.setKeyHash(this.localHashedPassword);
   }
 
-  async init(
+  private async init(
     email: string,
     masterPassword: string,
     captchaToken?: string,
