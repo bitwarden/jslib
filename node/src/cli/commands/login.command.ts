@@ -30,6 +30,11 @@ import { NodeUtils } from "jslib-common/misc/nodeUtils";
 import { Utils } from "jslib-common/misc/utils";
 
 import Separator from "inquirer/lib/objects/separator";
+import {
+  ApiLogInCredentials,
+  PasswordLogInCredentials,
+  SsoLogInCredentials,
+} from "jslib-common/models/domain/logInCredentials";
 
 // tslint:disable-next-line
 const open = require("open");
@@ -163,17 +168,21 @@ export class LoginCommand {
 
       let response: AuthResult = null;
       if (clientId != null && clientSecret != null) {
-        response = await this.authService.logInApiKey(clientId, clientSecret, twoFactor);
+        response = await this.authService.logIn(new ApiLogInCredentials(clientId, clientSecret));
       } else if (ssoCode != null && ssoCodeVerifier != null) {
-        response = await this.authService.logInSso(
-          ssoCode,
-          ssoCodeVerifier,
-          this.ssoRedirectUri,
-          orgIdentifier,
-          twoFactor
+        response = await this.authService.logIn(
+          new SsoLogInCredentials(
+            ssoCode,
+            ssoCodeVerifier,
+            this.ssoRedirectUri,
+            orgIdentifier,
+            twoFactor
+          )
         );
       } else {
-        response = await this.authService.logIn(email, password, twoFactor);
+        response = await this.authService.logIn(
+          new PasswordLogInCredentials(email, password, null, twoFactor)
+        );
       }
       if (response.captchaSiteKey) {
         const badCaptcha = Response.badRequest(
@@ -189,14 +198,11 @@ export class LoginCommand {
           }
 
           const secondResponse = await this.authService.logIn(
-            email,
-            password,
-            {
+            new PasswordLogInCredentials(email, password, captchaClientSecret, {
               provider: twoFactorMethod,
               token: twoFactorToken,
               remember: false,
-            },
-            captchaClientSecret
+            })
           );
           response = secondResponse;
         } catch (e) {

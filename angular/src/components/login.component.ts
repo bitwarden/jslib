@@ -18,6 +18,7 @@ import { StateService } from "jslib-common/abstractions/state.service";
 import { Utils } from "jslib-common/misc/utils";
 
 import { CaptchaProtectedComponent } from "./captchaProtected.component";
+import { PasswordLogInCredentials } from "jslib-common/models/domain/logInCredentials";
 
 @Directive()
 export class LoginComponent extends CaptchaProtectedComponent implements OnInit {
@@ -93,12 +94,13 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
     }
 
     try {
-      this.formPromise = this.authService.logIn(
+      const credentials = new PasswordLogInCredentials(
         this.email,
         this.masterPassword,
-        null,
-        this.captchaToken
+        this.captchaToken,
+        null
       );
+      this.formPromise = this.authService.logIn(credentials);
       const response = await this.formPromise;
       if (this.rememberEmail) {
         await this.stateService.setRememberedEmail(this.email);
