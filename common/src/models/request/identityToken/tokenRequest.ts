@@ -15,6 +15,14 @@ export abstract class TokenRequest {
     this.device = device != null ? device : null;
   }
 
+  alterIdentityTokenHeaders(headers: Headers) {
+    // Implemented in subclass if required
+  }
+
+  setTwoFactor(twoFactor: TokenRequestTwoFactor) {
+    this.twoFactor = twoFactor;
+  }
+
   protected toIdentityToken(clientId: string) {
     const obj: any = {
       scope: "api offline_access",
@@ -36,13 +44,5 @@ export abstract class TokenRequest {
     }
 
     return obj;
-  }
-
-  alterIdentityTokenHeaders(headers: Headers) {
-    // Implemented in subclass if required
-  }
-
-  setTwoFactor(twoFactor: TokenRequestTwoFactor) {
-    this.twoFactor = twoFactor;
   }
 }

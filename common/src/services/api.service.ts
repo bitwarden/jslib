@@ -28,7 +28,9 @@ import { EventRequest } from "../models/request/eventRequest";
 import { FolderRequest } from "../models/request/folderRequest";
 import { GroupRequest } from "../models/request/groupRequest";
 import { IapCheckRequest } from "../models/request/iapCheckRequest";
-import { TokenRequest } from "../models/request/identityToken/tokenRequest";
+import { ApiTokenRequest } from "../models/request/identityToken/apiTokenRequest";
+import { PasswordTokenRequest } from "../models/request/identityToken/passwordTokenRequest";
+import { SsoTokenRequest } from "../models/request/identityToken/ssoTokenRequest";
 import { ImportCiphersRequest } from "../models/request/importCiphersRequest";
 import { ImportDirectoryRequest } from "../models/request/importDirectoryRequest";
 import { ImportOrganizationCiphersRequest } from "../models/request/importOrganizationCiphersRequest";
@@ -173,9 +175,6 @@ import { VerifyOTPRequest } from "../models/request/account/verifyOTPRequest";
 import { KeyConnectorUserKeyRequest } from "../models/request/keyConnectorUserKeyRequest";
 import { KeyConnectorUserKeyResponse } from "../models/response/keyConnectorUserKeyResponse";
 import { SendAccessView } from "../models/view/sendAccessView";
-import { ApiTokenRequest } from "../models/request/identityToken/apiTokenRequest";
-import { PasswordTokenRequest } from "../models/request/identityToken/passwordTokenRequest";
-import { SsoTokenRequest } from "../models/request/identityToken/ssoTokenRequest";
 
 export class ApiService implements ApiServiceAbstraction {
   protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
