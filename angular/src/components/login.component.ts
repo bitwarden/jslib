@@ -36,6 +36,7 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
   protected twoFactorRoute = "2fa";
   protected successRoute = "vault";
   protected forcePasswordResetRoute = "update-temp-password";
+  protected alwaysRememberEmail: boolean = false;
 
   constructor(
     protected authService: AuthService,
@@ -59,7 +60,9 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
         this.email = "";
       }
     }
-    this.rememberEmail = (await this.stateService.getRememberedEmail()) != null;
+    if (!this.alwaysRememberEmail) {
+      this.rememberEmail = (await this.stateService.getRememberedEmail()) != null;
+    }
     if (Utils.isBrowser && !Utils.isNode) {
       this.focusInput();
     }
@@ -102,7 +105,7 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
       );
       this.formPromise = this.authService.logIn(credentials);
       const response = await this.formPromise;
-      if (this.rememberEmail) {
+      if (this.rememberEmail || this.alwaysRememberEmail) {
         await this.stateService.setRememberedEmail(this.email);
       } else {
         await this.stateService.setRememberedEmail(null);
