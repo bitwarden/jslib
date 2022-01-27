@@ -40,8 +40,6 @@ describe("SsoLogInStrategy", () => {
   const encKey = "ENC_KEY";
   const privateKey = "PRIVATE_KEY";
   const keyConnectorUrl = "KEY_CONNECTOR_URL";
-  const kdf = 0;
-  const kdfIterations = 10000;
 
   const ssoCode = "SSO_CODE";
   const ssoCodeVerifier = "SSO_CODE_VERIFIER";
