@@ -17,42 +17,10 @@ import { SsoTokenRequest } from "../../models/request/identityToken/ssoTokenRequ
 import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
 
 export class SsoLogInStrategy extends LogInStrategy {
-  static async new(
-    cryptoService: CryptoService,
-    apiService: ApiService,
-    tokenService: TokenService,
-    appIdService: AppIdService,
-    platformUtilsService: PlatformUtilsService,
-    messagingService: MessagingService,
-    logService: LogService,
-    stateService: StateService,
-    twoFactorService: TwoFactorService,
-    keyConnectorService: KeyConnectorService,
-    code: string,
-    codeVerifier: string,
-    redirectUrl: string,
-    orgId: string,
-    twoFactor?: TokenRequestTwoFactor
-  ): Promise<SsoLogInStrategy> {
-    const delegate = new SsoLogInStrategy(
-      cryptoService,
-      apiService,
-      tokenService,
-      appIdService,
-      platformUtilsService,
-      messagingService,
-      logService,
-      stateService,
-      twoFactorService,
-      keyConnectorService
-    );
-    await delegate.init(code, codeVerifier, redirectUrl, orgId, twoFactor);
-    return delegate;
-  }
   tokenRequest: SsoTokenRequest;
   orgId: string;
 
-  private constructor(
+  constructor(
     cryptoService: CryptoService,
     apiService: ApiService,
     tokenService: TokenService,
@@ -89,7 +57,7 @@ export class SsoLogInStrategy extends LogInStrategy {
     }
   }
 
-  private async init(
+  async logIn(
     code: string,
     codeVerifier: string,
     redirectUrl: string,
@@ -104,5 +72,7 @@ export class SsoLogInStrategy extends LogInStrategy {
       await this.buildTwoFactor(twoFactor),
       await this.buildDeviceRequest()
     );
+
+    return this.startLogIn();
   }
 }

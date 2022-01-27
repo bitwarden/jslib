@@ -26,15 +26,15 @@ import { LogInStrategy } from "../misc/logInStrategies/logIn.strategy";
 
 export class AuthService implements AuthServiceAbstraction {
   get email(): string {
-    return this.logInDelegate instanceof PasswordLogInStrategy ? this.logInDelegate.email : null;
+    return this.logInStrategy instanceof PasswordLogInStrategy ? this.logInStrategy.email : null;
   }
 
   get masterPasswordHash(): string {
-    return this.logInDelegate instanceof PasswordLogInStrategy
-      ? this.logInDelegate.masterPasswordHash
+    return this.logInStrategy instanceof PasswordLogInStrategy
+      ? this.logInStrategy.masterPasswordHash
       : null;
   }
-  private logInDelegate: LogInStrategy;
+  private logInStrategy: LogInStrategy;
 
   constructor(
     protected cryptoService: CryptoService,
@@ -56,7 +56,7 @@ export class AuthService implements AuthServiceAbstraction {
     twoFactor?: TokenRequestTwoFactor,
     captchaToken?: string
   ): Promise<AuthResult> {
-    const passwordLogInDelegate = await PasswordLogInStrategy.new(
+    const passwordLogInStrategy = new PasswordLogInStrategy(
       this.cryptoService,
       this.apiService,
       this.tokenService,
@@ -66,16 +66,17 @@ export class AuthService implements AuthServiceAbstraction {
       this.logService,
       this.stateService,
       this.twoFactorService,
-      this,
+      this
+    );
+
+    this.clearState();
+    const result = await passwordLogInStrategy.logIn(
       email,
       masterPassword,
       captchaToken,
       twoFactor
     );
-
-    this.clearState();
-    const result = await passwordLogInDelegate.logIn();
-    this.saveStateIfRequired(passwordLogInDelegate, result);
+    this.saveStateIfRequired(passwordLogInStrategy, result);
     return result;
   }
 
@@ -86,7 +87,7 @@ export class AuthService implements AuthServiceAbstraction {
     orgId: string,
     twoFactor?: TokenRequestTwoFactor
   ): Promise<AuthResult> {
-    const ssoLogInDelegate = await SsoLogInStrategy.new(
+    const ssoLogInStrategy = new SsoLogInStrategy(
       this.cryptoService,
       this.apiService,
       this.tokenService,
@@ -96,17 +97,12 @@ export class AuthService implements AuthServiceAbstraction {
       this.logService,
       this.stateService,
       this.twoFactorService,
-      this.keyConnectorService,
-      code,
-      codeVerifier,
-      redirectUrl,
-      orgId,
-      twoFactor
+      this.keyConnectorService
     );
 
     this.clearState();
-    const result = await ssoLogInDelegate.logIn();
-    this.saveStateIfRequired(ssoLogInDelegate, result);
+    const result = await ssoLogInStrategy.logIn(code, codeVerifier, redirectUrl, orgId, twoFactor);
+    this.saveStateIfRequired(ssoLogInStrategy, result);
     return result;
   }
 
@@ -115,7 +111,7 @@ export class AuthService implements AuthServiceAbstraction {
     clientSecret: string,
     twoFactor?: TokenRequestTwoFactor
   ): Promise<AuthResult> {
-    const apiLogInDelegate = await ApiLogInStrategy.new(
+    const apiLogInStrategy = new ApiLogInStrategy(
       this.cryptoService,
       this.apiService,
       this.tokenService,
@@ -126,21 +122,18 @@ export class AuthService implements AuthServiceAbstraction {
       this.stateService,
       this.twoFactorService,
       this.environmentService,
-      this.keyConnectorService,
-      clientId,
-      clientSecret,
-      twoFactor
+      this.keyConnectorService
     );
 
     this.clearState();
-    const result = await apiLogInDelegate.logIn();
-    this.saveStateIfRequired(apiLogInDelegate, result);
+    const result = await apiLogInStrategy.logIn(clientId, clientSecret, twoFactor);
+    this.saveStateIfRequired(apiLogInStrategy, result);
     return result;
   }
 
   async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
     try {
-      return await this.logInDelegate.logInTwoFactor(twoFactor);
+      return await this.logInStrategy.logInTwoFactor(twoFactor);
     } finally {
       this.clearState();
     }
@@ -152,15 +145,15 @@ export class AuthService implements AuthServiceAbstraction {
   }
 
   authingWithApiKey(): boolean {
-    return this.logInDelegate instanceof ApiLogInStrategy;
+    return this.logInStrategy instanceof ApiLogInStrategy;
   }
 
   authingWithSso(): boolean {
-    return this.logInDelegate instanceof SsoLogInStrategy;
+    return this.logInStrategy instanceof SsoLogInStrategy;
   }
 
   authingWithPassword(): boolean {
-    return this.logInDelegate instanceof PasswordLogInStrategy;
+    return this.logInStrategy instanceof PasswordLogInStrategy;
   }
 
   async makePreloginKey(masterPassword: string, email: string): Promise<SymmetricCryptoKey> {
@@ -181,13 +174,13 @@ export class AuthService implements AuthServiceAbstraction {
     return this.cryptoService.makeKey(masterPassword, email, kdf, kdfIterations);
   }
 
-  protected saveStateIfRequired(delegate: LogInStrategy, result: AuthResult) {
+  protected saveStateIfRequired(Strategy: LogInStrategy, result: AuthResult) {
     if (result.requiresTwoFactor) {
-      this.logInDelegate = delegate;
+      this.logInStrategy = Strategy;
     }
   }
 
   protected clearState() {
-    this.logInDelegate = null;
+    this.logInStrategy = null;
   }
 }

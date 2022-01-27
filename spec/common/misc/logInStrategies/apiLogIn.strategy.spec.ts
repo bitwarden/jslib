@@ -54,7 +54,7 @@ describe("ApiLogInStrategy", () => {
     appIdService.getAppId().resolves(deviceId);
     tokenService.getTwoFactorToken().resolves(null);
 
-    apiLogInStrategy = await ApiLogInStrategy.new(
+    apiLogInStrategy = new ApiLogInStrategy(
       cryptoService,
       apiService,
       tokenService,
@@ -65,15 +65,13 @@ describe("ApiLogInStrategy", () => {
       stateService,
       twoFactorService,
       environmentService,
-      keyConnectorService,
-      apiClientId,
-      apiClientSecret
+      keyConnectorService
     );
   });
 
   it("sends api key credentials to the server", async () => {
     apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
-    await apiLogInStrategy.logIn();
+    await apiLogInStrategy.logIn(apiClientId, apiClientSecret);
 
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {
@@ -93,7 +91,7 @@ describe("ApiLogInStrategy", () => {
   it("sets the local environment after a successful login", async () => {
     apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
 
-    await apiLogInStrategy.logIn();
+    await apiLogInStrategy.logIn(apiClientId, apiClientSecret);
 
     stateService.received(1).setApiKeyClientId(apiClientId);
     stateService.received(1).setApiKeyClientSecret(apiClientSecret);
@@ -107,7 +105,7 @@ describe("ApiLogInStrategy", () => {
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
     environmentService.getKeyConnectorUrl().returns(keyConnectorUrl);
 
-    await apiLogInStrategy.logIn();
+    await apiLogInStrategy.logIn(apiClientId, apiClientSecret);
 
     keyConnectorService.received(1).getAndSetKey(keyConnectorUrl);
   });

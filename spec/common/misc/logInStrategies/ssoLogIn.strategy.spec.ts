@@ -28,11 +28,9 @@ describe("SsoLogInStrategy", () => {
   let platformUtilsService: SubstituteOf<PlatformUtilsService>;
   let messagingService: SubstituteOf<MessagingService>;
   let logService: SubstituteOf<LogService>;
-  let environmentService: SubstituteOf<EnvironmentService>;
   let keyConnectorService: SubstituteOf<KeyConnectorService>;
   let stateService: SubstituteOf<StateService>;
   let twoFactorService: SubstituteOf<TwoFactorService>;
-  let authService: SubstituteOf<AuthService>;
 
   let ssoLogInStrategy: SsoLogInStrategy;
 
@@ -54,16 +52,14 @@ describe("SsoLogInStrategy", () => {
     platformUtilsService = Substitute.for<PlatformUtilsService>();
     messagingService = Substitute.for<MessagingService>();
     logService = Substitute.for<LogService>();
-    environmentService = Substitute.for<EnvironmentService>();
     stateService = Substitute.for<StateService>();
     keyConnectorService = Substitute.for<KeyConnectorService>();
     twoFactorService = Substitute.for<TwoFactorService>();
-    authService = Substitute.for<AuthService>();
 
     tokenService.getTwoFactorToken().resolves(null);
     appIdService.getAppId().resolves(deviceId);
 
-    ssoLogInStrategy = await SsoLogInStrategy.new(
+    ssoLogInStrategy = new SsoLogInStrategy(
       cryptoService,
       apiService,
       tokenService,
@@ -73,18 +69,14 @@ describe("SsoLogInStrategy", () => {
       logService,
       stateService,
       twoFactorService,
-      keyConnectorService,
-      ssoCode,
-      ssoCodeVerifier,
-      ssoRedirectUrl,
-      ssoOrgId
+      keyConnectorService
     );
   });
 
   it("sends SSO information to server", async () => {
     apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
 
-    await ssoLogInStrategy.logIn();
+    await ssoLogInStrategy.logIn(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
 
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {
@@ -106,7 +98,7 @@ describe("SsoLogInStrategy", () => {
     tokenResponse.key = null;
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-    await ssoLogInStrategy.logIn();
+    await ssoLogInStrategy.logIn(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
 
     cryptoService.didNotReceive().setEncPrivateKey(privateKey);
     cryptoService.didNotReceive().setEncKey(encKey);
@@ -118,7 +110,7 @@ describe("SsoLogInStrategy", () => {
 
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-    await ssoLogInStrategy.logIn();
+    await ssoLogInStrategy.logIn(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
 
     keyConnectorService.received(1).getAndSetKey(keyConnectorUrl);
   });
@@ -130,7 +122,7 @@ describe("SsoLogInStrategy", () => {
 
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-    await ssoLogInStrategy.logIn();
+    await ssoLogInStrategy.logIn(ssoCode, ssoCodeVerifier, ssoRedirectUrl, ssoOrgId);
 
     keyConnectorService.received(1).convertNewSsoUserToKeyConnector(tokenResponse, ssoOrgId);
   });

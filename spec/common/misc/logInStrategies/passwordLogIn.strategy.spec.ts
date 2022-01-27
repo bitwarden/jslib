@@ -68,7 +68,7 @@ describe("PasswordLogInStrategy", () => {
       .hashPassword(masterPassword, Arg.any(), HashPurpose.LocalAuthorization)
       .resolves(localHashedPassword);
 
-    passwordLogInStrategy = await PasswordLogInStrategy.new(
+    passwordLogInStrategy = new PasswordLogInStrategy(
       cryptoService,
       apiService,
       tokenService,
@@ -78,16 +78,14 @@ describe("PasswordLogInStrategy", () => {
       logService,
       stateService,
       twoFactorService,
-      authService,
-      email,
-      masterPassword
+      authService
     );
 
     apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
   });
 
   it("sends master password credentials to the server", async () => {
-    const result = await passwordLogInStrategy.logIn();
+    await passwordLogInStrategy.logIn(email, masterPassword);
 
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {
@@ -105,7 +103,7 @@ describe("PasswordLogInStrategy", () => {
   });
 
   it("sets the local environment after a successful login", async () => {
-    await passwordLogInStrategy.logIn();
+    await passwordLogInStrategy.logIn(email, masterPassword);
 
     cryptoService.received(1).setKey(preloginKey);
     cryptoService.received(1).setKeyHash(localHashedPassword);

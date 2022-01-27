@@ -41,7 +41,7 @@ export abstract class LogInStrategy {
     protected twoFactorService: TwoFactorService
   ) {}
 
-  async logIn(): Promise<AuthResult> {
+  protected async startLogIn(): Promise<AuthResult> {
     this.twoFactorService.clearSelectedProvider();
 
     const response = await this.apiService.postIdentityToken(this.tokenRequest);
@@ -59,13 +59,14 @@ export abstract class LogInStrategy {
 
   async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
     this.tokenRequest.setTwoFactor(twoFactor);
-    return this.logIn();
+    return this.startLogIn();
   }
 
   protected onSuccessfulLogin(response: IdentityTokenResponse): Promise<void> {
     // Implemented in subclass if required
     return null;
   }
+
   protected async buildDeviceRequest() {
     const appId = await this.appIdService.getAppId();
     return new DeviceRequest(appId, this.platformUtilsService);
