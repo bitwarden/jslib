@@ -1,7 +1,5 @@
 import { LogInStrategy } from "./logIn.strategy";
 
-import { TokenRequestTwoFactor } from "../../models/request/identityToken/tokenRequest";
-
 import { ApiService } from "../../abstractions/api.service";
 import { AppIdService } from "../../abstractions/appId.service";
 import { CryptoService } from "../../abstractions/crypto.service";
@@ -16,8 +14,9 @@ import { TwoFactorService } from "../../abstractions/twoFactor.service";
 
 import { ApiTokenRequest } from "../../models/request/identityToken/apiTokenRequest";
 
-import { ApiLogInCredentials } from "../../models/domain/logInCredentials";
 import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
+
+import { ApiLogInCredentials } from "../../models/domain/logInCredentials";
 
 export class ApiLogInStrategy extends LogInStrategy {
   tokenRequest: ApiTokenRequest;

@@ -12,10 +12,11 @@ import { OrganizationUserType } from "../enums/organizationUserType";
 import { Utils } from "../misc/utils";
 
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-import { SetKeyConnectorKeyRequest } from "../models/request/account/setKeyConnectorKeyRequest";
 
+import { SetKeyConnectorKeyRequest } from "../models/request/account/setKeyConnectorKeyRequest";
 import { KeyConnectorUserKeyRequest } from "../models/request/keyConnectorUserKeyRequest";
 import { KeysRequest } from "../models/request/keysRequest";
+
 import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
 
 export class KeyConnectorService implements KeyConnectorServiceAbstraction {

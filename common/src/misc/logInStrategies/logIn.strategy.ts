@@ -4,13 +4,13 @@ import { Account, AccountProfile, AccountTokens } from "../../models/domain/acco
 import { AuthResult } from "../../models/domain/authResult";
 
 import { DeviceRequest } from "../../models/request/deviceRequest";
-import { KeysRequest } from "../../models/request/keysRequest";
-
 import { ApiTokenRequest } from "../../models/request/identityToken/apiTokenRequest";
 import { PasswordTokenRequest } from "../../models/request/identityToken/passwordTokenRequest";
 import { SsoTokenRequest } from "../../models/request/identityToken/ssoTokenRequest";
 import { TokenRequestTwoFactor } from "../../models/request/identityToken/tokenRequest";
+import { KeysRequest } from "../../models/request/keysRequest";
 
+import { IdentityCaptchaResponse } from "../../models/response/identityCaptchaResponse";
 import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
 import { IdentityTwoFactorResponse } from "../../models/response/identityTwoFactorResponse";
 
@@ -22,9 +22,7 @@ import { MessagingService } from "../../abstractions/messaging.service";
 import { PlatformUtilsService } from "../../abstractions/platformUtils.service";
 import { StateService } from "../../abstractions/state.service";
 import { TokenService } from "../../abstractions/token.service";
-
 import { TwoFactorService } from "../../abstractions/twoFactor.service";
-import { IdentityCaptchaResponse } from "../../models/response/identityCaptchaResponse";
 
 export abstract class LogInStrategy {
   protected abstract tokenRequest: ApiTokenRequest | PasswordTokenRequest | SsoTokenRequest;

@@ -1,10 +1,9 @@
 import { LogInStrategy } from "./logIn.strategy";
 
-import { TokenRequestTwoFactor } from "../../models/request/identityToken/tokenRequest";
-
 import { ApiService } from "../../abstractions/api.service";
 import { AppIdService } from "../../abstractions/appId.service";
 import { CryptoService } from "../../abstractions/crypto.service";
+import { KeyConnectorService } from "../../abstractions/keyConnector.service";
 import { LogService } from "../../abstractions/log.service";
 import { MessagingService } from "../../abstractions/messaging.service";
 import { PlatformUtilsService } from "../../abstractions/platformUtils.service";
@@ -12,9 +11,10 @@ import { StateService } from "../../abstractions/state.service";
 import { TokenService } from "../../abstractions/token.service";
 import { TwoFactorService } from "../../abstractions/twoFactor.service";
 
-import { KeyConnectorService } from "../../abstractions/keyConnector.service";
 import { SsoLogInCredentials } from "../../models/domain/logInCredentials";
+
 import { SsoTokenRequest } from "../../models/request/identityToken/ssoTokenRequest";
+
 import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
 
 export class SsoLogInStrategy extends LogInStrategy {

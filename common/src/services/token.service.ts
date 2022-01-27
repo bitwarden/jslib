@@ -2,7 +2,7 @@ import { StateService } from "../abstractions/state.service";
 import { TokenService as TokenServiceAbstraction } from "../abstractions/token.service";
 
 import { Utils } from "../misc/utils";
-import { AuthResult } from "../models/domain/authResult";
+
 import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
 
 export class TokenService implements TokenServiceAbstraction {
