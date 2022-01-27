@@ -72,7 +72,7 @@ export abstract class LogInStrategy {
     return new DeviceRequest(appId, this.platformUtilsService);
   }
 
-  protected async buildTwoFactor(userProvidedTwoFactor: TokenRequestTwoFactor) {
+  protected async buildTwoFactor(userProvidedTwoFactor?: TokenRequestTwoFactor) {
     if (userProvidedTwoFactor != null) {
       return userProvidedTwoFactor;
     }

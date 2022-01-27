@@ -12,9 +12,9 @@ import { TokenService } from "jslib-common/abstractions/token.service";
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
 import { PasswordLogInStrategy } from "jslib-common/misc/logInStrategies/passwordLogin.strategy";
-
 import { Utils } from "jslib-common/misc/utils";
 
+import { PasswordLogInCredentials } from "jslib-common/models/domain/logInCredentials";
 import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
 
 import { HashPurpose } from "jslib-common/enums/hashPurpose";
@@ -45,6 +45,7 @@ describe("PasswordLogInStrategy", () => {
   let authService: SubstituteOf<AuthService>;
 
   let passwordLogInStrategy: PasswordLogInStrategy;
+  let credentials: PasswordLogInCredentials;
 
   beforeEach(async () => {
     cryptoService = Substitute.for<CryptoService>();
@@ -80,12 +81,13 @@ describe("PasswordLogInStrategy", () => {
       twoFactorService,
       authService
     );
+    credentials = new PasswordLogInCredentials(email, masterPassword);
 
     apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
   });
 
   it("sends master password credentials to the server", async () => {
-    await passwordLogInStrategy.logIn(email, masterPassword);
+    await passwordLogInStrategy.logIn(credentials);
 
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {
@@ -103,7 +105,7 @@ describe("PasswordLogInStrategy", () => {
   });
 
   it("sets the local environment after a successful login", async () => {
-    await passwordLogInStrategy.logIn(email, masterPassword);
+    await passwordLogInStrategy.logIn(credentials);
 
     cryptoService.received(1).setKey(preloginKey);
     cryptoService.received(1).setKeyHash(localHashedPassword);

@@ -17,6 +17,7 @@ import { TwoFactorService } from "../../abstractions/twoFactor.service";
 import { SymmetricCryptoKey } from "../../models/domain/symmetricCryptoKey";
 
 import { HashPurpose } from "../../enums/hashPurpose";
+import { PasswordLogInCredentials } from "../../models/domain/logInCredentials";
 
 export class PasswordLogInStrategy extends LogInStrategy {
   get email() {
@@ -62,12 +63,9 @@ export class PasswordLogInStrategy extends LogInStrategy {
     await this.cryptoService.setKeyHash(this.localHashedPassword);
   }
 
-  async logIn(
-    email: string,
-    masterPassword: string,
-    captchaToken?: string,
-    twoFactor?: TokenRequestTwoFactor
-  ) {
+  async logIn(credentials: PasswordLogInCredentials) {
+    const { email, masterPassword, captchaToken, twoFactor } = credentials;
+
     this.key = await this.authService.makePreloginKey(masterPassword, email);
 
     // Hash the password early (before authentication) so we don't persist it in memory in plaintext

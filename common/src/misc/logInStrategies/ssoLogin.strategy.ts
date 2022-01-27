@@ -15,6 +15,7 @@ import { TwoFactorService } from "../../abstractions/twoFactor.service";
 import { KeyConnectorService } from "../../abstractions/keyConnector.service";
 import { SsoTokenRequest } from "../../models/request/identityToken/ssoTokenRequest";
 import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
+import { SsoLogInCredentials } from "../../models/domain/logInCredentials";
 
 export class SsoLogInStrategy extends LogInStrategy {
   tokenRequest: SsoTokenRequest;
@@ -57,19 +58,13 @@ export class SsoLogInStrategy extends LogInStrategy {
     }
   }
 
-  async logIn(
-    code: string,
-    codeVerifier: string,
-    redirectUrl: string,
-    orgId: string,
-    twoFactor?: TokenRequestTwoFactor
-  ) {
-    this.orgId = orgId;
+  async logIn(credentials: SsoLogInCredentials) {
+    this.orgId = credentials.orgId;
     this.tokenRequest = new SsoTokenRequest(
-      code,
-      codeVerifier,
-      redirectUrl,
-      await this.buildTwoFactor(twoFactor),
+      credentials.code,
+      credentials.codeVerifier,
+      credentials.redirectUrl,
+      await this.buildTwoFactor(credentials.twoFactor),
       await this.buildDeviceRequest()
     );
 

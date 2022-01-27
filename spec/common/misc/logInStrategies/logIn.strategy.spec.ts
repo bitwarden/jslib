@@ -12,21 +12,20 @@ import { TokenService } from "jslib-common/abstractions/token.service";
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
 import { PasswordLogInStrategy } from "jslib-common/misc/logInStrategies/passwordLogin.strategy";
-
 import { Utils } from "jslib-common/misc/utils";
 
 import { Account, AccountProfile, AccountTokens } from "jslib-common/models/domain/account";
 import { AuthResult } from "jslib-common/models/domain/authResult";
 import { EncString } from "jslib-common/models/domain/encString";
+import { PasswordLogInCredentials } from "jslib-common/models/domain/logInCredentials";
+
+import { PasswordTokenRequest } from "jslib-common/models/request/identityToken/passwordTokenRequest";
 
 import { IdentityCaptchaResponse } from "jslib-common/models/response/identityCaptchaResponse";
 import { IdentityTokenResponse } from "jslib-common/models/response/identityTokenResponse";
 import { IdentityTwoFactorResponse } from "jslib-common/models/response/identityTwoFactorResponse";
 
-import { TokenRequestTwoFactor } from "jslib-common/models/request/identityToken/tokenRequest";
-
 import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
-import { PasswordTokenRequest } from "jslib-common/models/request/identityToken/passwordTokenRequest";
 
 const email = "hello@world.com";
 const masterPassword = "password";
@@ -81,6 +80,7 @@ describe("LogInStrategy", () => {
   let authService: SubstituteOf<AuthService>;
 
   let passwordLogInStrategy: PasswordLogInStrategy;
+  let credentials: PasswordLogInCredentials;
 
   beforeEach(async () => {
     cryptoService = Substitute.for<CryptoService>();
@@ -109,6 +109,7 @@ describe("LogInStrategy", () => {
       twoFactorService,
       authService
     );
+    credentials = new PasswordLogInCredentials(email, masterPassword);
   });
 
   describe("base class", () => {
@@ -116,7 +117,7 @@ describe("LogInStrategy", () => {
       apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
       tokenService.decodeToken(accessToken).resolves(decodedToken);
 
-      await doLogIn();
+      await passwordLogInStrategy.logIn(credentials);
 
       stateService.received(1).addAccount(
         new Account({
@@ -153,7 +154,7 @@ describe("LogInStrategy", () => {
 
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-      const result = await doLogIn();
+      const result = await passwordLogInStrategy.logIn(credentials);
 
       const expected = new AuthResult();
       expected.forcePasswordReset = true;
@@ -173,7 +174,7 @@ describe("LogInStrategy", () => {
 
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-      const result = await doLogIn();
+      const result = await passwordLogInStrategy.logIn(credentials);
 
       stateService.didNotReceive().addAccount(Arg.any());
       messagingService.didNotReceive().send(Arg.any());
@@ -190,7 +191,7 @@ describe("LogInStrategy", () => {
 
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-      await doLogIn();
+      await passwordLogInStrategy.logIn(credentials);
 
       apiService.received(1).postAccountKeys(Arg.any());
     });
@@ -208,7 +209,7 @@ describe("LogInStrategy", () => {
 
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-      const result = await doLogIn();
+      const result = await passwordLogInStrategy.logIn(credentials);
 
       stateService.didNotReceive().addAccount(Arg.any());
       messagingService.didNotReceive().send(Arg.any());
@@ -223,7 +224,7 @@ describe("LogInStrategy", () => {
       tokenService.getTwoFactorToken().resolves(twoFactorToken);
       apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
 
-      await doLogIn();
+      await passwordLogInStrategy.logIn(credentials);
 
       apiService.received(1).postIdentityToken(
         Arg.is((actual) => {
@@ -240,12 +241,13 @@ describe("LogInStrategy", () => {
     it("sends 2FA token provided by user to server (single step)", async () => {
       // This occurs if the user enters the 2FA code as an argument in the CLI
       apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
-
-      await doLogIn({
+      credentials.twoFactor = {
         provider: twoFactorProviderType,
         token: twoFactorToken,
         remember: twoFactorRemember,
-      });
+      };
+
+      await passwordLogInStrategy.logIn(credentials);
 
       apiService.received(1).postIdentityToken(
         Arg.is((actual) => {
@@ -288,8 +290,4 @@ describe("LogInStrategy", () => {
       );
     });
   });
-
-  function doLogIn(twoFactor: TokenRequestTwoFactor = null) {
-    return passwordLogInStrategy.logIn(email, masterPassword, null, twoFactor);
-  }
 });

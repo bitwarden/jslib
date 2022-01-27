@@ -13,8 +13,9 @@ import { TokenService } from "jslib-common/abstractions/token.service";
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
 import { ApiLogInStrategy } from "jslib-common/misc/logInStrategies/apiLogin.strategy";
-
 import { Utils } from "jslib-common/misc/utils";
+
+import { ApiLogInCredentials } from "jslib-common/models/domain/logInCredentials";
 
 import { identityTokenResponseFactory } from "./logIn.strategy.spec";
 
@@ -32,6 +33,7 @@ describe("ApiLogInStrategy", () => {
   let twoFactorService: SubstituteOf<TwoFactorService>;
 
   let apiLogInStrategy: ApiLogInStrategy;
+  let credentials: ApiLogInCredentials;
 
   const deviceId = Utils.newGuid();
   const keyConnectorUrl = "KEY_CONNECTOR_URL";
@@ -67,11 +69,13 @@ describe("ApiLogInStrategy", () => {
       environmentService,
       keyConnectorService
     );
+
+    credentials = new ApiLogInCredentials(apiClientId, apiClientSecret);
   });
 
   it("sends api key credentials to the server", async () => {
     apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
-    await apiLogInStrategy.logIn(apiClientId, apiClientSecret);
+    await apiLogInStrategy.logIn(credentials);
 
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {
@@ -91,7 +95,7 @@ describe("ApiLogInStrategy", () => {
   it("sets the local environment after a successful login", async () => {
     apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
 
-    await apiLogInStrategy.logIn(apiClientId, apiClientSecret);
+    await apiLogInStrategy.logIn(credentials);
 
     stateService.received(1).setApiKeyClientId(apiClientId);
     stateService.received(1).setApiKeyClientSecret(apiClientSecret);
@@ -105,7 +109,7 @@ describe("ApiLogInStrategy", () => {
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
     environmentService.getKeyConnectorUrl().returns(keyConnectorUrl);
 
-    await apiLogInStrategy.logIn(apiClientId, apiClientSecret);
+    await apiLogInStrategy.logIn(credentials);
 
     keyConnectorService.received(1).getAndSetKey(keyConnectorUrl);
   });

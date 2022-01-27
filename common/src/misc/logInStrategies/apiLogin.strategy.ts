@@ -17,6 +17,7 @@ import { TwoFactorService } from "../../abstractions/twoFactor.service";
 import { ApiTokenRequest } from "../../models/request/identityToken/apiTokenRequest";
 
 import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
+import { ApiLogInCredentials } from "../../models/domain/logInCredentials";
 
 export class ApiLogInStrategy extends LogInStrategy {
   tokenRequest: ApiTokenRequest;
@@ -60,11 +61,11 @@ export class ApiLogInStrategy extends LogInStrategy {
     await this.stateService.setApiKeyClientSecret(this.tokenRequest.clientSecret);
   }
 
-  async logIn(clientId: string, clientSecret: string, twoFactor?: TokenRequestTwoFactor) {
+  async logIn(credentials: ApiLogInCredentials) {
     this.tokenRequest = new ApiTokenRequest(
-      clientId,
-      clientSecret,
-      await this.buildTwoFactor(twoFactor),
+      credentials.clientId,
+      credentials.clientSecret,
+      await this.buildTwoFactor(),
       await this.buildDeviceRequest()
     );
 

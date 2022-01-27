@@ -1,6 +1,11 @@
 import { KdfType } from "../enums/kdfType";
 
 import { ApiLogInStrategy } from "../misc/logInStrategies/apiLogin.strategy";
+import {
+  ApiLogInCredentials,
+  PasswordLogInCredentials,
+  SsoLogInCredentials,
+} from "../models/domain/logInCredentials";
 import { PasswordLogInStrategy } from "../misc/logInStrategies/passwordLogin.strategy";
 import { SsoLogInStrategy } from "../misc/logInStrategies/ssoLogin.strategy";
 import { AuthResult } from "../models/domain/authResult";
@@ -22,7 +27,6 @@ import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import { StateService } from "../abstractions/state.service";
 import { TokenService } from "../abstractions/token.service";
 import { TwoFactorService } from "../abstractions/twoFactor.service";
-import { LogInStrategy } from "../misc/logInStrategies/logIn.strategy";
 
 export class AuthService implements AuthServiceAbstraction {
   get email(): string {
@@ -34,7 +38,8 @@ export class AuthService implements AuthServiceAbstraction {
       ? this.logInStrategy.masterPasswordHash
       : null;
   }
-  private logInStrategy: LogInStrategy;
+
+  private logInStrategy: ApiLogInStrategy | PasswordLogInStrategy | SsoLogInStrategy;
 
   constructor(
     protected cryptoService: CryptoService,
@@ -51,83 +56,61 @@ export class AuthService implements AuthServiceAbstraction {
   ) {}
 
   async logIn(
-    email: string,
-    masterPassword: string,
-    twoFactor?: TokenRequestTwoFactor,
-    captchaToken?: string
+    credentials: ApiLogInCredentials | PasswordLogInCredentials | SsoLogInCredentials
   ): Promise<AuthResult> {
-    const passwordLogInStrategy = new PasswordLogInStrategy(
-      this.cryptoService,
-      this.apiService,
-      this.tokenService,
-      this.appIdService,
-      this.platformUtilsService,
-      this.messagingService,
-      this.logService,
-      this.stateService,
-      this.twoFactorService,
-      this
-    );
-
     this.clearState();
-    const result = await passwordLogInStrategy.logIn(
-      email,
-      masterPassword,
-      captchaToken,
-      twoFactor
-    );
-    this.saveStateIfRequired(passwordLogInStrategy, result);
-    return result;
-  }
 
-  async logInSso(
-    code: string,
-    codeVerifier: string,
-    redirectUrl: string,
-    orgId: string,
-    twoFactor?: TokenRequestTwoFactor
-  ): Promise<AuthResult> {
-    const ssoLogInStrategy = new SsoLogInStrategy(
-      this.cryptoService,
-      this.apiService,
-      this.tokenService,
-      this.appIdService,
-      this.platformUtilsService,
-      this.messagingService,
-      this.logService,
-      this.stateService,
-      this.twoFactorService,
-      this.keyConnectorService
-    );
+    let result: AuthResult;
+    let strategy: ApiLogInStrategy | PasswordLogInStrategy | SsoLogInStrategy;
 
-    this.clearState();
-    const result = await ssoLogInStrategy.logIn(code, codeVerifier, redirectUrl, orgId, twoFactor);
-    this.saveStateIfRequired(ssoLogInStrategy, result);
-    return result;
-  }
+    if (credentials instanceof PasswordLogInCredentials) {
+      strategy = new PasswordLogInStrategy(
+        this.cryptoService,
+        this.apiService,
+        this.tokenService,
+        this.appIdService,
+        this.platformUtilsService,
+        this.messagingService,
+        this.logService,
+        this.stateService,
+        this.twoFactorService,
+        this
+      );
+      result = await strategy.logIn(credentials);
+    } else if (credentials instanceof SsoLogInCredentials) {
+      strategy = new SsoLogInStrategy(
+        this.cryptoService,
+        this.apiService,
+        this.tokenService,
+        this.appIdService,
+        this.platformUtilsService,
+        this.messagingService,
+        this.logService,
+        this.stateService,
+        this.twoFactorService,
+        this.keyConnectorService
+      );
+      result = await strategy.logIn(credentials);
+    } else if (credentials instanceof ApiLogInCredentials) {
+      strategy = new ApiLogInStrategy(
+        this.cryptoService,
+        this.apiService,
+        this.tokenService,
+        this.appIdService,
+        this.platformUtilsService,
+        this.messagingService,
+        this.logService,
+        this.stateService,
+        this.twoFactorService,
+        this.environmentService,
+        this.keyConnectorService
+      );
+      result = await strategy.logIn(credentials);
+    }
 
-  async logInApiKey(
-    clientId: string,
-    clientSecret: string,
-    twoFactor?: TokenRequestTwoFactor
-  ): Promise<AuthResult> {
-    const apiLogInStrategy = new ApiLogInStrategy(
-      this.cryptoService,
-      this.apiService,
-      this.tokenService,
-      this.appIdService,
-      this.platformUtilsService,
-      this.messagingService,
-      this.logService,
-      this.stateService,
-      this.twoFactorService,
-      this.environmentService,
-      this.keyConnectorService
-    );
-
-    this.clearState();
-    const result = await apiLogInStrategy.logIn(clientId, clientSecret, twoFactor);
-    this.saveStateIfRequired(apiLogInStrategy, result);
+    if (result?.requiresTwoFactor) {
+      this.saveState(strategy);
+    }
     return result;
   }
 
@@ -174,13 +157,11 @@ export class AuthService implements AuthServiceAbstraction {
     return this.cryptoService.makeKey(masterPassword, email, kdf, kdfIterations);
   }
 
-  protected saveStateIfRequired(Strategy: LogInStrategy, result: AuthResult) {
-    if (result.requiresTwoFactor) {
-      this.logInStrategy = Strategy;
-    }
+  private saveState(strategy: ApiLogInStrategy | PasswordLogInStrategy | SsoLogInStrategy) {
+    this.logInStrategy = strategy;
   }
 
-  protected clearState() {
+  private clearState() {
     this.logInStrategy = null;
   }
 }
