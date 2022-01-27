@@ -11,7 +11,7 @@ import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
-import { PasswordLogInDelegate } from "jslib-common/misc/logInDelegate/passwordLogin.delegate";
+import { PasswordLogInStrategy } from "jslib-common/misc/logInStrategies/passwordLogin.strategy";
 
 import { Utils } from "jslib-common/misc/utils";
 
@@ -66,7 +66,7 @@ export function identityTokenResponseFactory() {
   });
 }
 
-describe("LogInDelegate", () => {
+describe("LogInStrategy", () => {
   let cryptoService: SubstituteOf<CryptoService>;
   let apiService: SubstituteOf<ApiService>;
   let tokenService: SubstituteOf<TokenService>;
@@ -78,7 +78,7 @@ describe("LogInDelegate", () => {
   let twoFactorService: SubstituteOf<TwoFactorService>;
   let authService: SubstituteOf<AuthService>;
 
-  let passwordLogInDelegate: PasswordLogInDelegate;
+  let passwordLogInStrategy: PasswordLogInStrategy;
 
   beforeEach(async () => {
     cryptoService = Substitute.for<CryptoService>();
@@ -96,19 +96,19 @@ describe("LogInDelegate", () => {
 
     appIdService.getAppId().resolves(deviceId);
 
-    passwordLogInDelegate = null; // PasswordLogInDelegate must be initialized by each describe block
+    passwordLogInStrategy = null; // PasswordLogInStrategy must be initialized by each describe block
   });
 
   describe("base class", () => {
     beforeEach(async () => {
-      await setupLogInDelegate();
+      await setupLogInStrategy();
     });
 
     it("sets the local environment after a successful login", async () => {
       apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
       tokenService.decodeToken(accessToken).resolves(decodedToken);
 
-      await passwordLogInDelegate.logIn();
+      await passwordLogInStrategy.logIn();
 
       stateService.received(1).addAccount(
         new Account({
@@ -145,7 +145,7 @@ describe("LogInDelegate", () => {
 
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-      const result = await passwordLogInDelegate.logIn();
+      const result = await passwordLogInStrategy.logIn();
 
       const expected = new AuthResult();
       expected.forcePasswordReset = true;
@@ -165,7 +165,7 @@ describe("LogInDelegate", () => {
 
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-      const result = await passwordLogInDelegate.logIn();
+      const result = await passwordLogInStrategy.logIn();
 
       stateService.didNotReceive().addAccount(Arg.any());
       messagingService.didNotReceive().send(Arg.any());
@@ -182,7 +182,7 @@ describe("LogInDelegate", () => {
 
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-      await passwordLogInDelegate.logIn();
+      await passwordLogInStrategy.logIn();
 
       apiService.received(1).postAccountKeys(Arg.any());
     });
@@ -190,7 +190,7 @@ describe("LogInDelegate", () => {
 
   describe("Two-factor authentication", () => {
     it("rejects login if 2FA is required", async () => {
-      await setupLogInDelegate();
+      await setupLogInStrategy();
 
       // Sample response where TOTP 2FA required
       const tokenResponse = new IdentityTwoFactorResponse({
@@ -202,7 +202,7 @@ describe("LogInDelegate", () => {
 
       apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-      const result = await passwordLogInDelegate.logIn();
+      const result = await passwordLogInStrategy.logIn();
 
       stateService.didNotReceive().addAccount(Arg.any());
       messagingService.didNotReceive().send(Arg.any());
@@ -216,10 +216,10 @@ describe("LogInDelegate", () => {
     it("sends stored 2FA token to server", async () => {
       tokenService = Substitute.for<TokenService>();
       tokenService.getTwoFactorToken().resolves(twoFactorToken);
-      await setupLogInDelegate();
+      await setupLogInStrategy();
       apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
 
-      await passwordLogInDelegate.logIn();
+      await passwordLogInStrategy.logIn();
 
       apiService.received(1).postIdentityToken(
         Arg.is((actual) => {
@@ -235,14 +235,14 @@ describe("LogInDelegate", () => {
 
     it("sends 2FA token provided by user to server (single step)", async () => {
       // This occurs if the user enters the 2FA code as an argument in the CLI
-      await setupLogInDelegate({
+      await setupLogInStrategy({
         provider: twoFactorProviderType,
         token: twoFactorToken,
         remember: twoFactorRemember,
       });
       apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
 
-      await passwordLogInDelegate.logIn();
+      await passwordLogInStrategy.logIn();
 
       apiService.received(1).postIdentityToken(
         Arg.is((actual) => {
@@ -257,10 +257,10 @@ describe("LogInDelegate", () => {
     });
 
     it("sends 2FA token provided by user to server (two-step)", async () => {
-      await setupLogInDelegate();
+      await setupLogInStrategy();
       apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
 
-      await passwordLogInDelegate.logInTwoFactor({
+      await passwordLogInStrategy.logInTwoFactor({
         provider: twoFactorProviderType,
         token: twoFactorToken,
         remember: twoFactorRemember,
@@ -279,9 +279,9 @@ describe("LogInDelegate", () => {
     });
   });
 
-  async function setupLogInDelegate(twoFactor: TokenRequestTwoFactor = null) {
-    // The base class is abstract so we test it via PasswordLogInDelegate
-    passwordLogInDelegate = await PasswordLogInDelegate.new(
+  async function setupLogInStrategy(twoFactor: TokenRequestTwoFactor = null) {
+    // The base class is abstract so we test it via PasswordLogInStrategy
+    passwordLogInStrategy = await PasswordLogInStrategy.new(
       cryptoService,
       apiService,
       tokenService,

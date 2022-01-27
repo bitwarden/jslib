@@ -12,15 +12,15 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
 
-import { SsoLogInDelegate } from "jslib-common/misc/logInDelegate/ssoLogin.delegate";
+import { SsoLogInStrategy } from "jslib-common/misc/logInStrategies/ssoLogin.strategy";
 
 import { Utils } from "jslib-common/misc/utils";
 
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
-import { identityTokenResponseFactory } from "./logIn.delegate.spec";
+import { identityTokenResponseFactory } from "./logIn.strategy.spec";
 
-describe("SsoLogInDelegate", () => {
+describe("SsoLogInStrategy", () => {
   let cryptoService: SubstituteOf<CryptoService>;
   let apiService: SubstituteOf<ApiService>;
   let tokenService: SubstituteOf<TokenService>;
@@ -34,7 +34,7 @@ describe("SsoLogInDelegate", () => {
   let twoFactorService: SubstituteOf<TwoFactorService>;
   let authService: SubstituteOf<AuthService>;
 
-  let ssoLogInDelegate: SsoLogInDelegate;
+  let ssoLogInStrategy: SsoLogInStrategy;
 
   const deviceId = Utils.newGuid();
   const encKey = "ENC_KEY";
@@ -65,7 +65,7 @@ describe("SsoLogInDelegate", () => {
     tokenService.getTwoFactorToken().resolves(null);
     appIdService.getAppId().resolves(deviceId);
 
-    ssoLogInDelegate = await SsoLogInDelegate.new(
+    ssoLogInStrategy = await SsoLogInStrategy.new(
       cryptoService,
       apiService,
       tokenService,
@@ -86,7 +86,7 @@ describe("SsoLogInDelegate", () => {
   it("sends SSO information to server", async () => {
     apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
 
-    await ssoLogInDelegate.logIn();
+    await ssoLogInStrategy.logIn();
 
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {
@@ -108,7 +108,7 @@ describe("SsoLogInDelegate", () => {
     tokenResponse.key = null;
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-    await ssoLogInDelegate.logIn();
+    await ssoLogInStrategy.logIn();
 
     cryptoService.didNotReceive().setEncPrivateKey(privateKey);
     cryptoService.didNotReceive().setEncKey(encKey);
@@ -120,7 +120,7 @@ describe("SsoLogInDelegate", () => {
 
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-    await ssoLogInDelegate.logIn();
+    await ssoLogInStrategy.logIn();
 
     keyConnectorService.received(1).getAndSetKey(keyConnectorUrl);
   });
@@ -132,7 +132,7 @@ describe("SsoLogInDelegate", () => {
 
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
 
-    await ssoLogInDelegate.logIn();
+    await ssoLogInStrategy.logIn();
 
     keyConnectorService.received(1).convertNewSsoUserToKeyConnector(tokenResponse, ssoOrgId);
   });

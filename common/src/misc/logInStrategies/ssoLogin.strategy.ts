@@ -1,4 +1,4 @@
-import { LogInDelegate } from "./logIn.delegate";
+import { LogInStrategy } from "./logIn.strategy";
 
 import { TokenRequestTwoFactor } from "../../models/request/identityToken/tokenRequest";
 
@@ -16,7 +16,7 @@ import { KeyConnectorService } from "../../abstractions/keyConnector.service";
 import { SsoTokenRequest } from "../../models/request/identityToken/ssoTokenRequest";
 import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
 
-export class SsoLogInDelegate extends LogInDelegate {
+export class SsoLogInStrategy extends LogInStrategy {
   static async new(
     cryptoService: CryptoService,
     apiService: ApiService,
@@ -33,8 +33,8 @@ export class SsoLogInDelegate extends LogInDelegate {
     redirectUrl: string,
     orgId: string,
     twoFactor?: TokenRequestTwoFactor
-  ): Promise<SsoLogInDelegate> {
-    const delegate = new SsoLogInDelegate(
+  ): Promise<SsoLogInStrategy> {
+    const delegate = new SsoLogInStrategy(
       cryptoService,
       apiService,
       tokenService,

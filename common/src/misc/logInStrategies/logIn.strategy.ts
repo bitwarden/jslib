@@ -26,7 +26,7 @@ import { TokenService } from "../../abstractions/token.service";
 import { TwoFactorService } from "../../abstractions/twoFactor.service";
 import { IdentityCaptchaResponse } from "../../models/response/identityCaptchaResponse";
 
-export abstract class LogInDelegate {
+export abstract class LogInStrategy {
   protected abstract tokenRequest: ApiTokenRequest | PasswordTokenRequest | SsoTokenRequest;
 
   constructor(

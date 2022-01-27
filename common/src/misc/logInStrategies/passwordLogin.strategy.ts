@@ -1,4 +1,4 @@
-import { LogInDelegate } from "./logIn.delegate";
+import { LogInStrategy } from "./logIn.strategy";
 
 import { PasswordTokenRequest } from "../../models/request/identityToken/passwordTokenRequest";
 import { TokenRequestTwoFactor } from "../../models/request/identityToken/tokenRequest";
@@ -18,7 +18,7 @@ import { SymmetricCryptoKey } from "../../models/domain/symmetricCryptoKey";
 
 import { HashPurpose } from "../../enums/hashPurpose";
 
-export class PasswordLogInDelegate extends LogInDelegate {
+export class PasswordLogInStrategy extends LogInStrategy {
   get email() {
     return this.tokenRequest.email;
   }
@@ -42,8 +42,8 @@ export class PasswordLogInDelegate extends LogInDelegate {
     masterPassword: string,
     captchaToken?: string,
     twoFactor?: TokenRequestTwoFactor
-  ): Promise<PasswordLogInDelegate> {
-    const delegate = new PasswordLogInDelegate(
+  ): Promise<PasswordLogInStrategy> {
+    const delegate = new PasswordLogInStrategy(
       cryptoService,
       apiService,
       tokenService,

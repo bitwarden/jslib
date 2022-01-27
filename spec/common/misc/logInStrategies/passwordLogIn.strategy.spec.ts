@@ -11,7 +11,7 @@ import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
-import { PasswordLogInDelegate } from "jslib-common/misc/logInDelegate/passwordLogin.delegate";
+import { PasswordLogInStrategy } from "jslib-common/misc/logInStrategies/passwordLogin.strategy";
 
 import { Utils } from "jslib-common/misc/utils";
 
@@ -19,7 +19,7 @@ import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKe
 
 import { HashPurpose } from "jslib-common/enums/hashPurpose";
 
-import { identityTokenResponseFactory } from "./logIn.delegate.spec";
+import { identityTokenResponseFactory } from "./logIn.strategy.spec";
 
 const email = "hello@world.com";
 const masterPassword = "password";
@@ -32,7 +32,7 @@ const preloginKey = new SymmetricCryptoKey(
 );
 const deviceId = Utils.newGuid();
 
-describe("PasswordLogInDelegate", () => {
+describe("PasswordLogInStrategy", () => {
   let cryptoService: SubstituteOf<CryptoService>;
   let apiService: SubstituteOf<ApiService>;
   let tokenService: SubstituteOf<TokenService>;
@@ -44,7 +44,7 @@ describe("PasswordLogInDelegate", () => {
   let twoFactorService: SubstituteOf<TwoFactorService>;
   let authService: SubstituteOf<AuthService>;
 
-  let passwordLogInDelegate: PasswordLogInDelegate;
+  let passwordLogInStrategy: PasswordLogInStrategy;
 
   beforeEach(async () => {
     cryptoService = Substitute.for<CryptoService>();
@@ -68,7 +68,7 @@ describe("PasswordLogInDelegate", () => {
       .hashPassword(masterPassword, Arg.any(), HashPurpose.LocalAuthorization)
       .resolves(localHashedPassword);
 
-    passwordLogInDelegate = await PasswordLogInDelegate.new(
+    passwordLogInStrategy = await PasswordLogInStrategy.new(
       cryptoService,
       apiService,
       tokenService,
@@ -87,7 +87,7 @@ describe("PasswordLogInDelegate", () => {
   });
 
   it("sends master password credentials to the server", async () => {
-    const result = await passwordLogInDelegate.logIn();
+    const result = await passwordLogInStrategy.logIn();
 
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {
@@ -105,7 +105,7 @@ describe("PasswordLogInDelegate", () => {
   });
 
   it("sets the local environment after a successful login", async () => {
-    await passwordLogInDelegate.logIn();
+    await passwordLogInStrategy.logIn();
 
     cryptoService.received(1).setKey(preloginKey);
     cryptoService.received(1).setKeyHash(localHashedPassword);

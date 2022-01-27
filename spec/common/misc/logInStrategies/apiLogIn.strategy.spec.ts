@@ -12,13 +12,13 @@ import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 
-import { ApiLogInDelegate } from "jslib-common/misc/logInDelegate/apiLogin.delegate";
+import { ApiLogInStrategy } from "jslib-common/misc/logInStrategies/apiLogin.strategy";
 
 import { Utils } from "jslib-common/misc/utils";
 
-import { identityTokenResponseFactory } from "./logIn.delegate.spec";
+import { identityTokenResponseFactory } from "./logIn.strategy.spec";
 
-describe("ApiLogInDelegate", () => {
+describe("ApiLogInStrategy", () => {
   let cryptoService: SubstituteOf<CryptoService>;
   let apiService: SubstituteOf<ApiService>;
   let tokenService: SubstituteOf<TokenService>;
@@ -31,7 +31,7 @@ describe("ApiLogInDelegate", () => {
   let stateService: SubstituteOf<StateService>;
   let twoFactorService: SubstituteOf<TwoFactorService>;
 
-  let apiLogInDelegate: ApiLogInDelegate;
+  let apiLogInStrategy: ApiLogInStrategy;
 
   const deviceId = Utils.newGuid();
   const keyConnectorUrl = "KEY_CONNECTOR_URL";
@@ -54,7 +54,7 @@ describe("ApiLogInDelegate", () => {
     appIdService.getAppId().resolves(deviceId);
     tokenService.getTwoFactorToken().resolves(null);
 
-    apiLogInDelegate = await ApiLogInDelegate.new(
+    apiLogInStrategy = await ApiLogInStrategy.new(
       cryptoService,
       apiService,
       tokenService,
@@ -73,7 +73,7 @@ describe("ApiLogInDelegate", () => {
 
   it("sends api key credentials to the server", async () => {
     apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
-    await apiLogInDelegate.logIn();
+    await apiLogInStrategy.logIn();
 
     apiService.received(1).postIdentityToken(
       Arg.is((actual) => {
@@ -93,7 +93,7 @@ describe("ApiLogInDelegate", () => {
   it("sets the local environment after a successful login", async () => {
     apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
 
-    await apiLogInDelegate.logIn();
+    await apiLogInStrategy.logIn();
 
     stateService.received(1).setApiKeyClientId(apiClientId);
     stateService.received(1).setApiKeyClientSecret(apiClientSecret);
@@ -107,7 +107,7 @@ describe("ApiLogInDelegate", () => {
     apiService.postIdentityToken(Arg.any()).resolves(tokenResponse);
     environmentService.getKeyConnectorUrl().returns(keyConnectorUrl);
 
-    await apiLogInDelegate.logIn();
+    await apiLogInStrategy.logIn();
 
     keyConnectorService.received(1).getAndSetKey(keyConnectorUrl);
   });

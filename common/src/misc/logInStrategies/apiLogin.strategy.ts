@@ -1,4 +1,4 @@
-import { LogInDelegate } from "./logIn.delegate";
+import { LogInStrategy } from "./logIn.strategy";
 
 import { TokenRequestTwoFactor } from "../../models/request/identityToken/tokenRequest";
 
@@ -18,7 +18,7 @@ import { ApiTokenRequest } from "../../models/request/identityToken/apiTokenRequ
 
 import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
 
-export class ApiLogInDelegate extends LogInDelegate {
+export class ApiLogInStrategy extends LogInStrategy {
   static async new(
     cryptoService: CryptoService,
     apiService: ApiService,
@@ -34,8 +34,8 @@ export class ApiLogInDelegate extends LogInDelegate {
     clientId: string,
     clientSecret: string,
     twoFactor?: TokenRequestTwoFactor
-  ): Promise<ApiLogInDelegate> {
-    const delegate = new ApiLogInDelegate(
+  ): Promise<ApiLogInStrategy> {
+    const delegate = new ApiLogInStrategy(
       cryptoService,
       apiService,
       tokenService,

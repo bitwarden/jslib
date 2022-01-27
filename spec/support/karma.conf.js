@@ -9,9 +9,9 @@ module.exports = (config) => {
 
     // list of files / patterns to load in the browser
     files: [
-      { pattern: "spec/utils.ts", watched: false },
-      { pattern: "spec/common/**/*.ts", watched: false },
-      { pattern: "spec/web/**/*.ts", watched: false },
+      // { pattern: "spec/utils.ts", watched: false },
+      { pattern: "spec/common/misc/*.ts", watched: false },
+      // { pattern: "spec/web/**/*.ts", watched: false },
     ],
 
     // list of files to exclude
