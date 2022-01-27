@@ -36,6 +36,7 @@ import { BehaviorSubject } from "rxjs";
 
 import { StateMigrationService } from "../abstractions/stateMigration.service";
 import { EnvironmentUrls } from "../models/domain/environmentUrls";
+import { WindowState } from "../models/domain/windowState";
 
 const keys = {
   global: "global",
@@ -2066,14 +2067,14 @@ export class StateService<TAccount extends Account = Account>
     await this.saveGlobals(globals, await this.defaultOnDiskOptions());
   }
 
-  async getWindow(): Promise<Map<string, any>> {
+  async getWindow(): Promise<WindowState> {
     const globals = await this.getGlobals(await this.defaultOnDiskOptions());
     return globals?.window != null && Object.keys(globals.window).length > 0
       ? globals.window
-      : new Map<string, any>();
+      : new WindowState();
   }
 
-  async setWindow(value: Map<string, any>, options?: StorageOptions): Promise<void> {
+  async setWindow(value: WindowState, options?: StorageOptions): Promise<void> {
     const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );

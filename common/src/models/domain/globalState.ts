@@ -1,5 +1,6 @@
 import { StateVersion } from "../../enums/stateVersion";
 import { EnvironmentUrls } from "./environmentUrls";
+import { WindowState } from "./windowState";
 
 export class GlobalState {
   enableAlwaysOnTop?: boolean;
@@ -11,7 +12,7 @@ export class GlobalState {
   ssoState?: string;
   rememberedEmail?: string;
   theme?: string = "light";
-  window?: Map<string, any> = new Map<string, any>();
+  window?: WindowState = new WindowState();
   twoFactorToken?: string;
   disableFavicon?: boolean;
   biometricAwaitingAcceptance?: boolean;

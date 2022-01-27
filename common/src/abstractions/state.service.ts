@@ -19,6 +19,7 @@ import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHist
 import { Policy } from "../models/domain/policy";
 import { StorageOptions } from "../models/domain/storageOptions";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
+import { WindowState } from "../models/domain/windowState";
 
 import { CipherView } from "../models/view/cipherView";
 import { CollectionView } from "../models/view/collectionView";
@@ -299,6 +300,6 @@ export abstract class StateService<T extends Account = Account> {
   setVaultTimeoutAction: (value: string, options?: StorageOptions) => Promise<void>;
   getStateVersion: () => Promise<number>;
   setStateVersion: (value: number) => Promise<void>;
-  getWindow: () => Promise<Map<string, any>>;
-  setWindow: (value: Map<string, any>) => Promise<void>;
+  getWindow: () => Promise<WindowState>;
+  setWindow: (value: WindowState) => Promise<void>;
 }
