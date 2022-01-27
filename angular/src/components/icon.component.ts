@@ -96,7 +96,7 @@ export class IconComponent implements OnChanges {
       if (this.imageEnabled && isWebsite) {
         try {
           this.image = this.iconsUrl + "/" + Utils.getHostname(hostnameUri) + "/icon.png";
-          this.fallbackImage = "images/fa-globe.png";
+          this.fallbackImage = "images/bwi-globe.png";
         } catch (e) {
           // Ignore error since the fallback icon will be shown if image is null.
         }
