@@ -2,6 +2,11 @@ import { TwoFactorProviderType } from "../../enums/twoFactorProviderType";
 
 import { Account, AccountProfile, AccountTokens } from "../../models/domain/account";
 import { AuthResult } from "../../models/domain/authResult";
+import {
+  ApiLogInCredentials,
+  PasswordLogInCredentials,
+  SsoLogInCredentials,
+} from "../../models/domain/logInCredentials";
 
 import { DeviceRequest } from "../../models/request/deviceRequest";
 import { ApiTokenRequest } from "../../models/request/identityToken/apiTokenRequest";
@@ -38,6 +43,10 @@ export abstract class LogInStrategy {
     protected stateService: StateService,
     protected twoFactorService: TwoFactorService
   ) {}
+
+  abstract logIn(
+    credentials: ApiLogInCredentials | PasswordLogInCredentials | SsoLogInCredentials
+  ): Promise<AuthResult>;
 
   async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
     this.tokenRequest.setTwoFactor(twoFactor);
