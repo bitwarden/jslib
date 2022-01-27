@@ -13,7 +13,7 @@ export class ApiTokenRequest extends TokenRequest {
   }
 
   toIdentityToken(clientId: string) {
-    // Use the api clientId provided by the user in the TokenRequest instead of the method argument
+    // Use the actual clientId from the user's API credentials, not the string passed in from platformUtilsService
     const obj = super.toIdentityToken(this.clientId);
 
     obj.scope = this.clientId.startsWith("organization") ? "api.organization" : "api";
