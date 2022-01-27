@@ -5,6 +5,11 @@ import * as inquirer from "inquirer";
 import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
 
 import { AuthResult } from "jslib-common/models/domain/authResult";
+import {
+  ApiLogInCredentials,
+  PasswordLogInCredentials,
+  SsoLogInCredentials,
+} from "jslib-common/models/domain/logInCredentials";
 import { TwoFactorEmailRequest } from "jslib-common/models/request/twoFactorEmailRequest";
 import { ErrorResponse } from "jslib-common/models/response/errorResponse";
 
@@ -30,11 +35,6 @@ import { NodeUtils } from "jslib-common/misc/nodeUtils";
 import { Utils } from "jslib-common/misc/utils";
 
 import Separator from "inquirer/lib/objects/separator";
-import {
-  ApiLogInCredentials,
-  PasswordLogInCredentials,
-  SsoLogInCredentials,
-} from "jslib-common/models/domain/logInCredentials";
 
 // tslint:disable-next-line
 const open = require("open");

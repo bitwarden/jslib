@@ -17,8 +17,8 @@ import { StateService } from "jslib-common/abstractions/state.service";
 
 import { Utils } from "jslib-common/misc/utils";
 
-import { CaptchaProtectedComponent } from "./captchaProtected.component";
 import { PasswordLogInCredentials } from "jslib-common/models/domain/logInCredentials";
+import { CaptchaProtectedComponent } from "./captchaProtected.component";
 
 @Directive()
 export class LoginComponent extends CaptchaProtectedComponent implements OnInit {

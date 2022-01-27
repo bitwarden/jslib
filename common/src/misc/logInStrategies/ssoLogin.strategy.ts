@@ -13,9 +13,9 @@ import { TokenService } from "../../abstractions/token.service";
 import { TwoFactorService } from "../../abstractions/twoFactor.service";
 
 import { KeyConnectorService } from "../../abstractions/keyConnector.service";
+import { SsoLogInCredentials } from "../../models/domain/logInCredentials";
 import { SsoTokenRequest } from "../../models/request/identityToken/ssoTokenRequest";
 import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
-import { SsoLogInCredentials } from "../../models/domain/logInCredentials";
 
 export class SsoLogInStrategy extends LogInStrategy {
   tokenRequest: SsoTokenRequest;

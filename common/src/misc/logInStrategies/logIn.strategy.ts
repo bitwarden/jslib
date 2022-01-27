@@ -41,6 +41,11 @@ export abstract class LogInStrategy {
     protected twoFactorService: TwoFactorService
   ) {}
 
+  async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
+    this.tokenRequest.setTwoFactor(twoFactor);
+    return this.startLogIn();
+  }
+
   protected async startLogIn(): Promise<AuthResult> {
     this.twoFactorService.clearSelectedProvider();
 
@@ -55,11 +60,6 @@ export abstract class LogInStrategy {
     }
 
     throw new Error("Invalid response object.");
-  }
-
-  async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
-    this.tokenRequest.setTwoFactor(twoFactor);
-    return this.startLogIn();
   }
 
   protected onSuccessfulLogin(response: IdentityTokenResponse): Promise<void> {
