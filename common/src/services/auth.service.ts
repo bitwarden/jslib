@@ -73,7 +73,10 @@ export class AuthService implements AuthServiceAbstraction {
       twoFactor
     );
 
-    return this.startLogin(passwordLogInDelegate);
+    this.clearState();
+    const result = await passwordLogInDelegate.logIn();
+    this.saveStateIfRequired(passwordLogInDelegate, result);
+    return result;
   }
 
   async logInSso(
@@ -101,7 +104,10 @@ export class AuthService implements AuthServiceAbstraction {
       twoFactor
     );
 
-    return this.startLogin(ssoLogInDelegate);
+    this.clearState();
+    const result = await ssoLogInDelegate.logIn();
+    this.saveStateIfRequired(ssoLogInDelegate, result);
+    return result;
   }
 
   async logInApiKey(
@@ -126,14 +132,17 @@ export class AuthService implements AuthServiceAbstraction {
       twoFactor
     );
 
-    return this.startLogin(apiLogInDelegate);
+    this.clearState();
+    const result = await apiLogInDelegate.logIn();
+    this.saveStateIfRequired(apiLogInDelegate, result);
+    return result;
   }
 
   async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
     try {
       return await this.logInDelegate.logInTwoFactor(twoFactor);
     } finally {
-      this.logInDelegate = null;
+      this.clearState();
     }
   }
 
@@ -172,13 +181,13 @@ export class AuthService implements AuthServiceAbstraction {
     return this.cryptoService.makeKey(masterPassword, email, kdf, kdfIterations);
   }
 
-  protected async startLogin(delegate: LogInStrategy): Promise<AuthResult> {
-    this.logInDelegate = null;
-    const result = await delegate.logIn();
+  protected saveStateIfRequired(delegate: LogInStrategy, result: AuthResult) {
     if (result.requiresTwoFactor) {
       this.logInDelegate = delegate;
     }
+  }
 
-    return result;
+  protected clearState() {
+    this.logInDelegate = null;
   }
 }
