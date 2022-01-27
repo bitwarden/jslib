@@ -1,4 +1,6 @@
 import { StateVersion } from "../../enums/stateVersion";
+import { ThemeType } from "../../enums/themeType";
+
 import { EnvironmentUrls } from "./environmentUrls";
 import { WindowState } from "./windowState";
 
@@ -11,7 +13,7 @@ export class GlobalState {
   ssoOrganizationIdentifier?: string;
   ssoState?: string;
   rememberedEmail?: string;
-  theme?: string = "light";
+  theme?: ThemeType = ThemeType.Light;
   window?: WindowState = new WindowState();
   twoFactorToken?: string;
   disableFavicon?: boolean;

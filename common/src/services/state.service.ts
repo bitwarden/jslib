@@ -8,6 +8,7 @@ import { StorageService } from "../abstractions/storage.service";
 import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 import { KdfType } from "../enums/kdfType";
 import { StorageLocation } from "../enums/storageLocation";
+import { ThemeType } from "../enums/themeType";
 import { UriMatchType } from "../enums/uriMatchType";
 
 import { CipherView } from "../models/view/cipherView";
@@ -1961,13 +1962,13 @@ export class StateService<TAccount extends Account = Account>
     );
   }
 
-  async getTheme(options?: StorageOptions): Promise<string> {
+  async getTheme(options?: StorageOptions): Promise<ThemeType> {
     return (
       await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
     )?.theme;
   }
 
-  async setTheme(value: string, options?: StorageOptions): Promise<void> {
+  async setTheme(value: ThemeType, options?: StorageOptions): Promise<void> {
     const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
     );
