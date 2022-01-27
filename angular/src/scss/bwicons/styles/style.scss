@@ -4,8 +4,10 @@ $icomoon-font-path: "fonts" !default;
 // New font sheet? Update the font-face information below
 @font-face {
   font-family: "#{$icomoon-font-family}";
-  src: url("../fonts/bwi-font.svg") format("svg"), url("../fonts/bwi-font.ttf") format("truetype"),
-    url("../fonts/bwi-font.woff") format("woff"), url("../fonts/bwi-font.woff2") format("woff2");
+  src: url("~@bitwarden/jslib-angular/src/scss/bwicons/fonts/bwi-font.svg") format("svg"),
+    url("~@bitwarden/jslib-angular/src/scss/bwicons/fonts/bwi-font.ttf") format("truetype"),
+    url("~@bitwarden/jslib-angular/src/scss/bwicons/fonts/bwi-font.woff") format("woff"),
+    url("~@bitwarden/jslib-angular/src/scss/bwicons/fonts/bwi-font.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
   font-display: block;
