@@ -92,6 +92,7 @@ import { UpdateTwoFactorYubioOtpRequest } from "../models/request/updateTwoFacto
 import { VerifyBankRequest } from "../models/request/verifyBankRequest";
 import { VerifyDeleteRecoverRequest } from "../models/request/verifyDeleteRecoverRequest";
 import { VerifyEmailRequest } from "../models/request/verifyEmailRequest";
+import { OrganizationApiKeyInformationResponse } from "../models/response/organizationApiKeyInformationResponse";
 
 import { ApiKeyResponse } from "../models/response/apiKeyResponse";
 import { AttachmentResponse } from "../models/response/attachmentResponse";
@@ -524,6 +525,9 @@ export abstract class ApiService {
     id: string,
     request: SecretVerificationRequest
   ) => Promise<ApiKeyResponse>;
+  getOrganizationApiKeyInformation: (
+    id: string
+  ) => Promise<ListResponse<OrganizationApiKeyInformationResponse>>;
   postOrganizationRotateApiKey: (
     id: string,
     request: SecretVerificationRequest

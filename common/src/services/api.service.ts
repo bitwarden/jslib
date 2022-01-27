@@ -173,6 +173,7 @@ import { VerifyOTPRequest } from "../models/request/account/verifyOTPRequest";
 import { KeyConnectorUserKeyRequest } from "../models/request/keyConnectorUserKeyRequest";
 import { KeyConnectorUserKeyResponse } from "../models/response/keyConnectorUserKeyResponse";
 import { SendAccessView } from "../models/view/sendAccessView";
+import { OrganizationApiKeyInformationResponse } from "../models/response/organizationApiKeyInformationResponse";
 
 export class ApiService implements ApiServiceAbstraction {
   protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
@@ -1679,6 +1680,13 @@ export class ApiService implements ApiServiceAbstraction {
   ): Promise<ApiKeyResponse> {
     const r = await this.send("POST", "/organizations/" + id + "/api-key", request, true, true);
     return new ApiKeyResponse(r);
+  }
+
+  async getOrganizationApiKeyInformation(
+    id: string
+  ): Promise<ListResponse<OrganizationApiKeyInformationResponse>> {
+    const r = await this.send("GET", "/organizations/" + id + "/api-key-information", null, true, true);
+    return new ListResponse(r, OrganizationApiKeyInformationResponse);
   }
 
   async postOrganizationRotateApiKey(
