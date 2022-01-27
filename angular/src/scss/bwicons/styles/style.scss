@@ -60,28 +60,14 @@ $icomoon-font-path: "~@bitwarden/jslib-angular/src/scss/bwicons/fonts/" !default
 
 // Spin Animations
 .bwi-spin {
-  -webkit-animation: bwi-spin 2s infinite linear;
   animation: bwi-spin 2s infinite linear;
-}
-
-@-webkit-keyframes bwi-spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(359deg);
-    transform: rotate(359deg);
-  }
 }
 
 @keyframes bwi-spin {
   0% {
-    -webkit-transform: rotate(0deg);
     transform: rotate(0deg);
   }
   100% {
-    -webkit-transform: rotate(359deg);
     transform: rotate(359deg);
   }
 }
@@ -109,9 +95,6 @@ $icomoon-font-path: "~@bitwarden/jslib-angular/src/scss/bwicons/fonts/" !default
 
 // Rotation
 .bwi-rotate-270 {
-  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=3)";
-  -webkit-transform: rotate(270deg);
-  -ms-transform: rotate(270deg);
   transform: rotate(270deg);
 }
 
@@ -166,7 +149,7 @@ $icons: (
   "cog": "\e910",
   "cog-f": "\e911",
   "check-circle": "\e912",
-  "eye-2": "\e913",
+  "eye": "\e913",
   "pencil-square": "\e914",
   "bookmark": "\e915",
   "files": "\e916",
@@ -242,7 +225,7 @@ $icons: (
   "ban": "\e967",
   "camera": "\e968",
   "chevron-up": "\e969",
-  "eye-slash-2": "\e96d",
+  "eye-slash": "\e96d",
   "file": "\e96e",
   "paste": "\e96f",
   "github": "\e950",
