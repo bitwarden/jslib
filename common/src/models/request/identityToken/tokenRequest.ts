@@ -15,7 +15,7 @@ export abstract class TokenRequest {
     this.device = device != null ? device : null;
   }
 
-  toIdentityToken(clientId: string) {
+  protected toIdentityToken(clientId: string) {
     const obj: any = {
       scope: "api offline_access",
       client_id: clientId,

@@ -173,6 +173,9 @@ import { VerifyOTPRequest } from "../models/request/account/verifyOTPRequest";
 import { KeyConnectorUserKeyRequest } from "../models/request/keyConnectorUserKeyRequest";
 import { KeyConnectorUserKeyResponse } from "../models/response/keyConnectorUserKeyResponse";
 import { SendAccessView } from "../models/view/sendAccessView";
+import { ApiTokenRequest } from "../models/request/identityToken/apiTokenRequest";
+import { PasswordTokenRequest } from "../models/request/identityToken/passwordTokenRequest";
+import { SsoTokenRequest } from "../models/request/identityToken/ssoTokenRequest";
 
 export class ApiService implements ApiServiceAbstraction {
   protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
@@ -208,7 +211,7 @@ export class ApiService implements ApiServiceAbstraction {
   // Auth APIs
 
   async postIdentityToken(
-    request: TokenRequest
+    request: ApiTokenRequest | PasswordTokenRequest | SsoTokenRequest
   ): Promise<IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse> {
     const headers = new Headers({
       "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
@@ -219,9 +222,15 @@ export class ApiService implements ApiServiceAbstraction {
       headers.set("User-Agent", this.customUserAgent);
     }
     request.alterIdentityTokenHeaders(headers);
+
+    const identityToken =
+      request instanceof ApiTokenRequest
+        ? request.toIdentityToken()
+        : request.toIdentityToken(this.platformUtilsService.identityClientId);
+
     const response = await this.fetch(
       new Request(this.environmentService.getIdentityUrl() + "/connect/token", {
-        body: this.qsStringify(request.toIdentityToken(this.platformUtilsService.identityClientId)),
+        body: this.qsStringify(identityToken),
         credentials: this.getCredentials(),
         cache: "no-store",
         headers: headers,

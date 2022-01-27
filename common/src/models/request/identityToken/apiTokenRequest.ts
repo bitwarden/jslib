@@ -12,8 +12,7 @@ export class ApiTokenRequest extends TokenRequest {
     super(twoFactor, device);
   }
 
-  toIdentityToken(clientId: string) {
-    // Use the actual clientId from the user's API credentials, not the string passed in from platformUtilsService
+  toIdentityToken() {
     const obj = super.toIdentityToken(this.clientId);
 
     obj.scope = this.clientId.startsWith("organization") ? "api.organization" : "api";
