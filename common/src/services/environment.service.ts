@@ -126,7 +126,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
     this.keyConnectorUrl = urls.keyConnector;
   }
 
-  async setUrls(urls: Urls): Promise<any> {
+  async setUrls(urls: Urls): Promise<Urls> {
     urls.base = this.formatUrl(urls.base);
     urls.webVault = this.formatUrl(urls.webVault);
     urls.api = this.formatUrl(urls.api);
