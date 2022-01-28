@@ -116,11 +116,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
     const urls: any = await this.stateService.getEnvironmentUrls();
     const envUrls = new EnvironmentUrls();
 
-    if (urls.base) {
-      this.baseUrl = envUrls.base = urls.base;
-      return;
-    }
-
+    this.baseUrl = envUrls.base = urls.base;
     this.webVaultUrl = urls.webVault;
     this.apiUrl = envUrls.api = urls.api;
     this.identityUrl = envUrls.identity = urls.identity;

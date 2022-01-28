@@ -49,7 +49,8 @@ import { Importer } from "../importers/importer";
 import { KasperskyTxtImporter } from "../importers/kasperskyTxtImporter";
 import { KeePass2XmlImporter } from "../importers/keepass2XmlImporter";
 import { KeePassXCsvImporter } from "../importers/keepassxCsvImporter";
-import { KeeperCsvImporter } from "../importers/keeperCsvImporter";
+import { KeeperCsvImporter } from "../importers/keeperImporters/keeperCsvImporter";
+import { KeeperJsonImporter } from "../importers/keeperImporters/keeperJsonImporter";
 import { LastPassCsvImporter } from "../importers/lastpassCsvImporter";
 import { LogMeOnceCsvImporter } from "../importers/logMeOnceCsvImporter";
 import { MeldiumCsvImporter } from "../importers/meldiumCsvImporter";
@@ -100,6 +101,7 @@ export class ImportService implements ImportServiceAbstraction {
     { id: "1passwordmaccsv", name: "1Password 6 and 7 Mac (csv)" },
     { id: "roboformcsv", name: "RoboForm (csv)" },
     { id: "keepercsv", name: "Keeper (csv)" },
+    { id: "keeperjson", name: "Keeper (json)" },
     { id: "enpasscsv", name: "Enpass (csv)" },
     { id: "enpassjson", name: "Enpass (json)" },
     { id: "safeincloudxml", name: "SafeInCloud (xml)" },
@@ -251,6 +253,8 @@ export class ImportService implements ImportServiceAbstraction {
         return new OnePasswordMacCsvImporter();
       case "keepercsv":
         return new KeeperCsvImporter();
+      case "keeperjson":
+        return new KeeperJsonImporter();
       case "passworddragonxml":
         return new PasswordDragonXmlImporter();
       case "enpasscsv":

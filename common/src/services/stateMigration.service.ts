@@ -167,37 +167,51 @@ export class StateMigrationService {
       }
     };
 
-    const globals: GlobalState = {
-      stateVersion: StateVersion.Two,
-      environmentUrls:
-        (await this.get<EnvironmentUrls>(v1Keys.environmentUrls)) ?? new EnvironmentUrls(),
-      locale: await this.get<string>(v1Keys.locale),
-      loginRedirect: null,
-      mainWindowSize: null,
-      noAutoPromptBiometrics: await this.get<boolean>(v1Keys.disableAutoBiometricsPrompt),
-      noAutoPromptBiometricsText: await this.get<string>(v1Keys.noAutoPromptBiometricsText),
-      organizationInvitation: null,
-      ssoCodeVerifier: await this.get<string>(v1Keys.ssoCodeVerifier),
-      ssoOrganizationIdentifier: await this.get<string>(v1Keys.ssoIdentifier),
-      ssoState: null,
-      rememberedEmail: await this.get<string>(v1Keys.rememberedEmail),
-      theme: await this.get<string>(v1Keys.theme),
-      vaultTimeout: await this.get<number>(v1Keys.vaultTimeout),
-      vaultTimeoutAction: await this.get<string>(v1Keys.vaultTimeoutAction),
-      window: null,
-      enableTray: await this.get<boolean>(v1Keys.enableTray),
-      enableMinimizeToTray: await this.get<boolean>(v1Keys.enableMinimizeToTray),
-      enableCloseToTray: await this.get<boolean>(v1Keys.enableCloseToTray),
-      enableStartToTray: await this.get<boolean>(v1Keys.enableStartToTray),
-      openAtLogin: await this.get<boolean>(v1Keys.openAtLogin),
-      alwaysShowDock: await this.get<boolean>(v1Keys.alwaysShowDock),
-    };
-
-    // Some processes, like biometrics, may have already defined a value before migrations are run
-    const existingGlobals = await this.get<GlobalState>(keys.global);
-    if (existingGlobals != null) {
-      Object.assign(globals, existingGlobals);
-    }
+    // Some processes, like biometrics, may have already defined a value before migrations are run.
+    // We don't want to null out those values if they don't exist in the old storage scheme (like for new installs)
+    // So, the OOO for migration is that we:
+    // 1. Check for an existing storage value from the old storage structure OR
+    // 2. Check for a value already set by processes that run before migration OR
+    // 3. Assign the default value
+    const globals = (await this.get<GlobalState>(keys.global)) ?? new GlobalState();
+    globals.stateVersion = StateVersion.Two;
+    globals.environmentUrls =
+      (await this.get<EnvironmentUrls>(v1Keys.environmentUrls)) ?? globals.environmentUrls;
+    globals.locale = (await this.get<string>(v1Keys.locale)) ?? globals.locale;
+    globals.noAutoPromptBiometrics =
+      (await this.get<boolean>(v1Keys.disableAutoBiometricsPrompt)) ??
+      globals.noAutoPromptBiometrics;
+    globals.noAutoPromptBiometricsText =
+      (await this.get<string>(v1Keys.noAutoPromptBiometricsText)) ??
+      globals.noAutoPromptBiometricsText;
+    globals.ssoCodeVerifier =
+      (await this.get<string>(v1Keys.ssoCodeVerifier)) ?? globals.ssoCodeVerifier;
+    globals.ssoOrganizationIdentifier =
+      (await this.get<string>(v1Keys.ssoIdentifier)) ?? globals.ssoOrganizationIdentifier;
+    globals.ssoState = (await this.get<any>(v1Keys.ssoState)) ?? globals.ssoState;
+    globals.rememberedEmail =
+      (await this.get<string>(v1Keys.rememberedEmail)) ?? globals.rememberedEmail;
+    globals.theme = (await this.get<string>(v1Keys.theme)) ?? globals.theme;
+    globals.vaultTimeout = (await this.get<number>(v1Keys.vaultTimeout)) ?? globals.vaultTimeout;
+    globals.vaultTimeoutAction =
+      (await this.get<string>(v1Keys.vaultTimeoutAction)) ?? globals.vaultTimeoutAction;
+    globals.window = (await this.get<any>(v1Keys.mainWindowSize)) ?? globals.window;
+    globals.enableTray = (await this.get<boolean>(v1Keys.enableTray)) ?? globals.enableTray;
+    globals.enableMinimizeToTray =
+      (await this.get<boolean>(v1Keys.enableMinimizeToTray)) ?? globals.enableMinimizeToTray;
+    globals.enableCloseToTray =
+      (await this.get<boolean>(v1Keys.enableCloseToTray)) ?? globals.enableCloseToTray;
+    globals.enableStartToTray =
+      (await this.get<boolean>(v1Keys.enableStartToTray)) ?? globals.enableStartToTray;
+    globals.openAtLogin = (await this.get<boolean>(v1Keys.openAtLogin)) ?? globals.openAtLogin;
+    globals.alwaysShowDock =
+      (await this.get<boolean>(v1Keys.alwaysShowDock)) ?? globals.alwaysShowDock;
+    globals.enableBrowserIntegration =
+      (await this.get<boolean>(v1Keys.enableBrowserIntegration)) ??
+      globals.enableBrowserIntegration;
+    globals.enableBrowserIntegrationFingerprint =
+      (await this.get<boolean>(v1Keys.enableBrowserIntegrationFingerprint)) ??
+      globals.enableBrowserIntegrationFingerprint;
 
     const userId =
       (await this.get<string>(v1Keys.userId)) ?? (await this.get<string>(v1Keys.entityId));
@@ -226,10 +240,6 @@ export class StateMigrationService {
         enableAlwaysOnTop: await this.get<boolean>(v1Keys.enableAlwaysOnTop),
         enableAutoFillOnPageLoad: await this.get<boolean>(v1Keys.enableAutoFillOnPageLoad),
         enableBiometric: await this.get<boolean>(v1Keys.enableBiometric),
-        enableBrowserIntegration: await this.get<boolean>(v1Keys.enableBrowserIntegration),
-        enableBrowserIntegrationFingerprint: await this.get<boolean>(
-          v1Keys.enableBrowserIntegrationFingerprint
-        ),
         enableFullWidth: await this.get<boolean>(v1Keys.enableFullWidth),
         enableGravitars: await this.get<boolean>(v1Keys.enableGravatars),
         environmentUrls: globals.environmentUrls,
@@ -357,10 +367,6 @@ export class StateMigrationService {
         enableAlwaysOnTop: await this.get<boolean>(v1Keys.enableAlwaysOnTop),
         enableAutoFillOnPageLoad: await this.get<boolean>(v1Keys.enableAutoFillOnPageLoad),
         enableBiometric: await this.get<boolean>(v1Keys.enableBiometric),
-        enableBrowserIntegration: await this.get<boolean>(v1Keys.enableBrowserIntegration),
-        enableBrowserIntegrationFingerprint: await this.get<boolean>(
-          v1Keys.enableBrowserIntegrationFingerprint
-        ),
         enableFullWidth: await this.get<boolean>(v1Keys.enableFullWidth),
         enableGravitars: await this.get<boolean>(v1Keys.enableGravatars),
         environmentUrls: globals.environmentUrls,

@@ -122,8 +122,6 @@ export class AccountSettings {
   enableAlwaysOnTop?: boolean;
   enableAutoFillOnPageLoad?: boolean;
   enableBiometric?: boolean;
-  enableBrowserIntegration?: boolean;
-  enableBrowserIntegrationFingerprint?: boolean;
   enableFullWidth?: boolean;
   enableGravitars?: boolean;
   environmentUrls: EnvironmentUrls = new EnvironmentUrls();
