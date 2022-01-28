@@ -1,6 +1,7 @@
 import { BehaviorSubject } from "rxjs";
 
 import { KdfType } from "../enums/kdfType";
+import { ThemeType } from "../enums/themeType";
 import { UriMatchType } from "../enums/uriMatchType";
 
 import { CipherData } from "../models/data/cipherData";
@@ -287,8 +288,8 @@ export abstract class StateService<T extends Account = Account> {
   setSsoOrganizationIdentifier: (value: string, options?: StorageOptions) => Promise<void>;
   getSsoState: (options?: StorageOptions) => Promise<string>;
   setSsoState: (value: string, options?: StorageOptions) => Promise<void>;
-  getTheme: (options?: StorageOptions) => Promise<string>;
-  setTheme: (value: string, options?: StorageOptions) => Promise<void>;
+  getTheme: (options?: StorageOptions) => Promise<ThemeType>;
+  setTheme: (value: ThemeType, options?: StorageOptions) => Promise<void>;
   getTwoFactorToken: (options?: StorageOptions) => Promise<string>;
   setTwoFactorToken: (value: string, options?: StorageOptions) => Promise<void>;
   getUserId: (options?: StorageOptions) => Promise<string>;

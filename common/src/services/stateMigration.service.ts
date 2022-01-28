@@ -16,6 +16,7 @@ import { SendData } from "../models/data/sendData";
 import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 import { KdfType } from "../enums/kdfType";
 import { StateVersion } from "../enums/stateVersion";
+import { ThemeType } from "../enums/themeType";
 
 import { EnvironmentUrls } from "../models/domain/environmentUrls";
 
@@ -191,7 +192,7 @@ export class StateMigrationService {
     globals.ssoState = (await this.get<any>(v1Keys.ssoState)) ?? globals.ssoState;
     globals.rememberedEmail =
       (await this.get<string>(v1Keys.rememberedEmail)) ?? globals.rememberedEmail;
-    globals.theme = (await this.get<string>(v1Keys.theme)) ?? globals.theme;
+    globals.theme = (await this.get<ThemeType>(v1Keys.theme)) ?? globals.theme;
     globals.vaultTimeout = (await this.get<number>(v1Keys.vaultTimeout)) ?? globals.vaultTimeout;
     globals.vaultTimeoutAction =
       (await this.get<string>(v1Keys.vaultTimeoutAction)) ?? globals.vaultTimeoutAction;
