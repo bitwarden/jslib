@@ -37,7 +37,7 @@ import { Utils } from "jslib-common/misc/utils";
 
 @Directive()
 export class AddEditComponent implements OnInit {
-  @Input() cloneMode: boolean = false;
+  @Input() cloneMode = false;
   @Input() folderId: string = null;
   @Input() cipherId: string;
   @Input() type: CipherType;
@@ -52,7 +52,7 @@ export class AddEditComponent implements OnInit {
   @Output() onEditCollections = new EventEmitter<CipherView>();
   @Output() onGeneratePassword = new EventEmitter();
 
-  editMode: boolean = false;
+  editMode = false;
   cipher: CipherView;
   folders: FolderView[];
   collections: CollectionView[] = [];
@@ -61,9 +61,9 @@ export class AddEditComponent implements OnInit {
   deletePromise: Promise<any>;
   restorePromise: Promise<any>;
   checkPasswordPromise: Promise<number>;
-  showPassword: boolean = false;
-  showCardNumber: boolean = false;
-  showCardCode: boolean = false;
+  showPassword = false;
+  showCardNumber = false;
+  showCardCode = false;
   cipherType = CipherType;
   typeOptions: any[];
   cardBrandOptions: any[];
@@ -74,8 +74,8 @@ export class AddEditComponent implements OnInit {
   autofillOnPageLoadOptions: any[];
   currentDate = new Date();
   allowPersonal = true;
-  reprompt: boolean = false;
-  canUseReprompt: boolean = true;
+  reprompt = false;
+  canUseReprompt = true;
 
   protected writeableCollections: CollectionView[];
   private previousCipherId: string;

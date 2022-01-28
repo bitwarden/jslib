@@ -12,12 +12,12 @@ export class CiphersComponent {
   @Output() onAddCipher = new EventEmitter();
   @Output() onAddCipherOptions = new EventEmitter();
 
-  loaded: boolean = false;
+  loaded = false;
   ciphers: CipherView[] = [];
   searchText: string;
   searchPlaceholder: string = null;
   filter: (cipher: CipherView) => boolean = null;
-  deleted: boolean = false;
+  deleted = false;
 
   protected searchPending = false;
 
@@ -25,13 +25,13 @@ export class CiphersComponent {
 
   constructor(protected searchService: SearchService) {}
 
-  async load(filter: (cipher: CipherView) => boolean = null, deleted: boolean = false) {
+  async load(filter: (cipher: CipherView) => boolean = null, deleted = false) {
     this.deleted = deleted || false;
     await this.applyFilter(filter);
     this.loaded = true;
   }
 
-  async reload(filter: (cipher: CipherView) => boolean = null, deleted: boolean = false) {
+  async reload(filter: (cipher: CipherView) => boolean = null, deleted = false) {
     this.loaded = false;
     this.ciphers = [];
     await this.load(filter, deleted);

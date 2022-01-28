@@ -17,7 +17,7 @@ import { ModalRef } from "../components/modal/modal.ref";
 
 export class ModalConfig<D = any> {
   data?: D;
-  allowMultipleModals: boolean = false;
+  allowMultipleModals = false;
 }
 
 @Injectable()

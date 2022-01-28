@@ -8,7 +8,7 @@ import { Response } from "../models/response";
 import { MessageResponse } from "../models/response/messageResponse";
 
 export class UpdateCommand {
-  inPkg: boolean = false;
+  inPkg = false;
 
   constructor(
     private platformUtilsService: PlatformUtilsService,

@@ -5,7 +5,7 @@ import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 
 export default class BiometricDarwinMain implements BiometricMain {
-  isError: boolean = false;
+  isError = false;
 
   constructor(private i18nservice: I18nService, private stateService: StateService) {}
 

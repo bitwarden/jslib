@@ -24,7 +24,7 @@ export class UpdateTempPasswordComponent extends BaseChangePasswordComponent {
   hint: string;
   key: string;
   enforcedPolicyOptions: MasterPasswordPolicyOptions;
-  showPassword: boolean = false;
+  showPassword = false;
 
   onSuccessfulChangePassword: () => Promise<any>;
 

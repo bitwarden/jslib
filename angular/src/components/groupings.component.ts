@@ -31,13 +31,13 @@ export class GroupingsComponent {
   nestedFolders: TreeNode<FolderView>[];
   collections: CollectionView[];
   nestedCollections: TreeNode<CollectionView>[];
-  loaded: boolean = false;
+  loaded = false;
   cipherType = CipherType;
-  selectedAll: boolean = false;
-  selectedFavorites: boolean = false;
-  selectedTrash: boolean = false;
+  selectedAll = false;
+  selectedFavorites = false;
+  selectedTrash = false;
   selectedType: CipherType = null;
-  selectedFolder: boolean = false;
+  selectedFolder = false;
   selectedFolderId: string = null;
   selectedCollectionId: string = null;
 

@@ -9,7 +9,7 @@ import { LogService } from "jslib-common/abstractions/log.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 
 export default class BiometricWindowsMain implements BiometricMain {
-  isError: boolean = false;
+  isError = false;
 
   private windowsSecurityCredentialsUiModule: any;
 

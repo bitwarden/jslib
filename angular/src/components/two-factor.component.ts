@@ -25,16 +25,16 @@ import { WebAuthnIFrame } from "jslib-common/misc/webauthn_iframe";
 
 @Directive()
 export class TwoFactorComponent implements OnInit, OnDestroy {
-  token: string = "";
-  remember: boolean = false;
-  webAuthnReady: boolean = false;
-  webAuthnNewTab: boolean = false;
+  token = "";
+  remember = false;
+  webAuthnReady = false;
+  webAuthnNewTab = false;
   providers = TwoFactorProviders;
   providerType = TwoFactorProviderType;
   selectedProviderType: TwoFactorProviderType = TwoFactorProviderType.Authenticator;
-  webAuthnSupported: boolean = false;
+  webAuthnSupported = false;
   webAuthn: WebAuthnIFrame = null;
-  title: string = "";
+  title = "";
   twoFactorEmail: string = null;
   formPromise: Promise<any>;
   emailPromise: Promise<any>;

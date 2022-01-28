@@ -21,17 +21,17 @@ import { CaptchaProtectedComponent } from "./captchaProtected.component";
 
 @Directive()
 export class RegisterComponent extends CaptchaProtectedComponent implements OnInit {
-  name: string = "";
-  email: string = "";
-  masterPassword: string = "";
-  confirmMasterPassword: string = "";
-  hint: string = "";
-  showPassword: boolean = false;
+  name = "";
+  email = "";
+  masterPassword = "";
+  confirmMasterPassword = "";
+  hint = "";
+  showPassword = false;
   formPromise: Promise<any>;
   masterPasswordScore: number;
   referenceData: ReferenceEventRequest;
   showTerms = true;
-  acceptPolicies: boolean = false;
+  acceptPolicies = false;
 
   protected successRoute = "login";
   private masterPasswordStrengthTimeout: any;

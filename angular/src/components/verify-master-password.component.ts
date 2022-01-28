@@ -26,9 +26,9 @@ import { Verification } from "jslib-common/types/verification";
   ],
 })
 export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnInit {
-  usesKeyConnector: boolean = false;
-  disableRequestOTP: boolean = false;
-  sentCode: boolean = false;
+  usesKeyConnector = false;
+  disableRequestOTP = false;
+  sentCode = false;
 
   secret = new FormControl("");
 

@@ -21,11 +21,11 @@ import { CaptchaProtectedComponent } from "./captchaProtected.component";
 
 @Directive()
 export class LoginComponent extends CaptchaProtectedComponent implements OnInit {
-  @Input() email: string = "";
+  @Input() email = "";
   @Input() rememberEmail = true;
 
-  masterPassword: string = "";
-  showPassword: boolean = false;
+  masterPassword = "";
+  showPassword = false;
   formPromise: Promise<AuthResult>;
   onSuccessfulLogin: () => Promise<any>;
   onSuccessfulLoginNavigate: () => Promise<any>;
@@ -35,7 +35,7 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
   protected twoFactorRoute = "2fa";
   protected successRoute = "vault";
   protected forcePasswordResetRoute = "update-temp-password";
-  protected alwaysRememberEmail: boolean = false;
+  protected alwaysRememberEmail = false;
 
   constructor(
     protected authService: AuthService,

@@ -13,7 +13,7 @@ export class FolderAddEditComponent implements OnInit {
   @Output() onSavedFolder = new EventEmitter<FolderView>();
   @Output() onDeletedFolder = new EventEmitter<FolderView>();
 
-  editMode: boolean = false;
+  editMode = false;
   folder: FolderView = new FolderView();
   title: string;
   formPromise: Promise<any>;

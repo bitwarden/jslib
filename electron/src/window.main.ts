@@ -11,11 +11,11 @@ const mainWindowSizeKey = "mainWindowSize";
 const WindowEventHandlingDelay = 100;
 export class WindowMain {
   win: BrowserWindow;
-  isQuitting: boolean = false;
+  isQuitting = false;
 
   private windowStateChangeTimer: NodeJS.Timer;
   private windowStates: { [key: string]: any } = {};
-  private enableAlwaysOnTop: boolean = false;
+  private enableAlwaysOnTop = false;
 
   constructor(
     private stateService: StateService,

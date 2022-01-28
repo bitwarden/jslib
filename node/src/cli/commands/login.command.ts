@@ -490,7 +490,7 @@ export class LoginCommand {
     return clientId;
   }
 
-  private async apiClientSecret(isAdditionalAuthentication: boolean = false): Promise<string> {
+  private async apiClientSecret(isAdditionalAuthentication = false): Promise<string> {
     const additionalAuthenticationMessage = "Additional authentication required.\nAPI key ";
     let clientSecret: string = null;
 

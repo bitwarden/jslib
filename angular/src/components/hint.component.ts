@@ -8,7 +8,7 @@ import { LogService } from "jslib-common/abstractions/log.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 
 export class HintComponent {
-  email: string = "";
+  email = "";
   formPromise: Promise<any>;
 
   protected successRoute = "login";

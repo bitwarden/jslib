@@ -123,7 +123,7 @@ export class UpdaterMain {
     });
   }
 
-  async checkForUpdate(withFeedback: boolean = false) {
+  async checkForUpdate(withFeedback = false) {
     if (this.doingUpdateCheck || isDev()) {
       return;
     }

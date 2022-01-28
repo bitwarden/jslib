@@ -60,7 +60,7 @@ export class ViewComponent implements OnDestroy, OnInit {
 
   private totpInterval: any;
   private previousCipherId: string;
-  private passwordReprompted: boolean = false;
+  private passwordReprompted = false;
 
   constructor(
     protected cipherService: CipherService,

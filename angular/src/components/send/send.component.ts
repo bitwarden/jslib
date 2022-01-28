@@ -20,7 +20,7 @@ export class SendComponent implements OnInit {
   loaded = false;
   loading = true;
   refreshing = false;
-  expired: boolean = false;
+  expired = false;
   type: SendType = null;
   sends: SendView[] = [];
   filteredSends: SendView[] = [];

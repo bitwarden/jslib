@@ -18,7 +18,7 @@ export class ExportComponent implements OnInit {
   @Output() onSaved = new EventEmitter();
 
   formPromise: Promise<string>;
-  disabledByPolicy: boolean = false;
+  disabledByPolicy = false;
 
   exportForm = this.formBuilder.group({
     format: ["json"],

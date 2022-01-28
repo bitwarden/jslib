@@ -29,9 +29,9 @@ import { Utils } from "jslib-common/misc/utils";
 
 @Directive()
 export class SetPasswordComponent extends BaseChangePasswordComponent {
-  syncLoading: boolean = true;
-  showPassword: boolean = false;
-  hint: string = "";
+  syncLoading = true;
+  showPassword = false;
+  hint = "";
   identifier: string = null;
   orgId: string;
   resetPasswordAutoEnroll = false;

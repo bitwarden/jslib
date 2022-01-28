@@ -3,7 +3,7 @@ import { ConsoleLogService } from "jslib-common/services/consoleLog.service";
 const originalConsole = console;
 let caughtMessage: any;
 
-declare var console: any;
+declare let console: any;
 
 export function interceptConsole(interceptions: any): object {
   console = {

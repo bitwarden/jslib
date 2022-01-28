@@ -7,7 +7,7 @@ function newGuid() {
   });
 }
 
-export function GetUniqueString(prefix: string = "") {
+export function GetUniqueString(prefix = "") {
   return prefix + "_" + newGuid();
 }
 

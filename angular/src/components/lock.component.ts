@@ -25,19 +25,19 @@ import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
 
 @Directive()
 export class LockComponent implements OnInit {
-  masterPassword: string = "";
-  pin: string = "";
-  showPassword: boolean = false;
+  masterPassword = "";
+  pin = "";
+  showPassword = false;
   email: string;
-  pinLock: boolean = false;
-  webVaultHostname: string = "";
+  pinLock = false;
+  webVaultHostname = "";
   formPromise: Promise<any>;
   supportsBiometric: boolean;
   biometricLock: boolean;
   biometricText: string;
   hideInput: boolean;
 
-  protected successRoute: string = "vault";
+  protected successRoute = "vault";
   protected onSuccessfulSubmit: () => Promise<void>;
 
   private invalidPinAttempts = 0;
