@@ -126,7 +126,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
     this.keyConnectorUrl = urls.keyConnector;
   }
 
-  async setUrls(urls: Urls, saveSettings: boolean = true): Promise<any> {
+  async setUrls(urls: Urls): Promise<any> {
     urls.base = this.formatUrl(urls.base);
     urls.webVault = this.formatUrl(urls.webVault);
     urls.api = this.formatUrl(urls.api);
@@ -136,18 +136,16 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
     urls.events = this.formatUrl(urls.events);
     urls.keyConnector = this.formatUrl(urls.keyConnector);
 
-    if (saveSettings) {
-      await this.stateService.setEnvironmentUrls({
-        base: urls.base,
-        api: urls.api,
-        identity: urls.identity,
-        webVault: urls.webVault,
-        icons: urls.icons,
-        notifications: urls.notifications,
-        events: urls.events,
-        keyConnector: urls.keyConnector,
-      });
-    }
+    await this.stateService.setEnvironmentUrls({
+      base: urls.base,
+      api: urls.api,
+      identity: urls.identity,
+      webVault: urls.webVault,
+      icons: urls.icons,
+      notifications: urls.notifications,
+      events: urls.events,
+      keyConnector: urls.keyConnector,
+    });
 
     this.baseUrl = urls.base;
     this.webVaultUrl = urls.webVault;
