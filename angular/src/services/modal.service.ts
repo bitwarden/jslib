@@ -68,6 +68,7 @@ export class ModalService {
       return;
     }
 
+    // eslint-disable-next-line
     const [modalRef, _] = this.openInternal(componentType, config, true);
 
     return modalRef;
@@ -145,6 +146,7 @@ export class ModalService {
         el.querySelectorAll('.modal-backdrop, .modal *[data-dismiss="modal"]')
       );
       for (const closeElement of modals) {
+        // eslint-disable-next-line
         closeElement.addEventListener("click", (event) => {
           modalRef.close();
         });

@@ -17,6 +17,7 @@ export class ApiActionDirective implements OnChanges {
     private logService: LogService
   ) {}
 
+  // eslint-disable-next-line
   ngOnChanges(changes: any) {
     if (this.appApiAction == null || this.appApiAction.then == null) {
       return;
@@ -25,6 +26,7 @@ export class ApiActionDirective implements OnChanges {
     this.el.nativeElement.loading = true;
 
     this.appApiAction.then(
+      // eslint-disable-next-line
       (response: any) => {
         this.el.nativeElement.loading = false;
       },

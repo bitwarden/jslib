@@ -180,7 +180,9 @@ describe("Lastpass CSV Importer", () => {
       const cipher = result.ciphers.shift();
       let property: keyof typeof data.expected;
       for (property in data.expected) {
+        // eslint-disable-next-line
         if (data.expected.hasOwnProperty(property)) {
+          // eslint-disable-next-line
           expect(cipher.hasOwnProperty(property)).toBe(true);
           expect(cipher[property]).toEqual(data.expected[property]);
         }

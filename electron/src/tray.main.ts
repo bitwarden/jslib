@@ -75,6 +75,7 @@ export class TrayMain {
       }
     });
 
+    // eslint-disable-next-line
     win.on("show", async (e: Event) => {
       const enableTray = await this.stateService.getEnableTray();
       if (!enableTray) {

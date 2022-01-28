@@ -6,7 +6,6 @@ import { StateService } from "jslib-common/abstractions/state.service";
 import { CryptoService } from "jslib-common/services/crypto.service";
 
 import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
-import { StorageLocation } from "jslib-common/enums/storageLocation";
 import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
 
 export class ElectronCryptoService extends CryptoService {

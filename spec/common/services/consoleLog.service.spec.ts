@@ -7,16 +7,16 @@ declare let console: any;
 
 export function interceptConsole(interceptions: any): object {
   console = {
-    // eslint-disable-next-line
     log: function () {
+      // eslint-disable-next-line
       interceptions.log = arguments;
     },
-    // eslint-disable-next-line
     warn: function () {
+      // eslint-disable-next-line
       interceptions.warn = arguments;
     },
-    // eslint-disable-next-line
     error: function () {
+      // eslint-disable-next-line
       interceptions.error = arguments;
     },
   };
@@ -40,7 +40,7 @@ describe("ConsoleLogService", () => {
   });
 
   it("filters messages below the set threshold", () => {
-    logService = new ConsoleLogService(true, (level) => true);
+    logService = new ConsoleLogService(true, () => true);
     logService.debug("debug");
     logService.info("info");
     logService.warning("warning");
@@ -93,7 +93,7 @@ describe("ConsoleLogService", () => {
   });
 
   it("filters time output", async () => {
-    logService = new ConsoleLogService(true, (level) => true);
+    logService = new ConsoleLogService(true, () => true);
     logService.time();
     logService.timeEnd();
 

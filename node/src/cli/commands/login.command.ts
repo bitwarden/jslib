@@ -28,9 +28,6 @@ import { MessageResponse } from "../models/response/messageResponse";
 import { NodeUtils } from "jslib-common/misc/nodeUtils";
 import { Utils } from "jslib-common/misc/utils";
 
-// tslint:disable-next-line
-const open = require("open");
-
 export class LoginCommand {
   protected validatedParams: () => Promise<any>;
   protected success: () => Promise<MessageResponse>;

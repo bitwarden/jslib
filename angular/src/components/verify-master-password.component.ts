@@ -66,6 +66,7 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
     this.onChange = fn;
   }
 
+  // eslint-disable-next-line
   registerOnTouched(fn: any): void {
     // Not implemented
   }

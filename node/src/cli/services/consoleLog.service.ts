@@ -13,7 +13,7 @@ export class ConsoleLogService extends BaseConsoleLogService {
     }
 
     if (process.env.BW_RESPONSE === "true") {
-      // tslint:disable-next-line
+      // eslint-disable-next-line
       console.error(message);
       return;
     }

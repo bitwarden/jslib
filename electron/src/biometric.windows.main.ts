@@ -33,6 +33,7 @@ export default class BiometricWindowsMain implements BiometricMain {
     await this.stateService.setBiometricText("unlockWithWindowsHello");
     await this.stateService.setNoAutoPromptBiometricsText("noAutoPromptWindowsHello");
 
+    // eslint-disable-next-line
     ipcMain.on("biometric", async (event: any, message: any) => {
       event.returnValue = await this.authenticateBiometric();
     });
@@ -72,6 +73,7 @@ export default class BiometricWindowsMain implements BiometricMain {
   async checkAvailabilityAsync(): Promise<any> {
     const module = this.getWindowsSecurityCredentialsUiModule();
     if (module != null) {
+      // eslint-disable-next-line
       return new Promise((resolve, reject) => {
         try {
           module.UserConsentVerifier.checkAvailabilityAsync((error: Error, result: any) => {
@@ -134,6 +136,7 @@ export default class BiometricWindowsMain implements BiometricMain {
       return -1;
     }
     try {
+      // eslint-disable-next-line
       const version = require("os").release();
       return Number.parseInt(version.split(".")[0], 10);
     } catch {

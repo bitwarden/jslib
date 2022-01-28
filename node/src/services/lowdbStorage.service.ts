@@ -66,7 +66,7 @@ export class LowdbStorageService implements StorageService {
         if (fs.existsSync(this.dataFilePath)) {
           const backupPath = this.dataFilePath + ".bak";
           this.logService.warning(`Writing backup of data file to ${backupPath}`);
-          await fs.copyFile(this.dataFilePath, backupPath, (err) => {
+          await fs.copyFile(this.dataFilePath, backupPath, () => {
             this.logService.warning(
               `Error while creating data file backup, "${e.message}". No backup may have been created.`
             );

@@ -59,6 +59,7 @@ export class LockComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    // eslint-disable-next-line
     this.stateService.activeAccount.subscribe(async (_userId) => {
       await this.load();
     });

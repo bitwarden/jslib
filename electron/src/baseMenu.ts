@@ -1,4 +1,4 @@
-import { app, clipboard, dialog, Menu, MenuItemConstructorOptions } from "electron";
+import { Menu, MenuItemConstructorOptions } from "electron";
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { WindowMain } from "./window.main";

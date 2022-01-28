@@ -120,10 +120,10 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
     this.onChange = onChange;
   }
 
-  // tslint:disable-next-line
+  // eslint-disable-next-line
   registerOnTouched(onTouched: any): void {}
 
-  // tslint:disable-next-line
+  // eslint-disable-next-line
   setDisabledState?(isDisabled: boolean): void {}
 
   validate(control: AbstractControl): ValidationErrors {

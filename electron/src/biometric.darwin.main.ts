@@ -14,6 +14,7 @@ export default class BiometricDarwinMain implements BiometricMain {
     await this.stateService.setBiometricText("unlockWithTouchId");
     await this.stateService.setNoAutoPromptBiometricsText("noAutoPromptTouchId");
 
+    // eslint-disable-next-line
     ipcMain.on("biometric", async (event: any, message: any) => {
       event.returnValue = await this.authenticateBiometric();
     });
