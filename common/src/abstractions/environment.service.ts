@@ -29,6 +29,6 @@ export abstract class EnvironmentService {
   getEventsUrl: () => string;
   getKeyConnectorUrl: () => string;
   setUrlsFromStorage: () => Promise<void>;
-  setUrls: (urls: any, saveSettings?: boolean) => Promise<Urls>;
+  setUrls: (urls: any) => Promise<Urls>;
   getUrls: () => Urls;
 }
