@@ -1,18 +1,16 @@
-import { BaseImporter } from "./baseImporter";
-import { Importer } from "./importer";
-
+import { CipherRepromptType } from "../enums/cipherRepromptType";
+import { CipherType } from "../enums/cipherType";
+import { FieldType } from "../enums/fieldType";
+import { SecureNoteType } from "../enums/secureNoteType";
 import { ImportResult } from "../models/domain/importResult";
-
 import { CipherView } from "../models/view/cipherView";
 import { CollectionView } from "../models/view/collectionView";
 import { FieldView } from "../models/view/fieldView";
 import { LoginView } from "../models/view/loginView";
 import { SecureNoteView } from "../models/view/secureNoteView";
 
-import { CipherRepromptType } from "../enums/cipherRepromptType";
-import { CipherType } from "../enums/cipherType";
-import { FieldType } from "../enums/fieldType";
-import { SecureNoteType } from "../enums/secureNoteType";
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
 export class BitwardenCsvImporter extends BaseImporter implements Importer {
   parse(data: string): Promise<ImportResult> {

@@ -1,9 +1,8 @@
 import { CardData } from "../data/cardData";
+import { CardView } from "../view/cardView";
 
 import Domain from "./domainBase";
 import { EncString } from "./encString";
-
-import { CardView } from "../view/cardView";
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
 export class Card extends Domain {

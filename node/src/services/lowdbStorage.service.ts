@@ -1,11 +1,11 @@
 import * as fs from "fs";
+import * as path from "path";
+
 import * as lowdb from "lowdb";
 import * as FileSync from "lowdb/adapters/FileSync";
-import * as path from "path";
 
 import { LogService } from "jslib-common/abstractions/log.service";
 import { StorageService } from "jslib-common/abstractions/storage.service";
-
 import { NodeUtils } from "jslib-common/misc/nodeUtils";
 import { sequentialize } from "jslib-common/misc/sequentialize";
 import { Utils } from "jslib-common/misc/utils";

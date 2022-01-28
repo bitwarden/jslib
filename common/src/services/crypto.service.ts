@@ -1,25 +1,21 @@
 import * as bigInt from "big-integer";
 
-import { EncryptionType } from "../enums/encryptionType";
-import { HashPurpose } from "../enums/hashPurpose";
-import { KdfType } from "../enums/kdfType";
-import { KeySuffixOptions } from "../enums/keySuffixOptions";
-
-import { EncArrayBuffer } from "../models/domain/encArrayBuffer";
-import { EncryptedObject } from "../models/domain/encryptedObject";
-import { EncString } from "../models/domain/encString";
-import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-
 import { CryptoService as CryptoServiceAbstraction } from "../abstractions/crypto.service";
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
 import { LogService } from "../abstractions/log.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import { StateService } from "../abstractions/state.service";
-
+import { EncryptionType } from "../enums/encryptionType";
+import { HashPurpose } from "../enums/hashPurpose";
+import { KdfType } from "../enums/kdfType";
+import { KeySuffixOptions } from "../enums/keySuffixOptions";
 import { sequentialize } from "../misc/sequentialize";
 import { Utils } from "../misc/utils";
 import { EEFLongWordList } from "../misc/wordlist";
-
+import { EncArrayBuffer } from "../models/domain/encArrayBuffer";
+import { EncString } from "../models/domain/encString";
+import { EncryptedObject } from "../models/domain/encryptedObject";
+import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 import { ProfileOrganizationResponse } from "../models/response/profileOrganizationResponse";
 import { ProfileProviderOrganizationResponse } from "../models/response/profileProviderOrganizationResponse";
 import { ProfileProviderResponse } from "../models/response/profileProviderResponse";

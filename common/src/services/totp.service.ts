@@ -2,7 +2,6 @@ import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
 import { LogService } from "../abstractions/log.service";
 import { StateService } from "../abstractions/state.service";
 import { TotpService as TotpServiceAbstraction } from "../abstractions/totp.service";
-
 import { Utils } from "../misc/utils";
 
 const B32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";

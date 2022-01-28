@@ -1,9 +1,8 @@
 import { StorageService } from "../abstractions/storage.service";
-
-import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
-import { GlobalState } from "../models/domain/globalState";
-import { StorageOptions } from "../models/domain/storageOptions";
-
+import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
+import { KdfType } from "../enums/kdfType";
+import { StateVersion } from "../enums/stateVersion";
+import { ThemeType } from "../enums/themeType";
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
 import { EventData } from "../models/data/eventData";
@@ -12,13 +11,10 @@ import { OrganizationData } from "../models/data/organizationData";
 import { PolicyData } from "../models/data/policyData";
 import { ProviderData } from "../models/data/providerData";
 import { SendData } from "../models/data/sendData";
-
-import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
-import { KdfType } from "../enums/kdfType";
-import { StateVersion } from "../enums/stateVersion";
-import { ThemeType } from "../enums/themeType";
-
 import { EnvironmentUrls } from "../models/domain/environmentUrls";
+import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
+import { GlobalState } from "../models/domain/globalState";
+import { StorageOptions } from "../models/domain/storageOptions";
 
 // Originally (before January 2022) storage was handled as a flat key/value pair store.
 // With the move to a typed object for state storage these keys should no longer be in use anywhere outside of this migration.

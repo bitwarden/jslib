@@ -1,9 +1,18 @@
+import { ApiService } from "../abstractions/api.service";
+import { CipherService as CipherServiceAbstraction } from "../abstractions/cipher.service";
+import { CryptoService } from "../abstractions/crypto.service";
+import { FileUploadService } from "../abstractions/fileUpload.service";
+import { I18nService } from "../abstractions/i18n.service";
+import { LogService } from "../abstractions/log.service";
+import { SearchService } from "../abstractions/search.service";
+import { SettingsService } from "../abstractions/settings.service";
+import { StateService } from "../abstractions/state.service";
 import { CipherType } from "../enums/cipherType";
 import { FieldType } from "../enums/fieldType";
 import { UriMatchType } from "../enums/uriMatchType";
-
+import { sequentialize } from "../misc/sequentialize";
+import { Utils } from "../misc/utils";
 import { CipherData } from "../models/data/cipherData";
-
 import { Attachment } from "../models/domain/attachment";
 import { Card } from "../models/domain/card";
 import { Cipher } from "../models/domain/cipher";
@@ -16,8 +25,8 @@ import { Login } from "../models/domain/login";
 import { LoginUri } from "../models/domain/loginUri";
 import { Password } from "../models/domain/password";
 import { SecureNote } from "../models/domain/secureNote";
+import { SortedCiphersCache } from "../models/domain/sortedCiphersCache";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-
 import { AttachmentRequest } from "../models/request/attachmentRequest";
 import { CipherBulkDeleteRequest } from "../models/request/cipherBulkDeleteRequest";
 import { CipherBulkMoveRequest } from "../models/request/cipherBulkMoveRequest";
@@ -27,30 +36,13 @@ import { CipherCollectionsRequest } from "../models/request/cipherCollectionsReq
 import { CipherCreateRequest } from "../models/request/cipherCreateRequest";
 import { CipherRequest } from "../models/request/cipherRequest";
 import { CipherShareRequest } from "../models/request/cipherShareRequest";
-
 import { CipherResponse } from "../models/response/cipherResponse";
 import { ErrorResponse } from "../models/response/errorResponse";
-
 import { AttachmentView } from "../models/view/attachmentView";
 import { CipherView } from "../models/view/cipherView";
 import { FieldView } from "../models/view/fieldView";
 import { PasswordHistoryView } from "../models/view/passwordHistoryView";
 import { View } from "../models/view/view";
-
-import { SortedCiphersCache } from "../models/domain/sortedCiphersCache";
-
-import { ApiService } from "../abstractions/api.service";
-import { CipherService as CipherServiceAbstraction } from "../abstractions/cipher.service";
-import { CryptoService } from "../abstractions/crypto.service";
-import { FileUploadService } from "../abstractions/fileUpload.service";
-import { I18nService } from "../abstractions/i18n.service";
-import { SearchService } from "../abstractions/search.service";
-import { SettingsService } from "../abstractions/settings.service";
-import { StateService } from "../abstractions/state.service";
-
-import { LogService } from "../abstractions/log.service";
-import { sequentialize } from "../misc/sequentialize";
-import { Utils } from "../misc/utils";
 
 const DomainMatchBlacklist = new Map<string, Set<string>>([
   ["google.com", new Set(["script.google.com"])],

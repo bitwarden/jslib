@@ -5,13 +5,9 @@ import { LogService } from "../abstractions/log.service";
 import { OrganizationService } from "../abstractions/organization.service";
 import { StateService } from "../abstractions/state.service";
 import { TokenService } from "../abstractions/token.service";
-
 import { OrganizationUserType } from "../enums/organizationUserType";
-
 import { Utils } from "../misc/utils";
-
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-
 import { KeyConnectorUserKeyRequest } from "../models/request/keyConnectorUserKeyRequest";
 
 export class KeyConnectorService implements KeyConnectorServiceAbstraction {

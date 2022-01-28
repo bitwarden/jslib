@@ -1,17 +1,13 @@
-import { CollectionData } from "../models/data/collectionData";
-
-import { Collection } from "../models/domain/collection";
-import { TreeNode } from "../models/domain/treeNode";
-
-import { CollectionView } from "../models/view/collectionView";
-
 import { CollectionService as CollectionServiceAbstraction } from "../abstractions/collection.service";
 import { CryptoService } from "../abstractions/crypto.service";
 import { I18nService } from "../abstractions/i18n.service";
 import { StateService } from "../abstractions/state.service";
-
 import { ServiceUtils } from "../misc/serviceUtils";
 import { Utils } from "../misc/utils";
+import { CollectionData } from "../models/data/collectionData";
+import { Collection } from "../models/domain/collection";
+import { TreeNode } from "../models/domain/treeNode";
+import { CollectionView } from "../models/view/collectionView";
 
 const NestingDelimiter = "/";
 

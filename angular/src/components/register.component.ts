@@ -1,10 +1,6 @@
 import { Directive, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 
-import { KeysRequest } from "jslib-common/models/request/keysRequest";
-import { ReferenceEventRequest } from "jslib-common/models/request/referenceEventRequest";
-import { RegisterRequest } from "jslib-common/models/request/registerRequest";
-
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { AuthService } from "jslib-common/abstractions/auth.service";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
@@ -14,8 +10,10 @@ import { LogService } from "jslib-common/abstractions/log.service";
 import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-
 import { KdfType } from "jslib-common/enums/kdfType";
+import { KeysRequest } from "jslib-common/models/request/keysRequest";
+import { ReferenceEventRequest } from "jslib-common/models/request/referenceEventRequest";
+import { RegisterRequest } from "jslib-common/models/request/registerRequest";
 
 import { CaptchaProtectedComponent } from "./captchaProtected.component";
 

@@ -1,18 +1,15 @@
 import * as zxcvbn from "zxcvbn";
 
-import { EncString } from "../models/domain/encString";
-import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
-import { PasswordGeneratorPolicyOptions } from "../models/domain/passwordGeneratorPolicyOptions";
-import { Policy } from "../models/domain/policy";
-
 import { CryptoService } from "../abstractions/crypto.service";
 import { PasswordGenerationService as PasswordGenerationServiceAbstraction } from "../abstractions/passwordGeneration.service";
 import { PolicyService } from "../abstractions/policy.service";
 import { StateService } from "../abstractions/state.service";
-
-import { EEFLongWordList } from "../misc/wordlist";
-
 import { PolicyType } from "../enums/policyType";
+import { EEFLongWordList } from "../misc/wordlist";
+import { EncString } from "../models/domain/encString";
+import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
+import { PasswordGeneratorPolicyOptions } from "../models/domain/passwordGeneratorPolicyOptions";
+import { Policy } from "../models/domain/policy";
 
 const DefaultOptions = {
   length: 14,

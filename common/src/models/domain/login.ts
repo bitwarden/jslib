@@ -1,11 +1,9 @@
-import { LoginUri } from "./loginUri";
-
 import { LoginData } from "../data/loginData";
-
 import { LoginView } from "../view/loginView";
 
 import Domain from "./domainBase";
 import { EncString } from "./encString";
+import { LoginUri } from "./loginUri";
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
 export class Login extends Domain {

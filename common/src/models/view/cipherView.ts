@@ -1,7 +1,6 @@
 import { CipherRepromptType } from "../../enums/cipherRepromptType";
 import { CipherType } from "../../enums/cipherType";
 import { LinkedIdType } from "../../enums/linkedIdType";
-
 import { Cipher } from "../domain/cipher";
 
 import { AttachmentView } from "./attachmentView";

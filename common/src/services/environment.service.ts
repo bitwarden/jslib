@@ -1,12 +1,11 @@
 import { Observable, Subject } from "rxjs";
 
-import { EnvironmentUrls } from "../models/domain/environmentUrls";
-
 import {
   EnvironmentService as EnvironmentServiceAbstraction,
   Urls,
 } from "../abstractions/environment.service";
 import { StateService } from "../abstractions/state.service";
+import { EnvironmentUrls } from "../models/domain/environmentUrls";
 
 export class EnvironmentService implements EnvironmentServiceAbstraction {
   private readonly urlsSubject = new Subject<Urls>();

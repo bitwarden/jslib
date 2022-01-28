@@ -1,7 +1,6 @@
-import { EncString } from "./encString";
-
 import { View } from "../view/view";
 
+import { EncString } from "./encString";
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
 export default class Domain {

@@ -1,6 +1,6 @@
-import { View } from "./view";
-
 import { SendText } from "../domain/sendText";
+
+import { View } from "./view";
 
 export class SendTextView implements View {
   text: string = null;

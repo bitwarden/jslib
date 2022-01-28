@@ -1,10 +1,10 @@
+import { CipherType } from "../../enums/cipherType";
+import { FieldType } from "../../enums/fieldType";
 import { ImportResult } from "../../models/domain/importResult";
+import { CipherView } from "../../models/view/cipherView";
 import { BaseImporter } from "../baseImporter";
 import { Importer } from "../importer";
 
-import { CipherType } from "../../enums/cipherType";
-import { FieldType } from "../../enums/fieldType";
-import { CipherView } from "../../models/view/cipherView";
 import { CipherImportContext } from "./cipherImportContext";
 
 export const IgnoredProperties = [

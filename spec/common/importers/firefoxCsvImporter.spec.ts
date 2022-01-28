@@ -1,5 +1,4 @@
 import { FirefoxCsvImporter as Importer } from "jslib-common/importers/firefoxCsvImporter";
-
 import { CipherView } from "jslib-common/models/view/cipherView";
 import { LoginUriView } from "jslib-common/models/view/loginUriView";
 import { LoginView } from "jslib-common/models/view/loginView";

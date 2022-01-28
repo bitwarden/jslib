@@ -1,4 +1,5 @@
 import { ConsoleLogService } from "jslib-node/cli/services/consoleLog.service";
+
 import { interceptConsole, restoreConsole } from "../../common/services/consoleLog.service.spec";
 
 let caughtMessage: any = {};

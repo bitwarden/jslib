@@ -1,12 +1,10 @@
 import { FieldType } from "../../enums/fieldType";
 import { LinkedIdType } from "../../enums/linkedIdType";
-
 import { FieldData } from "../data/fieldData";
+import { FieldView } from "../view/fieldView";
 
 import Domain from "./domainBase";
 import { EncString } from "./encString";
-
-import { FieldView } from "../view/fieldView";
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
 export class Field extends Domain {

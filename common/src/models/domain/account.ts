@@ -1,27 +1,24 @@
-import { OrganizationData } from "../data/organizationData";
-
 import { AuthenticationStatus } from "../../enums/authenticationStatus";
 import { KdfType } from "../../enums/kdfType";
 import { UriMatchType } from "../../enums/uriMatchType";
-
+import { CipherData } from "../data/cipherData";
+import { CollectionData } from "../data/collectionData";
+import { EventData } from "../data/eventData";
+import { FolderData } from "../data/folderData";
+import { OrganizationData } from "../data/organizationData";
+import { PolicyData } from "../data/policyData";
+import { ProviderData } from "../data/providerData";
+import { SendData } from "../data/sendData";
 import { CipherView } from "../view/cipherView";
 import { CollectionView } from "../view/collectionView";
 import { FolderView } from "../view/folderView";
 import { SendView } from "../view/sendView";
 
 import { EncString } from "./encString";
+import { EnvironmentUrls } from "./environmentUrls";
 import { GeneratedPasswordHistory } from "./generatedPasswordHistory";
 import { Policy } from "./policy";
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";
-
-import { CipherData } from "../data/cipherData";
-import { CollectionData } from "../data/collectionData";
-import { EventData } from "../data/eventData";
-import { FolderData } from "../data/folderData";
-import { PolicyData } from "../data/policyData";
-import { ProviderData } from "../data/providerData";
-import { SendData } from "../data/sendData";
-import { EnvironmentUrls } from "./environmentUrls";
 
 export class EncryptionPair<TEncrypted, TDecrypted> {
   encrypted?: TEncrypted;

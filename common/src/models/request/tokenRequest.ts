@@ -1,9 +1,8 @@
 import { TwoFactorProviderType } from "../../enums/twoFactorProviderType";
+import { Utils } from "../../misc/utils";
 
 import { CaptchaProtectedRequest } from "./captchaProtectedRequest";
 import { DeviceRequest } from "./deviceRequest";
-
-import { Utils } from "../../misc/utils";
 
 export class TokenRequest implements CaptchaProtectedRequest {
   email: string;

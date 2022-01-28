@@ -1,6 +1,7 @@
-import { app, BrowserWindow, screen } from "electron";
 import * as path from "path";
 import * as url from "url";
+
+import { app, BrowserWindow, screen } from "electron";
 
 import { LogService } from "jslib-common/abstractions/log.service";
 import { StateService } from "jslib-common/abstractions/state.service";

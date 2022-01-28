@@ -12,16 +12,12 @@ import { MessagingService } from "jslib-common/abstractions/messaging.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { VaultTimeoutService } from "jslib-common/abstractions/vaultTimeout.service";
-
-import { EncString } from "jslib-common/models/domain/encString";
-import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
-
-import { SecretVerificationRequest } from "jslib-common/models/request/secretVerificationRequest";
-
-import { Utils } from "jslib-common/misc/utils";
-
 import { HashPurpose } from "jslib-common/enums/hashPurpose";
 import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
+import { Utils } from "jslib-common/misc/utils";
+import { EncString } from "jslib-common/models/domain/encString";
+import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
+import { SecretVerificationRequest } from "jslib-common/models/request/secretVerificationRequest";
 
 @Directive()
 export class LockComponent implements OnInit {

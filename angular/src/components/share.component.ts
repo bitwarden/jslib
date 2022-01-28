@@ -1,19 +1,16 @@
 import { Directive, EventEmitter, Input, OnInit, Output } from "@angular/core";
 
-import { OrganizationUserStatusType } from "jslib-common/enums/organizationUserStatusType";
-
 import { CipherService } from "jslib-common/abstractions/cipher.service";
 import { CollectionService } from "jslib-common/abstractions/collection.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { LogService } from "jslib-common/abstractions/log.service";
 import { OrganizationService } from "jslib-common/abstractions/organization.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
-
+import { OrganizationUserStatusType } from "jslib-common/enums/organizationUserStatusType";
+import { Utils } from "jslib-common/misc/utils";
 import { Organization } from "jslib-common/models/domain/organization";
 import { CipherView } from "jslib-common/models/view/cipherView";
 import { CollectionView } from "jslib-common/models/view/collectionView";
-
-import { Utils } from "jslib-common/misc/utils";
 
 @Directive()
 export class ShareComponent implements OnInit {

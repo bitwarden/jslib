@@ -1,10 +1,10 @@
-import { Importer } from "../importer";
-import { IgnoredProperties, OnePasswordCsvImporter } from "./onepasswordCsvImporter";
-
 import { CipherType } from "../../enums/cipherType";
 import { CardView } from "../../models/view/cardView";
 import { CipherView } from "../../models/view/cipherView";
 import { IdentityView } from "../../models/view/identityView";
+import { Importer } from "../importer";
+
+import { IgnoredProperties, OnePasswordCsvImporter } from "./onepasswordCsvImporter";
 
 export class OnePasswordMacCsvImporter extends OnePasswordCsvImporter implements Importer {
   setCipherType(value: any, cipher: CipherView) {

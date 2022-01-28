@@ -1,10 +1,9 @@
+import { SendFileData } from "../data/sendFileData";
+import { SendFileView } from "../view/sendFileView";
+
 import Domain from "./domainBase";
 import { EncString } from "./encString";
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";
-
-import { SendFileData } from "../data/sendFileData";
-
-import { SendFileView } from "../view/sendFileView";
 
 export class SendFile extends Domain {
   id: string;

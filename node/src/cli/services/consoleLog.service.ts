@@ -1,5 +1,4 @@
 import { LogLevelType } from "jslib-common/enums/logLevelType";
-
 import { ConsoleLogService as BaseConsoleLogService } from "jslib-common/services/consoleLog.service";
 
 export class ConsoleLogService extends BaseConsoleLogService {

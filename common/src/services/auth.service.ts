@@ -1,21 +1,3 @@
-import { HashPurpose } from "../enums/hashPurpose";
-import { KdfType } from "../enums/kdfType";
-import { TwoFactorProviderType } from "../enums/twoFactorProviderType";
-
-import { Account, AccountKeys, AccountProfile, AccountTokens } from "../models/domain/account";
-import { AuthResult } from "../models/domain/authResult";
-import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-
-import { SetKeyConnectorKeyRequest } from "../models/request/account/setKeyConnectorKeyRequest";
-import { DeviceRequest } from "../models/request/deviceRequest";
-import { KeyConnectorUserKeyRequest } from "../models/request/keyConnectorUserKeyRequest";
-import { KeysRequest } from "../models/request/keysRequest";
-import { PreloginRequest } from "../models/request/preloginRequest";
-import { TokenRequest } from "../models/request/tokenRequest";
-
-import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
-import { IdentityTwoFactorResponse } from "../models/response/identityTwoFactorResponse";
-
 import { ApiService } from "../abstractions/api.service";
 import { AppIdService } from "../abstractions/appId.service";
 import { AuthService as AuthServiceAbstraction } from "../abstractions/auth.service";
@@ -30,8 +12,21 @@ import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import { StateService } from "../abstractions/state.service";
 import { TokenService } from "../abstractions/token.service";
 import { VaultTimeoutService } from "../abstractions/vaultTimeout.service";
-
+import { HashPurpose } from "../enums/hashPurpose";
+import { KdfType } from "../enums/kdfType";
+import { TwoFactorProviderType } from "../enums/twoFactorProviderType";
 import { Utils } from "../misc/utils";
+import { Account, AccountKeys, AccountProfile, AccountTokens } from "../models/domain/account";
+import { AuthResult } from "../models/domain/authResult";
+import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
+import { SetKeyConnectorKeyRequest } from "../models/request/account/setKeyConnectorKeyRequest";
+import { DeviceRequest } from "../models/request/deviceRequest";
+import { KeyConnectorUserKeyRequest } from "../models/request/keyConnectorUserKeyRequest";
+import { KeysRequest } from "../models/request/keysRequest";
+import { PreloginRequest } from "../models/request/preloginRequest";
+import { TokenRequest } from "../models/request/tokenRequest";
+import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
+import { IdentityTwoFactorResponse } from "../models/response/identityTwoFactorResponse";
 
 export const TwoFactorProviders = {
   [TwoFactorProviderType.Authenticator]: {

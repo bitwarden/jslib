@@ -1,8 +1,6 @@
 import { CipherRepromptType } from "../../enums/cipherRepromptType";
 import { CipherType } from "../../enums/cipherType";
-
 import { CipherData } from "../data/cipherData";
-
 import { CipherView } from "../view/cipherView";
 
 import { Attachment } from "./attachment";

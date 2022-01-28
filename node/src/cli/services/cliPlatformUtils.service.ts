@@ -1,9 +1,8 @@
 import * as child_process from "child_process";
 
+import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { DeviceType } from "jslib-common/enums/deviceType";
 import { ThemeType } from "jslib-common/enums/themeType";
-
-import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 
 // eslint-disable-next-line
 const open = require("open");

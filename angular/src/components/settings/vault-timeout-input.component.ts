@@ -9,7 +9,6 @@ import {
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { PolicyService } from "jslib-common/abstractions/policy.service";
-
 import { PolicyType } from "jslib-common/enums/policyType";
 import { Policy } from "jslib-common/models/domain/policy";
 

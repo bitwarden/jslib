@@ -1,6 +1,6 @@
-import { CipherRequest } from "./cipherRequest";
-
 import { Cipher } from "../domain/cipher";
+
+import { CipherRequest } from "./cipherRequest";
 
 export class CipherCreateRequest {
   cipher: CipherRequest;

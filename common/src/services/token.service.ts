@@ -1,6 +1,5 @@
 import { StateService } from "../abstractions/state.service";
 import { TokenService as TokenServiceAbstraction } from "../abstractions/token.service";
-
 import { Utils } from "../misc/utils";
 
 export class TokenService implements TokenServiceAbstraction {

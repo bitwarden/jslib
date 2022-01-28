@@ -2,9 +2,9 @@ import { dialog, shell } from "electron";
 import log from "electron-log";
 import { autoUpdater } from "electron-updater";
 
-import { isAppImage, isDev, isMacAppStore, isWindowsPortable, isWindowsStore } from "./utils";
-
 import { I18nService } from "jslib-common/abstractions/i18n.service";
+
+import { isAppImage, isDev, isMacAppStore, isWindowsPortable, isWindowsStore } from "./utils";
 import { WindowMain } from "./window.main";
 
 const UpdaterCheckInitalDelay = 5 * 1000; // 5 seconds

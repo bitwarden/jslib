@@ -1,15 +1,12 @@
 import { Directive, EventEmitter, Input, Output } from "@angular/core";
 
-import { CipherType } from "jslib-common/enums/cipherType";
-
-import { CollectionView } from "jslib-common/models/view/collectionView";
-import { FolderView } from "jslib-common/models/view/folderView";
-
-import { TreeNode } from "jslib-common/models/domain/treeNode";
-
 import { CollectionService } from "jslib-common/abstractions/collection.service";
 import { FolderService } from "jslib-common/abstractions/folder.service";
 import { StateService } from "jslib-common/abstractions/state.service";
+import { CipherType } from "jslib-common/enums/cipherType";
+import { TreeNode } from "jslib-common/models/domain/treeNode";
+import { CollectionView } from "jslib-common/models/view/collectionView";
+import { FolderView } from "jslib-common/models/view/folderView";
 
 @Directive()
 export class GroupingsComponent {

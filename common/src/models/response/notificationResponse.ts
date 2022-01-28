@@ -1,6 +1,6 @@
-import { BaseResponse } from "./baseResponse";
-
 import { NotificationType } from "../../enums/notificationType";
+
+import { BaseResponse } from "./baseResponse";
 
 export class NotificationResponse extends BaseResponse {
   contextId: string;

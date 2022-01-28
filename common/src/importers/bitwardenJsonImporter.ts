@@ -1,15 +1,13 @@
-import { BaseImporter } from "./baseImporter";
-import { Importer } from "./importer";
-
+import { CryptoService } from "../abstractions/crypto.service";
+import { I18nService } from "../abstractions/i18n.service";
 import { EncString } from "../models/domain/encString";
 import { ImportResult } from "../models/domain/importResult";
-
 import { CipherWithIds } from "../models/export/cipherWithIds";
 import { CollectionWithId } from "../models/export/collectionWithId";
 import { FolderWithId } from "../models/export/folderWithId";
 
-import { CryptoService } from "../abstractions/crypto.service";
-import { I18nService } from "../abstractions/i18n.service";
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
 export class BitwardenJsonImporter extends BaseImporter implements Importer {
   private results: any;

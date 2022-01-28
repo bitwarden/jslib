@@ -1,9 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { Directive, EventEmitter, Input, OnInit, Output } from "@angular/core";
 
-import { PolicyType } from "jslib-common/enums/policyType";
-import { SendType } from "jslib-common/enums/sendType";
-
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { LogService } from "jslib-common/abstractions/log.service";
@@ -12,13 +9,13 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { SendService } from "jslib-common/abstractions/send.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-
+import { PolicyType } from "jslib-common/enums/policyType";
+import { SendType } from "jslib-common/enums/sendType";
+import { EncArrayBuffer } from "jslib-common/models/domain/encArrayBuffer";
+import { Send } from "jslib-common/models/domain/send";
 import { SendFileView } from "jslib-common/models/view/sendFileView";
 import { SendTextView } from "jslib-common/models/view/sendTextView";
 import { SendView } from "jslib-common/models/view/sendView";
-
-import { EncArrayBuffer } from "jslib-common/models/domain/encArrayBuffer";
-import { Send } from "jslib-common/models/domain/send";
 
 @Directive()
 export class AddEditComponent implements OnInit {

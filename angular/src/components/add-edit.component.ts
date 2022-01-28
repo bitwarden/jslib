@@ -1,13 +1,5 @@
 import { Directive, EventEmitter, Input, OnInit, Output } from "@angular/core";
 
-import { CipherRepromptType } from "jslib-common/enums/cipherRepromptType";
-import { CipherType } from "jslib-common/enums/cipherType";
-import { EventType } from "jslib-common/enums/eventType";
-import { OrganizationUserStatusType } from "jslib-common/enums/organizationUserStatusType";
-import { PolicyType } from "jslib-common/enums/policyType";
-import { SecureNoteType } from "jslib-common/enums/secureNoteType";
-import { UriMatchType } from "jslib-common/enums/uriMatchType";
-
 import { AuditService } from "jslib-common/abstractions/audit.service";
 import { CipherService } from "jslib-common/abstractions/cipher.service";
 import { CollectionService } from "jslib-common/abstractions/collection.service";
@@ -21,9 +13,15 @@ import { PasswordRepromptService } from "jslib-common/abstractions/passwordRepro
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-
+import { CipherRepromptType } from "jslib-common/enums/cipherRepromptType";
+import { CipherType } from "jslib-common/enums/cipherType";
+import { EventType } from "jslib-common/enums/eventType";
+import { OrganizationUserStatusType } from "jslib-common/enums/organizationUserStatusType";
+import { PolicyType } from "jslib-common/enums/policyType";
+import { SecureNoteType } from "jslib-common/enums/secureNoteType";
+import { UriMatchType } from "jslib-common/enums/uriMatchType";
+import { Utils } from "jslib-common/misc/utils";
 import { Cipher } from "jslib-common/models/domain/cipher";
-
 import { CardView } from "jslib-common/models/view/cardView";
 import { CipherView } from "jslib-common/models/view/cipherView";
 import { CollectionView } from "jslib-common/models/view/collectionView";
@@ -32,8 +30,6 @@ import { IdentityView } from "jslib-common/models/view/identityView";
 import { LoginUriView } from "jslib-common/models/view/loginUriView";
 import { LoginView } from "jslib-common/models/view/loginView";
 import { SecureNoteView } from "jslib-common/models/view/secureNoteView";
-
-import { Utils } from "jslib-common/misc/utils";
 
 @Directive()
 export class AddEditComponent implements OnInit {

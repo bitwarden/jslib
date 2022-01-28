@@ -1,8 +1,8 @@
-import { ipcMain } from "electron";
 import * as fs from "fs";
 
-import { StorageService } from "jslib-common/abstractions/storage.service";
+import { ipcMain } from "electron";
 
+import { StorageService } from "jslib-common/abstractions/storage.service";
 import { NodeUtils } from "jslib-common/misc/nodeUtils";
 
 // eslint-disable-next-line

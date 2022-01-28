@@ -1,7 +1,7 @@
+import { ImportResult } from "../models/domain/importResult";
+
 import { BaseImporter } from "./baseImporter";
 import { Importer } from "./importer";
-
-import { ImportResult } from "../models/domain/importResult";
 
 const OfficialProps = ["!group_id", "!group_name", "title", "username", "password", "URL", "id"];
 

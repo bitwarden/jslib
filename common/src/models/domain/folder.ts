@@ -1,5 +1,4 @@
 import { FolderData } from "../data/folderData";
-
 import { FolderView } from "../view/folderView";
 
 import Domain from "./domainBase";

@@ -1,12 +1,12 @@
 import { ipcMain } from "electron";
 import forceFocus from "forcefocus";
 
-import { WindowMain } from "./window.main";
-
 import { BiometricMain } from "jslib-common/abstractions/biometric.main";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { LogService } from "jslib-common/abstractions/log.service";
 import { StateService } from "jslib-common/abstractions/state.service";
+
+import { WindowMain } from "./window.main";
 
 export default class BiometricWindowsMain implements BiometricMain {
   isError = false;

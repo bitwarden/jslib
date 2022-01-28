@@ -1,5 +1,4 @@
 import { TwoFactorProviderType } from "../enums/twoFactorProviderType";
-
 import { AuthResult } from "../models/domain/authResult";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 

@@ -1,8 +1,6 @@
-import { BaseImporter } from "./baseImporter";
-import { Importer } from "./importer";
-
+import { CipherType } from "../enums/cipherType";
+import { SecureNoteType } from "../enums/secureNoteType";
 import { ImportResult } from "../models/domain/importResult";
-
 import { CardView } from "../models/view/cardView";
 import { CipherView } from "../models/view/cipherView";
 import { FolderView } from "../models/view/folderView";
@@ -10,8 +8,8 @@ import { IdentityView } from "../models/view/identityView";
 import { LoginView } from "../models/view/loginView";
 import { SecureNoteView } from "../models/view/secureNoteView";
 
-import { CipherType } from "../enums/cipherType";
-import { SecureNoteType } from "../enums/secureNoteType";
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
 export class LastPassCsvImporter extends BaseImporter implements Importer {
   parse(data: string): Promise<ImportResult> {

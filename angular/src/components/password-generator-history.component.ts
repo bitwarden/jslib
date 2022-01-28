@@ -3,7 +3,6 @@ import { Directive, OnInit } from "@angular/core";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
-
 import { GeneratedPasswordHistory } from "jslib-common/models/domain/generatedPasswordHistory";
 
 @Directive()

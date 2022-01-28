@@ -1,8 +1,6 @@
 import { ProviderService as ProviderServiceAbstraction } from "../abstractions/provider.service";
 import { StateService } from "../abstractions/state.service";
-
 import { ProviderData } from "../models/data/providerData";
-
 import { Provider } from "../models/domain/provider";
 
 export class ProviderService implements ProviderServiceAbstraction {

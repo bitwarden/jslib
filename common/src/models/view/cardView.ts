@@ -1,8 +1,7 @@
-import { ItemView } from "./itemView";
-
 import { CardLinkedId as LinkedId } from "../../enums/linkedIdType";
-
 import { linkedFieldOption } from "../../misc/linkedFieldOption.decorator";
+
+import { ItemView } from "./itemView";
 
 export class CardView extends ItemView {
   @linkedFieldOption(LinkedId.CardholderName)

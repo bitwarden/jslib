@@ -3,9 +3,7 @@ import { Directive, Input } from "@angular/core";
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
-
 import { CaptchaIFrame } from "jslib-common/misc/captcha_iframe";
-
 import { Utils } from "jslib-common/misc/utils";
 
 @Directive()

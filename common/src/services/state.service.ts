@@ -1,29 +1,14 @@
-import { StateService as StateServiceAbstraction } from "../abstractions/state.service";
-
-import { Account, AccountData, AccountFactory } from "../models/domain/account";
+import { BehaviorSubject } from "rxjs";
 
 import { LogService } from "../abstractions/log.service";
+import { StateService as StateServiceAbstraction } from "../abstractions/state.service";
+import { StateMigrationService } from "../abstractions/stateMigration.service";
 import { StorageService } from "../abstractions/storage.service";
-
 import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 import { KdfType } from "../enums/kdfType";
 import { StorageLocation } from "../enums/storageLocation";
 import { ThemeType } from "../enums/themeType";
 import { UriMatchType } from "../enums/uriMatchType";
-
-import { CipherView } from "../models/view/cipherView";
-import { CollectionView } from "../models/view/collectionView";
-import { FolderView } from "../models/view/folderView";
-import { SendView } from "../models/view/sendView";
-
-import { EncString } from "../models/domain/encString";
-import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
-import { GlobalState } from "../models/domain/globalState";
-import { Policy } from "../models/domain/policy";
-import { State } from "../models/domain/state";
-import { StorageOptions } from "../models/domain/storageOptions";
-import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
 import { EventData } from "../models/data/eventData";
@@ -32,12 +17,20 @@ import { OrganizationData } from "../models/data/organizationData";
 import { PolicyData } from "../models/data/policyData";
 import { ProviderData } from "../models/data/providerData";
 import { SendData } from "../models/data/sendData";
-
-import { BehaviorSubject } from "rxjs";
-
-import { StateMigrationService } from "../abstractions/stateMigration.service";
+import { Account, AccountData, AccountFactory } from "../models/domain/account";
+import { EncString } from "../models/domain/encString";
 import { EnvironmentUrls } from "../models/domain/environmentUrls";
+import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
+import { GlobalState } from "../models/domain/globalState";
+import { Policy } from "../models/domain/policy";
+import { State } from "../models/domain/state";
+import { StorageOptions } from "../models/domain/storageOptions";
+import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 import { WindowState } from "../models/domain/windowState";
+import { CipherView } from "../models/view/cipherView";
+import { CollectionView } from "../models/view/collectionView";
+import { FolderView } from "../models/view/folderView";
+import { SendView } from "../models/view/sendView";
 
 const keys = {
   global: "global",

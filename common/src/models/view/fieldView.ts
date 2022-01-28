@@ -1,9 +1,8 @@
 import { FieldType } from "../../enums/fieldType";
 import { LinkedIdType } from "../../enums/linkedIdType";
+import { Field } from "../domain/field";
 
 import { View } from "./view";
-
-import { Field } from "../domain/field";
 
 export class FieldView implements View {
   name: string = null;

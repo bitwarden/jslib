@@ -1,12 +1,7 @@
-import * as program from "commander";
 import * as http from "http";
+
+import * as program from "commander";
 import * as inquirer from "inquirer";
-
-import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
-
-import { AuthResult } from "jslib-common/models/domain/authResult";
-import { TwoFactorEmailRequest } from "jslib-common/models/request/twoFactorEmailRequest";
-import { ErrorResponse } from "jslib-common/models/response/errorResponse";
 
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { AuthService } from "jslib-common/abstractions/auth.service";
@@ -18,15 +13,16 @@ import { PasswordGenerationService } from "jslib-common/abstractions/passwordGen
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-
-import { Response } from "../models/response";
-
-import { UpdateTempPasswordRequest } from "jslib-common/models/request/updateTempPasswordRequest";
-
-import { MessageResponse } from "../models/response/messageResponse";
-
+import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
 import { NodeUtils } from "jslib-common/misc/nodeUtils";
 import { Utils } from "jslib-common/misc/utils";
+import { AuthResult } from "jslib-common/models/domain/authResult";
+import { TwoFactorEmailRequest } from "jslib-common/models/request/twoFactorEmailRequest";
+import { UpdateTempPasswordRequest } from "jslib-common/models/request/updateTempPasswordRequest";
+import { ErrorResponse } from "jslib-common/models/response/errorResponse";
+
+import { Response } from "../models/response";
+import { MessageResponse } from "../models/response/messageResponse";
 
 export class LoginCommand {
   protected validatedParams: () => Promise<any>;

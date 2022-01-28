@@ -1,5 +1,4 @@
 import { CollectionData } from "../data/collectionData";
-
 import { CollectionView } from "../view/collectionView";
 
 import Domain from "./domainBase";

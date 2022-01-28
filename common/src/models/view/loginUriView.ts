@@ -1,10 +1,8 @@
 import { UriMatchType } from "../../enums/uriMatchType";
-
-import { View } from "./view";
-
+import { Utils } from "../../misc/utils";
 import { LoginUri } from "../domain/loginUri";
 
-import { Utils } from "../../misc/utils";
+import { View } from "./view";
 
 const CanLaunchWhitelist = [
   "https://",

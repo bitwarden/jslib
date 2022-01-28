@@ -4,7 +4,6 @@ import { FolderService } from "jslib-common/abstractions/folder.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { LogService } from "jslib-common/abstractions/log.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
-
 import { FolderView } from "jslib-common/models/view/folderView";
 
 @Directive()

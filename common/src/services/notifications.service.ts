@@ -1,8 +1,6 @@
 import * as signalR from "@microsoft/signalr";
 import * as signalRMsgPack from "@microsoft/signalr-protocol-msgpack";
 
-import { NotificationType } from "../enums/notificationType";
-
 import { ApiService } from "../abstractions/api.service";
 import { AppIdService } from "../abstractions/appId.service";
 import { EnvironmentService } from "../abstractions/environment.service";
@@ -11,7 +9,7 @@ import { NotificationsService as NotificationsServiceAbstraction } from "../abst
 import { StateService } from "../abstractions/state.service";
 import { SyncService } from "../abstractions/sync.service";
 import { VaultTimeoutService } from "../abstractions/vaultTimeout.service";
-
+import { NotificationType } from "../enums/notificationType";
 import {
   NotificationResponse,
   SyncCipherNotification,

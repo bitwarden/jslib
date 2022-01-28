@@ -1,11 +1,10 @@
 import { Directive, EventEmitter, OnInit, Output } from "@angular/core";
 import { Router } from "@angular/router";
 
-import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
-
 import { AuthService } from "jslib-common/abstractions/auth.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
+import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
 
 @Directive()
 export class TwoFactorOptionsComponent implements OnInit {

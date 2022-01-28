@@ -1,14 +1,7 @@
 import { Directive, OnDestroy, OnInit } from "@angular/core";
-
 import { ActivatedRoute, Router } from "@angular/router";
-
+import * as DuoWebSDK from "duo_web_sdk";
 import { first } from "rxjs/operators";
-
-import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
-
-import { TwoFactorEmailRequest } from "jslib-common/models/request/twoFactorEmailRequest";
-
-import { AuthResult } from "jslib-common/models/domain/authResult";
 
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { AuthService } from "jslib-common/abstractions/auth.service";
@@ -17,11 +10,11 @@ import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { LogService } from "jslib-common/abstractions/log.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-
-import { TwoFactorProviders } from "jslib-common/services/auth.service";
-
-import * as DuoWebSDK from "duo_web_sdk";
+import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
 import { WebAuthnIFrame } from "jslib-common/misc/webauthn_iframe";
+import { AuthResult } from "jslib-common/models/domain/authResult";
+import { TwoFactorEmailRequest } from "jslib-common/models/request/twoFactorEmailRequest";
+import { TwoFactorProviders } from "jslib-common/services/auth.service";
 
 @Directive()
 export class TwoFactorComponent implements OnInit, OnDestroy {

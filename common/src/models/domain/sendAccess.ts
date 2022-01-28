@@ -1,7 +1,5 @@
 import { SendType } from "../../enums/sendType";
-
 import { SendAccessResponse } from "../response/sendAccessResponse";
-
 import { SendAccessView } from "../view/sendAccessView";
 
 import Domain from "./domainBase";

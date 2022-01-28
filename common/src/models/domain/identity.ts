@@ -1,10 +1,9 @@
 import { IdentityData } from "../data/identityData";
+import { IdentityView } from "../view/identityView";
 
 import Domain from "./domainBase";
 import { EncString } from "./encString";
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";
-
-import { IdentityView } from "../view/identityView";
 
 export class Identity extends Domain {
   title: EncString;

@@ -1,9 +1,8 @@
 import { PasswordHistoryData } from "../data/passwordHistoryData";
+import { PasswordHistoryView } from "../view/passwordHistoryView";
 
 import Domain from "./domainBase";
 import { EncString } from "./encString";
-
-import { PasswordHistoryView } from "../view/passwordHistoryView";
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
 export class Password extends Domain {

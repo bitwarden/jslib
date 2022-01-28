@@ -1,7 +1,5 @@
 import { UriMatchType } from "../../enums/uriMatchType";
-
 import { LoginUriData } from "../data/loginUriData";
-
 import { LoginUriView } from "../view/loginUriView";
 
 import Domain from "./domainBase";

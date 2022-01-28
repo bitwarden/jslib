@@ -1,10 +1,6 @@
 import { Directive, Input, NgZone, OnInit } from "@angular/core";
-
 import { Router } from "@angular/router";
-
 import { take } from "rxjs/operators";
-
-import { AuthResult } from "jslib-common/models/domain/authResult";
 
 import { AuthService } from "jslib-common/abstractions/auth.service";
 import { CryptoFunctionService } from "jslib-common/abstractions/cryptoFunction.service";
@@ -14,8 +10,8 @@ import { LogService } from "jslib-common/abstractions/log.service";
 import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-
 import { Utils } from "jslib-common/misc/utils";
+import { AuthResult } from "jslib-common/models/domain/authResult";
 
 import { CaptchaProtectedComponent } from "./captchaProtected.component";
 
