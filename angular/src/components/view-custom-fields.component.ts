@@ -32,7 +32,7 @@ export class ViewCustomFieldsComponent {
   }
 
   toggleFieldCount(field: FieldView) {
-    const f = (field as any);
+    const f = field as any;
     f.showCount = !f.showCount;
     f.showValue = f.showCount;
     if (f.showValue) {
@@ -41,7 +41,7 @@ export class ViewCustomFieldsComponent {
   }
 
   showFieldActionButtons(field: FieldView) {
-    const f = (field as any);
+    const f = field as any;
     f.showActionButtons = true;
   }
 }

@@ -16,11 +16,7 @@ export class ColorPasswordPipe implements PipeTransform {
 
   protected generateTemplate(
     password: string,
-    templateGenerator: (
-      chararacter: string,
-      type: string,
-      index?: number
-    ) => string
+    templateGenerator: (chararacter: string, type: string, index?: number) => string
   ) {
     // Convert to an array to handle cases that stings have special characters, ie: emoji.
     const passwordArray = Array.from(password);

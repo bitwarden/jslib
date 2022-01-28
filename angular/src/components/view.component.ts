@@ -237,9 +237,9 @@ export class ViewComponent implements OnDestroy, OnInit {
     this.showPasswordCount = !this.showPasswordCount;
     this.showPassword = this.showPasswordCount;
     if (this.showPassword) {
-        this.eventService.collect(EventType.Cipher_ClientToggledPasswordVisible, this.cipherId);
+      this.eventService.collect(EventType.Cipher_ClientToggledPasswordVisible, this.cipherId);
     }
-}
+  }
 
   async toggleCardNumber() {
     if (!(await this.promptPassword())) {
