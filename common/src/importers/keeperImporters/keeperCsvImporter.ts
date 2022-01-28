@@ -1,7 +1,7 @@
-import { BaseImporter } from "./baseImporter";
-import { Importer } from "./importer";
+import { BaseImporter } from "../baseImporter";
+import { Importer } from "../importer";
 
-import { ImportResult } from "../models/domain/importResult";
+import { ImportResult } from "../../models/domain/importResult";
 
 export class KeeperCsvImporter extends BaseImporter implements Importer {
   parse(data: string): Promise<ImportResult> {
