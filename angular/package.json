@@ -20,6 +20,7 @@
     "lint:fix": "tslint 'src/**/*.ts' 'spec/**/*.ts' --fix"
   },
   "devDependencies": {
+    "@fluffy-spoon/substitute": "^1.208.0",
     "@types/duo_web_sdk": "^2.7.1",
     "rimraf": "^3.0.2",
     "typescript": "4.3.5"
