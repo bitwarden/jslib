@@ -116,11 +116,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
     const urls: any = await this.stateService.getEnvironmentUrls();
     const envUrls = new EnvironmentUrls();
 
-    if (urls.base) {
-      this.baseUrl = envUrls.base = urls.base;
-      return;
-    }
-
+    this.baseUrl = envUrls.base = urls.base;
     this.webVaultUrl = urls.webVault;
     this.apiUrl = envUrls.api = urls.api;
     this.identityUrl = envUrls.identity = urls.identity;
@@ -130,7 +126,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
     this.keyConnectorUrl = urls.keyConnector;
   }
 
-  async setUrls(urls: Urls, saveSettings: boolean = true): Promise<any> {
+  async setUrls(urls: Urls): Promise<Urls> {
     urls.base = this.formatUrl(urls.base);
     urls.webVault = this.formatUrl(urls.webVault);
     urls.api = this.formatUrl(urls.api);
@@ -140,18 +136,16 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
     urls.events = this.formatUrl(urls.events);
     urls.keyConnector = this.formatUrl(urls.keyConnector);
 
-    if (saveSettings) {
-      await this.stateService.setEnvironmentUrls({
-        base: urls.base,
-        api: urls.api,
-        identity: urls.identity,
-        webVault: urls.webVault,
-        icons: urls.icons,
-        notifications: urls.notifications,
-        events: urls.events,
-        keyConnector: urls.keyConnector,
-      });
-    }
+    await this.stateService.setEnvironmentUrls({
+      base: urls.base,
+      api: urls.api,
+      identity: urls.identity,
+      webVault: urls.webVault,
+      icons: urls.icons,
+      notifications: urls.notifications,
+      events: urls.events,
+      keyConnector: urls.keyConnector,
+    });
 
     this.baseUrl = urls.base;
     this.webVaultUrl = urls.webVault;

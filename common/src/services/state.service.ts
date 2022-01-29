@@ -8,6 +8,7 @@ import { StorageService } from "../abstractions/storage.service";
 import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 import { KdfType } from "../enums/kdfType";
 import { StorageLocation } from "../enums/storageLocation";
+import { ThemeType } from "../enums/themeType";
 import { UriMatchType } from "../enums/uriMatchType";
 
 import { CipherView } from "../models/view/cipherView";
@@ -36,6 +37,7 @@ import { BehaviorSubject } from "rxjs";
 
 import { StateMigrationService } from "../abstractions/stateMigration.service";
 import { EnvironmentUrls } from "../models/domain/environmentUrls";
+import { WindowState } from "../models/domain/windowState";
 
 const keys = {
   global: "global",
@@ -58,6 +60,8 @@ export class StateService<TAccount extends Account = Account>
 
   protected state: State<TAccount> = new State<TAccount>();
 
+  private hasBeenInited: boolean = false;
+
   constructor(
     protected storageService: StorageService,
     protected secureStorageService: StorageService,
@@ -67,11 +71,16 @@ export class StateService<TAccount extends Account = Account>
   ) {}
 
   async init(): Promise<void> {
+    if (this.hasBeenInited) {
+      return;
+    }
+
     if (await this.stateMigrationService.needsMigration()) {
       await this.stateMigrationService.migrate();
     }
 
     await this.initAccountState();
+    this.hasBeenInited = true;
   }
 
   async initAccountState() {
@@ -988,26 +997,26 @@ export class StateService<TAccount extends Account = Account>
 
   async getEnableBrowserIntegration(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.enableBrowserIntegration ?? false
+      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
+        ?.enableBrowserIntegration ?? false
     );
   }
 
   async setEnableBrowserIntegration(value: boolean, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
+    const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.settings.enableBrowserIntegration = value;
-    await this.saveAccount(
-      account,
+    globals.enableBrowserIntegration = value;
+    await this.saveGlobals(
+      globals,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
   }
 
   async getEnableBrowserIntegrationFingerprint(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.enableBrowserIntegrationFingerprint ?? false
+      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
+        ?.enableBrowserIntegrationFingerprint ?? false
     );
   }
 
@@ -1015,12 +1024,12 @@ export class StateService<TAccount extends Account = Account>
     value: boolean,
     options?: StorageOptions
   ): Promise<void> {
-    const account = await this.getAccount(
+    const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.settings.enableBrowserIntegrationFingerprint = value;
-    await this.saveAccount(
-      account,
+    globals.enableBrowserIntegrationFingerprint = value;
+    await this.saveGlobals(
+      globals,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
   }
@@ -1953,13 +1962,13 @@ export class StateService<TAccount extends Account = Account>
     );
   }
 
-  async getTheme(options?: StorageOptions): Promise<string> {
+  async getTheme(options?: StorageOptions): Promise<ThemeType> {
     return (
       await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
     )?.theme;
   }
 
-  async setTheme(value: string, options?: StorageOptions): Promise<void> {
+  async setTheme(value: ThemeType, options?: StorageOptions): Promise<void> {
     const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
     );
@@ -2059,14 +2068,14 @@ export class StateService<TAccount extends Account = Account>
     await this.saveGlobals(globals, await this.defaultOnDiskOptions());
   }
 
-  async getWindow(): Promise<Map<string, any>> {
+  async getWindow(): Promise<WindowState> {
     const globals = await this.getGlobals(await this.defaultOnDiskOptions());
     return globals?.window != null && Object.keys(globals.window).length > 0
       ? globals.window
-      : new Map<string, any>();
+      : new WindowState();
   }
 
-  async setWindow(value: Map<string, any>, options?: StorageOptions): Promise<void> {
+  async setWindow(value: WindowState, options?: StorageOptions): Promise<void> {
     const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
@@ -2210,14 +2219,16 @@ export class StateService<TAccount extends Account = Account>
       account.profile.userId,
       await this.defaultOnDiskLocalOptions()
     );
+    // EnvironmentUrls are set before authenticating and should override whatever is stored from any previous session
+    const environmentUrls = account.settings.environmentUrls;
     if (storedAccount?.settings != null) {
-      // EnvironmentUrls are set before authenticating and should override whatever is stored from last session
-      storedAccount.settings.environmentUrls = account.settings.environmentUrls;
       account.settings = storedAccount.settings;
     } else if (await this.storageService.has(keys.tempAccountSettings)) {
       account.settings = await this.storageService.get<any>(keys.tempAccountSettings);
       await this.storageService.remove(keys.tempAccountSettings);
     }
+    Object.assign(account.settings, this.createAccount().settings);
+    account.settings.environmentUrls = environmentUrls;
     await this.storageService.save(
       account.profile.userId,
       account,

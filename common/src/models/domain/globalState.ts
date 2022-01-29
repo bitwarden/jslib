@@ -1,5 +1,8 @@
 import { StateVersion } from "../../enums/stateVersion";
+import { ThemeType } from "../../enums/themeType";
+
 import { EnvironmentUrls } from "./environmentUrls";
+import { WindowState } from "./windowState";
 
 export class GlobalState {
   enableAlwaysOnTop?: boolean;
@@ -10,8 +13,8 @@ export class GlobalState {
   ssoOrganizationIdentifier?: string;
   ssoState?: string;
   rememberedEmail?: string;
-  theme?: string = "light";
-  window?: Map<string, any> = new Map<string, any>();
+  theme?: ThemeType = ThemeType.Light;
+  window?: WindowState = new WindowState();
   twoFactorToken?: string;
   disableFavicon?: boolean;
   biometricAwaitingAcceptance?: boolean;
@@ -32,4 +35,6 @@ export class GlobalState {
   enableStartToTray?: boolean;
   openAtLogin?: boolean;
   alwaysShowDock?: boolean;
+  enableBrowserIntegration?: boolean;
+  enableBrowserIntegrationFingerprint?: boolean;
 }
