@@ -76,7 +76,11 @@ import { PasswordRepromptService } from "./passwordReprompt.service";
 import { UnauthGuardService } from "./unauth-guard.service";
 import { ValidationService } from "./validation.service";
 
-import { Account, AccountFactory } from "jslib-common/models/domain/account";
+import { Account } from "jslib-common/models/domain/account";
+import { GlobalState } from "jslib-common/models/domain/globalState";
+
+import { GlobalStateFactory } from "jslib-common/factories/globalStateFactory";
+import { StateFactory } from "jslib-common/factories/stateFactory";
 
 @NgModule({
   declarations: [],
@@ -338,7 +342,7 @@ import { Account, AccountFactory } from "jslib-common/models/domain/account";
           secureStorageService,
           logService,
           stateMigrationService,
-          new AccountFactory(Account)
+          new StateFactory(GlobalState, Account)
         ),
       deps: [
         StorageServiceAbstraction,
@@ -349,7 +353,15 @@ import { Account, AccountFactory } from "jslib-common/models/domain/account";
     },
     {
       provide: StateMigrationServiceAbstraction,
-      useClass: StateMigrationService,
+      useFactory: (
+        storageService: StorageServiceAbstraction,
+        secureStorageService: StorageServiceAbstraction
+      ) =>
+        new StateMigrationService(
+          storageService,
+          secureStorageService,
+          new GlobalStateFactory(GlobalState)
+        ),
       deps: [StorageServiceAbstraction, "SECURE_STORAGE"],
     },
     {

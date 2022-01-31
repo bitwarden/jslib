@@ -20,6 +20,8 @@ import { ThemeType } from "../enums/themeType";
 
 import { EnvironmentUrls } from "../models/domain/environmentUrls";
 
+import { GlobalStateFactory } from "../factories/globalStateFactory";
+
 // Originally (before January 2022) storage was handled as a flat key/value pair store.
 // With the move to a typed object for state storage these keys should no longer be in use anywhere outside of this migration.
 const v1Keys: { [key: string]: string } = {
@@ -126,10 +128,11 @@ const partialKeys = {
   masterKey: "_masterkey",
 };
 
-export class StateMigrationService {
+export class StateMigrationService<TGlobalState extends GlobalState = GlobalState> {
   constructor(
     protected storageService: StorageService,
-    protected secureStorageService: StorageService
+    protected secureStorageService: StorageService,
+    protected globalStateFactory: GlobalStateFactory<TGlobalState>
   ) {}
 
   async needsMigration(): Promise<boolean> {
@@ -174,7 +177,7 @@ export class StateMigrationService {
     // 1. Check for an existing storage value from the old storage structure OR
     // 2. Check for a value already set by processes that run before migration OR
     // 3. Assign the default value
-    const globals = (await this.get<GlobalState>(keys.global)) ?? new GlobalState();
+    const globals = (await this.get<GlobalState>(keys.global)) ?? this.globalStateFactory.create();
     globals.stateVersion = StateVersion.Two;
     globals.environmentUrls =
       (await this.get<EnvironmentUrls>(v1Keys.environmentUrls)) ?? globals.environmentUrls;
@@ -438,8 +441,8 @@ export class StateMigrationService {
     return this.storageService.save(key, value, this.options);
   }
 
-  protected async getGlobals(): Promise<GlobalState> {
-    return await this.get<GlobalState>(keys.global);
+  protected async getGlobals(): Promise<TGlobalState> {
+    return await this.get<TGlobalState>(keys.global);
   }
 
   protected async getCurrentStateVersion(): Promise<StateVersion> {
