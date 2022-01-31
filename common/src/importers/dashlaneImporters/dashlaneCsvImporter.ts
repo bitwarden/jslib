@@ -2,11 +2,13 @@ import { BaseImporter } from "../baseImporter";
 import { Importer } from "../importer";
 
 import { ImportResult } from "../../models/domain/importResult";
+
+import { CardView } from "../../models/view/cardView";
 import { CipherView } from "../../models/view/cipherView";
-import { CipherType } from "../../enums/cipherType";
 import { IdentityView } from "../../models/view/identityView";
 import { LoginView } from "../../models/view/loginView";
-import { CardView } from "../../models/view/cardView";
+
+import { CipherType } from "../../enums/cipherType";
 import { SecureNoteType } from "../../enums/secureNoteType";
 
 export class CredentialsRecord {
@@ -208,7 +210,7 @@ export class DashlaneCsvImporter extends BaseImporter implements Importer {
     cipher.type = CipherType.Identity;
     cipher.identity = new IdentityView();
 
-    let mappedValues: string[] = ["name", "number"];
+    const mappedValues: string[] = ["name", "number"];
     switch (row.type) {
       case "card":
         cipher.name = `${row.name} ${row.type}`;

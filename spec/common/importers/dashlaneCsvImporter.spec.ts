@@ -4,9 +4,9 @@ import { CipherType } from "jslib-common/enums/cipherType";
 
 import { data as credentialsData } from "./testData/dashlaneCsv/credentials.csv";
 import { data as identityData } from "./testData/dashlaneCsv/id.csv";
+import { data as multiPersonalInfoData } from "./testData/dashlaneCsv/multiplePersonalInfo.csv";
 import { data as paymentsData } from "./testData/dashlaneCsv/payments.csv";
 import { data as personalInfoData } from "./testData/dashlaneCsv/personalInfo.csv";
-import { data as multiPersonalInfoData } from "./testData/dashlaneCsv/multiplePersonalInfo.csv";
 import { data as secureNoteData } from "./testData/dashlaneCsv/securenotes.csv";
 
 describe("Dashlane CSV Importer", () => {
