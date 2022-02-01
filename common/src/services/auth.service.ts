@@ -77,7 +77,6 @@ export class AuthService implements AuthServiceAbstraction {
         this.twoFactorService,
         this
       );
-      credentials;
     } else if (credentials.type === AuthenticationType.Sso) {
       strategy = new SsoLogInStrategy(
         this.cryptoService,
