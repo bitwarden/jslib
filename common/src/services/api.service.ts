@@ -310,7 +310,9 @@ export class ApiService implements ApiServiceAbstraction {
       request,
       false,
       true,
-      this.environmentService.getIdentityUrl()
+      this.platformUtilsService.isDev()
+        ? this.environmentService.getIdentityUrl()
+        : this.environmentService.getApiUrl()
     );
     return new PreloginResponse(r);
   }
@@ -359,7 +361,9 @@ export class ApiService implements ApiServiceAbstraction {
       request,
       false,
       false,
-      this.environmentService.getIdentityUrl()
+      this.platformUtilsService.isDev()
+        ? this.environmentService.getIdentityUrl()
+        : this.environmentService.getApiUrl()
     );
   }
 
