@@ -304,7 +304,14 @@ export class ApiService implements ApiServiceAbstraction {
   }
 
   async postPrelogin(request: PreloginRequest): Promise<PreloginResponse> {
-    const r = await this.send("POST", "/accounts/prelogin", request, false, true);
+    const r = await this.send(
+      "POST",
+      "/accounts/prelogin",
+      request,
+      false,
+      true,
+      this.environmentService.getIdentityUrl()
+    );
     return new PreloginResponse(r);
   }
 
@@ -346,7 +353,14 @@ export class ApiService implements ApiServiceAbstraction {
   }
 
   postRegister(request: RegisterRequest): Promise<any> {
-    return this.send("POST", "/accounts/register", request, false, false);
+    return this.send(
+      "POST",
+      "/accounts/register",
+      request,
+      false,
+      false,
+      this.environmentService.getIdentityUrl()
+    );
   }
 
   async postPremium(data: FormData): Promise<PaymentResponse> {
