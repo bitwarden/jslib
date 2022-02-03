@@ -42,6 +42,7 @@ export class SendRequest {
       case SendType.File:
         this.file = new SendFileApi();
         this.file.fileName = send.file.fileName != null ? send.file.fileName.encryptedString : null;
+        this.file.size = fileLength?.toString() ?? "0";
         break;
       default:
         break;
