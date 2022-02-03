@@ -15,9 +15,7 @@
   "scripts": {
     "clean": "rimraf dist/**/*",
     "build": "npm run clean && tsc",
-    "build:watch": "npm run clean && tsc -watch",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "build:watch": "npm run clean && tsc -watch"
   },
   "devDependencies": {
     "@types/lunr": "^2.3.3",
