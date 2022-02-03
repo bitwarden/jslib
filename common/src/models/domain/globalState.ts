@@ -13,7 +13,7 @@ export class GlobalState {
   ssoOrganizationIdentifier?: string;
   ssoState?: string;
   rememberedEmail?: string;
-  theme?: ThemeType = ThemeType.Light;
+  theme?: ThemeType = ThemeType.System;
   window?: WindowState = new WindowState();
   twoFactorToken?: string;
   disableFavicon?: boolean;

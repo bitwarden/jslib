@@ -3,6 +3,7 @@ import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 import { KdfType } from "../enums/kdfType";
 import { StateVersion } from "../enums/stateVersion";
 import { ThemeType } from "../enums/themeType";
+import { GlobalStateFactory } from "../factories/globalStateFactory";
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
 import { EventData } from "../models/data/eventData";
@@ -122,10 +123,11 @@ const partialKeys = {
   masterKey: "_masterkey",
 };
 
-export class StateMigrationService {
+export class StateMigrationService<TGlobalState extends GlobalState = GlobalState> {
   constructor(
     protected storageService: StorageService,
-    protected secureStorageService: StorageService
+    protected secureStorageService: StorageService,
+    protected globalStateFactory: GlobalStateFactory<TGlobalState>
   ) {}
 
   async needsMigration(): Promise<boolean> {
@@ -170,7 +172,7 @@ export class StateMigrationService {
     // 1. Check for an existing storage value from the old storage structure OR
     // 2. Check for a value already set by processes that run before migration OR
     // 3. Assign the default value
-    const globals = (await this.get<GlobalState>(keys.global)) ?? new GlobalState();
+    const globals = (await this.get<GlobalState>(keys.global)) ?? this.globalStateFactory.create();
     globals.stateVersion = StateVersion.Two;
     globals.environmentUrls =
       (await this.get<EnvironmentUrls>(v1Keys.environmentUrls)) ?? globals.environmentUrls;
@@ -434,8 +436,8 @@ export class StateMigrationService {
     return this.storageService.save(key, value, this.options);
   }
 
-  protected async getGlobals(): Promise<GlobalState> {
-    return await this.get<GlobalState>(keys.global);
+  protected async getGlobals(): Promise<TGlobalState> {
+    return await this.get<TGlobalState>(keys.global);
   }
 
   protected async getCurrentStateVersion(): Promise<StateVersion> {

@@ -12,6 +12,7 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { StateService } from "jslib-common/abstractions/state.service";
 import { Utils } from "jslib-common/misc/utils";
 import { AuthResult } from "jslib-common/models/domain/authResult";
+import { PasswordLogInCredentials } from "jslib-common/models/domain/logInCredentials";
 
 import { CaptchaProtectedComponent } from "./captchaProtected.component";
 
@@ -92,7 +93,13 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
     }
 
     try {
-      this.formPromise = this.authService.logIn(this.email, this.masterPassword, this.captchaToken);
+      const credentials = new PasswordLogInCredentials(
+        this.email,
+        this.masterPassword,
+        this.captchaToken,
+        null
+      );
+      this.formPromise = this.authService.logIn(credentials);
       const response = await this.formPromise;
       if (this.rememberEmail || this.alwaysRememberEmail) {
         await this.stateService.setRememberedEmail(this.email);
@@ -101,7 +108,7 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
       }
       if (this.handleCaptchaRequired(response)) {
         return;
-      } else if (response.twoFactor) {
+      } else if (response.requiresTwoFactor) {
         if (this.onSuccessfulLoginTwoFactorNavigate != null) {
           this.onSuccessfulLoginTwoFactorNavigate();
         } else {

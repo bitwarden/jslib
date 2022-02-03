@@ -29,6 +29,9 @@ import { EventRequest } from "../models/request/eventRequest";
 import { FolderRequest } from "../models/request/folderRequest";
 import { GroupRequest } from "../models/request/groupRequest";
 import { IapCheckRequest } from "../models/request/iapCheckRequest";
+import { ApiTokenRequest } from "../models/request/identityToken/apiTokenRequest";
+import { PasswordTokenRequest } from "../models/request/identityToken/passwordTokenRequest";
+import { SsoTokenRequest } from "../models/request/identityToken/ssoTokenRequest";
 import { ImportCiphersRequest } from "../models/request/importCiphersRequest";
 import { ImportDirectoryRequest } from "../models/request/importDirectoryRequest";
 import { ImportOrganizationCiphersRequest } from "../models/request/importOrganizationCiphersRequest";
@@ -78,7 +81,6 @@ import { SendRequest } from "../models/request/sendRequest";
 import { SetPasswordRequest } from "../models/request/setPasswordRequest";
 import { StorageRequest } from "../models/request/storageRequest";
 import { TaxInfoUpdateRequest } from "../models/request/taxInfoUpdateRequest";
-import { TokenRequest } from "../models/request/tokenRequest";
 import { TwoFactorEmailRequest } from "../models/request/twoFactorEmailRequest";
 import { TwoFactorProviderRequest } from "../models/request/twoFactorProviderRequest";
 import { TwoFactorRecoveryRequest } from "../models/request/twoFactorRecoveryRequest";
@@ -205,7 +207,7 @@ export class ApiService implements ApiServiceAbstraction {
   // Auth APIs
 
   async postIdentityToken(
-    request: TokenRequest
+    request: ApiTokenRequest | PasswordTokenRequest | SsoTokenRequest
   ): Promise<IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse> {
     const headers = new Headers({
       "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
@@ -216,11 +218,15 @@ export class ApiService implements ApiServiceAbstraction {
       headers.set("User-Agent", this.customUserAgent);
     }
     request.alterIdentityTokenHeaders(headers);
+
+    const identityToken =
+      request instanceof ApiTokenRequest
+        ? request.toIdentityToken()
+        : request.toIdentityToken(this.platformUtilsService.identityClientId);
+
     const response = await this.fetch(
       new Request(this.environmentService.getIdentityUrl() + "/connect/token", {
-        body: this.qsStringify(
-          request.toIdentityToken(request.clientId ?? this.platformUtilsService.identityClientId)
-        ),
+        body: this.qsStringify(identityToken),
         credentials: this.getCredentials(),
         cache: "no-store",
         headers: headers,
@@ -241,7 +247,7 @@ export class ApiService implements ApiServiceAbstraction {
         responseJson.TwoFactorProviders2 &&
         Object.keys(responseJson.TwoFactorProviders2).length
       ) {
-        await this.tokenService.clearTwoFactorToken(request.email);
+        await this.tokenService.clearTwoFactorToken();
         return new IdentityTwoFactorResponse(responseJson);
       } else if (
         response.status === 400 &&

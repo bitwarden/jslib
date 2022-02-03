@@ -9,6 +9,7 @@ import { KdfType } from "../enums/kdfType";
 import { StorageLocation } from "../enums/storageLocation";
 import { ThemeType } from "../enums/themeType";
 import { UriMatchType } from "../enums/uriMatchType";
+import { StateFactory } from "../factories/stateFactory";
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
 import { EventData } from "../models/data/eventData";
@@ -17,7 +18,7 @@ import { OrganizationData } from "../models/data/organizationData";
 import { PolicyData } from "../models/data/policyData";
 import { ProviderData } from "../models/data/providerData";
 import { SendData } from "../models/data/sendData";
-import { Account, AccountData, AccountFactory } from "../models/domain/account";
+import { Account, AccountData } from "../models/domain/account";
 import { EncString } from "../models/domain/encString";
 import { EnvironmentUrls } from "../models/domain/environmentUrls";
 import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
@@ -45,13 +46,17 @@ const partialKeys = {
   masterKey: "_masterkey",
 };
 
-export class StateService<TAccount extends Account = Account>
-  implements StateServiceAbstraction<TAccount>
+export class StateService<
+  TAccount extends Account = Account,
+  TGlobalState extends GlobalState = GlobalState
+> implements StateServiceAbstraction<TAccount>
 {
   accounts = new BehaviorSubject<{ [userId: string]: TAccount }>({});
   activeAccount = new BehaviorSubject<string>(null);
 
-  protected state: State<TAccount> = new State<TAccount>();
+  protected state: State<TAccount, TGlobalState> = new State<TAccount, TGlobalState>(
+    this.createGlobals()
+  );
 
   private hasBeenInited = false;
 
@@ -60,7 +65,7 @@ export class StateService<TAccount extends Account = Account>
     protected secureStorageService: StorageService,
     protected logService: LogService,
     protected stateMigrationService: StateMigrationService,
-    protected accountFactory: AccountFactory<TAccount>
+    protected stateFactory: StateFactory<TAccount, TGlobalState>
   ) {}
 
   async init(): Promise<void> {
@@ -2079,8 +2084,8 @@ export class StateService<TAccount extends Account = Account>
     );
   }
 
-  protected async getGlobals(options: StorageOptions): Promise<GlobalState> {
-    let globals: GlobalState;
+  protected async getGlobals(options: StorageOptions): Promise<TGlobalState> {
+    let globals: TGlobalState;
     if (this.useMemory(options.storageLocation)) {
       globals = this.getGlobalsFromMemory();
     }
@@ -2089,28 +2094,28 @@ export class StateService<TAccount extends Account = Account>
       globals = await this.getGlobalsFromDisk(options);
     }
 
-    return globals ?? new GlobalState();
+    return globals ?? this.createGlobals();
   }
 
-  protected async saveGlobals(globals: GlobalState, options: StorageOptions) {
+  protected async saveGlobals(globals: TGlobalState, options: StorageOptions) {
     return this.useMemory(options.storageLocation)
       ? this.saveGlobalsToMemory(globals)
       : await this.saveGlobalsToDisk(globals, options);
   }
 
-  protected getGlobalsFromMemory(): GlobalState {
+  protected getGlobalsFromMemory(): TGlobalState {
     return this.state.globals;
   }
 
-  protected async getGlobalsFromDisk(options: StorageOptions): Promise<GlobalState> {
-    return await this.storageService.get<GlobalState>(keys.global, options);
+  protected async getGlobalsFromDisk(options: StorageOptions): Promise<TGlobalState> {
+    return await this.storageService.get<TGlobalState>(keys.global, options);
   }
 
-  protected saveGlobalsToMemory(globals: GlobalState): void {
+  protected saveGlobalsToMemory(globals: TGlobalState): void {
     this.state.globals = globals;
   }
 
-  protected async saveGlobalsToDisk(globals: GlobalState, options: StorageOptions): Promise<void> {
+  protected async saveGlobalsToDisk(globals: TGlobalState, options: StorageOptions): Promise<void> {
     if (options.useSecureStorage) {
       await this.secureStorageService.save(keys.global, globals, options);
     } else {
@@ -2405,7 +2410,11 @@ export class StateService<TAccount extends Account = Account>
   }
 
   protected createAccount(init: Partial<TAccount> = null): TAccount {
-    return this.accountFactory.create(init);
+    return this.stateFactory.createAccount(init);
+  }
+
+  protected createGlobals(init: Partial<TGlobalState> = null): TGlobalState {
+    return this.stateFactory.createGlobal(init);
   }
 
   protected async deAuthenticateAccount(userId: string) {
