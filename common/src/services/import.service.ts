@@ -101,7 +101,8 @@ export class ImportService implements ImportServiceAbstraction {
     { id: "1passwordmaccsv", name: "1Password 6 and 7 Mac (csv)" },
     { id: "roboformcsv", name: "RoboForm (csv)" },
     { id: "keepercsv", name: "Keeper (csv)" },
-    { id: "keeperjson", name: "Keeper (json)" },
+    // Temporarily remove this option for the Feb release
+    // { id: "keeperjson", name: "Keeper (json)" },
     { id: "enpasscsv", name: "Enpass (csv)" },
     { id: "enpassjson", name: "Enpass (json)" },
     { id: "safeincloudxml", name: "SafeInCloud (xml)" },
