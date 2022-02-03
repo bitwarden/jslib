@@ -348,7 +348,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
       return new Array<GeneratedPasswordHistory>();
     }
 
-    if ((await this.stateService.getDecryptedPasswordGenerationHistory()) != null) {
+    if ((await this.stateService.getDecryptedPasswordGenerationHistory()) == null) {
       const encrypted = await this.stateService.getEncryptedPasswordGenerationHistory();
       const decrypted = await this.decryptHistory(encrypted);
       await this.stateService.setDecryptedPasswordGenerationHistory(decrypted);
