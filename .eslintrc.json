@@ -42,6 +42,5 @@
         "pathGroupsExcludedImportTypes": ["builtin"]
       }
     ]
-    // "sort-imports": ["error"] // TODO: Figure out this rule, it requires manual interaction
   }
 }

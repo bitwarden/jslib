@@ -15,7 +15,7 @@ import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType"
 import { WebAuthnIFrame } from "jslib-common/misc/webauthn_iframe";
 import { AuthResult } from "jslib-common/models/domain/authResult";
 import { TwoFactorEmailRequest } from "jslib-common/models/request/twoFactorEmailRequest";
-import { TwoFactorProviders } from "jslib-common/services/auth.service";
+import { TwoFactorProviders } from "jslib-common/services/twoFactor.service";
 
 @Directive()
 export class TwoFactorComponent implements OnInit, OnDestroy {
