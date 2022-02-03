@@ -33,7 +33,6 @@ export default class BiometricWindowsMain implements BiometricMain {
     await this.stateService.setBiometricText("unlockWithWindowsHello");
     await this.stateService.setNoAutoPromptBiometricsText("noAutoPromptWindowsHello");
 
-    // eslint-disable-next-line
     ipcMain.on("biometric", async (event: any, message: any) => {
       event.returnValue = await this.authenticateBiometric();
     });

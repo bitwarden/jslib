@@ -52,7 +52,6 @@ export class SendComponent implements OnInit {
     this.disableSend = await this.policyService.policyAppliesToUser(PolicyType.DisableSend);
   }
 
-  // eslint-disable-next-line
   async load(filter: (send: SendView) => boolean = null) {
     this.loading = true;
     const sends = await this.sendService.getAllDecrypted();

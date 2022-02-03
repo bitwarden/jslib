@@ -78,7 +78,6 @@ export class AddEditCustomFieldsComponent implements OnChanges {
     }
   }
 
-  // eslint-disable-next-line
   trackByFunction(index: number, item: any) {
     return index;
   }

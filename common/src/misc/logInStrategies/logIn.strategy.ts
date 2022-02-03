@@ -65,7 +65,6 @@ export abstract class LogInStrategy {
     throw new Error("Invalid response object.");
   }
 
-  // eslint-disable-next-line
   protected onSuccessfulLogin(response: IdentityTokenResponse): Promise<void> {
     // Implemented in subclass if required
     return null;

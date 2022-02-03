@@ -74,7 +74,6 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     }
   }
 
-  // eslint-disable-next-line
   async lock(allowSoftLock = false, userId?: string): Promise<void> {
     const authed = await this.stateService.getIsAuthenticated({ userId: userId });
     if (!authed) {

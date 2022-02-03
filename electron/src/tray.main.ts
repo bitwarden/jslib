@@ -76,8 +76,7 @@ export class TrayMain {
       }
     });
 
-    // eslint-disable-next-line
-    win.on("show", async (e: Event) => {
+    win.on("show", async () => {
       const enableTray = await this.stateService.getEnableTray();
       if (!enableTray) {
         setTimeout(() => this.removeTray(false), 100);

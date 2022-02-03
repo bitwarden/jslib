@@ -83,7 +83,6 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     return Promise.resolve(false);
   }
 
-  // eslint-disable-next-line
   launchUri(uri: string, options?: any): void {
     shell.openExternal(uri);
   }
@@ -104,7 +103,6 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
 
   // Temporarily restricted to only Windows until https://github.com/electron/electron/pull/28349
   // has been merged and an updated electron build is available.
-  // eslint-disable-next-line
   supportsWebAuthn(win: Window): boolean {
     return process.platform === "win32";
   }

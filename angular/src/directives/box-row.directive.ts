@@ -18,8 +18,7 @@ export class BoxRowDirective implements OnInit {
     this.formEls.forEach((formEl) => {
       formEl.addEventListener(
         "focus",
-        // eslint-disable-next-line
-        (event: Event) => {
+        () => {
           this.el.classList.add("active");
         },
         false
@@ -27,8 +26,7 @@ export class BoxRowDirective implements OnInit {
 
       formEl.addEventListener(
         "blur",
-        // eslint-disable-next-line
-        (event: Event) => {
+        () => {
           this.el.classList.remove("active");
         },
         false

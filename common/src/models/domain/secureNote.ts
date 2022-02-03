@@ -17,7 +17,6 @@ export class SecureNote extends Domain {
     this.type = obj.type;
   }
 
-  // eslint-disable-next-line
   decrypt(orgId: string, encKey?: SymmetricCryptoKey): Promise<SecureNoteView> {
     return Promise.resolve(new SecureNoteView(this));
   }

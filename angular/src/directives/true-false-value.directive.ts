@@ -35,17 +35,14 @@ export class TrueFalseValueDirective implements ControlValueAccessor {
     this.propagateChange = fn;
   }
 
-  // eslint-disable-next-line
   registerOnTouched(fn: any): void {
     /* nothing */
   }
 
-  // eslint-disable-next-line
   setDisabledState?(isDisabled: boolean): void {
     /* nothing */
   }
 
-  // eslint-disable-next-line
   private propagateChange = (_: any) => {
     /* nothing */
   };

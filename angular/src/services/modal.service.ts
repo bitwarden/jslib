@@ -146,8 +146,7 @@ export class ModalService {
         el.querySelectorAll('.modal-backdrop, .modal *[data-dismiss="modal"]')
       );
       for (const closeElement of modals) {
-        // eslint-disable-next-line
-        closeElement.addEventListener("click", (event) => {
+        closeElement.addEventListener("click", () => {
           modalRef.close();
         });
       }

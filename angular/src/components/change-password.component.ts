@@ -82,7 +82,6 @@ export class ChangePasswordComponent implements OnInit {
     return true;
   }
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   async performSubmitActions(
     masterPasswordHash: string,
     key: SymmetricCryptoKey,
@@ -90,7 +89,6 @@ export class ChangePasswordComponent implements OnInit {
   ) {
     // Override in sub-class
   }
-  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   async strongPassword(): Promise<boolean> {
     if (this.masterPassword == null || this.masterPassword === "") {

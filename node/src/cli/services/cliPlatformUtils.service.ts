@@ -76,7 +76,6 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     return Promise.resolve(false);
   }
 
-  // eslint-disable-next-line
   launchUri(uri: string, options?: any): void {
     if (process.platform === "linux") {
       child_process.spawnSync("xdg-open", [uri]);
@@ -85,7 +84,6 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     }
   }
 
-  // eslint-disable-next-line
   saveFile(win: Window, blobData: any, blobOptions: any, fileName: string): void {
     throw new Error("Not implemented.");
   }
@@ -98,7 +96,6 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     return this.packageJson.version;
   }
 
-  // eslint-disable-next-line
   supportsWebAuthn(win: Window) {
     return false;
   }
@@ -107,7 +104,6 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     return false;
   }
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   showToast(
     type: "error" | "success" | "warning" | "info",
     title: string,
@@ -116,9 +112,7 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
   ): void {
     throw new Error("Not implemented.");
   }
-  /* eslint-enable @typescript-eslint/no-unused-vars */
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   showDialog(
     text: string,
     title?: string,
@@ -128,7 +122,6 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
   ): Promise<boolean> {
     throw new Error("Not implemented.");
   }
-  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   isDev(): boolean {
     return process.env.BWCLI_ENV === "development";
@@ -138,12 +131,10 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     return false;
   }
 
-  // eslint-disable-next-line
   copyToClipboard(text: string, options?: any): void {
     throw new Error("Not implemented.");
   }
 
-  // eslint-disable-next-line
   readFromClipboard(options?: any): Promise<string> {
     throw new Error("Not implemented.");
   }
