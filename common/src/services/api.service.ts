@@ -226,7 +226,7 @@ export class ApiService implements ApiServiceAbstraction {
     const identityToken =
       request instanceof ApiTokenRequest
         ? request.toIdentityToken()
-        : request.toIdentityToken(this.platformUtilsService.identityClientId);
+        : request.toIdentityToken(this.platformUtilsService.getClientTypeString());
 
     const response = await this.fetch(
       new Request(this.environmentService.getIdentityUrl() + "/connect/token", {

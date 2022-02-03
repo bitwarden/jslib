@@ -7,7 +7,6 @@ interface ToastOptions {
 }
 
 export abstract class PlatformUtilsService {
-  identityClientId: string;
   getDevice: () => DeviceType;
   getDeviceString: () => string;
   getClientType: () => ClientType;
