@@ -1,3 +1,4 @@
+import { ClientType } from "../enums/clientType";
 import { DeviceType } from "../enums/deviceType";
 import { PolicyType } from "../enums/policyType";
 
@@ -2187,11 +2188,13 @@ export class ApiService implements ApiServiceAbstraction {
     return accessToken;
   }
 
-  fetch(request: Request): Promise<Response> {
+  async fetch(request: Request): Promise<Response> {
     if (request.method === "GET") {
       request.headers.set("Cache-Control", "no-store");
       request.headers.set("Pragma", "no-cache");
     }
+    request.headers.set("X-Client-Name", this.platformUtilsService.getClientTypeString());
+    request.headers.set("X-Client-Version", await this.platformUtilsService.getApplicationVersion());
     return this.nativeFetch(request);
   }
 
