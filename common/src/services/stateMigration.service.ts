@@ -137,7 +137,7 @@ export class StateMigrationService<
   constructor(
     protected storageService: StorageService,
     protected secureStorageService: StorageService,
-    protected stateFactory: StateFactory<TAccount, TGlobalState>
+    protected stateFactory: StateFactory<TGlobalState, TAccount>
   ) {}
 
   async needsMigration(): Promise<boolean> {
