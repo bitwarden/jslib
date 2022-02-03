@@ -2,7 +2,6 @@ import { TwoFactorProviderType } from "../../enums/twoFactorProviderType";
 import { Utils } from "../../misc/utils";
 
 export class AuthResult {
-  twoFactor = false;
   captchaSiteKey = "";
   resetMasterPassword = false;
   forcePasswordReset = false;
