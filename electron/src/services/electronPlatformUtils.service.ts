@@ -21,7 +21,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     private isDesktopApp: boolean,
     private stateService: StateService
   ) {
-    this.clientType = isDesktopApp ? ClientType.Desktop : ClientType.Connector;
+    this.clientType = isDesktopApp ? ClientType.Desktop : ClientType.DirectoryConnector;
   }
 
   getDevice(): DeviceType {
@@ -50,10 +50,6 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
 
   getClientType() {
     return this.clientType;
-  }
-
-  getClientTypeString() {
-    return ClientType[this.getClientType()].toLowerCase();
   }
 
   isFirefox(): boolean {

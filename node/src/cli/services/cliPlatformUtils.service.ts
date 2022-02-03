@@ -46,10 +46,6 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     return this.clientType;
   }
 
-  getClientTypeString() {
-    return ClientType[this.getClientType()].toLowerCase();
-  }
-
   isFirefox() {
     return false;
   }

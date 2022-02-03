@@ -226,7 +226,7 @@ export class ApiService implements ApiServiceAbstraction {
     const identityToken =
       request instanceof ApiTokenRequest
         ? request.toIdentityToken()
-        : request.toIdentityToken(this.platformUtilsService.getClientTypeString());
+        : request.toIdentityToken(this.platformUtilsService.getClientType());
 
     const response = await this.fetch(
       new Request(this.environmentService.getIdentityUrl() + "/connect/token", {
@@ -2193,7 +2193,7 @@ export class ApiService implements ApiServiceAbstraction {
       request.headers.set("Cache-Control", "no-store");
       request.headers.set("Pragma", "no-cache");
     }
-    request.headers.set("X-Client-Name", this.platformUtilsService.getClientTypeString());
+    request.headers.set("X-Client-Name", this.platformUtilsService.getClientType());
     request.headers.set(
       "X-Client-Version",
       await this.platformUtilsService.getApplicationVersion()
