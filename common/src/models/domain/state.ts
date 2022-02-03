@@ -2,8 +2,8 @@ import { Account } from "./account";
 import { GlobalState } from "./globalState";
 
 export class State<
-  TAccount extends Account = Account,
-  TGlobalState extends GlobalState = GlobalState
+  TGlobalState extends GlobalState = GlobalState,
+  TAccount extends Account = Account
 > {
   accounts: { [userId: string]: TAccount } = {};
   globals: TGlobalState;

@@ -21,6 +21,8 @@ import { ThemeType } from "../enums/themeType";
 import { EnvironmentUrls } from "../models/domain/environmentUrls";
 
 import { GlobalStateFactory } from "../factories/globalStateFactory";
+import { StateFactory } from "../factories/stateFactory";
+import { Account, AccountSettings } from "../models/domain/account";
 
 // Originally (before January 2022) storage was handled as a flat key/value pair store.
 // With the move to a typed object for state storage these keys should no longer be in use anywhere outside of this migration.
@@ -128,11 +130,14 @@ const partialKeys = {
   masterKey: "_masterkey",
 };
 
-export class StateMigrationService<TGlobalState extends GlobalState = GlobalState> {
+export class StateMigrationService<
+  TGlobalState extends GlobalState = GlobalState,
+  TAccount extends Account = Account
+> {
   constructor(
     protected storageService: StorageService,
     protected secureStorageService: StorageService,
-    protected globalStateFactory: GlobalStateFactory<TGlobalState>
+    protected stateFactory: StateFactory<TGlobalState, TAccount>
   ) {}
 
   async needsMigration(): Promise<boolean> {
@@ -177,7 +182,8 @@ export class StateMigrationService<TGlobalState extends GlobalState = GlobalStat
     // 1. Check for an existing storage value from the old storage structure OR
     // 2. Check for a value already set by processes that run before migration OR
     // 3. Assign the default value
-    const globals = (await this.get<GlobalState>(keys.global)) ?? this.globalStateFactory.create();
+    const globals =
+      (await this.get<GlobalState>(keys.global)) ?? this.stateFactory.createGlobal(null);
     globals.stateVersion = StateVersion.Two;
     globals.environmentUrls =
       (await this.get<EnvironmentUrls>(v1Keys.environmentUrls)) ?? globals.environmentUrls;
@@ -220,46 +226,91 @@ export class StateMigrationService<TGlobalState extends GlobalState = GlobalStat
     const userId =
       (await this.get<string>(v1Keys.userId)) ?? (await this.get<string>(v1Keys.entityId));
 
+    const defaultAccount = this.stateFactory.createAccount(null);
+    const accountSettings: AccountSettings = {
+      autoConfirmFingerPrints:
+        (await this.get<boolean>(v1Keys.autoConfirmFingerprints)) ??
+        defaultAccount.settings.autoConfirmFingerPrints,
+      autoFillOnPageLoadDefault:
+        (await this.get<boolean>(v1Keys.autoFillOnPageLoadDefault)) ??
+        defaultAccount.settings.autoFillOnPageLoadDefault,
+      biometricLocked: null,
+      biometricUnlock:
+        (await this.get<boolean>(v1Keys.biometricUnlock)) ??
+        defaultAccount.settings.biometricUnlock,
+      clearClipboard:
+        (await this.get<number>(v1Keys.clearClipboard)) ?? defaultAccount.settings.clearClipboard,
+      defaultUriMatch:
+        (await this.get<any>(v1Keys.defaultUriMatch)) ?? defaultAccount.settings.defaultUriMatch,
+      disableAddLoginNotification:
+        (await this.get<boolean>(v1Keys.disableAddLoginNotification)) ??
+        defaultAccount.settings.disableAddLoginNotification,
+      disableAutoBiometricsPrompt:
+        (await this.get<boolean>(v1Keys.disableAutoBiometricsPrompt)) ??
+        defaultAccount.settings.disableAutoBiometricsPrompt,
+      disableAutoTotpCopy:
+        (await this.get<boolean>(v1Keys.disableAutoTotpCopy)) ??
+        defaultAccount.settings.disableAutoTotpCopy,
+      disableBadgeCounter:
+        (await this.get<boolean>(v1Keys.disableBadgeCounter)) ??
+        defaultAccount.settings.disableBadgeCounter,
+      disableChangedPasswordNotification:
+        (await this.get<boolean>(v1Keys.disableChangedPasswordNotification)) ??
+        defaultAccount.settings.disableChangedPasswordNotification,
+      disableContextMenuItem:
+        (await this.get<boolean>(v1Keys.disableContextMenuItem)) ??
+        defaultAccount.settings.disableContextMenuItem,
+      disableGa: (await this.get<boolean>(v1Keys.disableGa)) ?? defaultAccount.settings.disableGa,
+      dontShowCardsCurrentTab:
+        (await this.get<boolean>(v1Keys.dontShowCardsCurrentTab)) ??
+        defaultAccount.settings.dontShowCardsCurrentTab,
+      dontShowIdentitiesCurrentTab:
+        (await this.get<boolean>(v1Keys.dontShowIdentitiesCurrentTab)) ??
+        defaultAccount.settings.dontShowIdentitiesCurrentTab,
+      enableAlwaysOnTop:
+        (await this.get<boolean>(v1Keys.enableAlwaysOnTop)) ??
+        defaultAccount.settings.enableAlwaysOnTop,
+      enableAutoFillOnPageLoad:
+        (await this.get<boolean>(v1Keys.enableAutoFillOnPageLoad)) ??
+        defaultAccount.settings.enableAutoFillOnPageLoad,
+      enableBiometric:
+        (await this.get<boolean>(v1Keys.enableBiometric)) ??
+        defaultAccount.settings.enableBiometric,
+      enableFullWidth:
+        (await this.get<boolean>(v1Keys.enableFullWidth)) ??
+        defaultAccount.settings.enableFullWidth,
+      enableGravitars:
+        (await this.get<boolean>(v1Keys.enableGravatars)) ??
+        defaultAccount.settings.enableGravitars,
+      environmentUrls: globals.environmentUrls ?? defaultAccount.settings.environmentUrls,
+      equivalentDomains:
+        (await this.get<any>(v1Keys.equivalentDomains)) ??
+        defaultAccount.settings.equivalentDomains,
+      minimizeOnCopyToClipboard:
+        (await this.get<boolean>(v1Keys.minimizeOnCopyToClipboard)) ??
+        defaultAccount.settings.minimizeOnCopyToClipboard,
+      neverDomains:
+        (await this.get<any>(v1Keys.neverDomains)) ?? defaultAccount.settings.neverDomains,
+      passwordGenerationOptions:
+        (await this.get<any>(v1Keys.passwordGenerationOptions)) ??
+        defaultAccount.settings.passwordGenerationOptions,
+      pinProtected: {
+        decrypted: null,
+        encrypted: await this.get<string>(v1Keys.pinProtected),
+      },
+      protectedPin: await this.get<string>(v1Keys.protectedPin),
+      settings: userId == null ? null : await this.get<any>(v1KeyPrefixes.settings + userId),
+      vaultTimeout:
+        (await this.get<number>(v1Keys.vaultTimeout)) ?? defaultAccount.settings.vaultTimeout,
+      vaultTimeoutAction:
+        (await this.get<string>(v1Keys.vaultTimeoutAction)) ??
+        defaultAccount.settings.vaultTimeoutAction,
+    };
+
     // (userId == null) = no logged in user (so no known userId) and we need to temporarily store account specific settings in state to migrate on first auth
     // (userId != null) = we have a currently authed user (so known userId) with encrypted data and other key settings we can move, no need to temporarily store account settings
     if (userId == null) {
-      await this.set(keys.tempAccountSettings, {
-        autoConfirmFingerPrints: await this.get<boolean>(v1Keys.autoConfirmFingerprints),
-        autoFillOnPageLoadDefault: await this.get<boolean>(v1Keys.autoFillOnPageLoadDefault),
-        biometricLocked: null,
-        biometricUnlock: await this.get<boolean>(v1Keys.biometricUnlock),
-        clearClipboard: await this.get<number>(v1Keys.clearClipboard),
-        defaultUriMatch: await this.get<any>(v1Keys.defaultUriMatch),
-        disableAddLoginNotification: await this.get<boolean>(v1Keys.disableAddLoginNotification),
-        disableAutoBiometricsPrompt: await this.get<boolean>(v1Keys.disableAutoBiometricsPrompt),
-        disableAutoTotpCopy: await this.get<boolean>(v1Keys.disableAutoTotpCopy),
-        disableBadgeCounter: await this.get<boolean>(v1Keys.disableBadgeCounter),
-        disableChangedPasswordNotification: await this.get<boolean>(
-          v1Keys.disableChangedPasswordNotification
-        ),
-        disableContextMenuItem: await this.get<boolean>(v1Keys.disableContextMenuItem),
-        disableGa: await this.get<boolean>(v1Keys.disableGa),
-        dontShowCardsCurrentTab: await this.get<boolean>(v1Keys.dontShowCardsCurrentTab),
-        dontShowIdentitiesCurrentTab: await this.get<boolean>(v1Keys.dontShowIdentitiesCurrentTab),
-        enableAlwaysOnTop: await this.get<boolean>(v1Keys.enableAlwaysOnTop),
-        enableAutoFillOnPageLoad: await this.get<boolean>(v1Keys.enableAutoFillOnPageLoad),
-        enableBiometric: await this.get<boolean>(v1Keys.enableBiometric),
-        enableFullWidth: await this.get<boolean>(v1Keys.enableFullWidth),
-        enableGravitars: await this.get<boolean>(v1Keys.enableGravatars),
-        environmentUrls: globals.environmentUrls,
-        equivalentDomains: await this.get<any>(v1Keys.equivalentDomains),
-        minimizeOnCopyToClipboard: await this.get<boolean>(v1Keys.minimizeOnCopyToClipboard),
-        neverDomains: await this.get<any>(v1Keys.neverDomains),
-        passwordGenerationOptions: await this.get<any>(v1Keys.passwordGenerationOptions),
-        pinProtected: {
-          decrypted: null,
-          encrypted: await this.get<string>(v1Keys.pinProtected),
-        },
-        protectedPin: await this.get<string>(v1Keys.protectedPin),
-        settings: null,
-        vaultTimeout: await this.get<number>(v1Keys.vaultTimeout),
-        vaultTimeoutAction: await this.get<string>(v1Keys.vaultTimeoutAction),
-      });
+      await this.set(keys.tempAccountSettings, accountSettings);
       await this.set(keys.global, globals);
       await this.set(keys.authenticatedAccounts, []);
       await this.set(keys.activeUserId, null);
@@ -350,43 +401,7 @@ export class StateMigrationService<TGlobalState extends GlobalState = GlobalStat
         userId: userId,
         usesKeyConnector: null,
       },
-      settings: {
-        autoConfirmFingerPrints: await this.get<boolean>(v1Keys.autoConfirmFingerprints),
-        autoFillOnPageLoadDefault: await this.get<boolean>(v1Keys.autoFillOnPageLoadDefault),
-        biometricLocked: null,
-        biometricUnlock: await this.get<boolean>(v1Keys.biometricUnlock),
-        clearClipboard: await this.get<number>(v1Keys.clearClipboard),
-        defaultUriMatch: await this.get<any>(v1Keys.defaultUriMatch),
-        disableAddLoginNotification: await this.get<boolean>(v1Keys.disableAddLoginNotification),
-        disableAutoBiometricsPrompt: await this.get<boolean>(v1Keys.disableAutoBiometricsPrompt),
-        disableAutoTotpCopy: await this.get<boolean>(v1Keys.disableAutoTotpCopy),
-        disableBadgeCounter: await this.get<boolean>(v1Keys.disableBadgeCounter),
-        disableChangedPasswordNotification: await this.get<boolean>(
-          v1Keys.disableChangedPasswordNotification
-        ),
-        disableContextMenuItem: await this.get<boolean>(v1Keys.disableContextMenuItem),
-        disableGa: await this.get<boolean>(v1Keys.disableGa),
-        dontShowCardsCurrentTab: await this.get<boolean>(v1Keys.dontShowCardsCurrentTab),
-        dontShowIdentitiesCurrentTab: await this.get<boolean>(v1Keys.dontShowIdentitiesCurrentTab),
-        enableAlwaysOnTop: await this.get<boolean>(v1Keys.enableAlwaysOnTop),
-        enableAutoFillOnPageLoad: await this.get<boolean>(v1Keys.enableAutoFillOnPageLoad),
-        enableBiometric: await this.get<boolean>(v1Keys.enableBiometric),
-        enableFullWidth: await this.get<boolean>(v1Keys.enableFullWidth),
-        enableGravitars: await this.get<boolean>(v1Keys.enableGravatars),
-        environmentUrls: globals.environmentUrls,
-        equivalentDomains: await this.get<any>(v1Keys.equivalentDomains),
-        minimizeOnCopyToClipboard: await this.get<boolean>(v1Keys.minimizeOnCopyToClipboard),
-        neverDomains: await this.get<any>(v1Keys.neverDomains),
-        passwordGenerationOptions: await this.get<any>(v1Keys.passwordGenerationOptions),
-        pinProtected: {
-          decrypted: null,
-          encrypted: await this.get<string>(v1Keys.pinProtected),
-        },
-        protectedPin: await this.get<string>(v1Keys.protectedPin),
-        settings: await this.get<any>(v1KeyPrefixes.settings + userId),
-        vaultTimeout: await this.get<number>(v1Keys.vaultTimeout),
-        vaultTimeoutAction: await this.get<string>(v1Keys.vaultTimeoutAction),
-      },
+      settings: accountSettings,
       tokens: {
         accessToken: await this.get<string>(v1Keys.accessToken),
         decodedToken: null,
