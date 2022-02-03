@@ -53,7 +53,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
   }
 
   getClientTypeString() {
-      return ClientType[this.getClientType()].toLowerCase();
+    return ClientType[this.getClientType()].toLowerCase();
   }
 
   isFirefox(): boolean {

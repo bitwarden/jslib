@@ -2194,7 +2194,10 @@ export class ApiService implements ApiServiceAbstraction {
       request.headers.set("Pragma", "no-cache");
     }
     request.headers.set("X-Client-Name", this.platformUtilsService.getClientTypeString());
-    request.headers.set("X-Client-Version", await this.platformUtilsService.getApplicationVersion());
+    request.headers.set(
+      "X-Client-Version",
+      await this.platformUtilsService.getApplicationVersion()
+    );
     return this.nativeFetch(request);
   }
 
