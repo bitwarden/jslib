@@ -2233,7 +2233,6 @@ export class StateService<
       account.settings = await this.storageService.get<any>(keys.tempAccountSettings);
       await this.storageService.remove(keys.tempAccountSettings);
     }
-    Object.assign(account.settings, this.createAccount().settings);
     account.settings.environmentUrls = environmentUrls;
     await this.storageService.save(
       account.profile.userId,
