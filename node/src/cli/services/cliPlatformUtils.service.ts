@@ -1,8 +1,8 @@
 import * as child_process from "child_process";
 
+import { ClientType } from "jslib-common/enums/clientType";
 import { DeviceType } from "jslib-common/enums/deviceType";
 import { ThemeType } from "jslib-common/enums/themeType";
-import { ClientType } from "jslib-common/enums/clientType";
 
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 
