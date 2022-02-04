@@ -8,7 +8,7 @@ export class OrganizationSponsorshipSyncStatusResponse extends BaseResponse {
     super(response);
     const lastSyncDate = this.getResponseProperty("LastSyncDate");
     if (lastSyncDate) {
-      this.lastSyncDate = this.getResponseProperty("LastSyncDate");
+      this.lastSyncDate = new Date(lastSyncDate);
     }
   }
 }
