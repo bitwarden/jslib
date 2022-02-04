@@ -32,7 +32,7 @@ import { AvastJsonImporter } from "../importers/avastJsonImporter";
 import { AviraCsvImporter } from "../importers/aviraCsvImporter";
 import { BitwardenCsvImporter } from "../importers/bitwardenCsvImporter";
 import { BitwardenJsonImporter } from "../importers/bitwardenJsonImporter";
-import { BitwardenPasswordProtectedImporter } from '../importers/bitwardenPasswordProtectedImporter';
+import { BitwardenPasswordProtectedImporter } from "../importers/bitwardenPasswordProtectedImporter";
 import { BlackBerryCsvImporter } from "../importers/blackBerryCsvImporter";
 import { BlurCsvImporter } from "../importers/blurCsvImporter";
 import { ButtercupCsvImporter } from "../importers/buttercupCsvImporter";
@@ -165,7 +165,7 @@ export class ImportService implements ImportServiceAbstraction {
     private collectionService: CollectionService,
     private platformUtilsService: PlatformUtilsService,
     private cryptoService: CryptoService
-  ) { }
+  ) {}
 
   getImportOptions(): ImportOption[] {
     return this.featuredImportOptions.concat(this.regularImportOptions);
