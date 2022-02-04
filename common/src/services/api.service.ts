@@ -174,6 +174,7 @@ import { KeyConnectorUserKeyRequest } from "../models/request/keyConnectorUserKe
 import { KeyConnectorUserKeyResponse } from "../models/response/keyConnectorUserKeyResponse";
 import { SendAccessView } from "../models/view/sendAccessView";
 import { OrganizationApiKeyInformationResponse } from "../models/response/organizationApiKeyInformationResponse";
+import { OrganizationSponsorshipSyncStatusResponse } from "../models/response/organizationSponsorshipSyncStatusResponse";
 
 export class ApiService implements ApiServiceAbstraction {
   protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
@@ -2241,6 +2242,18 @@ export class ApiService implements ApiServiceAbstraction {
       request,
       true,
       false
+    );
+  }
+
+  async getSponsorshipSyncStatus(
+    sponsoredOrgId: string
+  ): Promise<OrganizationSponsorshipSyncStatusResponse> {
+    return await this.send(
+      "GET",
+      "/organization/sponsorship/" + sponsoredOrgId + "/sync-status",
+      null,
+      true,
+      true
     );
   }
 

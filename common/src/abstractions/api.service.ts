@@ -169,6 +169,7 @@ import { TwoFactorYubiKeyResponse } from "../models/response/twoFactorYubiKeyRes
 import { UserKeyResponse } from "../models/response/userKeyResponse";
 
 import { SendAccessView } from "../models/view/sendAccessView";
+import { OrganizationSponsorshipSyncStatusResponse } from "../models/response/organizationSponsorshipSyncStatusResponse";
 
 export abstract class ApiService {
   postIdentityToken: (
@@ -667,6 +668,9 @@ export abstract class ApiService {
     sponsorshipOrgId: string,
     request: OrganizationSponsorshipCreateRequest
   ) => Promise<void>;
+  getSponsorshipSyncStatus: (
+    sponsoredOrgId: string
+  ) => Promise<OrganizationSponsorshipSyncStatusResponse>;
   deleteRevokeSponsorship: (sponsoringOrganizationId: string) => Promise<void>;
   deleteRemoveSponsorship: (sponsoringOrgId: string) => Promise<void>;
   postPreValidateSponsorshipToken: (sponsorshipToken: string) => Promise<boolean>;
