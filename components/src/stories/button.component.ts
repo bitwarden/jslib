@@ -6,7 +6,7 @@ type CombiendTypes = `${ModeTypes}-${ButtonTypes}`;
 
 @Component({
   selector: "storybook-button",
-  template: ` <button type="button" (click)="onClick.emit($event)" [ngClass]="classes">
+  template: `<button type="button" (click)="onClick.emit($event)" [ngClass]="classes">
     {{ label }}
   </button>`,
 })
@@ -19,12 +19,6 @@ export class ButtonComponent {
 
   @Input()
   buttonType: ButtonTypes = "default";
-
-  /**
-   * What background color to use
-   */
-  @Input()
-  backgroundColor?: string;
 
   /**
    * How large should the button be?
@@ -47,14 +41,20 @@ export class ButtonComponent {
   onClick = new EventEmitter<Event>();
 
   private buttonStyles: Record<CombiendTypes, string> = {
-    "primary-default": "border border-blue-500 bg-blue-500 hover:bg-blue-700 text-white",
-    "primary-outline": "border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white",
+    "primary-default":
+      "tw-border tw-border-blue-500 tw-bg-blue-500 tw-text-white hover:tw-bg-blue-700",
+    "primary-outline":
+      "tw-border tw-border-blue-500 tw-text-blue-500 hover:tw-bg-blue-500 hover:tw-text-white",
     "secondary-default": "",
     "secondary-outline": "",
   };
 
   public get classes(): string[] {
     const style: CombiendTypes = `${this.mode}-${this.buttonType}`;
-    return ["font-semibold py-2 px-4 rounded mr-2 transition", this.buttonStyles[style]];
+
+    return [
+      "tw-font-semibold tw-py-2 tw-px-4 tw-rounded tw-mr-2 tw-transition",
+      this.buttonStyles[style] || "lol",
+    ];
   }
 }
