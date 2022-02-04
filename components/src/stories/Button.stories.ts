@@ -6,6 +6,10 @@ import { ButtonComponent } from "./button.component";
 export default {
   title: "Jslib/Button",
   component: ButtonComponent,
+  args: {
+    mode: "primary",
+    buttonType: "default",
+  },
   // More on argTypes: https://storybook.js.org/docs/angular/api/argtypes
 } as Meta;
 
@@ -18,6 +22,7 @@ export const Primary = Template.bind({});
 // More on args: https://storybook.js.org/docs/angular/writing-stories/args
 Primary.args = {
   mode: "primary",
+  buttonType: "default",
   label: "Button",
 };
 
