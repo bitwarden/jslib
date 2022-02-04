@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter } from "@angular/core";
 
 type ModeTypes = "primary" | "secondary";
 type ButtonTypes = "default" | "outline";
+type CombiendTypes = `${ModeTypes}-${ButtonTypes}`;
 
 @Component({
   selector: "storybook-button",
@@ -45,7 +46,7 @@ export class ButtonComponent {
   @Output()
   onClick = new EventEmitter<Event>();
 
-  private modeClasses: Record<`${ModeTypes}-${ButtonTypes}`, string> = {
+  private buttonStyles: Record<CombiendTypes, string> = {
     "primary-default": "border border-blue-500 bg-blue-500 hover:bg-blue-700 text-white",
     "primary-outline": "border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white",
     "secondary-default": "",
@@ -53,9 +54,7 @@ export class ButtonComponent {
   };
 
   public get classes(): string[] {
-    return [
-      "font-semibold py-2 px-4 rounded mr-2 transition",
-      this.modeClasses[`${this.mode}-${this.buttonType}`],
-    ];
+    const style: CombiendTypes = `${this.mode}-${this.buttonType}`;
+    return ["font-semibold py-2 px-4 rounded mr-2 transition", this.buttonStyles[style]];
   }
 }
