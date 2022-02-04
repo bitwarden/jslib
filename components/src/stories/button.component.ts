@@ -1,13 +1,11 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from "@angular/core";
+
+type ModeTypes = "primary" | "secondary";
+type ButtonTypes = "default" | "outline";
 
 @Component({
-  selector: 'storybook-button',
-  template: ` <button
-    type="button"
-    (click)="onClick.emit($event)"
-    [ngClass]="classes"
-    [ngStyle]="{ 'background-color': backgroundColor }"
-  >
+  selector: "storybook-button",
+  template: ` <button type="button" (click)="onClick.emit($event)" [ngClass]="classes">
     {{ label }}
   </button>`,
 })
@@ -16,7 +14,10 @@ export class ButtonComponent {
    * Is this the principal call to action on the page?
    */
   @Input()
-  primary = false;
+  mode: ModeTypes = "primary";
+
+  @Input()
+  buttonType: ButtonTypes = "default";
 
   /**
    * What background color to use
@@ -28,7 +29,7 @@ export class ButtonComponent {
    * How large should the button be?
    */
   @Input()
-  size: 'small' | 'medium' | 'large' = 'medium';
+  size: "small" | "medium" | "large" = "medium";
 
   /**
    * Button contents
@@ -36,7 +37,7 @@ export class ButtonComponent {
    * @required
    */
   @Input()
-  label = 'Button';
+  label = "Button";
 
   /**
    * Optional click handler
@@ -44,9 +45,17 @@ export class ButtonComponent {
   @Output()
   onClick = new EventEmitter<Event>();
 
-  public get classes(): string[] {
-    const mode = this.primary ? 'btn-primary' : 'btn-secondary';
+  private modeClasses: Record<`${ModeTypes}-${ButtonTypes}`, string> = {
+    "primary-default": "border border-blue-500 bg-blue-500 hover:bg-blue-700 text-white",
+    "primary-outline": "border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white",
+    "secondary-default": "",
+    "secondary-outline": "",
+  };
 
-    return ['btn', `btn-${this.size}`, mode];
+  public get classes(): string[] {
+    return [
+      "font-semibold py-2 px-4 rounded mr-2 transition",
+      this.modeClasses[`${this.mode}-${this.buttonType}`],
+    ];
   }
 }
