@@ -1,5 +1,6 @@
 # Build directories
 dist
+.angular
 
 # Github Workflows
 .github/workflows
