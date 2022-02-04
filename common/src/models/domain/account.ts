@@ -21,6 +21,7 @@ import { FolderData } from "../data/folderData";
 import { PolicyData } from "../data/policyData";
 import { ProviderData } from "../data/providerData";
 import { SendData } from "../data/sendData";
+import { EnvironmentUrls } from "./environmentUrls";
 
 export class EncryptionPair<TEncrypted, TDecrypted> {
   encrypted?: TEncrypted;
@@ -103,7 +104,6 @@ export class AccountProfile {
 }
 
 export class AccountSettings {
-  alwaysShowDock?: boolean;
   autoConfirmFingerPrints?: boolean;
   autoFillOnPageLoadDefault?: boolean;
   biometricLocked?: boolean;
@@ -122,24 +122,18 @@ export class AccountSettings {
   enableAlwaysOnTop?: boolean;
   enableAutoFillOnPageLoad?: boolean;
   enableBiometric?: boolean;
-  enableBrowserIntegration?: boolean;
-  enableBrowserIntegrationFingerprint?: boolean;
-  enableCloseToTray?: boolean;
   enableFullWidth?: boolean;
   enableGravitars?: boolean;
-  enableMinimizeToTray?: boolean;
-  enableStartToTray?: boolean;
-  enableTray?: boolean;
+  environmentUrls: EnvironmentUrls = new EnvironmentUrls();
   equivalentDomains?: any;
   minimizeOnCopyToClipboard?: boolean;
   neverDomains?: { [id: string]: any };
-  openAtLogin?: boolean;
   passwordGenerationOptions?: any;
   pinProtected?: EncryptionPair<string, EncString> = new EncryptionPair<string, EncString>();
   protectedPin?: string;
   settings?: any; // TODO: Merge whatever is going on here into the AccountSettings model properly
   vaultTimeout?: number;
-  vaultTimeoutAction?: string;
+  vaultTimeoutAction?: string = "lock";
 }
 
 export class AccountTokens {

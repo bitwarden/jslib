@@ -1,16 +1,20 @@
+import { StateVersion } from "../../enums/stateVersion";
+import { ThemeType } from "../../enums/themeType";
+
+import { EnvironmentUrls } from "./environmentUrls";
+import { WindowState } from "./windowState";
+
 export class GlobalState {
   enableAlwaysOnTop?: boolean;
   installedVersion?: string;
-  lastActive?: number;
-  locale?: string;
-  openAtLogin?: boolean;
+  locale?: string = "en";
   organizationInvitation?: any;
   ssoCodeVerifier?: string;
   ssoOrganizationIdentifier?: string;
   ssoState?: string;
   rememberedEmail?: string;
-  theme?: string;
-  window?: Map<string, any> = new Map<string, any>();
+  theme?: ThemeType = ThemeType.System;
+  window?: WindowState = new WindowState();
   twoFactorToken?: string;
   disableFavicon?: boolean;
   biometricAwaitingAcceptance?: boolean;
@@ -23,8 +27,14 @@ export class GlobalState {
   biometricText?: string;
   noAutoPromptBiometrics?: boolean;
   noAutoPromptBiometricsText?: string;
-  stateVersion: number;
-  environmentUrls?: any = {
-    server: "bitwarden.com",
-  };
+  stateVersion: StateVersion = StateVersion.One;
+  environmentUrls: EnvironmentUrls = new EnvironmentUrls();
+  enableTray?: boolean;
+  enableMinimizeToTray?: boolean;
+  enableCloseToTray?: boolean;
+  enableStartToTray?: boolean;
+  openAtLogin?: boolean;
+  alwaysShowDock?: boolean;
+  enableBrowserIntegration?: boolean;
+  enableBrowserIntegrationFingerprint?: boolean;
 }

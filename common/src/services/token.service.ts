@@ -3,6 +3,8 @@ import { TokenService as TokenServiceAbstraction } from "../abstractions/token.s
 
 import { Utils } from "../misc/utils";
 
+import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
+
 export class TokenService implements TokenServiceAbstraction {
   constructor(private stateService: StateService) {}
 
@@ -79,8 +81,8 @@ export class TokenService implements TokenServiceAbstraction {
     await this.setClientSecret(clientSecret);
   }
 
-  async setTwoFactorToken(token: string): Promise<any> {
-    return await this.stateService.setTwoFactorToken(token);
+  async setTwoFactorToken(tokenResponse: IdentityTokenResponse): Promise<any> {
+    return await this.stateService.setTwoFactorToken(tokenResponse.twoFactorToken);
   }
 
   async getTwoFactorToken(): Promise<string> {
@@ -209,11 +211,8 @@ export class TokenService implements TokenServiceAbstraction {
 
   async getIsExternal(): Promise<boolean> {
     const decoded = await this.decodeToken();
-    if (!Array.isArray(decoded.amr)) {
-      throw new Error("No amr found");
-    }
 
-    return decoded.amr.includes("external");
+    return Array.isArray(decoded.amr) && decoded.amr.includes("external");
   }
 
   private async skipTokenStorage(): Promise<boolean> {

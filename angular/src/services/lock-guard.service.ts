@@ -7,6 +7,7 @@ import { VaultTimeoutService } from "jslib-common/abstractions/vaultTimeout.serv
 @Injectable()
 export class LockGuardService implements CanActivate {
   protected homepage = "vault";
+  protected loginpage = "login";
   constructor(
     private vaultTimeoutService: VaultTimeoutService,
     private router: Router,
@@ -14,16 +15,15 @@ export class LockGuardService implements CanActivate {
   ) {}
 
   async canActivate() {
-    if (!(await this.stateService.getIsAuthenticated())) {
-      this.router.navigate(["login"]);
-      return false;
+    if (await this.vaultTimeoutService.isLocked()) {
+      return true;
     }
 
-    if (!(await this.vaultTimeoutService.isLocked())) {
-      this.router.navigate([this.homepage]);
-      return false;
-    }
+    const redirectUrl = (await this.stateService.getIsAuthenticated())
+      ? [this.homepage]
+      : [this.loginpage];
 
-    return true;
+    this.router.navigate(redirectUrl);
+    return false;
   }
 }
