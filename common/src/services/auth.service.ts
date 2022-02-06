@@ -28,6 +28,8 @@ import { StateService } from "../abstractions/state.service";
 import { TokenService } from "../abstractions/token.service";
 import { TwoFactorService } from "../abstractions/twoFactor.service";
 
+import { AuthenticationType } from "../enums/authenticationType";
+
 export class AuthService implements AuthServiceAbstraction {
   get email(): string {
     return this.logInStrategy instanceof PasswordLogInStrategy ? this.logInStrategy.email : null;
@@ -60,10 +62,9 @@ export class AuthService implements AuthServiceAbstraction {
   ): Promise<AuthResult> {
     this.clearState();
 
-    let result: AuthResult;
     let strategy: ApiLogInStrategy | PasswordLogInStrategy | SsoLogInStrategy;
 
-    if (credentials instanceof PasswordLogInCredentials) {
+    if (credentials.type === AuthenticationType.Password) {
       strategy = new PasswordLogInStrategy(
         this.cryptoService,
         this.apiService,
@@ -76,8 +77,7 @@ export class AuthService implements AuthServiceAbstraction {
         this.twoFactorService,
         this
       );
-      result = await strategy.logIn(credentials);
-    } else if (credentials instanceof SsoLogInCredentials) {
+    } else if (credentials.type === AuthenticationType.Sso) {
       strategy = new SsoLogInStrategy(
         this.cryptoService,
         this.apiService,
@@ -90,8 +90,7 @@ export class AuthService implements AuthServiceAbstraction {
         this.twoFactorService,
         this.keyConnectorService
       );
-      result = await strategy.logIn(credentials);
-    } else if (credentials instanceof ApiLogInCredentials) {
+    } else if (credentials.type === AuthenticationType.Api) {
       strategy = new ApiLogInStrategy(
         this.cryptoService,
         this.apiService,
@@ -105,8 +104,9 @@ export class AuthService implements AuthServiceAbstraction {
         this.environmentService,
         this.keyConnectorService
       );
-      result = await strategy.logIn(credentials);
     }
+
+    const result = await strategy.logIn(credentials as any);
 
     if (result?.requiresTwoFactor) {
       this.saveState(strategy);
