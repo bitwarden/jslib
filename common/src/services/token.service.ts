@@ -3,6 +3,8 @@ import { TokenService as TokenServiceAbstraction } from "../abstractions/token.s
 
 import { Utils } from "../misc/utils";
 
+import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
+
 export class TokenService implements TokenServiceAbstraction {
   constructor(private stateService: StateService) {}
 
@@ -79,8 +81,8 @@ export class TokenService implements TokenServiceAbstraction {
     await this.setClientSecret(clientSecret);
   }
 
-  async setTwoFactorToken(token: string): Promise<any> {
-    return await this.stateService.setTwoFactorToken(token);
+  async setTwoFactorToken(tokenResponse: IdentityTokenResponse): Promise<any> {
+    return await this.stateService.setTwoFactorToken(tokenResponse.twoFactorToken);
   }
 
   async getTwoFactorToken(): Promise<string> {

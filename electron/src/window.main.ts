@@ -99,7 +99,6 @@ export class WindowMain {
 
   async createWindow(): Promise<void> {
     this.windowStates[mainWindowSizeKey] = await this.getWindowState(
-      mainWindowSizeKey,
       this.defaultWidth,
       this.defaultHeight
     );
@@ -214,7 +213,7 @@ export class WindowMain {
       const bounds = win.getBounds();
 
       if (this.windowStates[configKey] == null) {
-        this.windowStates[configKey] = (await this.stateService.getWindow()).get(configKey);
+        this.windowStates[configKey] = await this.stateService.getWindow();
         if (this.windowStates[configKey] == null) {
           this.windowStates[configKey] = {};
         }
@@ -230,25 +229,20 @@ export class WindowMain {
         this.windowStates[configKey].height = bounds.height;
       }
 
-      const cachedWindow = (await this.stateService.getWindow()) ?? new Map<string, any>();
-      cachedWindow.set(configKey, this.windowStates[configKey]);
-      await this.stateService.setWindow(cachedWindow);
+      await this.stateService.setWindow(this.windowStates[configKey]);
     } catch (e) {
       this.logService.error(e);
     }
   }
 
-  private async getWindowState(configKey: string, defaultWidth: number, defaultHeight: number) {
-    const windowState = (await this.stateService.getWindow()) ?? new Map<string, any>();
-    let state = windowState.has(configKey) ? windowState.get(configKey) : null;
+  private async getWindowState(defaultWidth: number, defaultHeight: number) {
+    const state = await this.stateService.getWindow();
 
     const isValid = state != null && (this.stateHasBounds(state) || state.isMaximized);
     let displayBounds: Electron.Rectangle = null;
     if (!isValid) {
-      state = {
-        width: defaultWidth,
-        height: defaultHeight,
-      };
+      state.width = defaultWidth;
+      state.height = defaultHeight;
 
       displayBounds = screen.getPrimaryDisplay().bounds;
     } else if (this.stateHasBounds(state) && state.displayBounds) {

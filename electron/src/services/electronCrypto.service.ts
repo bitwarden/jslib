@@ -38,9 +38,9 @@ export class ElectronCryptoService extends CryptoService {
     }
   }
 
-  protected async retrieveKeyFromStorage(keySuffix: KeySuffixOptions) {
+  protected async retrieveKeyFromStorage(keySuffix: KeySuffixOptions, userId?: string) {
     await this.upgradeSecurelyStoredKey();
-    return super.retrieveKeyFromStorage(keySuffix);
+    return super.retrieveKeyFromStorage(keySuffix, userId);
   }
 
   /**
