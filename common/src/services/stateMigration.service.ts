@@ -122,6 +122,7 @@ const keys = {
   authenticatedAccounts: "authenticatedAccounts",
   activeUserId: "activeUserId",
   tempAccountSettings: "tempAccountSettings", // used to hold account specific settings (i.e clear clipboard) between initial migration and first account authentication
+  accountActivity: "accountActivity",
 };
 
 const partialKeys = {
@@ -396,7 +397,6 @@ export class StateMigrationService<
         kdfIterations: await this.get<number>(v1Keys.kdfIterations),
         kdfType: await this.get<KdfType>(v1Keys.kdf),
         keyHash: await this.get<string>(v1Keys.keyHash),
-        lastActive: await this.get<number>(v1Keys.lastActive),
         lastSync: null,
         userId: userId,
         usesKeyConnector: null,
@@ -412,6 +412,13 @@ export class StateMigrationService<
 
     await this.set(keys.authenticatedAccounts, [userId]);
     await this.set(keys.activeUserId, userId);
+
+    const accountActivity: { [userId: string]: number } = {
+      [userId]: await this.get<number>(v1Keys.lastActive),
+    };
+    accountActivity[userId] = await this.get<number>(v1Keys.lastActive);
+    await this.set(keys.accountActivity, accountActivity);
+
     await clearV1Keys(userId);
 
     if (await this.secureStorageService.has(v1Keys.key, { keySuffix: "biometric" })) {
