@@ -2248,13 +2248,14 @@ export class ApiService implements ApiServiceAbstraction {
   async getSponsorshipSyncStatus(
     sponsoredOrgId: string
   ): Promise<OrganizationSponsorshipSyncStatusResponse> {
-    return await this.send(
+    const response = await this.send(
       "GET",
       "/organization/sponsorship/" + sponsoredOrgId + "/sync-status",
       null,
       true,
       true
     );
+    return new OrganizationSponsorshipSyncStatusResponse(response);
   }
 
   async deleteRevokeSponsorship(sponsoringOrganizationId: string): Promise<void> {
