@@ -41,9 +41,6 @@ export class ButtonComponent implements OnChanges {
   @Input()
   block = false;
 
-  @Input()
-  type: "button" | "submit" = "button";
-
   /**
    * How large should the button be?
    */

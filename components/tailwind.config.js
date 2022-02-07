@@ -1,8 +1,5 @@
-module.exports = {
-  content: ["./src/**/*.{html,ts}"],
-  prefix: "tw-",
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-};
+const config = require("../../tailwind.config");
+
+config.content = ["./src/**/*.{html,ts}"];
+
+module.exports = config;

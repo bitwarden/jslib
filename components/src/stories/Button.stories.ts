@@ -1,11 +1,27 @@
 // also exported from '@storybook/angular' if you can deal with breaking changes in 6.1
-import { Story, Meta } from "@storybook/angular/types-6-0";
+import { Component } from "@angular/core";
+import { Story, Meta, moduleMetadata } from "@storybook/angular";
 import { ButtonComponent } from "./button.component";
+
+@Component({
+  selector: "dummy-button",
+  template: `
+    <button bit-button [buttonType]="buttonType" [mode]="mode" [block]="block">123</button>
+  `,
+})
+class DummyButton extends ButtonComponent {
+  override ngOnChanges() {}
+}
 
 // More on default export: https://storybook.js.org/docs/angular/writing-stories/introduction#default-export
 export default {
   title: "Jslib/Button",
-  component: ButtonComponent,
+  component: DummyButton,
+  decorators: [
+    moduleMetadata({
+      declarations: [DummyButton, ButtonComponent],
+    }),
+  ],
   args: {
     mode: "primary",
     buttonType: "default",
@@ -23,23 +39,19 @@ export const Primary = Template.bind({});
 Primary.args = {
   mode: "primary",
   buttonType: "default",
-  label: "Button",
 };
 
 export const Secondary = Template.bind({});
 Secondary.args = {
   mode: "secondary",
-  label: "Button",
 };
 
 export const Outline = Template.bind({});
 Outline.args = {
   buttonType: "outline",
-  label: "Button",
 };
 
 export const Small = Template.bind({});
 Small.args = {
   size: "small",
-  label: "Button",
 };
