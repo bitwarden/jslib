@@ -461,6 +461,6 @@ export class StateMigrationService<
   }
 
   protected async getCurrentStateVersion(): Promise<StateVersion> {
-    return (await this.getGlobals())?.stateVersion;
+    return (await this.getGlobals())?.stateVersion ?? StateVersion.One;
   }
 }
