@@ -55,14 +55,14 @@ const partialKeys = {
 };
 
 export class StateService<
-  TAccount extends Account = Account,
-  TGlobalState extends GlobalState = GlobalState
+  TGlobalState extends GlobalState = GlobalState,
+  TAccount extends Account = Account
 > implements StateServiceAbstraction<TAccount>
 {
   accounts = new BehaviorSubject<{ [userId: string]: TAccount }>({});
   activeAccount = new BehaviorSubject<string>(null);
 
-  protected state: State<TAccount, TGlobalState> = new State<TAccount, TGlobalState>(
+  protected state: State<TGlobalState, TAccount> = new State<TGlobalState, TAccount>(
     this.createGlobals()
   );
 
@@ -73,7 +73,7 @@ export class StateService<
     protected secureStorageService: StorageService,
     protected logService: LogService,
     protected stateMigrationService: StateMigrationService,
-    protected stateFactory: StateFactory<TAccount, TGlobalState>
+    protected stateFactory: StateFactory<TGlobalState, TAccount>
   ) {}
 
   async init(): Promise<void> {
@@ -2233,7 +2233,6 @@ export class StateService<
       account.settings = await this.storageService.get<any>(keys.tempAccountSettings);
       await this.storageService.remove(keys.tempAccountSettings);
     }
-    Object.assign(account.settings, this.createAccount().settings);
     account.settings.environmentUrls = environmentUrls;
     await this.storageService.save(
       account.profile.userId,
