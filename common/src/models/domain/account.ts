@@ -94,7 +94,6 @@ export class AccountProfile {
   everBeenUnlocked?: boolean;
   forcePasswordReset?: boolean;
   hasPremiumPersonally?: boolean;
-  lastActive?: number;
   lastSync?: string;
   userId?: string;
   usesKeyConnector?: boolean;

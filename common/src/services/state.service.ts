@@ -46,6 +46,7 @@ const keys = {
   authenticatedAccounts: "authenticatedAccounts",
   activeUserId: "activeUserId",
   tempAccountSettings: "tempAccountSettings", // used to hold account specific settings (i.e clear clipboard) between initial migration and first account authentication
+  accountActivity: "accountActivity",
 };
 
 const partialKeys = {
@@ -117,7 +118,7 @@ export class StateService<
   async addAccount(account: TAccount) {
     account = await this.setAccountEnvironmentUrls(account);
     this.state.authenticatedAccounts.push(account.profile.userId);
-    this.storageService.save(keys.authenticatedAccounts, this.state.authenticatedAccounts);
+    await this.storageService.save(keys.authenticatedAccounts, this.state.authenticatedAccounts);
     this.state.accounts[account.profile.userId] = account;
     await this.scaffoldNewAccountStorage(account);
     await this.setActiveUser(account.profile.userId);
@@ -1561,22 +1562,32 @@ export class StateService<
   }
 
   async getLastActive(options?: StorageOptions): Promise<number> {
-    return (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
-    )?.profile?.lastActive;
+    options = this.reconcileOptions(options, await this.defaultOnDiskOptions());
+
+    const accountActivity = await this.storageService.get<{ [userId: string]: number }>(
+      keys.accountActivity,
+      options
+    );
+
+    if (accountActivity == null || Object.keys(accountActivity).length < 1) {
+      return null;
+    }
+
+    return accountActivity[options.userId];
   }
 
   async setLastActive(value: number, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
-    if (account != null) {
-      account.profile.lastActive = value;
-      await this.saveAccount(
-        account,
-        this.reconcileOptions(options, await this.defaultOnDiskOptions())
-      );
+    options = this.reconcileOptions(options, await this.defaultOnDiskOptions());
+    if (options.userId == null) {
+      return;
     }
+    const accountActivity =
+      (await this.storageService.get<{ [userId: string]: number }>(
+        keys.accountActivity,
+        options
+      )) ?? {};
+    accountActivity[options.userId] = value;
+    await this.storageService.save(keys.accountActivity, accountActivity, options);
   }
 
   async getLastSync(options?: StorageOptions): Promise<string> {
