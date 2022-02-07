@@ -413,7 +413,9 @@ export class StateMigrationService<
     await this.set(keys.authenticatedAccounts, [userId]);
     await this.set(keys.activeUserId, userId);
 
-    const accountActivity: { [userId: string]: number } = {};
+    const accountActivity: { [userId: string]: number } = {
+      [userId]: await this.get<number>(v1Keys.lastActive),
+    };
     accountActivity[userId] = await this.get<number>(v1Keys.lastActive);
     await this.set(keys.accountActivity, accountActivity);
 
