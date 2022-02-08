@@ -208,7 +208,9 @@ export class AttachmentsComponent implements OnInit {
         "warning"
       );
       if (confirmed) {
-        this.platformUtilsService.launchUri("https://bitwarden.com/help/account-encryption-key/");
+        this.platformUtilsService.launchUri(
+          "https://bitwarden.com/help/account-encryption-key/#rotate-your-encryption-key"
+        );
       }
     }
   }
