@@ -313,7 +313,7 @@ import { StateFactory } from "jslib-common/factories/stateFactory";
           keyConnectorService,
           stateService,
           null,
-          async () => messagingService.send("logout", { expired: false })
+          async (userId?: string) => messagingService.send("logout", { expired: false, userId: userId })
         ),
       deps: [
         CipherServiceAbstraction,

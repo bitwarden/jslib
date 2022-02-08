@@ -121,6 +121,7 @@ export class StateService<
     await this.storageService.save(keys.authenticatedAccounts, this.state.authenticatedAccounts);
     this.state.accounts[account.profile.userId] = account;
     await this.scaffoldNewAccountStorage(account);
+    await this.setLastActive(new Date().getTime(), { userId: account.profile.userId });
     await this.setActiveUser(account.profile.userId);
     this.activeAccount.next(account.profile.userId);
   }
@@ -2437,6 +2438,7 @@ export class StateService<
 
   protected async deAuthenticateAccount(userId: string) {
     await this.setAccessToken(null, { userId: userId });
+    await this.setLastActive(null, { userId: userId });
     const index = this.state.authenticatedAccounts.indexOf(userId);
     if (index > -1) {
       this.state.authenticatedAccounts.splice(index, 1);
