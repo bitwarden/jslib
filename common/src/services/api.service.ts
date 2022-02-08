@@ -1,3 +1,4 @@
+import { ClientType } from "../enums/clientType";
 import { DeviceType } from "../enums/deviceType";
 import { PolicyType } from "../enums/policyType";
 
@@ -225,7 +226,7 @@ export class ApiService implements ApiServiceAbstraction {
     const identityToken =
       request instanceof ApiTokenRequest
         ? request.toIdentityToken()
-        : request.toIdentityToken(this.platformUtilsService.identityClientId);
+        : request.toIdentityToken(this.platformUtilsService.getClientType());
 
     const response = await this.fetch(
       new Request(this.environmentService.getIdentityUrl() + "/connect/token", {
@@ -2205,11 +2206,16 @@ export class ApiService implements ApiServiceAbstraction {
     return accessToken;
   }
 
-  fetch(request: Request): Promise<Response> {
+  async fetch(request: Request): Promise<Response> {
     if (request.method === "GET") {
       request.headers.set("Cache-Control", "no-store");
       request.headers.set("Pragma", "no-cache");
     }
+    request.headers.set("Bitwarden-Client-Name", this.platformUtilsService.getClientType());
+    request.headers.set(
+      "Bitwarden-Client-Version",
+      await this.platformUtilsService.getApplicationVersion()
+    );
     return this.nativeFetch(request);
   }
 
