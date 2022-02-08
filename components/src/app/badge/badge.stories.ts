@@ -5,17 +5,41 @@ export default {
   title: "Jslib/Badge",
   component: BadgeComponent,
   args: {
-    mode: "primary",
-    buttonType: "default",
+    type: "primary",
   },
 } as Meta;
 
 const Template: Story<BadgeComponent> = (args: BadgeComponent) => ({
   props: args,
   template: `
-    <bit-badge>Content</bit-badge>
+    Test <bit-badge [type]="type">Content</bit-badge>
   `,
 });
 
 export const Primary = Template.bind({});
 Primary.args = {};
+
+export const Secondary = Template.bind({});
+Secondary.args = {
+  type: "secondary",
+};
+
+export const Success = Template.bind({});
+Success.args = {
+  type: "success",
+};
+
+export const Danger = Template.bind({});
+Danger.args = {
+  type: "danger",
+};
+
+export const Warning = Template.bind({});
+Warning.args = {
+  type: "warning",
+};
+
+export const Info = Template.bind({});
+Info.args = {
+  type: "info",
+};

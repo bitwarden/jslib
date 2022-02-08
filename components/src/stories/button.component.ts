@@ -29,9 +29,6 @@ const buttonStyles: Record<CombiendTypes, string> = {
 export class ButtonComponent implements OnChanges {
   @HostBinding("class") @Input("class") classList: string = "";
 
-  /**
-   * Is this the principal call to action on the page?
-   */
   @Input()
   mode: ModeTypes = "primary";
 

@@ -1,17 +1,43 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from "@angular/core";
+
+type BadgeTypes = "primary" | "secondary" | "success" | "danger" | "warning" | "info";
+
+const styles: Record<BadgeTypes, string[]> = {
+  primary: ["tw-bg-primary-500", "hover:tw-bg-primary-700"],
+  secondary: ["tw-bg-secondary-500", "hover:tw-bg-secondary-700"],
+  success: ["tw-bg-success-500", "hover:tw-bg-success-700"],
+  danger: ["tw-bg-danger-500", "hover:tw-bg-danger-700"],
+  warning: ["tw-bg-warning-500", "hover:tw-bg-warning-700"],
+  info: ["tw-bg-info-500", "hover:tw-bg-info-700"],
+};
 
 @Component({
   selector: "bit-badge",
-  template: ` <span [classList]="classes"><ng-content></ng-content></span> `,
+  template: `<span [ngClass]="classes"><ng-content></ng-content></span>`,
 })
 export class BadgeComponent implements OnInit {
+  @Input()
+  type: BadgeTypes = "primary";
+
   constructor() {}
 
   ngOnInit() {}
 
   get classes() {
     return [
-      "tw-inline-flex tw-items-center tw-justify-center tw-px-2 tw-py-1 tw-mr-2 tw-text-xs tw-font-bold tw-leading-none tw-text-white tw-bg-primary-500 tw-rounded",
-    ];
+      "tw-inline-block",
+      "tw-py-0.5",
+      "tw-px-1",
+      "tw-font-bold",
+      "tw-leading-none",
+      "tw-text-center",
+      "tw-text-white",
+      "tw-align-baseline",
+      "tw-rounded",
+      "tw-border-collapse",
+      "tw-box-border",
+      "tw-whitespace-no-wrap",
+      "tw-text-xs",
+    ].concat(styles[this.type]);
   }
 }
