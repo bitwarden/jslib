@@ -147,20 +147,23 @@ export class StateService<
   }
 
   async getAccessToken(options?: StorageOptions): Promise<string> {
-    return (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
-    )?.tokens?.accessToken;
+    const defaultOptions =
+      (await this.getVaultTimeoutAction({ userId: options?.userId })) === "logOut"
+        ? this.defaultInMemoryOptions
+        : await this.defaultOnDiskOptions();
+    options = this.reconcileOptions(options, defaultOptions);
+    return (await this.getAccount(options))?.tokens?.accessToken;
   }
 
   async setAccessToken(value: string, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    const defaultOptions =
+      (await this.getVaultTimeoutAction({ userId: options?.userId })) === "logOut"
+        ? this.defaultInMemoryOptions
+        : await this.defaultOnDiskOptions();
+    options = this.reconcileOptions(options, defaultOptions);
+    const account = await this.getAccount(options);
     account.tokens.accessToken = value;
-    await this.saveAccount(
-      account,
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    await this.saveAccount(account, options);
   }
 
   async getAddEditCipherInfo(options?: StorageOptions): Promise<any> {
@@ -195,37 +198,43 @@ export class StateService<
   }
 
   async getApiKeyClientId(options?: StorageOptions): Promise<string> {
-    return (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
-    )?.profile?.apiKeyClientId;
+    const defaultOptions =
+      (await this.getVaultTimeoutAction({ userId: options?.userId })) === "logOut"
+        ? this.defaultInMemoryOptions
+        : await this.defaultOnDiskOptions();
+    options = this.reconcileOptions(options, defaultOptions);
+    return (await this.getAccount(options))?.profile?.apiKeyClientId;
   }
 
   async setApiKeyClientId(value: string, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    const defaultOptions =
+      (await this.getVaultTimeoutAction({ userId: options?.userId })) === "logOut"
+        ? this.defaultInMemoryOptions
+        : await this.defaultOnDiskOptions();
+    options = this.reconcileOptions(options, defaultOptions);
+    const account = await this.getAccount(options);
     account.profile.apiKeyClientId = value;
-    await this.saveAccount(
-      account,
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    await this.saveAccount(account, options);
   }
 
   async getApiKeyClientSecret(options?: StorageOptions): Promise<string> {
-    return (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
-    )?.keys?.apiKeyClientSecret;
+    const defaultOptions =
+      (await this.getVaultTimeoutAction({ userId: options?.userId })) === "logOut"
+        ? this.defaultInMemoryOptions
+        : await this.defaultOnDiskOptions();
+    options = this.reconcileOptions(options, defaultOptions);
+    return (await this.getAccount(options))?.keys?.apiKeyClientSecret;
   }
 
   async setApiKeyClientSecret(value: string, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    const defaultOptions =
+      (await this.getVaultTimeoutAction({ userId: options?.userId })) === "logOut"
+        ? this.defaultInMemoryOptions
+        : await this.defaultOnDiskOptions();
+    options = this.reconcileOptions(options, defaultOptions);
+    const account = await this.getAccount(options);
     account.keys.apiKeyClientSecret = value;
-    await this.saveAccount(
-      account,
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    await this.saveAccount(account, options);
   }
 
   async getAutoConfirmFingerPrints(options?: StorageOptions): Promise<boolean> {
@@ -1866,20 +1875,23 @@ export class StateService<
   }
 
   async getRefreshToken(options?: StorageOptions): Promise<string> {
-    return (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
-    )?.tokens?.refreshToken;
+    const defaultOptions =
+      (await this.getVaultTimeoutAction({ userId: options?.userId })) === "logOut"
+        ? this.defaultInMemoryOptions
+        : await this.defaultOnDiskOptions();
+    options = this.reconcileOptions(options, defaultOptions);
+    return (await this.getAccount(options))?.tokens?.refreshToken;
   }
 
   async setRefreshToken(value: string, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    const defaultOptions =
+      (await this.getVaultTimeoutAction({ userId: options?.userId })) === "logOut"
+        ? this.defaultInMemoryOptions
+        : await this.defaultOnDiskOptions();
+    options = this.reconcileOptions(options, defaultOptions);
+    const account = await this.getAccount(options);
     account.tokens.refreshToken = value;
-    await this.saveAccount(
-      account,
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    await this.saveAccount(account, options);
   }
 
   async getRememberedEmail(options?: StorageOptions): Promise<string> {
@@ -2225,9 +2237,11 @@ export class StateService<
   }
 
   protected async scaffoldNewAccountStorage(account: TAccount): Promise<void> {
-    await this.scaffoldNewAccountLocalStorage(account);
-    await this.scaffoldNewAccountSessionStorage(account);
-    await this.scaffoldNewAccountMemoryStorage(account);
+    // We don't want to manipulate the referenced in memory account
+    const deepClone = JSON.parse(JSON.stringify(account));
+    await this.scaffoldNewAccountLocalStorage(deepClone);
+    await this.scaffoldNewAccountSessionStorage(deepClone);
+    await this.scaffoldNewAccountMemoryStorage(deepClone);
   }
 
   // TODO: There is a tech debt item for splitting up these methods - only Web uses multiple storage locations in its storageService.
@@ -2246,6 +2260,12 @@ export class StateService<
       await this.storageService.remove(keys.tempAccountSettings);
     }
     account.settings.environmentUrls = environmentUrls;
+    if (account.settings.vaultTimeoutAction === "logOut") {
+      account.tokens.accessToken = null;
+      account.tokens.refreshToken = null;
+      account.profile.apiKeyClientId = null;
+      account.keys.apiKeyClientSecret = null;
+    }
     await this.storageService.save(
       account.profile.userId,
       account,
@@ -2422,7 +2442,7 @@ export class StateService<
 
   protected clearDecryptedDataForActiveUser() {
     const userId = this.state.activeUserId;
-    if (userId == null) {
+    if (userId == null || this.state?.accounts[userId]?.data == null) {
       return;
     }
     this.state.accounts[userId].data = new AccountData();
