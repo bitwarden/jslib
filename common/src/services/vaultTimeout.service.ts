@@ -198,6 +198,6 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
 
   private async executeTimeoutAction(userId: string): Promise<void> {
     const timeoutAction = await this.stateService.getVaultTimeoutAction({ userId: userId });
-    timeoutAction === "logOut" ? await this.logOut() : await this.lock(true, userId);
+    timeoutAction === "logOut" ? await this.logOut(userId) : await this.lock(true, userId);
   }
 }
