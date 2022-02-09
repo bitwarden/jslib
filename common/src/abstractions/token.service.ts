@@ -12,7 +12,6 @@ export abstract class TokenService {
   getClientId: () => Promise<string>;
   setClientSecret: (clientSecret: string) => Promise<any>;
   getClientSecret: () => Promise<string>;
-  toggleTokens: () => Promise<any>;
   setTwoFactorToken: (token: string, email: string) => Promise<any>;
   getTwoFactorToken: (email: string) => Promise<string>;
   clearTwoFactorToken: (email: string) => Promise<any>;

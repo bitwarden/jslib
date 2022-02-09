@@ -20,9 +20,6 @@ export class TokenService implements TokenServiceAbstraction {
   }
 
   async setClientId(clientId: string): Promise<any> {
-    if ((await this.skipTokenStorage()) || clientId == null) {
-      return;
-    }
     return await this.stateService.setApiKeyClientId(clientId);
   }
 
@@ -31,9 +28,6 @@ export class TokenService implements TokenServiceAbstraction {
   }
 
   async setClientSecret(clientSecret: string): Promise<any> {
-    if ((await this.skipTokenStorage()) || clientSecret == null) {
-      return;
-    }
     return await this.stateService.setApiKeyClientSecret(clientSecret);
   }
 
@@ -50,9 +44,6 @@ export class TokenService implements TokenServiceAbstraction {
   }
 
   async setRefreshToken(refreshToken: string): Promise<any> {
-    if (await this.skipTokenStorage()) {
-      return;
-    }
     return await this.stateService.setRefreshToken(refreshToken);
   }
 
@@ -211,11 +202,5 @@ export class TokenService implements TokenServiceAbstraction {
     const decoded = await this.decodeToken();
 
     return Array.isArray(decoded.amr) && decoded.amr.includes("external");
-  }
-
-  private async skipTokenStorage(): Promise<boolean> {
-    const timeout = await this.stateService.getVaultTimeout();
-    const action = await this.stateService.getVaultTimeoutAction();
-    return timeout != null && action === "logOut";
   }
 }
