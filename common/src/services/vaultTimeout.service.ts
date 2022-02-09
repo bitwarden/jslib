@@ -87,7 +87,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         (pinSet[0] && (await this.stateService.getDecryptedPinProtected()) != null) || pinSet[1];
 
       if (!pinLock && !(await this.isBiometricLockSet())) {
-        await this.logOut();
+        await this.logOut(userId);
       }
     }
 
