@@ -131,7 +131,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     const clientSecret = await this.tokenService.getClientSecret();
 
     const currentAction = await this.stateService.getVaultTimeoutAction();
-    if ((timeout != null || timeout === 0) && action === "logOut" && action != currentAction) {
+    if ((timeout != null || timeout === 0) && action === "logOut" && action !== currentAction) {
       // if we have a vault timeout and the action is log out, reset tokens
       await this.tokenService.clearToken();
     }
