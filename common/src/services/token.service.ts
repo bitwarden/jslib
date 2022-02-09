@@ -22,9 +22,6 @@ export class TokenService implements TokenServiceAbstraction {
   }
 
   async setClientId(clientId: string): Promise<any> {
-    if ((await this.skipTokenStorage()) || clientId == null) {
-      return;
-    }
     return await this.stateService.setApiKeyClientId(clientId);
   }
 
@@ -33,9 +30,6 @@ export class TokenService implements TokenServiceAbstraction {
   }
 
   async setClientSecret(clientSecret: string): Promise<any> {
-    if ((await this.skipTokenStorage()) || clientSecret == null) {
-      return;
-    }
     return await this.stateService.setApiKeyClientSecret(clientSecret);
   }
 
@@ -52,33 +46,11 @@ export class TokenService implements TokenServiceAbstraction {
   }
 
   async setRefreshToken(refreshToken: string): Promise<any> {
-    if (await this.skipTokenStorage()) {
-      return;
-    }
     return await this.stateService.setRefreshToken(refreshToken);
   }
 
   async getRefreshToken(): Promise<string> {
     return await this.stateService.getRefreshToken();
-  }
-
-  async toggleTokens(): Promise<any> {
-    const token = await this.getToken();
-    const refreshToken = await this.getRefreshToken();
-    const clientId = await this.getClientId();
-    const clientSecret = await this.getClientSecret();
-    const timeout = await this.stateService.getVaultTimeout();
-    const action = await this.stateService.getVaultTimeoutAction();
-
-    if ((timeout != null || timeout === 0) && action === "logOut") {
-      // if we have a vault timeout and the action is log out, reset tokens
-      await this.clearToken();
-    }
-
-    await this.setToken(token);
-    await this.setRefreshToken(refreshToken);
-    await this.setClientId(clientId);
-    await this.setClientSecret(clientSecret);
   }
 
   async setTwoFactorToken(tokenResponse: IdentityTokenResponse): Promise<any> {
@@ -213,11 +185,5 @@ export class TokenService implements TokenServiceAbstraction {
     const decoded = await this.decodeToken();
 
     return Array.isArray(decoded.amr) && decoded.amr.includes("external");
-  }
-
-  private async skipTokenStorage(): Promise<boolean> {
-    const timeout = await this.stateService.getVaultTimeout();
-    const action = await this.stateService.getVaultTimeoutAction();
-    return timeout != null && action === "logOut";
   }
 }
