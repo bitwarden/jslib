@@ -29,7 +29,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     private policyService: PolicyService,
     private keyConnectorService: KeyConnectorService,
     private stateService: StateService,
-    private lockedCallback: () => Promise<void> = null,
+    private lockedCallback: (userId?: string) => Promise<void> = null,
     private loggedOutCallback: (userId?: string) => Promise<void> = null
   ) {}
 
@@ -87,7 +87,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         (pinSet[0] && (await this.stateService.getDecryptedPinProtected()) != null) || pinSet[1];
 
       if (!pinLock && !(await this.isBiometricLockSet())) {
-        await this.logOut();
+        await this.logOut(userId);
       }
     }
 
@@ -110,7 +110,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     this.messagingService.send("locked", { userId: userId });
 
     if (this.lockedCallback != null) {
-      await this.lockedCallback();
+      await this.lockedCallback(userId);
     }
   }
 
@@ -198,6 +198,6 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
 
   private async executeTimeoutAction(userId: string): Promise<void> {
     const timeoutAction = await this.stateService.getVaultTimeoutAction({ userId: userId });
-    timeoutAction === "logOut" ? await this.logOut() : await this.lock(true, userId);
+    timeoutAction === "logOut" ? await this.logOut(userId) : await this.lock(true, userId);
   }
 }
