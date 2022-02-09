@@ -1507,7 +1507,9 @@ export class StateService<
   }
 
   async getIsAuthenticated(options?: StorageOptions): Promise<boolean> {
-    return (await this.getAccessToken(options)) != null && (await this.getUserId(options)) != null;
+    return (await this.getAccessToken(options)) != null &&
+      (await this.getUserId(options)) != null &&
+      (await this.getAccount(this.defaultInMemoryOptions) != null);
   }
 
   async getKdfIterations(options?: StorageOptions): Promise<number> {
