@@ -57,7 +57,6 @@ export class AccountData {
   collapsedGroupings?: Set<string>;
   eventCollection?: EventData[];
   organizations?: { [id: string]: OrganizationData };
-  providers?: { [id: string]: ProviderData };
 }
 
 export class AccountKeys {
@@ -100,6 +99,7 @@ export class AccountProfile {
   keyHash?: string;
   kdfIterations?: number;
   kdfType?: KdfType;
+  providers?: { [id: string]: ProviderData };
 }
 
 export class AccountSettings {
