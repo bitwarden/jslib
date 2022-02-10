@@ -1848,7 +1848,7 @@ export class StateService<
   async getProviders(options?: StorageOptions): Promise<{ [id: string]: ProviderData }> {
     return (
       await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
-    )?.profile?.providers;
+    )?.data?.providers;
   }
 
   async setProviders(
@@ -1858,7 +1858,7 @@ export class StateService<
     const account = await this.getAccount(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.profile.providers = value;
+    account.data.providers = value;
     await this.saveAccount(
       account,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
