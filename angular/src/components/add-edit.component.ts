@@ -283,6 +283,36 @@ export class AddEditComponent implements OnInit {
 
     if (
       (!this.editMode || this.cloneMode) &&
+      this.cipher.type === CipherType.Login
+    ) {
+      if (
+        (
+          this.cipher.login.username == null ||
+          this.cipher.login.username === ""
+        ) &&
+        (
+          this.cipher.login.password == null ||
+          this.cipher.login.password === ""
+        )
+      ) {
+        this.platformUtilsService.showToast(
+          "error",
+          this.i18nService.t("errorOccurred"),
+          this.i18nService.t("usernamePasswordRequired")
+        );
+        return false;
+      }
+      if (
+        this.cipher.login.uris != null &&
+        this.cipher.login.uris.length === 1 &&
+        (this.cipher.login.uris[0].uri == null || this.cipher.login.uris[0].uri === "")
+      ) {
+        this.cipher.login.uris = null;
+      }
+    }
+
+    if (
+      (!this.editMode || this.cloneMode) &&
       this.cipher.type === CipherType.Login &&
       this.cipher.login.uris != null &&
       this.cipher.login.uris.length === 1 &&
