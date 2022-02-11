@@ -155,6 +155,9 @@ export class StateMigrationService<
         case StateVersion.One:
           await this.migrateStateFrom1To2();
           break;
+        case StateVersion.Two:
+          await this.migrateStateFrom2To3();
+          break;
       }
 
       currentStateVersion += 1;
@@ -454,7 +457,7 @@ export class StateMigrationService<
     const authenticatedUserIds = await this.get<string[]>(keys.authenticatedAccounts);
     await Promise.all(
       authenticatedUserIds.map(async (userId) => {
-        const account = await this.get<Account>(userId);
+        const account = await this.get<TAccount>(userId);
         if (
           account?.profile?.hasPremiumPersonally === null &&
           account.tokens?.accessToken != null
@@ -465,6 +468,11 @@ export class StateMigrationService<
         }
       })
     );
+
+    const globals = await this.getGlobals();
+    globals.stateVersion = StateVersion.Three;
+    await this.set(keys.global, globals);
+
   }
 
   protected get options(): StorageOptions {
