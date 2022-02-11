@@ -2194,7 +2194,7 @@ export class StateService<
       return null;
     }
 
-    var cachedAccount = this.accountDiskCache.get(options.userId);
+    const cachedAccount = this.accountDiskCache.get(options.userId);
     if (cachedAccount != null) {
       return cachedAccount;
     }
