@@ -24,7 +24,9 @@ export class AppIdService implements AppIdServiceAbstraction {
     }
 
     const guid = Utils.newGuid();
-    await this.storageService.save(key, guid);
+    await this.storageService.save(key, guid, {
+      htmlStorageLocation: HtmlStorageLocation.Local,
+    });
     return guid;
   }
 }
