@@ -472,7 +472,6 @@ export class StateMigrationService<
     const globals = await this.getGlobals();
     globals.stateVersion = StateVersion.Three;
     await this.set(keys.global, globals);
-
   }
 
   protected get options(): StorageOptions {
