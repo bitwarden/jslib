@@ -69,13 +69,17 @@ export class StateService<
 
   private hasBeenInited: boolean = false;
 
+  private accountDiskCache: Map<string, TAccount>;
+
   constructor(
     protected storageService: StorageService,
     protected secureStorageService: StorageService,
     protected logService: LogService,
     protected stateMigrationService: StateMigrationService,
     protected stateFactory: StateFactory<TGlobalState, TAccount>
-  ) {}
+  ) {
+    this.accountDiskCache = new Map<string, TAccount>();
+  }
 
   async init(): Promise<void> {
     if (this.hasBeenInited) {
@@ -2191,6 +2195,11 @@ export class StateService<
       return null;
     }
 
+    const cachedAccount = this.accountDiskCache.get(options.userId);
+    if (cachedAccount != null) {
+      return cachedAccount;
+    }
+
     const account = options?.useSecureStorage
       ? (await this.secureStorageService.get<TAccount>(options.userId, options)) ??
         (await this.storageService.get<TAccount>(
@@ -2199,6 +2208,7 @@ export class StateService<
         ))
       : await this.storageService.get<TAccount>(options.userId, options);
 
+    this.accountDiskCache.set(options.userId, account);
     return account;
   }
 
@@ -2228,6 +2238,7 @@ export class StateService<
       : this.storageService;
 
     await storageLocation.save(`${options.userId}`, account, options);
+    this.accountDiskCache.delete(options.userId);
   }
 
   protected async saveAccountToMemory(account: TAccount): Promise<void> {
