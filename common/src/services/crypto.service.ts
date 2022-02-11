@@ -347,12 +347,14 @@ export class CryptoService implements CryptoServiceAbstraction {
   }
 
   async hasKeyStored(keySuffix: KeySuffixOptions, userId?: string): Promise<boolean> {
-    const key =
-      keySuffix === KeySuffixOptions.Auto
-        ? await this.stateService.getCryptoMasterKeyAuto({ userId: userId })
-        : await this.stateService.hasCryptoMasterKeyBiometric({ userId: userId });
-
-    return key != null;
+    switch (keySuffix) {
+      case KeySuffixOptions.Auto:
+        return (await this.stateService.getCryptoMasterKeyAuto({ userId: userId })) != null;
+      case KeySuffixOptions.Biometric:
+        return (await this.stateService.hasCryptoMasterKeyBiometric({ userId: userId })) === true;
+      default:
+        return false;
+    }
   }
 
   async hasEncKey(): Promise<boolean> {
