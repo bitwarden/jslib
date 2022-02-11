@@ -2432,8 +2432,7 @@ export class StateService<
     // We preserve settings for logged out accounts, but we don't want to consider them when thinking about active account state
     for (const userId in this.state.accounts) {
       if (!(await this.getIsAuthenticated({ userId: userId }))) {
-        delete this.state.accounts[userId];
-        this.accountDiskCache.delete(userId);
+        this.removeAccountFromMemory(userId);
       }
     }
   }
