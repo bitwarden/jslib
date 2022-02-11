@@ -4,11 +4,9 @@ import { TokenService as TokenServiceAbstraction } from "../abstractions/token.s
 import { Utils } from "../misc/utils";
 
 export class TokenService implements TokenServiceAbstraction {
-  constructor(private stateService: StateService) {}
-
-  static decodeTokenString(token: string) {
+  static decodeToken(token: string): Promise<any> {
     if (token == null) {
-      throw new Error("Token not found.");
+      throw new Error("Token not provided.");
     }
 
     const parts = token.split(".");
@@ -21,8 +19,11 @@ export class TokenService implements TokenServiceAbstraction {
       throw new Error("Cannot decode the token");
     }
 
-    return JSON.parse(decoded);
+    const decodedToken = JSON.parse(decoded);
+    return decodedToken;
   }
+
+  constructor(private stateService: StateService) {}
 
   async setTokens(
     accessToken: string,
@@ -118,7 +119,11 @@ export class TokenService implements TokenServiceAbstraction {
 
     token = token ?? (await this.stateService.getAccessToken());
 
-    return TokenService.decodeTokenString(token);
+    if (token == null) {
+      throw new Error("Token not found.");
+    }
+
+    return TokenService.decodeToken(token);
   }
 
   async getTokenExpirationDate(): Promise<Date> {
