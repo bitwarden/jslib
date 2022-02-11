@@ -72,18 +72,18 @@ export class CipherService implements CipherServiceAbstraction {
     private stateService: StateService
   ) {}
 
-  async getDecryptedCipherCache(): Promise<CipherView[]> {
+  private async getDecryptedCipherCache(): Promise<CipherView[]> {
     const decryptedCiphers = await this.stateService.getDecryptedCiphers();
     return decryptedCiphers;
   }
 
-  async setDecryptedCipherCache(value: CipherView[]) {
+  private async setDecryptedCipherCache(userId: string, value: CipherView[]) {
     await this.stateService.setDecryptedCiphers(value);
     if (this.searchService != null) {
       if (value == null) {
         this.searchService().clearIndex();
       } else {
-        this.searchService().indexCiphers(null, value);
+        await this.searchService().indexCiphers(userId, value);
       }
     }
   }
@@ -355,7 +355,7 @@ export class CipherService implements CipherServiceAbstraction {
 
     await Promise.all(promises);
     decCiphers.sort(this.getLocaleSortingFunction());
-    await this.setDecryptedCipherCache(decCiphers);
+    await this.setDecryptedCipherCache(userId, decCiphers);
     return decCiphers;
   }
 
