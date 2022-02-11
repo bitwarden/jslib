@@ -23,7 +23,7 @@ import { EnvironmentUrls } from "../models/domain/environmentUrls";
 import { GlobalStateFactory } from "../factories/globalStateFactory";
 import { StateFactory } from "../factories/stateFactory";
 import { Account, AccountSettings } from "../models/domain/account";
-import { TokenService } from '../abstractions/token.service';
+import { TokenService } from '../services/token.service';
 
 // Originally (before January 2022) storage was handled as a flat key/value pair store.
 // With the move to a typed object for state storage these keys should no longer be in use anywhere outside of this migration.
@@ -140,7 +140,6 @@ export class StateMigrationService<
     protected storageService: StorageService,
     protected secureStorageService: StorageService,
     protected stateFactory: StateFactory<TGlobalState, TAccount>,
-    protected tokenService: TokenService
   ) {}
 
   async needsMigration(): Promise<boolean> {
@@ -454,11 +453,11 @@ export class StateMigrationService<
   }
 
   protected async migrateStateFrom2To3(): Promise<void> {
-    const userId = await this.get(keys.activeUserId) as string;
+    const userId = await this.get<string>(keys.activeUserId);
     const account = await this.get(userId) as any;
     if (account?.profile?.hasPremiumPersonally === null) {
       const encodedToken = account.tokens.accessToken;
-      const decodedToken = await this.tokenService.decodeToken(encodedToken);
+      const decodedToken = await TokenService.decodeTokenString(encodedToken);
       account.profile.hasPremiumPersonally = decodedToken.premium;
       await this.set(userId, account);
     }
