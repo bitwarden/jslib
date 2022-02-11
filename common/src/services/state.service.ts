@@ -2381,10 +2381,7 @@ export class StateService<
     );
     await this.saveAccount(
       this.resetAccount(storedAccount),
-      this.reconcileOptions(
-        { userId: userId },
-        await this.defaultOnDiskLocalOptions()
-      )
+      this.reconcileOptions({ userId: userId }, await this.defaultOnDiskLocalOptions())
     );
   }
 
@@ -2396,10 +2393,7 @@ export class StateService<
     );
     await this.saveAccount(
       this.resetAccount(storedAccount),
-      this.reconcileOptions(
-        { userId: userId },
-        await this.defaultOnDiskOptions()
-      )
+      this.reconcileOptions({ userId: userId }, await this.defaultOnDiskOptions())
     );
   }
 
