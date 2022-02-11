@@ -77,7 +77,7 @@ export class StateService<
     protected logService: LogService,
     protected stateMigrationService: StateMigrationService,
     protected stateFactory: StateFactory<TGlobalState, TAccount>,
-    protected useAccountCache: boolean = true,
+    protected useAccountCache: boolean = true
   ) {
     this.accountDiskCache = new Map<string, TAccount>();
   }
@@ -2197,10 +2197,10 @@ export class StateService<
     }
 
     if (this.useAccountCache) {
-        const cachedAccount = this.accountDiskCache.get(options.userId);
-        if (cachedAccount != null) {
-          return cachedAccount;
-        }
+      const cachedAccount = this.accountDiskCache.get(options.userId);
+      if (cachedAccount != null) {
+        return cachedAccount;
+      }
     }
 
     const account = options?.useSecureStorage
@@ -2212,7 +2212,7 @@ export class StateService<
       : await this.storageService.get<TAccount>(options.userId, options);
 
     if (this.useAccountCache) {
-        this.accountDiskCache.set(options.userId, account);
+      this.accountDiskCache.set(options.userId, account);
     }
     return account;
   }
@@ -2245,7 +2245,7 @@ export class StateService<
     await storageLocation.save(`${options.userId}`, account, options);
 
     if (this.useAccountCache) {
-        this.accountDiskCache.delete(options.userId);
+      this.accountDiskCache.delete(options.userId);
     }
   }
 
@@ -2434,7 +2434,7 @@ export class StateService<
   protected removeAccountFromMemory(userId: string = this.state.activeUserId): void {
     delete this.state.accounts[userId];
     if (this.useAccountCache) {
-        this.accountDiskCache.delete(userId);
+      this.accountDiskCache.delete(userId);
     }
   }
 
