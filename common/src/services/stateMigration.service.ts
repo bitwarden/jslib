@@ -23,11 +23,12 @@ import { EnvironmentUrls } from "../models/domain/environmentUrls";
 import { GlobalStateFactory } from "../factories/globalStateFactory";
 import { StateFactory } from "../factories/stateFactory";
 import { Account, AccountSettings } from "../models/domain/account";
-import { TokenService } from '../abstractions/token.service';
+
+import { TokenService } from './token.service';
 
 // Originally (before January 2022) storage was handled as a flat key/value pair store.
 // With the move to a typed object for state storage these keys should no longer be in use anywhere outside of this migration.
-const v1Keys: { [key: string]: string } = {
+const v1Keys: { [key: string]: string; } = {
   accessToken: "accessToken",
   alwaysShowDock: "alwaysShowDock",
   autoConfirmFingerprints: "autoConfirmFingerprints",
@@ -105,7 +106,7 @@ const v1Keys: { [key: string]: string } = {
   rememberedEmail: "rememberedEmail",
 };
 
-const v1KeyPrefixes: { [key: string]: string } = {
+const v1KeyPrefixes: { [key: string]: string; } = {
   ciphers: "ciphers_",
   collections: "collections_",
   folders: "folders_",
@@ -135,13 +136,13 @@ const partialKeys = {
 export class StateMigrationService<
   TGlobalState extends GlobalState = GlobalState,
   TAccount extends Account = Account
-> {
+  > {
   constructor(
     protected storageService: StorageService,
     protected secureStorageService: StorageService,
     protected stateFactory: StateFactory<TGlobalState, TAccount>,
     protected tokenService: TokenService
-  ) {}
+  ) { }
 
   async needsMigration(): Promise<boolean> {
     const currentStateVersion = await this.getCurrentStateVersion();
@@ -331,22 +332,22 @@ export class StateMigrationService<
         addEditCipherInfo: null,
         ciphers: {
           decrypted: null,
-          encrypted: await this.get<{ [id: string]: CipherData }>(v1KeyPrefixes.ciphers + userId),
+          encrypted: await this.get<{ [id: string]: CipherData; }>(v1KeyPrefixes.ciphers + userId),
         },
         collapsedGroupings: null,
         collections: {
           decrypted: null,
-          encrypted: await this.get<{ [id: string]: CollectionData }>(
+          encrypted: await this.get<{ [id: string]: CollectionData; }>(
             v1KeyPrefixes.collections + userId
           ),
         },
         eventCollection: await this.get<EventData[]>(v1Keys.eventCollection),
         folders: {
           decrypted: null,
-          encrypted: await this.get<{ [id: string]: FolderData }>(v1KeyPrefixes.folders + userId),
+          encrypted: await this.get<{ [id: string]: FolderData; }>(v1KeyPrefixes.folders + userId),
         },
         localData: null,
-        organizations: await this.get<{ [id: string]: OrganizationData }>(
+        organizations: await this.get<{ [id: string]: OrganizationData; }>(
           v1KeyPrefixes.organizations + userId
         ),
         passwordGenerationHistory: {
@@ -355,12 +356,12 @@ export class StateMigrationService<
         },
         policies: {
           decrypted: null,
-          encrypted: await this.get<{ [id: string]: PolicyData }>(v1KeyPrefixes.policies + userId),
+          encrypted: await this.get<{ [id: string]: PolicyData; }>(v1KeyPrefixes.policies + userId),
         },
-        providers: await this.get<{ [id: string]: ProviderData }>(v1KeyPrefixes.providers + userId),
+        providers: await this.get<{ [id: string]: ProviderData; }>(v1KeyPrefixes.providers + userId),
         sends: {
           decrypted: null,
-          encrypted: await this.get<{ [id: string]: SendData }>(v1KeyPrefixes.sends + userId),
+          encrypted: await this.get<{ [id: string]: SendData; }>(v1KeyPrefixes.sends + userId),
         },
       },
       keys: {
@@ -418,7 +419,7 @@ export class StateMigrationService<
     await this.set(keys.authenticatedAccounts, [userId]);
     await this.set(keys.activeUserId, userId);
 
-    const accountActivity: { [userId: string]: number } = {
+    const accountActivity: { [userId: string]: number; } = {
       [userId]: await this.get<number>(v1Keys.lastActive),
     };
     accountActivity[userId] = await this.get<number>(v1Keys.lastActive);

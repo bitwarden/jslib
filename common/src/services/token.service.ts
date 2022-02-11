@@ -4,6 +4,25 @@ import { TokenService as TokenServiceAbstraction } from "../abstractions/token.s
 import { Utils } from "../misc/utils";
 
 export class TokenService implements TokenServiceAbstraction {
+  static decodeToken(token: string): Promise<any> {
+    if (token == null) {
+      throw new Error("Token not provided.");
+    }
+
+    const parts = token.split(".");
+    if (parts.length !== 3) {
+      throw new Error("JWT must have 3 parts");
+    }
+
+    const decoded = Utils.fromUrlB64ToUtf8(parts[1]);
+    if (decoded == null) {
+      throw new Error("Cannot decode the token");
+    }
+
+    const decodedToken = JSON.parse(decoded);
+    return decodedToken;
+  }
+
   constructor(private stateService: StateService) {}
 
   async setTokens(
@@ -104,18 +123,7 @@ export class TokenService implements TokenServiceAbstraction {
       throw new Error("Token not found.");
     }
 
-    const parts = token.split(".");
-    if (parts.length !== 3) {
-      throw new Error("JWT must have 3 parts");
-    }
-
-    const decoded = Utils.fromUrlB64ToUtf8(parts[1]);
-    if (decoded == null) {
-      throw new Error("Cannot decode the token");
-    }
-
-    const decodedToken = JSON.parse(decoded);
-    return decodedToken;
+    return TokenService.decodeToken(token);
   }
 
   async getTokenExpirationDate(): Promise<Date> {
