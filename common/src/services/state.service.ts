@@ -2376,26 +2376,24 @@ export class StateService<
   protected async removeAccountFromLocalStorage(
     userId: string = this.state.activeUserId
   ): Promise<void> {
-    const storedAccount = await this.storageService.get<TAccount>(userId, {
-      htmlStorageLocation: HtmlStorageLocation.Local,
-    });
-    await this.storageService.save(
-      userId,
+    const storedAccount = await this.getAccount(
+      this.reconcileOptions({ userId: userId }, await this.defaultOnDiskLocalOptions())
+    );
+    await this.saveAccount(
       this.resetAccount(storedAccount),
-      await this.defaultOnDiskLocalOptions()
+      this.reconcileOptions({ userId: userId }, await this.defaultOnDiskLocalOptions())
     );
   }
 
   protected async removeAccountFromSessionStorage(
     userId: string = this.state.activeUserId
   ): Promise<void> {
-    const storedAccount = await this.storageService.get<TAccount>(userId, {
-      htmlStorageLocation: HtmlStorageLocation.Session,
-    });
-    await this.storageService.save(
-      userId,
+    const storedAccount = await this.getAccount(
+      this.reconcileOptions({ userId: userId }, await this.defaultOnDiskOptions())
+    );
+    await this.saveAccount(
       this.resetAccount(storedAccount),
-      await this.defaultOnDiskOptions()
+      this.reconcileOptions({ userId: userId }, await this.defaultOnDiskOptions())
     );
   }
 
@@ -2470,6 +2468,10 @@ export class StateService<
   }
 
   protected async dynamicallySetActiveUser() {
+    if (this.state.accounts == null || Object.keys(this.state.accounts).length < 1) {
+      await this.setActiveUser(null);
+      return;
+    }
     for (const userId in this.state.accounts) {
       if (userId == null) {
         continue;
