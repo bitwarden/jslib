@@ -2227,9 +2227,11 @@ export class StateService<
   // TODO: There is a tech debt item for splitting up these methods - only Web uses multiple storage locations in its storageService.
   // For now these methods exist with some redundancy to facilitate this special web requirement.
   protected async scaffoldNewAccountLocalStorage(account: TAccount): Promise<void> {
-    const storedAccount = await this.storageService.get<TAccount>(
-      account.profile.userId,
-      await this.defaultOnDiskLocalOptions()
+    const storedAccount = await this.getAccount(
+      this.reconcileOptions(
+        { userId: account.profile.userId },
+        await this.defaultOnDiskLocalOptions()
+      )
     );
     // EnvironmentUrls are set before authenticating and should override whatever is stored from any previous session
     const environmentUrls = account.settings.environmentUrls;
@@ -2246,31 +2248,57 @@ export class StateService<
       account.profile.apiKeyClientId = null;
       account.keys.apiKeyClientSecret = null;
     }
-    await this.saveAccount(account, await this.defaultOnDiskLocalOptions());
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(
+        { userId: account.profile.userId },
+        await this.defaultOnDiskLocalOptions()
+      )
+    );
   }
 
   protected async scaffoldNewAccountMemoryStorage(account: TAccount): Promise<void> {
-    const storedAccount = await this.storageService.get<TAccount>(
-      account.profile.userId,
-      await this.defaultOnDiskMemoryOptions()
+    const storedAccount = await this.getAccount(
+      this.reconcileOptions(
+        { userId: account.profile.userId },
+        await this.defaultOnDiskMemoryOptions()
+      )
     );
     if (storedAccount?.settings != null) {
       storedAccount.settings.environmentUrls = account.settings.environmentUrls;
       account.settings = storedAccount.settings;
     }
-    await this.saveAccount(account, await this.defaultOnDiskLocalOptions());
+    await this.storageService.save(
+      account.profile.userId,
+      account,
+      await this.defaultOnDiskMemoryOptions()
+    );
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(
+        { userId: account.profile.userId },
+        await this.defaultOnDiskMemoryOptions()
+      )
+    );
   }
 
   protected async scaffoldNewAccountSessionStorage(account: TAccount): Promise<void> {
-    const storedAccount = await this.storageService.get<TAccount>(
-      account.profile.userId,
-      await this.defaultOnDiskOptions()
+    const storedAccount = await this.getAccount(
+      this.reconcileOptions({ userId: account.profile.userId }, await this.defaultOnDiskOptions())
     );
     if (storedAccount?.settings != null) {
       storedAccount.settings.environmentUrls = account.settings.environmentUrls;
       account.settings = storedAccount.settings;
     }
-    await this.saveAccount(account, await this.defaultOnDiskLocalOptions());
+    await this.storageService.save(
+      account.profile.userId,
+      account,
+      await this.defaultOnDiskMemoryOptions()
+    );
+    await this.saveAccount(
+      account,
+      this.reconcileOptions({ userId: account.profile.userId }, await this.defaultOnDiskOptions())
+    );
   }
   //
 
