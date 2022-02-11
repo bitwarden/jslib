@@ -2246,11 +2246,7 @@ export class StateService<
       account.profile.apiKeyClientId = null;
       account.keys.apiKeyClientSecret = null;
     }
-    await this.storageService.save(
-      account.profile.userId,
-      account,
-      await this.defaultOnDiskLocalOptions()
-    );
+    await this.saveAccount(account, await this.defaultOnDiskLocalOptions());
   }
 
   protected async scaffoldNewAccountMemoryStorage(account: TAccount): Promise<void> {
@@ -2262,11 +2258,7 @@ export class StateService<
       storedAccount.settings.environmentUrls = account.settings.environmentUrls;
       account.settings = storedAccount.settings;
     }
-    await this.storageService.save(
-      account.profile.userId,
-      account,
-      await this.defaultOnDiskMemoryOptions()
-    );
+    await this.saveAccount(account, await this.defaultOnDiskLocalOptions());
   }
 
   protected async scaffoldNewAccountSessionStorage(account: TAccount): Promise<void> {
@@ -2278,11 +2270,7 @@ export class StateService<
       storedAccount.settings.environmentUrls = account.settings.environmentUrls;
       account.settings = storedAccount.settings;
     }
-    await this.storageService.save(
-      account.profile.userId,
-      account,
-      await this.defaultOnDiskOptions()
-    );
+    await this.saveAccount(account, await this.defaultOnDiskLocalOptions());
   }
   //
 
