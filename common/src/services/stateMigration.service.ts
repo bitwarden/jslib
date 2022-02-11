@@ -24,11 +24,11 @@ import { GlobalStateFactory } from "../factories/globalStateFactory";
 import { StateFactory } from "../factories/stateFactory";
 import { Account, AccountSettings } from "../models/domain/account";
 
-import { TokenService } from './token.service';
+import { TokenService } from "./token.service";
 
 // Originally (before January 2022) storage was handled as a flat key/value pair store.
 // With the move to a typed object for state storage these keys should no longer be in use anywhere outside of this migration.
-const v1Keys: { [key: string]: string; } = {
+const v1Keys: { [key: string]: string } = {
   accessToken: "accessToken",
   alwaysShowDock: "alwaysShowDock",
   autoConfirmFingerprints: "autoConfirmFingerprints",
@@ -106,7 +106,7 @@ const v1Keys: { [key: string]: string; } = {
   rememberedEmail: "rememberedEmail",
 };
 
-const v1KeyPrefixes: { [key: string]: string; } = {
+const v1KeyPrefixes: { [key: string]: string } = {
   ciphers: "ciphers_",
   collections: "collections_",
   folders: "folders_",
@@ -136,11 +136,11 @@ const partialKeys = {
 export class StateMigrationService<
   TGlobalState extends GlobalState = GlobalState,
   TAccount extends Account = Account
-  > {
+> {
   constructor(
     protected storageService: StorageService,
     protected secureStorageService: StorageService,
-    protected stateFactory: StateFactory<TGlobalState, TAccount>,
+    protected stateFactory: StateFactory<TGlobalState, TAccount>
   ) {}
 
   async needsMigration(): Promise<boolean> {
@@ -331,22 +331,22 @@ export class StateMigrationService<
         addEditCipherInfo: null,
         ciphers: {
           decrypted: null,
-          encrypted: await this.get<{ [id: string]: CipherData; }>(v1KeyPrefixes.ciphers + userId),
+          encrypted: await this.get<{ [id: string]: CipherData }>(v1KeyPrefixes.ciphers + userId),
         },
         collapsedGroupings: null,
         collections: {
           decrypted: null,
-          encrypted: await this.get<{ [id: string]: CollectionData; }>(
+          encrypted: await this.get<{ [id: string]: CollectionData }>(
             v1KeyPrefixes.collections + userId
           ),
         },
         eventCollection: await this.get<EventData[]>(v1Keys.eventCollection),
         folders: {
           decrypted: null,
-          encrypted: await this.get<{ [id: string]: FolderData; }>(v1KeyPrefixes.folders + userId),
+          encrypted: await this.get<{ [id: string]: FolderData }>(v1KeyPrefixes.folders + userId),
         },
         localData: null,
-        organizations: await this.get<{ [id: string]: OrganizationData; }>(
+        organizations: await this.get<{ [id: string]: OrganizationData }>(
           v1KeyPrefixes.organizations + userId
         ),
         passwordGenerationHistory: {
@@ -355,12 +355,12 @@ export class StateMigrationService<
         },
         policies: {
           decrypted: null,
-          encrypted: await this.get<{ [id: string]: PolicyData; }>(v1KeyPrefixes.policies + userId),
+          encrypted: await this.get<{ [id: string]: PolicyData }>(v1KeyPrefixes.policies + userId),
         },
-        providers: await this.get<{ [id: string]: ProviderData; }>(v1KeyPrefixes.providers + userId),
+        providers: await this.get<{ [id: string]: ProviderData }>(v1KeyPrefixes.providers + userId),
         sends: {
           decrypted: null,
-          encrypted: await this.get<{ [id: string]: SendData; }>(v1KeyPrefixes.sends + userId),
+          encrypted: await this.get<{ [id: string]: SendData }>(v1KeyPrefixes.sends + userId),
         },
       },
       keys: {
@@ -418,7 +418,7 @@ export class StateMigrationService<
     await this.set(keys.authenticatedAccounts, [userId]);
     await this.set(keys.activeUserId, userId);
 
-    const accountActivity: { [userId: string]: number; } = {
+    const accountActivity: { [userId: string]: number } = {
       [userId]: await this.get<number>(v1Keys.lastActive),
     };
     accountActivity[userId] = await this.get<number>(v1Keys.lastActive);
@@ -454,14 +454,20 @@ export class StateMigrationService<
   }
 
   protected async migrateStateFrom2To3(): Promise<void> {
-    const userId = await this.get<string>(keys.activeUserId);
-    const account = await this.get(userId) as any;
-    if (account?.profile?.hasPremiumPersonally === null) {
-      const encodedToken = account.tokens.accessToken;
-      const decodedToken = await TokenService.decodeToken(encodedToken);
-      account.profile.hasPremiumPersonally = decodedToken.premium;
-      await this.set(userId, account);
-    }
+    const authenticatedUserIds = await this.get<string[]>(keys.authenticatedAccounts);
+    await Promise.all(
+      authenticatedUserIds.map(async (userId) => {
+        const account = await this.get<Account>(userId);
+        if (
+          account?.profile?.hasPremiumPersonally === null &&
+          account.tokens?.accessToken != null
+        ) {
+          const decodedToken = await TokenService.decodeToken(account.tokens.accessToken);
+          account.profile.hasPremiumPersonally = decodedToken.premium;
+          await this.set(userId, account);
+        }
+      })
+    );
   }
 
   protected get options(): StorageOptions {
