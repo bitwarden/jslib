@@ -2468,7 +2468,7 @@ export class StateService<
   }
 
   protected async dynamicallySetActiveUser() {
-    if (Object.keys(this.state.accounts).length < 1) {
+    if (this.state.accounts == null || Object.keys(this.state.accounts).length < 1) {
       await this.setActiveUser(null);
       return;
     }
