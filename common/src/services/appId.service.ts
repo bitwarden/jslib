@@ -2,6 +2,7 @@ import { Utils } from "../misc/utils";
 
 import { AppIdService as AppIdServiceAbstraction } from "../abstractions/appId.service";
 import { StorageService } from "../abstractions/storage.service";
+import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 
 export class AppIdService implements AppIdServiceAbstraction {
   constructor(private storageService: StorageService) {}
@@ -15,7 +16,9 @@ export class AppIdService implements AppIdServiceAbstraction {
   }
 
   private async makeAndGetAppId(key: string) {
-    const existingId = await this.storageService.get<string>(key);
+    const existingId = await this.storageService.get<string>(key, {
+      htmlStorageLocation: HtmlStorageLocation.Local,
+    });
     if (existingId != null) {
       return existingId;
     }
