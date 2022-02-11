@@ -2425,13 +2425,14 @@ export class StateService<
 
   protected removeAccountFromMemory(userId: string = this.state.activeUserId): void {
     delete this.state.accounts[userId];
+    this.accountDiskCache.delete(userId);
   }
 
   protected async pruneInMemoryAccounts() {
     // We preserve settings for logged out accounts, but we don't want to consider them when thinking about active account state
     for (const userId in this.state.accounts) {
       if (!(await this.getIsAuthenticated({ userId: userId }))) {
-        delete this.state.accounts[userId];
+        this.removeAccountFromMemory(userId);
       }
     }
   }
