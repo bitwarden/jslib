@@ -151,20 +151,12 @@ export class StateService<
   }
 
   async getAccessToken(options?: StorageOptions): Promise<string> {
-    const defaultOptions =
-      (await this.getVaultTimeoutAction({ userId: options?.userId })) === "logOut"
-        ? this.defaultInMemoryOptions
-        : await this.defaultOnDiskOptions();
-    options = this.reconcileOptions(options, defaultOptions);
+    options = await this.getTimeoutBasedStorageOptions(options);
     return (await this.getAccount(options))?.tokens?.accessToken;
   }
 
   async setAccessToken(value: string, options?: StorageOptions): Promise<void> {
-    const defaultOptions =
-      (await this.getVaultTimeoutAction({ userId: options?.userId })) === "logOut"
-        ? this.defaultInMemoryOptions
-        : await this.defaultOnDiskOptions();
-    options = this.reconcileOptions(options, defaultOptions);
+    options = await this.getTimeoutBasedStorageOptions(options);
     const account = await this.getAccount(options);
     account.tokens.accessToken = value;
     await this.saveAccount(account, options);
@@ -202,40 +194,24 @@ export class StateService<
   }
 
   async getApiKeyClientId(options?: StorageOptions): Promise<string> {
-    const defaultOptions =
-      (await this.getVaultTimeoutAction({ userId: options?.userId })) === "logOut"
-        ? this.defaultInMemoryOptions
-        : await this.defaultOnDiskOptions();
-    options = this.reconcileOptions(options, defaultOptions);
+    options = await this.getTimeoutBasedStorageOptions(options);
     return (await this.getAccount(options))?.profile?.apiKeyClientId;
   }
 
   async setApiKeyClientId(value: string, options?: StorageOptions): Promise<void> {
-    const defaultOptions =
-      (await this.getVaultTimeoutAction({ userId: options?.userId })) === "logOut"
-        ? this.defaultInMemoryOptions
-        : await this.defaultOnDiskOptions();
-    options = this.reconcileOptions(options, defaultOptions);
+    options = await this.getTimeoutBasedStorageOptions(options);
     const account = await this.getAccount(options);
     account.profile.apiKeyClientId = value;
     await this.saveAccount(account, options);
   }
 
   async getApiKeyClientSecret(options?: StorageOptions): Promise<string> {
-    const defaultOptions =
-      (await this.getVaultTimeoutAction({ userId: options?.userId })) === "logOut"
-        ? this.defaultInMemoryOptions
-        : await this.defaultOnDiskOptions();
-    options = this.reconcileOptions(options, defaultOptions);
+    options = await this.getTimeoutBasedStorageOptions(options);
     return (await this.getAccount(options))?.keys?.apiKeyClientSecret;
   }
 
   async setApiKeyClientSecret(value: string, options?: StorageOptions): Promise<void> {
-    const defaultOptions =
-      (await this.getVaultTimeoutAction({ userId: options?.userId })) === "logOut"
-        ? this.defaultInMemoryOptions
-        : await this.defaultOnDiskOptions();
-    options = this.reconcileOptions(options, defaultOptions);
+    options = await this.getTimeoutBasedStorageOptions(options);
     const account = await this.getAccount(options);
     account.keys.apiKeyClientSecret = value;
     await this.saveAccount(account, options);
@@ -1880,20 +1856,12 @@ export class StateService<
   }
 
   async getRefreshToken(options?: StorageOptions): Promise<string> {
-    const defaultOptions =
-      (await this.getVaultTimeoutAction({ userId: options?.userId })) === "logOut"
-        ? this.defaultInMemoryOptions
-        : await this.defaultOnDiskOptions();
-    options = this.reconcileOptions(options, defaultOptions);
+    options = await this.getTimeoutBasedStorageOptions(options);
     return (await this.getAccount(options))?.tokens?.refreshToken;
   }
 
   async setRefreshToken(value: string, options?: StorageOptions): Promise<void> {
-    const defaultOptions =
-      (await this.getVaultTimeoutAction({ userId: options?.userId })) === "logOut"
-        ? this.defaultInMemoryOptions
-        : await this.defaultOnDiskOptions();
-    options = this.reconcileOptions(options, defaultOptions);
+    options = await this.getTimeoutBasedStorageOptions(options);
     const account = await this.getAccount(options);
     account.tokens.refreshToken = value;
     await this.saveAccount(account, options);
@@ -2272,7 +2240,7 @@ export class StateService<
       await this.storageService.remove(keys.tempAccountSettings);
     }
     account.settings.environmentUrls = environmentUrls;
-    if (account.settings.vaultTimeoutAction === "logOut") {
+    if (account.settings.vaultTimeoutAction === "logOut" && account.settings.vaultTimeout != null) {
       account.tokens.accessToken = null;
       account.tokens.refreshToken = null;
       account.profile.apiKeyClientId = null;
@@ -2496,5 +2464,15 @@ export class StateService<
       }
       await this.setActiveUser(null);
     }
+  }
+
+  private async getTimeoutBasedStorageOptions(options?: StorageOptions): Promise<StorageOptions> {
+    const timeoutAction = await this.getVaultTimeoutAction({ userId: options?.userId });
+    const timeout = await this.getVaultTimeout({ userId: options?.userId });
+    const defaultOptions =
+      timeoutAction === "logOut" && timeout != null
+        ? this.defaultInMemoryOptions
+        : await this.defaultOnDiskOptions();
+    return this.reconcileOptions(options, defaultOptions);
   }
 }
