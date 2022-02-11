@@ -2425,6 +2425,7 @@ export class StateService<
 
   protected removeAccountFromMemory(userId: string = this.state.activeUserId): void {
     delete this.state.accounts[userId];
+    this.accountDiskCache.delete(userId);
   }
 
   protected async pruneInMemoryAccounts() {
@@ -2432,6 +2433,7 @@ export class StateService<
     for (const userId in this.state.accounts) {
       if (!(await this.getIsAuthenticated({ userId: userId }))) {
         delete this.state.accounts[userId];
+        this.accountDiskCache.delete(userId);
       }
     }
   }
