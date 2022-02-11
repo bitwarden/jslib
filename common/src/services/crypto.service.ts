@@ -349,9 +349,9 @@ export class CryptoService implements CryptoServiceAbstraction {
   async hasKeyStored(keySuffix: KeySuffixOptions, userId?: string): Promise<boolean> {
     switch (keySuffix) {
       case KeySuffixOptions.Auto:
-        return await this.stateService.getCryptoMasterKeyAuto({ userId: userId }) != null;
+        return (await this.stateService.getCryptoMasterKeyAuto({ userId: userId })) != null;
       case KeySuffixOptions.Biometric:
-        return await this.stateService.hasCryptoMasterKeyBiometric({ userId: userId }) === true;
+        return (await this.stateService.hasCryptoMasterKeyBiometric({ userId: userId })) === true;
       default:
         return false;
     }
