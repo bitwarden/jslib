@@ -83,7 +83,7 @@ export class CipherService implements CipherServiceAbstraction {
       if (value == null) {
         this.searchService().clearIndex();
       } else {
-        this.searchService().indexCiphers();
+        this.searchService().indexCiphers(null, value);
       }
     }
   }
