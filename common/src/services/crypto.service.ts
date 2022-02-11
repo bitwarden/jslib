@@ -351,7 +351,7 @@ export class CryptoService implements CryptoServiceAbstraction {
       case KeySuffixOptions.Auto:
         return await this.stateService.getCryptoMasterKeyAuto({ userId: userId }) != null;
       case KeySuffixOptions.Biometric:
-        return await this.stateService.hasCryptoMasterKeyBiometric({ userId: userId }) == true;
+        return await this.stateService.hasCryptoMasterKeyBiometric({ userId: userId }) === true;
       default:
         return false;
     }
