@@ -2382,7 +2382,7 @@ export class StateService<
     await this.saveAccount(
       this.resetAccount(storedAccount),
       this.reconcileOptions(
-        { userId: storedAccount.profile.userId },
+        { userId: userId },
         await this.defaultOnDiskLocalOptions()
       )
     );
@@ -2397,7 +2397,7 @@ export class StateService<
     await this.saveAccount(
       this.resetAccount(storedAccount),
       this.reconcileOptions(
-        { userId: storedAccount.profile.userId },
+        { userId: userId },
         await this.defaultOnDiskOptions()
       )
     );
