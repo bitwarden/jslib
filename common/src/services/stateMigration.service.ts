@@ -24,6 +24,8 @@ import { GlobalStateFactory } from "../factories/globalStateFactory";
 import { StateFactory } from "../factories/stateFactory";
 import { Account, AccountSettings } from "../models/domain/account";
 
+import { TokenService } from "./token.service";
+
 // Originally (before January 2022) storage was handled as a flat key/value pair store.
 // With the move to a typed object for state storage these keys should no longer be in use anywhere outside of this migration.
 const v1Keys: { [key: string]: string } = {
@@ -152,6 +154,9 @@ export class StateMigrationService<
       switch (currentStateVersion) {
         case StateVersion.One:
           await this.migrateStateFrom1To2();
+          break;
+        case StateVersion.Two:
+          await this.migrateStateFrom2To3();
           break;
       }
 
@@ -446,6 +451,27 @@ export class StateMigrationService<
       );
       await this.secureStorageService.remove(v1Keys.key);
     }
+  }
+
+  protected async migrateStateFrom2To3(): Promise<void> {
+    const authenticatedUserIds = await this.get<string[]>(keys.authenticatedAccounts);
+    await Promise.all(
+      authenticatedUserIds.map(async (userId) => {
+        const account = await this.get<TAccount>(userId);
+        if (
+          account?.profile?.hasPremiumPersonally === null &&
+          account.tokens?.accessToken != null
+        ) {
+          const decodedToken = await TokenService.decodeToken(account.tokens.accessToken);
+          account.profile.hasPremiumPersonally = decodedToken.premium;
+          await this.set(userId, account);
+        }
+      })
+    );
+
+    const globals = await this.getGlobals();
+    globals.stateVersion = StateVersion.Three;
+    await this.set(keys.global, globals);
   }
 
   protected get options(): StorageOptions {
