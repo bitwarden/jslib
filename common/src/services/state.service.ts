@@ -1468,20 +1468,17 @@ export class StateService<
 
   async getEverBeenUnlocked(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.profile?.everBeenUnlocked ?? false
+      (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.profile
+        ?.everBeenUnlocked ?? false
     );
   }
 
   async setEverBeenUnlocked(value: boolean, options?: StorageOptions): Promise<void> {
     const account = await this.getAccount(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+      this.reconcileOptions(options, this.defaultInMemoryOptions)
     );
     account.profile.everBeenUnlocked = value;
-    await this.saveAccount(
-      account,
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
   }
 
   async getForcePasswordReset(options?: StorageOptions): Promise<boolean> {
