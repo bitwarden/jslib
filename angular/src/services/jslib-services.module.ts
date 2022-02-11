@@ -356,12 +356,14 @@ import { StateFactory } from "jslib-common/factories/stateFactory";
       provide: StateMigrationServiceAbstraction,
       useFactory: (
         storageService: StorageServiceAbstraction,
-        secureStorageService: StorageServiceAbstraction
+        secureStorageService: StorageServiceAbstraction,
+        tokenService: TokenServiceAbstraction
       ) =>
         new StateMigrationService(
           storageService,
           secureStorageService,
-          new StateFactory(GlobalState, Account)
+          new StateFactory(GlobalState, Account),
+          tokenService
         ),
       deps: [StorageServiceAbstraction, "SECURE_STORAGE"],
     },
