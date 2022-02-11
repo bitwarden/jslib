@@ -350,7 +350,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     const key =
       keySuffix === KeySuffixOptions.Auto
         ? await this.stateService.getCryptoMasterKeyAuto({ userId: userId })
-        : await this.stateService.hasCryptoMasterKeyBiometric({ userId: userId });
+        : await this.stateService.getCryptoMasterKeyBiometric({ userId: userId });
 
     return key != null;
   }
