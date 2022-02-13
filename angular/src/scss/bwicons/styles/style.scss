@@ -31,7 +31,7 @@ $icomoon-font-path: "~@bitwarden/jslib-angular/src/scss/bwicons/fonts/" !default
 
 // Fixed Width Icons
 .bwi-fw {
-  width: math.div(18em, 14);
+  width: calc(18em / 14);
   text-align: center;
 }
 
@@ -41,8 +41,8 @@ $icomoon-font-path: "~@bitwarden/jslib-angular/src/scss/bwicons/fonts/" !default
 }
 
 .bwi-lg {
-  font-size: math.div(4em, 3);
-  line-height: math.div(3em, 4);
+  font-size: calc(4em / 3);
+  line-height: calc(3em / 4);
   vertical-align: -15%;
 }
 
@@ -75,7 +75,7 @@ $icomoon-font-path: "~@bitwarden/jslib-angular/src/scss/bwicons/fonts/" !default
 // List Icons
 .bwi-ul {
   padding-left: 0;
-  margin-left: math.div(30em, 14);
+  margin-left: calc(30em / 14);
   list-style-type: none;
   > li {
     position: relative;
@@ -84,12 +84,12 @@ $icomoon-font-path: "~@bitwarden/jslib-angular/src/scss/bwicons/fonts/" !default
 
 .bwi-li {
   position: absolute;
-  left: math.div(30em, 14) * -1;
-  width: math.div(30em, 14);
-  top: math.div(2em, 14);
+  left: calc(30em / 14) * -1;
+  width: calc(30em / 14);
+  top: calc(2em / 14);
   text-align: center;
   &.bwi-lg {
-    left: (math.div(30em, 14) * -1) + math.div(4em, 14);
+    left: (calc(30em / 14) * -1) + calc(4em / 14);
   }
 }
 
