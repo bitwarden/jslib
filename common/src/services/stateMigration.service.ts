@@ -483,7 +483,8 @@ export class StateMigrationService<
       authenticatedUserIds.map(async (userId) => {
         const account = await this.get<TAccount>(userId);
         if (account?.profile?.everBeenUnlocked != null) {
-          return this.set("everBeenUnlocked", null);
+          delete account.profile.everBeenUnlocked;
+          return this.set(userId, account);
         }
       })
     );
