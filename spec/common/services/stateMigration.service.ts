@@ -1,12 +1,14 @@
 import { Arg, Substitute, SubstituteOf } from "@fluffy-spoon/substitute";
 
 import { StorageService } from "jslib-common/abstractions/storage.service";
-import { StateFactory } from "jslib-common/factories/stateFactory";
 
 import { StateMigrationService } from "jslib-common/services/stateMigration.service";
 
-import { Account, AccountProfile } from "jslib-common/models/domain/account";
+import { StateFactory } from "jslib-common/factories/stateFactory";
+
+import { Account } from "jslib-common/models/domain/account";
 import { GlobalState } from "jslib-common/models/domain/globalState";
+
 import { StateVersion } from "jslib-common/enums/stateVersion";
 
 const userId = "USER_ID";
