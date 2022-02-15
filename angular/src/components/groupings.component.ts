@@ -151,7 +151,7 @@ export class GroupingsComponent {
     } else {
       this.collapsedGroupings.add(id);
     }
-    await this.stateService.setCollapsedGroupings(this.collapsedGroupings);
+    await this.stateService.setCollapsedGroupings(Array.from(this.collapsedGroupings));
   }
 
   isCollapsed(grouping: FolderView | CollectionView, idPrefix = "") {
