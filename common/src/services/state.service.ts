@@ -388,17 +388,21 @@ export class StateService<
     );
   }
 
-  async getCollapsedGroupings(options?: StorageOptions): Promise<Set<string>> {
-    return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))
-      ?.data?.collapsedGroupings;
+  async getCollapsedGroupings(options?: StorageOptions): Promise<string[]> {
+    return (
+      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
+    )?.data?.collapsedGroupings;
   }
 
-  async setCollapsedGroupings(value: Set<string>, options?: StorageOptions): Promise<void> {
+  async setCollapsedGroupings(value: string[], options?: StorageOptions): Promise<void> {
     const account = await this.getAccount(
-      this.reconcileOptions(options, this.defaultInMemoryOptions)
+      this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
     );
     account.data.collapsedGroupings = value;
-    await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
+    );
   }
 
   async getConvertAccountToKeyConnector(options?: StorageOptions): Promise<boolean> {
