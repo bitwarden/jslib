@@ -158,6 +158,9 @@ export class StateMigrationService<
         case StateVersion.Two:
           await this.migrateStateFrom2To3();
           break;
+        case StateVersion.Three:
+          await this.migrateStateFrom3To4();
+          break;
       }
 
       currentStateVersion += 1;
@@ -471,6 +474,23 @@ export class StateMigrationService<
 
     const globals = await this.getGlobals();
     globals.stateVersion = StateVersion.Three;
+    await this.set(keys.global, globals);
+  }
+
+  protected async migrateStateFrom3To4(): Promise<void> {
+    const authenticatedUserIds = await this.get<string[]>(keys.authenticatedAccounts);
+    await Promise.all(
+      authenticatedUserIds.map(async (userId) => {
+        const account = await this.get<TAccount>(userId);
+        if (account?.profile?.everBeenUnlocked != null) {
+          delete account.profile.everBeenUnlocked;
+          return this.set(userId, account);
+        }
+      })
+    );
+
+    const globals = await this.getGlobals();
+    globals.stateVersion = StateVersion.Four;
     await this.set(keys.global, globals);
   }
 

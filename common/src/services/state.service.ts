@@ -76,7 +76,8 @@ export class StateService<
     protected secureStorageService: StorageService,
     protected logService: LogService,
     protected stateMigrationService: StateMigrationService,
-    protected stateFactory: StateFactory<TGlobalState, TAccount>
+    protected stateFactory: StateFactory<TGlobalState, TAccount>,
+    protected useAccountCache: boolean = true
   ) {
     this.accountDiskCache = new Map<string, TAccount>();
   }
@@ -1612,16 +1613,19 @@ export class StateService<
   }
 
   async getLocalData(options?: StorageOptions): Promise<any> {
-    return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))
-      ?.data?.localData;
+    return (
+      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
+    )?.data?.localData;
   }
-
   async setLocalData(value: string, options?: StorageOptions): Promise<void> {
     const account = await this.getAccount(
-      this.reconcileOptions(options, this.defaultInMemoryOptions)
+      this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
     );
     account.data.localData = value;
-    await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
+    );
   }
 
   async getLocale(options?: StorageOptions): Promise<string> {
@@ -2163,9 +2167,11 @@ export class StateService<
       return null;
     }
 
-    const cachedAccount = this.accountDiskCache.get(options.userId);
-    if (cachedAccount != null) {
-      return cachedAccount;
+    if (this.useAccountCache) {
+      const cachedAccount = this.accountDiskCache.get(options.userId);
+      if (cachedAccount != null) {
+        return cachedAccount;
+      }
     }
 
     const account = options?.useSecureStorage
@@ -2176,7 +2182,9 @@ export class StateService<
         ))
       : await this.storageService.get<TAccount>(options.userId, options);
 
-    this.accountDiskCache.set(options.userId, account);
+    if (this.useAccountCache) {
+      this.accountDiskCache.set(options.userId, account);
+    }
     return account;
   }
 
@@ -2206,7 +2214,10 @@ export class StateService<
       : this.storageService;
 
     await storageLocation.save(`${options.userId}`, account, options);
-    this.accountDiskCache.delete(options.userId);
+
+    if (this.useAccountCache) {
+      this.accountDiskCache.delete(options.userId);
+    }
   }
 
   protected async saveAccountToMemory(account: TAccount): Promise<void> {
@@ -2407,7 +2418,9 @@ export class StateService<
 
   protected removeAccountFromMemory(userId: string = this.state.activeUserId): void {
     delete this.state.accounts[userId];
-    this.accountDiskCache.delete(userId);
+    if (this.useAccountCache) {
+      this.accountDiskCache.delete(userId);
+    }
   }
 
   protected async pruneInMemoryAccounts() {
