@@ -1,5 +1,6 @@
 import * as child_process from "child_process";
 
+import { ClientType } from "jslib-common/enums/clientType";
 import { DeviceType } from "jslib-common/enums/deviceType";
 import { ThemeType } from "jslib-common/enums/themeType";
 
@@ -9,12 +10,12 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 const open = require("open");
 
 export class CliPlatformUtilsService implements PlatformUtilsService {
-  identityClientId: string;
+  clientType: ClientType;
 
   private deviceCache: DeviceType = null;
 
-  constructor(identityClientId: string, private packageJson: any) {
-    this.identityClientId = identityClientId;
+  constructor(clientType: ClientType, private packageJson: any) {
+    this.clientType = clientType;
   }
 
   getDevice(): DeviceType {
@@ -39,6 +40,10 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
   getDeviceString(): string {
     const device = DeviceType[this.getDevice()].toLowerCase();
     return device.replace("desktop", "");
+  }
+
+  getClientType() {
+    return this.clientType;
   }
 
   isFirefox() {

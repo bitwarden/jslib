@@ -24,6 +24,8 @@ import { GlobalStateFactory } from "../factories/globalStateFactory";
 import { StateFactory } from "../factories/stateFactory";
 import { Account, AccountSettings } from "../models/domain/account";
 
+import { TokenService } from "./token.service";
+
 // Originally (before January 2022) storage was handled as a flat key/value pair store.
 // With the move to a typed object for state storage these keys should no longer be in use anywhere outside of this migration.
 const v1Keys: { [key: string]: string } = {
@@ -122,6 +124,7 @@ const keys = {
   authenticatedAccounts: "authenticatedAccounts",
   activeUserId: "activeUserId",
   tempAccountSettings: "tempAccountSettings", // used to hold account specific settings (i.e clear clipboard) between initial migration and first account authentication
+  accountActivity: "accountActivity",
 };
 
 const partialKeys = {
@@ -151,6 +154,12 @@ export class StateMigrationService<
       switch (currentStateVersion) {
         case StateVersion.One:
           await this.migrateStateFrom1To2();
+          break;
+        case StateVersion.Two:
+          await this.migrateStateFrom2To3();
+          break;
+        case StateVersion.Three:
+          await this.migrateStateFrom3To4();
           break;
       }
 
@@ -396,7 +405,6 @@ export class StateMigrationService<
         kdfIterations: await this.get<number>(v1Keys.kdfIterations),
         kdfType: await this.get<KdfType>(v1Keys.kdf),
         keyHash: await this.get<string>(v1Keys.keyHash),
-        lastActive: await this.get<number>(v1Keys.lastActive),
         lastSync: null,
         userId: userId,
         usesKeyConnector: null,
@@ -412,6 +420,13 @@ export class StateMigrationService<
 
     await this.set(keys.authenticatedAccounts, [userId]);
     await this.set(keys.activeUserId, userId);
+
+    const accountActivity: { [userId: string]: number } = {
+      [userId]: await this.get<number>(v1Keys.lastActive),
+    };
+    accountActivity[userId] = await this.get<number>(v1Keys.lastActive);
+    await this.set(keys.accountActivity, accountActivity);
+
     await clearV1Keys(userId);
 
     if (await this.secureStorageService.has(v1Keys.key, { keySuffix: "biometric" })) {
@@ -441,6 +456,44 @@ export class StateMigrationService<
     }
   }
 
+  protected async migrateStateFrom2To3(): Promise<void> {
+    const authenticatedUserIds = await this.get<string[]>(keys.authenticatedAccounts);
+    await Promise.all(
+      authenticatedUserIds.map(async (userId) => {
+        const account = await this.get<TAccount>(userId);
+        if (
+          account?.profile?.hasPremiumPersonally === null &&
+          account.tokens?.accessToken != null
+        ) {
+          const decodedToken = await TokenService.decodeToken(account.tokens.accessToken);
+          account.profile.hasPremiumPersonally = decodedToken.premium;
+          await this.set(userId, account);
+        }
+      })
+    );
+
+    const globals = await this.getGlobals();
+    globals.stateVersion = StateVersion.Three;
+    await this.set(keys.global, globals);
+  }
+
+  protected async migrateStateFrom3To4(): Promise<void> {
+    const authenticatedUserIds = await this.get<string[]>(keys.authenticatedAccounts);
+    await Promise.all(
+      authenticatedUserIds.map(async (userId) => {
+        const account = await this.get<TAccount>(userId);
+        if (account?.profile?.everBeenUnlocked != null) {
+          delete account.profile.everBeenUnlocked;
+          return this.set(userId, account);
+        }
+      })
+    );
+
+    const globals = await this.getGlobals();
+    globals.stateVersion = StateVersion.Four;
+    await this.set(keys.global, globals);
+  }
+
   protected get options(): StorageOptions {
     return { htmlStorageLocation: HtmlStorageLocation.Local };
   }
@@ -461,6 +514,6 @@ export class StateMigrationService<
   }
 
   protected async getCurrentStateVersion(): Promise<StateVersion> {
-    return (await this.getGlobals())?.stateVersion;
+    return (await this.getGlobals())?.stateVersion ?? StateVersion.One;
   }
 }

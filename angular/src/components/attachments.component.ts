@@ -209,7 +209,7 @@ export class AttachmentsComponent implements OnInit {
       );
       if (confirmed) {
         this.platformUtilsService.launchUri(
-          "https://help.bitwarden.com/article/update-encryption-key/"
+          "https://bitwarden.com/help/account-encryption-key/#rotate-your-encryption-key"
         );
       }
     }

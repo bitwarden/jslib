@@ -29,7 +29,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     private policyService: PolicyService,
     private keyConnectorService: KeyConnectorService,
     private stateService: StateService,
-    private lockedCallback: () => Promise<void> = null,
+    private lockedCallback: (userId?: string) => Promise<void> = null,
     private loggedOutCallback: (userId?: string) => Promise<void> = null
   ) {}
 
@@ -87,7 +87,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
         (pinSet[0] && (await this.stateService.getDecryptedPinProtected()) != null) || pinSet[1];
 
       if (!pinLock && !(await this.isBiometricLockSet())) {
-        await this.logOut();
+        await this.logOut(userId);
       }
     }
 
@@ -97,6 +97,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
 
     await this.stateService.setEverBeenUnlocked(true, { userId: userId });
     await this.stateService.setBiometricLocked(true, { userId: userId });
+    await this.stateService.setCryptoMasterKeyAuto(null, { userId: userId });
 
     await this.cryptoService.clearKey(false, userId);
     await this.cryptoService.clearOrgKeys(true, userId);
@@ -110,7 +111,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     this.messagingService.send("locked", { userId: userId });
 
     if (this.lockedCallback != null) {
-      await this.lockedCallback();
+      await this.lockedCallback(userId);
     }
   }
 
@@ -122,9 +123,28 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
 
   async setVaultTimeoutOptions(timeout: number, action: string): Promise<void> {
     await this.stateService.setVaultTimeout(timeout);
+
+    // We swap these tokens from being on disk for lock actions, and in memory for logout actions
+    // Get them here to set them to their new location after changing the timeout action and clearing if needed
+    const token = await this.tokenService.getToken();
+    const refreshToken = await this.tokenService.getRefreshToken();
+    const clientId = await this.tokenService.getClientId();
+    const clientSecret = await this.tokenService.getClientSecret();
+
+    const currentAction = await this.stateService.getVaultTimeoutAction();
+    if ((timeout != null || timeout === 0) && action === "logOut" && action !== currentAction) {
+      // if we have a vault timeout and the action is log out, reset tokens
+      await this.tokenService.clearToken();
+    }
+
     await this.stateService.setVaultTimeoutAction(action);
+
+    await this.tokenService.setToken(token);
+    await this.tokenService.setRefreshToken(refreshToken);
+    await this.tokenService.setClientId(clientId);
+    await this.tokenService.setClientSecret(clientSecret);
+
     await this.cryptoService.toggleKey();
-    await this.tokenService.toggleTokens();
   }
 
   async isPinLockSet(): Promise<[boolean, boolean]> {
@@ -198,6 +218,6 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
 
   private async executeTimeoutAction(userId: string): Promise<void> {
     const timeoutAction = await this.stateService.getVaultTimeoutAction({ userId: userId });
-    timeoutAction === "logOut" ? await this.logOut() : await this.lock(true, userId);
+    timeoutAction === "logOut" ? await this.logOut(userId) : await this.lock(true, userId);
   }
 }

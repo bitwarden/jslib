@@ -59,6 +59,8 @@ export class LockComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    // Load the first and observe updates
+    await this.load();
     this.stateService.activeAccount.subscribe(async (_userId) => {
       await this.load();
     });
