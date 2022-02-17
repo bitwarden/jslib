@@ -2,7 +2,11 @@ import { AuthenticationType } from "../../enums/authenticationType";
 
 import { TokenRequestTwoFactor } from "../request/identityToken/tokenRequest";
 
-export class PasswordLogInCredentials {
+abstract class LogInCredentials {
+  abstract type: AuthenticationType;
+}
+
+export class PasswordLogInCredentials extends LogInCredentials {
   readonly type = AuthenticationType.Password;
 
   constructor(
@@ -10,10 +14,12 @@ export class PasswordLogInCredentials {
     public masterPassword: string,
     public captchaToken?: string,
     public twoFactor?: TokenRequestTwoFactor
-  ) {}
+  ) {
+    super();
+  }
 }
 
-export class SsoLogInCredentials {
+export class SsoLogInCredentials extends LogInCredentials {
   readonly type = AuthenticationType.Sso;
 
   constructor(
@@ -22,7 +28,9 @@ export class SsoLogInCredentials {
     public redirectUrl: string,
     public orgId: string,
     public twoFactor?: TokenRequestTwoFactor
-  ) {}
+  ) {
+    super();
+  }
 }
 
 export class ApiLogInCredentials {
