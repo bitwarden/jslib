@@ -158,41 +158,8 @@ export class CryptoService implements CryptoServiceAbstraction {
   }
 
   @sequentialize(() => "getEncKey")
-  async getEncKey(key: SymmetricCryptoKey = null): Promise<SymmetricCryptoKey> {
-    const inMemoryKey = await this.stateService.getDecryptedCryptoSymmetricKey();
-    if (inMemoryKey != null) {
-      return inMemoryKey;
-    }
-
-    const encKey = await this.stateService.getEncryptedCryptoSymmetricKey();
-    if (encKey == null) {
-      return null;
-    }
-
-    if (key == null) {
-      key = await this.getKey();
-    }
-    if (key == null) {
-      return null;
-    }
-
-    let decEncKey: ArrayBuffer;
-    const encKeyCipher = new EncString(encKey);
-    if (encKeyCipher.encryptionType === EncryptionType.AesCbc256_B64) {
-      decEncKey = await this.decryptToBytes(encKeyCipher, key);
-    } else if (encKeyCipher.encryptionType === EncryptionType.AesCbc256_HmacSha256_B64) {
-      const newKey = await this.stretchKey(key);
-      decEncKey = await this.decryptToBytes(encKeyCipher, newKey);
-    } else {
-      throw new Error("Unsupported encKey type.");
-    }
-
-    if (decEncKey == null) {
-      return null;
-    }
-    const symmetricCryptoKey = new SymmetricCryptoKey(decEncKey);
-    await this.stateService.setDecryptedCryptoSymmetricKey(symmetricCryptoKey);
-    return symmetricCryptoKey;
+  getEncKey(key: SymmetricCryptoKey = null): Promise<SymmetricCryptoKey> {
+    return this.getEncKeyHelper(key);
   }
 
   async getPublicKey(): Promise<ArrayBuffer> {
@@ -747,7 +714,7 @@ export class CryptoService implements CryptoServiceAbstraction {
   async validateKey(key: SymmetricCryptoKey) {
     try {
       const encPrivateKey = await this.stateService.getEncryptedPrivateKey();
-      const encKey = await this.getEncKey(key);
+      const encKey = await this.getEncKeyHelper(key);
       if (encPrivateKey == null || encKey == null) {
         return false;
       }
@@ -966,5 +933,41 @@ export class CryptoService implements CryptoServiceAbstraction {
   private async clearSecretKeyStore(userId?: string): Promise<void> {
     await this.stateService.setCryptoMasterKeyAuto(null, { userId: userId });
     await this.stateService.setCryptoMasterKeyBiometric(null, { userId: userId });
+  }
+
+  private async getEncKeyHelper(key: SymmetricCryptoKey = null): Promise<SymmetricCryptoKey> {
+    const inMemoryKey = await this.stateService.getDecryptedCryptoSymmetricKey();
+    if (inMemoryKey != null) {
+      return inMemoryKey;
+    }
+
+    const encKey = await this.stateService.getEncryptedCryptoSymmetricKey();
+    if (encKey == null) {
+      return null;
+    }
+
+    if (key == null) {
+      key = await this.getKey();
+    }
+    if (key == null) {
+      return null;
+    }
+
+    let decEncKey: ArrayBuffer;
+    const encKeyCipher = new EncString(encKey);
+    if (encKeyCipher.encryptionType === EncryptionType.AesCbc256_B64) {
+      decEncKey = await this.decryptToBytes(encKeyCipher, key);
+    } else if (encKeyCipher.encryptionType === EncryptionType.AesCbc256_HmacSha256_B64) {
+      const newKey = await this.stretchKey(key);
+      decEncKey = await this.decryptToBytes(encKeyCipher, newKey);
+    } else {
+      throw new Error("Unsupported encKey type.");
+    }
+    if (decEncKey == null) {
+      return null;
+    }
+    const symmetricCryptoKey = new SymmetricCryptoKey(decEncKey);
+    await this.stateService.setDecryptedCryptoSymmetricKey(symmetricCryptoKey);
+    return symmetricCryptoKey;
   }
 }
