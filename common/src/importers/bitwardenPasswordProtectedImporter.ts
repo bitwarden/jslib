@@ -49,7 +49,7 @@ export class BitwardenPasswordProtectedImporter extends BaseImporter implements 
 
     const encData = new EncString(parsedData.data);
     const clearTextData = await this.cryptoService.decryptToUtf8(encData, this.key);
-    return this.innerImporter.parse(clearTextData);
+    return await this.innerImporter.parse(clearTextData);
   }
 
   private async checkPassword(jdoc: BitwardenPasswordProtectedFileFormat): Promise<boolean> {
