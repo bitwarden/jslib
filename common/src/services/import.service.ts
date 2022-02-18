@@ -233,7 +233,7 @@ export class ImportService implements ImportServiceAbstraction {
         return new BitwardenJsonImporter(this.cryptoService, this.i18nService);
       case "bitwardenpasswordprotected":
         return new BitwardenPasswordProtectedImporter(
-          this,
+          new BitwardenJsonImporter(this.cryptoService, this.i18nService),
           this.cryptoService,
           this.i18nService,
           password

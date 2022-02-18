@@ -47,14 +47,10 @@ export class ExportService implements ExportServiceAbstraction {
     }
   }
 
-  async getPasswordProtectedExport(
-    password: string,
-    format: "csv" | "json" | "encrypted_json" = "csv",
-    organizationId?: string
-  ): Promise<string> {
+  async getPasswordProtectedExport(password: string, organizationId?: string): Promise<string> {
     const clearText = organizationId
-      ? await this.getOrganizationExport(organizationId, format)
-      : await this.getExport(format);
+      ? await this.getOrganizationExport(organizationId, "json")
+      : await this.getExport("json");
 
     const salt = Utils.fromBufferToB64(await this.cryptoFunctionService.randomBytes(16));
     const kdfIterations = 100000;
@@ -71,7 +67,6 @@ export class ExportService implements ExportServiceAbstraction {
     const jsonDoc: any = {
       encrypted: true,
       passwordProtected: true,
-      format: format,
       salt: salt,
       kdfIterations: kdfIterations,
       kdfType: KdfType.PBKDF2_SHA256,
