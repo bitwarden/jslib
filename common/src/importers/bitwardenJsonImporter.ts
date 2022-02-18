@@ -23,6 +23,12 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
     this.result = new ImportResult();
     this.results = JSON.parse(data);
     if (this.results == null || this.results.items == null) {
+      if (this.results?.passwordProtected) {
+        this.result.success = false;
+        this.result.errorMessage = this.i18nService.t("importPasswordRequired");
+        return this.result;
+      }
+
       this.result.success = false;
       return this.result;
     }
