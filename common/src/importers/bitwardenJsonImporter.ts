@@ -22,7 +22,7 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
   async parse(data: string): Promise<ImportResult> {
     this.result = new ImportResult();
     this.results = JSON.parse(data);
-    if (this.results == null || this.results.items == null || this.results.items.length === 0) {
+    if (this.results == null || this.results.items == null) {
       this.result.success = false;
       return this.result;
     }
