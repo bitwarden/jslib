@@ -7,7 +7,10 @@ import { ApiService } from "../abstractions/api.service";
 import { CipherService } from "../abstractions/cipher.service";
 import { CryptoService } from "../abstractions/crypto.service";
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
-import { ExportService as ExportServiceAbstraction } from "../abstractions/export.service";
+import {
+  ExportFormat,
+  ExportService as ExportServiceAbstraction,
+} from "../abstractions/export.service";
 import { FolderService } from "../abstractions/folder.service";
 
 import { CipherView } from "../models/view/cipherView";
@@ -39,7 +42,11 @@ export class ExportService implements ExportServiceAbstraction {
     private cryptoFunctionService: CryptoFunctionService
   ) {}
 
-  async getExport(format: "csv" | "json" | "encrypted_json" = "csv"): Promise<string> {
+  async getExport(format: ExportFormat = "csv", organizationId?: string): Promise<string> {
+    if (organizationId) {
+      return await this.getOrganizationExport(organizationId, format);
+    }
+
     if (format === "encrypted_json") {
       return this.getEncryptedExport();
     } else {
@@ -79,7 +86,7 @@ export class ExportService implements ExportServiceAbstraction {
 
   async getOrganizationExport(
     organizationId: string,
-    format: "csv" | "json" | "encrypted_json" = "csv"
+    format: ExportFormat = "csv"
   ): Promise<string> {
     if (format === "encrypted_json") {
       return this.getOrganizationEncryptedExport(organizationId);
