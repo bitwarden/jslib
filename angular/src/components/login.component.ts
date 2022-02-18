@@ -5,6 +5,7 @@ import { Router } from "@angular/router";
 import { take } from "rxjs/operators";
 
 import { AuthResult } from "jslib-common/models/domain/authResult";
+import { PasswordLogInCredentials } from "jslib-common/models/domain/logInCredentials";
 
 import { AuthService } from "jslib-common/abstractions/auth.service";
 import { CryptoFunctionService } from "jslib-common/abstractions/cryptoFunction.service";
@@ -35,6 +36,7 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
   protected twoFactorRoute = "2fa";
   protected successRoute = "vault";
   protected forcePasswordResetRoute = "update-temp-password";
+  protected alwaysRememberEmail: boolean = false;
 
   constructor(
     protected authService: AuthService,
@@ -58,7 +60,9 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
         this.email = "";
       }
     }
-    this.rememberEmail = (await this.stateService.getRememberedEmail()) != null;
+    if (!this.alwaysRememberEmail) {
+      this.rememberEmail = (await this.stateService.getRememberedEmail()) != null;
+    }
     if (Utils.isBrowser && !Utils.isNode) {
       this.focusInput();
     }
@@ -93,16 +97,22 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
     }
 
     try {
-      this.formPromise = this.authService.logIn(this.email, this.masterPassword, this.captchaToken);
+      const credentials = new PasswordLogInCredentials(
+        this.email,
+        this.masterPassword,
+        this.captchaToken,
+        null
+      );
+      this.formPromise = this.authService.logIn(credentials);
       const response = await this.formPromise;
-      if (this.rememberEmail) {
+      if (this.rememberEmail || this.alwaysRememberEmail) {
         await this.stateService.setRememberedEmail(this.email);
       } else {
         await this.stateService.setRememberedEmail(null);
       }
       if (this.handleCaptchaRequired(response)) {
         return;
-      } else if (response.twoFactor) {
+      } else if (response.requiresTwoFactor) {
         if (this.onSuccessfulLoginTwoFactorNavigate != null) {
           this.onSuccessfulLoginTwoFactorNavigate();
         } else {

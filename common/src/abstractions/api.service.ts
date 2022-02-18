@@ -75,7 +75,6 @@ import { SendRequest } from "../models/request/sendRequest";
 import { SetPasswordRequest } from "../models/request/setPasswordRequest";
 import { StorageRequest } from "../models/request/storageRequest";
 import { TaxInfoUpdateRequest } from "../models/request/taxInfoUpdateRequest";
-import { TokenRequest } from "../models/request/tokenRequest";
 import { TwoFactorEmailRequest } from "../models/request/twoFactorEmailRequest";
 import { TwoFactorProviderRequest } from "../models/request/twoFactorProviderRequest";
 import { TwoFactorRecoveryRequest } from "../models/request/twoFactorRecoveryRequest";
@@ -92,6 +91,10 @@ import { UpdateTwoFactorYubioOtpRequest } from "../models/request/updateTwoFacto
 import { VerifyBankRequest } from "../models/request/verifyBankRequest";
 import { VerifyDeleteRecoverRequest } from "../models/request/verifyDeleteRecoverRequest";
 import { VerifyEmailRequest } from "../models/request/verifyEmailRequest";
+
+import { ApiTokenRequest } from "../models/request/identityToken/apiTokenRequest";
+import { PasswordTokenRequest } from "../models/request/identityToken/passwordTokenRequest";
+import { SsoTokenRequest } from "../models/request/identityToken/ssoTokenRequest";
 
 import { ApiKeyResponse } from "../models/response/apiKeyResponse";
 import { AttachmentResponse } from "../models/response/attachmentResponse";
@@ -171,7 +174,7 @@ import { SendAccessView } from "../models/view/sendAccessView";
 
 export abstract class ApiService {
   postIdentityToken: (
-    request: TokenRequest
+    request: PasswordTokenRequest | SsoTokenRequest | ApiTokenRequest
   ) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse>;
   refreshIdentityToken: () => Promise<any>;
 

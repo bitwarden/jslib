@@ -1,3 +1,4 @@
+import { ClientType } from "../enums/clientType";
 import { DeviceType } from "../enums/deviceType";
 import { ThemeType } from "../enums/themeType";
 
@@ -6,9 +7,9 @@ interface ToastOptions {
 }
 
 export abstract class PlatformUtilsService {
-  identityClientId: string;
   getDevice: () => DeviceType;
   getDeviceString: () => string;
+  getClientType: () => ClientType;
   isFirefox: () => boolean;
   isChrome: () => boolean;
   isEdge: () => boolean;

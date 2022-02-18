@@ -54,7 +54,7 @@ export class AccountData {
     GeneratedPasswordHistory[]
   > = new EncryptionPair<GeneratedPasswordHistory[], GeneratedPasswordHistory[]>();
   addEditCipherInfo?: any;
-  collapsedGroupings?: Set<string>;
+  collapsedGroupings?: string[];
   eventCollection?: EventData[];
   organizations?: { [id: string]: OrganizationData };
   providers?: { [id: string]: ProviderData };
@@ -94,7 +94,6 @@ export class AccountProfile {
   everBeenUnlocked?: boolean;
   forcePasswordReset?: boolean;
   hasPremiumPersonally?: boolean;
-  lastActive?: number;
   lastSync?: string;
   userId?: string;
   usesKeyConnector?: boolean;
@@ -104,7 +103,6 @@ export class AccountProfile {
 }
 
 export class AccountSettings {
-  alwaysShowDock?: boolean;
   autoConfirmFingerPrints?: boolean;
   autoFillOnPageLoadDefault?: boolean;
   biometricLocked?: boolean;
@@ -123,19 +121,12 @@ export class AccountSettings {
   enableAlwaysOnTop?: boolean;
   enableAutoFillOnPageLoad?: boolean;
   enableBiometric?: boolean;
-  enableBrowserIntegration?: boolean;
-  enableBrowserIntegrationFingerprint?: boolean;
-  enableCloseToTray?: boolean;
   enableFullWidth?: boolean;
   enableGravitars?: boolean;
-  enableMinimizeToTray?: boolean;
-  enableStartToTray?: boolean;
-  enableTray?: boolean;
   environmentUrls: EnvironmentUrls = new EnvironmentUrls();
   equivalentDomains?: any;
   minimizeOnCopyToClipboard?: boolean;
   neverDomains?: { [id: string]: any };
-  openAtLogin?: boolean;
   passwordGenerationOptions?: any;
   pinProtected?: EncryptionPair<string, EncString> = new EncryptionPair<string, EncString>();
   protectedPin?: string;

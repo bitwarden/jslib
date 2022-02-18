@@ -27,6 +27,7 @@ import { StateMigrationService } from "jslib-common/services/stateMigration.serv
 import { SyncService } from "jslib-common/services/sync.service";
 import { TokenService } from "jslib-common/services/token.service";
 import { TotpService } from "jslib-common/services/totp.service";
+import { TwoFactorService } from "jslib-common/services/twoFactor.service";
 import { UserVerificationService } from "jslib-common/services/userVerification.service";
 import { VaultTimeoutService } from "jslib-common/services/vaultTimeout.service";
 import { WebCryptoFunctionService } from "jslib-common/services/webCryptoFunction.service";
@@ -65,6 +66,7 @@ import { StorageService as StorageServiceAbstraction } from "jslib-common/abstra
 import { SyncService as SyncServiceAbstraction } from "jslib-common/abstractions/sync.service";
 import { TokenService as TokenServiceAbstraction } from "jslib-common/abstractions/token.service";
 import { TotpService as TotpServiceAbstraction } from "jslib-common/abstractions/totp.service";
+import { TwoFactorService as TwoFactorServiceAbstraction } from "jslib-common/abstractions/twoFactor.service";
 import { UserVerificationService as UserVerificationServiceAbstraction } from "jslib-common/abstractions/userVerification.service";
 import { VaultTimeoutService as VaultTimeoutServiceAbstraction } from "jslib-common/abstractions/vaultTimeout.service";
 
@@ -75,6 +77,12 @@ import { ModalService } from "./modal.service";
 import { PasswordRepromptService } from "./passwordReprompt.service";
 import { UnauthGuardService } from "./unauth-guard.service";
 import { ValidationService } from "./validation.service";
+
+import { Account } from "jslib-common/models/domain/account";
+import { GlobalState } from "jslib-common/models/domain/globalState";
+
+import { GlobalStateFactory } from "jslib-common/factories/globalStateFactory";
+import { StateFactory } from "jslib-common/factories/stateFactory";
 
 @NgModule({
   declarations: [],
@@ -108,15 +116,13 @@ import { ValidationService } from "./validation.service";
         ApiServiceAbstraction,
         TokenServiceAbstraction,
         AppIdServiceAbstraction,
-        I18nServiceAbstraction,
         PlatformUtilsServiceAbstraction,
         MessagingServiceAbstraction,
-        VaultTimeoutServiceAbstraction,
         LogService,
-        CryptoFunctionServiceAbstraction,
         KeyConnectorServiceAbstraction,
         EnvironmentServiceAbstraction,
         StateServiceAbstraction,
+        TwoFactorServiceAbstraction,
       ],
     },
     {
@@ -307,7 +313,8 @@ import { ValidationService } from "./validation.service";
           keyConnectorService,
           stateService,
           null,
-          async () => messagingService.send("logout", { expired: false })
+          async (userId?: string) =>
+            messagingService.send("logout", { expired: false, userId: userId })
         ),
       deps: [
         CipherServiceAbstraction,
@@ -325,7 +332,19 @@ import { ValidationService } from "./validation.service";
     },
     {
       provide: StateServiceAbstraction,
-      useClass: StateService,
+      useFactory: (
+        storageService: StorageServiceAbstraction,
+        secureStorageService: StorageServiceAbstraction,
+        logService: LogService,
+        stateMigrationService: StateMigrationServiceAbstraction
+      ) =>
+        new StateService(
+          storageService,
+          secureStorageService,
+          logService,
+          stateMigrationService,
+          new StateFactory(GlobalState, Account)
+        ),
       deps: [
         StorageServiceAbstraction,
         "SECURE_STORAGE",
@@ -335,7 +354,15 @@ import { ValidationService } from "./validation.service";
     },
     {
       provide: StateMigrationServiceAbstraction,
-      useClass: StateMigrationService,
+      useFactory: (
+        storageService: StorageServiceAbstraction,
+        secureStorageService: StorageServiceAbstraction
+      ) =>
+        new StateMigrationService(
+          storageService,
+          secureStorageService,
+          new StateFactory(GlobalState, Account)
+        ),
       deps: [StorageServiceAbstraction, "SECURE_STORAGE"],
     },
     {
@@ -429,6 +456,7 @@ import { ValidationService } from "./validation.service";
         TokenServiceAbstraction,
         LogService,
         OrganizationServiceAbstraction,
+        CryptoFunctionServiceAbstraction,
       ],
     },
     {
@@ -446,6 +474,11 @@ import { ValidationService } from "./validation.service";
       provide: ProviderServiceAbstraction,
       useClass: ProviderService,
       deps: [StateServiceAbstraction],
+    },
+    {
+      provide: TwoFactorServiceAbstraction,
+      useClass: TwoFactorService,
+      deps: [I18nServiceAbstraction, PlatformUtilsServiceAbstraction],
     },
   ],
 })
