@@ -15,7 +15,7 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
   private results: any;
   private result: ImportResult;
 
-  constructor(private cryptoService: CryptoService, private i18nService: I18nService) {
+  constructor(protected cryptoService: CryptoService, protected i18nService: I18nService) {
     super();
   }
 

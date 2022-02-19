@@ -149,8 +149,7 @@ const regularImportOptions = [
 
 export type ImportType =
   | typeof featuredImportOptions[number]["id"]
-  | typeof regularImportOptions[number]["id"]
-  | "bitwardenpasswordprotected";
+  | typeof regularImportOptions[number]["id"];
 
 export class ImportService implements ImportServiceAbstraction {
   featuredImportOptions = featuredImportOptions as readonly ImportOption[];
@@ -209,7 +208,7 @@ export class ImportService implements ImportServiceAbstraction {
   }
 
   getImporter(
-    format: ImportType,
+    format: ImportType | "bitwardenpasswordprotected",
     organizationId: string = null,
     password: string = null
   ): Importer {
@@ -221,7 +220,7 @@ export class ImportService implements ImportServiceAbstraction {
     return importer;
   }
 
-  private getImporterInstance(format: ImportType, password: string) {
+  private getImporterInstance(format: ImportType | "bitwardenpasswordprotected", password: string) {
     if (format == null) {
       return null;
     }
@@ -233,7 +232,6 @@ export class ImportService implements ImportServiceAbstraction {
         return new BitwardenJsonImporter(this.cryptoService, this.i18nService);
       case "bitwardenpasswordprotected":
         return new BitwardenPasswordProtectedImporter(
-          new BitwardenJsonImporter(this.cryptoService, this.i18nService),
           this.cryptoService,
           this.i18nService,
           password

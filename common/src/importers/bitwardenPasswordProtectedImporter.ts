@@ -1,4 +1,3 @@
-import { BaseImporter } from "./baseImporter";
 import { BitwardenJsonImporter } from "./bitwardenJsonImporter";
 import { Importer } from "./importer";
 
@@ -21,16 +20,11 @@ class BitwardenPasswordProtectedFileFormat {
   data: string;
 }
 
-export class BitwardenPasswordProtectedImporter extends BaseImporter implements Importer {
+export class BitwardenPasswordProtectedImporter extends BitwardenJsonImporter implements Importer {
   private key: SymmetricCryptoKey;
 
-  constructor(
-    private innerImporter: BitwardenJsonImporter,
-    private cryptoService: CryptoService,
-    private i18nService: I18nService,
-    private password: string
-  ) {
-    super();
+  constructor(cryptoService: CryptoService, i18nService: I18nService, private password: string) {
+    super(cryptoService, i18nService);
   }
 
   async parse(data: string): Promise<ImportResult> {
@@ -49,7 +43,7 @@ export class BitwardenPasswordProtectedImporter extends BaseImporter implements 
 
     const encData = new EncString(parsedData.data);
     const clearTextData = await this.cryptoService.decryptToUtf8(encData, this.key);
-    return await this.innerImporter.parse(clearTextData);
+    return await super.parse(clearTextData);
   }
 
   private async checkPassword(jdoc: BitwardenPasswordProtectedFileFormat): Promise<boolean> {
