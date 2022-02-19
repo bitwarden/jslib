@@ -10,5 +10,9 @@ export abstract class ImportService {
   regularImportOptions: readonly ImportOption[];
   getImportOptions: () => ImportOption[];
   import: (importer: Importer, fileContents: string, organizationId?: string) => Promise<Error>;
-  getImporter: (format: ImportType, organizationId: string, password?: string) => Importer;
+  getImporter: (
+    format: ImportType | "bitwardenpasswordprotected",
+    organizationId: string,
+    password?: string
+  ) => Importer;
 }
