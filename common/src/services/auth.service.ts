@@ -118,7 +118,7 @@ export class AuthService implements AuthServiceAbstraction {
     const result = await this.logInStrategy.logInTwoFactor(twoFactor);
 
     // If 2FA is incorrect then don't clear the state because we need to try again
-    if (!result.requiresTwoFactor) {
+    if (result == null || !result.requiresTwoFactor) {
       this.clearState();
     }
     return result;
