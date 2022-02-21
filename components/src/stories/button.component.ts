@@ -1,5 +1,4 @@
 import {
-  Component,
   Input,
   Output,
   EventEmitter,
@@ -9,18 +8,26 @@ import {
   Directive,
 } from "@angular/core";
 
-type ModeTypes = "primary" | "secondary";
+type ModeTypes = "primary" | "secondary" | "danger";
 type ButtonTypes = "default" | "outline";
-type CombiendTypes = `${ModeTypes}-${ButtonTypes}`;
 
-const buttonStyles: Record<CombiendTypes, string> = {
-  "primary-default":
-    "tw-border-primary-500 tw-bg-primary-500 tw-text-white hover:tw-bg-primary-700 disabled:tw-opacity-60 disabled:hover:tw-bg-primary-500",
-  "primary-outline":
-    "tw-border-primary-500 tw-text-primary-500 hover:tw-bg-primary-500 hover:tw-text-white",
-  "secondary-default": "",
-  "secondary-outline":
-    "tw-border-secondary-500 !tw-text-secondary-900 hover:tw-bg-secondary-500 hover:!tw-text-[#333333]",
+const buttonStyles: Record<ModeTypes, Record<ButtonTypes, string>> = {
+  primary: {
+    default:
+      "tw-border-primary-500 tw-bg-primary-500 tw-text-white hover:tw-bg-primary-700 disabled:tw-opacity-60 disabled:hover:tw-bg-primary-500",
+    outline:
+      "tw-bg-gray-100 tw-border-gray-400 tw-text-primary-500 hover:tw-bg-primary-500 hover:tw-border-primary-500 hover:tw-text-white",
+  },
+  secondary: {
+    default: "",
+    outline:
+      "tw-border-secondary-500 !tw-text-secondary-900 hover:tw-bg-secondary-500 hover:!tw-text-[#333333]",
+  },
+  danger: {
+    default: "",
+    outline:
+      "tw-bg-gray-100 tw-border-gray-400 tw-text-danger-500 hover:tw-bg-danger-500 hover:tw-border-danger-500 hover:tw-text-white",
+  },
 };
 
 @Directive({
@@ -57,12 +64,10 @@ export class ButtonComponent implements OnChanges {
   }
 
   public get classes(): string[] {
-    const style: CombiendTypes = `${this.mode}-${this.buttonType}`;
-
     return [
       "tw-font-semibold tw-py-2 tw-px-4 tw-rounded tw-transition tw-border tw-border-solid tw-text-center hover:tw-no-underline",
       this.block ? "tw-w-full tw-block" : "",
-      buttonStyles[style],
+      buttonStyles?.[this.mode]?.[this.buttonType],
     ];
   }
 }
