@@ -326,10 +326,8 @@ export class SyncService implements SyncServiceAbstraction {
       }
     });
 
-    await Promise.all([
-      this.organizationService.save(organizations),
-      this.providerService.save(providers),
-    ]);
+    await this.organizationService.save(organizations);
+    await this.providerService.save(providers);
 
     if (await this.keyConnectorService.userNeedsMigration()) {
       await this.keyConnectorService.setConvertAccountRequired(true);

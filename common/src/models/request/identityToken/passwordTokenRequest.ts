@@ -1,3 +1,4 @@
+import { ClientType } from "../../../enums/clientType";
 import { Utils } from "../../../misc/utils";
 import { CaptchaProtectedRequest } from "../captchaProtectedRequest";
 import { DeviceRequest } from "../deviceRequest";
@@ -15,7 +16,7 @@ export class PasswordTokenRequest extends TokenRequest implements CaptchaProtect
     super(twoFactor, device);
   }
 
-  toIdentityToken(clientId: string) {
+  toIdentityToken(clientId: ClientType) {
     const obj = super.toIdentityToken(clientId);
 
     obj.grant_type = "password";

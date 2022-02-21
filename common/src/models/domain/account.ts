@@ -51,7 +51,7 @@ export class AccountData {
     GeneratedPasswordHistory[]
   > = new EncryptionPair<GeneratedPasswordHistory[], GeneratedPasswordHistory[]>();
   addEditCipherInfo?: any;
-  collapsedGroupings?: Set<string>;
+  collapsedGroupings?: string[];
   eventCollection?: EventData[];
   organizations?: { [id: string]: OrganizationData };
   providers?: { [id: string]: ProviderData };
@@ -91,7 +91,6 @@ export class AccountProfile {
   everBeenUnlocked?: boolean;
   forcePasswordReset?: boolean;
   hasPremiumPersonally?: boolean;
-  lastActive?: number;
   lastSync?: string;
   userId?: string;
   usesKeyConnector?: boolean;

@@ -4,6 +4,25 @@ import { Utils } from "../misc/utils";
 import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
 
 export class TokenService implements TokenServiceAbstraction {
+  static decodeToken(token: string): Promise<any> {
+    if (token == null) {
+      throw new Error("Token not provided.");
+    }
+
+    const parts = token.split(".");
+    if (parts.length !== 3) {
+      throw new Error("JWT must have 3 parts");
+    }
+
+    const decoded = Utils.fromUrlB64ToUtf8(parts[1]);
+    if (decoded == null) {
+      throw new Error("Cannot decode the token");
+    }
+
+    const decodedToken = JSON.parse(decoded);
+    return decodedToken;
+  }
+
   constructor(private stateService: StateService) {}
 
   async setTokens(
@@ -20,9 +39,6 @@ export class TokenService implements TokenServiceAbstraction {
   }
 
   async setClientId(clientId: string): Promise<any> {
-    if ((await this.skipTokenStorage()) || clientId == null) {
-      return;
-    }
     return await this.stateService.setApiKeyClientId(clientId);
   }
 
@@ -31,9 +47,6 @@ export class TokenService implements TokenServiceAbstraction {
   }
 
   async setClientSecret(clientSecret: string): Promise<any> {
-    if ((await this.skipTokenStorage()) || clientSecret == null) {
-      return;
-    }
     return await this.stateService.setApiKeyClientSecret(clientSecret);
   }
 
@@ -50,33 +63,11 @@ export class TokenService implements TokenServiceAbstraction {
   }
 
   async setRefreshToken(refreshToken: string): Promise<any> {
-    if (await this.skipTokenStorage()) {
-      return;
-    }
     return await this.stateService.setRefreshToken(refreshToken);
   }
 
   async getRefreshToken(): Promise<string> {
     return await this.stateService.getRefreshToken();
-  }
-
-  async toggleTokens(): Promise<any> {
-    const token = await this.getToken();
-    const refreshToken = await this.getRefreshToken();
-    const clientId = await this.getClientId();
-    const clientSecret = await this.getClientSecret();
-    const timeout = await this.stateService.getVaultTimeout();
-    const action = await this.stateService.getVaultTimeoutAction();
-
-    if ((timeout != null || timeout === 0) && action === "logOut") {
-      // if we have a vault timeout and the action is log out, reset tokens
-      await this.clearToken();
-    }
-
-    await this.setToken(token);
-    await this.setRefreshToken(refreshToken);
-    await this.setClientId(clientId);
-    await this.setClientSecret(clientSecret);
   }
 
   async setTwoFactorToken(tokenResponse: IdentityTokenResponse): Promise<any> {
@@ -113,18 +104,7 @@ export class TokenService implements TokenServiceAbstraction {
       throw new Error("Token not found.");
     }
 
-    const parts = token.split(".");
-    if (parts.length !== 3) {
-      throw new Error("JWT must have 3 parts");
-    }
-
-    const decoded = Utils.fromUrlB64ToUtf8(parts[1]);
-    if (decoded == null) {
-      throw new Error("Cannot decode the token");
-    }
-
-    const decodedToken = JSON.parse(decoded);
-    return decodedToken;
+    return TokenService.decodeToken(token);
   }
 
   async getTokenExpirationDate(): Promise<Date> {
@@ -211,11 +191,5 @@ export class TokenService implements TokenServiceAbstraction {
     const decoded = await this.decodeToken();
 
     return Array.isArray(decoded.amr) && decoded.amr.includes("external");
-  }
-
-  private async skipTokenStorage(): Promise<boolean> {
-    const timeout = await this.stateService.getVaultTimeout();
-    const action = await this.stateService.getVaultTimeoutAction();
-    return timeout != null && action === "logOut";
   }
 }

@@ -37,7 +37,6 @@ import { TotpService as TotpServiceAbstraction } from "jslib-common/abstractions
 import { TwoFactorService as TwoFactorServiceAbstraction } from "jslib-common/abstractions/twoFactor.service";
 import { UserVerificationService as UserVerificationServiceAbstraction } from "jslib-common/abstractions/userVerification.service";
 import { VaultTimeoutService as VaultTimeoutServiceAbstraction } from "jslib-common/abstractions/vaultTimeout.service";
-import { GlobalStateFactory } from "jslib-common/factories/globalStateFactory";
 import { StateFactory } from "jslib-common/factories/stateFactory";
 import { Account } from "jslib-common/models/domain/account";
 import { GlobalState } from "jslib-common/models/domain/globalState";
@@ -310,7 +309,8 @@ import { ValidationService } from "./validation.service";
           keyConnectorService,
           stateService,
           null,
-          async () => messagingService.send("logout", { expired: false })
+          async (userId?: string) =>
+            messagingService.send("logout", { expired: false, userId: userId })
         ),
       deps: [
         CipherServiceAbstraction,
@@ -357,7 +357,7 @@ import { ValidationService } from "./validation.service";
         new StateMigrationService(
           storageService,
           secureStorageService,
-          new GlobalStateFactory(GlobalState)
+          new StateFactory(GlobalState, Account)
         ),
       deps: [StorageServiceAbstraction, "SECURE_STORAGE"],
     },

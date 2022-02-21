@@ -8,7 +8,7 @@ import { Utils } from "jslib-common/misc/utils";
 @Component({
   selector: "app-avatar",
   template:
-    '<img [src]="sanitizer.bypassSecurityTrustResourceUrl(src)" title="{{data}}" ' +
+    '<img *ngIf="src" [src]="sanitizer.bypassSecurityTrustResourceUrl(src)" title="{{data}}" ' +
     "[ngClass]=\"{'rounded-circle': circle}\">",
 })
 export class AvatarComponent implements OnChanges, OnInit {

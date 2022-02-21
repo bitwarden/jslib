@@ -1,6 +1,9 @@
+import { AuthenticationType } from "../../enums/authenticationType";
 import { TokenRequestTwoFactor } from "../request/identityToken/tokenRequest";
 
 export class PasswordLogInCredentials {
+  readonly type = AuthenticationType.Password;
+
   constructor(
     public email: string,
     public masterPassword: string,
@@ -10,6 +13,8 @@ export class PasswordLogInCredentials {
 }
 
 export class SsoLogInCredentials {
+  readonly type = AuthenticationType.Sso;
+
   constructor(
     public code: string,
     public codeVerifier: string,
@@ -20,5 +25,7 @@ export class SsoLogInCredentials {
 }
 
 export class ApiLogInCredentials {
+  readonly type = AuthenticationType.Api;
+
   constructor(public clientId: string, public clientSecret: string) {}
 }
