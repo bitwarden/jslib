@@ -117,8 +117,8 @@ export class AuthService implements AuthServiceAbstraction {
   async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
     const result = await this.logInStrategy.logInTwoFactor(twoFactor);
 
-    // If 2FA is incorrect then don't clear the state because we need to try again
-    if (result == null || !result.requiresTwoFactor) {
+    // Only clear state if 2FA token has been accepted, otherwise we need to be able to try again
+    if (!result.requiresTwoFactor) {
       this.clearState();
     }
     return result;
