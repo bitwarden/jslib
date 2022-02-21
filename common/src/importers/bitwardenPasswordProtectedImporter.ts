@@ -16,7 +16,6 @@ class BitwardenPasswordProtectedFileFormat {
   salt: string;
   kdfIterations: number;
   kdfType: number;
-  // tslint:disable-next-line
   encKeyValidation_DO_NOT_EDIT: string;
   data: string;
 }
