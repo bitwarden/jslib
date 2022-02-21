@@ -9,7 +9,7 @@ function dirtyValidator(validator: ValidatorFn) {
 
 // Don't use the higher order function because it prevents hasError() from comparing properly
 export function dirtyRequired(control: AbstractControl): ValidationErrors | null {
-  return control.dirty ? Validators.required : null;
+  return control.dirty ? Validators.required(control) : null;
 }
 
 export function dirtyRequiredIf(predicate: (predicateCtrl: AbstractControl) => boolean) {
