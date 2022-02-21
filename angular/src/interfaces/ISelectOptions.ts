@@ -1,5 +1,5 @@
 export interface ISelectOptions {
-    name: string,
-    value: any,
-    disabled?: boolean
+  name: string;
+  value: any;
+  disabled?: boolean;
 }
