@@ -17,9 +17,9 @@ export function dirtyRequiredIf(predicate: (predicateCtrl: AbstractControl) => b
 }
 
 /**
-* Equivalent to dirtyValidator(Validator.required), however using dirtyValidator returns a new function
-* each time which prevents formControl.hasError from properly comparing functions for equality.
-*/
+ * Equivalent to dirtyValidator(Validator.required), however using dirtyValidator returns a new function
+ * each time which prevents formControl.hasError from properly comparing functions for equality.
+ */
 export function dirtyRequired(control: AbstractControl): ValidationErrors | null {
   return control.dirty ? Validators.required(control) : null;
 }
