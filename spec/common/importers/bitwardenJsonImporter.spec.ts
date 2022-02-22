@@ -1,7 +1,7 @@
 import { Substitute, SubstituteOf } from "@fluffy-spoon/substitute";
+
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
-
 import { BitwardenJsonImporter } from "jslib-common/importers/bitwardenJsonImporter";
 
 import { data as passwordProtectedData } from "./testData/bitwardenJson/passwordProtected.json";

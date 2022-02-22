@@ -2,7 +2,6 @@ import Substitute, { Arg, SubstituteOf } from "@fluffy-spoon/substitute";
 
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
-import { ImportService } from "jslib-common/abstractions/import.service";
 import { KdfType } from "jslib-common/enums/kdfType";
 import { BitwardenPasswordProtectedImporter } from "jslib-common/importers/bitwardenPasswordProtectedImporter";
 import { Utils } from "jslib-common/misc/utils";
@@ -12,7 +11,6 @@ import { data as emptyDecryptedData } from "./testData/bitwardenJson/empty.json"
 
 describe("BitwardenPasswordProtectedImporter", () => {
   let importer: BitwardenPasswordProtectedImporter;
-  let importService: SubstituteOf<ImportService>;
   let cryptoService: SubstituteOf<CryptoService>;
   let i18nService: SubstituteOf<I18nService>;
   const password = Utils.newGuid();
@@ -30,7 +28,6 @@ describe("BitwardenPasswordProtectedImporter", () => {
   beforeEach(() => {
     cryptoService = Substitute.for<CryptoService>();
     i18nService = Substitute.for<I18nService>();
-    importService = Substitute.for<ImportService>();
 
     jDoc = {
       encrypted: true,

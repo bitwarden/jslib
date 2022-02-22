@@ -1,5 +1,5 @@
-import { Importer } from "../importers/importer";
 import { ImportError } from "../importers/importError";
+import { Importer } from "../importers/importer";
 import { ImportType } from "../services/import.service";
 
 export interface ImportOption {
