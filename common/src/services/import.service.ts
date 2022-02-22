@@ -82,6 +82,7 @@ import { TrueKeyCsvImporter } from "../importers/truekeyCsvImporter";
 import { UpmCsvImporter } from "../importers/upmCsvImporter";
 import { YotiCsvImporter } from "../importers/yotiCsvImporter";
 import { ZohoVaultCsvImporter } from "../importers/zohoVaultCsvImporter";
+import { ImportError } from "../importers/importError";
 
 const featuredImportOptions = [
   { id: "bitwardenjson", name: "Bitwarden (json)" },
@@ -174,11 +175,11 @@ export class ImportService implements ImportServiceAbstraction {
     importer: Importer,
     fileContents: string,
     organizationId: string = null
-  ): Promise<Error> {
+  ): Promise<ImportError> {
     const importResult = await importer.parse(fileContents);
     if (importResult.success) {
       if (importResult.folders.length === 0 && importResult.ciphers.length === 0) {
-        return new Error(this.i18nService.t("importNothingError"));
+        return new ImportError(this.i18nService.t("importNothingError"));
       } else if (importResult.ciphers.length > 0) {
         const halfway = Math.floor(importResult.ciphers.length / 2);
         const last = importResult.ciphers.length - 1;
@@ -188,7 +189,7 @@ export class ImportService implements ImportServiceAbstraction {
           this.badData(importResult.ciphers[halfway]) &&
           this.badData(importResult.ciphers[last])
         ) {
-          return new Error(this.i18nService.t("importFormatError"));
+          return new ImportError(this.i18nService.t("importFormatError"));
         }
       }
       try {
@@ -200,9 +201,12 @@ export class ImportService implements ImportServiceAbstraction {
       return null;
     } else {
       if (!Utils.isNullOrWhitespace(importResult.errorMessage)) {
-        return new Error(importResult.errorMessage);
+        return new ImportError(importResult.errorMessage, importResult.missingPassword);
       } else {
-        return new Error(this.i18nService.t("importFormatError"));
+        return new ImportError(
+          this.i18nService.t("importFormatError"),
+          importResult.missingPassword
+        );
       }
     }
   }
@@ -399,9 +403,9 @@ export class ImportService implements ImportServiceAbstraction {
     );
   }
 
-  private handleServerError(errorResponse: ErrorResponse, importResult: ImportResult): Error {
+  private handleServerError(errorResponse: ErrorResponse, importResult: ImportResult): ImportError {
     if (errorResponse.validationErrors == null) {
-      return new Error(errorResponse.message);
+      return new ImportError(errorResponse.message);
     }
 
     let errorMessage = "";
@@ -439,6 +443,6 @@ export class ImportService implements ImportServiceAbstraction {
       errorMessage += "[" + itemType + '] "' + item.name + '": ' + value;
     });
 
-    return new Error(errorMessage);
+    return new ImportError(errorMessage);
   }
 }
