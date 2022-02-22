@@ -1,10 +1,7 @@
-import { ItemView } from "./itemView";
-
-import { Card } from "../domain/card";
-
 import { CardLinkedId as LinkedId } from "../../enums/linkedIdType";
-
 import { linkedFieldOption } from "../../misc/linkedFieldOption.decorator";
+
+import { ItemView } from "./itemView";
 
 export class CardView extends ItemView {
   @linkedFieldOption(LinkedId.CardholderName)
@@ -16,13 +13,11 @@ export class CardView extends ItemView {
   @linkedFieldOption(LinkedId.Code, "securityCode")
   code: string = null;
 
-  // tslint:disable
   private _brand: string = null;
   private _number: string = null;
   private _subTitle: string = null;
-  // tslint:enable
 
-  constructor(c?: Card) {
+  constructor() {
     super();
   }
 

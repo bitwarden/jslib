@@ -1,7 +1,6 @@
 import { ipcRenderer } from "electron";
 
 import { StorageService } from "jslib-common/abstractions/storage.service";
-
 import { StorageOptions } from "jslib-common/models/domain/storageOptions";
 
 export class ElectronRendererSecureStorageService implements StorageService {

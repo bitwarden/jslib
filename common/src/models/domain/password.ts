@@ -1,16 +1,15 @@
 import { PasswordHistoryData } from "../data/passwordHistoryData";
+import { PasswordHistoryView } from "../view/passwordHistoryView";
 
 import Domain from "./domainBase";
 import { EncString } from "./encString";
-
-import { PasswordHistoryView } from "../view/passwordHistoryView";
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
 export class Password extends Domain {
   password: EncString;
   lastUsedDate: Date;
 
-  constructor(obj?: PasswordHistoryData, alreadyEncrypted: boolean = false) {
+  constructor(obj?: PasswordHistoryData, alreadyEncrypted = false) {
     super();
     if (obj == null) {
       return;

@@ -1,16 +1,15 @@
 import { Observable, Subject } from "rxjs";
 
-import { EnvironmentUrls } from "../models/domain/environmentUrls";
-
 import {
   EnvironmentService as EnvironmentServiceAbstraction,
   Urls,
 } from "../abstractions/environment.service";
 import { StateService } from "../abstractions/state.service";
+import { EnvironmentUrls } from "../models/domain/environmentUrls";
 
 export class EnvironmentService implements EnvironmentServiceAbstraction {
   private readonly urlsSubject = new Subject<Urls>();
-  urls: Observable<Urls> = this.urlsSubject; // tslint:disable-line
+  urls: Observable<Urls> = this.urlsSubject;
 
   private baseUrl: string;
   private webVaultUrl: string;
@@ -22,7 +21,7 @@ export class EnvironmentService implements EnvironmentServiceAbstraction {
   private keyConnectorUrl: string;
 
   constructor(private stateService: StateService) {
-    this.stateService.activeAccount.subscribe(async (_userId) => {
+    this.stateService.activeAccount.subscribe(async () => {
       await this.setUrlsFromStorage();
     });
   }

@@ -31,7 +31,7 @@ $icomoon-font-path: "~@bitwarden/jslib-angular/src/scss/bwicons/fonts/" !default
 
 // Fixed Width Icons
 .bwi-fw {
-  width: (18em / 14);
+  width: calc(18em / 14);
   text-align: center;
 }
 
@@ -41,8 +41,8 @@ $icomoon-font-path: "~@bitwarden/jslib-angular/src/scss/bwicons/fonts/" !default
 }
 
 .bwi-lg {
-  font-size: (4em / 3);
-  line-height: (3em / 4);
+  font-size: calc(4em / 3);
+  line-height: calc(3em / 4);
   vertical-align: -15%;
 }
 
@@ -75,7 +75,7 @@ $icomoon-font-path: "~@bitwarden/jslib-angular/src/scss/bwicons/fonts/" !default
 // List Icons
 .bwi-ul {
   padding-left: 0;
-  margin-left: (30em / 14);
+  margin-left: calc(30em / 14);
   list-style-type: none;
   > li {
     position: relative;
@@ -84,12 +84,12 @@ $icomoon-font-path: "~@bitwarden/jslib-angular/src/scss/bwicons/fonts/" !default
 
 .bwi-li {
   position: absolute;
-  left: -(30em / 14);
-  width: (30em / 14);
-  top: (2em / 14);
+  left: calc(-30em / 14);
+  width: calc(30em / 14);
+  top: calc(2em / 14);
   text-align: center;
   &.bwi-lg {
-    left: -(30em / 14) + (4em / 14);
+    left: calc(-30em / 14) + calc(4em / 14);
   }
 }
 
@@ -245,11 +245,5 @@ $icons: (
 @each $name, $glyph in $icons {
   .bwi-#{$name}:before {
     content: $glyph;
-  }
-}
-
-:export {
-  @each $name, $glyph in $icons {
-    #{$name}: $glyph;
   }
 }

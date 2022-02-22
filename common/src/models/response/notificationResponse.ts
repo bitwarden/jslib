@@ -1,6 +1,6 @@
-import { BaseResponse } from "./baseResponse";
-
 import { NotificationType } from "../../enums/notificationType";
+
+import { BaseResponse } from "./baseResponse";
 
 export class NotificationResponse extends BaseResponse {
   contextId: string;
@@ -36,6 +36,7 @@ export class NotificationResponse extends BaseResponse {
       case NotificationType.SyncSendUpdate:
       case NotificationType.SyncSendDelete:
         this.payload = new SyncSendNotification(payload);
+        break;
       default:
         break;
     }

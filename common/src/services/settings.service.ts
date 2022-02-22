@@ -30,6 +30,7 @@ export class SettingsService implements SettingsServiceAbstraction {
   private async getSettings(): Promise<any> {
     const settings = await this.stateService.getSettings();
     if (settings == null) {
+      // eslint-disable-next-line
       const userId = await this.stateService.getUserId();
     }
     return settings;

@@ -1,7 +1,5 @@
-import { EncryptionType } from "../../enums/encryptionType";
-
 import { CryptoService } from "../../abstractions/crypto.service";
-
+import { EncryptionType } from "../../enums/encryptionType";
 import { Utils } from "../../misc/utils";
 
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";

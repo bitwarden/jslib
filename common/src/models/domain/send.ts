@@ -1,11 +1,7 @@
 import { CryptoService } from "../../abstractions/crypto.service";
-
 import { SendType } from "../../enums/sendType";
-
 import { Utils } from "../../misc/utils";
-
 import { SendData } from "../data/sendData";
-
 import { SendView } from "../view/sendView";
 
 import Domain from "./domainBase";
@@ -32,7 +28,7 @@ export class Send extends Domain {
   disabled: boolean;
   hideEmail: boolean;
 
-  constructor(obj?: SendData, alreadyEncrypted: boolean = false) {
+  constructor(obj?: SendData, alreadyEncrypted = false) {
     super();
     if (obj == null) {
       return;

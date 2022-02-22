@@ -1,5 +1,4 @@
 import { ipcMain } from "electron";
-
 import { deletePassword, getPassword, setPassword } from "keytar";
 
 import { BiometricMain } from "jslib-common/abstractions/biometric.main";

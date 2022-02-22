@@ -1,3 +1,4 @@
+/* eslint-disable */
 export const data = `
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <database>    <!-- LABELS -->

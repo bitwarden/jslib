@@ -1,7 +1,7 @@
 import { ConsoleLogService } from "jslib-node/cli/services/consoleLog.service";
+
 import { interceptConsole, restoreConsole } from "../../common/services/consoleLog.service.spec";
 
-const originalConsole = console;
 let caughtMessage: any = {};
 
 describe("CLI Console log service", () => {

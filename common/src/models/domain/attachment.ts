@@ -1,14 +1,11 @@
+import { CryptoService } from "../../abstractions/crypto.service";
+import { Utils } from "../../misc/utils";
 import { AttachmentData } from "../data/attachmentData";
-
 import { AttachmentView } from "../view/attachmentView";
 
 import Domain from "./domainBase";
 import { EncString } from "./encString";
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";
-
-import { CryptoService } from "../../abstractions/crypto.service";
-
-import { Utils } from "../../misc/utils";
 
 export class Attachment extends Domain {
   id: string;
@@ -18,7 +15,7 @@ export class Attachment extends Domain {
   key: EncString;
   fileName: EncString;
 
-  constructor(obj?: AttachmentData, alreadyEncrypted: boolean = false) {
+  constructor(obj?: AttachmentData, alreadyEncrypted = false) {
     super();
     if (obj == null) {
       return;
