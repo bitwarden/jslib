@@ -21,6 +21,6 @@ export class A11yInvalidDirective implements OnDestroy, OnInit {
   }
 
   ngOnDestroy() {
-    this.sub.unsubscribe();
+    this.sub?.unsubscribe();
   }
 }
