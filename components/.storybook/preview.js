@@ -11,4 +11,11 @@ export const parameters = {
     },
   },
   docs: { inlineStories: true },
+  themes: {
+    default: "light",
+    list: [
+      { name: "light", class: "theme_light", color: "#ffffff" },
+      { name: "dark", class: "theme_dark", color: "#1f242e" },
+    ],
+  },
 };

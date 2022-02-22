@@ -14,19 +14,19 @@ type ButtonTypes = "default" | "outline";
 const buttonStyles: Record<ModeTypes, Record<ButtonTypes, string>> = {
   primary: {
     default:
-      "tw-border-primary-500 tw-bg-primary-500 tw-text-white hover:tw-bg-primary-700 disabled:tw-opacity-60 disabled:hover:tw-bg-primary-500",
+      "tw-border-primary-500 tw-bg-primary-500 tw-text-white hover:tw-bg-primary-700 hover:tw-border-primary-700 disabled:tw-opacity-60 disabled:hover:tw-bg-primary-500",
     outline:
-      "tw-bg-gray-100 tw-border-gray-400 tw-text-primary-500 hover:tw-bg-primary-500 hover:tw-border-primary-500 hover:tw-text-white",
+      "tw-bg-outline-background tw-border-outline-border tw-text-primary-500 hover:tw-bg-primary-500 hover:tw-border-primary-500 hover:tw-text-white",
   },
   secondary: {
     default: "",
     outline:
-      "tw-border-secondary-500 !tw-text-secondary-900 hover:tw-bg-secondary-500 hover:!tw-text-[#333333]",
+      "tw-bg-outline-background tw-border-outline-border !tw-text-secondary-text hover:tw-bg-secondary-500 hover:tw-border-secondary-500 hover:!tw-text-secondary-text-hover",
   },
   danger: {
     default: "",
     outline:
-      "tw-bg-gray-100 tw-border-gray-400 tw-text-danger-500 hover:tw-bg-danger-500 hover:tw-border-danger-500 hover:tw-text-white",
+      "tw-bg-outline-background tw-border-outline-border tw-text-danger-500 hover:tw-bg-danger-500 hover:tw-border-danger-500 hover:tw-text-white",
   },
 };
 
