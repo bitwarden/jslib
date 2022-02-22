@@ -1,4 +1,4 @@
-import Substitute, { SubstituteOf } from "@fluffy-spoon/substitute";
+import { Substitute, SubstituteOf } from "@fluffy-spoon/substitute";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 
