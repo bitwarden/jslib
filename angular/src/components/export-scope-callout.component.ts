@@ -26,7 +26,6 @@ export class ExportScopeCalloutComponent implements OnInit {
     if (!(await this.organizationService.hasOrganizations())) {
       return;
     }
-    this.show = true;
     this.scopeConfig =
       this.organizationId != null
         ? {
@@ -39,5 +38,6 @@ export class ExportScopeCalloutComponent implements OnInit {
             description: "exportingPersonalVaultDescription",
             scopeIdentifier: await this.stateService.getEmail(),
           };
+    this.show = true;
   }
 }
