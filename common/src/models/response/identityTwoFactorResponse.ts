@@ -1,6 +1,6 @@
-import { BaseResponse } from "./baseResponse";
-
 import { TwoFactorProviderType } from "../../enums/twoFactorProviderType";
+
+import { BaseResponse } from "./baseResponse";
 
 export class IdentityTwoFactorResponse extends BaseResponse {
   twoFactorProviders: TwoFactorProviderType[];
@@ -14,6 +14,7 @@ export class IdentityTwoFactorResponse extends BaseResponse {
     const twoFactorProviders2 = this.getResponseProperty("TwoFactorProviders2");
     if (twoFactorProviders2 != null) {
       for (const prop in twoFactorProviders2) {
+        // eslint-disable-next-line
         if (twoFactorProviders2.hasOwnProperty(prop)) {
           this.twoFactorProviders2.set(parseInt(prop, null), twoFactorProviders2[prop]);
         }

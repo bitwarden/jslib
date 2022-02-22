@@ -11,10 +11,8 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
-
 import { ApiLogInStrategy } from "jslib-common/misc/logInStrategies/apiLogin.strategy";
 import { Utils } from "jslib-common/misc/utils";
-
 import { ApiLogInCredentials } from "jslib-common/models/domain/logInCredentials";
 
 import { identityTokenResponseFactory } from "./logIn.strategy.spec";

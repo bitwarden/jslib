@@ -1,7 +1,6 @@
-import { CardView } from "../view/cardView";
-
 import { Card as CardDomain } from "../domain/card";
 import { EncString } from "../domain/encString";
+import { CardView } from "../view/cardView";
 
 export class Card {
   static template(): Card {

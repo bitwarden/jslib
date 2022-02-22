@@ -1,6 +1,6 @@
-import { FolderRequest } from "./folderRequest";
-
 import { Folder } from "../domain/folder";
+
+import { FolderRequest } from "./folderRequest";
 
 export class FolderWithIdRequest extends FolderRequest {
   id: string;

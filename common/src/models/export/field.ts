@@ -1,10 +1,8 @@
 import { FieldType } from "../../enums/fieldType";
 import { LinkedIdType } from "../../enums/linkedIdType";
-
-import { FieldView } from "../view/fieldView";
-
 import { EncString } from "../domain/encString";
 import { Field as FieldDomain } from "../domain/field";
+import { FieldView } from "../view/fieldView";
 
 export class Field {
   static template(): Field {

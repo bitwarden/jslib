@@ -1,7 +1,6 @@
-import { EncString } from "./encString";
-
 import { View } from "../view/view";
 
+import { EncString } from "./encString";
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
 export default class Domain {
@@ -13,6 +12,7 @@ export default class Domain {
     notEncList: any[] = []
   ) {
     for (const prop in map) {
+      // eslint-disable-next-line
       if (!map.hasOwnProperty(prop)) {
         continue;
       }
@@ -32,6 +32,7 @@ export default class Domain {
     notEncStringList: any[] = []
   ) {
     for (const prop in map) {
+      // eslint-disable-next-line
       if (!map.hasOwnProperty(prop)) {
         continue;
       }
@@ -55,11 +56,11 @@ export default class Domain {
     const self: any = this;
 
     for (const prop in map) {
+      // eslint-disable-next-line
       if (!map.hasOwnProperty(prop)) {
         continue;
       }
 
-      // tslint:disable-next-line
       (function (theProp) {
         const p = Promise.resolve()
           .then(() => {

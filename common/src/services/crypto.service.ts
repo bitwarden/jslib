@@ -1,25 +1,21 @@
 import * as bigInt from "big-integer";
 
-import { EncryptionType } from "../enums/encryptionType";
-import { HashPurpose } from "../enums/hashPurpose";
-import { KdfType } from "../enums/kdfType";
-import { KeySuffixOptions } from "../enums/keySuffixOptions";
-
-import { EncArrayBuffer } from "../models/domain/encArrayBuffer";
-import { EncryptedObject } from "../models/domain/encryptedObject";
-import { EncString } from "../models/domain/encString";
-import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-
 import { CryptoService as CryptoServiceAbstraction } from "../abstractions/crypto.service";
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
 import { LogService } from "../abstractions/log.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import { StateService } from "../abstractions/state.service";
-
+import { EncryptionType } from "../enums/encryptionType";
+import { HashPurpose } from "../enums/hashPurpose";
+import { KdfType } from "../enums/kdfType";
+import { KeySuffixOptions } from "../enums/keySuffixOptions";
 import { sequentialize } from "../misc/sequentialize";
 import { Utils } from "../misc/utils";
 import { EEFLongWordList } from "../misc/wordlist";
-
+import { EncArrayBuffer } from "../models/domain/encArrayBuffer";
+import { EncString } from "../models/domain/encString";
+import { EncryptedObject } from "../models/domain/encryptedObject";
+import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 import { ProfileOrganizationResponse } from "../models/response/profileOrganizationResponse";
 import { ProfileProviderOrganizationResponse } from "../models/response/profileProviderOrganizationResponse";
 import { ProfileProviderResponse } from "../models/response/profileProviderResponse";
@@ -227,6 +223,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     let setKey = false;
 
     for (const orgId in encOrgKeys) {
+      // eslint-disable-next-line
       if (!encOrgKeys.hasOwnProperty(orgId)) {
         continue;
       }
@@ -272,6 +269,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     let setKey = false;
 
     for (const orgId in encProviderKeys) {
+      // eslint-disable-next-line
       if (!encProviderKeys.hasOwnProperty(orgId)) {
         continue;
       }
@@ -328,7 +326,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     return (await this.stateService.getEncryptedCryptoSymmetricKey()) != null;
   }
 
-  async clearKey(clearSecretStorage: boolean = true, userId?: string): Promise<any> {
+  async clearKey(clearSecretStorage = true, userId?: string): Promise<any> {
     await this.stateService.setCryptoMasterKey(null, { userId: userId });
     await this.stateService.setLegacyEtmKey(null, { userId: userId });
     if (clearSecretStorage) {
@@ -574,8 +572,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     switch (encType) {
       case EncryptionType.Rsa2048_OaepSha256_B64:
       case EncryptionType.Rsa2048_OaepSha1_B64:
-      // HmacSha256 types are deprecated
-      case EncryptionType.Rsa2048_OaepSha256_HmacSha256_B64:
+      case EncryptionType.Rsa2048_OaepSha256_HmacSha256_B64: // HmacSha256 types are deprecated
       case EncryptionType.Rsa2048_OaepSha1_HmacSha256_B64:
         break;
       default:
@@ -699,7 +696,6 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     // Use & to apply the mask and reduce the number of recursive lookups
-    // tslint:disable-next-line
     rval = rval & mask;
 
     if (rval >= range) {
@@ -894,7 +890,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     return new SymmetricCryptoKey(newKey.buffer);
   }
 
-  private async hashPhrase(hash: ArrayBuffer, minimumEntropy: number = 64) {
+  private async hashPhrase(hash: ArrayBuffer, minimumEntropy = 64) {
     const entropyPerWord = Math.log(EEFLongWordList.length) / Math.log(2);
     let numWords = Math.ceil(minimumEntropy / entropyPerWord);
 

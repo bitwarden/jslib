@@ -1,19 +1,15 @@
+import { ApiService } from "../abstractions/api.service";
 import { OrganizationService } from "../abstractions/organization.service";
 import { PolicyService as PolicyServiceAbstraction } from "../abstractions/policy.service";
 import { StateService } from "../abstractions/state.service";
-
+import { OrganizationUserStatusType } from "../enums/organizationUserStatusType";
+import { OrganizationUserType } from "../enums/organizationUserType";
+import { PolicyType } from "../enums/policyType";
 import { PolicyData } from "../models/data/policyData";
-
 import { MasterPasswordPolicyOptions } from "../models/domain/masterPasswordPolicyOptions";
 import { Organization } from "../models/domain/organization";
 import { Policy } from "../models/domain/policy";
 import { ResetPasswordPolicyOptions } from "../models/domain/resetPasswordPolicyOptions";
-
-import { OrganizationUserStatusType } from "../enums/organizationUserStatusType";
-import { OrganizationUserType } from "../enums/organizationUserType";
-import { PolicyType } from "../enums/policyType";
-
-import { ApiService } from "../abstractions/api.service";
 import { ListResponse } from "../models/response/listResponse";
 import { PolicyResponse } from "../models/response/policyResponse";
 
@@ -38,6 +34,7 @@ export class PolicyService implements PolicyServiceAbstraction {
     } else {
       const diskPolicies = await this.stateService.getEncryptedPolicies({ userId: userId });
       for (const id in diskPolicies) {
+        // eslint-disable-next-line
         if (diskPolicies.hasOwnProperty(id)) {
           response.push(new Policy(diskPolicies[id]));
         }
@@ -178,6 +175,7 @@ export class PolicyService implements PolicyServiceAbstraction {
       return false;
     }
 
+    // eslint-disable-next-line
     if (enforcedPolicyOptions.requireSpecial && !/[!@#$%\^&*]/g.test(newPassword)) {
       return false;
     }

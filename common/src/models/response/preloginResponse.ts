@@ -1,6 +1,6 @@
-import { BaseResponse } from "./baseResponse";
-
 import { KdfType } from "../../enums/kdfType";
+
+import { BaseResponse } from "./baseResponse";
 
 export class PreloginResponse extends BaseResponse {
   kdf: KdfType;

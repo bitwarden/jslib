@@ -1,14 +1,13 @@
-import { BaseImporter } from "./baseImporter";
-import { Importer } from "./importer";
-
-import { EncString } from "../models/domain/encString";
-import { ImportResult } from "../models/domain/importResult";
-
 import { CryptoService } from "../abstractions/crypto.service";
 import { I18nService } from "../abstractions/i18n.service";
 import { ImportService } from "../abstractions/import.service";
 import { KdfType } from "../enums/kdfType";
+import { EncString } from "../models/domain/encString";
+import { ImportResult } from "../models/domain/importResult";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
+
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
 class BitwardenPasswordProtectedFileFormat {
   encrypted: boolean;
@@ -17,7 +16,6 @@ class BitwardenPasswordProtectedFileFormat {
   salt: string;
   kdfIterations: number;
   kdfType: number;
-  // tslint:disable-next-line
   encKeyValidation_DO_NOT_EDIT: string;
   data: string;
 }

@@ -11,24 +11,21 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { UserVerificationService } from "jslib-common/abstractions/userVerification.service";
-
-import { ChangePasswordComponent as BaseChangePasswordComponent } from "./change-password.component";
-
+import { VerificationType } from "jslib-common/enums/verificationType";
 import { EncString } from "jslib-common/models/domain/encString";
 import { MasterPasswordPolicyOptions } from "jslib-common/models/domain/masterPasswordPolicyOptions";
+import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
 import { PasswordRequest } from "jslib-common/models/request/passwordRequest";
-
-import { VerificationType } from "jslib-common/enums/verificationType";
 import { Verification } from "jslib-common/types/verification";
 
-import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
+import { ChangePasswordComponent as BaseChangePasswordComponent } from "./change-password.component";
 
 @Directive()
 export class UpdatePasswordComponent extends BaseChangePasswordComponent {
   hint: string;
   key: string;
   enforcedPolicyOptions: MasterPasswordPolicyOptions;
-  showPassword: boolean = false;
+  showPassword = false;
   currentMasterPassword: string;
 
   onSuccessfulChangePassword: () => Promise<any>;

@@ -1,20 +1,3 @@
-import { KdfType } from "../enums/kdfType";
-
-import { ApiLogInStrategy } from "../misc/logInStrategies/apiLogin.strategy";
-import { PasswordLogInStrategy } from "../misc/logInStrategies/passwordLogin.strategy";
-import { SsoLogInStrategy } from "../misc/logInStrategies/ssoLogin.strategy";
-import { AuthResult } from "../models/domain/authResult";
-import {
-  ApiLogInCredentials,
-  PasswordLogInCredentials,
-  SsoLogInCredentials,
-} from "../models/domain/logInCredentials";
-import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-
-import { PreloginRequest } from "../models/request/preloginRequest";
-
-import { TokenRequestTwoFactor } from "../models/request/identityToken/tokenRequest";
-
 import { ApiService } from "../abstractions/api.service";
 import { AppIdService } from "../abstractions/appId.service";
 import { AuthService as AuthServiceAbstraction } from "../abstractions/auth.service";
@@ -27,8 +10,20 @@ import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import { StateService } from "../abstractions/state.service";
 import { TokenService } from "../abstractions/token.service";
 import { TwoFactorService } from "../abstractions/twoFactor.service";
-
 import { AuthenticationType } from "../enums/authenticationType";
+import { KdfType } from "../enums/kdfType";
+import { ApiLogInStrategy } from "../misc/logInStrategies/apiLogin.strategy";
+import { PasswordLogInStrategy } from "../misc/logInStrategies/passwordLogin.strategy";
+import { SsoLogInStrategy } from "../misc/logInStrategies/ssoLogin.strategy";
+import { AuthResult } from "../models/domain/authResult";
+import {
+  ApiLogInCredentials,
+  PasswordLogInCredentials,
+  SsoLogInCredentials,
+} from "../models/domain/logInCredentials";
+import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
+import { TokenRequestTwoFactor } from "../models/request/identityToken/tokenRequest";
+import { PreloginRequest } from "../models/request/preloginRequest";
 
 export class AuthService implements AuthServiceAbstraction {
   get email(): string {
@@ -122,7 +117,7 @@ export class AuthService implements AuthServiceAbstraction {
     }
   }
 
-  logOut(callback: Function) {
+  logOut(callback: () => void) {
     callback();
     this.messagingService.send("loggedOut");
   }

@@ -1,7 +1,5 @@
 import { LogService } from "../abstractions/log.service";
-
 import { Utils } from "../misc/utils";
-
 import { EncArrayBuffer } from "../models/domain/encArrayBuffer";
 
 const MAX_SINGLE_BLOB_UPLOAD_SIZE = 256 * 1024 * 1024; // 256 MiB
@@ -56,6 +54,7 @@ export class AzureFileUploadService {
       );
     }
 
+    // eslint-disable-next-line
     try {
       while (blockIndex < numBlocks) {
         url = await this.renewUrlIfNecessary(url, renewalCallback);

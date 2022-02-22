@@ -2,7 +2,6 @@ import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
 import { LogService } from "../abstractions/log.service";
 import { StateService } from "../abstractions/state.service";
 import { TotpService as TotpServiceAbstraction } from "../abstractions/totp.service";
-
 import { Utils } from "../misc/utils";
 
 const B32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
@@ -77,18 +76,15 @@ export class TotpService implements TotpServiceAbstraction {
       return null;
     }
 
-    /* tslint:disable */
     const offset = hash[hash.length - 1] & 0xf;
     const binary =
       ((hash[offset] & 0x7f) << 24) |
       ((hash[offset + 1] & 0xff) << 16) |
       ((hash[offset + 2] & 0xff) << 8) |
       (hash[offset + 3] & 0xff);
-    /* tslint:enable */
 
     let otp = "";
     if (isSteamAuth) {
-      // tslint:disable-next-line
       let fullCode = binary & 0x7fffffff;
       for (let i = 0; i < digits; i++) {
         otp += SteamChars[fullCode % SteamChars.length];
