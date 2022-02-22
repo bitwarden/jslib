@@ -1,7 +1,7 @@
 import { Directive, ElementRef, HostListener } from "@angular/core";
 
 @Directive({
-  selector: "input[appChangeStripSpaces]",
+  selector: "input[appInputStripSpaces]",
 })
 export class InputStripSpacesDirective {
   constructor(private el: ElementRef<HTMLInputElement>) {}
