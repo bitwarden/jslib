@@ -47,6 +47,7 @@ import { FirefoxCsvImporter } from "../importers/firefoxCsvImporter";
 import { FSecureFskImporter } from "../importers/fsecureFskImporter";
 import { GnomeJsonImporter } from "../importers/gnomeJsonImporter";
 import { Importer } from "../importers/importer";
+import { ImportError } from "../importers/importError";
 import { KasperskyTxtImporter } from "../importers/kasperskyTxtImporter";
 import { KeePass2XmlImporter } from "../importers/keepass2XmlImporter";
 import { KeePassXCsvImporter } from "../importers/keepassxCsvImporter";
@@ -82,7 +83,6 @@ import { TrueKeyCsvImporter } from "../importers/truekeyCsvImporter";
 import { UpmCsvImporter } from "../importers/upmCsvImporter";
 import { YotiCsvImporter } from "../importers/yotiCsvImporter";
 import { ZohoVaultCsvImporter } from "../importers/zohoVaultCsvImporter";
-import { ImportError } from "../importers/importError";
 
 const featuredImportOptions = [
   { id: "bitwardenjson", name: "Bitwarden (json)" },
