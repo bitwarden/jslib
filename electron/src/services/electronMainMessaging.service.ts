@@ -17,7 +17,7 @@ export class ElectronMainMessagingService implements MessagingService {
     });
 
     ipcMain.handle("showMessageBox", (event, options) => {
-      return dialog.showMessageBox(options);
+      return dialog.showMessageBox(this.windowMain.win, options);
     });
 
     ipcMain.handle("openContextMenu", (event, options: { menu: RendererMenuItem[] }) => {
