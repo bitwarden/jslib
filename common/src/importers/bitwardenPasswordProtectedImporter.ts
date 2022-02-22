@@ -9,7 +9,7 @@ import { I18nService } from "../abstractions/i18n.service";
 import { KdfType } from "../enums/kdfType";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 
-class BitwardenPasswordProtectedFileFormat {
+interface BitwardenPasswordProtectedFileFormat {
   encrypted: boolean;
   passwordProtected: boolean;
   salt: string;
