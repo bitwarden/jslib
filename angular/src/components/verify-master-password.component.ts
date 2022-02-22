@@ -4,9 +4,7 @@ import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from "@angular/f
 
 import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.service";
 import { UserVerificationService } from "jslib-common/abstractions/userVerification.service";
-
 import { VerificationType } from "jslib-common/enums/verificationType";
-
 import { Verification } from "jslib-common/types/verification";
 
 @Component({
@@ -26,9 +24,9 @@ import { Verification } from "jslib-common/types/verification";
   ],
 })
 export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnInit {
-  usesKeyConnector: boolean = false;
-  disableRequestOTP: boolean = false;
-  sentCode: boolean = false;
+  usesKeyConnector = false;
+  disableRequestOTP = false;
+  sentCode = false;
 
   secret = new FormControl("");
 

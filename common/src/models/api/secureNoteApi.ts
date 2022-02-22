@@ -1,6 +1,5 @@
-import { BaseResponse } from "../response/baseResponse";
-
 import { SecureNoteType } from "../../enums/secureNoteType";
+import { BaseResponse } from "../response/baseResponse";
 
 export class SecureNoteApi extends BaseResponse {
   type: SecureNoteType;

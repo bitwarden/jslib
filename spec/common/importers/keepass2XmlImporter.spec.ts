@@ -1,6 +1,6 @@
 import { KeePass2XmlImporter as Importer } from "jslib-common/importers/keepass2XmlImporter";
 
-const TestData: string = `<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+const TestData = `<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <KeePassFile>
 	<Meta>
 		<Generator>KeePass</Generator>

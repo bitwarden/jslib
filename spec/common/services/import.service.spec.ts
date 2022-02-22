@@ -1,6 +1,6 @@
-import Substitute, { Arg, SubstituteOf } from "@fluffy-spoon/substitute";
-import { ApiService } from "jslib-common/abstractions/api.service";
+import Substitute, { SubstituteOf } from "@fluffy-spoon/substitute";
 
+import { ApiService } from "jslib-common/abstractions/api.service";
 import { CipherService } from "jslib-common/abstractions/cipher.service";
 import { CollectionService } from "jslib-common/abstractions/collection.service";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
@@ -8,10 +8,8 @@ import { FolderService } from "jslib-common/abstractions/folder.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { BitwardenPasswordProtectedImporter } from "jslib-common/importers/bitwardenPasswordProtectedImporter";
-
 import { Importer } from "jslib-common/importers/importer";
 import { Utils } from "jslib-common/misc/utils";
-
 import { ImportService } from "jslib-common/services/import.service";
 
 describe("ImportService", () => {

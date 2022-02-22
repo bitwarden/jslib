@@ -1,10 +1,8 @@
 import { UriMatchType } from "../../enums/uriMatchType";
-
-import { View } from "./view";
-
+import { Utils } from "../../misc/utils";
 import { LoginUri } from "../domain/loginUri";
 
-import { Utils } from "../../misc/utils";
+import { View } from "./view";
 
 const CanLaunchWhitelist = [
   "https://",
@@ -25,13 +23,11 @@ const CanLaunchWhitelist = [
 export class LoginUriView implements View {
   match: UriMatchType = null;
 
-  // tslint:disable
   private _uri: string = null;
   private _domain: string = null;
   private _hostname: string = null;
   private _host: string = null;
   private _canLaunch: boolean = null;
-  // tslint:enable
 
   constructor(u?: LoginUri) {
     if (!u) {

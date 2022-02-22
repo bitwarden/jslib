@@ -1,6 +1,7 @@
 import { EmergencyAccessStatusType } from "../../enums/emergencyAccessStatusType";
 import { EmergencyAccessType } from "../../enums/emergencyAccessType";
 import { KdfType } from "../../enums/kdfType";
+
 import { BaseResponse } from "./baseResponse";
 import { CipherResponse } from "./cipherResponse";
 

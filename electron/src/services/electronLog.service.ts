@@ -1,11 +1,11 @@
-import log from "electron-log";
 import * as path from "path";
 
-import { isDev } from "../utils";
+import log from "electron-log";
 
 import { LogLevelType } from "jslib-common/enums/logLevelType";
-
 import { ConsoleLogService as BaseLogService } from "jslib-common/services/consoleLog.service";
+
+import { isDev } from "../utils";
 
 export class ElectronLogService extends BaseLogService {
   constructor(protected filter: (level: LogLevelType) => boolean = null, logDir: string = null) {

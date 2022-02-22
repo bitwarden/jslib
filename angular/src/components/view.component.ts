@@ -9,11 +9,6 @@ import {
   Output,
 } from "@angular/core";
 
-import { CipherRepromptType } from "jslib-common/enums/cipherRepromptType";
-import { CipherType } from "jslib-common/enums/cipherType";
-import { EventType } from "jslib-common/enums/eventType";
-import { FieldType } from "jslib-common/enums/fieldType";
-
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { AuditService } from "jslib-common/abstractions/audit.service";
 import { BroadcasterService } from "jslib-common/abstractions/broadcaster.service";
@@ -27,9 +22,11 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
 import { TotpService } from "jslib-common/abstractions/totp.service";
-
+import { CipherRepromptType } from "jslib-common/enums/cipherRepromptType";
+import { CipherType } from "jslib-common/enums/cipherType";
+import { EventType } from "jslib-common/enums/eventType";
+import { FieldType } from "jslib-common/enums/fieldType";
 import { ErrorResponse } from "jslib-common/models/response/errorResponse";
-
 import { AttachmentView } from "jslib-common/models/view/attachmentView";
 import { CipherView } from "jslib-common/models/view/cipherView";
 import { LoginUriView } from "jslib-common/models/view/loginUriView";
@@ -60,7 +57,7 @@ export class ViewComponent implements OnDestroy, OnInit {
 
   private totpInterval: any;
   private previousCipherId: string;
-  private passwordReprompted: boolean = false;
+  private passwordReprompted = false;
 
   constructor(
     protected cipherService: CipherService,

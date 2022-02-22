@@ -1,17 +1,14 @@
-import { BaseImporter } from "./baseImporter";
-import { Importer } from "./importer";
-
+import { CipherType } from "../enums/cipherType";
+import { FieldType } from "../enums/fieldType";
+import { SecureNoteType } from "../enums/secureNoteType";
 import { ImportResult } from "../models/domain/importResult";
-
+import { CipherView } from "../models/view/cipherView";
+import { FieldView } from "../models/view/fieldView";
 import { FolderView } from "../models/view/folderView";
 import { SecureNoteView } from "../models/view/secureNoteView";
 
-import { CipherType } from "../enums/cipherType";
-import { SecureNoteType } from "../enums/secureNoteType";
-
-import { FieldType } from "../enums/fieldType";
-import { CipherView } from "../models/view/cipherView";
-import { FieldView } from "../models/view/fieldView";
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
 export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
   parse(data: string): Promise<ImportResult> {

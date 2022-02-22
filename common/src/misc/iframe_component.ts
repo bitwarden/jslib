@@ -1,5 +1,3 @@
-import { I18nService } from "../abstractions/i18n.service";
-
 export abstract class IFrameComponent {
   iframe: HTMLIFrameElement;
   private connectorLink: HTMLAnchorElement;

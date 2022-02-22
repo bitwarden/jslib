@@ -9,7 +9,6 @@ import {
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { PolicyService } from "jslib-common/abstractions/policy.service";
-
 import { PolicyType } from "jslib-common/enums/policyType";
 import { Policy } from "jslib-common/models/domain/policy";
 
@@ -120,11 +119,13 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
     this.onChange = onChange;
   }
 
-  // tslint:disable-next-line
-  registerOnTouched(onTouched: any): void {}
+  registerOnTouched(onTouched: any): void {
+    // Empty
+  }
 
-  // tslint:disable-next-line
-  setDisabledState?(isDisabled: boolean): void {}
+  setDisabledState?(isDisabled: boolean): void {
+    // Empty
+  }
 
   validate(control: AbstractControl): ValidationErrors {
     if (this.vaultTimeoutPolicy && this.vaultTimeoutPolicy?.data?.minutes < control.value) {

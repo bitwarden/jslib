@@ -9,23 +9,7 @@ import {
   ImportService as ImportServiceAbstraction,
 } from "../abstractions/import.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";
-
-import { ImportResult } from "../models/domain/importResult";
-
 import { CipherType } from "../enums/cipherType";
-
-import { Utils } from "../misc/utils";
-
-import { CipherRequest } from "../models/request/cipherRequest";
-import { CollectionRequest } from "../models/request/collectionRequest";
-import { FolderRequest } from "../models/request/folderRequest";
-import { ImportCiphersRequest } from "../models/request/importCiphersRequest";
-import { ImportOrganizationCiphersRequest } from "../models/request/importOrganizationCiphersRequest";
-import { KvpRequest } from "../models/request/kvpRequest";
-
-import { ErrorResponse } from "../models/response/errorResponse";
-import { CipherView } from "../models/view/cipherView";
-
 import { AscendoCsvImporter } from "../importers/ascendoCsvImporter";
 import { AvastCsvImporter } from "../importers/avastCsvImporter";
 import { AvastJsonImporter } from "../importers/avastJsonImporter";
@@ -51,7 +35,6 @@ import { KasperskyTxtImporter } from "../importers/kasperskyTxtImporter";
 import { KeePass2XmlImporter } from "../importers/keepass2XmlImporter";
 import { KeePassXCsvImporter } from "../importers/keepassxCsvImporter";
 import { KeeperCsvImporter } from "../importers/keeperImporters/keeperCsvImporter";
-import { KeeperJsonImporter } from "../importers/keeperImporters/keeperJsonImporter";
 import { LastPassCsvImporter } from "../importers/lastpassCsvImporter";
 import { LogMeOnceCsvImporter } from "../importers/logMeOnceCsvImporter";
 import { MeldiumCsvImporter } from "../importers/meldiumCsvImporter";
@@ -82,6 +65,16 @@ import { TrueKeyCsvImporter } from "../importers/truekeyCsvImporter";
 import { UpmCsvImporter } from "../importers/upmCsvImporter";
 import { YotiCsvImporter } from "../importers/yotiCsvImporter";
 import { ZohoVaultCsvImporter } from "../importers/zohoVaultCsvImporter";
+import { Utils } from "../misc/utils";
+import { ImportResult } from "../models/domain/importResult";
+import { CipherRequest } from "../models/request/cipherRequest";
+import { CollectionRequest } from "../models/request/collectionRequest";
+import { FolderRequest } from "../models/request/folderRequest";
+import { ImportCiphersRequest } from "../models/request/importCiphersRequest";
+import { ImportOrganizationCiphersRequest } from "../models/request/importOrganizationCiphersRequest";
+import { KvpRequest } from "../models/request/kvpRequest";
+import { ErrorResponse } from "../models/response/errorResponse";
+import { CipherView } from "../models/view/cipherView";
 
 const featuredImportOptions = [
   { id: "bitwardenjson", name: "Bitwarden (json)" },

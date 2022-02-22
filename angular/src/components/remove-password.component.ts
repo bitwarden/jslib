@@ -7,16 +7,15 @@ import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.serv
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { SyncService } from "jslib-common/abstractions/sync.service";
-
 import { Organization } from "jslib-common/models/domain/organization";
 
 @Directive()
 export class RemovePasswordComponent implements OnInit {
   actionPromise: Promise<any>;
-  continuing: boolean = false;
-  leaving: boolean = false;
+  continuing = false;
+  leaving = false;
 
-  loading: boolean = true;
+  loading = true;
   organization: Organization;
   email: string;
 

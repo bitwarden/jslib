@@ -1,13 +1,10 @@
-import { ItemView } from "./itemView";
-import { LoginUriView } from "./loginUriView";
-
+import { LoginLinkedId as LinkedId } from "../../enums/linkedIdType";
+import { linkedFieldOption } from "../../misc/linkedFieldOption.decorator";
 import { Utils } from "../../misc/utils";
-
 import { Login } from "../domain/login";
 
-import { LoginLinkedId as LinkedId } from "../../enums/linkedIdType";
-
-import { linkedFieldOption } from "../../misc/linkedFieldOption.decorator";
+import { ItemView } from "./itemView";
+import { LoginUriView } from "./loginUriView";
 
 export class LoginView extends ItemView {
   @linkedFieldOption(LinkedId.Username)

@@ -3,7 +3,6 @@ import { DomSanitizer } from "@angular/platform-browser";
 
 import { CryptoFunctionService } from "jslib-common/abstractions/cryptoFunction.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-
 import { Utils } from "jslib-common/misc/utils";
 
 @Component({
@@ -81,12 +80,10 @@ export class AvatarComponent implements OnChanges, OnInit {
   private stringToColor(str: string): string {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
-      // tslint:disable-next-line
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
     let color = "#";
     for (let i = 0; i < 3; i++) {
-      // tslint:disable-next-line
       const value = (hash >> (i * 8)) & 0xff;
       color += ("00" + value.toString(16)).substr(-2);
     }

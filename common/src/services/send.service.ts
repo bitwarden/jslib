@@ -1,21 +1,3 @@
-import { SendData } from "../models/data/sendData";
-
-import { SendRequest } from "../models/request/sendRequest";
-
-import { ErrorResponse } from "../models/response/errorResponse";
-import { SendResponse } from "../models/response/sendResponse";
-
-import { EncArrayBuffer } from "../models/domain/encArrayBuffer";
-import { EncString } from "../models/domain/encString";
-import { Send } from "../models/domain/send";
-import { SendFile } from "../models/domain/sendFile";
-import { SendText } from "../models/domain/sendText";
-import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-
-import { SendType } from "../enums/sendType";
-
-import { SendView } from "../models/view/sendView";
-
 import { ApiService } from "../abstractions/api.service";
 import { CryptoService } from "../abstractions/crypto.service";
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
@@ -23,8 +5,19 @@ import { FileUploadService } from "../abstractions/fileUpload.service";
 import { I18nService } from "../abstractions/i18n.service";
 import { SendService as SendServiceAbstraction } from "../abstractions/send.service";
 import { StateService } from "../abstractions/state.service";
-
+import { SendType } from "../enums/sendType";
 import { Utils } from "../misc/utils";
+import { SendData } from "../models/data/sendData";
+import { EncArrayBuffer } from "../models/domain/encArrayBuffer";
+import { EncString } from "../models/domain/encString";
+import { Send } from "../models/domain/send";
+import { SendFile } from "../models/domain/sendFile";
+import { SendText } from "../models/domain/sendText";
+import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
+import { SendRequest } from "../models/request/sendRequest";
+import { ErrorResponse } from "../models/response/errorResponse";
+import { SendResponse } from "../models/response/sendResponse";
+import { SendView } from "../models/view/sendView";
 
 export class SendService implements SendServiceAbstraction {
   constructor(
@@ -95,6 +88,7 @@ export class SendService implements SendServiceAbstraction {
 
   async get(id: string): Promise<Send> {
     const sends = await this.stateService.getEncryptedSends();
+    // eslint-disable-next-line
     if (sends == null || !sends.hasOwnProperty(id)) {
       return null;
     }
@@ -106,6 +100,7 @@ export class SendService implements SendServiceAbstraction {
     const sends = await this.stateService.getEncryptedSends();
     const response: Send[] = [];
     for (const id in sends) {
+      // eslint-disable-next-line
       if (sends.hasOwnProperty(id)) {
         response.push(new Send(sends[id]));
       }

@@ -9,7 +9,6 @@ import { LogService } from "jslib-common/abstractions/log.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { UserVerificationService } from "jslib-common/abstractions/userVerification.service";
-
 import { EventType } from "jslib-common/enums/eventType";
 import { PolicyType } from "jslib-common/enums/policyType";
 
@@ -18,7 +17,7 @@ export class ExportComponent implements OnInit {
   @Output() onSaved = new EventEmitter();
 
   formPromise: Promise<string>;
-  disabledByPolicy: boolean = false;
+  disabledByPolicy = false;
 
   exportForm = this.formBuilder.group({
     format: ["json"],

@@ -1,11 +1,9 @@
+import { FieldType } from "../enums/fieldType";
+import { ImportResult } from "../models/domain/importResult";
+import { FolderView } from "../models/view/folderView";
+
 import { BaseImporter } from "./baseImporter";
 import { Importer } from "./importer";
-
-import { FieldType } from "../enums/fieldType";
-
-import { ImportResult } from "../models/domain/importResult";
-
-import { FolderView } from "../models/view/folderView";
 
 export class KeePass2XmlImporter extends BaseImporter implements Importer {
   result = new ImportResult();
