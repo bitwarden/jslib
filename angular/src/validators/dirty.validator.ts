@@ -23,4 +23,3 @@ export function dirtyRequiredIf(predicate: (predicateCtrl: AbstractControl) => b
 export function dirtyRequired(control: AbstractControl): ValidationErrors | null {
   return control.dirty ? Validators.required(control) : null;
 }
-
