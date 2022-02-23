@@ -10,7 +10,7 @@ import { StateService } from "jslib-common/abstractions/state.service";
 export class ExportScopeCalloutComponent implements OnInit {
   @Input() organizationId: string = null;
 
-  show: boolean = false;
+  show = false;
   scopeConfig: {
     title: string;
     description: string;
