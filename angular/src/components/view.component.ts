@@ -44,6 +44,7 @@ export class ViewComponent implements OnDestroy, OnInit {
 
   cipher: CipherView;
   showPassword: boolean;
+  showPasswordCount: boolean;
   showCardNumber: boolean;
   showCardCode: boolean;
   canAccessPremium: boolean;
@@ -218,9 +219,18 @@ export class ViewComponent implements OnDestroy, OnInit {
     }
 
     this.showPassword = !this.showPassword;
+    this.showPasswordCount = false;
     if (this.showPassword) {
       this.eventService.collect(EventType.Cipher_ClientToggledPasswordVisible, this.cipherId);
     }
+  }
+
+  async togglePasswordCount() {
+    if (!this.showPassword) {
+      return;
+    }
+
+    this.showPasswordCount = !this.showPasswordCount;
   }
 
   async toggleCardNumber() {

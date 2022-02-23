@@ -23,8 +23,17 @@ export class ViewCustomFieldsComponent {
 
     const f = field as any;
     f.showValue = !f.showValue;
+    f.showCount = false;
     if (f.showValue) {
       this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible, this.cipher.id);
     }
+  }
+
+  async toggleFieldCount(field: FieldView) {
+    if (!field.showValue) {
+      return;
+    }
+
+    field.showCount = !field.showCount;
   }
 }
