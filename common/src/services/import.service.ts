@@ -4,13 +4,15 @@ import { CollectionService } from "../abstractions/collection.service";
 import { CryptoService } from "../abstractions/crypto.service";
 import { FolderService } from "../abstractions/folder.service";
 import { I18nService } from "../abstractions/i18n.service";
-import {
-  ImportOption,
-  ImportService as ImportServiceAbstraction,
-} from "../abstractions/import.service";
+import { ImportService as ImportServiceAbstraction } from "../abstractions/import.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import { CipherType } from "../enums/cipherType";
-import { featuredImportOptions, ImportType, regularImportOptions } from "../enums/importOptions";
+import {
+  featuredImportOptions,
+  ImportOption,
+  ImportType,
+  regularImportOptions,
+} from "../enums/importOptions";
 import { AscendoCsvImporter } from "../importers/ascendoCsvImporter";
 import { AvastCsvImporter } from "../importers/avastCsvImporter";
 import { AvastJsonImporter } from "../importers/avastJsonImporter";

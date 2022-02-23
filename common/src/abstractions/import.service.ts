@@ -1,7 +1,6 @@
-import { ImportOption } from "../enums/importOptions";
+import { ImportOption, ImportType } from "../enums/importOptions";
 import { ImportError } from "../importers/importError";
 import { Importer } from "../importers/importer";
-import { ImportType } from "../services/import.service";
 
 export abstract class ImportService {
   featuredImportOptions: readonly ImportOption[];
