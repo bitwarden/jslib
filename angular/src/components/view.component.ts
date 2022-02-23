@@ -47,7 +47,6 @@ export class ViewComponent implements OnDestroy, OnInit {
   showPasswordCount: boolean;
   showCardNumber: boolean;
   showCardCode: boolean;
-  showActionButtons: boolean;
   canAccessPremium: boolean;
   totpCode: string;
   totpCodeFormatted: string;
@@ -232,10 +231,6 @@ export class ViewComponent implements OnDestroy, OnInit {
     }
 
     this.showPasswordCount = !this.showPasswordCount;
-    this.showPassword = this.showPasswordCount;
-    if (this.showPassword) {
-      this.eventService.collect(EventType.Cipher_ClientToggledPasswordVisible, this.cipherId);
-    }
   }
 
   async toggleCardNumber() {
@@ -281,10 +276,6 @@ export class ViewComponent implements OnDestroy, OnInit {
     } else {
       this.platformUtilsService.showToast("success", null, this.i18nService.t("passwordSafe"));
     }
-  }
-
-  showPasswordActionButtons() {
-    this.showActionButtons = true;
   }
 
   launch(uri: LoginUriView, cipherId?: string) {

@@ -29,17 +29,11 @@ export class ViewCustomFieldsComponent {
     }
   }
 
-  toggleFieldCount(field: FieldView) {
-    const f = field as any;
-    f.showCount = !f.showCount;
-    f.showValue = f.showCount;
-    if (f.showValue) {
-      this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible, this.cipher.id);
+  async toggleFieldCount(field: FieldView) {
+    if (!(await this.promptPassword())) {
+      return;
     }
-  }
 
-  showFieldActionButtons(field: FieldView) {
-    const f = field as any;
-    f.showActionButtons = true;
+    field.showCount = !field.showCount;
   }
 }
