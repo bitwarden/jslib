@@ -240,6 +240,7 @@ $icons: (
   "apple": "\e945",
   "android": "\e944",
   "error": "\e981",
+  "numbered-list": "\e989"
 );
 
 @each $name, $glyph in $icons {
