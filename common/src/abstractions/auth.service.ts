@@ -1,58 +1,20 @@
-import { TwoFactorProviderType } from "../enums/twoFactorProviderType";
-
 import { AuthResult } from "../models/domain/authResult";
+import {
+  ApiLogInCredentials,
+  PasswordLogInCredentials,
+  SsoLogInCredentials,
+} from "../models/domain/logInCredentials";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
+import { TokenRequestTwoFactor } from "../models/request/identityToken/tokenRequest";
 
 export abstract class AuthService {
-  email: string;
   masterPasswordHash: string;
-  code: string;
-  codeVerifier: string;
-  ssoRedirectUrl: string;
-  clientId: string;
-  clientSecret: string;
-  twoFactorProvidersData: Map<TwoFactorProviderType, { [key: string]: string }>;
-  selectedTwoFactorProviderType: TwoFactorProviderType;
-
-  logIn: (email: string, masterPassword: string, captchaToken?: string) => Promise<AuthResult>;
-  logInSso: (
-    code: string,
-    codeVerifier: string,
-    redirectUrl: string,
-    orgId: string
+  email: string;
+  logIn: (
+    credentials: ApiLogInCredentials | PasswordLogInCredentials | SsoLogInCredentials
   ) => Promise<AuthResult>;
-  logInApiKey: (clientId: string, clientSecret: string) => Promise<AuthResult>;
-  logInTwoFactor: (
-    twoFactorProvider: TwoFactorProviderType,
-    twoFactorToken: string,
-    remember?: boolean
-  ) => Promise<AuthResult>;
-  logInComplete: (
-    email: string,
-    masterPassword: string,
-    twoFactorProvider: TwoFactorProviderType,
-    twoFactorToken: string,
-    remember?: boolean,
-    captchaToken?: string
-  ) => Promise<AuthResult>;
-  logInSsoComplete: (
-    code: string,
-    codeVerifier: string,
-    redirectUrl: string,
-    twoFactorProvider: TwoFactorProviderType,
-    twoFactorToken: string,
-    remember?: boolean
-  ) => Promise<AuthResult>;
-  logInApiKeyComplete: (
-    clientId: string,
-    clientSecret: string,
-    twoFactorProvider: TwoFactorProviderType,
-    twoFactorToken: string,
-    remember?: boolean
-  ) => Promise<AuthResult>;
-  logOut: (callback: Function) => void;
-  getSupportedTwoFactorProviders: (win: Window) => any[];
-  getDefaultTwoFactorProvider: (webAuthnSupported: boolean) => TwoFactorProviderType;
+  logInTwoFactor: (twoFactor: TokenRequestTwoFactor) => Promise<AuthResult>;
+  logOut: (callback: () => void) => void;
   makePreloginKey: (masterPassword: string, email: string) => Promise<SymmetricCryptoKey>;
   authingWithApiKey: () => boolean;
   authingWithSso: () => boolean;

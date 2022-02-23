@@ -1,6 +1,5 @@
-import { OnePasswordMacCsvImporter as Importer } from "jslib-common/importers/onepasswordImporters/onepasswordMacCsvImporter";
-
 import { CipherType } from "jslib-common/enums/cipherType";
+import { OnePasswordMacCsvImporter as Importer } from "jslib-common/importers/onepasswordImporters/onepasswordMacCsvImporter";
 import { CipherView } from "jslib-common/models/view/cipherView";
 
 import { data as creditCardData } from "./testData/onePasswordCsv/creditCard.mac.csv";

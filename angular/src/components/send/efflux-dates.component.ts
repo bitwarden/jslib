@@ -133,12 +133,13 @@ export class EffluxDatesComponent implements OnInit {
           default:
             return this.defaultDeletionDateTime.value;
         }
-      default:
+      default: {
         const now = new Date();
         const miliseconds = now.setTime(
           now.getTime() + (this.selectedDeletionDatePreset.value as number) * 60 * 60 * 1000
         );
         return new Date(miliseconds).toString();
+      }
     }
   }
 
@@ -163,12 +164,13 @@ export class EffluxDatesComponent implements OnInit {
             }
             return this.defaultExpirationDateTime.value;
         }
-      default:
+      default: {
         const now = new Date();
         const miliseconds = now.setTime(
           now.getTime() + (this.selectedExpirationDatePreset.value as number) * 60 * 60 * 1000
         );
         return new Date(miliseconds).toString();
+      }
     }
   }
   //

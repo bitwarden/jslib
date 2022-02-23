@@ -1,13 +1,11 @@
-import { BaseImporter } from "./baseImporter";
-import { Importer } from "./importer";
-
+import { CipherType } from "../enums/cipherType";
+import { SecureNoteType } from "../enums/secureNoteType";
 import { ImportResult } from "../models/domain/importResult";
-
 import { CardView } from "../models/view/cardView";
 import { SecureNoteView } from "../models/view/secureNoteView";
 
-import { CipherType } from "../enums/cipherType";
-import { SecureNoteType } from "../enums/secureNoteType";
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
 const PropertiesToIgnore = [
   "kind",
@@ -70,7 +68,7 @@ export class TrueKeyCsvImporter extends BaseImporter implements Importer {
         }
         for (const property in value) {
           if (
-            value.hasOwnProperty(property) &&
+            value.hasOwnProperty(property) && // eslint-disable-line
             PropertiesToIgnore.indexOf(property.toLowerCase()) < 0 &&
             !this.isNullOrWhitespace(value[property])
           ) {

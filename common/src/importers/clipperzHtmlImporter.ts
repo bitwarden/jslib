@@ -1,7 +1,7 @@
+import { ImportResult } from "../models/domain/importResult";
+
 import { BaseImporter } from "./baseImporter";
 import { Importer } from "./importer";
-
-import { ImportResult } from "../models/domain/importResult";
 
 export class ClipperzHtmlImporter extends BaseImporter implements Importer {
   parse(data: string): Promise<ImportResult> {
@@ -31,6 +31,7 @@ export class ClipperzHtmlImporter extends BaseImporter implements Importer {
 
       if (entry.currentVersion != null && entry.currentVersion.fields != null) {
         for (const property in entry.currentVersion.fields) {
+          // eslint-disable-next-line
           if (!entry.currentVersion.fields.hasOwnProperty(property)) {
             continue;
           }
@@ -50,7 +51,7 @@ export class ClipperzHtmlImporter extends BaseImporter implements Importer {
             case "url":
               cipher.login.uris = this.makeUriArray(field.value);
               break;
-            default:
+            default: {
               const labelLower = field.label != null ? field.label.toLowerCase() : null;
               if (
                 cipher.login.password == null &&
@@ -71,6 +72,7 @@ export class ClipperzHtmlImporter extends BaseImporter implements Importer {
                 this.processKvp(cipher, field.label, field.value);
               }
               break;
+            }
           }
         }
       }

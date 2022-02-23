@@ -1,15 +1,12 @@
 import { Directive, EventEmitter, Input, Output } from "@angular/core";
 
-import { CipherType } from "jslib-common/enums/cipherType";
-
-import { CollectionView } from "jslib-common/models/view/collectionView";
-import { FolderView } from "jslib-common/models/view/folderView";
-
-import { TreeNode } from "jslib-common/models/domain/treeNode";
-
 import { CollectionService } from "jslib-common/abstractions/collection.service";
 import { FolderService } from "jslib-common/abstractions/folder.service";
 import { StateService } from "jslib-common/abstractions/state.service";
+import { CipherType } from "jslib-common/enums/cipherType";
+import { TreeNode } from "jslib-common/models/domain/treeNode";
+import { CollectionView } from "jslib-common/models/view/collectionView";
+import { FolderView } from "jslib-common/models/view/folderView";
 
 @Directive()
 export class GroupingsComponent {
@@ -31,13 +28,13 @@ export class GroupingsComponent {
   nestedFolders: TreeNode<FolderView>[];
   collections: CollectionView[];
   nestedCollections: TreeNode<CollectionView>[];
-  loaded: boolean = false;
+  loaded = false;
   cipherType = CipherType;
-  selectedAll: boolean = false;
-  selectedFavorites: boolean = false;
-  selectedTrash: boolean = false;
+  selectedAll = false;
+  selectedFavorites = false;
+  selectedTrash = false;
   selectedType: CipherType = null;
-  selectedFolder: boolean = false;
+  selectedFolder = false;
   selectedFolderId: string = null;
   selectedCollectionId: string = null;
 
@@ -151,7 +148,7 @@ export class GroupingsComponent {
     } else {
       this.collapsedGroupings.add(id);
     }
-    await this.stateService.setCollapsedGroupings(this.collapsedGroupings);
+    await this.stateService.setCollapsedGroupings(Array.from(this.collapsedGroupings));
   }
 
   isCollapsed(grouping: FolderView | CollectionView, idPrefix = "") {

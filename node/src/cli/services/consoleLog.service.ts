@@ -1,5 +1,4 @@
 import { LogLevelType } from "jslib-common/enums/logLevelType";
-
 import { ConsoleLogService as BaseConsoleLogService } from "jslib-common/services/consoleLog.service";
 
 export class ConsoleLogService extends BaseConsoleLogService {
@@ -13,7 +12,7 @@ export class ConsoleLogService extends BaseConsoleLogService {
     }
 
     if (process.env.BW_RESPONSE === "true") {
-      // tslint:disable-next-line
+      // eslint-disable-next-line
       console.error(message);
       return;
     }

@@ -1,36 +1,5 @@
 import { Injector, LOCALE_ID, NgModule } from "@angular/core";
 
-import { ApiService } from "jslib-common/services/api.service";
-import { AppIdService } from "jslib-common/services/appId.service";
-import { AuditService } from "jslib-common/services/audit.service";
-import { AuthService } from "jslib-common/services/auth.service";
-import { CipherService } from "jslib-common/services/cipher.service";
-import { CollectionService } from "jslib-common/services/collection.service";
-import { ConsoleLogService } from "jslib-common/services/consoleLog.service";
-import { CryptoService } from "jslib-common/services/crypto.service";
-import { EnvironmentService } from "jslib-common/services/environment.service";
-import { EventService } from "jslib-common/services/event.service";
-import { ExportService } from "jslib-common/services/export.service";
-import { FileUploadService } from "jslib-common/services/fileUpload.service";
-import { FolderService } from "jslib-common/services/folder.service";
-import { KeyConnectorService } from "jslib-common/services/keyConnector.service";
-import { NotificationsService } from "jslib-common/services/notifications.service";
-import { OrganizationService } from "jslib-common/services/organization.service";
-import { PasswordGenerationService } from "jslib-common/services/passwordGeneration.service";
-import { PolicyService } from "jslib-common/services/policy.service";
-import { ProviderService } from "jslib-common/services/provider.service";
-import { SearchService } from "jslib-common/services/search.service";
-import { SendService } from "jslib-common/services/send.service";
-import { SettingsService } from "jslib-common/services/settings.service";
-import { StateService } from "jslib-common/services/state.service";
-import { StateMigrationService } from "jslib-common/services/stateMigration.service";
-import { SyncService } from "jslib-common/services/sync.service";
-import { TokenService } from "jslib-common/services/token.service";
-import { TotpService } from "jslib-common/services/totp.service";
-import { UserVerificationService } from "jslib-common/services/userVerification.service";
-import { VaultTimeoutService } from "jslib-common/services/vaultTimeout.service";
-import { WebCryptoFunctionService } from "jslib-common/services/webCryptoFunction.service";
-
 import { ApiService as ApiServiceAbstraction } from "jslib-common/abstractions/api.service";
 import { AppIdService as AppIdServiceAbstraction } from "jslib-common/abstractions/appId.service";
 import { AuditService as AuditServiceAbstraction } from "jslib-common/abstractions/audit.service";
@@ -65,8 +34,43 @@ import { StorageService as StorageServiceAbstraction } from "jslib-common/abstra
 import { SyncService as SyncServiceAbstraction } from "jslib-common/abstractions/sync.service";
 import { TokenService as TokenServiceAbstraction } from "jslib-common/abstractions/token.service";
 import { TotpService as TotpServiceAbstraction } from "jslib-common/abstractions/totp.service";
+import { TwoFactorService as TwoFactorServiceAbstraction } from "jslib-common/abstractions/twoFactor.service";
 import { UserVerificationService as UserVerificationServiceAbstraction } from "jslib-common/abstractions/userVerification.service";
 import { VaultTimeoutService as VaultTimeoutServiceAbstraction } from "jslib-common/abstractions/vaultTimeout.service";
+import { StateFactory } from "jslib-common/factories/stateFactory";
+import { Account } from "jslib-common/models/domain/account";
+import { GlobalState } from "jslib-common/models/domain/globalState";
+import { ApiService } from "jslib-common/services/api.service";
+import { AppIdService } from "jslib-common/services/appId.service";
+import { AuditService } from "jslib-common/services/audit.service";
+import { AuthService } from "jslib-common/services/auth.service";
+import { CipherService } from "jslib-common/services/cipher.service";
+import { CollectionService } from "jslib-common/services/collection.service";
+import { ConsoleLogService } from "jslib-common/services/consoleLog.service";
+import { CryptoService } from "jslib-common/services/crypto.service";
+import { EnvironmentService } from "jslib-common/services/environment.service";
+import { EventService } from "jslib-common/services/event.service";
+import { ExportService } from "jslib-common/services/export.service";
+import { FileUploadService } from "jslib-common/services/fileUpload.service";
+import { FolderService } from "jslib-common/services/folder.service";
+import { KeyConnectorService } from "jslib-common/services/keyConnector.service";
+import { NotificationsService } from "jslib-common/services/notifications.service";
+import { OrganizationService } from "jslib-common/services/organization.service";
+import { PasswordGenerationService } from "jslib-common/services/passwordGeneration.service";
+import { PolicyService } from "jslib-common/services/policy.service";
+import { ProviderService } from "jslib-common/services/provider.service";
+import { SearchService } from "jslib-common/services/search.service";
+import { SendService } from "jslib-common/services/send.service";
+import { SettingsService } from "jslib-common/services/settings.service";
+import { StateService } from "jslib-common/services/state.service";
+import { StateMigrationService } from "jslib-common/services/stateMigration.service";
+import { SyncService } from "jslib-common/services/sync.service";
+import { TokenService } from "jslib-common/services/token.service";
+import { TotpService } from "jslib-common/services/totp.service";
+import { TwoFactorService } from "jslib-common/services/twoFactor.service";
+import { UserVerificationService } from "jslib-common/services/userVerification.service";
+import { VaultTimeoutService } from "jslib-common/services/vaultTimeout.service";
+import { WebCryptoFunctionService } from "jslib-common/services/webCryptoFunction.service";
 
 import { AuthGuardService } from "./auth-guard.service";
 import { BroadcasterService } from "./broadcaster.service";
@@ -75,8 +79,6 @@ import { ModalService } from "./modal.service";
 import { PasswordRepromptService } from "./passwordReprompt.service";
 import { UnauthGuardService } from "./unauth-guard.service";
 import { ValidationService } from "./validation.service";
-
-import { Account, AccountFactory } from "jslib-common/models/domain/account";
 
 @NgModule({
   declarations: [],
@@ -110,15 +112,13 @@ import { Account, AccountFactory } from "jslib-common/models/domain/account";
         ApiServiceAbstraction,
         TokenServiceAbstraction,
         AppIdServiceAbstraction,
-        I18nServiceAbstraction,
         PlatformUtilsServiceAbstraction,
         MessagingServiceAbstraction,
-        VaultTimeoutServiceAbstraction,
         LogService,
-        CryptoFunctionServiceAbstraction,
         KeyConnectorServiceAbstraction,
         EnvironmentServiceAbstraction,
         StateServiceAbstraction,
+        TwoFactorServiceAbstraction,
       ],
     },
     {
@@ -309,7 +309,8 @@ import { Account, AccountFactory } from "jslib-common/models/domain/account";
           keyConnectorService,
           stateService,
           null,
-          async () => messagingService.send("logout", { expired: false })
+          async (userId?: string) =>
+            messagingService.send("logout", { expired: false, userId: userId })
         ),
       deps: [
         CipherServiceAbstraction,
@@ -338,7 +339,7 @@ import { Account, AccountFactory } from "jslib-common/models/domain/account";
           secureStorageService,
           logService,
           stateMigrationService,
-          new AccountFactory(Account)
+          new StateFactory(GlobalState, Account)
         ),
       deps: [
         StorageServiceAbstraction,
@@ -349,7 +350,15 @@ import { Account, AccountFactory } from "jslib-common/models/domain/account";
     },
     {
       provide: StateMigrationServiceAbstraction,
-      useClass: StateMigrationService,
+      useFactory: (
+        storageService: StorageServiceAbstraction,
+        secureStorageService: StorageServiceAbstraction
+      ) =>
+        new StateMigrationService(
+          storageService,
+          secureStorageService,
+          new StateFactory(GlobalState, Account)
+        ),
       deps: [StorageServiceAbstraction, "SECURE_STORAGE"],
     },
     {
@@ -443,6 +452,7 @@ import { Account, AccountFactory } from "jslib-common/models/domain/account";
         TokenServiceAbstraction,
         LogService,
         OrganizationServiceAbstraction,
+        CryptoFunctionServiceAbstraction,
       ],
     },
     {
@@ -460,6 +470,11 @@ import { Account, AccountFactory } from "jslib-common/models/domain/account";
       provide: ProviderServiceAbstraction,
       useClass: ProviderService,
       deps: [StateServiceAbstraction],
+    },
+    {
+      provide: TwoFactorServiceAbstraction,
+      useClass: TwoFactorService,
+      deps: [I18nServiceAbstraction, PlatformUtilsServiceAbstraction],
     },
   ],
 })

@@ -5,8 +5,8 @@ import { OrganizationImportMemberRequest } from "./organizationImportMemberReque
 export class OrganizationImportRequest {
   groups: OrganizationImportGroupRequest[] = [];
   members: OrganizationImportMemberRequest[] = [];
-  overwriteExisting: boolean = false;
-  largeImport: boolean = false;
+  overwriteExisting = false;
+  largeImport = false;
 
   constructor(
     model:

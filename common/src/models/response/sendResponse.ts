@@ -1,9 +1,8 @@
-import { BaseResponse } from "./baseResponse";
-
 import { SendType } from "../../enums/sendType";
-
 import { SendFileApi } from "../api/sendFileApi";
 import { SendTextApi } from "../api/sendTextApi";
+
+import { BaseResponse } from "./baseResponse";
 
 export class SendResponse extends BaseResponse {
   id: string;

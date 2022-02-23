@@ -3,7 +3,6 @@ import { Directive, OnInit } from "@angular/core";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-
 import { Utils } from "jslib-common/misc/utils";
 
 import { ModalRef } from "./modal/modal.ref";
