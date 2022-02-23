@@ -47,4 +47,9 @@ export class OrganizationService implements OrganizationServiceAbstraction {
       (o) => o.familySponsorshipAvailable || o.familySponsorshipFriendlyName !== null
     );
   }
+
+  async hasOrganizations(userId?: string): Promise<boolean> {
+    const organizations = await this.getAll(userId);
+    return organizations.length > 0;
+  }
 }
