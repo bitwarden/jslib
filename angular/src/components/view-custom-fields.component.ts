@@ -30,7 +30,7 @@ export class ViewCustomFieldsComponent {
   }
 
   async toggleFieldCount(field: FieldView) {
-    if (!(await this.promptPassword())) {
+    if (!field.showValue) {
       return;
     }
 

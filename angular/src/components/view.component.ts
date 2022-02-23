@@ -226,7 +226,7 @@ export class ViewComponent implements OnDestroy, OnInit {
   }
 
   async togglePasswordCount() {
-    if (!(await this.promptPassword())) {
+    if (!this.showPassword) {
       return;
     }
 
