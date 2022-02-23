@@ -172,10 +172,6 @@ describe("ExportService", () => {
         expect(exportObject.passwordProtected).toBe(true);
       });
 
-      it("specifies format", () => {
-        expect(exportObject).toEqual(jasmine.objectContaining({ format: jasmine.any(String) }));
-      });
-
       it("specifies salt", () => {
         expect(exportObject.salt).toEqual("salt");
       });

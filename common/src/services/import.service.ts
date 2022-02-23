@@ -4,12 +4,15 @@ import { CollectionService } from "../abstractions/collection.service";
 import { CryptoService } from "../abstractions/crypto.service";
 import { FolderService } from "../abstractions/folder.service";
 import { I18nService } from "../abstractions/i18n.service";
-import {
-  ImportOption,
-  ImportService as ImportServiceAbstraction,
-} from "../abstractions/import.service";
+import { ImportService as ImportServiceAbstraction } from "../abstractions/import.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import { CipherType } from "../enums/cipherType";
+import {
+  featuredImportOptions,
+  ImportOption,
+  ImportType,
+  regularImportOptions,
+} from "../enums/importOptions";
 import { AscendoCsvImporter } from "../importers/ascendoCsvImporter";
 import { AvastCsvImporter } from "../importers/avastCsvImporter";
 import { AvastJsonImporter } from "../importers/avastJsonImporter";
@@ -30,6 +33,7 @@ import { EnpassJsonImporter } from "../importers/enpassJsonImporter";
 import { FirefoxCsvImporter } from "../importers/firefoxCsvImporter";
 import { FSecureFskImporter } from "../importers/fsecureFskImporter";
 import { GnomeJsonImporter } from "../importers/gnomeJsonImporter";
+import { ImportError } from "../importers/importError";
 import { Importer } from "../importers/importer";
 import { KasperskyTxtImporter } from "../importers/kasperskyTxtImporter";
 import { KeePass2XmlImporter } from "../importers/keepass2XmlImporter";
@@ -76,75 +80,6 @@ import { KvpRequest } from "../models/request/kvpRequest";
 import { ErrorResponse } from "../models/response/errorResponse";
 import { CipherView } from "../models/view/cipherView";
 
-const featuredImportOptions = [
-  { id: "bitwardenjson", name: "Bitwarden (json)" },
-  { id: "bitwardencsv", name: "Bitwarden (csv)" },
-  { id: "chromecsv", name: "Chrome (csv)" },
-  { id: "dashlanejson", name: "Dashlane (json)" },
-  { id: "firefoxcsv", name: "Firefox (csv)" },
-  { id: "keepass2xml", name: "KeePass 2 (xml)" },
-  { id: "lastpasscsv", name: "LastPass (csv)" },
-  { id: "safaricsv", name: "Safari and macOS (csv)" },
-  { id: "1password1pif", name: "1Password (1pif)" },
-] as const;
-
-const regularImportOptions = [
-  { id: "keepassxcsv", name: "KeePassX (csv)" },
-  { id: "1passwordwincsv", name: "1Password 6 and 7 Windows (csv)" },
-  { id: "1passwordmaccsv", name: "1Password 6 and 7 Mac (csv)" },
-  { id: "roboformcsv", name: "RoboForm (csv)" },
-  { id: "keepercsv", name: "Keeper (csv)" },
-  // Temporarily remove this option for the Feb release
-  // { id: "keeperjson", name: "Keeper (json)" },
-  { id: "enpasscsv", name: "Enpass (csv)" },
-  { id: "enpassjson", name: "Enpass (json)" },
-  { id: "safeincloudxml", name: "SafeInCloud (xml)" },
-  { id: "pwsafexml", name: "Password Safe (xml)" },
-  { id: "stickypasswordxml", name: "Sticky Password (xml)" },
-  { id: "msecurecsv", name: "mSecure (csv)" },
-  { id: "truekeycsv", name: "True Key (csv)" },
-  { id: "passwordbossjson", name: "Password Boss (json)" },
-  { id: "zohovaultcsv", name: "Zoho Vault (csv)" },
-  { id: "splashidcsv", name: "SplashID (csv)" },
-  { id: "passworddragonxml", name: "Password Dragon (xml)" },
-  { id: "padlockcsv", name: "Padlock (csv)" },
-  { id: "passboltcsv", name: "Passbolt (csv)" },
-  { id: "clipperzhtml", name: "Clipperz (html)" },
-  { id: "aviracsv", name: "Avira (csv)" },
-  { id: "saferpasscsv", name: "SaferPass (csv)" },
-  { id: "upmcsv", name: "Universal Password Manager (csv)" },
-  { id: "ascendocsv", name: "Ascendo DataVault (csv)" },
-  { id: "meldiumcsv", name: "Meldium (csv)" },
-  { id: "passkeepcsv", name: "PassKeep (csv)" },
-  { id: "operacsv", name: "Opera (csv)" },
-  { id: "vivaldicsv", name: "Vivaldi (csv)" },
-  { id: "gnomejson", name: "GNOME Passwords and Keys/Seahorse (json)" },
-  { id: "blurcsv", name: "Blur (csv)" },
-  { id: "passwordagentcsv", name: "Password Agent (csv)" },
-  { id: "passpackcsv", name: "Passpack (csv)" },
-  { id: "passmanjson", name: "Passman (json)" },
-  { id: "avastcsv", name: "Avast Passwords (csv)" },
-  { id: "avastjson", name: "Avast Passwords (json)" },
-  { id: "fsecurefsk", name: "F-Secure KEY (fsk)" },
-  { id: "kasperskytxt", name: "Kaspersky Password Manager (txt)" },
-  { id: "remembearcsv", name: "RememBear (csv)" },
-  { id: "passwordwallettxt", name: "PasswordWallet (txt)" },
-  { id: "mykicsv", name: "Myki (csv)" },
-  { id: "securesafecsv", name: "SecureSafe (csv)" },
-  { id: "logmeoncecsv", name: "LogMeOnce (csv)" },
-  { id: "blackberrycsv", name: "BlackBerry Password Keeper (csv)" },
-  { id: "buttercupcsv", name: "Buttercup (csv)" },
-  { id: "codebookcsv", name: "Codebook (csv)" },
-  { id: "encryptrcsv", name: "Encryptr (csv)" },
-  { id: "yoticsv", name: "Yoti (csv)" },
-  { id: "nordpasscsv", name: "Nordpass (csv)" },
-] as const;
-
-export type ImportType =
-  | typeof featuredImportOptions[number]["id"]
-  | typeof regularImportOptions[number]["id"]
-  | "bitwardenpasswordprotected";
-
 export class ImportService implements ImportServiceAbstraction {
   featuredImportOptions = featuredImportOptions as readonly ImportOption[];
 
@@ -168,11 +103,11 @@ export class ImportService implements ImportServiceAbstraction {
     importer: Importer,
     fileContents: string,
     organizationId: string = null
-  ): Promise<Error> {
+  ): Promise<ImportError> {
     const importResult = await importer.parse(fileContents);
     if (importResult.success) {
       if (importResult.folders.length === 0 && importResult.ciphers.length === 0) {
-        return new Error(this.i18nService.t("importNothingError"));
+        return new ImportError(this.i18nService.t("importNothingError"));
       } else if (importResult.ciphers.length > 0) {
         const halfway = Math.floor(importResult.ciphers.length / 2);
         const last = importResult.ciphers.length - 1;
@@ -182,7 +117,7 @@ export class ImportService implements ImportServiceAbstraction {
           this.badData(importResult.ciphers[halfway]) &&
           this.badData(importResult.ciphers[last])
         ) {
-          return new Error(this.i18nService.t("importFormatError"));
+          return new ImportError(this.i18nService.t("importFormatError"));
         }
       }
       try {
@@ -194,15 +129,18 @@ export class ImportService implements ImportServiceAbstraction {
       return null;
     } else {
       if (!Utils.isNullOrWhitespace(importResult.errorMessage)) {
-        return new Error(importResult.errorMessage);
+        return new ImportError(importResult.errorMessage, importResult.missingPassword);
       } else {
-        return new Error(this.i18nService.t("importFormatError"));
+        return new ImportError(
+          this.i18nService.t("importFormatError"),
+          importResult.missingPassword
+        );
       }
     }
   }
 
   getImporter(
-    format: ImportType,
+    format: ImportType | "bitwardenpasswordprotected",
     organizationId: string = null,
     password: string = null
   ): Importer {
@@ -214,7 +152,7 @@ export class ImportService implements ImportServiceAbstraction {
     return importer;
   }
 
-  private getImporterInstance(format: ImportType, password: string) {
+  private getImporterInstance(format: ImportType | "bitwardenpasswordprotected", password: string) {
     if (format == null) {
       return null;
     }
@@ -226,7 +164,6 @@ export class ImportService implements ImportServiceAbstraction {
         return new BitwardenJsonImporter(this.cryptoService, this.i18nService);
       case "bitwardenpasswordprotected":
         return new BitwardenPasswordProtectedImporter(
-          this,
           this.cryptoService,
           this.i18nService,
           password
@@ -394,9 +331,9 @@ export class ImportService implements ImportServiceAbstraction {
     );
   }
 
-  private handleServerError(errorResponse: ErrorResponse, importResult: ImportResult): Error {
+  private handleServerError(errorResponse: ErrorResponse, importResult: ImportResult): ImportError {
     if (errorResponse.validationErrors == null) {
-      return new Error(errorResponse.message);
+      return new ImportError(errorResponse.message);
     }
 
     let errorMessage = "";
@@ -434,6 +371,6 @@ export class ImportService implements ImportServiceAbstraction {
       errorMessage += "[" + itemType + '] "' + item.name + '": ' + value;
     });
 
-    return new Error(errorMessage);
+    return new ImportError(errorMessage);
   }
 }

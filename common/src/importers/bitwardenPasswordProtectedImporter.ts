@@ -1,18 +1,16 @@
 import { CryptoService } from "../abstractions/crypto.service";
 import { I18nService } from "../abstractions/i18n.service";
-import { ImportService } from "../abstractions/import.service";
 import { KdfType } from "../enums/kdfType";
 import { EncString } from "../models/domain/encString";
 import { ImportResult } from "../models/domain/importResult";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 
-import { BaseImporter } from "./baseImporter";
+import { BitwardenJsonImporter } from "./bitwardenJsonImporter";
 import { Importer } from "./importer";
 
-class BitwardenPasswordProtectedFileFormat {
+interface BitwardenPasswordProtectedFileFormat {
   encrypted: boolean;
   passwordProtected: boolean;
-  format: "json" | "csv" | "encrypted_json";
   salt: string;
   kdfIterations: number;
   kdfType: number;
@@ -20,17 +18,11 @@ class BitwardenPasswordProtectedFileFormat {
   data: string;
 }
 
-export class BitwardenPasswordProtectedImporter extends BaseImporter implements Importer {
-  private innerImporter: Importer;
+export class BitwardenPasswordProtectedImporter extends BitwardenJsonImporter implements Importer {
   private key: SymmetricCryptoKey;
 
-  constructor(
-    private importService: ImportService,
-    private cryptoService: CryptoService,
-    private i18nService: I18nService,
-    private password: string
-  ) {
-    super();
+  constructor(cryptoService: CryptoService, i18nService: I18nService, private password: string) {
+    super(cryptoService, i18nService);
   }
 
   async parse(data: string): Promise<ImportResult> {
@@ -41,8 +33,6 @@ export class BitwardenPasswordProtectedImporter extends BaseImporter implements 
       return result;
     }
 
-    this.setInnerImporter(parsedData.format);
-
     if (!(await this.checkPassword(parsedData))) {
       result.success = false;
       result.errorMessage = this.i18nService.t("importEncKeyError");
@@ -51,7 +41,7 @@ export class BitwardenPasswordProtectedImporter extends BaseImporter implements 
 
     const encData = new EncString(parsedData.data);
     const clearTextData = await this.cryptoService.decryptToUtf8(encData, this.key);
-    return this.innerImporter.parse(clearTextData);
+    return await super.parse(clearTextData);
   }
 
   private async checkPassword(jdoc: BitwardenPasswordProtectedFileFormat): Promise<boolean> {
@@ -79,7 +69,6 @@ export class BitwardenPasswordProtectedImporter extends BaseImporter implements 
       !jdoc ||
       !jdoc.encrypted ||
       !jdoc.passwordProtected ||
-      !(jdoc.format === "csv" || jdoc.format === "json" || jdoc.format === "encrypted_json") ||
       !jdoc.salt ||
       !jdoc.kdfIterations ||
       typeof jdoc.kdfIterations !== "number" ||
@@ -88,12 +77,5 @@ export class BitwardenPasswordProtectedImporter extends BaseImporter implements 
       !jdoc.encKeyValidation_DO_NOT_EDIT ||
       !jdoc.data
     );
-  }
-
-  private setInnerImporter(format: "csv" | "json" | "encrypted_json") {
-    this.innerImporter =
-      format === "csv"
-        ? this.importService.getImporter("bitwardencsv", this.organizationId)
-        : this.importService.getImporter("bitwardenjson", this.organizationId);
   }
 }
