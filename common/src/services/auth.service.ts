@@ -20,6 +20,7 @@ import { AppIdService } from "../abstractions/appId.service";
 import { AuthService as AuthServiceAbstraction } from "../abstractions/auth.service";
 import { CryptoService } from "../abstractions/crypto.service";
 import { EnvironmentService } from "../abstractions/environment.service";
+import { I18nService } from '../abstractions/i18n.service';
 import { KeyConnectorService } from "../abstractions/keyConnector.service";
 import { LogService } from "../abstractions/log.service";
 import { MessagingService } from "../abstractions/messaging.service";
@@ -29,6 +30,8 @@ import { TokenService } from "../abstractions/token.service";
 import { TwoFactorService } from "../abstractions/twoFactor.service";
 
 import { AuthenticationType } from "../enums/authenticationType";
+
+const sessionTimeoutLength = 2 * 60 * 1000;   // 2 minutes
 
 export class AuthService implements AuthServiceAbstraction {
   get email(): string {
@@ -42,6 +45,7 @@ export class AuthService implements AuthServiceAbstraction {
   }
 
   private logInStrategy: ApiLogInStrategy | PasswordLogInStrategy | SsoLogInStrategy;
+  private sessionTimeout: any;
 
   constructor(
     protected cryptoService: CryptoService,
@@ -54,7 +58,8 @@ export class AuthService implements AuthServiceAbstraction {
     protected keyConnectorService: KeyConnectorService,
     protected environmentService: EnvironmentService,
     protected stateService: StateService,
-    protected twoFactorService: TwoFactorService
+    protected twoFactorService: TwoFactorService,
+    protected i18nService: I18nService
   ) {}
 
   async logIn(
@@ -115,6 +120,9 @@ export class AuthService implements AuthServiceAbstraction {
   }
 
   async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
+    if (this.logInStrategy == null) {
+      throw new Error(this.i18nService.t("sessionTimeout"));
+    }
     const result = await this.logInStrategy.logInTwoFactor(twoFactor);
 
     // Only clear state if 2FA token has been accepted, otherwise we need to be able to try again
@@ -161,9 +169,22 @@ export class AuthService implements AuthServiceAbstraction {
 
   private saveState(strategy: ApiLogInStrategy | PasswordLogInStrategy | SsoLogInStrategy) {
     this.logInStrategy = strategy;
+    this.startSessionTimeout();
   }
 
   private clearState() {
     this.logInStrategy = null;
+    this.clearSessionTimeout();
+  }
+
+  private startSessionTimeout() {
+    this.clearSessionTimeout();
+    this.sessionTimeout = setTimeout(() => this.clearState(), sessionTimeoutLength);
+  }
+
+  private clearSessionTimeout() {
+    if (this.sessionTimeout != null) {
+      clearTimeout(this.sessionTimeout);
+    }
   }
 }

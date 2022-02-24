@@ -123,6 +123,7 @@ import { StateFactory } from "jslib-common/factories/stateFactory";
         EnvironmentServiceAbstraction,
         StateServiceAbstraction,
         TwoFactorServiceAbstraction,
+        I18nServiceAbstraction,
       ],
     },
     {
