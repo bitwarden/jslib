@@ -15,6 +15,8 @@ import { PreloginRequest } from "../models/request/preloginRequest";
 
 import { TokenRequestTwoFactor } from "../models/request/identityToken/tokenRequest";
 
+import { ErrorResponse } from '../models/response/errorResponse';
+
 import { ApiService } from "../abstractions/api.service";
 import { AppIdService } from "../abstractions/appId.service";
 import { AuthService as AuthServiceAbstraction } from "../abstractions/auth.service";
@@ -123,13 +125,22 @@ export class AuthService implements AuthServiceAbstraction {
     if (this.logInStrategy == null) {
       throw new Error(this.i18nService.t("sessionTimeout"));
     }
-    const result = await this.logInStrategy.logInTwoFactor(twoFactor);
 
-    // Only clear state if 2FA token has been accepted, otherwise we need to be able to try again
-    if (!result.requiresTwoFactor) {
-      this.clearState();
+    try {
+      const result = await this.logInStrategy.logInTwoFactor(twoFactor);
+
+      // Only clear state if 2FA token has been accepted, otherwise we need to be able to try again
+      if (!result.requiresTwoFactor) {
+        this.clearState();
+      }
+      return result;
+    } catch (e) {
+      // API exceptions are okay, but if there are any unhandled client-side errors then clear state to be safe
+      if (!(e instanceof ErrorResponse)) {
+        this.clearState();
+      }
+      throw e;
     }
-    return result;
   }
 
   logOut(callback: Function) {
