@@ -1,9 +1,7 @@
 import { UriMatchType } from "../../enums/uriMatchType";
-
-import { LoginUriView } from "../view/loginUriView";
-
 import { EncString } from "../domain/encString";
 import { LoginUri as LoginUriDomain } from "../domain/loginUri";
+import { LoginUriView } from "../view/loginUriView";
 
 export class LoginUri {
   static template(): LoginUri {

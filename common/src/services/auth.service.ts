@@ -1,5 +1,18 @@
+import { ApiService } from "../abstractions/api.service";
+import { AppIdService } from "../abstractions/appId.service";
+import { AuthService as AuthServiceAbstraction } from "../abstractions/auth.service";
+import { CryptoService } from "../abstractions/crypto.service";
+import { EnvironmentService } from "../abstractions/environment.service";
+import { I18nService } from "../abstractions/i18n.service";
+import { KeyConnectorService } from "../abstractions/keyConnector.service";
+import { LogService } from "../abstractions/log.service";
+import { MessagingService } from "../abstractions/messaging.service";
+import { PlatformUtilsService } from "../abstractions/platformUtils.service";
+import { StateService } from "../abstractions/state.service";
+import { TokenService } from "../abstractions/token.service";
+import { TwoFactorService } from "../abstractions/twoFactor.service";
+import { AuthenticationType } from "../enums/authenticationType";
 import { KdfType } from "../enums/kdfType";
-
 import { ApiLogInStrategy } from "../misc/logInStrategies/apiLogin.strategy";
 import { PasswordLogInStrategy } from "../misc/logInStrategies/passwordLogin.strategy";
 import { SsoLogInStrategy } from "../misc/logInStrategies/ssoLogin.strategy";
@@ -10,30 +23,11 @@ import {
   SsoLogInCredentials,
 } from "../models/domain/logInCredentials";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-
-import { PreloginRequest } from "../models/request/preloginRequest";
-
 import { TokenRequestTwoFactor } from "../models/request/identityToken/tokenRequest";
+import { PreloginRequest } from "../models/request/preloginRequest";
+import { ErrorResponse } from "../models/response/errorResponse";
 
-import { ErrorResponse } from '../models/response/errorResponse';
-
-import { ApiService } from "../abstractions/api.service";
-import { AppIdService } from "../abstractions/appId.service";
-import { AuthService as AuthServiceAbstraction } from "../abstractions/auth.service";
-import { CryptoService } from "../abstractions/crypto.service";
-import { EnvironmentService } from "../abstractions/environment.service";
-import { I18nService } from '../abstractions/i18n.service';
-import { KeyConnectorService } from "../abstractions/keyConnector.service";
-import { LogService } from "../abstractions/log.service";
-import { MessagingService } from "../abstractions/messaging.service";
-import { PlatformUtilsService } from "../abstractions/platformUtils.service";
-import { StateService } from "../abstractions/state.service";
-import { TokenService } from "../abstractions/token.service";
-import { TwoFactorService } from "../abstractions/twoFactor.service";
-
-import { AuthenticationType } from "../enums/authenticationType";
-
-const sessionTimeoutLength = 2 * 60 * 1000;   // 2 minutes
+const sessionTimeoutLength = 2 * 60 * 1000; // 2 minutes
 
 export class AuthService implements AuthServiceAbstraction {
   get email(): string {
@@ -143,7 +137,7 @@ export class AuthService implements AuthServiceAbstraction {
     }
   }
 
-  logOut(callback: Function) {
+  logOut(callback: () => void) {
     callback();
     this.messagingService.send("loggedOut");
   }

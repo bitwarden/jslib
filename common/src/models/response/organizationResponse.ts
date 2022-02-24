@@ -1,7 +1,7 @@
+import { PlanType } from "../../enums/planType";
+
 import { BaseResponse } from "./baseResponse";
 import { PlanResponse } from "./planResponse";
-
-import { PlanType } from "../../enums/planType";
 
 export class OrganizationResponse extends BaseResponse {
   id: string;

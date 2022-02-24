@@ -3,7 +3,6 @@ import { BehaviorSubject } from "rxjs";
 import { KdfType } from "../enums/kdfType";
 import { ThemeType } from "../enums/themeType";
 import { UriMatchType } from "../enums/uriMatchType";
-
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
 import { EventData } from "../models/data/eventData";
@@ -12,7 +11,6 @@ import { OrganizationData } from "../models/data/organizationData";
 import { PolicyData } from "../models/data/policyData";
 import { ProviderData } from "../models/data/providerData";
 import { SendData } from "../models/data/sendData";
-
 import { Account } from "../models/domain/account";
 import { EncString } from "../models/domain/encString";
 import { EnvironmentUrls } from "../models/domain/environmentUrls";
@@ -21,7 +19,6 @@ import { Policy } from "../models/domain/policy";
 import { StorageOptions } from "../models/domain/storageOptions";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 import { WindowState } from "../models/domain/windowState";
-
 import { CipherView } from "../models/view/cipherView";
 import { CollectionView } from "../models/view/collectionView";
 import { FolderView } from "../models/view/folderView";

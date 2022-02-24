@@ -10,14 +10,11 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
-
+import { HashPurpose } from "jslib-common/enums/hashPurpose";
 import { PasswordLogInStrategy } from "jslib-common/misc/logInStrategies/passwordLogin.strategy";
 import { Utils } from "jslib-common/misc/utils";
-
 import { PasswordLogInCredentials } from "jslib-common/models/domain/logInCredentials";
 import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
-
-import { HashPurpose } from "jslib-common/enums/hashPurpose";
 
 import { identityTokenResponseFactory } from "./logIn.strategy.spec";
 

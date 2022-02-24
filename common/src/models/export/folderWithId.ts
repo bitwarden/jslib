@@ -1,8 +1,7 @@
-import { Folder } from "./folder";
-
+import { Folder as FolderDomain } from "../domain/folder";
 import { FolderView } from "../view/folderView";
 
-import { Folder as FolderDomain } from "../domain/folder";
+import { Folder } from "./folder";
 
 export class FolderWithId extends Folder {
   id: string;

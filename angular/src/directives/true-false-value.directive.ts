@@ -1,5 +1,5 @@
 import { Directive, ElementRef, forwardRef, HostListener, Input, Renderer2 } from "@angular/core";
-import { ControlValueAccessor, NgControl, NG_VALUE_ACCESSOR } from "@angular/forms";
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
 
 // ref: https://juristr.com/blog/2018/02/ng-true-value-directive/
 @Directive({

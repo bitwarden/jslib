@@ -6,7 +6,7 @@ import { CipherView } from "jslib-common/models/view/cipherView";
   name: "searchCiphers",
 })
 export class SearchCiphersPipe implements PipeTransform {
-  transform(ciphers: CipherView[], searchText: string, deleted: boolean = false): CipherView[] {
+  transform(ciphers: CipherView[], searchText: string, deleted = false): CipherView[] {
     if (ciphers == null || ciphers.length === 0) {
       return [];
     }

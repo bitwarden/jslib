@@ -1,12 +1,10 @@
-import { BaseImporter } from "./baseImporter";
-import { Importer } from "./importer";
-
+import { CipherType } from "../enums/cipherType";
 import { ImportResult } from "../models/domain/importResult";
-
 import { CardView } from "../models/view/cardView";
 import { FolderView } from "../models/view/folderView";
 
-import { CipherType } from "../enums/cipherType";
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
 export class PasswordBossJsonImporter extends BaseImporter implements Importer {
   parse(data: string): Promise<ImportResult> {
@@ -52,6 +50,7 @@ export class PasswordBossJsonImporter extends BaseImporter implements Importer {
       }
 
       for (const property in value.identifiers) {
+        // eslint-disable-next-line
         if (!value.identifiers.hasOwnProperty(property)) {
           continue;
         }

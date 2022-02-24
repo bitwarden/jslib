@@ -1,6 +1,7 @@
-import { app, BrowserWindow, screen } from "electron";
 import * as path from "path";
 import * as url from "url";
+
+import { app, BrowserWindow, screen } from "electron";
 
 import { LogService } from "jslib-common/abstractions/log.service";
 import { StateService } from "jslib-common/abstractions/state.service";
@@ -11,11 +12,11 @@ const mainWindowSizeKey = "mainWindowSize";
 const WindowEventHandlingDelay = 100;
 export class WindowMain {
   win: BrowserWindow;
-  isQuitting: boolean = false;
+  isQuitting = false;
 
   private windowStateChangeTimer: NodeJS.Timer;
   private windowStates: { [key: string]: any } = {};
-  private enableAlwaysOnTop: boolean = false;
+  private enableAlwaysOnTop = false;
 
   constructor(
     private stateService: StateService,
@@ -36,6 +37,7 @@ export class WindowMain {
             app.quit();
             return;
           } else {
+            // eslint-disable-next-line
             app.on("second-instance", (event, argv, workingDirectory) => {
               // Someone tried to run a second instance, we should focus our window.
               if (this.win != null) {

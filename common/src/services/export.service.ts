@@ -1,34 +1,31 @@
 import * as papa from "papaparse";
 
-import { CipherType } from "../enums/cipherType";
-import { KdfType } from "../enums/kdfType";
-
 import { ApiService } from "../abstractions/api.service";
 import { CipherService } from "../abstractions/cipher.service";
 import { CryptoService } from "../abstractions/crypto.service";
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
-import { ExportService as ExportServiceAbstraction } from "../abstractions/export.service";
+import {
+  ExportFormat,
+  ExportService as ExportServiceAbstraction,
+} from "../abstractions/export.service";
 import { FolderService } from "../abstractions/folder.service";
-
-import { CipherView } from "../models/view/cipherView";
-import { CollectionView } from "../models/view/collectionView";
-import { FolderView } from "../models/view/folderView";
-
+import { CipherType } from "../enums/cipherType";
+import { KdfType } from "../enums/kdfType";
+import { Utils } from "../misc/utils";
+import { CipherData } from "../models/data/cipherData";
+import { CollectionData } from "../models/data/collectionData";
 import { Cipher } from "../models/domain/cipher";
 import { Collection } from "../models/domain/collection";
 import { Folder } from "../models/domain/folder";
-
-import { CipherData } from "../models/data/cipherData";
-import { CollectionData } from "../models/data/collectionData";
-import { CollectionDetailsResponse } from "../models/response/collectionResponse";
-
 import { CipherWithIds as CipherExport } from "../models/export/cipherWithIds";
 import { CollectionWithId as CollectionExport } from "../models/export/collectionWithId";
 import { Event } from "../models/export/event";
 import { FolderWithId as FolderExport } from "../models/export/folderWithId";
+import { CollectionDetailsResponse } from "../models/response/collectionResponse";
+import { CipherView } from "../models/view/cipherView";
+import { CollectionView } from "../models/view/collectionView";
 import { EventView } from "../models/view/eventView";
-
-import { Utils } from "../misc/utils";
+import { FolderView } from "../models/view/folderView";
 
 export class ExportService implements ExportServiceAbstraction {
   constructor(
@@ -39,7 +36,11 @@ export class ExportService implements ExportServiceAbstraction {
     private cryptoFunctionService: CryptoFunctionService
   ) {}
 
-  async getExport(format: "csv" | "json" | "encrypted_json" = "csv"): Promise<string> {
+  async getExport(format: ExportFormat = "csv", organizationId?: string): Promise<string> {
+    if (organizationId) {
+      return await this.getOrganizationExport(organizationId, format);
+    }
+
     if (format === "encrypted_json") {
       return this.getEncryptedExport();
     } else {
@@ -47,14 +48,10 @@ export class ExportService implements ExportServiceAbstraction {
     }
   }
 
-  async getPasswordProtectedExport(
-    password: string,
-    format: "csv" | "json" | "encrypted_json" = "csv",
-    organizationId?: string
-  ): Promise<string> {
+  async getPasswordProtectedExport(password: string, organizationId?: string): Promise<string> {
     const clearText = organizationId
-      ? await this.getOrganizationExport(organizationId, format)
-      : await this.getExport(format);
+      ? await this.getOrganizationExport(organizationId, "json")
+      : await this.getExport("json");
 
     const salt = Utils.fromBufferToB64(await this.cryptoFunctionService.randomBytes(16));
     const kdfIterations = 100000;
@@ -71,7 +68,6 @@ export class ExportService implements ExportServiceAbstraction {
     const jsonDoc: any = {
       encrypted: true,
       passwordProtected: true,
-      format: format,
       salt: salt,
       kdfIterations: kdfIterations,
       kdfType: KdfType.PBKDF2_SHA256,
@@ -84,7 +80,7 @@ export class ExportService implements ExportServiceAbstraction {
 
   async getOrganizationExport(
     organizationId: string,
-    format: "csv" | "json" | "encrypted_json" = "csv"
+    format: ExportFormat = "csv"
   ): Promise<string> {
     if (format === "encrypted_json") {
       return this.getOrganizationEncryptedExport(organizationId);
@@ -97,7 +93,7 @@ export class ExportService implements ExportServiceAbstraction {
     return papa.unparse(events.map((e) => new Event(e)));
   }
 
-  getFileName(prefix: string = null, extension: string = "csv"): string {
+  getFileName(prefix: string = null, extension = "csv"): string {
     const now = new Date();
     const dateString =
       now.getFullYear() +
@@ -391,7 +387,7 @@ export class ExportService implements ExportServiceAbstraction {
     return JSON.stringify(jsonDoc, null, "  ");
   }
 
-  private padNumber(num: number, width: number, padCharacter: string = "0"): string {
+  private padNumber(num: number, width: number, padCharacter = "0"): string {
     const numString = num.toString();
     return numString.length >= width
       ? numString

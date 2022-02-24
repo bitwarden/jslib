@@ -4,6 +4,7 @@ import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.serv
 import { PasswordRepromptService as PasswordRepromptServiceAbstraction } from "jslib-common/abstractions/passwordReprompt.service";
 
 import { PasswordRepromptComponent } from "../components/password-reprompt.component";
+
 import { ModalService } from "./modal.service";
 
 @Injectable()
