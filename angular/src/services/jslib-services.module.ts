@@ -119,6 +119,7 @@ import { ValidationService } from "./validation.service";
         EnvironmentServiceAbstraction,
         StateServiceAbstraction,
         TwoFactorServiceAbstraction,
+        I18nServiceAbstraction,
       ],
     },
     {
