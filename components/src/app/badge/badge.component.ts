@@ -31,7 +31,7 @@ export class BadgeComponent implements OnInit {
       "tw-font-bold",
       "tw-leading-none",
       "tw-text-center",
-      "tw-text-white",
+      "tw-text-contrast",
       "tw-align-baseline",
       "tw-rounded",
       "tw-border-collapse",

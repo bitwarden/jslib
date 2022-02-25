@@ -22,9 +22,6 @@ const Template: Story<CalloutComponent> = (args: CalloutComponent) => ({
   `,
 });
 
-export const Primary = Template.bind({});
-Primary.args = {};
-
 export const Success = Template.bind({});
 Success.args = {
   type: "success",

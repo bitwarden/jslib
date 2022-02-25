@@ -45,14 +45,14 @@ export class CalloutComponent implements OnInit {
     switch (this.type) {
       case "danger":
       case "error":
-        return "tw-border-l-danger-700";
+        return "tw-border-l-danger-500";
       case "info":
       case "tip":
-        return "tw-border-l-info-700";
+        return "tw-border-l-info-500";
       case "success":
-        return "tw-border-l-success-700";
+        return "tw-border-l-success-500";
       case "warning":
-        return "tw-border-l-warning-700";
+        return "tw-border-l-warning-500";
     }
   }
 
@@ -60,14 +60,14 @@ export class CalloutComponent implements OnInit {
     switch (this.type) {
       case "danger":
       case "error":
-        return "!tw-text-danger-700";
+        return "!tw-text-danger";
       case "info":
       case "tip":
-        return "!tw-text-info-700";
+        return "!tw-text-info";
       case "success":
-        return "!tw-text-success-700";
+        return "!tw-text-success";
       case "warning":
-        return "!tw-text-warning-700";
+        return "!tw-text-warning";
     }
   }
 }
