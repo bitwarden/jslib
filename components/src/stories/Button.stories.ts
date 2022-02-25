@@ -6,7 +6,7 @@ import { ButtonComponent } from "./button.component";
 @Component({
   selector: "dummy-button",
   template: `
-    <button bit-button [buttonType]="buttonType" [mode]="mode" [block]="block">123</button>
+    <button bit-button [buttonType]="buttonType" [block]="block">Test</button>
   `,
 })
 class DummyButton extends ButtonComponent {
@@ -23,8 +23,7 @@ export default {
     }),
   ],
   args: {
-    mode: "primary",
-    buttonType: "default",
+    buttonType: "primary",
   },
   // More on argTypes: https://storybook.js.org/docs/angular/api/argtypes
 } as Meta;
@@ -37,21 +36,29 @@ const Template: Story<ButtonComponent> = (args: ButtonComponent) => ({
 export const Primary = Template.bind({});
 // More on args: https://storybook.js.org/docs/angular/writing-stories/args
 Primary.args = {
-  mode: "primary",
-  buttonType: "default",
+  buttonType: "primary",
 };
 
 export const Secondary = Template.bind({});
 Secondary.args = {
-  mode: "secondary",
+  buttonType: "secondary",
 };
 
-export const Outline = Template.bind({});
-Outline.args = {
-  buttonType: "outline",
+export const Danger = Template.bind({});
+Danger.args = {
+  buttonType: "danger",
 };
 
-export const Small = Template.bind({});
-Small.args = {
+const DisabledTemplate: Story = (args) => ({
+  props: args,
+  template: `
+    <button bit-button disabled buttonType="primary" class="tw-mr-2">Primary</button>
+    <button bit-button disabled buttonType="secondary" class="tw-mr-2">Secondary</button>
+    <button bit-button disabled buttonType="danger" class="tw-mr-2">Danger</button>
+  `,
+});
+
+export const Disabled = DisabledTemplate.bind({});
+Disabled.args = {
   size: "small",
 };

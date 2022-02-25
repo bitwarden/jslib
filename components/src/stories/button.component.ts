@@ -8,26 +8,12 @@ import {
   Directive,
 } from "@angular/core";
 
-type ModeTypes = "primary" | "secondary" | "danger";
-type ButtonTypes = "default" | "outline";
+type ButtonTypes = "primary" | "secondary" | "danger";
 
-const buttonStyles: Record<ModeTypes, Record<ButtonTypes, string>> = {
-  primary: {
-    default:
-      "tw-border-primary-500 tw-bg-primary-500 tw-text-white hover:tw-bg-primary-700 hover:tw-border-primary-700 disabled:tw-opacity-60 disabled:hover:tw-bg-primary-500",
-    outline:
-      "tw-bg-outline-background tw-border-outline-border tw-text-primary-500 hover:tw-bg-primary-500 hover:tw-border-primary-500 hover:tw-text-white",
-  },
-  secondary: {
-    default: "",
-    outline:
-      "tw-bg-outline-background tw-border-outline-border !tw-text-secondary-text hover:tw-bg-secondary-500 hover:tw-border-secondary-500 hover:!tw-text-secondary-text-hover",
-  },
-  danger: {
-    default: "",
-    outline:
-      "tw-bg-outline-background tw-border-outline-border tw-text-danger-500 hover:tw-bg-danger-500 hover:tw-border-danger-500 hover:tw-text-white",
-  },
+const buttonStyles: Record<ButtonTypes, string> = {
+  primary: "tw-border-primary-500 tw-bg-primary-500 tw-text-contrast hover:tw-bg-primary-700 hover:tw-border-primary-700",
+  secondary: "tw-bg-transparent tw-bg-outline-background tw-border-outline-border tw-text-muted hover:tw-bg-secondary-500 hover:tw-border-secondary-500 hover:tw-text-contrast",
+  danger: "tw-bg-transparent tw-border-danger-500 tw-text-danger hover:tw-bg-danger-500 hover:tw-border-danger-500 hover:tw-text-contrast",
 };
 
 @Directive({
@@ -37,10 +23,7 @@ export class ButtonComponent implements OnChanges {
   @HostBinding("class") @Input("class") classList: string = "";
 
   @Input()
-  mode: ModeTypes = "primary";
-
-  @Input()
-  buttonType: ButtonTypes = "default";
+  buttonType: ButtonTypes = "secondary";
 
   @Input()
   block = false;
@@ -66,8 +49,10 @@ export class ButtonComponent implements OnChanges {
   public get classes(): string[] {
     return [
       "tw-font-semibold tw-py-2 tw-px-4 tw-rounded tw-transition tw-border tw-border-solid tw-text-center hover:tw-no-underline",
+      "disabled:tw-bg-secondary-100 disabled:tw-border-secondary-100 disabled:tw-text-main",
+      "focus:tw-outline-none focus:tw-ring focus:tw-ring-offset-1 focus:tw-ring-primary-700",
       this.block ? "tw-w-full tw-block" : "",
-      buttonStyles?.[this.mode]?.[this.buttonType],
+      buttonStyles[this.buttonType],
     ];
   }
 }
