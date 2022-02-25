@@ -51,7 +51,6 @@ export class AccountData {
     GeneratedPasswordHistory[]
   > = new EncryptionPair<GeneratedPasswordHistory[], GeneratedPasswordHistory[]>();
   addEditCipherInfo?: any;
-  collapsedGroupings?: string[];
   eventCollection?: EventData[];
   organizations?: { [id: string]: OrganizationData };
   providers?: { [id: string]: ProviderData };
@@ -105,6 +104,7 @@ export class AccountSettings {
   biometricLocked?: boolean;
   biometricUnlock?: boolean;
   clearClipboard?: number;
+  collapsedGroupings?: string[];
   defaultUriMatch?: UriMatchType;
   disableAddLoginNotification?: boolean;
   disableAutoBiometricsPrompt?: boolean;
