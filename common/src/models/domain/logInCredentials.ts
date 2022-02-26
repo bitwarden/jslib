@@ -1,5 +1,6 @@
 import { AuthenticationType } from "../../enums/authenticationType";
-import { TokenRequestTwoFactor } from "../request/identityToken/tokenRequestTwoFactor";
+import { Utils } from "../../misc/utils";
+import { TokenRequestTwoFactor } from "../request/identityToken/tokenRequest";
 
 export class PasswordLogInCredentials {
   readonly type = AuthenticationType.Password;
@@ -25,7 +26,16 @@ export class SsoLogInCredentials {
 }
 
 export class ApiLogInCredentials {
+  static FromCombinedKey(key: string) {
+    const utf = Utils.fromB64ToUtf8(key);
+    const parsed = JSON.parse(utf) as ApiLogInCredentials;
+    const creds = new ApiLogInCredentials(parsed.clientId, parsed.clientSecret);
+    creds.encClientEncInfo = parsed.encClientEncInfo;
+    return creds;
+  }
+
   readonly type = AuthenticationType.Api;
+  encClientEncInfo: string;
 
   constructor(public clientId: string, public clientSecret: string) {}
 }

@@ -97,6 +97,10 @@ export class Utils {
     }
   }
 
+  static fromB64ToArrayBuffer(str: string): ArrayBuffer {
+    return this.fromB64ToArray(str).buffer;
+  }
+
   static fromBufferToUrlB64(buffer: ArrayBuffer): string {
     return Utils.fromB64toUrlB64(Utils.fromBufferToB64(buffer));
   }

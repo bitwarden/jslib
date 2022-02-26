@@ -10,13 +10,16 @@ import { StateService } from "../../abstractions/state.service";
 import { TokenService } from "../../abstractions/token.service";
 import { TwoFactorService } from "../../abstractions/twoFactor.service";
 import { ApiLogInCredentials } from "../../models/domain/logInCredentials";
+import { SymmetricCryptoKey } from "../../models/domain/symmetricCryptoKey";
 import { ApiTokenRequest } from "../../models/request/identityToken/apiTokenRequest";
 import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
+import { Utils } from "../utils";
 
 import { LogInStrategy } from "./logIn.strategy";
 
 export class ApiLogInStrategy extends LogInStrategy {
   tokenRequest: ApiTokenRequest;
+  encClientEncInfo: string;
 
   constructor(
     cryptoService: CryptoService,
@@ -45,7 +48,16 @@ export class ApiLogInStrategy extends LogInStrategy {
   }
 
   async onSuccessfulLogin(tokenResponse: IdentityTokenResponse) {
-    if (tokenResponse.apiUseKeyConnector) {
+    if (!Utils.isNullOrWhitespace(this.encClientEncInfo)) {
+      const {
+        clientEncKey,
+        clientLocalKeyHash,
+      }: { clientEncKey: string; clientLocalKeyHash: string } = JSON.parse(this.encClientEncInfo);
+      await this.cryptoService.setKey(
+        new SymmetricCryptoKey(Utils.fromB64ToArrayBuffer(clientEncKey))
+      );
+      await this.cryptoService.setKeyHash(clientLocalKeyHash);
+    } else if (tokenResponse.apiUseKeyConnector) {
       const keyConnectorUrl = this.environmentService.getKeyConnectorUrl();
       await this.keyConnectorService.getAndSetKey(keyConnectorUrl);
     }
@@ -58,6 +70,8 @@ export class ApiLogInStrategy extends LogInStrategy {
       await this.buildTwoFactor(),
       await this.buildDeviceRequest()
     );
+
+    this.encClientEncInfo = credentials.encClientEncInfo;
 
     return this.startLogIn();
   }

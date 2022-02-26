@@ -67,15 +67,12 @@ export class LoginCommand {
     let ssoCode: string = null;
     let orgIdentifier: string = null;
 
-    let clientId: string = null;
-    let clientSecret: string = null;
+    let combinedApiKey: string = null;
 
     let selectedProvider: any = null;
 
     if (options.apikey != null) {
-      const apiIdentifiers = await this.apiIdentifiers();
-      clientId = apiIdentifiers.clientId;
-      clientSecret = apiIdentifiers.clientSecret;
+      combinedApiKey = await this.apiCombinedKey();
     } else if (options.sso != null && this.canInteract) {
       const passwordOptions: any = {
         type: "password",
@@ -158,8 +155,10 @@ export class LoginCommand {
       }
 
       let response: AuthResult = null;
-      if (clientId != null && clientSecret != null) {
-        response = await this.authService.logIn(new ApiLogInCredentials(clientId, clientSecret));
+      if (combinedApiKey != null) {
+        response = await this.authService.logIn(
+          ApiLogInCredentials.FromCombinedKey(combinedApiKey)
+        );
       } else if (ssoCode != null && ssoCodeVerifier != null) {
         response = await this.authService.logIn(
           new SsoLogInCredentials(
@@ -283,7 +282,7 @@ export class LoginCommand {
       }
 
       // Handle Updating Temp Password if NOT using an API Key for authentication
-      if (response.forcePasswordReset && clientId == null && clientSecret == null) {
+      if (response.forcePasswordReset && combinedApiKey == null) {
         return await this.updateTempPassword();
       }
 
@@ -480,28 +479,28 @@ export class LoginCommand {
     return userInput;
   }
 
-  private async apiClientId(): Promise<string> {
-    let clientId: string = null;
+  private async apiCombinedKey(): Promise<string> {
+    let combinedApiKey: string = null;
 
-    const storedClientId: string = process.env.BW_CLIENTID;
-    if (storedClientId == null) {
+    const storedApiKey: string = process.env.BW_APIKEY;
+    if (storedApiKey == null) {
       if (this.canInteract) {
         const answer: inquirer.Answers = await inquirer.createPromptModule({
           output: process.stderr,
         })({
           type: "input",
-          name: "clientId",
-          message: "client_id:",
+          name: "apiKey",
+          message: "Combined Api Key:",
         });
-        clientId = answer.clientId;
+        combinedApiKey = answer.apiKey;
       } else {
-        clientId = null;
+        combinedApiKey = null;
       }
     } else {
-      clientId = storedClientId;
+      combinedApiKey = storedApiKey;
     }
 
-    return clientId;
+    return combinedApiKey;
   }
 
   private async apiClientSecret(isAdditionalAuthentication = false): Promise<string> {
@@ -524,13 +523,6 @@ export class LoginCommand {
     }
 
     return clientSecret;
-  }
-
-  private async apiIdentifiers(): Promise<{ clientId: string; clientSecret: string }> {
-    return {
-      clientId: await this.apiClientId(),
-      clientSecret: await this.apiClientSecret(),
-    };
   }
 
   private async openSsoPrompt(
