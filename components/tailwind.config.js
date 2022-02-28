@@ -1,3 +1,4 @@
+/* eslint-disable */
 const config = require("../../tailwind.config");
 
 config.content = ["./src/**/*.{html,ts}"];

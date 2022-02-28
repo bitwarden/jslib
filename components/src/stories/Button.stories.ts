@@ -1,15 +1,14 @@
 // also exported from '@storybook/angular' if you can deal with breaking changes in 6.1
 import { Component } from "@angular/core";
 import { Meta, moduleMetadata, Story } from "@storybook/angular";
+
 import { ButtonComponent } from "./button.component";
 
 @Component({
   selector: "dummy-button",
   template: ` <button bit-button [buttonType]="buttonType" [block]="block">Test</button> `,
 })
-class DummyButton extends ButtonComponent {
-  override ngOnChanges() {}
-}
+class DummyButton extends ButtonComponent {}
 
 // More on default export: https://storybook.js.org/docs/angular/writing-stories/introduction#default-export
 export default {

@@ -1,12 +1,4 @@
-import {
-  Directive,
-  ElementRef,
-  EventEmitter,
-  HostBinding,
-  Input,
-  OnChanges,
-  Output,
-} from "@angular/core";
+import { Directive, EventEmitter, HostBinding, Input, OnChanges, Output } from "@angular/core";
 
 type ButtonTypes = "primary" | "secondary" | "danger";
 
@@ -23,7 +15,7 @@ const buttonStyles: Record<ButtonTypes, string> = {
   selector: "button[bit-button], a[bit-button]",
 })
 export class ButtonComponent implements OnChanges {
-  @HostBinding("class") @Input("class") classList: string = "";
+  @HostBinding("class") @Input("class") classList = "";
 
   @Input()
   buttonType: ButtonTypes = "secondary";
@@ -42,8 +34,6 @@ export class ButtonComponent implements OnChanges {
    */
   @Output()
   onClick = new EventEmitter<Event>();
-
-  constructor(elementRef: ElementRef) {}
 
   ngOnChanges() {
     this.classList = this.classes.join(" ");

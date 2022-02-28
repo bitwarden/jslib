@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input } from "@angular/core";
 
 type BadgeTypes = "primary" | "secondary" | "success" | "danger" | "warning" | "info";
 
@@ -15,13 +15,9 @@ const styles: Record<BadgeTypes, string[]> = {
   selector: "bit-badge",
   template: `<span [ngClass]="classes"><ng-content></ng-content></span>`,
 })
-export class BadgeComponent implements OnInit {
+export class BadgeComponent {
   @Input()
   type: BadgeTypes = "primary";
-
-  constructor() {}
-
-  ngOnInit() {}
 
   get classes() {
     return [

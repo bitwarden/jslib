@@ -1,4 +1,5 @@
 import { Meta, Story } from "@storybook/angular";
+
 import { BadgeComponent } from "./badge.component";
 
 export default {
