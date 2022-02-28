@@ -49,11 +49,6 @@ Info.args = {
   title: "Info",
 };
 
-export const Danger = Template.bind({});
-Danger.args = {
-  type: "danger",
-};
-
 export const Warning = Template.bind({});
 Warning.args = {
   type: "warning",
