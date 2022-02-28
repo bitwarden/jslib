@@ -1,4 +1,4 @@
-import { Directive, EventEmitter, HostBinding, Input, OnChanges, Output } from "@angular/core";
+import { Input, Output, EventEmitter, HostBinding, OnChanges, Directive } from "@angular/core";
 
 type ButtonTypes = "primary" | "secondary" | "danger";
 

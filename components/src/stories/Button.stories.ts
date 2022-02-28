@@ -6,9 +6,9 @@ import { ButtonComponent } from "./button.component";
 
 @Component({
   selector: "dummy-button",
-  template: ` <button bit-button [buttonType]="buttonType" [block]="block">Test</button> `,
+  template: `<button bit-button [buttonType]="buttonType" [block]="block">Test</button> `,
 })
-class DummyButton extends ButtonComponent {}
+class DummyButton {}
 
 // More on default export: https://storybook.js.org/docs/angular/writing-stories/introduction#default-export
 export default {
