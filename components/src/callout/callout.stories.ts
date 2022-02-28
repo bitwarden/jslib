@@ -54,7 +54,7 @@ Warning.args = {
   type: "warning",
 };
 
-export const Error = Template.bind({});
-Error.args = {
-  type: "error",
+export const Danger = Template.bind({});
+Danger.args = {
+  type: "danger",
 };

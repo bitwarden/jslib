@@ -2,18 +2,18 @@ import { Component, Input, OnInit } from "@angular/core";
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 
-type CalloutTypes = "success" | "info" | "warning" | "error";
+type CalloutTypes = "success" | "info" | "warning" | "danger";
 
 const defaultIcon: Record<CalloutTypes, string> = {
   success: "bwi-check",
   info: "bwi-info-circle",
   warning: "bwi-exclamation-triangle",
-  error: "bwi-error",
+  danger: "bwi-error",
 };
 
 const defaultI18n: Partial<Record<CalloutTypes, string>> = {
   warning: "warning",
-  error: "error",
+  danger: "error",
 };
 
 @Component({
@@ -37,7 +37,7 @@ export class CalloutComponent implements OnInit {
 
   get calloutClass() {
     switch (this.type) {
-      case "error":
+      case "danger":
         return "tw-border-l-danger-500";
       case "info":
         return "tw-border-l-info-500";
@@ -50,7 +50,7 @@ export class CalloutComponent implements OnInit {
 
   get headerClass() {
     switch (this.type) {
-      case "error":
+      case "danger":
         return "tw-text-danger";
       case "info":
         return "tw-text-info";
