@@ -1,9 +1,8 @@
-import { OrganizationData } from "../data/organizationData";
-
 import { OrganizationUserStatusType } from "../../enums/organizationUserStatusType";
 import { OrganizationUserType } from "../../enums/organizationUserType";
 import { ProductType } from "../../enums/productType";
 import { PermissionsApi } from "../api/permissionsApi";
+import { OrganizationData } from "../data/organizationData";
 
 export class Organization {
   id: string;

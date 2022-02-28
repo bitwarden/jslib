@@ -1,11 +1,6 @@
 import { Directive, Input, NgZone, OnInit } from "@angular/core";
-
 import { Router } from "@angular/router";
-
 import { take } from "rxjs/operators";
-
-import { AuthResult } from "jslib-common/models/domain/authResult";
-import { PasswordLogInCredentials } from "jslib-common/models/domain/logInCredentials";
 
 import { AuthService } from "jslib-common/abstractions/auth.service";
 import { CryptoFunctionService } from "jslib-common/abstractions/cryptoFunction.service";
@@ -15,18 +10,19 @@ import { LogService } from "jslib-common/abstractions/log.service";
 import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-
 import { Utils } from "jslib-common/misc/utils";
+import { AuthResult } from "jslib-common/models/domain/authResult";
+import { PasswordLogInCredentials } from "jslib-common/models/domain/logInCredentials";
 
 import { CaptchaProtectedComponent } from "./captchaProtected.component";
 
 @Directive()
 export class LoginComponent extends CaptchaProtectedComponent implements OnInit {
-  @Input() email: string = "";
+  @Input() email = "";
   @Input() rememberEmail = true;
 
-  masterPassword: string = "";
-  showPassword: boolean = false;
+  masterPassword = "";
+  showPassword = false;
   formPromise: Promise<AuthResult>;
   onSuccessfulLogin: () => Promise<any>;
   onSuccessfulLoginNavigate: () => Promise<any>;
@@ -36,7 +32,7 @@ export class LoginComponent extends CaptchaProtectedComponent implements OnInit 
   protected twoFactorRoute = "2fa";
   protected successRoute = "vault";
   protected forcePasswordResetRoute = "update-temp-password";
-  protected alwaysRememberEmail: boolean = false;
+  protected alwaysRememberEmail = false;
 
   constructor(
     protected authService: AuthService,

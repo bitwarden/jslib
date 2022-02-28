@@ -1,14 +1,13 @@
 import { Router } from "@angular/router";
 
-import { PasswordHintRequest } from "jslib-common/models/request/passwordHintRequest";
-
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { LogService } from "jslib-common/abstractions/log.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
+import { PasswordHintRequest } from "jslib-common/models/request/passwordHintRequest";
 
 export class HintComponent {
-  email: string = "";
+  email = "";
   formPromise: Promise<any>;
 
   protected successRoute = "login";

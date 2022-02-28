@@ -1,8 +1,7 @@
-import { LogLevelType } from "../enums/logLevelType";
+import * as hrtime from "browser-hrtime";
 
 import { LogService as LogServiceAbstraction } from "../abstractions/log.service";
-
-import * as hrtime from "browser-hrtime";
+import { LogLevelType } from "../enums/logLevelType";
 
 export class ConsoleLogService implements LogServiceAbstraction {
   protected timersMap: Map<string, [number, number]> = new Map();
@@ -38,19 +37,19 @@ export class ConsoleLogService implements LogServiceAbstraction {
 
     switch (level) {
       case LogLevelType.Debug:
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.log(message);
         break;
       case LogLevelType.Info:
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.log(message);
         break;
       case LogLevelType.Warning:
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.warn(message);
         break;
       case LogLevelType.Error:
-        // tslint:disable-next-line
+        // eslint-disable-next-line
         console.error(message);
         break;
       default:
@@ -58,13 +57,13 @@ export class ConsoleLogService implements LogServiceAbstraction {
     }
   }
 
-  time(label: string = "default") {
+  time(label = "default") {
     if (!this.timersMap.has(label)) {
       this.timersMap.set(label, hrtime());
     }
   }
 
-  timeEnd(label: string = "default"): [number, number] {
+  timeEnd(label = "default"): [number, number] {
     const elapsed = hrtime(this.timersMap.get(label));
     this.timersMap.delete(label);
     this.write(LogLevelType.Info, `${label}: ${elapsed[0] * 1000 + elapsed[1] / 10e6}ms`);

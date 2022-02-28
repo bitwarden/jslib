@@ -10,22 +10,17 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
-
+import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
 import { PasswordLogInStrategy } from "jslib-common/misc/logInStrategies/passwordLogin.strategy";
 import { Utils } from "jslib-common/misc/utils";
-
 import { Account, AccountProfile, AccountTokens } from "jslib-common/models/domain/account";
 import { AuthResult } from "jslib-common/models/domain/authResult";
 import { EncString } from "jslib-common/models/domain/encString";
 import { PasswordLogInCredentials } from "jslib-common/models/domain/logInCredentials";
-
 import { PasswordTokenRequest } from "jslib-common/models/request/identityToken/passwordTokenRequest";
-
 import { IdentityCaptchaResponse } from "jslib-common/models/response/identityCaptchaResponse";
 import { IdentityTokenResponse } from "jslib-common/models/response/identityTokenResponse";
 import { IdentityTwoFactorResponse } from "jslib-common/models/response/identityTwoFactorResponse";
-
-import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
 
 const email = "hello@world.com";
 const masterPassword = "password";

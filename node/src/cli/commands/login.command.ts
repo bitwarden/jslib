@@ -1,17 +1,8 @@
-import * as program from "commander";
 import * as http from "http";
+
+import * as program from "commander";
 import * as inquirer from "inquirer";
-
-import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
-
-import { AuthResult } from "jslib-common/models/domain/authResult";
-import {
-  ApiLogInCredentials,
-  PasswordLogInCredentials,
-  SsoLogInCredentials,
-} from "jslib-common/models/domain/logInCredentials";
-import { TwoFactorEmailRequest } from "jslib-common/models/request/twoFactorEmailRequest";
-import { ErrorResponse } from "jslib-common/models/response/errorResponse";
+import Separator from "inquirer/lib/objects/separator";
 
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { AuthService } from "jslib-common/abstractions/auth.service";
@@ -24,20 +15,21 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
-
-import { Response } from "../models/response";
-
-import { UpdateTempPasswordRequest } from "jslib-common/models/request/updateTempPasswordRequest";
-
-import { MessageResponse } from "../models/response/messageResponse";
-
+import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
 import { NodeUtils } from "jslib-common/misc/nodeUtils";
 import { Utils } from "jslib-common/misc/utils";
+import { AuthResult } from "jslib-common/models/domain/authResult";
+import {
+  ApiLogInCredentials,
+  PasswordLogInCredentials,
+  SsoLogInCredentials,
+} from "jslib-common/models/domain/logInCredentials";
+import { TwoFactorEmailRequest } from "jslib-common/models/request/twoFactorEmailRequest";
+import { UpdateTempPasswordRequest } from "jslib-common/models/request/updateTempPasswordRequest";
+import { ErrorResponse } from "jslib-common/models/response/errorResponse";
 
-import Separator from "inquirer/lib/objects/separator";
-
-// tslint:disable-next-line
-const open = require("open");
+import { Response } from "../models/response";
+import { MessageResponse } from "../models/response/messageResponse";
 
 export class LoginCommand {
   protected validatedParams: () => Promise<any>;
@@ -482,7 +474,7 @@ export class LoginCommand {
     return clientId;
   }
 
-  private async apiClientSecret(isAdditionalAuthentication: boolean = false): Promise<string> {
+  private async apiClientSecret(isAdditionalAuthentication = false): Promise<string> {
     const additionalAuthenticationMessage = "Additional authentication required.\nAPI key ";
     let clientSecret: string = null;
 
