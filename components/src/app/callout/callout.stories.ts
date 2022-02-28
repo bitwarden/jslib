@@ -1,5 +1,6 @@
-import { Story, Meta, moduleMetadata } from "@storybook/angular";
-import { AppModule } from "../app.module";
+import { Meta, moduleMetadata, Story } from "@storybook/angular";
+import { I18nService } from "jslib-common/abstractions/i18n.service";
+import { I18nMockService } from "../i18n-mock.service";
 import { CalloutComponent } from "./callout.component";
 
 export default {
@@ -7,7 +8,18 @@ export default {
   component: CalloutComponent,
   decorators: [
     moduleMetadata({
-      imports: [AppModule],
+      providers: [
+        {
+          provide: I18nService,
+          useFactory: () => {
+            return new I18nMockService({
+              warning: "Warning",
+              error: "Error",
+              tip: "Tip",
+            });
+          },
+        },
+      ],
     }),
   ],
   args: {
@@ -18,13 +30,14 @@ export default {
 const Template: Story<CalloutComponent> = (args: CalloutComponent) => ({
   props: args,
   template: `
-    <bit-callout [type]="type">Content</bit-callout>
+    <bit-callout [type]="type" [title]="title">Content</bit-callout>
   `,
 });
 
 export const Success = Template.bind({});
 Success.args = {
   type: "success",
+  title: "Success",
 };
 
 export const Danger = Template.bind({});
@@ -40,4 +53,5 @@ Warning.args = {
 export const Info = Template.bind({});
 Info.args = {
   type: "info",
+  title: "Info",
 };
