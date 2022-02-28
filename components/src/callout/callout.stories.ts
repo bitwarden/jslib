@@ -43,6 +43,12 @@ Success.args = {
   title: "Success",
 };
 
+export const Info = Template.bind({});
+Info.args = {
+  type: "info",
+  title: "Info",
+};
+
 export const Danger = Template.bind({});
 Danger.args = {
   type: "danger",
@@ -53,8 +59,7 @@ Warning.args = {
   type: "warning",
 };
 
-export const Info = Template.bind({});
-Info.args = {
-  type: "info",
-  title: "Info",
+export const Error = Template.bind({});
+Error.args = {
+  type: "error",
 };

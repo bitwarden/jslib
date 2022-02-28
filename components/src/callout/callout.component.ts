@@ -2,7 +2,21 @@ import { Component, Input, OnInit } from "@angular/core";
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 
-type CalloutTypes = "success" | "info" | "warning" | "danger" | "error" | "tip";
+type CalloutTypes = "success" | "info" | "warning" | "danger" | "error";
+
+const defaultIcon: Record<CalloutTypes, string> = {
+  success: "bwi-check",
+  info: "bwi-info-circle",
+  warning: "bwi-exclamation-triangle",
+  danger: "bwi-exclamation-triangle",
+  error: "bwi-error",
+};
+
+const defaultI18n: Partial<Record<CalloutTypes, string>> = {
+  warning: "warning",
+  danger: "warning",
+  error: "error",
+};
 
 @Component({
   selector: "bit-callout",
@@ -17,27 +31,9 @@ export class CalloutComponent implements OnInit {
   constructor(private i18nService: I18nService) {}
 
   ngOnInit() {
-    if (this.type === "warning" || this.type === "danger") {
-      if (this.title === undefined) {
-        this.title = this.i18nService.t("warning");
-      }
-      if (this.icon === undefined) {
-        this.icon = "bwi-exclamation-triangle";
-      }
-    } else if (this.type === "error") {
-      if (this.title === undefined) {
-        this.title = this.i18nService.t("error");
-      }
-      if (this.icon === undefined) {
-        this.icon = "bwi-error";
-      }
-    } else if (this.type === "tip") {
-      if (this.title === undefined) {
-        this.title = this.i18nService.t("tip");
-      }
-      if (this.icon === undefined) {
-        this.icon = "bwi-lightbulb";
-      }
+    this.icon ??= defaultIcon[this.type];
+    if (this.title == null && defaultI18n[this.type] != null) {
+      this.title = this.i18nService.t(defaultI18n[this.type]);
     }
   }
 
@@ -47,7 +43,6 @@ export class CalloutComponent implements OnInit {
       case "error":
         return "tw-border-l-danger-500";
       case "info":
-      case "tip":
         return "tw-border-l-info-500";
       case "success":
         return "tw-border-l-success-500";
@@ -60,14 +55,13 @@ export class CalloutComponent implements OnInit {
     switch (this.type) {
       case "danger":
       case "error":
-        return "!tw-text-danger";
+        return "tw-text-danger";
       case "info":
-      case "tip":
-        return "!tw-text-info";
+        return "tw-text-info";
       case "success":
-        return "!tw-text-success";
+        return "tw-text-success";
       case "warning":
-        return "!tw-text-warning";
+        return "tw-text-warning";
     }
   }
 }
