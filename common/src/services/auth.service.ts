@@ -16,6 +16,7 @@ import { KdfType } from "../enums/kdfType";
 import { ApiLogInStrategy } from "../misc/logInStrategies/apiLogin.strategy";
 import { PasswordLogInStrategy } from "../misc/logInStrategies/passwordLogin.strategy";
 import { SsoLogInStrategy } from "../misc/logInStrategies/ssoLogin.strategy";
+import { Utils } from "../misc/utils";
 import { AuthResult } from "../models/domain/authResult";
 import {
   ApiLogInCredentials,
@@ -115,16 +116,19 @@ export class AuthService implements AuthServiceAbstraction {
     return result;
   }
 
-  async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
+  async logInTwoFactor(
+    twoFactor: TokenRequestTwoFactor,
+    captchaResponse: string
+  ): Promise<AuthResult> {
     if (this.logInStrategy == null) {
       throw new Error(this.i18nService.t("sessionTimeout"));
     }
 
     try {
-      const result = await this.logInStrategy.logInTwoFactor(twoFactor);
+      const result = await this.logInStrategy.logInTwoFactor(twoFactor, captchaResponse);
 
       // Only clear state if 2FA token has been accepted, otherwise we need to be able to try again
-      if (!result.requiresTwoFactor) {
+      if (!result.requiresTwoFactor && Utils.isNullOrWhitespace(result.captchaSiteKey)) {
         this.clearState();
       }
       return result;

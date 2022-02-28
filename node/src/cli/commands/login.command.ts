@@ -24,6 +24,7 @@ import {
   PasswordLogInCredentials,
   SsoLogInCredentials,
 } from "jslib-common/models/domain/logInCredentials";
+import { TokenRequestTwoFactor } from "jslib-common/models/request/identityToken/tokenRequest";
 import { TwoFactorEmailRequest } from "jslib-common/models/request/twoFactorEmailRequest";
 import { UpdateTempPasswordRequest } from "jslib-common/models/request/updateTempPasswordRequest";
 import { ErrorResponse } from "jslib-common/models/response/errorResponse";
@@ -68,6 +69,10 @@ export class LoginCommand {
 
     let clientId: string = null;
     let clientSecret: string = null;
+
+    let captchaClientSecret: string = null;
+
+    let selectedProvider: any = null;
 
     if (options.apikey != null) {
       const apiIdentifiers = await this.apiIdentifiers();
@@ -177,39 +182,23 @@ export class LoginCommand {
         );
       }
       if (response.captchaSiteKey) {
-        const badCaptcha = Response.badRequest(
-          "Your authentication request appears to be coming from a bot\n" +
-            "Please use your API key to validate this request and ensure BW_CLIENTSECRET is correct, if set.\n" +
-            "(https://bitwarden.com/help/cli-auth-challenges)"
-        );
+        const twoFactorRequest: TokenRequestTwoFactor = {
+          provider: twoFactorMethod,
+          token: twoFactorToken,
+          remember: false,
+        };
+        const credentials = new PasswordLogInCredentials(email, password);
+        const handledResponse = await this.handleCaptchaRequired(twoFactorRequest, credentials);
 
-        try {
-          const captchaClientSecret = await this.apiClientSecret(true);
-          if (Utils.isNullOrWhitespace(captchaClientSecret)) {
-            return badCaptcha;
-          }
-
-          const secondResponse = await this.authService.logIn(
-            new PasswordLogInCredentials(email, password, captchaClientSecret, {
-              provider: twoFactorMethod,
-              token: twoFactorToken,
-              remember: false,
-            })
-          );
-          response = secondResponse;
-        } catch (e) {
-          if (
-            (e instanceof ErrorResponse || e.constructor.name === "ErrorResponse") &&
-            (e as ErrorResponse).message.includes("Captcha is invalid")
-          ) {
-            return badCaptcha;
-          } else {
-            throw e;
-          }
+        if (handledResponse[2] != null) {
+          // Error Response
+          return handledResponse[2];
+        } else {
+          captchaClientSecret = handledResponse[0];
+          response = handledResponse[1];
         }
       }
       if (response.requiresTwoFactor) {
-        let selectedProvider: any = null;
         const twoFactorProviders = this.twoFactorService.getSupportedProviders(null);
         if (twoFactorProviders.length === 0) {
           return Response.badRequest("No providers available for this client.");
@@ -276,11 +265,31 @@ export class LoginCommand {
           }
         }
 
-        response = await this.authService.logInTwoFactor({
+        response = await this.authService.logInTwoFactor(
+          {
+            provider: selectedProvider.type,
+            token: twoFactorToken,
+            remember: false,
+          },
+          captchaClientSecret
+        );
+      }
+
+      if (response.captchaSiteKey) {
+        const twoFactorRequest: TokenRequestTwoFactor = {
           provider: selectedProvider.type,
           token: twoFactorToken,
           remember: false,
-        });
+        };
+        const handledResponse = await this.handleCaptchaRequired(twoFactorRequest);
+
+        if (handledResponse[2] != null) {
+          // Error Response
+          return handledResponse[2];
+        } else {
+          captchaClientSecret = handledResponse[0];
+          response = handledResponse[1];
+        }
       }
 
       if (response.requiresTwoFactor) {
@@ -432,6 +441,48 @@ export class LoginCommand {
         /* Do nothing */
       });
       return Response.error(e);
+    }
+  }
+
+  private async handleCaptchaRequired(
+    twoFactorRequest: TokenRequestTwoFactor,
+    credentials: PasswordLogInCredentials = null
+  ): Promise<[string, AuthResult, Response]> {
+    const badCaptcha = Response.badRequest(
+      "Your authentication request has been flagged and will require user interaction to proceed.\n" +
+        "Please use your API key to validate this request and ensure BW_CLIENTSECRET is correct, if set.\n" +
+        "(https://bitwarden.com/help/cli-auth-challenges)"
+    );
+
+    try {
+      const captchaClientSecret = await this.apiClientSecret(true);
+      if (Utils.isNullOrWhitespace(captchaClientSecret)) {
+        return [null, null, badCaptcha];
+      }
+
+      let authResultResponse: AuthResult = null;
+      if (credentials != null) {
+        credentials.captchaToken = captchaClientSecret;
+        credentials.twoFactor = twoFactorRequest;
+        authResultResponse = await this.authService.logIn(credentials);
+      } else {
+        authResultResponse = await this.authService.logInTwoFactor(
+          twoFactorRequest,
+          captchaClientSecret
+        );
+      }
+
+      return [captchaClientSecret, authResultResponse, null];
+    } catch (e) {
+      if (
+        e instanceof ErrorResponse ||
+        (e.constructor.name === "ErrorResponse" &&
+          (e as ErrorResponse).message.includes("Captcha is invalid"))
+      ) {
+        return [null, null, badCaptcha];
+      } else {
+        return [null, null, Response.error(e)];
+      }
     }
   }
 

@@ -17,8 +17,10 @@ import { AuthResult } from "jslib-common/models/domain/authResult";
 import { TwoFactorEmailRequest } from "jslib-common/models/request/twoFactorEmailRequest";
 import { TwoFactorProviders } from "jslib-common/services/twoFactor.service";
 
+import { CaptchaProtectedComponent } from "./captchaProtected.component";
+
 @Directive()
-export class TwoFactorComponent implements OnInit, OnDestroy {
+export class TwoFactorComponent extends CaptchaProtectedComponent implements OnInit, OnDestroy {
   token = "";
   remember = false;
   webAuthnReady = false;
@@ -56,6 +58,7 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
     protected logService: LogService,
     protected twoFactorService: TwoFactorService
   ) {
+    super(environmentService, i18nService, platformUtilsService);
     this.webAuthnSupported = this.platformUtilsService.supportsWebAuthn(win);
   }
 
@@ -153,6 +156,8 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
   }
 
   async submit() {
+    await this.setupCaptcha();
+
     if (this.token == null || this.token === "") {
       this.platformUtilsService.showToast(
         "error",
@@ -185,14 +190,20 @@ export class TwoFactorComponent implements OnInit, OnDestroy {
   }
 
   async doSubmit() {
-    this.formPromise = this.authService.logInTwoFactor({
-      provider: this.selectedProviderType,
-      token: this.token,
-      remember: this.remember,
-    });
+    this.formPromise = this.authService.logInTwoFactor(
+      {
+        provider: this.selectedProviderType,
+        token: this.token,
+        remember: this.remember,
+      },
+      this.captchaToken
+    );
     const response: AuthResult = await this.formPromise;
     const disableFavicon = await this.stateService.getDisableFavicon();
     await this.stateService.setDisableFavicon(!!disableFavicon);
+    if (this.handleCaptchaRequired(response)) {
+      return;
+    }
     if (this.onSuccessfulLogin != null) {
       this.onSuccessfulLogin();
     }
