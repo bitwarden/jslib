@@ -267,11 +267,14 @@ describe("LogInStrategy", () => {
 
       apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
 
-      await passwordLogInStrategy.logInTwoFactor({
-        provider: twoFactorProviderType,
-        token: twoFactorToken,
-        remember: twoFactorRemember,
-      });
+      await passwordLogInStrategy.logInTwoFactor(
+        {
+          provider: twoFactorProviderType,
+          token: twoFactorToken,
+          remember: twoFactorRemember,
+        },
+        null
+      );
 
       apiService.received(1).postIdentityToken(
         Arg.is((actual) => {
