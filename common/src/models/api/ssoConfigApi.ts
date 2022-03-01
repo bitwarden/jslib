@@ -40,7 +40,6 @@ export class SsoConfigApi extends BaseResponse {
       api.idpBindingType = view.saml.idpBindingType;
       api.idpSingleSignOnServiceUrl = view.saml.idpSingleSignOnServiceUrl;
       api.idpSingleLogoutServiceUrl = view.saml.idpSingleLogoutServiceUrl;
-      api.idpArtifactResolutionServiceUrl = view.saml.idpArtifactResolutionServiceUrl;
       api.idpX509PublicCert = view.saml.idpX509PublicCert;
       api.idpOutboundSigningAlgorithm = view.saml.idpOutboundSigningAlgorithm;
       api.idpAllowUnsolicitedAuthnResponse = view.saml.idpAllowUnsolicitedAuthnResponse;
@@ -83,7 +82,6 @@ export class SsoConfigApi extends BaseResponse {
   idpBindingType: Saml2BindingType;
   idpSingleSignOnServiceUrl: string;
   idpSingleLogoutServiceUrl: string;
-  idpArtifactResolutionServiceUrl: string;
   idpX509PublicCert: string;
   idpOutboundSigningAlgorithm: string;
   idpAllowUnsolicitedAuthnResponse: boolean;
@@ -125,9 +123,6 @@ export class SsoConfigApi extends BaseResponse {
     this.idpBindingType = this.getResponseProperty("IdpBindingType");
     this.idpSingleSignOnServiceUrl = this.getResponseProperty("IdpSingleSignOnServiceUrl");
     this.idpSingleLogoutServiceUrl = this.getResponseProperty("IdpSingleLogoutServiceUrl");
-    this.idpArtifactResolutionServiceUrl = this.getResponseProperty(
-      "IdpArtifactResolutionServiceUrl"
-    );
     this.idpX509PublicCert = this.getResponseProperty("IdpX509PublicCert");
     this.idpOutboundSigningAlgorithm = this.getResponseProperty("IdpOutboundSigningAlgorithm");
     this.idpAllowUnsolicitedAuthnResponse = this.getResponseProperty(
