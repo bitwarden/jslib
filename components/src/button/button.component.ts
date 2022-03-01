@@ -14,8 +14,7 @@ const buttonStyles: Record<ButtonTypes, string> = {
   ].join(" "),
   secondary: [
     "tw-bg-transparent",
-    "tw-bg-outline-background",
-    "tw-border-outline-border",
+    "tw-border-text-muted",
     "tw-text-muted",
     "hover:tw-bg-secondary-500",
     "hover:tw-border-secondary-500",
@@ -73,7 +72,7 @@ export class ButtonComponent implements OnChanges {
       "focus:tw-ring-offset-1",
       "focus:tw-ring-primary-700",
       this.block ? "tw-w-full tw-block" : "",
-      buttonStyles[this.buttonType],
+      buttonStyles[this.buttonType ?? "secondary"],
     ];
   }
 }

@@ -18,7 +18,6 @@ export default {
             return new I18nMockService({
               warning: "Warning",
               error: "Error",
-              tip: "Tip",
             });
           },
         },
