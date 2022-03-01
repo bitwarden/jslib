@@ -231,7 +231,7 @@ export class StateService<
   async getAutoFillOnPageLoadDefault(options?: StorageOptions): Promise<boolean> {
     return (
       (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.autoFillOnPageLoadDefault ?? false
+        ?.settings?.autoFillOnPageLoadDefault ?? true
     );
   }
 
