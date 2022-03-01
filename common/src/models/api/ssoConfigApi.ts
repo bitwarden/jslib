@@ -1,5 +1,3 @@
-import { BaseResponse } from "../response/baseResponse";
-
 import {
   OpenIdConnectRedirectBehavior,
   Saml2BindingType,
@@ -7,6 +5,7 @@ import {
   Saml2SigningBehavior,
   SsoType,
 } from "../../enums/ssoEnums";
+import { BaseResponse } from "../response/baseResponse";
 import { SsoConfigView } from "../view/ssoConfigView";
 
 export class SsoConfigApi extends BaseResponse {
