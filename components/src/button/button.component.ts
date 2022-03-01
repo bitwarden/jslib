@@ -1,6 +1,6 @@
 import { Input, HostBinding, OnChanges, Directive } from "@angular/core";
 
-type ButtonTypes = "primary" | "secondary" | "danger";
+export type ButtonTypes = "primary" | "secondary" | "danger";
 
 const buttonStyles: Record<ButtonTypes, string> = {
   primary: [
@@ -69,7 +69,7 @@ export class ButtonComponent implements OnChanges {
       "disabled:tw-text-main",
       "focus:tw-outline-none",
       "focus:tw-ring",
-      "focus:tw-ring-offset-1",
+      "focus:tw-ring-offset-2",
       "focus:tw-ring-primary-700",
       this.block ? "tw-w-full tw-block" : "",
       buttonStyles[this.buttonType ?? "secondary"],

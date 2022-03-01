@@ -1,24 +1,11 @@
-// also exported from '@storybook/angular' if you can deal with breaking changes in 6.1
-import { Component } from "@angular/core";
-import { Meta, moduleMetadata, Story } from "@storybook/angular";
+import { Meta, Story } from "@storybook/angular";
 
 import { ButtonComponent } from "./button.component";
-
-@Component({
-  selector: "dummy-button",
-  template: `<button bit-button [buttonType]="buttonType" [block]="block">Test</button> `,
-})
-class DummyButton {}
 
 // More on default export: https://storybook.js.org/docs/angular/writing-stories/introduction#default-export
 export default {
   title: "Jslib/Button",
-  component: DummyButton,
-  decorators: [
-    moduleMetadata({
-      declarations: [DummyButton, ButtonComponent],
-    }),
-  ],
+  component: ButtonComponent,
   args: {
     buttonType: "primary",
   },
@@ -28,6 +15,7 @@ export default {
 // More on component templates: https://storybook.js.org/docs/angular/writing-stories/introduction#using-args
 const Template: Story<ButtonComponent> = (args: ButtonComponent) => ({
   props: args,
+  template: `<button bit-button [buttonType]="buttonType" [block]="block">Test</button>`,
 });
 
 export const Primary = Template.bind({});
