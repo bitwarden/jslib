@@ -1,7 +1,3 @@
-import { View } from "./view";
-
-import { SsoConfigApi } from "../api/ssoConfigApi";
-
 import {
   OpenIdConnectRedirectBehavior,
   Saml2BindingType,
@@ -9,6 +5,9 @@ import {
   Saml2SigningBehavior,
   SsoType,
 } from "../../enums/ssoEnums";
+import { SsoConfigApi } from "../api/ssoConfigApi";
+
+import { View } from "./view";
 
 export class SsoConfigView extends View {
   configType: SsoType;
