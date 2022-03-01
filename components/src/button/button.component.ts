@@ -55,7 +55,6 @@ export class ButtonComponent implements OnChanges {
   get classes(): string[] {
     return [
       "tw-font-semibold",
-      "tw-text-sm",
       "tw-py-1.5",
       "tw-px-3",
       "tw-rounded",
