@@ -373,7 +373,7 @@ export class StateMigrationService<
         legacyEtmKey: null,
         organizationKeys: {
           decrypted: null,
-          encrypted: await this.get<any>(v1Keys.encOrgKeys + userId),
+          encrypted: await this.get<any>(v1Keys.encOrgKeys),
         },
         privateKey: {
           decrypted: null,
@@ -381,7 +381,7 @@ export class StateMigrationService<
         },
         providerKeys: {
           decrypted: null,
-          encrypted: await this.get<any>(v1Keys.encProviderKeys + userId),
+          encrypted: await this.get<any>(v1Keys.encProviderKeys),
         },
         publicKey: null,
       },
