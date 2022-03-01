@@ -100,7 +100,7 @@ export class AccountProfile {
 
 export class AccountSettings {
   autoConfirmFingerPrints?: boolean;
-  autoFillOnPageLoadDefault?: boolean;
+  autoFillOnPageLoadDefault?: boolean = true;
   biometricLocked?: boolean;
   biometricUnlock?: boolean;
   clearClipboard?: number;
@@ -116,7 +116,7 @@ export class AccountSettings {
   dontShowCardsCurrentTab?: boolean;
   dontShowIdentitiesCurrentTab?: boolean;
   enableAlwaysOnTop?: boolean;
-  enableAutoFillOnPageLoad?: boolean;
+  enableAutoFillOnPageLoad?: boolean = false;
   enableBiometric?: boolean;
   enableFullWidth?: boolean;
   enableGravitars?: boolean;
