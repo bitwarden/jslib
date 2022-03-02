@@ -1,8 +1,8 @@
+/* eslint-disable no-useless-escape */
 import * as tldjs from "tldjs";
 
 import { I18nService } from "../abstractions/i18n.service";
 
-// tslint:disable-next-line
 const nodeURL = typeof window === "undefined" ? require("url") : null;
 
 export class Utils {
@@ -176,9 +176,7 @@ export class Utils {
   // ref: http://stackoverflow.com/a/2117523/1090359
   static newGuid(): string {
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-      // tslint:disable-next-line
       const r = (Math.random() * 16) | 0;
-      // tslint:disable-next-line
       const v = c === "x" ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
@@ -309,6 +307,10 @@ export class Utils {
     return str == null || typeof str !== "string" || str.trim() === "";
   }
 
+  static isNullOrEmpty(str: string): boolean {
+    return str == null || typeof str !== "string" || str == "";
+  }
+
   static nameOf<T>(name: string & keyof T) {
     return name;
   }
@@ -347,7 +349,6 @@ export class Utils {
   }
 
   private static validIpAddress(ipString: string): boolean {
-    // tslint:disable-next-line
     const ipRegex =
       /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
     return ipRegex.test(ipString);
@@ -356,7 +357,6 @@ export class Utils {
   private static isMobile(win: Window) {
     let mobile = false;
     ((a) => {
-      // tslint:disable-next-line
       if (
         /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(
           a

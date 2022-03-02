@@ -1,4 +1,3 @@
-import * as program from "commander";
 import * as fetch from "node-fetch";
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
@@ -8,7 +7,7 @@ import { Response } from "../models/response";
 import { MessageResponse } from "../models/response/messageResponse";
 
 export class UpdateCommand {
-  inPkg: boolean = false;
+  inPkg = false;
 
   constructor(
     private platformUtilsService: PlatformUtilsService,

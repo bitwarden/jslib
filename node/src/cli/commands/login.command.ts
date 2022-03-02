@@ -1,12 +1,8 @@
-import * as program from "commander";
 import * as http from "http";
+
+import * as program from "commander";
 import * as inquirer from "inquirer";
-
-import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
-
-import { AuthResult } from "jslib-common/models/domain/authResult";
-import { TwoFactorEmailRequest } from "jslib-common/models/request/twoFactorEmailRequest";
-import { ErrorResponse } from "jslib-common/models/response/errorResponse";
+import Separator from "inquirer/lib/objects/separator";
 
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { AuthService } from "jslib-common/abstractions/auth.service";
@@ -14,25 +10,26 @@ import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { CryptoFunctionService } from "jslib-common/abstractions/cryptoFunction.service";
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
-import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.service";
 import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-import { SyncService } from "jslib-common/abstractions/sync.service";
-
-import { Response } from "../models/response";
-
-import { KeyConnectorUserKeyRequest } from "jslib-common/models/request/keyConnectorUserKeyRequest";
-import { UpdateTempPasswordRequest } from "jslib-common/models/request/updateTempPasswordRequest";
-
-import { MessageResponse } from "../models/response/messageResponse";
-
+import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
+import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
 import { NodeUtils } from "jslib-common/misc/nodeUtils";
 import { Utils } from "jslib-common/misc/utils";
+import { AuthResult } from "jslib-common/models/domain/authResult";
+import {
+  ApiLogInCredentials,
+  PasswordLogInCredentials,
+  SsoLogInCredentials,
+} from "jslib-common/models/domain/logInCredentials";
+import { TwoFactorEmailRequest } from "jslib-common/models/request/twoFactorEmailRequest";
+import { UpdateTempPasswordRequest } from "jslib-common/models/request/updateTempPasswordRequest";
+import { ErrorResponse } from "jslib-common/models/response/errorResponse";
 
-// tslint:disable-next-line
-const open = require("open");
+import { Response } from "../models/response";
+import { MessageResponse } from "../models/response/messageResponse";
 
 export class LoginCommand {
   protected validatedParams: () => Promise<any>;
@@ -56,9 +53,8 @@ export class LoginCommand {
     protected stateService: StateService,
     protected cryptoService: CryptoService,
     protected policyService: PolicyService,
-    clientId: string,
-    private syncService: SyncService,
-    protected keyConnectorService: KeyConnectorService
+    protected twoFactorService: TwoFactorService,
+    clientId: string
   ) {
     this.clientId = clientId;
   }
@@ -148,163 +144,146 @@ export class LoginCommand {
       return Response.error("Invalid two-step login method.");
     }
 
+    const twoFactor =
+      twoFactorToken == null
+        ? null
+        : {
+            provider: twoFactorMethod,
+            token: twoFactorToken,
+            remember: false,
+          };
+
     try {
       if (this.validatedParams != null) {
         await this.validatedParams();
       }
 
       let response: AuthResult = null;
-      if (twoFactorToken != null && twoFactorMethod != null) {
-        if (clientId != null && clientSecret != null) {
-          response = await this.authService.logInApiKeyComplete(
-            clientId,
-            clientSecret,
-            twoFactorMethod,
-            twoFactorToken,
-            false
-          );
-        } else if (ssoCode != null && ssoCodeVerifier != null) {
-          response = await this.authService.logInSsoComplete(
+      if (clientId != null && clientSecret != null) {
+        response = await this.authService.logIn(new ApiLogInCredentials(clientId, clientSecret));
+      } else if (ssoCode != null && ssoCodeVerifier != null) {
+        response = await this.authService.logIn(
+          new SsoLogInCredentials(
             ssoCode,
             ssoCodeVerifier,
             this.ssoRedirectUri,
-            twoFactorMethod,
-            twoFactorToken,
-            false
-          );
-        } else {
-          response = await this.authService.logInComplete(
-            email,
-            password,
-            twoFactorMethod,
-            twoFactorToken,
-            false,
-            this.clientSecret
-          );
-        }
+            orgIdentifier,
+            twoFactor
+          )
+        );
       } else {
-        if (clientId != null && clientSecret != null) {
-          response = await this.authService.logInApiKey(clientId, clientSecret);
-        } else if (ssoCode != null && ssoCodeVerifier != null) {
-          response = await this.authService.logInSso(
-            ssoCode,
-            ssoCodeVerifier,
-            this.ssoRedirectUri,
-            orgIdentifier
+        response = await this.authService.logIn(
+          new PasswordLogInCredentials(email, password, null, twoFactor)
+        );
+      }
+      if (response.captchaSiteKey) {
+        const badCaptcha = Response.badRequest(
+          "Your authentication request appears to be coming from a bot\n" +
+            "Please use your API key to validate this request and ensure BW_CLIENTSECRET is correct, if set.\n" +
+            "(https://bitwarden.com/help/cli-auth-challenges)"
+        );
+
+        try {
+          const captchaClientSecret = await this.apiClientSecret(true);
+          if (Utils.isNullOrWhitespace(captchaClientSecret)) {
+            return badCaptcha;
+          }
+
+          const secondResponse = await this.authService.logIn(
+            new PasswordLogInCredentials(email, password, captchaClientSecret, {
+              provider: twoFactorMethod,
+              token: twoFactorToken,
+              remember: false,
+            })
           );
-        } else {
-          response = await this.authService.logIn(email, password);
-        }
-        if (response.captchaSiteKey) {
-          const badCaptcha = Response.badRequest(
-            "Your authentication request appears to be coming from a bot\n" +
-              "Please use your API key to validate this request and ensure BW_CLIENTSECRET is correct, if set.\n" +
-              "(https://bitwarden.com/help/article/cli-auth-challenges)"
-          );
-
-          try {
-            const captchaClientSecret = await this.apiClientSecret(true);
-            if (Utils.isNullOrWhitespace(captchaClientSecret)) {
-              return badCaptcha;
-            }
-
-            const secondResponse = await this.authService.logInComplete(
-              email,
-              password,
-              twoFactorMethod,
-              twoFactorToken,
-              false,
-              captchaClientSecret
-            );
-            response = secondResponse;
-          } catch (e) {
-            if (
-              (e instanceof ErrorResponse || e.constructor.name === "ErrorResponse") &&
-              (e as ErrorResponse).message.includes("Captcha is invalid")
-            ) {
-              return badCaptcha;
-            } else {
-              throw e;
-            }
-          }
-        }
-        if (response.twoFactor) {
-          let selectedProvider: any = null;
-          const twoFactorProviders = this.authService.getSupportedTwoFactorProviders(null);
-          if (twoFactorProviders.length === 0) {
-            return Response.badRequest("No providers available for this client.");
-          }
-
-          if (twoFactorMethod != null) {
-            try {
-              selectedProvider = twoFactorProviders.filter((p) => p.type === twoFactorMethod)[0];
-            } catch (e) {
-              return Response.error("Invalid two-step login method.");
-            }
-          }
-
-          if (selectedProvider == null) {
-            if (twoFactorProviders.length === 1) {
-              selectedProvider = twoFactorProviders[0];
-            } else if (this.canInteract) {
-              const twoFactorOptions = twoFactorProviders.map((p) => p.name);
-              twoFactorOptions.push(new inquirer.Separator());
-              twoFactorOptions.push("Cancel");
-              const answer: inquirer.Answers = await inquirer.createPromptModule({
-                output: process.stderr,
-              })({
-                type: "list",
-                name: "method",
-                message: "Two-step login method:",
-                choices: twoFactorOptions,
-              });
-              const i = twoFactorOptions.indexOf(answer.method);
-              if (i === twoFactorOptions.length - 1) {
-                return Response.error("Login failed.");
-              }
-              selectedProvider = twoFactorProviders[i];
-            }
-            if (selectedProvider == null) {
-              return Response.error("Login failed. No provider selected.");
-            }
-          }
-
+          response = secondResponse;
+        } catch (e) {
           if (
-            twoFactorToken == null &&
-            response.twoFactorProviders.size > 1 &&
-            selectedProvider.type === TwoFactorProviderType.Email
+            (e instanceof ErrorResponse || e.constructor.name === "ErrorResponse") &&
+            (e as ErrorResponse).message.includes("Captcha is invalid")
           ) {
-            const emailReq = new TwoFactorEmailRequest();
-            emailReq.email = this.authService.email;
-            emailReq.masterPasswordHash = this.authService.masterPasswordHash;
-            await this.apiService.postTwoFactorEmail(emailReq);
+            return badCaptcha;
+          } else {
+            throw e;
           }
-
-          if (twoFactorToken == null) {
-            if (this.canInteract) {
-              const answer: inquirer.Answers = await inquirer.createPromptModule({
-                output: process.stderr,
-              })({
-                type: "input",
-                name: "token",
-                message: "Two-step login code:",
-              });
-              twoFactorToken = answer.token;
-            }
-            if (twoFactorToken == null || twoFactorToken === "") {
-              return Response.badRequest("Code is required.");
-            }
-          }
-
-          response = await this.authService.logInTwoFactor(
-            selectedProvider.type,
-            twoFactorToken,
-            false
-          );
         }
       }
+      if (response.requiresTwoFactor) {
+        let selectedProvider: any = null;
+        const twoFactorProviders = this.twoFactorService.getSupportedProviders(null);
+        if (twoFactorProviders.length === 0) {
+          return Response.badRequest("No providers available for this client.");
+        }
 
-      if (response.twoFactor) {
+        if (twoFactorMethod != null) {
+          try {
+            selectedProvider = twoFactorProviders.filter((p) => p.type === twoFactorMethod)[0];
+          } catch (e) {
+            return Response.error("Invalid two-step login method.");
+          }
+        }
+
+        if (selectedProvider == null) {
+          if (twoFactorProviders.length === 1) {
+            selectedProvider = twoFactorProviders[0];
+          } else if (this.canInteract) {
+            const twoFactorOptions: (string | Separator)[] = twoFactorProviders.map((p) => p.name);
+            twoFactorOptions.push(new inquirer.Separator());
+            twoFactorOptions.push("Cancel");
+            const answer: inquirer.Answers = await inquirer.createPromptModule({
+              output: process.stderr,
+            })({
+              type: "list",
+              name: "method",
+              message: "Two-step login method:",
+              choices: twoFactorOptions,
+            });
+            const i = twoFactorOptions.indexOf(answer.method);
+            if (i === twoFactorOptions.length - 1) {
+              return Response.error("Login failed.");
+            }
+            selectedProvider = twoFactorProviders[i];
+          }
+          if (selectedProvider == null) {
+            return Response.error("Login failed. No provider selected.");
+          }
+        }
+
+        if (
+          twoFactorToken == null &&
+          response.twoFactorProviders.size > 1 &&
+          selectedProvider.type === TwoFactorProviderType.Email
+        ) {
+          const emailReq = new TwoFactorEmailRequest();
+          emailReq.email = this.authService.email;
+          emailReq.masterPasswordHash = this.authService.masterPasswordHash;
+          await this.apiService.postTwoFactorEmail(emailReq);
+        }
+
+        if (twoFactorToken == null) {
+          if (this.canInteract) {
+            const answer: inquirer.Answers = await inquirer.createPromptModule({
+              output: process.stderr,
+            })({
+              type: "input",
+              name: "token",
+              message: "Two-step login code:",
+            });
+            twoFactorToken = answer.token;
+          }
+          if (twoFactorToken == null || twoFactorToken === "") {
+            return Response.badRequest("Code is required.");
+          }
+        }
+
+        response = await this.authService.logInTwoFactor({
+          provider: selectedProvider.type,
+          token: twoFactorToken,
+          remember: false,
+        });
+      }
+
+      if (response.requiresTwoFactor) {
         return Response.error("Login failed.");
       }
 
@@ -313,14 +292,6 @@ export class LoginCommand {
           "In order to log in with SSO from the CLI, you must first log in" +
             " through the web vault to set your master password."
         );
-      }
-
-      // Full sync required for the reset password and key connector checks
-      await this.syncService.fullSync(true);
-
-      // Handle converting to Key Connector if required
-      if (await this.keyConnectorService.userNeedsMigration()) {
-        return await this.migrateToKeyConnector();
       }
 
       // Handle Updating Temp Password if NOT using an API Key for authentication
@@ -479,68 +450,6 @@ export class LoginCommand {
     return userInput;
   }
 
-  private async migrateToKeyConnector() {
-    // If no interaction available, alert user to use web vault
-    if (!this.canInteract) {
-      await this.logout();
-      this.authService.logOut(() => {
-        /* Do nothing */
-      });
-      return Response.error(
-        new MessageResponse(
-          "An organization you are a member of is using Key Connector. " +
-            "In order to access the vault, you must opt-in to Key Connector now via the web vault. You have been logged out.",
-          null
-        )
-      );
-    }
-
-    const organization = await this.keyConnectorService.getManagingOrganization();
-
-    const answer: inquirer.Answers = await inquirer.createPromptModule({ output: process.stderr })({
-      type: "list",
-      name: "convert",
-      message:
-        organization.name +
-        " is using a self-hosted key server. A master password is no longer required to log in for members of this organization. ",
-      choices: [
-        {
-          name: "Remove master password and log in",
-          value: "remove",
-        },
-        {
-          name: "Leave organization and log in",
-          value: "leave",
-        },
-        {
-          name: "Exit",
-          value: "exit",
-        },
-      ],
-    });
-
-    if (answer.convert === "remove") {
-      await this.keyConnectorService.migrateUser();
-
-      // Update environment URL - required for api key login
-      const urls = this.environmentService.getUrls();
-      urls.keyConnector = organization.keyConnectorUrl;
-      await this.environmentService.setUrls(urls, true);
-
-      return await this.handleSuccessResponse();
-    } else if (answer.convert === "leave") {
-      await this.apiService.postLeaveOrganization(organization.id);
-      await this.syncService.fullSync(true);
-      return await this.handleSuccessResponse();
-    } else {
-      await this.logout();
-      this.authService.logOut(() => {
-        /* Do nothing */
-      });
-      return Response.error("You have been logged out.");
-    }
-  }
-
   private async apiClientId(): Promise<string> {
     let clientId: string = null;
 
@@ -565,7 +474,7 @@ export class LoginCommand {
     return clientId;
   }
 
-  private async apiClientSecret(isAdditionalAuthentication: boolean = false): Promise<string> {
+  private async apiClientSecret(isAdditionalAuthentication = false): Promise<string> {
     const additionalAuthenticationMessage = "Additional authentication required.\nAPI key ";
     let clientSecret: string = null;
 

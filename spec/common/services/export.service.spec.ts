@@ -1,20 +1,20 @@
-import { Substitute, SubstituteOf } from "@fluffy-spoon/substitute";
+import { Arg, Substitute, SubstituteOf } from "@fluffy-spoon/substitute";
 
 import { ApiService } from "jslib-common/abstractions/api.service";
 import { CipherService } from "jslib-common/abstractions/cipher.service";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
+import { CryptoFunctionService } from "jslib-common/abstractions/cryptoFunction.service";
 import { FolderService } from "jslib-common/abstractions/folder.service";
-
-import { ExportService } from "jslib-common/services/export.service";
-
+import { CipherType } from "jslib-common/enums/cipherType";
+import { KdfType } from "jslib-common/enums/kdfType";
+import { Utils } from "jslib-common/misc/utils";
 import { Cipher } from "jslib-common/models/domain/cipher";
 import { EncString } from "jslib-common/models/domain/encString";
 import { Login } from "jslib-common/models/domain/login";
 import { CipherWithIds as CipherExport } from "jslib-common/models/export/cipherWithIds";
-
-import { CipherType } from "jslib-common/enums/cipherType";
 import { CipherView } from "jslib-common/models/view/cipherView";
 import { LoginView } from "jslib-common/models/view/loginView";
+import { ExportService } from "jslib-common/services/export.service";
 
 import { BuildTestObject, GetUniqueString } from "../../utils";
 
@@ -85,12 +85,14 @@ function expectEqualCiphers(ciphers: CipherView[] | Cipher[], jsonResult: string
 describe("ExportService", () => {
   let exportService: ExportService;
   let apiService: SubstituteOf<ApiService>;
+  let cryptoFunctionService: SubstituteOf<CryptoFunctionService>;
   let cipherService: SubstituteOf<CipherService>;
   let folderService: SubstituteOf<FolderService>;
   let cryptoService: SubstituteOf<CryptoService>;
 
   beforeEach(() => {
     apiService = Substitute.for<ApiService>();
+    cryptoFunctionService = Substitute.for<CryptoFunctionService>();
     cipherService = Substitute.for<CipherService>();
     folderService = Substitute.for<FolderService>();
     cryptoService = Substitute.for<CryptoService>();
@@ -98,7 +100,13 @@ describe("ExportService", () => {
     folderService.getAllDecrypted().resolves([]);
     folderService.getAll().resolves([]);
 
-    exportService = new ExportService(folderService, cipherService, apiService, cryptoService);
+    exportService = new ExportService(
+      folderService,
+      cipherService,
+      apiService,
+      cryptoService,
+      cryptoFunctionService
+    );
   });
 
   it("exports unecrypted user ciphers", async () => {
@@ -131,5 +139,65 @@ describe("ExportService", () => {
     const actual = await exportService.getExport("encrypted_json");
 
     expectEqualCiphers(UserCipherDomains.slice(0, 2), actual);
+  });
+
+  describe("password protected export", () => {
+    let exportString: string;
+    let exportObject: any;
+    let mac: SubstituteOf<EncString>;
+    let data: SubstituteOf<EncString>;
+    const password = "password";
+    const salt = "salt";
+
+    describe("export json object", () => {
+      beforeEach(async () => {
+        mac = Substitute.for<EncString>();
+        data = Substitute.for<EncString>();
+
+        mac.encryptedString = "mac";
+        data.encryptedString = "encData";
+
+        spyOn(Utils, "fromBufferToB64").and.returnValue(salt);
+        cipherService.getAllDecrypted().resolves(UserCipherViews.slice(0, 1));
+
+        exportString = await exportService.getPasswordProtectedExport(password);
+        exportObject = JSON.parse(exportString);
+      });
+
+      it("specifies it is encrypted", () => {
+        expect(exportObject.encrypted).toBe(true);
+      });
+
+      it("specifies it's password protected", () => {
+        expect(exportObject.passwordProtected).toBe(true);
+      });
+
+      it("specifies salt", () => {
+        expect(exportObject.salt).toEqual("salt");
+      });
+
+      it("specifies kdfIterations", () => {
+        expect(exportObject.kdfIterations).toEqual(100000);
+      });
+
+      it("has kdfType", () => {
+        expect(exportObject.kdfType).toEqual(KdfType.PBKDF2_SHA256);
+      });
+
+      it("has a mac property", () => {
+        cryptoService.encrypt(Arg.any(), Arg.any()).resolves(mac);
+        expect(exportObject.encKeyValidation_DO_NOT_EDIT).toEqual(mac.encryptedString);
+      });
+
+      it("has data property", () => {
+        cryptoService.encrypt(Arg.any(), Arg.any()).resolves(data);
+        expect(exportObject.data).toEqual(data.encryptedString);
+      });
+
+      it("encrypts the data property", async () => {
+        const unencrypted = await exportService.getExport();
+        expect(exportObject.data).not.toEqual(unencrypted);
+      });
+    });
   });
 });

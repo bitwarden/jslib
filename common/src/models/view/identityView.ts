@@ -1,12 +1,8 @@
-import { ItemView } from "./itemView";
-
-import { Identity } from "../domain/identity";
-
+import { IdentityLinkedId as LinkedId } from "../../enums/linkedIdType";
+import { linkedFieldOption } from "../../misc/linkedFieldOption.decorator";
 import { Utils } from "../../misc/utils";
 
-import { IdentityLinkedId as LinkedId } from "../../enums/linkedIdType";
-
-import { linkedFieldOption } from "../../misc/linkedFieldOption.decorator";
+import { ItemView } from "./itemView";
 
 export class IdentityView extends ItemView {
   @linkedFieldOption(LinkedId.Title)
@@ -42,13 +38,11 @@ export class IdentityView extends ItemView {
   @linkedFieldOption(LinkedId.LicenseNumber)
   licenseNumber: string = null;
 
-  // tslint:disable
   private _firstName: string = null;
   private _lastName: string = null;
   private _subTitle: string = null;
-  // tslint:enable
 
-  constructor(i?: Identity) {
+  constructor() {
     super();
   }
 

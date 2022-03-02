@@ -1,7 +1,5 @@
 import { SendType } from "../../enums/sendType";
-
 import { SendAccessResponse } from "../response/sendAccessResponse";
-
 import { SendAccessView } from "../view/sendAccessView";
 
 import Domain from "./domainBase";
@@ -19,7 +17,7 @@ export class SendAccess extends Domain {
   expirationDate: Date;
   creatorIdentifier: string;
 
-  constructor(obj?: SendAccessResponse, alreadyEncrypted: boolean = false) {
+  constructor(obj?: SendAccessResponse, alreadyEncrypted = false) {
     super();
     if (obj == null) {
       return;

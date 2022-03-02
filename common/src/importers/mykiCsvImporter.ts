@@ -1,14 +1,12 @@
-import { BaseImporter } from "./baseImporter";
-import { Importer } from "./importer";
-
 import { CipherType } from "../enums/cipherType";
 import { SecureNoteType } from "../enums/secureNoteType";
-
+import { ImportResult } from "../models/domain/importResult";
 import { CardView } from "../models/view/cardView";
 import { IdentityView } from "../models/view/identityView";
 import { SecureNoteView } from "../models/view/secureNoteView";
 
-import { ImportResult } from "../models/domain/importResult";
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
 export class MykiCsvImporter extends BaseImporter implements Importer {
   parse(data: string): Promise<ImportResult> {

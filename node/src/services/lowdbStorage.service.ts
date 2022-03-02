@@ -1,18 +1,20 @@
 import * as fs from "fs";
+import * as path from "path";
+
 import * as lowdb from "lowdb";
 import * as FileSync from "lowdb/adapters/FileSync";
-import * as path from "path";
 
 import { LogService } from "jslib-common/abstractions/log.service";
 import { StorageService } from "jslib-common/abstractions/storage.service";
-
 import { NodeUtils } from "jslib-common/misc/nodeUtils";
+import { sequentialize } from "jslib-common/misc/sequentialize";
 import { Utils } from "jslib-common/misc/utils";
 
 export class LowdbStorageService implements StorageService {
   protected dataFilePath: string;
   private db: lowdb.LowdbSync<any>;
   private defaults: any;
+  private ready = false;
 
   constructor(
     protected logService: LogService,
@@ -23,7 +25,12 @@ export class LowdbStorageService implements StorageService {
     this.defaults = defaults;
   }
 
+  @sequentialize(() => "lowdbStorageInit")
   async init() {
+    if (this.ready) {
+      return;
+    }
+
     this.logService.info("Initializing lowdb storage service.");
     let adapter: lowdb.AdapterSync<any>;
     if (Utils.isNode && this.dir != null) {
@@ -59,7 +66,7 @@ export class LowdbStorageService implements StorageService {
         if (fs.existsSync(this.dataFilePath)) {
           const backupPath = this.dataFilePath + ".bak";
           this.logService.warning(`Writing backup of data file to ${backupPath}`);
-          await fs.copyFile(this.dataFilePath, backupPath, (err) => {
+          await fs.copyFile(this.dataFilePath, backupPath, () => {
             this.logService.warning(
               `Error while creating data file backup, "${e.message}". No backup may have been created.`
             );
@@ -81,9 +88,12 @@ export class LowdbStorageService implements StorageService {
         this.logService.info("Successfully wrote defaults to db.");
       });
     }
+
+    this.ready = true;
   }
 
-  get<T>(key: string): Promise<T> {
+  async get<T>(key: string): Promise<T> {
+    await this.waitForReady();
     return this.lockDbFile(() => {
       this.readForNoCache();
       const val = this.db.get(key).value();
@@ -99,7 +109,8 @@ export class LowdbStorageService implements StorageService {
     return this.get(key).then((v) => v != null);
   }
 
-  save(key: string, obj: any): Promise<any> {
+  async save(key: string, obj: any): Promise<any> {
+    await this.waitForReady();
     return this.lockDbFile(() => {
       this.readForNoCache();
       this.db.set(key, obj).write();
@@ -108,7 +119,8 @@ export class LowdbStorageService implements StorageService {
     });
   }
 
-  remove(key: string): Promise<any> {
+  async remove(key: string): Promise<any> {
+    await this.waitForReady();
     return this.lockDbFile(() => {
       this.readForNoCache();
       this.db.unset(key).write();
@@ -125,6 +137,12 @@ export class LowdbStorageService implements StorageService {
   private readForNoCache() {
     if (!this.allowCache) {
       this.db.read();
+    }
+  }
+
+  private async waitForReady() {
+    if (!this.ready) {
+      await this.init();
     }
   }
 }

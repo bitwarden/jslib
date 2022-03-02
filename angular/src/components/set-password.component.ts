@@ -1,6 +1,5 @@
 import { Directive } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-
 import { first } from "rxjs/operators";
 
 import { ApiService } from "jslib-common/abstractions/api.service";
@@ -12,26 +11,22 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { SyncService } from "jslib-common/abstractions/sync.service";
-
+import { HashPurpose } from "jslib-common/enums/hashPurpose";
+import { KdfType } from "jslib-common/enums/kdfType";
+import { Utils } from "jslib-common/misc/utils";
 import { EncString } from "jslib-common/models/domain/encString";
 import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
-
 import { KeysRequest } from "jslib-common/models/request/keysRequest";
 import { OrganizationUserResetPasswordEnrollmentRequest } from "jslib-common/models/request/organizationUserResetPasswordEnrollmentRequest";
 import { SetPasswordRequest } from "jslib-common/models/request/setPasswordRequest";
 
 import { ChangePasswordComponent as BaseChangePasswordComponent } from "./change-password.component";
 
-import { HashPurpose } from "jslib-common/enums/hashPurpose";
-import { KdfType } from "jslib-common/enums/kdfType";
-
-import { Utils } from "jslib-common/misc/utils";
-
 @Directive()
 export class SetPasswordComponent extends BaseChangePasswordComponent {
-  syncLoading: boolean = true;
-  showPassword: boolean = false;
-  hint: string = "";
+  syncLoading = true;
+  showPassword = false;
+  hint = "";
   identifier: string = null;
   orgId: string;
   resetPasswordAutoEnroll = false;

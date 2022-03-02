@@ -9,7 +9,10 @@ export class OrganizationSsoResponse extends BaseResponse {
   constructor(response: any) {
     super(response);
     this.enabled = this.getResponseProperty("Enabled");
-    this.data = new SsoConfigApi(this.getResponseProperty("Data"));
+    this.data =
+      this.getResponseProperty("Data") != null
+        ? new SsoConfigApi(this.getResponseProperty("Data"))
+        : null;
     this.urls = new SsoUrls(this.getResponseProperty("Urls"));
   }
 }

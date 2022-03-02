@@ -1,16 +1,14 @@
 import { SecureNoteType } from "../../enums/secureNoteType";
-
 import { SecureNoteData } from "../data/secureNoteData";
+import { SecureNoteView } from "../view/secureNoteView";
 
 import Domain from "./domainBase";
-
-import { SecureNoteView } from "../view/secureNoteView";
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
 export class SecureNote extends Domain {
   type: SecureNoteType;
 
-  constructor(obj?: SecureNoteData, alreadyEncrypted: boolean = false) {
+  constructor(obj?: SecureNoteData) {
     super();
     if (obj == null) {
       return;

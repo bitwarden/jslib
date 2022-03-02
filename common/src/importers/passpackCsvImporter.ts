@@ -1,9 +1,8 @@
+import { ImportResult } from "../models/domain/importResult";
+import { CollectionView } from "../models/view/collectionView";
+
 import { BaseImporter } from "./baseImporter";
 import { Importer } from "./importer";
-
-import { ImportResult } from "../models/domain/importResult";
-
-import { CollectionView } from "../models/view/collectionView";
 
 export class PasspackCsvImporter extends BaseImporter implements Importer {
   parse(data: string): Promise<ImportResult> {

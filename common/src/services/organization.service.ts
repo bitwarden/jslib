@@ -1,8 +1,6 @@
 import { OrganizationService as OrganizationServiceAbstraction } from "../abstractions/organization.service";
 import { StateService } from "../abstractions/state.service";
-
 import { OrganizationData } from "../models/data/organizationData";
-
 import { Organization } from "../models/domain/organization";
 
 export class OrganizationService implements OrganizationServiceAbstraction {
@@ -10,6 +8,7 @@ export class OrganizationService implements OrganizationServiceAbstraction {
 
   async get(id: string): Promise<Organization> {
     const organizations = await this.stateService.getOrganizations();
+    // eslint-disable-next-line
     if (organizations == null || !organizations.hasOwnProperty(id)) {
       return null;
     }
@@ -30,6 +29,7 @@ export class OrganizationService implements OrganizationServiceAbstraction {
     const organizations = await this.stateService.getOrganizations({ userId: userId });
     const response: Organization[] = [];
     for (const id in organizations) {
+      // eslint-disable-next-line
       if (organizations.hasOwnProperty(id) && !organizations[id].isProviderUser) {
         response.push(new Organization(organizations[id]));
       }
@@ -46,5 +46,10 @@ export class OrganizationService implements OrganizationServiceAbstraction {
     return orgs.some(
       (o) => o.familySponsorshipAvailable || o.familySponsorshipFriendlyName !== null
     );
+  }
+
+  async hasOrganizations(userId?: string): Promise<boolean> {
+    const organizations = await this.getAll(userId);
+    return organizations.length > 0;
   }
 }

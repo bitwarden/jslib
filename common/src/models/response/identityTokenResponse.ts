@@ -1,6 +1,6 @@
-import { BaseResponse } from "./baseResponse";
-
 import { KdfType } from "../../enums/kdfType";
+
+import { BaseResponse } from "./baseResponse";
 
 export class IdentityTokenResponse extends BaseResponse {
   accessToken: string;

@@ -1,9 +1,18 @@
+import { ApiService } from "../abstractions/api.service";
+import { CipherService as CipherServiceAbstraction } from "../abstractions/cipher.service";
+import { CryptoService } from "../abstractions/crypto.service";
+import { FileUploadService } from "../abstractions/fileUpload.service";
+import { I18nService } from "../abstractions/i18n.service";
+import { LogService } from "../abstractions/log.service";
+import { SearchService } from "../abstractions/search.service";
+import { SettingsService } from "../abstractions/settings.service";
+import { StateService } from "../abstractions/state.service";
 import { CipherType } from "../enums/cipherType";
 import { FieldType } from "../enums/fieldType";
 import { UriMatchType } from "../enums/uriMatchType";
-
+import { sequentialize } from "../misc/sequentialize";
+import { Utils } from "../misc/utils";
 import { CipherData } from "../models/data/cipherData";
-
 import { Attachment } from "../models/domain/attachment";
 import { Card } from "../models/domain/card";
 import { Cipher } from "../models/domain/cipher";
@@ -16,8 +25,8 @@ import { Login } from "../models/domain/login";
 import { LoginUri } from "../models/domain/loginUri";
 import { Password } from "../models/domain/password";
 import { SecureNote } from "../models/domain/secureNote";
+import { SortedCiphersCache } from "../models/domain/sortedCiphersCache";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-
 import { AttachmentRequest } from "../models/request/attachmentRequest";
 import { CipherBulkDeleteRequest } from "../models/request/cipherBulkDeleteRequest";
 import { CipherBulkMoveRequest } from "../models/request/cipherBulkMoveRequest";
@@ -27,30 +36,13 @@ import { CipherCollectionsRequest } from "../models/request/cipherCollectionsReq
 import { CipherCreateRequest } from "../models/request/cipherCreateRequest";
 import { CipherRequest } from "../models/request/cipherRequest";
 import { CipherShareRequest } from "../models/request/cipherShareRequest";
-
 import { CipherResponse } from "../models/response/cipherResponse";
 import { ErrorResponse } from "../models/response/errorResponse";
-
 import { AttachmentView } from "../models/view/attachmentView";
 import { CipherView } from "../models/view/cipherView";
 import { FieldView } from "../models/view/fieldView";
 import { PasswordHistoryView } from "../models/view/passwordHistoryView";
 import { View } from "../models/view/view";
-
-import { SortedCiphersCache } from "../models/domain/sortedCiphersCache";
-
-import { ApiService } from "../abstractions/api.service";
-import { CipherService as CipherServiceAbstraction } from "../abstractions/cipher.service";
-import { CryptoService } from "../abstractions/crypto.service";
-import { FileUploadService } from "../abstractions/fileUpload.service";
-import { I18nService } from "../abstractions/i18n.service";
-import { SearchService } from "../abstractions/search.service";
-import { SettingsService } from "../abstractions/settings.service";
-import { StateService } from "../abstractions/state.service";
-
-import { LogService } from "../abstractions/log.service";
-import { sequentialize } from "../misc/sequentialize";
-import { Utils } from "../misc/utils";
 
 const DomainMatchBlacklist = new Map<string, Set<string>>([
   ["google.com", new Set(["script.google.com"])],
@@ -308,6 +300,7 @@ export class CipherService implements CipherServiceAbstraction {
 
   async get(id: string): Promise<Cipher> {
     const ciphers = await this.stateService.getEncryptedCiphers();
+    // eslint-disable-next-line
     if (ciphers == null || !ciphers.hasOwnProperty(id)) {
       return null;
     }
@@ -321,6 +314,7 @@ export class CipherService implements CipherServiceAbstraction {
     const ciphers = await this.stateService.getEncryptedCiphers();
     const response: Cipher[] = [];
     for (const id in ciphers) {
+      // eslint-disable-next-line
       if (ciphers.hasOwnProperty(id)) {
         response.push(new Cipher(ciphers[id], false, localData ? localData[id] : null));
       }
@@ -355,14 +349,11 @@ export class CipherService implements CipherServiceAbstraction {
 
     await Promise.all(promises);
     decCiphers.sort(this.getLocaleSortingFunction());
-    await this.stateService.setDecryptedCiphers(decCiphers);
+    await this.setDecryptedCipherCache(decCiphers);
     return decCiphers;
   }
 
-  async getAllDecryptedForGrouping(
-    groupingId: string,
-    folder: boolean = true
-  ): Promise<CipherView[]> {
+  async getAllDecryptedForGrouping(groupingId: string, folder = true): Promise<CipherView[]> {
     const ciphers = await this.getAllDecrypted();
 
     return ciphers.filter((cipher) => {
@@ -451,12 +442,13 @@ export class CipherService implements CipherServiceAbstraction {
                 }
               }
               break;
-            case UriMatchType.Host:
+            case UriMatchType.Host: {
               const urlHost = Utils.getHost(url);
               if (urlHost != null && urlHost === Utils.getHost(u.uri)) {
                 return true;
               }
               break;
+            }
             case UriMatchType.Exact:
               if (url === u.uri) {
                 return true;
@@ -506,14 +498,11 @@ export class CipherService implements CipherServiceAbstraction {
     }
   }
 
-  async getLastUsedForUrl(url: string, autofillOnPageLoad: boolean = false): Promise<CipherView> {
+  async getLastUsedForUrl(url: string, autofillOnPageLoad = false): Promise<CipherView> {
     return this.getCipherForUrl(url, true, false, autofillOnPageLoad);
   }
 
-  async getLastLaunchedForUrl(
-    url: string,
-    autofillOnPageLoad: boolean = false
-  ): Promise<CipherView> {
+  async getLastLaunchedForUrl(url: string, autofillOnPageLoad = false): Promise<CipherView> {
     return this.getCipherForUrl(url, false, true, autofillOnPageLoad);
   }
 
@@ -690,7 +679,7 @@ export class CipherService implements CipherServiceAbstraction {
           reject(e);
         }
       };
-      reader.onerror = (_evt) => {
+      reader.onerror = () => {
         reject("Error reading file.");
       };
     });
@@ -845,6 +834,7 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     ids.forEach((id) => {
+      // eslint-disable-next-line
       if (ciphers.hasOwnProperty(id)) {
         ciphers[id].folderId = folderId;
       }
@@ -888,6 +878,7 @@ export class CipherService implements CipherServiceAbstraction {
   async deleteAttachment(id: string, attachmentId: string): Promise<void> {
     const ciphers = await this.stateService.getEncryptedCiphers();
 
+    // eslint-disable-next-line
     if (ciphers == null || !ciphers.hasOwnProperty(id) || ciphers[id].attachments == null) {
       return;
     }
@@ -1119,11 +1110,11 @@ export class CipherService implements CipherServiceAbstraction {
     const self = this;
 
     for (const prop in map) {
+      // eslint-disable-next-line
       if (!map.hasOwnProperty(prop)) {
         continue;
       }
 
-      // tslint:disable-next-line
       (function (theProp, theObj) {
         const p = Promise.resolve()
           .then(() => {

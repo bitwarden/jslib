@@ -13,7 +13,6 @@ import { SendService } from "../abstractions/send.service";
 import { SettingsService } from "../abstractions/settings.service";
 import { StateService } from "../abstractions/state.service";
 import { SyncService as SyncServiceAbstraction } from "../abstractions/sync.service";
-
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
 import { FolderData } from "../models/data/folderData";
@@ -21,7 +20,6 @@ import { OrganizationData } from "../models/data/organizationData";
 import { PolicyData } from "../models/data/policyData";
 import { ProviderData } from "../models/data/providerData";
 import { SendData } from "../models/data/sendData";
-
 import { CipherResponse } from "../models/response/cipherResponse";
 import { CollectionDetailsResponse } from "../models/response/collectionResponse";
 import { DomainsResponse } from "../models/response/domainsResponse";
@@ -36,7 +34,7 @@ import { ProfileResponse } from "../models/response/profileResponse";
 import { SendResponse } from "../models/response/sendResponse";
 
 export class SyncService implements SyncServiceAbstraction {
-  syncInProgress: boolean = false;
+  syncInProgress = false;
 
   constructor(
     private apiService: ApiService,
@@ -328,12 +326,11 @@ export class SyncService implements SyncServiceAbstraction {
       }
     });
 
-    await Promise.all([
-      this.organizationService.save(organizations),
-      this.providerService.save(providers),
-    ]);
+    await this.organizationService.save(organizations);
+    await this.providerService.save(providers);
 
     if (await this.keyConnectorService.userNeedsMigration()) {
+      await this.keyConnectorService.setConvertAccountRequired(true);
       this.messagingService.send("convertAccountToKeyConnector");
     } else {
       this.keyConnectorService.removeConvertAccountRequired();

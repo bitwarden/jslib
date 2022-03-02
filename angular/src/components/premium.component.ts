@@ -8,8 +8,8 @@ import { StateService } from "jslib-common/abstractions/state.service";
 
 @Directive()
 export class PremiumComponent implements OnInit {
-  isPremium: boolean = false;
-  price: number = 10;
+  isPremium = false;
+  price = 10;
   refreshPromise: Promise<any>;
 
   constructor(

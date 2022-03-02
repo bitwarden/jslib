@@ -1,22 +1,10 @@
 import { Component, Input, OnChanges } from "@angular/core";
 
-import { CipherType } from "jslib-common/enums/cipherType";
-
-import { CipherView } from "jslib-common/models/view/cipherView";
-
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-
+import { CipherType } from "jslib-common/enums/cipherType";
 import { Utils } from "jslib-common/misc/utils";
-
-const IconMap: any = {
-  "fa-globe": String.fromCharCode(0xf0ac),
-  "fa-sticky-note-o": String.fromCharCode(0xf24a),
-  "fa-id-card-o": String.fromCharCode(0xf2c3),
-  "fa-credit-card": String.fromCharCode(0xf09d),
-  "fa-android": String.fromCharCode(0xf17b),
-  "fa-apple": String.fromCharCode(0xf179),
-};
+import { CipherView } from "jslib-common/models/view/cipherView";
 
 /**
  * Provides a mapping from supported card brands to
@@ -59,25 +47,21 @@ export class IconComponent implements OnChanges {
     this.load();
   }
 
-  get iconCode(): string {
-    return IconMap[this.icon];
-  }
-
   protected load() {
     switch (this.cipher.type) {
       case CipherType.Login:
-        this.icon = "fa-globe";
+        this.icon = "bwi-globe";
         this.setLoginIcon();
         break;
       case CipherType.SecureNote:
-        this.icon = "fa-sticky-note-o";
+        this.icon = "bwi-sticky-note";
         break;
       case CipherType.Card:
-        this.icon = "fa-credit-card";
+        this.icon = "bwi-credit-card";
         this.setCardIcon();
         break;
       case CipherType.Identity:
-        this.icon = "fa-id-card-o";
+        this.icon = "bwi-id-card";
         break;
       default:
         break;
@@ -90,10 +74,10 @@ export class IconComponent implements OnChanges {
       let isWebsite = false;
 
       if (hostnameUri.indexOf("androidapp://") === 0) {
-        this.icon = "fa-android";
+        this.icon = "bwi-android";
         this.image = null;
       } else if (hostnameUri.indexOf("iosapp://") === 0) {
-        this.icon = "fa-apple";
+        this.icon = "bwi-apple";
         this.image = null;
       } else if (
         this.imageEnabled &&
@@ -109,7 +93,7 @@ export class IconComponent implements OnChanges {
       if (this.imageEnabled && isWebsite) {
         try {
           this.image = this.iconsUrl + "/" + Utils.getHostname(hostnameUri) + "/icon.png";
-          this.fallbackImage = "images/fa-globe.png";
+          this.fallbackImage = "images/bwi-globe.png";
         } catch (e) {
           // Ignore error since the fallback icon will be shown if image is null.
         }

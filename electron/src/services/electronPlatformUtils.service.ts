@@ -1,18 +1,17 @@
 import { clipboard, ipcRenderer, shell } from "electron";
 
-import { isDev, isMacAppStore } from "../utils";
-
-import { DeviceType } from "jslib-common/enums/deviceType";
-import { ThemeType } from "jslib-common/enums/themeType";
-
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { MessagingService } from "jslib-common/abstractions/messaging.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
+import { ClientType } from "jslib-common/enums/clientType";
+import { DeviceType } from "jslib-common/enums/deviceType";
+import { ThemeType } from "jslib-common/enums/themeType";
+
+import { isDev, isMacAppStore } from "../utils";
 
 export class ElectronPlatformUtilsService implements PlatformUtilsService {
-  identityClientId: string;
-
+  private clientType: ClientType;
   private deviceCache: DeviceType = null;
 
   constructor(
@@ -21,7 +20,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     private isDesktopApp: boolean,
     private stateService: StateService
   ) {
-    this.identityClientId = isDesktopApp ? "desktop" : "connector";
+    this.clientType = isDesktopApp ? ClientType.Desktop : ClientType.DirectoryConnector;
   }
 
   getDevice(): DeviceType {
@@ -46,6 +45,10 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
   getDeviceString(): string {
     const device = DeviceType[this.getDevice()].toLowerCase();
     return device.replace("desktop", "");
+  }
+
+  getClientType() {
+    return this.clientType;
   }
 
   isFirefox(): boolean {
