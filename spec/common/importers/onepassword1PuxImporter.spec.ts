@@ -1,10 +1,9 @@
+import { CipherType } from "jslib-common/enums/cipherType";
 import { FieldType } from "jslib-common/enums/fieldType";
-
-import { FieldView } from "jslib-common/models/view/fieldView";
-
-import { Utils } from "jslib-common/misc/utils";
-
+import { SecureNoteType } from "jslib-common/enums/secureNoteType";
 import { OnePassword1PuxImporter as Importer } from "jslib-common/importers/onepasswordImporters/onepassword1PuxImporter";
+import { Utils } from "jslib-common/misc/utils";
+import { FieldView } from "jslib-common/models/view/fieldView";
 
 import { APICredentialsData } from "./testData/onePassword1Pux/APICredentials";
 import { BankAccountData } from "./testData/onePassword1Pux/BankAccount";
@@ -21,15 +20,12 @@ import { OutdoorLicenseData } from "./testData/onePassword1Pux/OutdoorLicense";
 import { PassportData } from "./testData/onePassword1Pux/Passport";
 import { PasswordData } from "./testData/onePassword1Pux/Password";
 import { RewardsProgramData } from "./testData/onePassword1Pux/RewardsProgram";
+import { SSNData } from "./testData/onePassword1Pux/SSN";
 import { SanitizedExport } from "./testData/onePassword1Pux/SanitizedExport";
 import { SecureNoteData } from "./testData/onePassword1Pux/SecureNote";
 import { ServerData } from "./testData/onePassword1Pux/Server";
 import { SoftwareLicenseData } from "./testData/onePassword1Pux/SoftwareLicense";
-import { SSNData } from "./testData/onePassword1Pux/SSN";
 import { WirelessRouterData } from "./testData/onePassword1Pux/WirelessRouter";
-
-import { CipherType } from "jslib-common/enums/cipherType";
-import { SecureNoteType } from "jslib-common/enums/secureNoteType";
 
 function validateCustomField(fields: FieldView[], fieldName: string, expectedValue: any) {
   expect(fields).toBeDefined();

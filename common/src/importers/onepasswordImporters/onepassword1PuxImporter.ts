@@ -1,19 +1,16 @@
-import { BaseImporter } from "../baseImporter";
-import { Importer } from "../importer";
-
+import { CipherRepromptType } from "../../enums/cipherRepromptType";
+import { CipherType } from "../../enums/cipherType";
+import { FieldType } from "../../enums/fieldType";
+import { SecureNoteType } from "../../enums/secureNoteType";
 import { ImportResult } from "../../models/domain/importResult";
-
 import { CardView } from "../../models/view/cardView";
 import { CipherView } from "../../models/view/cipherView";
 import { IdentityView } from "../../models/view/identityView";
 import { LoginView } from "../../models/view/loginView";
 import { PasswordHistoryView } from "../../models/view/passwordHistoryView";
 import { SecureNoteView } from "../../models/view/secureNoteView";
-
-import { CipherRepromptType } from "../../enums/cipherRepromptType";
-import { CipherType } from "../../enums/cipherType";
-import { FieldType } from "../../enums/fieldType";
-import { SecureNoteType } from "../../enums/secureNoteType";
+import { BaseImporter } from "../baseImporter";
+import { Importer } from "../importer";
 
 import {
   CategoryEnum,
@@ -66,10 +63,10 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
             cipher.card = new CardView();
             break;
           case CategoryEnum.SecureNote:
-          // case CategoryEnum.Document:
           case CategoryEnum.SoftwareLicense:
           case CategoryEnum.EmailAccount:
           case CategoryEnum.MedicalRecord:
+            // case CategoryEnum.Document:
             cipher.type = CipherType.SecureNote;
             cipher.secureNote = new SecureNoteView();
             cipher.secureNote.type = SecureNoteType.Generic;
