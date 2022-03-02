@@ -16,7 +16,6 @@ import { KdfType } from "../enums/kdfType";
 import { ApiLogInStrategy } from "../misc/logInStrategies/apiLogin.strategy";
 import { PasswordLogInStrategy } from "../misc/logInStrategies/passwordLogin.strategy";
 import { SsoLogInStrategy } from "../misc/logInStrategies/ssoLogin.strategy";
-import { Utils } from "../misc/utils";
 import { AuthResult } from "../models/domain/authResult";
 import {
   ApiLogInCredentials,
