@@ -47,7 +47,7 @@ export abstract class LogInStrategy {
 
   async logInTwoFactor(
     twoFactor: TokenRequestTwoFactor,
-    captchaResposne: string = null
+    captchaResponse: string = null
   ): Promise<AuthResult> {
     this.tokenRequest.setTwoFactor(twoFactor);
     return this.startLogIn();
