@@ -1,6 +1,7 @@
 import { OrganizationUserStatusType } from "../../enums/organizationUserStatusType";
 import { OrganizationUserType } from "../../enums/organizationUserType";
 import { ProductType } from "../../enums/productType";
+import { SponsorshipStatus } from "../../enums/sponsorshipStatus";
 import { PermissionsApi } from "../api/permissionsApi";
 import { OrganizationData } from "../data/organizationData";
 
@@ -36,6 +37,8 @@ export class Organization {
   isProviderUser: boolean;
   familySponsorshipFriendlyName: string;
   familySponsorshipAvailable: boolean;
+  familySponsorshipStatus: SponsorshipStatus;
+  familySponsorshipValidUntil: string;
   planProductType: ProductType;
   keyConnectorEnabled: boolean;
   keyConnectorUrl: string;
@@ -76,6 +79,8 @@ export class Organization {
     this.isProviderUser = obj.isProviderUser;
     this.familySponsorshipFriendlyName = obj.familySponsorshipFriendlyName;
     this.familySponsorshipAvailable = obj.familySponsorshipAvailable;
+    this.familySponsorshipStatus = obj.familySponsorshipStatus;
+    this.familySponsorshipValidUntil = obj.familySponsorshipValidUntil;
     this.planProductType = obj.planProductType;
     this.keyConnectorEnabled = obj.keyConnectorEnabled;
     this.keyConnectorUrl = obj.keyConnectorUrl;

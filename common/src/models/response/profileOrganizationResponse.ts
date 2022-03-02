@@ -1,6 +1,7 @@
 import { OrganizationUserStatusType } from "../../enums/organizationUserStatusType";
 import { OrganizationUserType } from "../../enums/organizationUserType";
 import { ProductType } from "../../enums/productType";
+import { SponsorshipStatus } from "../../enums/sponsorshipStatus";
 import { PermissionsApi } from "../api/permissionsApi";
 
 import { BaseResponse } from "./baseResponse";
@@ -37,6 +38,8 @@ export class ProfileOrganizationResponse extends BaseResponse {
   providerName: string;
   familySponsorshipFriendlyName: string;
   familySponsorshipAvailable: boolean;
+  familySponsorshipStatus: SponsorshipStatus;
+  familySponsorshipValidUntil: string;
   planProductType: ProductType;
   keyConnectorEnabled: boolean;
   keyConnectorUrl: string;
@@ -74,6 +77,8 @@ export class ProfileOrganizationResponse extends BaseResponse {
     this.providerName = this.getResponseProperty("ProviderName");
     this.familySponsorshipFriendlyName = this.getResponseProperty("FamilySponsorshipFriendlyName");
     this.familySponsorshipAvailable = this.getResponseProperty("FamilySponsorshipAvailable");
+    this.familySponsorshipStatus = this.getResponseProperty("FamilySponsorshipStatus");
+    this.familySponsorshipValidUntil = this.getResponseProperty("FamilySponsorshipValidUntil");
     this.planProductType = this.getResponseProperty("PlanProductType");
     this.keyConnectorEnabled = this.getResponseProperty("KeyConnectorEnabled") ?? false;
     this.keyConnectorUrl = this.getResponseProperty("KeyConnectorUrl");
