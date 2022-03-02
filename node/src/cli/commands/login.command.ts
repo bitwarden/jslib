@@ -70,8 +70,6 @@ export class LoginCommand {
     let clientId: string = null;
     let clientSecret: string = null;
 
-    let captchaClientSecret: string = null;
-
     let selectedProvider: any = null;
 
     if (options.apikey != null) {
@@ -182,20 +180,14 @@ export class LoginCommand {
         );
       }
       if (response.captchaSiteKey) {
-        const twoFactorRequest: TokenRequestTwoFactor = {
-          provider: twoFactorMethod,
-          token: twoFactorToken,
-          remember: false,
-        };
         const credentials = new PasswordLogInCredentials(email, password);
-        const handledResponse = await this.handleCaptchaRequired(twoFactorRequest, credentials);
+        const handledResponse = await this.handleCaptchaRequired(twoFactor, credentials);
 
-        if (handledResponse[2] != null) {
-          // Error Response
-          return handledResponse[2];
+        // Error Response
+        if (handledResponse instanceof Response) {
+          return handledResponse;
         } else {
-          captchaClientSecret = handledResponse[0];
-          response = handledResponse[1];
+          response = handledResponse;
         }
       }
       if (response.requiresTwoFactor) {
@@ -271,7 +263,7 @@ export class LoginCommand {
             token: twoFactorToken,
             remember: false,
           },
-          captchaClientSecret
+          null
         );
       }
 
@@ -283,12 +275,11 @@ export class LoginCommand {
         };
         const handledResponse = await this.handleCaptchaRequired(twoFactorRequest);
 
-        if (handledResponse[2] != null) {
-          // Error Response
-          return handledResponse[2];
+        // Error Response
+        if (handledResponse instanceof Response) {
+          return handledResponse;
         } else {
-          captchaClientSecret = handledResponse[0];
-          response = handledResponse[1];
+          response = handledResponse;
         }
       }
 
@@ -447,7 +438,7 @@ export class LoginCommand {
   private async handleCaptchaRequired(
     twoFactorRequest: TokenRequestTwoFactor,
     credentials: PasswordLogInCredentials = null
-  ): Promise<[string, AuthResult, Response]> {
+  ): Promise<AuthResult | Response> {
     const badCaptcha = Response.badRequest(
       "Your authentication request has been flagged and will require user interaction to proceed.\n" +
         "Please use your API key to validate this request and ensure BW_CLIENTSECRET is correct, if set.\n" +
@@ -457,7 +448,7 @@ export class LoginCommand {
     try {
       const captchaClientSecret = await this.apiClientSecret(true);
       if (Utils.isNullOrWhitespace(captchaClientSecret)) {
-        return [null, null, badCaptcha];
+        return badCaptcha;
       }
 
       let authResultResponse: AuthResult = null;
@@ -472,16 +463,16 @@ export class LoginCommand {
         );
       }
 
-      return [captchaClientSecret, authResultResponse, null];
+      return authResultResponse;
     } catch (e) {
       if (
         e instanceof ErrorResponse ||
         (e.constructor.name === "ErrorResponse" &&
           (e as ErrorResponse).message.includes("Captcha is invalid"))
       ) {
-        return [null, null, badCaptcha];
+        return badCaptcha;
       } else {
-        return [null, null, Response.error(e)];
+        return Response.error(e);
       }
     }
   }

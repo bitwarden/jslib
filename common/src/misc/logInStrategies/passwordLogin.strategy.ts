@@ -65,8 +65,8 @@ export class PasswordLogInStrategy extends LogInStrategy {
     twoFactor: TokenRequestTwoFactor,
     captchaResponse: string
   ): Promise<AuthResult> {
-    this.tokenRequest.captchaResponse = captchaResponse ?? this.bypassToken;
-    return super.logInTwoFactor(twoFactor, captchaResponse);
+    this.tokenRequest.captchaResponse = captchaResponse ?? this.captchaBypassToken;
+    return super.logInTwoFactor(twoFactor);
   }
 
   async logIn(credentials: PasswordLogInCredentials) {

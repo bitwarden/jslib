@@ -128,7 +128,7 @@ export class AuthService implements AuthServiceAbstraction {
       const result = await this.logInStrategy.logInTwoFactor(twoFactor, captchaResponse);
 
       // Only clear state if 2FA token has been accepted, otherwise we need to be able to try again
-      if (!result.requiresTwoFactor && Utils.isNullOrWhitespace(result.captchaSiteKey)) {
+      if (!result.requiresTwoFactor && !result.requiresCaptcha) {
         this.clearState();
       }
       return result;
