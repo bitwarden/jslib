@@ -12,7 +12,6 @@ export enum OpenIdConnectRedirectBehavior {
 export enum Saml2BindingType {
   HttpRedirect = 1,
   HttpPost = 2,
-  Artifact = 4,
 }
 
 export enum Saml2NameIdFormat {

@@ -42,7 +42,6 @@ export class SsoConfigView extends View {
     idpBindingType: Saml2BindingType;
     idpSingleSignOnServiceUrl: string;
     idpSingleLogoutServiceUrl: string;
-    idpArtifactResolutionServiceUrl: string;
     idpX509PublicCert: string;
     idpOutboundSigningAlgorithm: string;
     idpAllowUnsolicitedAuthnResponse: boolean;
@@ -89,7 +88,6 @@ export class SsoConfigView extends View {
         idpBindingType: api.idpBindingType,
         idpSingleSignOnServiceUrl: api.idpSingleSignOnServiceUrl,
         idpSingleLogoutServiceUrl: api.idpSingleLogoutServiceUrl,
-        idpArtifactResolutionServiceUrl: api.idpArtifactResolutionServiceUrl,
         idpX509PublicCert: api.idpX509PublicCert,
         idpOutboundSigningAlgorithm: api.idpOutboundSigningAlgorithm,
         idpAllowUnsolicitedAuthnResponse: api.idpAllowUnsolicitedAuthnResponse,
