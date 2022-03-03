@@ -1,3 +1,4 @@
+import { ConfigurableFocusTrap, ConfigurableFocusTrapFactory } from "@angular/cdk/a11y";
 import {
   AfterViewInit,
   ChangeDetectorRef,
@@ -9,8 +10,6 @@ import {
   ViewChild,
   ViewContainerRef,
 } from "@angular/core";
-
-import { ConfigurableFocusTrap, ConfigurableFocusTrapFactory } from "@angular/cdk/a11y";
 
 import { ModalService } from "../../services/modal.service";
 

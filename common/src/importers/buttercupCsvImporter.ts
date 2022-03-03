@@ -1,7 +1,7 @@
+import { ImportResult } from "../models/domain/importResult";
+
 import { BaseImporter } from "./baseImporter";
 import { Importer } from "./importer";
-
-import { ImportResult } from "../models/domain/importResult";
 
 const OfficialProps = ["!group_id", "!group_name", "title", "username", "password", "URL", "id"];
 
@@ -25,6 +25,7 @@ export class ButtercupCsvImporter extends BaseImporter implements Importer {
 
       let processingCustomFields = false;
       for (const prop in value) {
+        // eslint-disable-next-line
         if (value.hasOwnProperty(prop)) {
           if (!processingCustomFields && OfficialProps.indexOf(prop) === -1) {
             processingCustomFields = true;

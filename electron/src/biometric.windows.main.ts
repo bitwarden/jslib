@@ -1,15 +1,15 @@
 import { ipcMain } from "electron";
 import forceFocus from "forcefocus";
 
-import { WindowMain } from "./window.main";
-
 import { BiometricMain } from "jslib-common/abstractions/biometric.main";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { LogService } from "jslib-common/abstractions/log.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 
+import { WindowMain } from "./window.main";
+
 export default class BiometricWindowsMain implements BiometricMain {
-  isError: boolean = false;
+  isError = false;
 
   private windowsSecurityCredentialsUiModule: any;
 
@@ -72,6 +72,7 @@ export default class BiometricWindowsMain implements BiometricMain {
   async checkAvailabilityAsync(): Promise<any> {
     const module = this.getWindowsSecurityCredentialsUiModule();
     if (module != null) {
+      // eslint-disable-next-line
       return new Promise((resolve, reject) => {
         try {
           module.UserConsentVerifier.checkAvailabilityAsync((error: Error, result: any) => {
@@ -134,6 +135,7 @@ export default class BiometricWindowsMain implements BiometricMain {
       return -1;
     }
     try {
+      // eslint-disable-next-line
       const version = require("os").release();
       return Number.parseInt(version.split(".")[0], 10);
     } catch {

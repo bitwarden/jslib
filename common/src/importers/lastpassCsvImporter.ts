@@ -1,8 +1,6 @@
-import { BaseImporter } from "./baseImporter";
-import { Importer } from "./importer";
-
+import { CipherType } from "../enums/cipherType";
+import { SecureNoteType } from "../enums/secureNoteType";
 import { ImportResult } from "../models/domain/importResult";
-
 import { CardView } from "../models/view/cardView";
 import { CipherView } from "../models/view/cipherView";
 import { FolderView } from "../models/view/folderView";
@@ -10,8 +8,8 @@ import { IdentityView } from "../models/view/identityView";
 import { LoginView } from "../models/view/loginView";
 import { SecureNoteView } from "../models/view/secureNoteView";
 
-import { CipherType } from "../enums/cipherType";
-import { SecureNoteType } from "../enums/secureNoteType";
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
 export class LastPassCsvImporter extends BaseImporter implements Importer {
   parse(data: string): Promise<ImportResult> {
@@ -22,11 +20,12 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
       return Promise.resolve(result);
     }
 
-    results.forEach((value, index) => {
+    results.forEach((value) => {
       const cipherIndex = result.ciphers.length;
       let folderIndex = result.folders.length;
       let grouping = value.grouping;
       if (grouping != null) {
+        // eslint-disable-next-line
         grouping = grouping.replace(/\\/g, "/").replace(/[\x00-\x1F\x7F-\x9F]/g, "");
       }
       const hasFolder = this.getValueOrDefault(grouping, "(none)") !== "(none)";
@@ -90,6 +89,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
 
   private buildBaseCipher(value: any) {
     const cipher = new CipherView();
+    // eslint-disable-next-line
     if (value.hasOwnProperty("profilename") && value.hasOwnProperty("profilelanguage")) {
       // form fill
       cipher.favorite = false;
@@ -272,6 +272,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
           cipher.notes = val;
         }
         processingNotes = true;
+        // eslint-disable-next-line
       } else if (map.hasOwnProperty(key)) {
         dataObj[map[key]] = val;
       } else {

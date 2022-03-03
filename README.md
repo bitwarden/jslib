@@ -17,6 +17,10 @@ Common code referenced across Bitwarden JavaScript projects.
 - [Windows 10 SDK 17134](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/)
   either by downloading it seperately or through the Visual Studio Installer.
 
+## We're Hiring!
+
+Interested in contributing in a big way? Consider joining our team! We're hiring for many positions. Please take a look at our [Careers page](https://bitwarden.com/careers/) to see what opportunities are currently open as well as what it's like to work at Bitwarden.
+
 ## Prettier
 
 We recently migrated to using Prettier as code formatter. All previous branches will need to updated to avoid large merge conflicts using the following steps:

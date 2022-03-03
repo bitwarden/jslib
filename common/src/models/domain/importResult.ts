@@ -4,6 +4,7 @@ import { FolderView } from "../view/folderView";
 
 export class ImportResult {
   success = false;
+  missingPassword = false;
   errorMessage: string;
   ciphers: CipherView[] = [];
   folders: FolderView[] = [];

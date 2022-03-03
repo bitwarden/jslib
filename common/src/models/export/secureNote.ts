@@ -1,8 +1,6 @@
 import { SecureNoteType } from "../../enums/secureNoteType";
-
-import { SecureNoteView } from "../view/secureNoteView";
-
 import { SecureNote as SecureNoteDomain } from "../domain/secureNote";
+import { SecureNoteView } from "../view/secureNoteView";
 
 export class SecureNote {
   static template(): SecureNote {

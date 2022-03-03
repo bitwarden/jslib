@@ -1,15 +1,12 @@
-import { BaseImporter } from "../baseImporter";
-import { Importer } from "../importer";
-
+import { CipherType } from "../../enums/cipherType";
+import { SecureNoteType } from "../../enums/secureNoteType";
 import { ImportResult } from "../../models/domain/importResult";
-
 import { CardView } from "../../models/view/cardView";
 import { CipherView } from "../../models/view/cipherView";
 import { IdentityView } from "../../models/view/identityView";
 import { LoginView } from "../../models/view/loginView";
-
-import { CipherType } from "../../enums/cipherType";
-import { SecureNoteType } from "../../enums/secureNoteType";
+import { BaseImporter } from "../baseImporter";
+import { Importer } from "../importer";
 
 import {
   CredentialsRecord,
@@ -208,8 +205,7 @@ export class DashlaneCsvImporter extends BaseImporter implements Importer {
   parsePersonalInformationRecordAsIdentity(cipher: CipherView, row: PersonalInformationRecord) {
     switch (row.type) {
       case "name":
-        const fullName = `${row.first_name} ${row.middle_name} ${row.last_name}`;
-        this.processFullName(cipher, fullName);
+        this.processFullName(cipher, `${row.first_name} ${row.middle_name} ${row.last_name}`);
         cipher.identity.title = row.title;
         cipher.name = cipher.identity.fullName;
 

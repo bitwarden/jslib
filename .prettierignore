@@ -1,5 +1,6 @@
 # Build directories
 dist
+coverage
 
 # Github Workflows
 .github/workflows

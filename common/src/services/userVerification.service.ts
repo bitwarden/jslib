@@ -1,14 +1,10 @@
-import { UserVerificationService as UserVerificationServiceAbstraction } from "../abstractions/userVerification.service";
-
 import { ApiService } from "../abstractions/api.service";
 import { CryptoService } from "../abstractions/crypto.service";
 import { I18nService } from "../abstractions/i18n.service";
-
+import { UserVerificationService as UserVerificationServiceAbstraction } from "../abstractions/userVerification.service";
 import { VerificationType } from "../enums/verificationType";
-
 import { VerifyOTPRequest } from "../models/request/account/verifyOTPRequest";
 import { SecretVerificationRequest } from "../models/request/secretVerificationRequest";
-
 import { Verification } from "../types/verification";
 
 export class UserVerificationService implements UserVerificationServiceAbstraction {

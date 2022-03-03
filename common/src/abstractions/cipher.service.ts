@@ -1,12 +1,9 @@
 import { CipherType } from "../enums/cipherType";
 import { UriMatchType } from "../enums/uriMatchType";
-
 import { CipherData } from "../models/data/cipherData";
-
 import { Cipher } from "../models/domain/cipher";
 import { Field } from "../models/domain/field";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-
 import { CipherView } from "../models/view/cipherView";
 import { FieldView } from "../models/view/fieldView";
 

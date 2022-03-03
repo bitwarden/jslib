@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from "@angular/core";
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
-
 import { MasterPasswordPolicyOptions } from "jslib-common/models/domain/masterPasswordPolicyOptions";
 
 @Component({

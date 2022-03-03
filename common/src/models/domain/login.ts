@@ -1,11 +1,9 @@
-import { LoginUri } from "./loginUri";
-
 import { LoginData } from "../data/loginData";
-
 import { LoginView } from "../view/loginView";
 
 import Domain from "./domainBase";
 import { EncString } from "./encString";
+import { LoginUri } from "./loginUri";
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
 export class Login extends Domain {
@@ -16,7 +14,7 @@ export class Login extends Domain {
   totp: EncString;
   autofillOnPageLoad: boolean;
 
-  constructor(obj?: LoginData, alreadyEncrypted: boolean = false) {
+  constructor(obj?: LoginData, alreadyEncrypted = false) {
     super();
     if (obj == null) {
       return;

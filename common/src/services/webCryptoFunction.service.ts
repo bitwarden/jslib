@@ -2,9 +2,7 @@ import * as forge from "node-forge";
 
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";
-
 import { Utils } from "../misc/utils";
-
 import { DecryptParameters } from "../models/domain/decryptParameters";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 

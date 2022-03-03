@@ -1,9 +1,9 @@
-import { BaseResponse } from "./baseResponse";
-
 import { OrganizationUserStatusType } from "../../enums/organizationUserStatusType";
 import { OrganizationUserType } from "../../enums/organizationUserType";
 import { ProductType } from "../../enums/productType";
 import { PermissionsApi } from "../api/permissionsApi";
+
+import { BaseResponse } from "./baseResponse";
 
 export class ProfileOrganizationResponse extends BaseResponse {
   id: string;
