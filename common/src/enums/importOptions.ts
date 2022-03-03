@@ -7,6 +7,7 @@ export const featuredImportOptions = [
   { id: "bitwardenjson", name: "Bitwarden (json)" },
   { id: "bitwardencsv", name: "Bitwarden (csv)" },
   { id: "chromecsv", name: "Chrome (csv)" },
+  { id: "dashlanecsv", name: "Dashlane (csv)" },
   { id: "dashlanejson", name: "Dashlane (json)" },
   { id: "firefoxcsv", name: "Firefox (csv)" },
   { id: "keepass2xml", name: "KeePass 2 (xml)" },
