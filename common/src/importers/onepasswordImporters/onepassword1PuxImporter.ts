@@ -345,20 +345,6 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
     return id;
   }
 
-  // totp?: string | null;
-  // date?: number | null;
-  // string?: string | null;
-  // concealed?: string | null;
-  // email?: string | null;
-  // phone?: string | null;
-  // menu?: string | null;
-  // gender?: string | null;
-  // monthYear?: number | null;
-  // url?: string | null;
-  // address?: Address | null;
-  // creditCardType?: string | null;
-  // creditCardNumber?: string | null;
-  // reference?: string | null;
   private extractValue(value: Value, valueKey: string): string {
     if (valueKey === "date") {
       return new Date(value.date * 1000).toUTCString();
