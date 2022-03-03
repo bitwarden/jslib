@@ -213,7 +213,7 @@ export class StateService<
   async getAutoConfirmFingerPrints(options?: StorageOptions): Promise<boolean> {
     return (
       (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.autoConfirmFingerPrints ?? true
+        ?.settings?.autoConfirmFingerPrints ?? false
     );
   }
 
