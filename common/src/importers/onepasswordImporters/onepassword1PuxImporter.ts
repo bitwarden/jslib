@@ -580,11 +580,6 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
       return true;
     }
 
-    // if (this.isNullOrWhitespace(cipher.identity.licenseNumber) && field.id === "membership_no") {
-    //   cipher.identity.licenseNumber = fieldValue;
-    //   return true;
-    // }
-
     return false;
   }
 
