@@ -27,6 +27,7 @@ import { IdentityTwoFactorResponse } from "../../models/response/identityTwoFact
 
 export abstract class LogInStrategy {
   protected abstract tokenRequest: ApiTokenRequest | PasswordTokenRequest | SsoTokenRequest;
+  protected captchaBypassToken: string = null;
 
   constructor(
     protected cryptoService: CryptoService,
@@ -44,7 +45,10 @@ export abstract class LogInStrategy {
     credentials: ApiLogInCredentials | PasswordLogInCredentials | SsoLogInCredentials
   ): Promise<AuthResult>;
 
-  async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
+  async logInTwoFactor(
+    twoFactor: TokenRequestTwoFactor,
+    captchaResponse: string = null
+  ): Promise<AuthResult> {
     this.tokenRequest.setTwoFactor(twoFactor);
     return this.startLogIn();
   }
@@ -152,6 +156,7 @@ export abstract class LogInStrategy {
     const result = new AuthResult();
     result.twoFactorProviders = response.twoFactorProviders2;
     this.twoFactorService.setProviders(response);
+    this.captchaBypassToken = response.captchaToken ?? null;
     return result;
   }
 

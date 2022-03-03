@@ -115,16 +115,19 @@ export class AuthService implements AuthServiceAbstraction {
     return result;
   }
 
-  async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
+  async logInTwoFactor(
+    twoFactor: TokenRequestTwoFactor,
+    captchaResponse: string
+  ): Promise<AuthResult> {
     if (this.logInStrategy == null) {
       throw new Error(this.i18nService.t("sessionTimeout"));
     }
 
     try {
-      const result = await this.logInStrategy.logInTwoFactor(twoFactor);
+      const result = await this.logInStrategy.logInTwoFactor(twoFactor, captchaResponse);
 
       // Only clear state if 2FA token has been accepted, otherwise we need to be able to try again
-      if (!result.requiresTwoFactor) {
+      if (!result.requiresTwoFactor && !result.requiresCaptcha) {
         this.clearState();
       }
       return result;
