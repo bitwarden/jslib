@@ -12,11 +12,12 @@ export const featuredImportOptions = [
   { id: "keepass2xml", name: "KeePass 2 (xml)" },
   { id: "lastpasscsv", name: "LastPass (csv)" },
   { id: "safaricsv", name: "Safari and macOS (csv)" },
-  { id: "1password1pif", name: "1Password (1pif)" },
+  { id: "1password1pux", name: "1Password (1pux)" },
 ] as const;
 
 export const regularImportOptions = [
   { id: "keepassxcsv", name: "KeePassX (csv)" },
+  { id: "1password1pif", name: "1Password (1pif)" },
   { id: "1passwordwincsv", name: "1Password 6 and 7 Windows (csv)" },
   { id: "1passwordmaccsv", name: "1Password 6 and 7 Mac (csv)" },
   { id: "roboformcsv", name: "RoboForm (csv)" },
