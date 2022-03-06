@@ -5,6 +5,7 @@ import { userAccountData } from "./testData/mykiCsv/UserAccount.csv";
 import { userCreditCardData } from "./testData/mykiCsv/UserCreditCard.csv";
 import { userIdentityData } from "./testData/mykiCsv/UserIdentity.csv";
 import { userNoteData } from "./testData/mykiCsv/UserNote.csv";
+import { userTwoFaData } from "./testData/mykiCsv/UserTwofa.csv";
 
 describe("Myki CSV Importer", () => {
   let importer: Importer;
@@ -26,6 +27,19 @@ describe("Myki CSV Importer", () => {
     const uriView = cipher.login.uris.shift();
     expect(uriView.uri).toEqual("http://www.google.com");
     expect(cipher.notes).toEqual("This is the additional information text.");
+  });
+
+  it("should parse userTwoFa records", async () => {
+    const result = await importer.parse(userTwoFaData);
+    expect(result != null).toBe(true);
+
+    const cipher = result.ciphers.shift();
+
+    expect(cipher.name).toEqual("2FA nickname");
+    expect(cipher.login.username).toBeNull();
+    expect(cipher.login.password).toBeNull();
+    expect(cipher.login.totp).toBe("someTOTPSeed");
+    expect(cipher.notes).toEqual("Additional information field content.");
   });
 
   it("should parse creditCard records", async () => {
