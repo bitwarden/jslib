@@ -16,6 +16,36 @@ import {
   SecureNoteRecord,
 } from "./types/dashlaneCsvTypes";
 
+const _mappedCredentialsColums = new Set([
+  "title",
+  "note",
+  "username",
+  "password",
+  "url",
+  "otpSecret",
+  "category",
+]);
+
+const _mappedPersonalInfoAsIdentiyColumns = new Set([
+  "type",
+  "title",
+  "first_name",
+  "middle_name",
+  "last_name",
+  "login",
+  "email",
+  "phone_number",
+  "address",
+  "country",
+  "state",
+  "city",
+  "zip",
+  // Skip item_name as we already have set a combined name
+  "item_name",
+]);
+
+const _mappedSecureNoteColumns = new Set(["title", "note"]);
+
 export class DashlaneCsvImporter extends BaseImporter implements Importer {
   parse(data: string): Promise<ImportResult> {
     const result = new ImportResult();
@@ -83,25 +113,12 @@ export class DashlaneCsvImporter extends BaseImporter implements Importer {
 
     cipher.name = row.title;
     cipher.notes = row.note;
-
     cipher.login.username = row.username;
     cipher.login.password = row.password;
-
     cipher.login.totp = row.otpSecret;
-
     cipher.login.uris = this.makeUriArray(row.url);
 
-    // If you add more mapped fields please extend this
-    const mappedValues = new Set([
-      "title",
-      "note",
-      "username",
-      "password",
-      "url",
-      "otpSecret",
-      "category",
-    ]);
-    this.importUnmappedFields(cipher, row, mappedValues);
+    this.importUnmappedFields(cipher, row, _mappedCredentialsColums);
   }
 
   parsePaymentRecord(cipher: CipherView, row: PaymentsRecord) {
@@ -134,7 +151,7 @@ export class DashlaneCsvImporter extends BaseImporter implements Importer {
         cipher.card.number = row.account_number;
 
         // If you add more mapped fields please extend this
-        mappedValues = ["account_name", "account_holder", "account_name", "account_number"];
+        mappedValues = ["account_name", "account_holder", "account_number"];
         break;
       default:
         break;
@@ -228,25 +245,7 @@ export class DashlaneCsvImporter extends BaseImporter implements Importer {
         break;
     }
 
-    const mappedValues = [
-      "type",
-      "title",
-      "first_name",
-      "middle_name",
-      "last_name",
-      "login",
-      "email",
-      "phone_number",
-      "address",
-      "country",
-      "state",
-      "city",
-      "zip",
-      // Skip item_name as we already have set a combined name
-      "item_name",
-    ];
-
-    this.importUnmappedFields(cipher, row, new Set(mappedValues));
+    this.importUnmappedFields(cipher, row, _mappedPersonalInfoAsIdentiyColumns);
   }
 
   parseSecureNoteRecords(cipher: CipherView, row: SecureNoteRecord) {
@@ -255,9 +254,7 @@ export class DashlaneCsvImporter extends BaseImporter implements Importer {
     cipher.name = row.title;
     cipher.notes = row.note;
 
-    // If you add more mapped fields please extend this
-    const mappedValues = new Set(["title", "note"]);
-    this.importUnmappedFields(cipher, row, mappedValues);
+    this.importUnmappedFields(cipher, row, _mappedSecureNoteColumns);
   }
 
   importUnmappedFields(cipher: CipherView, row: any, mappedValues: Set<string>) {
