@@ -32,6 +32,7 @@ const _mappedIdentityColumns = new Set(
   ])
 );
 
+const _mappedIdCardColumns = new Set(mappedBaseColumns.concat(["idName", "idNumber", "idCountry"]));
 const _mappedTwoFaColumns = new Set(mappedBaseColumns.concat(["authToken"]));
 
 const _mappedUserNoteColumns = new Set(mappedBaseColumns.concat(["content"]));
@@ -92,6 +93,18 @@ export class MykiCsvImporter extends BaseImporter implements Importer {
         cipher.identity.postalCode = this.getValueOrDefault(value.zipCode);
 
         this.importUnmappedFields(cipher, value, _mappedIdentityColumns);
+      } else if (value.idType !== undefined) {
+        // IdCards
+        cipher.identity = new IdentityView();
+        cipher.type = CipherType.Identity;
+        this.processFullName(cipher, value.idName);
+
+        // TODO set number depending on idType (licenseNumber, ssn, passportNumber)
+        cipher.identity.licenseNumber = value.idNumber;
+
+        cipher.identity.country = this.getValueOrDefault(value.idCountry);
+
+        this.importUnmappedFields(cipher, value, _mappedIdCardColumns);
       } else if (value.content !== undefined) {
         // Notes
         cipher.secureNote = new SecureNoteView();

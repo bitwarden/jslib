@@ -3,6 +3,7 @@ import { MykiCsvImporter as Importer } from "jslib-common/importers/mykiCsvImpor
 
 import { userAccountData } from "./testData/mykiCsv/UserAccount.csv";
 import { userCreditCardData } from "./testData/mykiCsv/UserCreditCard.csv";
+import { userIdCardData } from "./testData/mykiCsv/UserIdCard.csv";
 import { userIdentityData } from "./testData/mykiCsv/UserIdentity.csv";
 import { userNoteData } from "./testData/mykiCsv/UserNote.csv";
 import { userTwoFaData } from "./testData/mykiCsv/UserTwofa.csv";
@@ -122,6 +123,43 @@ describe("Myki CSV Importer", () => {
 
     expect(cipher.fields[3].name).toEqual("number");
     expect(cipher.fields[3].value).toEqual("2223334444");
+  });
+
+  it("should parse idCard records", async () => {
+    const result = await importer.parse(userIdCardData);
+
+    expect(result).not.toBeNull();
+    expect(result.success).toBe(true);
+
+    // TODO: idType field means multiple types
+    const cipher = result.ciphers.shift();
+    expect(cipher.type).toBe(CipherType.Identity);
+    expect(cipher.name).toBe("Joe User's nickname");
+    expect(cipher.notes).toBe("Additional information");
+
+    expect(cipher.identity.fullName).toBe("Joe M User");
+    expect(cipher.identity.firstName).toBe("Joe");
+    expect(cipher.identity.middleName).toBe("M");
+    expect(cipher.identity.lastName).toBe("User");
+    expect(cipher.identity.licenseNumber).toBe("123456");
+    expect(cipher.identity.country).toBe("United States");
+
+    expect(cipher.fields.length).toBe(5);
+
+    expect(cipher.fields[0].name).toEqual("status");
+    expect(cipher.fields[0].value).toEqual("active");
+
+    expect(cipher.fields[1].name).toEqual("tags");
+    expect(cipher.fields[1].value).toEqual("someTag");
+
+    expect(cipher.fields[2].name).toEqual("idType");
+    expect(cipher.fields[2].value).toEqual("Driver's License");
+
+    expect(cipher.fields[3].name).toEqual("idIssuanceDate");
+    expect(cipher.fields[3].value).toEqual("02/02/2022");
+
+    expect(cipher.fields[4].name).toEqual("idExpirationDate");
+    expect(cipher.fields[4].value).toEqual("02/02/2024");
   });
 
   it("should parse secureNote records", async () => {
