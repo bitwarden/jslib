@@ -27,6 +27,14 @@ describe("Myki CSV Importer", () => {
     const uriView = cipher.login.uris.shift();
     expect(uriView.uri).toEqual("http://www.google.com");
     expect(cipher.notes).toEqual("This is the additional information text.");
+
+    expect(cipher.fields.length).toBe(2);
+
+    expect(cipher.fields[0].name).toBe("status");
+    expect(cipher.fields[0].value).toBe("active");
+
+    expect(cipher.fields[1].name).toBe("tags");
+    expect(cipher.fields[1].value).toBe("someTag");
   });
 
   it("should parse userTwoFa records", async () => {
@@ -40,6 +48,14 @@ describe("Myki CSV Importer", () => {
     expect(cipher.login.password).toBeNull();
     expect(cipher.login.totp).toBe("someTOTPSeed");
     expect(cipher.notes).toEqual("Additional information field content.");
+
+    expect(cipher.fields.length).toBe(2);
+
+    expect(cipher.fields[0].name).toBe("status");
+    expect(cipher.fields[0].value).toBe("active");
+
+    expect(cipher.fields[1].name).toBe("tags");
+    expect(cipher.fields[1].value).toBe("someTag");
   });
 
   it("should parse creditCard records", async () => {
@@ -60,6 +76,14 @@ describe("Myki CSV Importer", () => {
     expect(cipher.card.expYear).toBe("24");
 
     expect(cipher.notes).toBe("This is the additional information field");
+
+    expect(cipher.fields.length).toBe(2);
+
+    expect(cipher.fields[0].name).toBe("status");
+    expect(cipher.fields[0].value).toBe("active");
+
+    expect(cipher.fields[1].name).toBe("tags");
+    expect(cipher.fields[1].value).toBe("someTag");
   });
 
   it("should parse identity records", async () => {
@@ -84,6 +108,20 @@ describe("Myki CSV Importer", () => {
     expect(cipher.identity.city).toBe("Portland");
     expect(cipher.identity.postalCode).toBe("04101");
     expect(cipher.identity.country).toBe("United States");
+
+    expect(cipher.fields.length).toBe(4);
+
+    expect(cipher.fields[0].name).toEqual("status");
+    expect(cipher.fields[0].value).toEqual("active");
+
+    expect(cipher.fields[1].name).toBe("tags");
+    expect(cipher.fields[1].value).toBe("someTag");
+
+    expect(cipher.fields[2].name).toEqual("gender");
+    expect(cipher.fields[2].value).toEqual("Male");
+
+    expect(cipher.fields[3].name).toEqual("number");
+    expect(cipher.fields[3].value).toEqual("2223334444");
   });
 
   it("should parse secureNote records", async () => {
@@ -97,5 +135,10 @@ describe("Myki CSV Importer", () => {
     expect(cipher.type).toBe(CipherType.SecureNote);
     expect(cipher.name).toBe("The title of a secure note");
     expect(cipher.notes).toBe("The content of a secure note. Lorem ipsum, etc.");
+
+    expect(cipher.fields.length).toBe(1);
+
+    expect(cipher.fields[0].name).toBe("status");
+    expect(cipher.fields[0].value).toBe("active");
   });
 });
