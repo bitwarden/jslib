@@ -1,12 +1,12 @@
 import { CipherType } from "jslib-common/enums/cipherType";
 import { DashlaneCsvImporter as Importer } from "jslib-common/importers/dashlaneImporters/dashlaneCsvImporter";
 
-import { data as credentialsData } from "./testData/dashlaneCsv/credentials.csv";
-import { data as identityData } from "./testData/dashlaneCsv/id.csv";
-import { data as multiPersonalInfoData } from "./testData/dashlaneCsv/multiplePersonalInfo.csv";
-import { data as paymentsData } from "./testData/dashlaneCsv/payments.csv";
-import { data as personalInfoData } from "./testData/dashlaneCsv/personalInfo.csv";
-import { data as secureNoteData } from "./testData/dashlaneCsv/securenotes.csv";
+import { credentialsData } from "./testData/dashlaneCsv/credentials.csv";
+import { identityData } from "./testData/dashlaneCsv/id.csv";
+import { multiplePersonalInfoData } from "./testData/dashlaneCsv/multiplePersonalInfo.csv";
+import { paymentsData } from "./testData/dashlaneCsv/payments.csv";
+import { personalInfoData } from "./testData/dashlaneCsv/personalInfo.csv";
+import { secureNoteData } from "./testData/dashlaneCsv/securenotes.csv";
 
 describe("Dashlane CSV Importer", () => {
   let importer: Importer;
@@ -197,7 +197,7 @@ describe("Dashlane CSV Importer", () => {
   });
 
   it("should parse personal information records (multiple identities)", async () => {
-    const result = await importer.parse(multiPersonalInfoData);
+    const result = await importer.parse(multiplePersonalInfoData);
 
     expect(result).not.toBeNull();
     expect(result.success).toBe(true);

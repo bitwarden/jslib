@@ -1,2 +1,2 @@
-export const data = `title,note
+export const secureNoteData = `title,note
 01,test`;

@@ -1,4 +1,4 @@
-export const data = `type,title,first_name,middle_name,last_name,login,date_of_birth,place_of_birth,email,email_type,item_name,phone_number,address,country,state,city,zip,address_recipient,address_building,address_apartment,address_floor,address_door_code,job_title,url
+export const multiplePersonalInfoData = `type,title,first_name,middle_name,last_name,login,date_of_birth,place_of_birth,email,email_type,item_name,phone_number,address,country,state,city,zip,address_recipient,address_building,address_apartment,address_floor,address_door_code,job_title,url
 name,MR,John,,Doe,jdoe,2022-01-30,world,,,,,,,,,,,,,,,,
 email,,,,,,,,jdoe@example.com,personal,Johns email,,,,,,,,,,,,,
 number,,,,,,,,,,John's number,+49123123123,,,,,,,,,,,,
