@@ -58,7 +58,6 @@ export class MykiCsvImporter extends BaseImporter implements Importer {
         cipher.secureNote = new SecureNoteView();
         cipher.type = CipherType.SecureNote;
         cipher.secureNote.type = SecureNoteType.Generic;
-        cipher.name = this.getValueOrDefault(value.title, "--");
         cipher.notes = this.getValueOrDefault(value.content);
       } else {
         return;
