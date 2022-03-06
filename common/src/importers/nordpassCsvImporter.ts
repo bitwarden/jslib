@@ -72,7 +72,7 @@ export class NordPassCsvImporter extends BaseImporter implements Importer {
         case CipherType.Identity:
           cipher.type = CipherType.Identity;
 
-          this.processName(cipher, this.getValueOrDefault(record.full_name));
+          this.processFullName(cipher, this.getValueOrDefault(record.full_name));
           cipher.identity.address1 = this.getValueOrDefault(record.address1);
           cipher.identity.address2 = this.getValueOrDefault(record.address2);
           cipher.identity.city = this.getValueOrDefault(record.city);
@@ -123,22 +123,5 @@ export class NordPassCsvImporter extends BaseImporter implements Importer {
     }
 
     return undefined;
-  }
-
-  private processName(cipher: CipherView, fullName: string) {
-    if (this.isNullOrWhitespace(fullName)) {
-      return;
-    }
-
-    const nameParts = fullName.split(" ");
-    if (nameParts.length > 0) {
-      cipher.identity.firstName = this.getValueOrDefault(nameParts[0]);
-    }
-    if (nameParts.length === 2) {
-      cipher.identity.lastName = this.getValueOrDefault(nameParts[1]);
-    } else if (nameParts.length >= 3) {
-      cipher.identity.middleName = this.getValueOrDefault(nameParts[1]);
-      cipher.identity.lastName = nameParts.slice(2, nameParts.length).join(" ");
-    }
   }
 }

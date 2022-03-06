@@ -49,7 +49,7 @@ export class LockComponent implements OnInit {
     protected environmentService: EnvironmentService,
     protected stateService: StateService,
     protected apiService: ApiService,
-    private logService: LogService,
+    protected logService: LogService,
     private keyConnectorService: KeyConnectorService,
     protected ngZone: NgZone
   ) {}

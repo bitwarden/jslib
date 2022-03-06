@@ -446,4 +446,21 @@ export abstract class BaseImporter {
       cipher.secureNote.type = SecureNoteType.Generic;
     }
   }
+
+  protected processFullName(cipher: CipherView, fullName: string) {
+    if (this.isNullOrWhitespace(fullName)) {
+      return;
+    }
+
+    const nameParts = fullName.split(" ");
+    if (nameParts.length > 0) {
+      cipher.identity.firstName = this.getValueOrDefault(nameParts[0]);
+    }
+    if (nameParts.length === 2) {
+      cipher.identity.lastName = this.getValueOrDefault(nameParts[1]);
+    } else if (nameParts.length >= 3) {
+      cipher.identity.middleName = this.getValueOrDefault(nameParts[1]);
+      cipher.identity.lastName = nameParts.slice(2, nameParts.length).join(" ");
+    }
+  }
 }

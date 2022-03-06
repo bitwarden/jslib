@@ -47,6 +47,7 @@ import { MSecureCsvImporter } from "../importers/msecureCsvImporter";
 import { MykiCsvImporter } from "../importers/mykiCsvImporter";
 import { NordPassCsvImporter } from "../importers/nordpassCsvImporter";
 import { OnePassword1PifImporter } from "../importers/onepasswordImporters/onepassword1PifImporter";
+import { OnePassword1PuxImporter } from "../importers/onepasswordImporters/onepassword1PuxImporter";
 import { OnePasswordMacCsvImporter } from "../importers/onepasswordImporters/onepasswordMacCsvImporter";
 import { OnePasswordWinCsvImporter } from "../importers/onepasswordImporters/onepasswordWinCsvImporter";
 import { PadlockCsvImporter } from "../importers/padlockCsvImporter";
@@ -200,6 +201,8 @@ export class ImportService implements ImportServiceAbstraction {
         return new MeldiumCsvImporter();
       case "1password1pif":
         return new OnePassword1PifImporter();
+      case "1password1pux":
+        return new OnePassword1PuxImporter();
       case "1passwordwincsv":
         return new OnePasswordWinCsvImporter();
       case "1passwordmaccsv":
