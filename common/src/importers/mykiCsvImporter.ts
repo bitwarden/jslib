@@ -27,7 +27,7 @@ export class MykiCsvImporter extends BaseImporter implements Importer {
         cipher.login.uris = this.makeUriArray(value.url);
         cipher.login.username = this.getValueOrDefault(value.username);
         cipher.login.password = this.getValueOrDefault(value.password);
-        cipher.login.totp = this.getValueOrDefault(value.twoFactAuthToken);
+        cipher.login.totp = this.getValueOrDefault(value.twofaSecret);
       } else if (value.cardNumber !== undefined) {
         // Cards
         cipher.card = new CardView();
