@@ -1,5 +1,4 @@
 import { SendType } from "../../enums/sendType";
-
 import { SendAccess } from "../domain/sendAccess";
 
 import { SendFileView } from "./sendFileView";

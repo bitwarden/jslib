@@ -1,5 +1,4 @@
 import { AuthenticationType } from "../../enums/authenticationType";
-
 import { TokenRequestTwoFactor } from "../request/identityToken/tokenRequest";
 
 abstract class LogInCredentials {

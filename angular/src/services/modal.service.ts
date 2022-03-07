@@ -17,7 +17,7 @@ import { ModalRef } from "../components/modal/modal.ref";
 
 export class ModalConfig<D = any> {
   data?: D;
-  allowMultipleModals: boolean = false;
+  allowMultipleModals = false;
 }
 
 @Injectable()
@@ -68,6 +68,7 @@ export class ModalService {
       return;
     }
 
+    // eslint-disable-next-line
     const [modalRef, _] = this.openInternal(componentType, config, true);
 
     return modalRef;
@@ -145,7 +146,7 @@ export class ModalService {
         el.querySelectorAll('.modal-backdrop, .modal *[data-dismiss="modal"]')
       );
       for (const closeElement of modals) {
-        closeElement.addEventListener("click", (event) => {
+        closeElement.addEventListener("click", () => {
           modalRef.close();
         });
       }

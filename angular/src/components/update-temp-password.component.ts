@@ -10,21 +10,19 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { SyncService } from "jslib-common/abstractions/sync.service";
-
-import { ChangePasswordComponent as BaseChangePasswordComponent } from "./change-password.component";
-
 import { EncString } from "jslib-common/models/domain/encString";
 import { MasterPasswordPolicyOptions } from "jslib-common/models/domain/masterPasswordPolicyOptions";
 import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
-
 import { UpdateTempPasswordRequest } from "jslib-common/models/request/updateTempPasswordRequest";
+
+import { ChangePasswordComponent as BaseChangePasswordComponent } from "./change-password.component";
 
 @Directive()
 export class UpdateTempPasswordComponent extends BaseChangePasswordComponent {
   hint: string;
   key: string;
   enforcedPolicyOptions: MasterPasswordPolicyOptions;
-  showPassword: boolean = false;
+  showPassword = false;
 
   onSuccessfulChangePassword: () => Promise<any>;
 

@@ -1,5 +1,4 @@
 import { Organization } from "../models/domain/organization";
-
 import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
 
 export abstract class KeyConnectorService {

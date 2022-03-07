@@ -1,24 +1,3 @@
-import { TwoFactorProviderType } from "../../enums/twoFactorProviderType";
-
-import { Account, AccountProfile, AccountTokens } from "../../models/domain/account";
-import { AuthResult } from "../../models/domain/authResult";
-import {
-  ApiLogInCredentials,
-  PasswordLogInCredentials,
-  SsoLogInCredentials,
-} from "../../models/domain/logInCredentials";
-
-import { DeviceRequest } from "../../models/request/deviceRequest";
-import { ApiTokenRequest } from "../../models/request/identityToken/apiTokenRequest";
-import { PasswordTokenRequest } from "../../models/request/identityToken/passwordTokenRequest";
-import { SsoTokenRequest } from "../../models/request/identityToken/ssoTokenRequest";
-import { TokenRequestTwoFactor } from "../../models/request/identityToken/tokenRequest";
-import { KeysRequest } from "../../models/request/keysRequest";
-
-import { IdentityCaptchaResponse } from "../../models/response/identityCaptchaResponse";
-import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
-import { IdentityTwoFactorResponse } from "../../models/response/identityTwoFactorResponse";
-
 import { ApiService } from "../../abstractions/api.service";
 import { AppIdService } from "../../abstractions/appId.service";
 import { CryptoService } from "../../abstractions/crypto.service";
@@ -28,9 +7,27 @@ import { PlatformUtilsService } from "../../abstractions/platformUtils.service";
 import { StateService } from "../../abstractions/state.service";
 import { TokenService } from "../../abstractions/token.service";
 import { TwoFactorService } from "../../abstractions/twoFactor.service";
+import { TwoFactorProviderType } from "../../enums/twoFactorProviderType";
+import { Account, AccountProfile, AccountTokens } from "../../models/domain/account";
+import { AuthResult } from "../../models/domain/authResult";
+import {
+  ApiLogInCredentials,
+  PasswordLogInCredentials,
+  SsoLogInCredentials,
+} from "../../models/domain/logInCredentials";
+import { DeviceRequest } from "../../models/request/deviceRequest";
+import { ApiTokenRequest } from "../../models/request/identityToken/apiTokenRequest";
+import { PasswordTokenRequest } from "../../models/request/identityToken/passwordTokenRequest";
+import { SsoTokenRequest } from "../../models/request/identityToken/ssoTokenRequest";
+import { TokenRequestTwoFactor } from "../../models/request/identityToken/tokenRequest";
+import { KeysRequest } from "../../models/request/keysRequest";
+import { IdentityCaptchaResponse } from "../../models/response/identityCaptchaResponse";
+import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
+import { IdentityTwoFactorResponse } from "../../models/response/identityTwoFactorResponse";
 
 export abstract class LogInStrategy {
   protected abstract tokenRequest: ApiTokenRequest | PasswordTokenRequest | SsoTokenRequest;
+  protected captchaBypassToken: string = null;
 
   constructor(
     protected cryptoService: CryptoService,
@@ -48,7 +45,10 @@ export abstract class LogInStrategy {
     credentials: ApiLogInCredentials | PasswordLogInCredentials | SsoLogInCredentials
   ): Promise<AuthResult>;
 
-  async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
+  async logInTwoFactor(
+    twoFactor: TokenRequestTwoFactor,
+    captchaResponse: string = null
+  ): Promise<AuthResult> {
     this.tokenRequest.setTwoFactor(twoFactor);
     return this.startLogIn();
   }
@@ -156,6 +156,7 @@ export abstract class LogInStrategy {
     const result = new AuthResult();
     result.twoFactorProviders = response.twoFactorProviders2;
     this.twoFactorService.setProviders(response);
+    this.captchaBypassToken = response.captchaToken ?? null;
     return result;
   }
 

@@ -1,9 +1,7 @@
-import { BaseResponse } from "../baseResponse";
-
-import { PermissionsApi } from "../../api/permissionsApi";
-
 import { ProviderUserStatusType } from "../../../enums/providerUserStatusType";
 import { ProviderUserType } from "../../../enums/providerUserType";
+import { PermissionsApi } from "../../api/permissionsApi";
+import { BaseResponse } from "../baseResponse";
 
 export class ProviderUserResponse extends BaseResponse {
   id: string;

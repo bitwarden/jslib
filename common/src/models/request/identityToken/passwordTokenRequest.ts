@@ -1,10 +1,9 @@
-import { TokenRequest, TokenRequestTwoFactor } from "./tokenRequest";
-
+import { ClientType } from "../../../enums/clientType";
+import { Utils } from "../../../misc/utils";
 import { CaptchaProtectedRequest } from "../captchaProtectedRequest";
 import { DeviceRequest } from "../deviceRequest";
 
-import { ClientType } from "../../../enums/clientType";
-import { Utils } from "../../../misc/utils";
+import { TokenRequest, TokenRequestTwoFactor } from "./tokenRequest";
 
 export class PasswordTokenRequest extends TokenRequest implements CaptchaProtectedRequest {
   constructor(

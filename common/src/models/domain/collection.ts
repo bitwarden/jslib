@@ -1,5 +1,4 @@
 import { CollectionData } from "../data/collectionData";
-
 import { CollectionView } from "../view/collectionView";
 
 import Domain from "./domainBase";
@@ -13,7 +12,7 @@ export class Collection extends Domain {
   readOnly: boolean;
   hidePasswords: boolean;
 
-  constructor(obj?: CollectionData, alreadyEncrypted: boolean = false) {
+  constructor(obj?: CollectionData, alreadyEncrypted = false) {
     super();
     if (obj == null) {
       return;

@@ -9,15 +9,12 @@ import { MessagingService } from "jslib-common/abstractions/messaging.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
-
+import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 import { SsoLogInStrategy } from "jslib-common/misc/logInStrategies/ssoLogin.strategy";
 import { Utils } from "jslib-common/misc/utils";
-
-import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
+import { SsoLogInCredentials } from "jslib-common/models/domain/logInCredentials";
 
 import { identityTokenResponseFactory } from "./logIn.strategy.spec";
-
-import { SsoLogInCredentials } from "jslib-common/models/domain/logInCredentials";
 
 describe("SsoLogInStrategy", () => {
   let cryptoService: SubstituteOf<CryptoService>;

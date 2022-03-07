@@ -1,15 +1,13 @@
-import { BaseImporter } from "./baseImporter";
-import { Importer } from "./importer";
-
+import { CipherType } from "../enums/cipherType";
+import { SecureNoteType } from "../enums/secureNoteType";
 import { ImportResult } from "../models/domain/importResult";
-
 import { CardView } from "../models/view/cardView";
 import { CipherView } from "../models/view/cipherView";
 import { IdentityView } from "../models/view/identityView";
 import { SecureNoteView } from "../models/view/secureNoteView";
 
-import { CipherType } from "../enums/cipherType";
-import { SecureNoteType } from "../enums/secureNoteType";
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
 const HandledResults = new Set([
   "ADDRESS",
@@ -53,6 +51,7 @@ export class DashlaneJsonImporter extends BaseImporter implements Importer {
     }
 
     for (const key in results) {
+      // eslint-disable-next-line
       if (results.hasOwnProperty(key) && !HandledResults.has(key)) {
         this.processNote(results[key], null, "Generic Note");
       }
@@ -161,6 +160,7 @@ export class DashlaneJsonImporter extends BaseImporter implements Importer {
         cipher.name = this.getValueOrDefault(obj[nameProperty]);
       }
       for (const key in obj) {
+        // eslint-disable-next-line
         if (obj.hasOwnProperty(key) && key !== nameProperty) {
           this.processKvp(cipher, key, obj[key].toString());
         }

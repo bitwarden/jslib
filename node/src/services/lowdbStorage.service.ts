@@ -1,11 +1,11 @@
 import * as fs from "fs";
+import * as path from "path";
+
 import * as lowdb from "lowdb";
 import * as FileSync from "lowdb/adapters/FileSync";
-import * as path from "path";
 
 import { LogService } from "jslib-common/abstractions/log.service";
 import { StorageService } from "jslib-common/abstractions/storage.service";
-
 import { NodeUtils } from "jslib-common/misc/nodeUtils";
 import { sequentialize } from "jslib-common/misc/sequentialize";
 import { Utils } from "jslib-common/misc/utils";
@@ -66,7 +66,7 @@ export class LowdbStorageService implements StorageService {
         if (fs.existsSync(this.dataFilePath)) {
           const backupPath = this.dataFilePath + ".bak";
           this.logService.warning(`Writing backup of data file to ${backupPath}`);
-          await fs.copyFile(this.dataFilePath, backupPath, (err) => {
+          await fs.copyFile(this.dataFilePath, backupPath, () => {
             this.logService.warning(
               `Error while creating data file backup, "${e.message}". No backup may have been created.`
             );

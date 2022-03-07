@@ -1,5 +1,18 @@
+import { ApiService } from "../abstractions/api.service";
+import { AppIdService } from "../abstractions/appId.service";
+import { AuthService as AuthServiceAbstraction } from "../abstractions/auth.service";
+import { CryptoService } from "../abstractions/crypto.service";
+import { EnvironmentService } from "../abstractions/environment.service";
+import { I18nService } from "../abstractions/i18n.service";
+import { KeyConnectorService } from "../abstractions/keyConnector.service";
+import { LogService } from "../abstractions/log.service";
+import { MessagingService } from "../abstractions/messaging.service";
+import { PlatformUtilsService } from "../abstractions/platformUtils.service";
+import { StateService } from "../abstractions/state.service";
+import { TokenService } from "../abstractions/token.service";
+import { TwoFactorService } from "../abstractions/twoFactor.service";
+import { AuthenticationType } from "../enums/authenticationType";
 import { KdfType } from "../enums/kdfType";
-
 import { ApiLogInStrategy } from "../misc/logInStrategies/apiLogin.strategy";
 import { PasswordLogInStrategy } from "../misc/logInStrategies/passwordLogin.strategy";
 import { SsoLogInStrategy } from "../misc/logInStrategies/ssoLogin.strategy";
@@ -10,25 +23,11 @@ import {
   SsoLogInCredentials,
 } from "../models/domain/logInCredentials";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-
-import { PreloginRequest } from "../models/request/preloginRequest";
-
 import { TokenRequestTwoFactor } from "../models/request/identityToken/tokenRequest";
+import { PreloginRequest } from "../models/request/preloginRequest";
+import { ErrorResponse } from "../models/response/errorResponse";
 
-import { ApiService } from "../abstractions/api.service";
-import { AppIdService } from "../abstractions/appId.service";
-import { AuthService as AuthServiceAbstraction } from "../abstractions/auth.service";
-import { CryptoService } from "../abstractions/crypto.service";
-import { EnvironmentService } from "../abstractions/environment.service";
-import { KeyConnectorService } from "../abstractions/keyConnector.service";
-import { LogService } from "../abstractions/log.service";
-import { MessagingService } from "../abstractions/messaging.service";
-import { PlatformUtilsService } from "../abstractions/platformUtils.service";
-import { StateService } from "../abstractions/state.service";
-import { TokenService } from "../abstractions/token.service";
-import { TwoFactorService } from "../abstractions/twoFactor.service";
-
-import { AuthenticationType } from "../enums/authenticationType";
+const sessionTimeoutLength = 2 * 60 * 1000; // 2 minutes
 
 export class AuthService implements AuthServiceAbstraction {
   get email(): string {
@@ -42,6 +41,7 @@ export class AuthService implements AuthServiceAbstraction {
   }
 
   private logInStrategy: ApiLogInStrategy | PasswordLogInStrategy | SsoLogInStrategy;
+  private sessionTimeout: any;
 
   constructor(
     protected cryptoService: CryptoService,
@@ -54,7 +54,8 @@ export class AuthService implements AuthServiceAbstraction {
     protected keyConnectorService: KeyConnectorService,
     protected environmentService: EnvironmentService,
     protected stateService: StateService,
-    protected twoFactorService: TwoFactorService
+    protected twoFactorService: TwoFactorService,
+    protected i18nService: I18nService
   ) {}
 
   async logIn(
@@ -114,15 +115,32 @@ export class AuthService implements AuthServiceAbstraction {
     return result;
   }
 
-  async logInTwoFactor(twoFactor: TokenRequestTwoFactor): Promise<AuthResult> {
+  async logInTwoFactor(
+    twoFactor: TokenRequestTwoFactor,
+    captchaResponse: string
+  ): Promise<AuthResult> {
+    if (this.logInStrategy == null) {
+      throw new Error(this.i18nService.t("sessionTimeout"));
+    }
+
     try {
-      return await this.logInStrategy.logInTwoFactor(twoFactor);
-    } finally {
-      this.clearState();
+      const result = await this.logInStrategy.logInTwoFactor(twoFactor, captchaResponse);
+
+      // Only clear state if 2FA token has been accepted, otherwise we need to be able to try again
+      if (!result.requiresTwoFactor && !result.requiresCaptcha) {
+        this.clearState();
+      }
+      return result;
+    } catch (e) {
+      // API exceptions are okay, but if there are any unhandled client-side errors then clear state to be safe
+      if (!(e instanceof ErrorResponse)) {
+        this.clearState();
+      }
+      throw e;
     }
   }
 
-  logOut(callback: Function) {
+  logOut(callback: () => void) {
     callback();
     this.messagingService.send("loggedOut");
   }
@@ -159,9 +177,22 @@ export class AuthService implements AuthServiceAbstraction {
 
   private saveState(strategy: ApiLogInStrategy | PasswordLogInStrategy | SsoLogInStrategy) {
     this.logInStrategy = strategy;
+    this.startSessionTimeout();
   }
 
   private clearState() {
     this.logInStrategy = null;
+    this.clearSessionTimeout();
+  }
+
+  private startSessionTimeout() {
+    this.clearSessionTimeout();
+    this.sessionTimeout = setTimeout(() => this.clearState(), sessionTimeoutLength);
+  }
+
+  private clearSessionTimeout() {
+    if (this.sessionTimeout != null) {
+      clearTimeout(this.sessionTimeout);
+    }
   }
 }

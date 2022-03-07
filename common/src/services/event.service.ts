@@ -1,15 +1,12 @@
-import { EventType } from "../enums/eventType";
-
-import { EventData } from "../models/data/eventData";
-
-import { EventRequest } from "../models/request/eventRequest";
-
 import { ApiService } from "../abstractions/api.service";
 import { CipherService } from "../abstractions/cipher.service";
 import { EventService as EventServiceAbstraction } from "../abstractions/event.service";
 import { LogService } from "../abstractions/log.service";
 import { OrganizationService } from "../abstractions/organization.service";
 import { StateService } from "../abstractions/state.service";
+import { EventType } from "../enums/eventType";
+import { EventData } from "../models/data/eventData";
+import { EventRequest } from "../models/request/eventRequest";
 
 export class EventService implements EventServiceAbstraction {
   private inited = false;

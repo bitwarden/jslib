@@ -1,7 +1,5 @@
 import { UriMatchType } from "../../enums/uriMatchType";
-
 import { LoginUriData } from "../data/loginUriData";
-
 import { LoginUriView } from "../view/loginUriView";
 
 import Domain from "./domainBase";
@@ -12,7 +10,7 @@ export class LoginUri extends Domain {
   uri: EncString;
   match: UriMatchType;
 
-  constructor(obj?: LoginUriData, alreadyEncrypted: boolean = false) {
+  constructor(obj?: LoginUriData, alreadyEncrypted = false) {
     super();
     if (obj == null) {
       return;

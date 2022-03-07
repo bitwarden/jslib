@@ -1,9 +1,9 @@
 import { StorageService } from "../abstractions/storage.service";
-
-import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
-import { GlobalState } from "../models/domain/globalState";
-import { StorageOptions } from "../models/domain/storageOptions";
-
+import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
+import { KdfType } from "../enums/kdfType";
+import { StateVersion } from "../enums/stateVersion";
+import { ThemeType } from "../enums/themeType";
+import { StateFactory } from "../factories/stateFactory";
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
 import { EventData } from "../models/data/eventData";
@@ -12,17 +12,11 @@ import { OrganizationData } from "../models/data/organizationData";
 import { PolicyData } from "../models/data/policyData";
 import { ProviderData } from "../models/data/providerData";
 import { SendData } from "../models/data/sendData";
-
-import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
-import { KdfType } from "../enums/kdfType";
-import { StateVersion } from "../enums/stateVersion";
-import { ThemeType } from "../enums/themeType";
-
-import { EnvironmentUrls } from "../models/domain/environmentUrls";
-
-import { GlobalStateFactory } from "../factories/globalStateFactory";
-import { StateFactory } from "../factories/stateFactory";
 import { Account, AccountSettings } from "../models/domain/account";
+import { EnvironmentUrls } from "../models/domain/environmentUrls";
+import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
+import { GlobalState } from "../models/domain/globalState";
+import { StorageOptions } from "../models/domain/storageOptions";
 
 import { TokenService } from "./token.service";
 
@@ -379,7 +373,7 @@ export class StateMigrationService<
         legacyEtmKey: null,
         organizationKeys: {
           decrypted: null,
-          encrypted: await this.get<any>(v1Keys.encOrgKeys + userId),
+          encrypted: await this.get<any>(v1Keys.encOrgKeys),
         },
         privateKey: {
           decrypted: null,
@@ -387,7 +381,7 @@ export class StateMigrationService<
         },
         providerKeys: {
           decrypted: null,
-          encrypted: await this.get<any>(v1Keys.encProviderKeys + userId),
+          encrypted: await this.get<any>(v1Keys.encProviderKeys),
         },
         publicKey: null,
       },

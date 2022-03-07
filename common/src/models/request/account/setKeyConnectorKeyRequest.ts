@@ -1,6 +1,5 @@
-import { KeysRequest } from "../keysRequest";
-
 import { KdfType } from "../../../enums/kdfType";
+import { KeysRequest } from "../keysRequest";
 
 export class SetKeyConnectorKeyRequest {
   key: string;

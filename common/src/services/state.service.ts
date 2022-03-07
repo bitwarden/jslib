@@ -1,29 +1,15 @@
-import { StateService as StateServiceAbstraction } from "../abstractions/state.service";
-
-import { Account, AccountData } from "../models/domain/account";
+import { BehaviorSubject } from "rxjs";
 
 import { LogService } from "../abstractions/log.service";
+import { StateService as StateServiceAbstraction } from "../abstractions/state.service";
+import { StateMigrationService } from "../abstractions/stateMigration.service";
 import { StorageService } from "../abstractions/storage.service";
-
 import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 import { KdfType } from "../enums/kdfType";
 import { StorageLocation } from "../enums/storageLocation";
 import { ThemeType } from "../enums/themeType";
 import { UriMatchType } from "../enums/uriMatchType";
-
-import { CipherView } from "../models/view/cipherView";
-import { CollectionView } from "../models/view/collectionView";
-import { FolderView } from "../models/view/folderView";
-import { SendView } from "../models/view/sendView";
-
-import { EncString } from "../models/domain/encString";
-import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
-import { GlobalState } from "../models/domain/globalState";
-import { Policy } from "../models/domain/policy";
-import { State } from "../models/domain/state";
-import { StorageOptions } from "../models/domain/storageOptions";
-import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-
+import { StateFactory } from "../factories/stateFactory";
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
 import { EventData } from "../models/data/eventData";
@@ -32,14 +18,20 @@ import { OrganizationData } from "../models/data/organizationData";
 import { PolicyData } from "../models/data/policyData";
 import { ProviderData } from "../models/data/providerData";
 import { SendData } from "../models/data/sendData";
-
-import { BehaviorSubject } from "rxjs";
-
-import { StateMigrationService } from "../abstractions/stateMigration.service";
+import { Account, AccountData } from "../models/domain/account";
+import { EncString } from "../models/domain/encString";
 import { EnvironmentUrls } from "../models/domain/environmentUrls";
+import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
+import { GlobalState } from "../models/domain/globalState";
+import { Policy } from "../models/domain/policy";
+import { State } from "../models/domain/state";
+import { StorageOptions } from "../models/domain/storageOptions";
+import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 import { WindowState } from "../models/domain/windowState";
-
-import { StateFactory } from "../factories/stateFactory";
+import { CipherView } from "../models/view/cipherView";
+import { CollectionView } from "../models/view/collectionView";
+import { FolderView } from "../models/view/folderView";
+import { SendView } from "../models/view/sendView";
 
 const keys = {
   global: "global",
@@ -67,7 +59,7 @@ export class StateService<
     this.createGlobals()
   );
 
-  private hasBeenInited: boolean = false;
+  private hasBeenInited = false;
 
   private accountDiskCache: Map<string, TAccount>;
 
@@ -221,7 +213,7 @@ export class StateService<
   async getAutoConfirmFingerPrints(options?: StorageOptions): Promise<boolean> {
     return (
       (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.autoConfirmFingerPrints ?? true
+        ?.settings?.autoConfirmFingerPrints ?? false
     );
   }
 
@@ -239,7 +231,7 @@ export class StateService<
   async getAutoFillOnPageLoadDefault(options?: StorageOptions): Promise<boolean> {
     return (
       (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.autoFillOnPageLoadDefault ?? false
+        ?.settings?.autoFillOnPageLoadDefault ?? true
     );
   }
 
@@ -388,17 +380,21 @@ export class StateService<
     );
   }
 
-  async getCollapsedGroupings(options?: StorageOptions): Promise<Set<string>> {
-    return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))
-      ?.data?.collapsedGroupings;
+  async getCollapsedGroupings(options?: StorageOptions): Promise<string[]> {
+    return (
+      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
+    )?.settings?.collapsedGroupings;
   }
 
-  async setCollapsedGroupings(value: Set<string>, options?: StorageOptions): Promise<void> {
+  async setCollapsedGroupings(value: string[], options?: StorageOptions): Promise<void> {
     const account = await this.getAccount(
-      this.reconcileOptions(options, this.defaultInMemoryOptions)
+      this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
     );
-    account.data.collapsedGroupings = value;
-    await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
+    account.settings.collapsedGroupings = value;
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
+    );
   }
 
   async getConvertAccountToKeyConnector(options?: StorageOptions): Promise<boolean> {
@@ -450,7 +446,7 @@ export class StateService<
     if (options?.userId == null) {
       return;
     }
-    await this.secureStorageService.save(`${options.userId}${partialKeys.autoKey}`, value, options);
+    await this.saveSecureStorageKey(partialKeys.autoKey, value, options);
   }
 
   async getCryptoMasterKeyB64(options?: StorageOptions): Promise<string> {
@@ -469,11 +465,7 @@ export class StateService<
     if (options?.userId == null) {
       return;
     }
-    await this.secureStorageService.save(
-      `${options.userId}${partialKeys.masterKey}`,
-      value,
-      options
-    );
+    await this.saveSecureStorageKey(partialKeys.masterKey, value, options);
   }
 
   async getCryptoMasterKeyBiometric(options?: StorageOptions): Promise<string> {
@@ -512,11 +504,7 @@ export class StateService<
     if (options?.userId == null) {
       return;
     }
-    await this.secureStorageService.save(
-      `${options.userId}${partialKeys.biometricKey}`,
-      value,
-      options
-    );
+    await this.saveSecureStorageKey(partialKeys.biometricKey, value, options);
   }
 
   async getDecodedToken(options?: StorageOptions): Promise<any> {
@@ -2505,5 +2493,11 @@ export class StateService<
         ? this.defaultInMemoryOptions
         : await this.defaultOnDiskOptions();
     return this.reconcileOptions(options, defaultOptions);
+  }
+
+  private async saveSecureStorageKey(key: string, value: string, options?: StorageOptions) {
+    return value == null
+      ? await this.secureStorageService.remove(`${options.userId}${key}`, options)
+      : await this.secureStorageService.save(`${options.userId}${key}`, value, options);
   }
 }

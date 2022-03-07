@@ -1,9 +1,8 @@
-import { LoginUri } from "./loginUri";
-
-import { LoginView } from "../view/loginView";
-
 import { EncString } from "../domain/encString";
 import { Login as LoginDomain } from "../domain/login";
+import { LoginView } from "../view/loginView";
+
+import { LoginUri } from "./loginUri";
 
 export class Login {
   static template(): Login {

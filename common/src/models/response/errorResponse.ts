@@ -39,6 +39,7 @@ export class ErrorResponse extends BaseResponse {
       return this.message;
     }
     for (const key in this.validationErrors) {
+      // eslint-disable-next-line
       if (!this.validationErrors.hasOwnProperty(key)) {
         continue;
       }
@@ -55,6 +56,7 @@ export class ErrorResponse extends BaseResponse {
       return messages;
     }
     for (const key in this.validationErrors) {
+      // eslint-disable-next-line
       if (!this.validationErrors.hasOwnProperty(key)) {
         continue;
       }

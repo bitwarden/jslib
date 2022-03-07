@@ -12,9 +12,9 @@ export class WebAuthnIFrame {
     private webAuthnNewTab: boolean,
     private platformUtilsService: PlatformUtilsService,
     private i18nService: I18nService,
-    private successCallback: Function,
-    private errorCallback: Function,
-    private infoCallback: Function
+    private successCallback: Function, // eslint-disable-line
+    private errorCallback: Function, // eslint-disable-line
+    private infoCallback: Function // eslint-disable-line
   ) {
     this.connectorLink = win.document.createElement("a");
   }
