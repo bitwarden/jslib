@@ -6,7 +6,7 @@ const buttonStyles: Record<ButtonTypes, string> = {
   primary: [
     "tw-border-primary-500",
     "tw-bg-primary-500",
-    "tw-text-contrast",
+    "!tw-text-contrast",
     "hover:tw-bg-primary-700",
     "hover:tw-border-primary-700",
     "focus:tw-bg-primary-700",
@@ -15,7 +15,7 @@ const buttonStyles: Record<ButtonTypes, string> = {
   secondary: [
     "tw-bg-transparent",
     "tw-border-text-muted",
-    "tw-text-muted",
+    "!tw-text-muted",
     "hover:tw-bg-secondary-500",
     "hover:tw-border-secondary-500",
     "hover:tw-text-contrast",
@@ -26,7 +26,7 @@ const buttonStyles: Record<ButtonTypes, string> = {
   danger: [
     "tw-bg-transparent",
     "tw-border-danger-500",
-    "tw-text-danger",
+    "!tw-text-danger",
     "hover:tw-bg-danger-500",
     "hover:tw-border-danger-500",
     "hover:tw-text-contrast",
