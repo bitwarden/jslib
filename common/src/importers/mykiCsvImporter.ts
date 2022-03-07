@@ -33,6 +33,7 @@ const _mappedIdentityColumns = new Set(
 );
 
 const _mappedIdCardColumns = new Set(mappedBaseColumns.concat(["idName", "idNumber", "idCountry"]));
+
 const _mappedTwoFaColumns = new Set(mappedBaseColumns.concat(["authToken"]));
 
 const _mappedUserNoteColumns = new Set(mappedBaseColumns.concat(["content"]));
@@ -95,14 +96,35 @@ export class MykiCsvImporter extends BaseImporter implements Importer {
         this.importUnmappedFields(cipher, value, _mappedIdentityColumns);
       } else if (value.idType !== undefined) {
         // IdCards
+
         cipher.identity = new IdentityView();
         cipher.type = CipherType.Identity;
         this.processFullName(cipher, value.idName);
-
-        // TODO set number depending on idType (licenseNumber, ssn, passportNumber)
-        cipher.identity.licenseNumber = value.idNumber;
-
         cipher.identity.country = this.getValueOrDefault(value.idCountry);
+
+        switch (value.idType) {
+          // case "Driver's License":
+          // case "ID Card":
+          // case "Outdoor License":
+          // case "Software License":
+          // case "Tax Number":
+          // case "Bank Account":
+          // case "Insurance Card":
+          // case "Health Card":
+          // case "Membership":
+          // case "Database":
+          // case "Reward Program":
+          // case "Tour Visa":
+          case "Passport":
+            cipher.identity.passportNumber = value.idNumber;
+            break;
+          case "Social Security":
+            cipher.identity.ssn = value.idNumber;
+            break;
+          default:
+            cipher.identity.licenseNumber = value.idNumber;
+            break;
+        }
 
         this.importUnmappedFields(cipher, value, _mappedIdCardColumns);
       } else if (value.content !== undefined) {
