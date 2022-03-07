@@ -8,7 +8,6 @@ export const featuredImportOptions = [
   { id: "bitwardencsv", name: "Bitwarden (csv)" },
   { id: "chromecsv", name: "Chrome (csv)" },
   { id: "dashlanecsv", name: "Dashlane (csv)" },
-  { id: "dashlanejson", name: "Dashlane (json)" },
   { id: "firefoxcsv", name: "Firefox (csv)" },
   { id: "keepass2xml", name: "KeePass 2 (xml)" },
   { id: "lastpasscsv", name: "LastPass (csv)" },
@@ -21,6 +20,7 @@ export const regularImportOptions = [
   { id: "1password1pif", name: "1Password (1pif)" },
   { id: "1passwordwincsv", name: "1Password 6 and 7 Windows (csv)" },
   { id: "1passwordmaccsv", name: "1Password 6 and 7 Mac (csv)" },
+  { id: "dashlanejson", name: "Dashlane (json)" },
   { id: "roboformcsv", name: "RoboForm (csv)" },
   { id: "keepercsv", name: "Keeper (csv)" },
   // Temporarily remove this option for the Feb release
