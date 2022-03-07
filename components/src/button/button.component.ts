@@ -65,7 +65,7 @@ export class ButtonComponent implements OnChanges {
       "hover:tw-no-underline",
       "disabled:tw-bg-secondary-100",
       "disabled:tw-border-secondary-100",
-      "disabled:tw-text-main",
+      "disabled:!tw-text-main",
       "focus:tw-outline-none",
       "focus:tw-ring",
       "focus:tw-ring-offset-2",
