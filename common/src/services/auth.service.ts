@@ -65,6 +65,8 @@ export class AuthService implements AuthServiceAbstraction {
 
     let strategy: ApiLogInStrategy | PasswordLogInStrategy | SsoLogInStrategy;
 
+    // We cannot use instanceof here because the credentials object is passed from the popup to the background page
+    // and they each have their own version of the class. This means instanceof comparisons will not work.
     if (credentials.type === AuthenticationType.Password) {
       strategy = new PasswordLogInStrategy(
         this.cryptoService,
