@@ -22,28 +22,26 @@ export const SecureNoteData: ExportData = {
           },
           items: [
             {
-              item: {
-                uuid: "gcozv72svonjgufn4q5hnyzwmu",
-                favIndex: 0,
-                createdAt: 1619465226,
-                updatedAt: 1619465278,
-                trashed: false,
-                categoryUuid: "003",
-                details: {
-                  loginFields: [],
-                  notesPlain:
-                    "This is my secure note. \n\nLorem ipsum expecto patronum. \nThe quick brown fox jumped over the lazy dog. ",
-                  sections: [],
-                  passwordHistory: [],
-                },
-                overview: {
-                  subtitle: "This is my secure note. ",
-                  title: "Secure Note #1",
-                  url: "",
-                  ps: 0,
-                  pbe: 0.0,
-                  pgrng: false,
-                },
+              uuid: "gcozv72svonjgufn4q5hnyzwmu",
+              favIndex: 0,
+              createdAt: 1619465226,
+              updatedAt: 1619465278,
+              trashed: false,
+              categoryUuid: "003",
+              details: {
+                loginFields: [],
+                notesPlain:
+                  "This is my secure note. \n\nLorem ipsum expecto patronum. \nThe quick brown fox jumped over the lazy dog. ",
+                sections: [],
+                passwordHistory: [],
+              },
+              overview: {
+                subtitle: "This is my secure note. ",
+                title: "Secure Note #1",
+                url: "",
+                ps: 0,
+                pbe: 0.0,
+                pgrng: false,
               },
             },
           ],

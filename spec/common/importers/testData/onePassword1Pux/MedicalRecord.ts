@@ -22,174 +22,172 @@ export const MedicalRecordData: ExportData = {
           },
           items: [
             {
-              item: {
-                uuid: "42mj5boh5rxq7uqjrmkslmhosu",
-                favIndex: 0,
-                createdAt: 1641220207,
-                updatedAt: 1641220326,
-                trashed: false,
-                categoryUuid: "113",
-                details: {
-                  loginFields: [],
-                  notesPlain: "Some notes about my medical history",
-                  sections: [
-                    {
-                      title: "",
-                      fields: [
-                        {
-                          title: "date",
-                          id: "date",
-                          value: {
-                            date: 1641038460,
-                          },
-                          indexAtSource: 0,
-                          guarded: true,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+              uuid: "42mj5boh5rxq7uqjrmkslmhosu",
+              favIndex: 0,
+              createdAt: 1641220207,
+              updatedAt: 1641220326,
+              trashed: false,
+              categoryUuid: "113",
+              details: {
+                loginFields: [],
+                notesPlain: "Some notes about my medical history",
+                sections: [
+                  {
+                    title: "",
+                    fields: [
+                      {
+                        title: "date",
+                        id: "date",
+                        value: {
+                          date: 1641038460,
                         },
-                        {
-                          title: "location",
-                          id: "location",
-                          value: {
-                            string: "some hospital/clinic",
-                          },
-                          indexAtSource: 1,
-                          guarded: true,
-                          multiline: false,
-                          dontGenerate: false,
-                          placeholder: "locationplaceholder",
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                        indexAtSource: 0,
+                        guarded: true,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "default",
                         },
-                        {
-                          title: "healthcare professional",
-                          id: "healthcareprofessional",
-                          value: {
-                            string: "Some Doctor",
-                          },
-                          indexAtSource: 2,
-                          guarded: true,
-                          multiline: false,
-                          dontGenerate: false,
-                          placeholder: "nameplaceholder",
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "words",
-                          },
+                      },
+                      {
+                        title: "location",
+                        id: "location",
+                        value: {
+                          string: "some hospital/clinic",
                         },
-                        {
-                          title: "patient",
-                          id: "patient",
-                          value: {
-                            string: "Me",
-                          },
-                          indexAtSource: 3,
-                          guarded: true,
-                          multiline: false,
-                          dontGenerate: false,
-                          placeholder: "nameplaceholder",
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "words",
-                          },
+                        indexAtSource: 1,
+                        guarded: true,
+                        multiline: false,
+                        dontGenerate: false,
+                        placeholder: "locationplaceholder",
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "default",
                         },
-                        {
-                          title: "reason for visit",
-                          id: "reason",
-                          value: {
-                            string: "unwell",
-                          },
-                          indexAtSource: 4,
-                          guarded: true,
-                          multiline: true,
-                          dontGenerate: false,
-                          placeholder: "reasonplaceholder",
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "sentences",
-                          },
+                      },
+                      {
+                        title: "healthcare professional",
+                        id: "healthcareprofessional",
+                        value: {
+                          string: "Some Doctor",
                         },
-                      ],
-                    },
-                    {
-                      title: "medication",
-                      name: "medication",
-                      fields: [
-                        {
-                          title: "medication",
-                          id: "medication",
-                          value: {
-                            string: "Insuline",
-                          },
-                          indexAtSource: 0,
-                          guarded: true,
-                          multiline: false,
-                          dontGenerate: false,
-                          placeholder: "medicationplaceholder",
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "words",
-                          },
+                        indexAtSource: 2,
+                        guarded: true,
+                        multiline: false,
+                        dontGenerate: false,
+                        placeholder: "nameplaceholder",
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "words",
                         },
-                        {
-                          title: "dosage",
-                          id: "dosage",
-                          value: {
-                            string: "1",
-                          },
-                          indexAtSource: 1,
-                          guarded: true,
-                          multiline: false,
-                          dontGenerate: false,
-                          placeholder: "dosageplaceholder",
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                      },
+                      {
+                        title: "patient",
+                        id: "patient",
+                        value: {
+                          string: "Me",
                         },
-                        {
-                          title: "medication notes",
-                          id: "notes",
-                          value: {
-                            string: "multiple times a day",
-                          },
-                          indexAtSource: 2,
-                          guarded: true,
-                          multiline: true,
-                          dontGenerate: false,
-                          placeholder: "notesplaceholder",
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "sentences",
-                          },
+                        indexAtSource: 3,
+                        guarded: true,
+                        multiline: false,
+                        dontGenerate: false,
+                        placeholder: "nameplaceholder",
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "words",
                         },
-                      ],
-                    },
-                  ],
-                  passwordHistory: [],
-                },
-                overview: {
-                  subtitle: "2022-01-01",
-                  title: "Some Health Record",
-                  url: "",
-                  ps: 0,
-                  pbe: 0.0,
-                  pgrng: false,
-                },
+                      },
+                      {
+                        title: "reason for visit",
+                        id: "reason",
+                        value: {
+                          string: "unwell",
+                        },
+                        indexAtSource: 4,
+                        guarded: true,
+                        multiline: true,
+                        dontGenerate: false,
+                        placeholder: "reasonplaceholder",
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "sentences",
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    title: "medication",
+                    name: "medication",
+                    fields: [
+                      {
+                        title: "medication",
+                        id: "medication",
+                        value: {
+                          string: "Insuline",
+                        },
+                        indexAtSource: 0,
+                        guarded: true,
+                        multiline: false,
+                        dontGenerate: false,
+                        placeholder: "medicationplaceholder",
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "words",
+                        },
+                      },
+                      {
+                        title: "dosage",
+                        id: "dosage",
+                        value: {
+                          string: "1",
+                        },
+                        indexAtSource: 1,
+                        guarded: true,
+                        multiline: false,
+                        dontGenerate: false,
+                        placeholder: "dosageplaceholder",
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "default",
+                        },
+                      },
+                      {
+                        title: "medication notes",
+                        id: "notes",
+                        value: {
+                          string: "multiple times a day",
+                        },
+                        indexAtSource: 2,
+                        guarded: true,
+                        multiline: true,
+                        dontGenerate: false,
+                        placeholder: "notesplaceholder",
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "sentences",
+                        },
+                      },
+                    ],
+                  },
+                ],
+                passwordHistory: [],
+              },
+              overview: {
+                subtitle: "2022-01-01",
+                title: "Some Health Record",
+                url: "",
+                ps: 0,
+                pbe: 0.0,
+                pgrng: false,
               },
             },
           ],
