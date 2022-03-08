@@ -28,12 +28,12 @@ export class BadgeComponent {
       "tw-leading-none",
       "tw-text-center",
       "tw-text-contrast",
-      "tw-align-baseline",
+      "tw-align-middle",
       "tw-rounded",
       "tw-border-collapse",
       "tw-box-border",
       "tw-whitespace-no-wrap",
-      "tw-text-base",
+      "tw-text-xs",
       "hover:tw-text-decoration-none",
     ].concat(styles[this.type]);
   }
