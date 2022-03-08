@@ -4,7 +4,7 @@ type BadgeTypes = "primary" | "secondary" | "success" | "danger" | "warning" | "
 
 const styles: Record<BadgeTypes, string[]> = {
   primary: ["tw-bg-primary-500", "hover:tw-bg-primary-700"],
-  secondary: ["tw-bg-secondary-500", "hover:tw-bg-secondary-700"],
+  secondary: ["tw-bg-text-muted", "hover:tw-bg-secondary-700"],
   success: ["tw-bg-success-500", "hover:tw-bg-success-700"],
   danger: ["tw-bg-danger-500", "hover:tw-bg-danger-700"],
   warning: ["tw-bg-warning-500", "hover:tw-bg-warning-700"],
