@@ -6,9 +6,9 @@ import { StateService } from "jslib-common/abstractions/state.service";
  * Hides the element if the user has premium.
  */
 @Directive({
-  selector: "[appUnlessPremium]",
+  selector: "[appNotPremium]",
 })
-export class UnlessPremiumDirective implements OnInit {
+export class NotPremiumDirective implements OnInit {
   constructor(
     private templateRef: TemplateRef<any>,
     private viewContainer: ViewContainerRef,
