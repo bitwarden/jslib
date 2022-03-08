@@ -18,7 +18,6 @@ import {
   ExportData,
   FieldsEntity,
   Item,
-  ItemCollection,
   LoginFieldTypeEnum,
   Overview,
   PasswordHistoryEntity,
@@ -38,8 +37,7 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
     // TODO Add handling of multiple vaults
     // const personalVaults = account.vaults[0].filter((v) => v.attrs.type === VaultAttributeTypeEnum.Personal);
     account.vaults.forEach((vault: VaultsEntity) => {
-      vault.items.forEach((itemCollection: ItemCollection) => {
-        const item: Item = itemCollection.item;
+      vault.items.forEach((item: Item) => {
         if (item.trashed === true) {
           return;
         }

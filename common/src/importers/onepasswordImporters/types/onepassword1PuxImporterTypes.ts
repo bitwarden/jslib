@@ -15,7 +15,7 @@ export interface AccountAttributes {
 }
 export interface VaultsEntity {
   attrs: VaultAttributes;
-  items?: ItemCollection[] | null;
+  items?: Item[] | null;
 }
 export interface VaultAttributes {
   uuid: string;
@@ -23,9 +23,6 @@ export interface VaultAttributes {
   avatar: string;
   name: string;
   type: string;
-}
-export interface ItemCollection {
-  item: Item;
 }
 
 export enum CategoryEnum {
