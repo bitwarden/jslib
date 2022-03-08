@@ -22,8 +22,8 @@ export class BadgeComponent {
   get classes() {
     return [
       "tw-inline-block",
-      "tw-py-0.5",
-      "tw-px-1",
+      "tw-py-1",
+      "tw-px-1.5",
       "tw-font-bold",
       "tw-leading-none",
       "tw-text-center",
@@ -33,7 +33,8 @@ export class BadgeComponent {
       "tw-border-collapse",
       "tw-box-border",
       "tw-whitespace-no-wrap",
-      "tw-text-xs",
+      "tw-text-base",
+      "hover:tw-text-decoration-none",
     ].concat(styles[this.type]);
   }
 }
