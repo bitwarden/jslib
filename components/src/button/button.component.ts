@@ -21,7 +21,7 @@ const buttonStyles: Record<ButtonTypes, string> = {
     "hover:!tw-text-contrast",
     "focus:tw-bg-secondary-500",
     "focus:tw-border-secondary-500",
-    "focus:tw-text-contrast",
+    "focus:!tw-text-contrast",
   ].join(" "),
   danger: [
     "tw-bg-transparent",
@@ -32,7 +32,7 @@ const buttonStyles: Record<ButtonTypes, string> = {
     "hover:!tw-text-contrast",
     "focus:tw-bg-danger-500",
     "focus:tw-border-danger-500",
-    "focus:tw-text-contrast",
+    "focus:!tw-text-contrast",
   ].join(" "),
 };
 
