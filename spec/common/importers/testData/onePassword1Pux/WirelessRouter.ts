@@ -22,158 +22,156 @@ export const WirelessRouterData: ExportData = {
           },
           items: [
             {
-              item: {
-                uuid: "fnnva6qkqdc3bv3qte2npnz6l4",
-                favIndex: 0,
-                createdAt: 1577652307,
-                updatedAt: 1577652307,
-                trashed: false,
-                categoryUuid: "109",
-                details: {
-                  loginFields: [],
-                  notesPlain: "My Wifi Router Config",
-                  sections: [
-                    {
-                      title: "",
-                      fields: [
-                        {
-                          title: "base station name",
-                          id: "name",
-                          value: {
-                            string: "pixel 2Xl",
-                          },
-                          indexAtSource: 0,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "words",
-                          },
+              uuid: "fnnva6qkqdc3bv3qte2npnz6l4",
+              favIndex: 0,
+              createdAt: 1577652307,
+              updatedAt: 1577652307,
+              trashed: false,
+              categoryUuid: "109",
+              details: {
+                loginFields: [],
+                notesPlain: "My Wifi Router Config",
+                sections: [
+                  {
+                    title: "",
+                    fields: [
+                      {
+                        title: "base station name",
+                        id: "name",
+                        value: {
+                          string: "pixel 2Xl",
                         },
-                        {
-                          title: "base station password",
-                          id: "password",
-                          value: {
-                            concealed: "BqatGTVQ9TCN72tLbjrsHqkb",
-                          },
-                          indexAtSource: 1,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                        indexAtSource: 0,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "words",
                         },
-                        {
-                          title: "server / ip address",
-                          id: "server",
-                          value: {
-                            string: "127.0.0.1",
-                          },
-                          indexAtSource: 2,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "uRL",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                      },
+                      {
+                        title: "base station password",
+                        id: "password",
+                        value: {
+                          concealed: "BqatGTVQ9TCN72tLbjrsHqkb",
                         },
-                        {
-                          title: "airport id",
-                          id: "airport_id",
-                          value: {
-                            string: "some airportId",
-                          },
-                          indexAtSource: 3,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                        indexAtSource: 1,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "default",
                         },
-                        {
-                          title: "network name",
-                          id: "network_name",
-                          value: {
-                            string: "some network name",
-                          },
-                          indexAtSource: 4,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                      },
+                      {
+                        title: "server / ip address",
+                        id: "server",
+                        value: {
+                          string: "127.0.0.1",
                         },
-                        {
-                          title: "wireless security",
-                          id: "wireless_security",
-                          value: {
-                            menu: "WPA",
-                          },
-                          indexAtSource: 5,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                        indexAtSource: 2,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "uRL",
+                          correction: "default",
+                          capitalization: "default",
                         },
-                        {
-                          title: "wireless network password",
-                          id: "wireless_password",
-                          value: {
-                            concealed: "wifipassword",
-                          },
-                          indexAtSource: 6,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                      },
+                      {
+                        title: "airport id",
+                        id: "airport_id",
+                        value: {
+                          string: "some airportId",
                         },
-                        {
-                          title: "attached storage password",
-                          id: "disk_password",
-                          value: {
-                            concealed: "diskpassword",
-                          },
-                          indexAtSource: 7,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                        indexAtSource: 3,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "default",
                         },
-                      ],
-                    },
-                  ],
-                  passwordHistory: [],
-                },
-                overview: {
-                  subtitle: "",
-                  title: "Wireless Router",
-                  url: "",
-                },
+                      },
+                      {
+                        title: "network name",
+                        id: "network_name",
+                        value: {
+                          string: "some network name",
+                        },
+                        indexAtSource: 4,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "default",
+                        },
+                      },
+                      {
+                        title: "wireless security",
+                        id: "wireless_security",
+                        value: {
+                          menu: "WPA",
+                        },
+                        indexAtSource: 5,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "default",
+                        },
+                      },
+                      {
+                        title: "wireless network password",
+                        id: "wireless_password",
+                        value: {
+                          concealed: "wifipassword",
+                        },
+                        indexAtSource: 6,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "default",
+                        },
+                      },
+                      {
+                        title: "attached storage password",
+                        id: "disk_password",
+                        value: {
+                          concealed: "diskpassword",
+                        },
+                        indexAtSource: 7,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "default",
+                        },
+                      },
+                    ],
+                  },
+                ],
+                passwordHistory: [],
+              },
+              overview: {
+                subtitle: "",
+                title: "Wireless Router",
+                url: "",
               },
             },
           ],

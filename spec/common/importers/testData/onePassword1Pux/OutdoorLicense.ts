@@ -22,145 +22,143 @@ export const OutdoorLicenseData: ExportData = {
           },
           items: [
             {
-              item: {
-                uuid: "6fb73t5lk7vc52h3osw3ccmguy",
-                favIndex: 0,
-                createdAt: 1619467374,
-                updatedAt: 1619467492,
-                trashed: false,
-                categoryUuid: "104",
-                details: {
-                  loginFields: [],
-                  notesPlain: "My Outdoor License",
-                  sections: [
-                    {
-                      title: "",
-                      fields: [
-                        {
-                          title: "full name",
-                          id: "name",
-                          value: {
-                            string: "Cash Bandit",
-                          },
-                          indexAtSource: 0,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "words",
-                          },
+              uuid: "6fb73t5lk7vc52h3osw3ccmguy",
+              favIndex: 0,
+              createdAt: 1619467374,
+              updatedAt: 1619467492,
+              trashed: false,
+              categoryUuid: "104",
+              details: {
+                loginFields: [],
+                notesPlain: "My Outdoor License",
+                sections: [
+                  {
+                    title: "",
+                    fields: [
+                      {
+                        title: "full name",
+                        id: "name",
+                        value: {
+                          string: "Cash Bandit",
                         },
-                        {
-                          title: "valid from",
-                          id: "valid_from",
-                          value: {
-                            date: 1617278460,
-                          },
-                          indexAtSource: 1,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                        indexAtSource: 0,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "words",
                         },
-                        {
-                          title: "expires",
-                          id: "expires",
-                          value: {
-                            date: 2343124860,
-                          },
-                          indexAtSource: 2,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                      },
+                      {
+                        title: "valid from",
+                        id: "valid_from",
+                        value: {
+                          date: 1617278460,
                         },
-                        {
-                          title: "approved wildlife",
-                          id: "game",
-                          value: {
-                            string: "Bananas,blueberries,corn",
-                          },
-                          indexAtSource: 3,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "words",
-                          },
+                        indexAtSource: 1,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "default",
                         },
-                        {
-                          title: "maximum quota",
-                          id: "quota",
-                          value: {
-                            string: "100/each",
-                          },
-                          indexAtSource: 4,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                      },
+                      {
+                        title: "expires",
+                        id: "expires",
+                        value: {
+                          date: 2343124860,
                         },
-                        {
-                          title: "state",
-                          id: "state",
-                          value: {
-                            string: "Washington",
-                          },
-                          indexAtSource: 5,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "words",
-                          },
+                        indexAtSource: 2,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "default",
                         },
-                        {
-                          title: "country",
-                          id: "country",
-                          value: {
-                            string: "United States of America",
-                          },
-                          indexAtSource: 6,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "words",
-                          },
+                      },
+                      {
+                        title: "approved wildlife",
+                        id: "game",
+                        value: {
+                          string: "Bananas,blueberries,corn",
                         },
-                      ],
-                    },
-                  ],
-                  passwordHistory: [],
-                },
-                overview: {
-                  subtitle: "Cash Bandit",
-                  title: "Harvest License",
-                  url: "",
-                  ps: 0,
-                  pbe: 0.0,
-                  pgrng: false,
-                },
+                        indexAtSource: 3,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "words",
+                        },
+                      },
+                      {
+                        title: "maximum quota",
+                        id: "quota",
+                        value: {
+                          string: "100/each",
+                        },
+                        indexAtSource: 4,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "default",
+                        },
+                      },
+                      {
+                        title: "state",
+                        id: "state",
+                        value: {
+                          string: "Washington",
+                        },
+                        indexAtSource: 5,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "words",
+                        },
+                      },
+                      {
+                        title: "country",
+                        id: "country",
+                        value: {
+                          string: "United States of America",
+                        },
+                        indexAtSource: 6,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "words",
+                        },
+                      },
+                    ],
+                  },
+                ],
+                passwordHistory: [],
+              },
+              overview: {
+                subtitle: "Cash Bandit",
+                title: "Harvest License",
+                url: "",
+                ps: 0,
+                pbe: 0.0,
+                pgrng: false,
               },
             },
           ],

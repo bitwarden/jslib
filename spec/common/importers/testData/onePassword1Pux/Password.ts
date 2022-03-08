@@ -22,34 +22,32 @@ export const PasswordData: ExportData = {
           },
           items: [
             {
-              item: {
-                uuid: "qpdsrgpngzud3x3rbfvyrz3ane",
-                favIndex: 0,
-                createdAt: 1619465796,
-                updatedAt: 1619465869,
-                trashed: false,
-                categoryUuid: "005",
-                details: {
-                  loginFields: [],
-                  notesPlain: "SuperSecret Password Notes",
-                  sections: [],
-                  passwordHistory: [],
-                  password: "GBq[AGb]4*Si3tjwuab^",
-                },
-                overview: {
-                  subtitle: "April 26, 2021 2:36 PM",
-                  urls: [
-                    {
-                      label: "website",
-                      url: "https://n0t.y0ur.n0rm4l.w3bs1t3",
-                    },
-                  ],
-                  title: "SuperSecret Password",
-                  url: "https://n0t.y0ur.n0rm4l.w3bs1t3",
-                  ps: 100,
-                  pbe: 127.500786,
-                  pgrng: true,
-                },
+              uuid: "qpdsrgpngzud3x3rbfvyrz3ane",
+              favIndex: 0,
+              createdAt: 1619465796,
+              updatedAt: 1619465869,
+              trashed: false,
+              categoryUuid: "005",
+              details: {
+                loginFields: [],
+                notesPlain: "SuperSecret Password Notes",
+                sections: [],
+                passwordHistory: [],
+                password: "GBq[AGb]4*Si3tjwuab^",
+              },
+              overview: {
+                subtitle: "April 26, 2021 2:36 PM",
+                urls: [
+                  {
+                    label: "website",
+                    url: "https://n0t.y0ur.n0rm4l.w3bs1t3",
+                  },
+                ],
+                title: "SuperSecret Password",
+                url: "https://n0t.y0ur.n0rm4l.w3bs1t3",
+                ps: 100,
+                pbe: 127.500786,
+                pgrng: true,
               },
             },
           ],
