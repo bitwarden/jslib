@@ -181,4 +181,27 @@ export class Organization {
   get isExemptFromPolicies() {
     return this.canManagePolicies;
   }
+
+  get canAccessManageTab(): boolean {
+    return (
+      this.canManageUsers ||
+      this.canViewAllCollections ||
+      this.canViewAssignedCollections ||
+      this.canManageGroups ||
+      this.canManagePolicies ||
+      this.canAccessEventLogs
+    );
+  }
+
+  get canAccessToolsTab(): boolean {
+    return this.canAccessImportExport || this.canAccessReports;
+  }
+
+  get canAccessSettingsTab(): boolean {
+    return this.isOwner;
+  }
+
+  get canAccessAdminView() {
+    return this.canAccessManageTab || this.canAccessToolsTab || this.canAccessSettingsTab;
+  }
 }
