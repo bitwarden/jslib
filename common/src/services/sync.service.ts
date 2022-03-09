@@ -13,6 +13,7 @@ import { SendService } from "../abstractions/send.service";
 import { SettingsService } from "../abstractions/settings.service";
 import { StateService } from "../abstractions/state.service";
 import { SyncService as SyncServiceAbstraction } from "../abstractions/sync.service";
+import { sequentialize } from '../misc/sequentialize';
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
 import { FolderData } from "../models/data/folderData";
@@ -71,6 +72,7 @@ export class SyncService implements SyncServiceAbstraction {
     await this.stateService.setLastSync(date.toJSON(), { userId: userId });
   }
 
+  @sequentialize(() => "fullSync")
   async fullSync(forceSync: boolean, allowThrowOnError = false): Promise<boolean> {
     this.syncStarted();
     const isAuthenticated = await this.stateService.getIsAuthenticated();
@@ -260,6 +262,12 @@ export class SyncService implements SyncServiceAbstraction {
     return this.syncCompleted(false);
   }
 
+  async doFirstSync() {
+    return this.needsFirstSync()
+      ? false
+      : this.fullSync(false);
+  }
+
   // Helpers
 
   private syncStarted() {
@@ -273,17 +281,22 @@ export class SyncService implements SyncServiceAbstraction {
     return successfully;
   }
 
+  private async needsFirstSync() {
+    const lastSync = await this.getLastSync();
+    return lastSync != null && lastSync.getTime() !== 0;
+  }
+
   private async needsSyncing(forceSync: boolean) {
     if (forceSync) {
       return true;
     }
 
-    const lastSync = await this.getLastSync();
-    if (lastSync == null || lastSync.getTime() === 0) {
+    if (!this.needsFirstSync()) {
       return true;
     }
 
     const response = await this.apiService.getAccountRevisionDate();
+    const lastSync = await this.getLastSync();
     if (new Date(response) <= lastSync) {
       return false;
     }
