@@ -22,145 +22,143 @@ export const APICredentialsData: ExportData = {
           },
           items: [
             {
-              item: {
-                uuid: "6nqnjdqyk5mwvqbdgbdr47oabe",
-                favIndex: 0,
-                createdAt: 1619465969,
-                updatedAt: 1619466052,
-                trashed: false,
-                categoryUuid: "112",
-                details: {
-                  loginFields: [],
-                  notesPlain: "My API Credential",
-                  sections: [
-                    {
-                      title: "",
-                      fields: [
-                        {
-                          title: "username",
-                          id: "username",
-                          value: {
-                            string: "apiuser@nullvalue.test",
-                          },
-                          indexAtSource: 0,
-                          guarded: true,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "no",
-                            capitalization: "none",
-                          },
+              uuid: "6nqnjdqyk5mwvqbdgbdr47oabe",
+              favIndex: 0,
+              createdAt: 1619465969,
+              updatedAt: 1619466052,
+              trashed: false,
+              categoryUuid: "112",
+              details: {
+                loginFields: [],
+                notesPlain: "My API Credential",
+                sections: [
+                  {
+                    title: "",
+                    fields: [
+                      {
+                        title: "username",
+                        id: "username",
+                        value: {
+                          string: "apiuser@nullvalue.test",
                         },
-                        {
-                          title: "credential",
-                          id: "credential",
-                          value: {
-                            concealed: "apiapiapiapiapiapiappy",
-                          },
-                          indexAtSource: 1,
-                          guarded: true,
-                          multiline: false,
-                          dontGenerate: true,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "no",
-                            capitalization: "default",
-                          },
+                        indexAtSource: 0,
+                        guarded: true,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "no",
+                          capitalization: "none",
                         },
-                        {
-                          title: "type",
-                          id: "type",
-                          value: {
-                            menu: "jwt",
-                          },
-                          indexAtSource: 2,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                      },
+                      {
+                        title: "credential",
+                        id: "credential",
+                        value: {
+                          concealed: "apiapiapiapiapiapiappy",
                         },
-                        {
-                          title: "filename",
-                          id: "filename",
-                          value: {
-                            string: "filename.jwt",
-                          },
-                          indexAtSource: 3,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                        indexAtSource: 1,
+                        guarded: true,
+                        multiline: false,
+                        dontGenerate: true,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "no",
+                          capitalization: "default",
                         },
-                        {
-                          title: "valid from",
-                          id: "validFrom",
-                          value: {
-                            date: 1301918460,
-                          },
-                          indexAtSource: 4,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                      },
+                      {
+                        title: "type",
+                        id: "type",
+                        value: {
+                          menu: "jwt",
                         },
-                        {
-                          title: "expires",
-                          id: "expires",
-                          value: {
-                            date: 1932811260,
-                          },
-                          indexAtSource: 5,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                        indexAtSource: 2,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "default",
                         },
-                        {
-                          title: "hostname",
-                          id: "hostname",
-                          value: {
-                            string: "not.your.everyday.hostname",
-                          },
-                          indexAtSource: 6,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "uRL",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                      },
+                      {
+                        title: "filename",
+                        id: "filename",
+                        value: {
+                          string: "filename.jwt",
                         },
-                      ],
-                    },
-                  ],
-                  passwordHistory: [],
-                },
-                overview: {
-                  subtitle: "",
-                  title: "API Credential",
-                  url: "",
-                  ps: 0,
-                  pbe: 0.0,
-                  pgrng: false,
-                },
+                        indexAtSource: 3,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "default",
+                        },
+                      },
+                      {
+                        title: "valid from",
+                        id: "validFrom",
+                        value: {
+                          date: 1301918460,
+                        },
+                        indexAtSource: 4,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "default",
+                        },
+                      },
+                      {
+                        title: "expires",
+                        id: "expires",
+                        value: {
+                          date: 1932811260,
+                        },
+                        indexAtSource: 5,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "default",
+                        },
+                      },
+                      {
+                        title: "hostname",
+                        id: "hostname",
+                        value: {
+                          string: "not.your.everyday.hostname",
+                        },
+                        indexAtSource: 6,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "uRL",
+                          correction: "default",
+                          capitalization: "default",
+                        },
+                      },
+                    ],
+                  },
+                ],
+                passwordHistory: [],
+              },
+              overview: {
+                subtitle: "",
+                title: "API Credential",
+                url: "",
+                ps: 0,
+                pbe: 0.0,
+                pgrng: false,
               },
             },
           ],
