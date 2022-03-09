@@ -262,10 +262,10 @@ export class SyncService implements SyncServiceAbstraction {
     return this.syncCompleted(false);
   }
 
-  async doFirstSync() {
+  async ensureFirstSync() {
     return this.needsFirstSync()
       ? false
-      : this.fullSync(false);
+      : this.fullSync(true);
   }
 
   // Helpers
@@ -283,7 +283,7 @@ export class SyncService implements SyncServiceAbstraction {
 
   private async needsFirstSync() {
     const lastSync = await this.getLastSync();
-    return lastSync != null && lastSync.getTime() !== 0;
+    return lastSync == null || lastSync.getTime() === 0;
   }
 
   private async needsSyncing(forceSync: boolean) {
@@ -291,7 +291,7 @@ export class SyncService implements SyncServiceAbstraction {
       return true;
     }
 
-    if (!this.needsFirstSync()) {
+    if (this.needsFirstSync()) {
       return true;
     }
 
