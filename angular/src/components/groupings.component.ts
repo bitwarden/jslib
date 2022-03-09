@@ -4,10 +4,15 @@ import { CollectionService } from "jslib-common/abstractions/collection.service"
 import { FolderService } from "jslib-common/abstractions/folder.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { CipherType } from "jslib-common/enums/cipherType";
-import { TreeNode } from "jslib-common/models/domain/treeNode";
+import { ITreeNodeObject, TreeNode } from "jslib-common/models/domain/treeNode";
 import { CollectionView } from "jslib-common/models/view/collectionView";
 import { FolderView } from "jslib-common/models/view/folderView";
 
+export type TopLevelGroupingId = "vaults" | "types" | "collections" | "folders";
+export class TopLevelGroupingView implements ITreeNodeObject {
+  id: TopLevelGroupingId;
+  name: string; // localizationString
+}
 @Directive()
 export class GroupingsComponent {
   @Input() showFolders = true;
@@ -37,6 +42,26 @@ export class GroupingsComponent {
   selectedFolder = false;
   selectedFolderId: string = null;
   selectedCollectionId: string = null;
+
+  readonly vaultsGrouping: TopLevelGroupingView = {
+    id: "vaults",
+    name: "allVaults",
+  };
+
+  readonly typesGrouping: TopLevelGroupingView = {
+    id: "types",
+    name: "types",
+  };
+
+  readonly collectionsGrouping: TopLevelGroupingView = {
+    id: "collections",
+    name: "collections",
+  };
+
+  readonly foldersGrouping: TopLevelGroupingView = {
+    id: "folders",
+    name: "folders",
+  };
 
   private collapsedGroupings: Set<string>;
 
@@ -138,12 +163,12 @@ export class GroupingsComponent {
     this.selectedCollectionId = null;
   }
 
-  async collapse(grouping: FolderView | CollectionView, idPrefix = "") {
-    if (grouping.id == null) {
+  async collapse(node: ITreeNodeObject, idPrefix = "") {
+    if (node.id == null) {
       return;
     }
-    const id = idPrefix + grouping.id;
-    if (this.isCollapsed(grouping, idPrefix)) {
+    const id = idPrefix + node.id;
+    if (this.isCollapsed(node, idPrefix)) {
       this.collapsedGroupings.delete(id);
     } else {
       this.collapsedGroupings.add(id);
@@ -151,7 +176,7 @@ export class GroupingsComponent {
     await this.stateService.setCollapsedGroupings(Array.from(this.collapsedGroupings));
   }
 
-  isCollapsed(grouping: FolderView | CollectionView, idPrefix = "") {
-    return this.collapsedGroupings.has(idPrefix + grouping.id);
+  isCollapsed(node: ITreeNodeObject, idPrefix = "") {
+    return this.collapsedGroupings.has(idPrefix + node.id);
   }
 }
