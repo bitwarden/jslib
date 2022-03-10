@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Directive, HostBinding, Input, OnChanges } from "@angular/core";
 
 type BadgeTypes = "primary" | "secondary" | "success" | "danger" | "warning" | "info";
 
@@ -11,13 +11,17 @@ const styles: Record<BadgeTypes, string[]> = {
   info: ["tw-bg-info-500", "hover:tw-bg-info-700"],
 };
 
-@Component({
-  selector: "bit-badge",
-  template: `<span [ngClass]="classes"><ng-content></ng-content></span>`,
+@Directive({
+  selector: "span[bit-badge], a[bit-badge], button[bit-badge]",
 })
-export class BadgeComponent {
-  @Input()
-  type: BadgeTypes = "primary";
+export class BadgeComponent implements OnChanges {
+  @HostBinding("class") @Input("class") classList = "";
+
+  @Input() badgeType: BadgeTypes = "primary";
+
+  ngOnChanges() {
+    this.classList = this.classes.join(" ");
+  }
 
   get classes() {
     return [
@@ -27,14 +31,17 @@ export class BadgeComponent {
       "tw-font-bold",
       "tw-leading-none",
       "tw-text-center",
-      "tw-text-contrast",
-      "tw-align-middle",
+      "!tw-text-contrast",
       "tw-rounded",
-      "tw-border-collapse",
+      "tw-border-none",
       "tw-box-border",
       "tw-whitespace-no-wrap",
       "tw-text-xs",
-      "hover:tw-text-decoration-none",
-    ].concat(styles[this.type]);
+      "hover:tw-no-underline",
+      "focus:tw-outline-none",
+      "focus:tw-ring",
+      "focus:tw-ring-offset-2",
+      "focus:tw-ring-primary-700",
+    ].concat(styles[this.badgeType]);
   }
 }

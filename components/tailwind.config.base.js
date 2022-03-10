@@ -38,8 +38,11 @@ module.exports = {
         700: "var(--color-info-700)",
       },
       "text-muted": "var(--color-text-muted)",
-      background: "var(--color-background)",
-      "background-elevation": "var(--color-background-elevation)",
+      background: {
+        DEFAULT: "var(--color-background)",
+        alt: "var(--color-background-alt)",
+        alt2: "var(--color-background-alt2)",
+      },
     },
     textColor: {
       main: "var(--color-text-main)",
@@ -49,6 +52,9 @@ module.exports = {
       danger: "var(--color-danger-500)",
       warning: "var(--color-warning-500)",
       info: "var(--color-info-500)",
+      primary: {
+        300: "var(--color-primary-300)",
+      },
     },
     ringOffsetColor: ({ theme }) => ({
       DEFAULT: theme("colors.background"),

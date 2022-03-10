@@ -13,7 +13,7 @@ export default {
 const Template: Story<BadgeComponent> = (args: BadgeComponent) => ({
   props: args,
   template: `
-    <span class="tw-text-main">Test </span><bit-badge [type]="type">Content</bit-badge>
+    <span class="tw-text-main">Test </span><span bit-badge [badgeType]="type">Content</span>
   `,
 });
 
