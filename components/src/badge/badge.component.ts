@@ -1,4 +1,4 @@
-import { Directive, HostBinding, Input, OnChanges } from "@angular/core";
+import { Directive, HostBinding, Input, OnChanges, OnInit } from "@angular/core";
 
 type BadgeTypes = "primary" | "secondary" | "success" | "danger" | "warning" | "info";
 
@@ -14,13 +14,17 @@ const styles: Record<BadgeTypes, string[]> = {
 @Directive({
   selector: "span[bit-badge], a[bit-badge], button[bit-badge]",
 })
-export class BadgeComponent implements OnChanges {
+export class BadgeComponent implements OnInit, OnChanges {
   @HostBinding("class") @Input("class") classList = "";
 
   @Input() badgeType: BadgeTypes = "primary";
 
-  ngOnChanges() {
+  ngOnInit(): void {
     this.classList = this.classes.join(" ");
+  }
+
+  ngOnChanges() {
+    this.ngOnInit();
   }
 
   get classes() {

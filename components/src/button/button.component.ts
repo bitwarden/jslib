@@ -1,4 +1,4 @@
-import { Input, HostBinding, OnChanges, Directive } from "@angular/core";
+import { Input, HostBinding, OnChanges, Directive, OnInit } from "@angular/core";
 
 export type ButtonTypes = "primary" | "secondary" | "danger";
 
@@ -39,8 +39,8 @@ const buttonStyles: Record<ButtonTypes, string> = {
 @Directive({
   selector: "button[bit-button], a[bit-button]",
 })
-export class ButtonComponent implements OnChanges {
-  @HostBinding("class") @Input("class") classList = "";
+export class ButtonComponent implements OnInit, OnChanges {
+  @HostBinding("class") @Input() classList = "";
 
   @Input()
   buttonType: ButtonTypes = "secondary";
@@ -48,8 +48,12 @@ export class ButtonComponent implements OnChanges {
   @Input()
   block = false;
 
-  ngOnChanges() {
+  ngOnInit(): void {
     this.classList = this.classes.join(" ");
+  }
+
+  ngOnChanges() {
+    this.ngOnInit();
   }
 
   get classes(): string[] {
