@@ -13,7 +13,7 @@ import { SendService } from "../abstractions/send.service";
 import { SettingsService } from "../abstractions/settings.service";
 import { StateService } from "../abstractions/state.service";
 import { SyncService as SyncServiceAbstraction } from "../abstractions/sync.service";
-import { sequentialize } from '../misc/sequentialize';
+import { sequentialize } from "../misc/sequentialize";
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
 import { FolderData } from "../models/data/folderData";
