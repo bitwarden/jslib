@@ -262,12 +262,6 @@ export class SyncService implements SyncServiceAbstraction {
     return this.syncCompleted(false);
   }
 
-  async ensureFirstSync() {
-    return this.needsFirstSync()
-      ? false
-      : this.fullSync(true);
-  }
-
   // Helpers
 
   private syncStarted() {
@@ -281,22 +275,17 @@ export class SyncService implements SyncServiceAbstraction {
     return successfully;
   }
 
-  private async needsFirstSync() {
-    const lastSync = await this.getLastSync();
-    return lastSync == null || lastSync.getTime() === 0;
-  }
-
   private async needsSyncing(forceSync: boolean) {
     if (forceSync) {
       return true;
     }
 
-    if (this.needsFirstSync()) {
+    const lastSync = await this.getLastSync();
+    if (lastSync == null || lastSync.getTime() === 0) {
       return true;
     }
 
     const response = await this.apiService.getAccountRevisionDate();
-    const lastSync = await this.getLastSync();
     if (new Date(response) <= lastSync) {
       return false;
     }
