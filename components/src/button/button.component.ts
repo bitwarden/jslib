@@ -1,4 +1,4 @@
-import { Input, HostBinding, OnChanges, Directive } from "@angular/core";
+import { Input, HostBinding, OnChanges, Directive, OnInit } from "@angular/core";
 
 export type ButtonTypes = "primary" | "secondary" | "danger";
 
@@ -18,10 +18,10 @@ const buttonStyles: Record<ButtonTypes, string> = {
     "!tw-text-muted",
     "hover:tw-bg-secondary-500",
     "hover:tw-border-secondary-500",
-    "hover:tw-text-contrast",
+    "hover:!tw-text-contrast",
     "focus:tw-bg-secondary-500",
     "focus:tw-border-secondary-500",
-    "focus:tw-text-contrast",
+    "focus:!tw-text-contrast",
   ].join(" "),
   danger: [
     "tw-bg-transparent",
@@ -29,18 +29,18 @@ const buttonStyles: Record<ButtonTypes, string> = {
     "!tw-text-danger",
     "hover:tw-bg-danger-500",
     "hover:tw-border-danger-500",
-    "hover:tw-text-contrast",
+    "hover:!tw-text-contrast",
     "focus:tw-bg-danger-500",
     "focus:tw-border-danger-500",
-    "focus:tw-text-contrast",
+    "focus:!tw-text-contrast",
   ].join(" "),
 };
 
 @Directive({
   selector: "button[bit-button], a[bit-button]",
 })
-export class ButtonComponent implements OnChanges {
-  @HostBinding("class") @Input("class") classList = "";
+export class ButtonComponent implements OnInit, OnChanges {
+  @HostBinding("class") @Input() classList = "";
 
   @Input()
   buttonType: ButtonTypes = "secondary";
@@ -48,8 +48,12 @@ export class ButtonComponent implements OnChanges {
   @Input()
   block = false;
 
-  ngOnChanges() {
+  ngOnInit(): void {
     this.classList = this.classes.join(" ");
+  }
+
+  ngOnChanges() {
+    this.ngOnInit();
   }
 
   get classes(): string[] {
