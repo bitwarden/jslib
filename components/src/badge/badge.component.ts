@@ -3,7 +3,7 @@ import { Directive, ElementRef, HostBinding, Input, OnChanges, OnInit } from "@a
 type BadgeTypes = "primary" | "secondary" | "success" | "danger" | "warning" | "info";
 
 const styles: Record<BadgeTypes, string[]> = {
-  primary: ["tw-bg-danger-500"],
+  primary: ["tw-bg-primary-500"],
   secondary: ["tw-bg-text-muted"],
   success: ["tw-bg-success-500"],
   danger: ["tw-bg-danger-500"],
