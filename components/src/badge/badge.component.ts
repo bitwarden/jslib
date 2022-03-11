@@ -28,10 +28,10 @@ export class BadgeComponent implements OnInit, OnChanges {
 
   @Input() badgeType: BadgeTypes = "primary";
 
-  private isButton = false;
+  private isSpan = false;
 
   constructor(private el: ElementRef<Element>) {
-    this.isButton = el?.nativeElement?.nodeName == "BUTTON";
+    this.isSpan = el?.nativeElement?.nodeName == "SPAN";
   }
 
   ngOnInit(): void {
@@ -63,6 +63,6 @@ export class BadgeComponent implements OnInit, OnChanges {
       "focus:tw-ring-primary-700",
     ]
       .concat(styles[this.badgeType])
-      .concat(this.isButton ? hoverStyles[this.badgeType] : []);
+      .concat(this.isSpan ? [] : hoverStyles[this.badgeType]);
   }
 }
