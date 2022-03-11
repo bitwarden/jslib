@@ -1,6 +1,5 @@
 import { FieldType } from "../../enums/fieldType";
 import { LinkedIdType } from "../../enums/linkedIdType";
-
 import { FieldApi } from "../api/fieldApi";
 
 export class FieldData {

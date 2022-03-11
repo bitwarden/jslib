@@ -15,9 +15,7 @@
   "scripts": {
     "clean": "rimraf dist/**/*",
     "build": "npm run clean && tsc",
-    "build:watch": "npm run clean && tsc -watch",
-    "lint": "tslint 'src/**/*.ts' 'spec/**/*.ts'",
-    "lint:fix": "tslint 'src/**/*.ts' 'spec/**/*.ts' --fix"
+    "build:watch": "npm run clean && tsc -watch"
   },
   "devDependencies": {
     "@types/duo_web_sdk": "^2.7.1",

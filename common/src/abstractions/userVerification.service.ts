@@ -1,5 +1,4 @@
 import { SecretVerificationRequest } from "../models/request/secretVerificationRequest";
-
 import { Verification } from "../types/verification";
 
 export abstract class UserVerificationService {

@@ -7,10 +7,8 @@ import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { LogService } from "jslib-common/abstractions/log.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-
 import { Cipher } from "jslib-common/models/domain/cipher";
 import { ErrorResponse } from "jslib-common/models/response/errorResponse";
-
 import { AttachmentView } from "jslib-common/models/view/attachmentView";
 import { CipherView } from "jslib-common/models/view/cipherView";
 
@@ -209,7 +207,7 @@ export class AttachmentsComponent implements OnInit {
       );
       if (confirmed) {
         this.platformUtilsService.launchUri(
-          "https://help.bitwarden.com/article/update-encryption-key/"
+          "https://bitwarden.com/help/account-encryption-key/#rotate-your-encryption-key"
         );
       }
     }

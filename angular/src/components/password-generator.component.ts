@@ -3,17 +3,16 @@ import { Directive, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
-
 import { PasswordGeneratorPolicyOptions } from "jslib-common/models/domain/passwordGeneratorPolicyOptions";
 
 @Directive()
 export class PasswordGeneratorComponent implements OnInit {
-  @Input() showSelect: boolean = false;
+  @Input() showSelect = false;
   @Output() onSelected = new EventEmitter<string>();
 
   passTypeOptions: any[];
   options: any = {};
-  password: string = "-";
+  password = "-";
   showOptions = false;
   avoidAmbiguous = false;
   enforcedPolicyOptions: PasswordGeneratorPolicyOptions;
@@ -50,7 +49,7 @@ export class PasswordGeneratorComponent implements OnInit {
     this.password = await this.passwordGenerationService.generatePassword(this.options);
   }
 
-  async saveOptions(regenerate: boolean = true) {
+  async saveOptions(regenerate = true) {
     this.normalizeOptions();
     await this.passwordGenerationService.saveOptions(this.options);
 

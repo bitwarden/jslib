@@ -7,12 +7,10 @@ import { PasswordGenerationService } from "jslib-common/abstractions/passwordGen
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-
+import { KdfType } from "jslib-common/enums/kdfType";
 import { EncString } from "jslib-common/models/domain/encString";
 import { MasterPasswordPolicyOptions } from "jslib-common/models/domain/masterPasswordPolicyOptions";
 import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
-
-import { KdfType } from "jslib-common/enums/kdfType";
 
 @Directive()
 export class ChangePasswordComponent implements OnInit {
@@ -40,7 +38,7 @@ export class ChangePasswordComponent implements OnInit {
 
   async ngOnInit() {
     this.email = await this.stateService.getEmail();
-    this.enforcedPolicyOptions = await this.policyService.getMasterPasswordPolicyOptions();
+    this.enforcedPolicyOptions ??= await this.policyService.getMasterPasswordPolicyOptions();
   }
 
   async submit() {

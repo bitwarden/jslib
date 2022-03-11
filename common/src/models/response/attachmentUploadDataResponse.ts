@@ -1,4 +1,5 @@
 import { FileUploadType } from "../../enums/fileUploadType";
+
 import { BaseResponse } from "./baseResponse";
 import { CipherResponse } from "./cipherResponse";
 

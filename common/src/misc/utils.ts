@@ -1,13 +1,12 @@
+/* eslint-disable no-useless-escape */
 import * as tldts from "tldts";
 
 import { I18nService } from "../abstractions/i18n.service";
 
-// tslint:disable-next-line
 const nodeURL = typeof window === "undefined" ? require("url") : null;
 
 export class Utils {
   static inited = false;
-  static isNativeScript = false;
   static isNode = false;
   static isBrowser = true;
   static isMobileBrowser = false;
@@ -31,18 +30,13 @@ export class Utils {
       (process as any).release != null &&
       (process as any).release.name === "node";
     Utils.isBrowser = typeof window !== "undefined";
-    Utils.isNativeScript = !Utils.isNode && !Utils.isBrowser;
     Utils.isMobileBrowser = Utils.isBrowser && this.isMobile(window);
     Utils.isAppleMobileBrowser = Utils.isBrowser && this.isAppleMobile(window);
-    Utils.global = Utils.isNativeScript
-      ? global
-      : Utils.isNode && !Utils.isBrowser
-      ? global
-      : window;
+    Utils.global = Utils.isNode && !Utils.isBrowser ? global : window;
   }
 
   static fromB64ToArray(str: string): Uint8Array {
-    if (Utils.isNode || Utils.isNativeScript) {
+    if (Utils.isNode) {
       return new Uint8Array(Buffer.from(str, "base64"));
     } else {
       const binaryString = window.atob(str);
@@ -59,7 +53,7 @@ export class Utils {
   }
 
   static fromHexToArray(str: string): Uint8Array {
-    if (Utils.isNode || Utils.isNativeScript) {
+    if (Utils.isNode) {
       return new Uint8Array(Buffer.from(str, "hex"));
     } else {
       const bytes = new Uint8Array(str.length / 2);
@@ -71,7 +65,7 @@ export class Utils {
   }
 
   static fromUtf8ToArray(str: string): Uint8Array {
-    if (Utils.isNode || Utils.isNativeScript) {
+    if (Utils.isNode) {
       return new Uint8Array(Buffer.from(str, "utf8"));
     } else {
       const strUtf8 = unescape(encodeURIComponent(str));
@@ -92,7 +86,7 @@ export class Utils {
   }
 
   static fromBufferToB64(buffer: ArrayBuffer): string {
-    if (Utils.isNode || Utils.isNativeScript) {
+    if (Utils.isNode) {
       return Buffer.from(buffer).toString("base64");
     } else {
       let binary = "";
@@ -113,7 +107,7 @@ export class Utils {
   }
 
   static fromBufferToUtf8(buffer: ArrayBuffer): string {
-    if (Utils.isNode || Utils.isNativeScript) {
+    if (Utils.isNode) {
       return Buffer.from(buffer).toString("utf8");
     } else {
       const bytes = new Uint8Array(buffer);
@@ -128,7 +122,7 @@ export class Utils {
 
   // ref: https://stackoverflow.com/a/40031979/1090359
   static fromBufferToHex(buffer: ArrayBuffer): string {
-    if (Utils.isNode || Utils.isNativeScript) {
+    if (Utils.isNode) {
       return Buffer.from(buffer).toString("hex");
     } else {
       const bytes = new Uint8Array(buffer);
@@ -161,7 +155,7 @@ export class Utils {
   }
 
   static fromUtf8ToB64(utfStr: string): string {
-    if (Utils.isNode || Utils.isNativeScript) {
+    if (Utils.isNode) {
       return Buffer.from(utfStr, "utf8").toString("base64");
     } else {
       return decodeURIComponent(escape(window.btoa(utfStr)));
@@ -173,7 +167,7 @@ export class Utils {
   }
 
   static fromB64ToUtf8(b64Str: string): string {
-    if (Utils.isNode || Utils.isNativeScript) {
+    if (Utils.isNode) {
       return Buffer.from(b64Str, "base64").toString("utf8");
     } else {
       return decodeURIComponent(escape(window.atob(b64Str)));
@@ -183,9 +177,7 @@ export class Utils {
   // ref: http://stackoverflow.com/a/2117523/1090359
   static newGuid(): string {
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-      // tslint:disable-next-line
       const r = (Math.random() * 16) | 0;
-      // tslint:disable-next-line
       const v = c === "x" ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
@@ -313,6 +305,10 @@ export class Utils {
     return str == null || typeof str !== "string" || str.trim() === "";
   }
 
+  static isNullOrEmpty(str: string): boolean {
+    return str == null || typeof str !== "string" || str == "";
+  }
+
   static nameOf<T>(name: string & keyof T) {
     return name;
   }
@@ -350,7 +346,6 @@ export class Utils {
   private static isMobile(win: Window) {
     let mobile = false;
     ((a) => {
-      // tslint:disable-next-line
       if (
         /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(
           a
@@ -375,7 +370,7 @@ export class Utils {
   private static getUrlObject(uriString: string): URL {
     try {
       if (nodeURL != null) {
-        return nodeURL.URL ? new nodeURL.URL(uriString) : nodeURL.parse(uriString);
+        return new nodeURL.URL(uriString);
       } else if (typeof URL === "function") {
         return new URL(uriString);
       } else if (window != null) {

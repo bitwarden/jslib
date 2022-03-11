@@ -9,7 +9,6 @@ import {
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { PolicyService } from "jslib-common/abstractions/policy.service";
-
 import { PolicyType } from "jslib-common/enums/policyType";
 import { Policy } from "jslib-common/models/domain/policy";
 
@@ -21,9 +20,9 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
 
   static CUSTOM_VALUE = -100;
 
-  form = this.fb.group({
+  form = this.formBuilder.group({
     vaultTimeout: [null],
-    custom: this.fb.group({
+    custom: this.formBuilder.group({
       hours: [null],
       minutes: [null],
     }),
@@ -38,7 +37,7 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
   private validatorChange: () => void;
 
   constructor(
-    private fb: FormBuilder,
+    private formBuilder: FormBuilder,
     private policyService: PolicyService,
     private i18nService: I18nService
   ) {}
@@ -120,11 +119,13 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
     this.onChange = onChange;
   }
 
-  // tslint:disable-next-line
-  registerOnTouched(onTouched: any): void {}
+  registerOnTouched(onTouched: any): void {
+    // Empty
+  }
 
-  // tslint:disable-next-line
-  setDisabledState?(isDisabled: boolean): void {}
+  setDisabledState?(isDisabled: boolean): void {
+    // Empty
+  }
 
   validate(control: AbstractControl): ValidationErrors {
     if (this.vaultTimeoutPolicy && this.vaultTimeoutPolicy?.data?.minutes < control.value) {

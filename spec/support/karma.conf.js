@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 module.exports = (config) => {
   config.set({
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -85,7 +86,7 @@ module.exports = (config) => {
         removeBrowser("SafariTechPreview");
 
         var githubAction =
-          process.env.GITHUB_WORKFLOW != null && process.env.GITHUB_WORKFLOW !== "";
+          process.env.GITHUB_WORKFLOW != null && process.env.GITHUB_WORKFLOW !== ""; // eslint-disable-line
         if (githubAction) {
           removeBrowser("Firefox");
           removeBrowser("Safari");

@@ -9,7 +9,7 @@ import { StringResponse } from "./models/response/stringResponse";
 
 export abstract class BaseProgram {
   constructor(
-    private stateService: StateService,
+    protected stateService: StateService,
     private writeLn: (s: string, finalLine: boolean, error: boolean) => void
   ) {}
 
@@ -79,7 +79,7 @@ export abstract class BaseProgram {
       return message.raw;
     }
 
-    let out: string = "";
+    let out = "";
     if (message.title != null) {
       if (message.noColor) {
         out = message.title;

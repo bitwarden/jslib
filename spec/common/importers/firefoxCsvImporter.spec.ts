@@ -1,5 +1,4 @@
 import { FirefoxCsvImporter as Importer } from "jslib-common/importers/firefoxCsvImporter";
-
 import { CipherView } from "jslib-common/models/view/cipherView";
 import { LoginUriView } from "jslib-common/models/view/loginUriView";
 import { LoginView } from "jslib-common/models/view/loginView";
@@ -63,7 +62,9 @@ describe("Firefox CSV Importer", () => {
       const cipher = result.ciphers.shift();
       let property: keyof typeof data.expected;
       for (property in data.expected) {
+        // eslint-disable-next-line
         if (data.expected.hasOwnProperty(property)) {
+          // eslint-disable-next-line
           expect(cipher.hasOwnProperty(property)).toBe(true);
           expect(cipher[property]).toEqual(data.expected[property]);
         }

@@ -1,10 +1,5 @@
 import { Directive, NgZone, OnInit } from "@angular/core";
 
-import { PolicyType } from "jslib-common/enums/policyType";
-import { SendType } from "jslib-common/enums/sendType";
-
-import { SendView } from "jslib-common/models/view/sendView";
-
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { LogService } from "jslib-common/abstractions/log.service";
@@ -12,6 +7,9 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { SearchService } from "jslib-common/abstractions/search.service";
 import { SendService } from "jslib-common/abstractions/send.service";
+import { PolicyType } from "jslib-common/enums/policyType";
+import { SendType } from "jslib-common/enums/sendType";
+import { SendView } from "jslib-common/models/view/sendView";
 
 @Directive()
 export class SendComponent implements OnInit {
@@ -20,7 +18,7 @@ export class SendComponent implements OnInit {
   loaded = false;
   loading = true;
   refreshing = false;
-  expired: boolean = false;
+  expired = false;
   type: SendType = null;
   sends: SendView[] = [];
   filteredSends: SendView[] = [];

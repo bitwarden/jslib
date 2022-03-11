@@ -1,8 +1,8 @@
 import { BehaviorSubject } from "rxjs";
 
 import { KdfType } from "../enums/kdfType";
+import { ThemeType } from "../enums/themeType";
 import { UriMatchType } from "../enums/uriMatchType";
-
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
 import { EventData } from "../models/data/eventData";
@@ -11,24 +11,24 @@ import { OrganizationData } from "../models/data/organizationData";
 import { PolicyData } from "../models/data/policyData";
 import { ProviderData } from "../models/data/providerData";
 import { SendData } from "../models/data/sendData";
-
 import { Account } from "../models/domain/account";
 import { EncString } from "../models/domain/encString";
+import { EnvironmentUrls } from "../models/domain/environmentUrls";
 import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
 import { Policy } from "../models/domain/policy";
 import { StorageOptions } from "../models/domain/storageOptions";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-
+import { WindowState } from "../models/domain/windowState";
 import { CipherView } from "../models/view/cipherView";
 import { CollectionView } from "../models/view/collectionView";
 import { FolderView } from "../models/view/folderView";
 import { SendView } from "../models/view/sendView";
 
-export abstract class StateService {
-  accounts: BehaviorSubject<{ [userId: string]: Account }>;
+export abstract class StateService<T extends Account = Account> {
+  accounts: BehaviorSubject<{ [userId: string]: T }>;
   activeAccount: BehaviorSubject<string>;
 
-  addAccount: (account: Account) => Promise<void>;
+  addAccount: (account: T) => Promise<void>;
   setActiveUser: (userId: string) => Promise<void>;
   clean: (options?: StorageOptions) => Promise<void>;
   init: () => Promise<void>;
@@ -60,8 +60,8 @@ export abstract class StateService {
   getCanAccessPremium: (options?: StorageOptions) => Promise<boolean>;
   getClearClipboard: (options?: StorageOptions) => Promise<number>;
   setClearClipboard: (value: number, options?: StorageOptions) => Promise<void>;
-  getCollapsedGroupings: (options?: StorageOptions) => Promise<Set<string>>;
-  setCollapsedGroupings: (value: Set<string>, options?: StorageOptions) => Promise<void>;
+  getCollapsedGroupings: (options?: StorageOptions) => Promise<string[]>;
+  setCollapsedGroupings: (value: string[], options?: StorageOptions) => Promise<void>;
   getConvertAccountToKeyConnector: (options?: StorageOptions) => Promise<boolean>;
   setConvertAccountToKeyConnector: (value: boolean, options?: StorageOptions) => Promise<void>;
   getCryptoMasterKey: (options?: StorageOptions) => Promise<SymmetricCryptoKey>;
@@ -213,8 +213,8 @@ export abstract class StateService {
   setEntityId: (value: string, options?: StorageOptions) => Promise<void>;
   getEntityType: (options?: StorageOptions) => Promise<any>;
   setEntityType: (value: string, options?: StorageOptions) => Promise<void>;
-  getEnvironmentUrls: (options?: StorageOptions) => Promise<any>;
-  setEnvironmentUrls: (value: any, options?: StorageOptions) => Promise<void>;
+  getEnvironmentUrls: (options?: StorageOptions) => Promise<EnvironmentUrls>;
+  setEnvironmentUrls: (value: EnvironmentUrls, options?: StorageOptions) => Promise<void>;
   getEquivalentDomains: (options?: StorageOptions) => Promise<any>;
   setEquivalentDomains: (value: string, options?: StorageOptions) => Promise<void>;
   getEventCollection: (options?: StorageOptions) => Promise<EventData[]>;
@@ -285,8 +285,8 @@ export abstract class StateService {
   setSsoOrganizationIdentifier: (value: string, options?: StorageOptions) => Promise<void>;
   getSsoState: (options?: StorageOptions) => Promise<string>;
   setSsoState: (value: string, options?: StorageOptions) => Promise<void>;
-  getTheme: (options?: StorageOptions) => Promise<string>;
-  setTheme: (value: string, options?: StorageOptions) => Promise<void>;
+  getTheme: (options?: StorageOptions) => Promise<ThemeType>;
+  setTheme: (value: ThemeType, options?: StorageOptions) => Promise<void>;
   getTwoFactorToken: (options?: StorageOptions) => Promise<string>;
   setTwoFactorToken: (value: string, options?: StorageOptions) => Promise<void>;
   getUserId: (options?: StorageOptions) => Promise<string>;
@@ -298,6 +298,6 @@ export abstract class StateService {
   setVaultTimeoutAction: (value: string, options?: StorageOptions) => Promise<void>;
   getStateVersion: () => Promise<number>;
   setStateVersion: (value: number) => Promise<void>;
-  getWindow: () => Promise<Map<string, any>>;
-  setWindow: (value: Map<string, any>) => Promise<void>;
+  getWindow: () => Promise<WindowState>;
+  setWindow: (value: WindowState) => Promise<void>;
 }

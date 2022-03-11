@@ -1,10 +1,10 @@
+import { CipherType } from "../../enums/cipherType";
+import { FieldType } from "../../enums/fieldType";
 import { ImportResult } from "../../models/domain/importResult";
+import { CipherView } from "../../models/view/cipherView";
 import { BaseImporter } from "../baseImporter";
 import { Importer } from "../importer";
 
-import { CipherType } from "../../enums/cipherType";
-import { FieldType } from "../../enums/fieldType";
-import { CipherView } from "../../models/view/cipherView";
 import { CipherImportContext } from "./cipherImportContext";
 
 export const IgnoredProperties = [
@@ -68,6 +68,7 @@ export abstract class OnePasswordCsvImporter extends BaseImporter implements Imp
 
       let altUsername: string = null;
       for (const property in value) {
+        // eslint-disable-next-line
         if (!value.hasOwnProperty(property) || this.isNullOrWhitespace(value[property])) {
           continue;
         }

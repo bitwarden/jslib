@@ -16,25 +16,32 @@
     "clean": "rimraf dist/**/*",
     "build": "npm run clean && ttsc",
     "build:watch": "npm run clean && ttsc -watch",
-    "lint": "tslint '*/src/**/*.ts' 'spec/**/*.ts' && prettier --check .",
-    "lint:fix": "tslint '*/src/**/*.ts' 'spec/**/*.ts' --fix",
+    "lint": "eslint . && prettier --check .",
+    "lint:fix": "eslint . --fix",
     "prettier": "prettier --write .",
     "test": "karma start ./spec/support/karma.conf.js --single-run",
     "test:watch": "karma start ./spec/support/karma.conf.js",
-    "test:node": "npm run build && jasmine",
-    "test:node:watch": "concurrently -k -n TSC,Node -c yellow,cyan \"npm run build:watch\" \"nodemon -w ./dist --delay 500ms --exec jasmine\"",
+    "test:node": "jasmine-ts -r tsconfig-paths/register",
+    "test:node:watch": "nodemon -w ./angular -w ./common -w ./electron -w ./node -w ./shared -w ./spec --ext \"ts,js,mjs,json\" --exec jasmine-ts -r tsconfig-paths/register",
     "prepare": "husky install"
   },
   "devDependencies": {
     "@fluffy-spoon/substitute": "^1.202.0",
     "@types/jasmine": "^3.7.6",
     "@types/node": "^16.11.12",
+    "@typescript-eslint/eslint-plugin": "^5.10.1",
+    "@typescript-eslint/parser": "^5.10.1",
     "commander": "7.2.0",
     "concurrently": "^6.1.0",
+    "eslint": "^8.7.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-import-resolver-typescript": "^2.5.0",
+    "eslint-plugin-import": "^2.25.4",
     "form-data": "4.0.0",
     "husky": "^7.0.4",
     "jasmine": "^3.7.0",
     "jasmine-core": "^3.7.1",
+    "jasmine-ts": "^0.4.0",
     "jasmine-ts-console-reporter": "^3.1.1",
     "jsdom": "^16.5.3",
     "karma": "^6.3.2",
@@ -52,7 +59,8 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.4.0",
     "ts-loader": "^8.1.0",
-    "tslint": "^6.1.3",
+    "ts-node": "^10.4.0",
+    "tsconfig-paths": "^3.12.0",
     "ttypescript": "^1.5.12",
     "typemoq": "^2.1.0",
     "typescript": "4.3.5",
@@ -70,6 +78,7 @@
     "npm": "~8"
   },
   "lint-staged": {
-    "*.{js,ts,css,scss,md}": "prettier --write"
+    "*": "prettier --ignore-unknown --write",
+    "*.ts": "eslint --fix"
   }
 }
