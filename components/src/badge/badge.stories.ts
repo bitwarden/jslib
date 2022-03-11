@@ -13,7 +13,9 @@ export default {
 const Template: Story<BadgeComponent> = (args: BadgeComponent) => ({
   props: args,
   template: `
-    <span class="tw-text-main">Test </span><span bit-badge [badgeType]="type">Content</span>
+    <span class="tw-text-main">Span </span><span bit-badge [badgeType]="type">Badge</span>
+    <br><br>
+    <span class="tw-text-main">Button </span><button bit-badge [badgeType]="type">Badge</button>
   `,
 });
 

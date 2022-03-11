@@ -1,14 +1,23 @@
-import { Directive, HostBinding, Input, OnChanges, OnInit } from "@angular/core";
+import { Directive, ElementRef, HostBinding, Input, OnChanges, OnInit } from "@angular/core";
 
 type BadgeTypes = "primary" | "secondary" | "success" | "danger" | "warning" | "info";
 
 const styles: Record<BadgeTypes, string[]> = {
-  primary: ["tw-bg-primary-500", "hover:tw-bg-primary-700"],
-  secondary: ["tw-bg-text-muted", "hover:tw-bg-secondary-700"],
-  success: ["tw-bg-success-500", "hover:tw-bg-success-700"],
-  danger: ["tw-bg-danger-500", "hover:tw-bg-danger-700"],
-  warning: ["tw-bg-warning-500", "hover:tw-bg-warning-700"],
-  info: ["tw-bg-info-500", "hover:tw-bg-info-700"],
+  primary: ["tw-bg-primary-500"],
+  secondary: ["tw-bg-text-muted"],
+  success: ["tw-bg-success-500"],
+  danger: ["tw-bg-danger-500"],
+  warning: ["tw-bg-warning-500"],
+  info: ["tw-bg-info-500"],
+};
+
+const hoverStyles: Record<BadgeTypes, string[]> = {
+  primary: ["hover:tw-bg-primary-700"],
+  secondary: ["hover:tw-bg-secondary-700"],
+  success: ["hover:tw-bg-success-700"],
+  danger: ["hover:tw-bg-danger-700"],
+  warning: ["hover:tw-bg-warning-700"],
+  info: ["hover:tw-bg-info-700"],
 };
 
 @Directive({
@@ -18,6 +27,12 @@ export class BadgeComponent implements OnInit, OnChanges {
   @HostBinding("class") @Input("class") classList = "";
 
   @Input() badgeType: BadgeTypes = "primary";
+
+  private isButton = false;
+
+  constructor(private el: ElementRef<Element>) {
+    this.isButton = el?.nativeElement?.nodeName == "BUTTON";
+  }
 
   ngOnInit(): void {
     this.classList = this.classes.join(" ");
@@ -46,6 +61,8 @@ export class BadgeComponent implements OnInit, OnChanges {
       "focus:tw-ring",
       "focus:tw-ring-offset-2",
       "focus:tw-ring-primary-700",
-    ].concat(styles[this.badgeType]);
+    ]
+      .concat(styles[this.badgeType])
+      .concat(this.isButton ? hoverStyles[this.badgeType] : []);
   }
 }
