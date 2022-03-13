@@ -13,6 +13,7 @@ module.exports = (config) => {
       { pattern: "spec/utils.ts", watched: false },
       { pattern: "spec/common/**/*.ts", watched: false },
       { pattern: "spec/web/**/*.ts", watched: false },
+      { pattern: "spec/utils/**/*.ts", watched: false },
     ],
 
     // list of files to exclude

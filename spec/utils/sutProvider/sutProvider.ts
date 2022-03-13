@@ -3,14 +3,6 @@ import Substitute, { SubstituteOf } from "@fluffy-spoon/substitute";
 import "reflect-metadata";
 
 /**
- * SutProvider uses the emitDecoratorMetadata option (set in tsconfig) to get constructor argument types at runtime.
- * Use this as a class decorator if you want to use SutProvider on a class that does not otherwise have a decorator.
- */
-export function enableSutProvider(target: any) {
-  // Do nothing
-}
-
-/**
  * A helper class that will automatically create a sut and use mocks for all dependencies.
  */
 export class SutProvider<T> {

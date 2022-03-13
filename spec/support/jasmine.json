@@ -1,6 +1,11 @@
 {
   "spec_dir": "spec",
-  "spec_files": ["common/**/*[sS]pec.ts", "node/**/*[sS]pec.ts", "electron/**/*[sS]pec.ts"],
+  "spec_files": [
+    "common/**/*[sS]pec.ts",
+    "node/**/*[sS]pec.ts",
+    "electron/**/*[sS]pec.ts",
+    "utils/**/*[sS]pec.ts"
+  ],
   "helpers": ["helpers.ts"],
   "stopSpecOnExpectationFailure": false,
   "random": true

@@ -1,4 +1,5 @@
-import { enableSutProvider } from "./sutProvider";
+import { enableSutProvider } from "../../../common/src/misc/enableSutProvider";
+
 import { Dep1, Dep2, Dep3 } from "./testDeps.service";
 
 @enableSutProvider
