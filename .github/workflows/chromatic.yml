@@ -38,6 +38,4 @@ jobs:
           workingDir: ./components
           exitOnceUploaded: true
           onlyChanged: true
-          externals:
-            - "*.scss"
-            - "tailwind.config*.js"
+          externals: ["*.scss", "tailwind.config*.js"]
