@@ -71,6 +71,7 @@ import { TrueKeyCsvImporter } from "../importers/truekeyCsvImporter";
 import { UpmCsvImporter } from "../importers/upmCsvImporter";
 import { YotiCsvImporter } from "../importers/yotiCsvImporter";
 import { ZohoVaultCsvImporter } from "../importers/zohoVaultCsvImporter";
+import { enableSutProvider } from "../misc/enableSutProvider";
 import { Utils } from "../misc/utils";
 import { ImportResult } from "../models/domain/importResult";
 import { CipherRequest } from "../models/request/cipherRequest";
@@ -82,7 +83,8 @@ import { KvpRequest } from "../models/request/kvpRequest";
 import { ErrorResponse } from "../models/response/errorResponse";
 import { CipherView } from "../models/view/cipherView";
 
-export class ImportService implements ImportServiceAbstraction {
+@enableSutProvider
+export class ImportService {
   featuredImportOptions = featuredImportOptions as readonly ImportOption[];
 
   regularImportOptions = regularImportOptions as readonly ImportOption[];

@@ -11,6 +11,7 @@ import {
 import { FolderService } from "../abstractions/folder.service";
 import { CipherType } from "../enums/cipherType";
 import { KdfType } from "../enums/kdfType";
+import { enableSutProvider } from "../misc/enableSutProvider";
 import { Utils } from "../misc/utils";
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
@@ -27,6 +28,7 @@ import { CollectionView } from "../models/view/collectionView";
 import { EventView } from "../models/view/eventView";
 import { FolderView } from "../models/view/folderView";
 
+@enableSutProvider
 export class ExportService implements ExportServiceAbstraction {
   constructor(
     private folderService: FolderService,

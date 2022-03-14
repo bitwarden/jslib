@@ -1,9 +1,8 @@
 import { Arg, Substitute, SubstituteOf } from "@fluffy-spoon/substitute";
+import { SutProvider } from "spec/utils/sutProvider/sutProvider";
 
-import { ApiService } from "jslib-common/abstractions/api.service";
 import { CipherService } from "jslib-common/abstractions/cipher.service";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
-import { CryptoFunctionService } from "jslib-common/abstractions/cryptoFunction.service";
 import { FolderService } from "jslib-common/abstractions/folder.service";
 import { CipherType } from "jslib-common/enums/cipherType";
 import { KdfType } from "jslib-common/enums/kdfType";
@@ -83,36 +82,22 @@ function expectEqualCiphers(ciphers: CipherView[] | Cipher[], jsonResult: string
 }
 
 describe("ExportService", () => {
-  let exportService: ExportService;
-  let apiService: SubstituteOf<ApiService>;
-  let cryptoFunctionService: SubstituteOf<CryptoFunctionService>;
+  let sutProvider: SutProvider<ExportService>;
   let cipherService: SubstituteOf<CipherService>;
-  let folderService: SubstituteOf<FolderService>;
-  let cryptoService: SubstituteOf<CryptoService>;
 
   beforeEach(() => {
-    apiService = Substitute.for<ApiService>();
-    cryptoFunctionService = Substitute.for<CryptoFunctionService>();
-    cipherService = Substitute.for<CipherService>();
-    folderService = Substitute.for<FolderService>();
-    cryptoService = Substitute.for<CryptoService>();
+    sutProvider = new SutProvider(ExportService);
+    cipherService = sutProvider.getDependency<CipherService>(CipherService);
 
+    const folderService = sutProvider.getDependency<FolderService>(FolderService);
     folderService.getAllDecrypted().resolves([]);
     folderService.getAll().resolves([]);
-
-    exportService = new ExportService(
-      folderService,
-      cipherService,
-      apiService,
-      cryptoService,
-      cryptoFunctionService
-    );
   });
 
   it("exports unecrypted user ciphers", async () => {
     cipherService.getAllDecrypted().resolves(UserCipherViews.slice(0, 1));
 
-    const actual = await exportService.getExport("json");
+    const actual = await sutProvider.sut.getExport("json");
 
     expectEqualCiphers(UserCipherViews.slice(0, 1), actual);
   });
@@ -120,7 +105,7 @@ describe("ExportService", () => {
   it("exports encrypted json user ciphers", async () => {
     cipherService.getAll().resolves(UserCipherDomains.slice(0, 1));
 
-    const actual = await exportService.getExport("encrypted_json");
+    const actual = await sutProvider.sut.getExport("encrypted_json");
 
     expectEqualCiphers(UserCipherDomains.slice(0, 1), actual);
   });
@@ -128,7 +113,7 @@ describe("ExportService", () => {
   it("does not unecrypted export trashed user items", async () => {
     cipherService.getAllDecrypted().resolves(UserCipherViews);
 
-    const actual = await exportService.getExport("json");
+    const actual = await sutProvider.sut.getExport("json");
 
     expectEqualCiphers(UserCipherViews.slice(0, 2), actual);
   });
@@ -136,7 +121,7 @@ describe("ExportService", () => {
   it("does not encrypted export trashed user items", async () => {
     cipherService.getAll().resolves(UserCipherDomains);
 
-    const actual = await exportService.getExport("encrypted_json");
+    const actual = await sutProvider.sut.getExport("encrypted_json");
 
     expectEqualCiphers(UserCipherDomains.slice(0, 2), actual);
   });
@@ -160,7 +145,7 @@ describe("ExportService", () => {
         spyOn(Utils, "fromBufferToB64").and.returnValue(salt);
         cipherService.getAllDecrypted().resolves(UserCipherViews.slice(0, 1));
 
-        exportString = await exportService.getPasswordProtectedExport(password);
+        exportString = await sutProvider.sut.getPasswordProtectedExport(password);
         exportObject = JSON.parse(exportString);
       });
 
@@ -185,17 +170,23 @@ describe("ExportService", () => {
       });
 
       it("has a mac property", () => {
-        cryptoService.encrypt(Arg.any(), Arg.any()).resolves(mac);
+        sutProvider
+          .getDependency<CryptoService>(CryptoService)
+          .encrypt(Arg.any(), Arg.any())
+          .resolves(mac);
         expect(exportObject.encKeyValidation_DO_NOT_EDIT).toEqual(mac.encryptedString);
       });
 
       it("has data property", () => {
-        cryptoService.encrypt(Arg.any(), Arg.any()).resolves(data);
+        sutProvider
+          .getDependency<CryptoService>(CryptoService)
+          .encrypt(Arg.any(), Arg.any())
+          .resolves(data);
         expect(exportObject.data).toEqual(data.encryptedString);
       });
 
       it("encrypts the data property", async () => {
-        const unencrypted = await exportService.getExport();
+        const unencrypted = await sutProvider.sut.getExport();
         expect(exportObject.data).not.toEqual(unencrypted);
       });
     });
