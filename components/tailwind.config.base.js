@@ -11,7 +11,7 @@ module.exports = {
       transparent: colors.transparent,
       current: colors.current,
       primary: {
-        300: "var(--color-primary-300)",
+        300: "var(--color-primary-100)",
         500: "var(--color-primary-500)",
         700: "var(--color-primary-700)",
       },
