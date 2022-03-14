@@ -84,7 +84,7 @@ import { ErrorResponse } from "../models/response/errorResponse";
 import { CipherView } from "../models/view/cipherView";
 
 @enableSutProvider
-export class ImportService {
+export class ImportService implements ImportServiceAbstraction {
   featuredImportOptions = featuredImportOptions as readonly ImportOption[];
 
   regularImportOptions = regularImportOptions as readonly ImportOption[];
