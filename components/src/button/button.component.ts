@@ -4,7 +4,7 @@ export type ButtonTypes = "primary" | "secondary" | "danger";
 
 const buttonStyles: Record<ButtonTypes, string> = {
   primary: [
-    "tw-border-warning-500",
+    "tw-border-primary-500",
     "tw-bg-primary-500",
     "!tw-text-contrast",
     "hover:tw-bg-primary-700",
