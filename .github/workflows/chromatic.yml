@@ -1,7 +1,10 @@
 ---
 name: Chromatic
 
-on: push
+on:
+  push:
+    paths:
+      - 'components/**'
 
 jobs:
   chromatic:
