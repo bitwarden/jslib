@@ -27,6 +27,7 @@ export class AttachmentsComponent implements OnInit {
   deletePromises: { [id: string]: Promise<any> } = {};
   reuploadPromises: { [id: string]: Promise<any> } = {};
   emergencyAccessId?: string = null;
+  // test
 
   constructor(
     protected cipherService: CipherService,
