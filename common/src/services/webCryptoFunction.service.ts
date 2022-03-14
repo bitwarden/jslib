@@ -190,7 +190,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
   }
 
   hmacFast(value: string, key: string, algorithm: "sha1" | "sha256" | "sha512"): Promise<string> {
-    const hmac = (forge as any).hmac.create();
+    const hmac = forge.hmac.create();
     hmac.start(algorithm, key);
     hmac.update(value);
     const bytes = hmac.digest().getBytes();
@@ -206,7 +206,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     }
     const macKey = buffer.getBytes();
 
-    const hmac = (forge as any).hmac.create();
+    const hmac = forge.hmac.create();
     hmac.start("sha256", macKey);
     hmac.update(a);
     const mac1 = hmac.digest().getBytes();
@@ -266,12 +266,12 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
   }
 
   aesDecryptFast(parameters: DecryptParameters<string>): Promise<string> {
-    const dataBuffer = (forge as any).util.createBuffer(parameters.data);
-    const decipher = (forge as any).cipher.createDecipher("AES-CBC", parameters.encKey);
+    const dataBuffer = forge.util.createBuffer(parameters.data);
+    const decipher = forge.cipher.createDecipher("AES-CBC", parameters.encKey);
     decipher.start({ iv: parameters.iv });
     decipher.update(dataBuffer);
     decipher.finish();
-    const val = decipher.output.toString("utf8");
+    const val = decipher.output.toString();
     return Promise.resolve(val);
   }
 
