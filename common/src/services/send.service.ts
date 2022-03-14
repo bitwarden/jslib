@@ -19,6 +19,8 @@ import { ErrorResponse } from "../models/response/errorResponse";
 import { SendResponse } from "../models/response/sendResponse";
 import { SendView } from "../models/view/sendView";
 
+export const SEND_KDF_ITERATIONS = 100000;
+
 export class SendService implements SendServiceAbstraction {
   constructor(
     private cryptoService: CryptoService,
@@ -55,7 +57,7 @@ export class SendService implements SendServiceAbstraction {
         password,
         model.key,
         "sha256",
-        100000
+        SEND_KDF_ITERATIONS
       );
       send.password = Utils.fromBufferToB64(passwordHash);
     }

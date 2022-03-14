@@ -10,7 +10,7 @@ import { LogService } from "jslib-common/abstractions/log.service";
 import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-import { KdfType } from "jslib-common/enums/kdfType";
+import { DEFAULT_KDF_ITERATIONS, DEFAULT_KDF_TYPE } from "jslib-common/enums/kdfType";
 import { KeysRequest } from "jslib-common/models/request/keysRequest";
 import { ReferenceEventRequest } from "jslib-common/models/request/referenceEventRequest";
 import { RegisterRequest } from "jslib-common/models/request/registerRequest";
@@ -163,9 +163,8 @@ export class RegisterComponent extends CaptchaProtectedComponent implements OnIn
 
     this.name = this.name === "" ? null : this.name;
     this.email = this.email.trim().toLowerCase();
-    const kdf = KdfType.PBKDF2_SHA256;
-    const useLowerKdf = this.platformUtilsService.isIE();
-    const kdfIterations = useLowerKdf ? 10000 : 100000;
+    const kdf = DEFAULT_KDF_TYPE;
+    const kdfIterations = DEFAULT_KDF_ITERATIONS;
     const key = await this.cryptoService.makeKey(
       this.masterPassword,
       this.email,
