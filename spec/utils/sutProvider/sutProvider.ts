@@ -10,9 +10,14 @@ export class SutProvider<T> {
   private dependencies = new Map<any, any>();
 
   constructor(sutType: any) {
-    const dependencyMetadata = Reflect.getMetadata("design:paramtypes", sutType);
-    const mocks: any = [];
+    const dependencyMetadata = Reflect.getOwnMetadata("design:paramtypes", sutType);
+    if (dependencyMetadata == null) {
+      throw new Error(
+        "No class metadata found. Make sure your sut has a decorator (e.g. @enableSutProvider) and emitDecoratorMetadata is enabled in tsconfig."
+      );
+    }
 
+    const mocks: any = [];
     dependencyMetadata.forEach((depType: any) => {
       const mock = this.createMock();
       mocks.push(mock);
