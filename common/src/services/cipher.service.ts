@@ -1029,7 +1029,7 @@ export class CipherService implements CipherServiceAbstraction {
       ciphers[c.id].revisionDate = c.revisionDate;
     };
 
-    if (cipher.constructor.name === "Array") {
+    if (cipher.constructor.name === Array.name) {
       (cipher as { id: string; revisionDate: string }[]).forEach(clearDeletedDate);
     } else {
       clearDeletedDate(cipher as { id: string; revisionDate: string });

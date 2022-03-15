@@ -467,7 +467,7 @@ export class LoginCommand {
     } catch (e) {
       if (
         e instanceof ErrorResponse ||
-        (e.constructor.name === "ErrorResponse" &&
+        (e.constructor.name === ErrorResponse.name &&
           (e as ErrorResponse).message.includes("Captcha is invalid"))
       ) {
         return badCaptcha;
