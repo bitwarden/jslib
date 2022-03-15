@@ -37,7 +37,11 @@ module.exports = {
         500: "var(--color-info-500)",
         700: "var(--color-info-700)",
       },
-      "text-muted": "var(--color-text-muted)",
+      text: {
+        main: "var(--color-text-main)",
+        muted: "var(--color-text-muted)",
+        contrast: "var(--color-text-contrast)",
+      },
       background: {
         DEFAULT: "var(--color-background)",
         alt: "var(--color-background-alt)",
