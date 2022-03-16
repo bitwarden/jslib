@@ -184,7 +184,8 @@ export class Organization {
   }
 
   hasAnyPermission(permissions: Permissions[]) {
-    return (permissions.includes(Permissions.AccessEventLogs) && this.canAccessEventLogs) ||
+    const specifiedPermissions =
+      (permissions.includes(Permissions.AccessEventLogs) && this.canAccessEventLogs) ||
       (permissions.includes(Permissions.AccessImportExport) && this.canAccessImportExport) ||
       (permissions.includes(Permissions.AccessReports) && this.canAccessReports) ||
       (permissions.includes(Permissions.CreateNewCollections) &&
@@ -200,6 +201,8 @@ export class Organization {
       (permissions.includes(Permissions.ManagePolicies) && this.canManagePolicies) ||
       (permissions.includes(Permissions.ManageUsers) && this.canManageUsers) ||
       (permissions.includes(Permissions.ManageUsersPassword) && this.canManageUsersPassword) ||
-      (permissions.includes(Permissions.ManageSso) && this.canManageSso)
+      (permissions.includes(Permissions.ManageSso) && this.canManageSso);
+
+    return specifiedPermissions && (this.enabled || this.isOwner)
   }
 }
