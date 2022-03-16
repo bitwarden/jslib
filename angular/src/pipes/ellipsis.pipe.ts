@@ -1,12 +1,12 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform } from "@angular/core";
 
 @Pipe({
-  name: 'ellipsis'
+  name: "ellipsis",
 })
 export class EllipsisPipe implements PipeTransform {
-  transform(value: string, limit = 25, completeWords = false, ellipsis = '...') {
+  transform(value: string, limit = 25, completeWords = false, ellipsis = "...") {
     if (completeWords) {
-      limit = value.substring(0, limit).lastIndexOf(' ');
+      limit = value.substring(0, limit).lastIndexOf(" ");
     }
     return value.length > limit ? value.substring(0, limit) + ellipsis : value;
   }
