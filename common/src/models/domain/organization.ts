@@ -1,7 +1,7 @@
 import { OrganizationUserStatusType } from "../../enums/organizationUserStatusType";
 import { OrganizationUserType } from "../../enums/organizationUserType";
-import { ProductType } from "../../enums/productType";
 import { Permissions } from "../../enums/permissions";
+import { ProductType } from "../../enums/productType";
 import { PermissionsApi } from "../api/permissionsApi";
 import { OrganizationData } from "../data/organizationData";
 
@@ -188,8 +188,7 @@ export class Organization {
       (permissions.includes(Permissions.AccessEventLogs) && this.canAccessEventLogs) ||
       (permissions.includes(Permissions.AccessImportExport) && this.canAccessImportExport) ||
       (permissions.includes(Permissions.AccessReports) && this.canAccessReports) ||
-      (permissions.includes(Permissions.CreateNewCollections) &&
-        this.canCreateNewCollections) ||
+      (permissions.includes(Permissions.CreateNewCollections) && this.canCreateNewCollections) ||
       (permissions.includes(Permissions.EditAnyCollection) && this.canEditAnyCollection) ||
       (permissions.includes(Permissions.DeleteAnyCollection) && this.canDeleteAnyCollection) ||
       (permissions.includes(Permissions.EditAssignedCollections) &&
