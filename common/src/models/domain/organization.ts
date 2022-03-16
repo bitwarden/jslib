@@ -1,6 +1,7 @@
 import { OrganizationUserStatusType } from "../../enums/organizationUserStatusType";
 import { OrganizationUserType } from "../../enums/organizationUserType";
 import { ProductType } from "../../enums/productType";
+import { Permissions } from "../../enums/permissions";
 import { PermissionsApi } from "../api/permissionsApi";
 import { OrganizationData } from "../data/organizationData";
 
@@ -182,27 +183,23 @@ export class Organization {
     return this.canManagePolicies;
   }
 
-  get canAccessManageTab(): boolean {
-    return (
-      this.canManageUsers ||
-      this.canViewAllCollections ||
-      this.canViewAssignedCollections ||
-      this.canManageGroups ||
-      this.canManagePolicies ||
-      this.canAccessEventLogs
-    );
-  }
-
-  get canAccessToolsTab(): boolean {
-    return this.canAccessImportExport || this.canAccessReports;
-  }
-
-  get canAccessSettingsTab(): boolean {
-    return this.isOwner;
-  }
-
-  get canAccessAdminView() {
-    return (this.enabled && (this.canAccessManageTab || this.canAccessToolsTab || this.canAccessSettingsTab)) ||
-      (!this.enabled && this.isOwner);
+  hasAnyPermission(permissions: Permissions[]) {
+    return (permissions.includes(Permissions.AccessEventLogs) && this.canAccessEventLogs) ||
+      (permissions.includes(Permissions.AccessImportExport) && this.canAccessImportExport) ||
+      (permissions.includes(Permissions.AccessReports) && this.canAccessReports) ||
+      (permissions.includes(Permissions.CreateNewCollections) &&
+        this.canCreateNewCollections) ||
+      (permissions.includes(Permissions.EditAnyCollection) && this.canEditAnyCollection) ||
+      (permissions.includes(Permissions.DeleteAnyCollection) && this.canDeleteAnyCollection) ||
+      (permissions.includes(Permissions.EditAssignedCollections) &&
+        this.canEditAssignedCollections) ||
+      (permissions.includes(Permissions.DeleteAssignedCollections) &&
+        this.canDeleteAssignedCollections) ||
+      (permissions.includes(Permissions.ManageGroups) && this.canManageGroups) ||
+      (permissions.includes(Permissions.ManageOrganization) && this.isOwner) ||
+      (permissions.includes(Permissions.ManagePolicies) && this.canManagePolicies) ||
+      (permissions.includes(Permissions.ManageUsers) && this.canManageUsers) ||
+      (permissions.includes(Permissions.ManageUsersPassword) && this.canManageUsersPassword) ||
+      (permissions.includes(Permissions.ManageSso) && this.canManageSso)
   }
 }
