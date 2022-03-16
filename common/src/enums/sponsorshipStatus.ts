@@ -1,8 +1,6 @@
 export enum SponsorshipStatus {
-  None = 0,
-  Pending = 1,
-  Sent = 2,
-  Active = 3,
-  PendingRevoke = 4,
-  Revoked = 5,
+  Requested = 0, // self-hosted only
+  Sent = 1,
+  Active = 2,
+  ToRevoke = 3,
 }
