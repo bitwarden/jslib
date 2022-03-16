@@ -202,6 +202,7 @@ export class Organization {
   }
 
   get canAccessAdminView() {
-    return this.canAccessManageTab || this.canAccessToolsTab || this.canAccessSettingsTab;
+    return (this.enabled && (this.canAccessManageTab || this.canAccessToolsTab || this.canAccessSettingsTab)) ||
+      (!this.enabled && this.isOwner);
   }
 }
