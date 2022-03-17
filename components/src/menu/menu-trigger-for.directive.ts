@@ -2,7 +2,6 @@ import { Directive, ElementRef, Input, OnDestroy, ViewContainerRef, EventEmitter
 import { MenuComponent } from './menu.component';
 import { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
-import { mergeWith } from 'rxjs/operators';
 
 @Directive({
   selector: "[bitMenuTriggerFor]",
@@ -11,10 +10,10 @@ import { mergeWith } from 'rxjs/operators';
     '(click)': 'toggleMenu()'
   }
 })
-export class MenuTriggerFor implements OnDestroy {
+export class MenuTriggerForDirective implements OnDestroy {
   private isOpen = false;
   private overlayRef: OverlayRef;
-  private menuClosingActionsSub = Subscription.EMPTY;
+  private menuClosingActionsSub = null;
   private defaultMenuConfig: OverlayConfig = {
       hasBackdrop: true,
       backdropClass: 'cdk-overlay-transparent-backdrop',
@@ -35,8 +34,10 @@ export class MenuTriggerFor implements OnDestroy {
 
   @Input('bitMenuTriggerFor') menu: MenuComponent;
 
-  constructor(private overlay: Overlay, private elementRef: ElementRef<HTMLElement>,
-    private viewContainerRef: ViewContainerRef) { }
+  constructor( private elementRef: ElementRef<HTMLElement>,
+    private viewContainerRef: ViewContainerRef,
+    private overlay: Overlay
+  ) { }
 
   toggleMenu() {
     this.isOpen ? this.destroyMenu() : this.openMenu();
@@ -52,9 +53,9 @@ export class MenuTriggerFor implements OnDestroy {
     );
     this.overlayRef.attach(templatePortal);
 
-    this.menuClosingActionsSub = this.closeMenuActions().subscribe(
-      () => this.destroyMenu()
-    );
+    // this.menuClosingActionsSub = this.closeMenuActions().subscribe(
+    //   () => this.destroyMenu()
+    // );
   }
 
   destroyMenu() {
@@ -66,12 +67,12 @@ export class MenuTriggerFor implements OnDestroy {
     this.overlayRef.detach();
   }
 
-  closeMenuActions(): Observable<MouseEvent | void> {
-    return this.menu.closed.pipe(mergeWith(
-      this.overlayRef.backdropClick(),
-      this.overlayRef.detachments(),
-    ))
-  }
+  // closeMenuActions(): Observable<MouseEvent | void> {
+  //   return this.menu.closed.pipe(mergeWith(
+  //     this.overlayRef.backdropClick(),
+  //     this.overlayRef.detachments(),
+  //   ))
+  // }
 
   ngOnDestroy() {
     if (this.overlayRef != null) {
