@@ -202,6 +202,6 @@ export class Organization {
       (permissions.includes(Permissions.ManageUsersPassword) && this.canManageUsersPassword) ||
       (permissions.includes(Permissions.ManageSso) && this.canManageSso);
 
-    return specifiedPermissions && (this.enabled || this.isOwner)
+    return specifiedPermissions && (this.enabled || this.isOwner);
   }
 }
