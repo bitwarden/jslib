@@ -15,7 +15,7 @@ export class ApiActionDirective implements OnChanges {
     private el: ElementRef,
     private validationService: ValidationService,
     private logService: LogService
-  ) { }
+  ) {}
 
   ngOnChanges(changes: any) {
     if (this.appApiAction == null || this.appApiAction.then == null) {
