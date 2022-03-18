@@ -17,8 +17,9 @@ export class SafariCsvImporter extends BaseImporter implements Importer {
       cipher.name = this.getValueOrDefault(value.Title, "--");
       cipher.login.username = this.getValueOrDefault(value.Username);
       cipher.login.password = this.getValueOrDefault(value.Password);
-      cipher.login.uris = this.makeUriArray(value.Url);
+      cipher.login.uris = this.makeUriArray(value.Url ?? value.URL);
       cipher.login.totp = this.getValueOrDefault(value.OTPAuth);
+      cipher.notes = this.getValueOrDefault(value.Notes);
       this.cleanupCipher(cipher);
       result.ciphers.push(cipher);
     });
