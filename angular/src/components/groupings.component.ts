@@ -1,9 +1,12 @@
 import { Directive, EventEmitter, Input, Output } from "@angular/core";
 
+import { CipherService } from "jslib-common/abstractions/cipher.service";
 import { CollectionService } from "jslib-common/abstractions/collection.service";
 import { FolderService } from "jslib-common/abstractions/folder.service";
+import { OrganizationService } from "jslib-common/abstractions/organization.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { CipherType } from "jslib-common/enums/cipherType";
+import { Organization } from "jslib-common/models/domain/organization";
 import { ITreeNodeObject, TreeNode } from "jslib-common/models/domain/treeNode";
 import { CollectionView } from "jslib-common/models/view/collectionView";
 import { FolderView } from "jslib-common/models/view/folderView";
@@ -19,6 +22,7 @@ export class GroupingsComponent {
   @Input() showCollections = true;
   @Input() showFavorites = true;
   @Input() showTrash = true;
+  @Input() showOrganizations = true;
 
   @Output() onAllClicked = new EventEmitter();
   @Output() onFavoritesClicked = new EventEmitter();
@@ -28,6 +32,9 @@ export class GroupingsComponent {
   @Output() onAddFolder = new EventEmitter();
   @Output() onEditFolder = new EventEmitter<FolderView>();
   @Output() onCollectionClicked = new EventEmitter<CollectionView>();
+  @Output() onOrganizationClicked = new EventEmitter<Organization>();
+  @Output() onMyVaultClicked = new EventEmitter();
+  @Output() onAllVaultsClicked = new EventEmitter();
 
   folders: FolderView[];
   nestedFolders: TreeNode<FolderView>[];
@@ -42,6 +49,9 @@ export class GroupingsComponent {
   selectedFolder = false;
   selectedFolderId: string = null;
   selectedCollectionId: string = null;
+  selectedOrganizationId: string = null;
+  organizations: Organization[];
+  myVaultOnly = false;
 
   readonly vaultsGrouping: TopLevelGroupingView = {
     id: "vaults",
@@ -68,7 +78,9 @@ export class GroupingsComponent {
   constructor(
     protected collectionService: CollectionService,
     protected folderService: FolderService,
-    protected stateService: StateService
+    protected stateService: StateService,
+    protected organizationService: OrganizationService,
+    protected cipherService: CipherService
   ) {}
 
   async load(setLoaded = true) {
@@ -81,6 +93,7 @@ export class GroupingsComponent {
 
     await this.loadFolders();
     await this.loadCollections();
+    await this.loadOrganizations();
 
     if (setLoaded) {
       this.loaded = true;
@@ -100,12 +113,32 @@ export class GroupingsComponent {
     this.nestedCollections = await this.collectionService.getAllNested(this.collections);
   }
 
-  async loadFolders() {
+  async loadFolders(organizationId?: string) {
     if (!this.showFolders) {
       return;
     }
-    this.folders = await this.folderService.getAllDecrypted();
-    this.nestedFolders = await this.folderService.getAllNested();
+    const folders = await this.folderService.getAllDecrypted();
+    if (organizationId != null) {
+      const ciphers = await this.cipherService.getAllDecrypted();
+      const orgCiphers = ciphers.filter((c) => c.organizationId == organizationId);
+      this.folders = folders.filter(
+        (f) =>
+          f.id != null &&
+          (orgCiphers.filter((oc) => oc.folderId == f.id).length > 0 ||
+            ciphers.filter((c) => c.folderId == f.id).length < 1)
+      );
+    } else {
+      this.folders = folders;
+    }
+    this.nestedFolders = await this.folderService.getAllNested(this.folders);
+  }
+
+  async loadOrganizations() {
+    this.showOrganizations = await this.organizationService.hasOrganizations();
+    if (!this.showOrganizations) {
+      return;
+    }
+    this.organizations = await this.organizationService.getAll();
   }
 
   selectAll() {
@@ -153,6 +186,26 @@ export class GroupingsComponent {
     this.onCollectionClicked.emit(collection);
   }
 
+  async selectOrganization(organization: Organization) {
+    this.clearSelectedOrganization();
+    this.selectedOrganizationId = organization.id;
+    await this.reloadCollectionsAndFolders(this.selectedOrganizationId);
+    this.onOrganizationClicked.emit(organization);
+  }
+
+  async selectMyVault() {
+    this.clearSelectedOrganization();
+    this.myVaultOnly = true;
+    await this.reloadCollectionsAndFolders(this.selectedOrganizationId);
+    this.onMyVaultClicked.emit();
+  }
+
+  async selectAllVaults() {
+    this.clearSelectedOrganization();
+    await this.reloadCollectionsAndFolders(this.selectedOrganizationId);
+    this.onAllVaultsClicked.emit();
+  }
+
   clearSelections() {
     this.selectedAll = false;
     this.selectedFavorites = false;
@@ -161,6 +214,19 @@ export class GroupingsComponent {
     this.selectedFolder = false;
     this.selectedFolderId = null;
     this.selectedCollectionId = null;
+  }
+
+  clearSelectedOrganization() {
+    this.selectedOrganizationId = null;
+    this.myVaultOnly = false;
+    const clearingFolderOrCollectionSelection =
+      this.selectedFolderId != null || this.selectedCollectionId != null;
+    if (clearingFolderOrCollectionSelection) {
+      this.selectedFolder = false;
+      this.selectedFolderId = null;
+      this.selectedCollectionId = null;
+      this.selectedAll = true;
+    }
   }
 
   async collapse(node: ITreeNodeObject, idPrefix = "") {
@@ -178,5 +244,10 @@ export class GroupingsComponent {
 
   isCollapsed(node: ITreeNodeObject, idPrefix = "") {
     return this.collapsedGroupings.has(idPrefix + node.id);
+  }
+
+  private async reloadCollectionsAndFolders(organizationId?: string) {
+    await this.loadCollections(organizationId);
+    await this.loadFolders(organizationId);
   }
 }
