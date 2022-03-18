@@ -15,7 +15,7 @@ export class ApiActionDirective implements OnChanges {
     private el: ElementRef,
     private validationService: ValidationService,
     private logService: LogService
-  ) {}
+  ) { }
 
   ngOnChanges(changes: any) {
     if (this.appApiAction == null || this.appApiAction.then == null) {
@@ -31,10 +31,7 @@ export class ApiActionDirective implements OnChanges {
       (e: any) => {
         this.el.nativeElement.loading = false;
 
-        if (
-          (e instanceof ErrorResponse || e.constructor.name === ErrorResponse.name) &&
-          (e as ErrorResponse).captchaRequired
-        ) {
+        if ((e as ErrorResponse).captchaRequired) {
           this.logService.error("Captcha required error response: " + e.getSingleMessage());
           return;
         }
