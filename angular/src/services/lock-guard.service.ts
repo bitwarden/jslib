@@ -4,15 +4,19 @@ import { CanActivate, Router } from "@angular/router";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { VaultTimeoutService } from "jslib-common/abstractions/vaultTimeout.service";
 
+import { BaseGuardService } from "./base-guard.service";
+
 @Injectable()
-export class LockGuardService implements CanActivate {
+export class LockGuardService extends BaseGuardService implements CanActivate {
   protected homepage = "vault";
   protected loginpage = "login";
   constructor(
+    protected router: Router,
     private vaultTimeoutService: VaultTimeoutService,
-    private router: Router,
     private stateService: StateService
-  ) {}
+  ) {
+    super(router);
+  }
 
   async canActivate() {
     if (await this.vaultTimeoutService.isLocked()) {
@@ -23,7 +27,6 @@ export class LockGuardService implements CanActivate {
       ? [this.homepage]
       : [this.loginpage];
 
-    this.router.navigate(redirectUrl);
-    return false;
+    return this.redirectNavigation(redirectUrl);
   }
 }
