@@ -15,7 +15,10 @@ export default {
 // More on component templates: https://storybook.js.org/docs/angular/writing-stories/introduction#using-args
 const Template: Story<ButtonComponent> = (args: ButtonComponent) => ({
   props: args,
-  template: `<button bit-button [buttonType]="buttonType" [block]="block">Test</button>`,
+  template: `
+    <button bit-button [buttonType]="buttonType" [block]="block">Button</button>
+    <a bit-button [buttonType]="buttonType" [block]="block" href="#" class="tw-ml-2">Link</a>
+  `,
 });
 
 export const Primary = Template.bind({});
