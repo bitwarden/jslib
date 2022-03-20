@@ -8,6 +8,6 @@ export class EllipsisPipe implements PipeTransform {
     if (completeWords) {
       limit = value.substring(0, limit).lastIndexOf(" ");
     }
-    return value.length > limit ? value.substring(0, limit) + ellipsis : value;
+    return value.length > limit ? value.substring(0, limit - ellipsis.length) + ellipsis : value;
   }
 }
