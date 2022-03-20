@@ -27,6 +27,6 @@ export class LockGuardService extends BaseGuardService implements CanActivate {
       ? [this.homepage]
       : [this.loginpage];
 
-    return this.redirectNavigation(redirectUrl);
+    return this.redirect(redirectUrl);
   }
 }

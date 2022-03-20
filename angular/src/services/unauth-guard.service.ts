@@ -22,9 +22,9 @@ export class UnauthGuardService extends BaseGuardService implements CanActivate 
     if (isAuthed) {
       const locked = await this.vaultTimeoutService.isLocked();
       if (locked) {
-        return this.redirectNavigation("lock");
+        return this.redirect("lock");
       } else {
-        return this.redirectNavigation(this.homepage);
+        return this.redirect(this.homepage);
       }
     }
     return true;

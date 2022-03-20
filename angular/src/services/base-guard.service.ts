@@ -10,7 +10,7 @@ export class BaseGuardService {
      * route is specified. Arguments are the same as Router.navigate.
      * You should return the result of this method from a CanActivate guard to cancel the current navigation.
      */
-    protected redirectNavigation(redirectUrl: string | any[] = homeRoute, extras?: NavigationExtras): false {
+    protected redirect(redirectUrl: string | any[] = homeRoute, extras?: NavigationExtras): false {
         const command = Array.isArray(redirectUrl)
             ? redirectUrl
             : [redirectUrl];
