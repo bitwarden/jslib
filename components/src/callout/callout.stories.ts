@@ -29,8 +29,8 @@ export default {
   },
   parameters: {
     design: {
-      type: 'figma',
-      url: 'https://www.figma.com/file/f32LSg3jaegICkMu7rPARm/Tailwind-Component-Library-Update?node-id=1717%3A14375',
+      type: "figma",
+      url: "https://www.figma.com/file/f32LSg3jaegICkMu7rPARm/Tailwind-Component-Library-Update?node-id=1717%3A14375",
     },
   },
 } as Meta;
