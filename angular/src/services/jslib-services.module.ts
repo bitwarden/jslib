@@ -72,12 +72,12 @@ import { UserVerificationService } from "jslib-common/services/userVerification.
 import { VaultTimeoutService } from "jslib-common/services/vaultTimeout.service";
 import { WebCryptoFunctionService } from "jslib-common/services/webCryptoFunction.service";
 
-import { AuthGuardService } from "./auth-guard.service";
+import { AuthGuard } from "./auth.guard";
 import { BroadcasterService } from "./broadcaster.service";
-import { LockGuardService } from "./lock-guard.service";
+import { LockGuard } from "./lock.guard";
 import { ModalService } from "./modal.service";
 import { PasswordRepromptService } from "./passwordReprompt.service";
-import { UnauthGuardService } from "./unauth-guard.service";
+import { UnauthGuard } from "./unauth.guard";
 import { ValidationService } from "./validation.service";
 
 @NgModule({
@@ -90,9 +90,9 @@ import { ValidationService } from "./validation.service";
       deps: [I18nServiceAbstraction],
     },
     ValidationService,
-    AuthGuardService,
-    UnauthGuardService,
-    LockGuardService,
+    AuthGuard,
+    UnauthGuard,
+    LockGuard,
     ModalService,
     {
       provide: AppIdServiceAbstraction,

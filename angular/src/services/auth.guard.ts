@@ -6,10 +6,10 @@ import { MessagingService } from "jslib-common/abstractions/messaging.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { VaultTimeoutService } from "jslib-common/abstractions/vaultTimeout.service";
 
-import { BaseGuardService } from "./base-guard.service";
+import { BaseGuard } from "./base.guard";
 
 @Injectable()
-export class AuthGuardService extends BaseGuardService implements CanActivate {
+export class AuthGuard extends BaseGuard implements CanActivate {
   constructor(
     router: Router,
     private vaultTimeoutService: VaultTimeoutService,

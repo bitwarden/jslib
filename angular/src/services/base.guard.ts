@@ -2,7 +2,7 @@ import { NavigationExtras, Router } from "@angular/router";
 
 const homeRoute = ["/"];
 
-export class BaseGuardService {
+export class BaseGuard {
   constructor(protected router: Router) {}
 
   /**
