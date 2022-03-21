@@ -10,7 +10,7 @@ import { BaseGuardService } from "./base-guard.service";
 export class UnauthGuardService extends BaseGuardService implements CanActivate {
   protected homepage = "vault";
   constructor(
-    protected router: Router,
+    router: Router,
     private vaultTimeoutService: VaultTimeoutService,
     private stateService: StateService
   ) {

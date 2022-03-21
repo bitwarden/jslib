@@ -11,7 +11,7 @@ import { BaseGuardService } from "./base-guard.service";
 @Injectable()
 export class AuthGuardService extends BaseGuardService implements CanActivate {
   constructor(
-    protected router: Router,
+    router: Router,
     private vaultTimeoutService: VaultTimeoutService,
     private messagingService: MessagingService,
     private keyConnectorService: KeyConnectorService,

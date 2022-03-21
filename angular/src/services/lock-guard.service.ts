@@ -11,7 +11,7 @@ export class LockGuardService extends BaseGuardService implements CanActivate {
   protected homepage = "vault";
   protected loginpage = "login";
   constructor(
-    protected router: Router,
+    router: Router,
     private vaultTimeoutService: VaultTimeoutService,
     private stateService: StateService
   ) {
