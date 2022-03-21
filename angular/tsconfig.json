@@ -5,6 +5,6 @@
       "jslib-common/*": ["../common/src/*"]
     }
   },
-  "include": ["src", "spec", "jslib-services.module.ts"],
+  "include": ["src", "spec"],
   "exclude": ["node_modules", "dist"]
 }
