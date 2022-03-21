@@ -12,7 +12,6 @@ export class EllipsisPipe implements PipeTransform {
     if (completeWords && value.length > limit && value.indexOf(" ") > 0) {
       limit = value.substring(0, limit).lastIndexOf(" ");
     }
-    console.log(value.length, limit);
     return value.substring(0, limit) + ellipsis;
   }
 }
