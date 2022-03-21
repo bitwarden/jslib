@@ -9,11 +9,10 @@ export class EllipsisPipe implements PipeTransform {
       return value;
     }
     limit -= ellipsis.length;
-    if (completeWords && value.length > limit) {
-      if (value.indexOf(" ") > 0) {
-        limit = value.substring(0, limit).lastIndexOf(" ");
-      }
+    if (completeWords && value.length > limit && value.indexOf(" ") > 0) {
+      limit = value.substring(0, limit).lastIndexOf(" ");
     }
+    console.log(value.length, limit);
     return value.substring(0, limit) + ellipsis;
   }
 }
