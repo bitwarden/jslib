@@ -1,6 +1,5 @@
 import { NgModule } from "@angular/core";
-
-import { JslibServicesModule } from "./services/jslib-services.module"
+import { CommonModule } from '@angular/common';
 
 import { A11yInvalidDirective } from "./directives/a11y-invalid.directive";
 import { A11yTitleDirective } from "./directives/a11y-title.directive";
@@ -27,12 +26,17 @@ import { CalloutComponent } from "./components/callout.component";
 import { ExportScopeCalloutComponent } from "./components/export-scope-callout.component";
 import { IconComponent } from "./components/icon.component";
 import { VerifyMasterPasswordComponent } from "./components/verify-master-password.component";
-import { CommonModule } from '@angular/common';
+import { BitwardenToastModule } from './components/toastr.component';
 
 
 @NgModule({
   imports: [
-    CommonModule
+    BitwardenToastModule.forRoot({
+      maxOpened: 5,
+      autoDismiss: true,
+      closeButton: true,
+    }),
+    CommonModule,
   ],
   declarations: [
     A11yInvalidDirective,
@@ -66,6 +70,7 @@ import { CommonModule } from '@angular/common';
     ApiActionDirective,
     AvatarComponent,
     AutofocusDirective,
+    BitwardenToastModule,
     BlurClickDirective,
     BoxRowDirective,
     ColorPasswordPipe,
