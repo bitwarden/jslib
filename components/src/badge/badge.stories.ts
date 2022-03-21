@@ -8,6 +8,12 @@ export default {
   args: {
     type: "primary",
   },
+  parameters: {
+    design: {
+      type: 'figma',
+      url: 'https://www.figma.com/file/f32LSg3jaegICkMu7rPARm/Tailwind-Component-Library-Update?node-id=1717%3A14229',
+    },
+  },
 } as Meta;
 
 const Template: Story<BadgeComponent> = (args: BadgeComponent) => ({
