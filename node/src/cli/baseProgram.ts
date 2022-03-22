@@ -1,6 +1,8 @@
 import * as chalk from "chalk";
 
+import { AuthService } from "jslib-common/abstractions/auth.service";
 import { StateService } from "jslib-common/abstractions/state.service";
+import { AuthenticationStatus } from "jslib-common/enums/authenticationStatus";
 
 import { Response } from "./models/response";
 import { ListResponse } from "./models/response/listResponse";
@@ -10,6 +12,7 @@ import { StringResponse } from "./models/response/stringResponse";
 export abstract class BaseProgram {
   constructor(
     protected stateService: StateService,
+    protected authService: AuthService,
     private writeLn: (s: string, finalLine: boolean, error: boolean) => void
   ) {}
 
@@ -97,16 +100,16 @@ export abstract class BaseProgram {
   }
 
   protected async exitIfAuthed() {
-    const authed = await this.stateService.getIsAuthenticated();
-    if (authed) {
+    const authStatus = await this.authService.authStatus();
+    if (authStatus !== AuthenticationStatus.LoggedOut) {
       const email = await this.stateService.getEmail();
       this.processResponse(Response.error("You are already logged in as " + email + "."), true);
     }
   }
 
   protected async exitIfNotAuthed() {
-    const authed = await this.stateService.getIsAuthenticated();
-    if (!authed) {
+    const authStatus = await this.authService.authStatus();
+    if (authStatus === AuthenticationStatus.LoggedOut) {
       this.processResponse(Response.error("You are not logged in."), true);
     }
   }
