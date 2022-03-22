@@ -5,6 +5,7 @@ import { FileUploadService } from "../abstractions/fileUpload.service";
 import { I18nService } from "../abstractions/i18n.service";
 import { SendService as SendServiceAbstraction } from "../abstractions/send.service";
 import { StateService } from "../abstractions/state.service";
+import { SEND_KDF_ITERATIONS } from "../enums/kdfType";
 import { SendType } from "../enums/sendType";
 import { Utils } from "../misc/utils";
 import { SendData } from "../models/data/sendData";
@@ -18,8 +19,6 @@ import { SendRequest } from "../models/request/sendRequest";
 import { ErrorResponse } from "../models/response/errorResponse";
 import { SendResponse } from "../models/response/sendResponse";
 import { SendView } from "../models/view/sendView";
-
-export const SEND_KDF_ITERATIONS = 100000;
 
 export class SendService implements SendServiceAbstraction {
   constructor(
