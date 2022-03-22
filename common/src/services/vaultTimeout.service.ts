@@ -64,8 +64,8 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
   }
 
   async lock(allowSoftLock = false, userId?: string): Promise<void> {
-    const authed = await this.stateService.getIsAuthenticated({ userId: userId });
-    if (!authed) {
+    const authStatus = await this.authService.authStatus(userId);
+    if (authStatus === AuthenticationStatus.LoggedOut) {
       return;
     }
 

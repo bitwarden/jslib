@@ -22,9 +22,8 @@ export class LockGuardService implements CanActivate {
       return true;
     }
 
-    const redirectUrl = (await this.stateService.getIsAuthenticated())
-      ? [this.homepage]
-      : [this.loginpage];
+    const redirectUrl =
+      authStatus === AuthenticationStatus.LoggedOut ? [this.loginpage] : [this.homepage];
 
     this.router.navigate(redirectUrl);
     return false;

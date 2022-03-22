@@ -1,9 +1,11 @@
 import { ApiService } from "../abstractions/api.service";
+import { AuthService } from "../abstractions/auth.service";
 import { CipherService } from "../abstractions/cipher.service";
 import { EventService as EventServiceAbstraction } from "../abstractions/event.service";
 import { LogService } from "../abstractions/log.service";
 import { OrganizationService } from "../abstractions/organization.service";
 import { StateService } from "../abstractions/state.service";
+import { AuthenticationStatus } from "../enums/authenticationStatus";
 import { EventType } from "../enums/eventType";
 import { EventData } from "../models/data/eventData";
 import { EventRequest } from "../models/request/eventRequest";
@@ -16,7 +18,8 @@ export class EventService implements EventServiceAbstraction {
     private cipherService: CipherService,
     private stateService: StateService,
     private logService: LogService,
-    private organizationService: OrganizationService
+    private organizationService: OrganizationService,
+    private authService: AuthService
   ) {}
 
   init(checkOnInterval: boolean) {
@@ -36,8 +39,8 @@ export class EventService implements EventServiceAbstraction {
     cipherId: string = null,
     uploadImmediately = false
   ): Promise<any> {
-    const authed = await this.stateService.getIsAuthenticated();
-    if (!authed) {
+    const authState = await this.authService.authStatus();
+    if (authState === AuthenticationStatus.LoggedOut) {
       return;
     }
     const organizations = await this.organizationService.getAll();
@@ -70,8 +73,8 @@ export class EventService implements EventServiceAbstraction {
   }
 
   async uploadEvents(userId?: string): Promise<any> {
-    const authed = await this.stateService.getIsAuthenticated({ userId: userId });
-    if (!authed) {
+    const authState = await this.authService.authStatus(userId);
+    if (authState === AuthenticationStatus.LoggedOut) {
       return;
     }
     const eventCollection = await this.stateService.getEventCollection({ userId: userId });
