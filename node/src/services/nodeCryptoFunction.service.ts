@@ -210,9 +210,9 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
   rsaExtractPublicKey(privateKey: ArrayBuffer): Promise<ArrayBuffer> {
     const privateKeyByteString = Utils.fromBufferToByteString(privateKey);
     const privateKeyAsn1 = forge.asn1.fromDer(privateKeyByteString);
-    const forgePrivateKey = (forge as any).pki.privateKeyFromAsn1(privateKeyAsn1);
+    const forgePrivateKey: any = forge.pki.privateKeyFromAsn1(privateKeyAsn1);
     const forgePublicKey = (forge.pki as any).setRsaPublicKey(forgePrivateKey.n, forgePrivateKey.e);
-    const publicKeyAsn1 = (forge.pki as any).publicKeyToAsn1(forgePublicKey);
+    const publicKeyAsn1 = forge.pki.publicKeyToAsn1(forgePublicKey);
     const publicKeyByteString = forge.asn1.toDer(publicKeyAsn1).data;
     const publicKeyArray = Utils.fromByteStringToArray(publicKeyByteString);
     return Promise.resolve(publicKeyArray.buffer);
@@ -232,12 +232,12 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
             return;
           }
 
-          const publicKeyAsn1 = (forge.pki as any).publicKeyToAsn1(keyPair.publicKey);
+          const publicKeyAsn1 = forge.pki.publicKeyToAsn1(keyPair.publicKey);
           const publicKeyByteString = forge.asn1.toDer(publicKeyAsn1).getBytes();
           const publicKey = Utils.fromByteStringToArray(publicKeyByteString);
 
-          const privateKeyAsn1 = (forge.pki as any).privateKeyToAsn1(keyPair.privateKey);
-          const privateKeyPkcs8 = (forge.pki as any).wrapRsaPrivateKey(privateKeyAsn1);
+          const privateKeyAsn1 = forge.pki.privateKeyToAsn1(keyPair.privateKey);
+          const privateKeyPkcs8 = forge.pki.wrapRsaPrivateKey(privateKeyAsn1);
           const privateKeyByteString = forge.asn1.toDer(privateKeyPkcs8).getBytes();
           const privateKey = Utils.fromByteStringToArray(privateKeyByteString);
 
@@ -286,16 +286,16 @@ export class NodeCryptoFunctionService implements CryptoFunctionService {
   private toPemPrivateKey(key: ArrayBuffer): string {
     const byteString = Utils.fromBufferToByteString(key);
     const asn1 = forge.asn1.fromDer(byteString);
-    const privateKey = (forge as any).pki.privateKeyFromAsn1(asn1);
-    const rsaPrivateKey = (forge.pki as any).privateKeyToAsn1(privateKey);
-    const privateKeyInfo = (forge.pki as any).wrapRsaPrivateKey(rsaPrivateKey);
-    return (forge.pki as any).privateKeyInfoToPem(privateKeyInfo);
+    const privateKey = forge.pki.privateKeyFromAsn1(asn1);
+    const rsaPrivateKey = forge.pki.privateKeyToAsn1(privateKey);
+    const privateKeyInfo = forge.pki.wrapRsaPrivateKey(rsaPrivateKey);
+    return forge.pki.privateKeyInfoToPem(privateKeyInfo);
   }
 
   private toPemPublicKey(key: ArrayBuffer): string {
     const byteString = Utils.fromBufferToByteString(key);
     const asn1 = forge.asn1.fromDer(byteString);
-    const publicKey = (forge as any).pki.publicKeyFromAsn1(asn1);
-    return (forge.pki as any).publicKeyToPem(publicKey);
+    const publicKey = forge.pki.publicKeyFromAsn1(asn1);
+    return forge.pki.publicKeyToPem(publicKey);
   }
 }
