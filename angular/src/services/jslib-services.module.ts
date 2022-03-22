@@ -240,7 +240,8 @@ import { ValidationService } from "./validation.service";
         keyConnectorService: KeyConnectorServiceAbstraction,
         stateService: StateServiceAbstraction,
         organizationService: OrganizationServiceAbstraction,
-        providerService: ProviderServiceAbstraction
+        providerService: ProviderServiceAbstraction,
+        authService: AuthServiceAbstraction
       ) =>
         new SyncService(
           apiService,
@@ -257,6 +258,7 @@ import { ValidationService } from "./validation.service";
           stateService,
           organizationService,
           providerService,
+          authService,
           async (expired: boolean) => messagingService.send("logout", { expired: expired })
         ),
       deps: [
@@ -295,7 +297,8 @@ import { ValidationService } from "./validation.service";
         tokenService: TokenServiceAbstraction,
         policyService: PolicyServiceAbstraction,
         keyConnectorService: KeyConnectorServiceAbstraction,
-        stateService: StateServiceAbstraction
+        stateService: StateServiceAbstraction,
+        authService: AuthServiceAbstraction
       ) =>
         new VaultTimeoutService(
           cipherService,
@@ -309,6 +312,7 @@ import { ValidationService } from "./validation.service";
           policyService,
           keyConnectorService,
           stateService,
+          authService,
           null,
           async (userId?: string) =>
             messagingService.send("logout", { expired: false, userId: userId })
@@ -383,21 +387,21 @@ import { ValidationService } from "./validation.service";
         syncService: SyncServiceAbstraction,
         appIdService: AppIdServiceAbstraction,
         apiService: ApiServiceAbstraction,
-        vaultTimeoutService: VaultTimeoutServiceAbstraction,
         environmentService: EnvironmentServiceAbstraction,
         messagingService: MessagingServiceAbstraction,
         logService: LogService,
-        stateService: StateServiceAbstraction
+        stateService: StateServiceAbstraction,
+        authService: AuthServiceAbstraction
       ) =>
         new NotificationsService(
           syncService,
           appIdService,
           apiService,
-          vaultTimeoutService,
           environmentService,
           async () => messagingService.send("logout", { expired: true }),
           logService,
-          stateService
+          stateService,
+          authService
         ),
       deps: [
         SyncServiceAbstraction,
@@ -424,6 +428,7 @@ import { ValidationService } from "./validation.service";
         StateServiceAbstraction,
         LogService,
         OrganizationServiceAbstraction,
+        AuthServiceAbstraction,
       ],
     },
     {
