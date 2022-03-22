@@ -1,3 +1,4 @@
+import { AuthenticationStatus } from "../enums/authenticationStatus";
 import { AuthResult } from "../models/domain/authResult";
 import {
   ApiLogInCredentials,
@@ -22,4 +23,5 @@ export abstract class AuthService {
   authingWithApiKey: () => boolean;
   authingWithSso: () => boolean;
   authingWithPassword: () => boolean;
+  authStatus: (userId?: string) => Promise<AuthenticationStatus>;
 }

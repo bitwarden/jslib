@@ -1,21 +1,24 @@
 import { Injectable } from "@angular/core";
 import { CanActivate, Router } from "@angular/router";
 
+import { AuthService } from "jslib-common/abstractions/auth.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-import { VaultTimeoutService } from "jslib-common/abstractions/vaultTimeout.service";
+import { AuthenticationStatus } from "jslib-common/enums/authenticationStatus";
 
 @Injectable()
 export class LockGuardService implements CanActivate {
   protected homepage = "vault";
   protected loginpage = "login";
   constructor(
-    private vaultTimeoutService: VaultTimeoutService,
+    private authService: AuthService,
     private router: Router,
     private stateService: StateService
   ) {}
 
   async canActivate() {
-    if (await this.vaultTimeoutService.isLocked()) {
+    const authStatus = await this.authService.authStatus();
+
+    if (authStatus === AuthenticationStatus.Locked) {
       return true;
     }
 
