@@ -12,7 +12,6 @@ import { StateService } from "../abstractions/state.service";
 import { TokenService } from "../abstractions/token.service";
 import { VaultTimeoutService as VaultTimeoutServiceAbstraction } from "../abstractions/vaultTimeout.service";
 import { AuthenticationStatus } from "../enums/authenticationStatus";
-import { AuthenticationType } from "../enums/authenticationType";
 import { PolicyType } from "../enums/policyType";
 
 export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {

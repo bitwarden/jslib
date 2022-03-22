@@ -219,9 +219,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
 
   private async isAuthedAndUnlocked() {
     const authStatus = await this.authService.authStatus();
-    return (
-      authStatus === AuthenticationStatus.Unlocked || authStatus === AuthenticationStatus.Active
-    );
+    return authStatus >= AuthenticationStatus.Unlocked;
   }
 
   private random(min: number, max: number) {
