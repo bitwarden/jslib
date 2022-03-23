@@ -125,6 +125,8 @@ export class AccountSettings {
   minimizeOnCopyToClipboard?: boolean;
   neverDomains?: { [id: string]: any };
   passwordGenerationOptions?: any;
+  usernameGenerationOptions?: any;
+  generatorOptions?: any;
   pinProtected?: EncryptionPair<string, EncString> = new EncryptionPair<string, EncString>();
   protectedPin?: string;
   settings?: any; // TODO: Merge whatever is going on here into the AccountSettings model properly
