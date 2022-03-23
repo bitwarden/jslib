@@ -1,5 +1,5 @@
 import { Directive, EventEmitter, Input, OnInit, Output } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { first } from "rxjs/operators";
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
