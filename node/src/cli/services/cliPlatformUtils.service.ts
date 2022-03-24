@@ -69,10 +69,6 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     return false;
   }
 
-  isIE() {
-    return false;
-  }
-
   isMacAppStore() {
     return false;
   }

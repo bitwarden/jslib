@@ -5,6 +5,7 @@ import { FileUploadService } from "../abstractions/fileUpload.service";
 import { I18nService } from "../abstractions/i18n.service";
 import { SendService as SendServiceAbstraction } from "../abstractions/send.service";
 import { StateService } from "../abstractions/state.service";
+import { SEND_KDF_ITERATIONS } from "../enums/kdfType";
 import { SendType } from "../enums/sendType";
 import { Utils } from "../misc/utils";
 import { SendData } from "../models/data/sendData";
@@ -55,7 +56,7 @@ export class SendService implements SendServiceAbstraction {
         password,
         model.key,
         "sha256",
-        100000
+        SEND_KDF_ITERATIONS
       );
       send.password = Utils.fromBufferToB64(passwordHash);
     }

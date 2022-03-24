@@ -413,7 +413,7 @@ import { ValidationService } from "./validation.service";
     {
       provide: CryptoFunctionServiceAbstraction,
       useClass: WebCryptoFunctionService,
-      deps: ["WINDOW", PlatformUtilsServiceAbstraction],
+      deps: ["WINDOW"],
     },
     {
       provide: EventServiceAbstraction,
