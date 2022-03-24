@@ -1,4 +1,4 @@
-import { SafariCsvImporter as Importer } from "jslib-common/importers/SafariCsvImporter";
+import { SafariCsvImporter as Importer } from "jslib-common/importers/safariCsvImporter";
 import { CipherView } from "jslib-common/models/view/cipherView";
 import { LoginUriView } from "jslib-common/models/view/loginUriView";
 import { LoginView } from "jslib-common/models/view/loginView";
