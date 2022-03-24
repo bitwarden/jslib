@@ -29,6 +29,7 @@ export class PasswordGeneratorComponent implements OnInit {
   avoidAmbiguous = false;
   showWebsiteOption = false;
   enforcedPasswordPolicyOptions: PasswordGeneratorPolicyOptions;
+  usernameWebsite: string = null;
 
   constructor(
     protected passwordGenerationService: PasswordGenerationService,
@@ -94,6 +95,9 @@ export class PasswordGeneratorComponent implements OnInit {
       }
       if (!this.showWebsiteOption) {
         this.usernameOptions.subaddressType = this.usernameOptions.catchallType = "random";
+      }
+      if (this.usernameWebsite != null) {
+        this.usernameOptions.website = this.usernameWebsite;
       }
 
       if (qParams.type === "username" || qParams.type === "password") {
