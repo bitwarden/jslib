@@ -12,7 +12,7 @@ import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { SyncService } from "jslib-common/abstractions/sync.service";
 import { HashPurpose } from "jslib-common/enums/hashPurpose";
-import { KdfType } from "jslib-common/enums/kdfType";
+import { DEFAULT_KDF_ITERATIONS, DEFAULT_KDF_TYPE } from "jslib-common/enums/kdfType";
 import { Utils } from "jslib-common/misc/utils";
 import { EncString } from "jslib-common/models/domain/encString";
 import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
@@ -85,9 +85,8 @@ export class SetPasswordComponent extends BaseChangePasswordComponent {
   }
 
   async setupSubmitActions() {
-    this.kdf = KdfType.PBKDF2_SHA256;
-    const useLowerKdf = this.platformUtilsService.isIE();
-    this.kdfIterations = useLowerKdf ? 10000 : 100000;
+    this.kdf = DEFAULT_KDF_TYPE;
+    this.kdfIterations = DEFAULT_KDF_ITERATIONS;
     return true;
   }
 
