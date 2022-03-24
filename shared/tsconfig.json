@@ -4,7 +4,7 @@
     "moduleResolution": "node",
     "noImplicitAny": true,
     "target": "ES6",
-    "module": "commonjs",
+    "module": "esnext",
     "lib": ["es5", "es6", "es7", "dom"],
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,

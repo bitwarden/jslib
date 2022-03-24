@@ -7,6 +7,7 @@ import { LogService } from "../abstractions/log.service";
 import { SearchService } from "../abstractions/search.service";
 import { SettingsService } from "../abstractions/settings.service";
 import { StateService } from "../abstractions/state.service";
+import { WebWorkerService } from '../abstractions/webWorker.service';
 import { CipherType } from "../enums/cipherType";
 import { FieldType } from "../enums/fieldType";
 import { UriMatchType } from "../enums/uriMatchType";
@@ -61,7 +62,8 @@ export class CipherService implements CipherServiceAbstraction {
     private i18nService: I18nService,
     private searchService: () => SearchService,
     private logService: LogService,
-    private stateService: StateService
+    private stateService: StateService,
+    private webWorkerService: WebWorkerService
   ) {}
 
   async getDecryptedCipherCache(): Promise<CipherView[]> {
@@ -324,6 +326,10 @@ export class CipherService implements CipherServiceAbstraction {
 
   @sequentialize(() => "getAllDecrypted")
   async getAllDecrypted(): Promise<CipherView[]> {
+
+    // TEST
+    this.webWorkerService.create('test');
+
     const userId = await this.stateService.getUserId();
     if ((await this.getDecryptedCipherCache()) != null) {
       if (
