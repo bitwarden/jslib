@@ -37,7 +37,7 @@ import { TotpService as TotpServiceAbstraction } from "jslib-common/abstractions
 import { TwoFactorService as TwoFactorServiceAbstraction } from "jslib-common/abstractions/twoFactor.service";
 import { UserVerificationService as UserVerificationServiceAbstraction } from "jslib-common/abstractions/userVerification.service";
 import { VaultTimeoutService as VaultTimeoutServiceAbstraction } from "jslib-common/abstractions/vaultTimeout.service";
-import { WebWorkerService as WebWorkerServiceAbstraction } from "jslib-common/abstractions/webWorker.service";
+import { CryptoWorkerService as CryptoWorkerServiceAbstraction } from "jslib-common/abstractions/cryptoWorker.service";
 import { StateFactory } from "jslib-common/factories/stateFactory";
 import { Account } from "jslib-common/models/domain/account";
 import { GlobalState } from "jslib-common/models/domain/globalState";
@@ -72,7 +72,7 @@ import { TwoFactorService } from "jslib-common/services/twoFactor.service";
 import { UserVerificationService } from "jslib-common/services/userVerification.service";
 import { VaultTimeoutService } from "jslib-common/services/vaultTimeout.service";
 import { WebCryptoFunctionService } from "jslib-common/services/webCryptoFunction.service";
-import { WebWorkerService } from "jslib-common/services/webWorker.service";
+import { CryptoWorkerService } from "jslib-common/services/cryptoWorker.service";
 
 import { AuthGuardService } from "./auth-guard.service";
 import { BroadcasterService } from "./broadcaster.service";
@@ -135,7 +135,8 @@ import { ValidationService } from "./validation.service";
         injector: Injector,
         logService: LogService,
         stateService: StateServiceAbstraction,
-        webWorkerService: WebWorkerServiceAbstraction
+        cryptoWorkerService: CryptoWorkerServiceAbstraction,
+        platformUtilsService: PlatformUtilsServiceAbstraction
       ) =>
         new CipherService(
           cryptoService,
@@ -146,7 +147,8 @@ import { ValidationService } from "./validation.service";
           () => injector.get(SearchServiceAbstraction),
           logService,
           stateService,
-          webWorkerService
+          cryptoWorkerService,
+          platformUtilsService
         ),
       deps: [
         CryptoServiceAbstraction,
@@ -157,7 +159,8 @@ import { ValidationService } from "./validation.service";
         Injector, // TODO: Get rid of this circular dependency!
         LogService,
         StateServiceAbstraction,
-        WebWorkerServiceAbstraction
+        CryptoWorkerServiceAbstraction,
+        PlatformUtilsServiceAbstraction
       ],
     },
     {
@@ -483,8 +486,8 @@ import { ValidationService } from "./validation.service";
       deps: [I18nServiceAbstraction, PlatformUtilsServiceAbstraction],
     },
     {
-      provide: WebWorkerServiceAbstraction,
-      useFactory: () => new WebWorkerService()
+      provide: CryptoWorkerServiceAbstraction,
+      useClass: CryptoWorkerService
     },
   ],
 })
