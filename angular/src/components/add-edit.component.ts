@@ -427,11 +427,7 @@ export class AddEditComponent implements OnInit {
   }
 
   async generateUsername(): Promise<boolean> {
-    if (
-      this.cipher.login != null &&
-      this.cipher.login.username != null &&
-      this.cipher.login.username.length
-    ) {
+    if (this.cipher.login?.username?.length) {
       const confirmed = await this.platformUtilsService.showDialog(
         this.i18nService.t("overwriteUsernameConfirmation"),
         this.i18nService.t("overwriteUsername"),
@@ -448,11 +444,7 @@ export class AddEditComponent implements OnInit {
   }
 
   async generatePassword(): Promise<boolean> {
-    if (
-      this.cipher.login != null &&
-      this.cipher.login.password != null &&
-      this.cipher.login.password.length
-    ) {
+    if (this.cipher.login?.password?.length) {
       const confirmed = await this.platformUtilsService.showDialog(
         this.i18nService.t("overwritePasswordConfirmation"),
         this.i18nService.t("overwritePassword"),

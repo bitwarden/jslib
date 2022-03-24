@@ -53,7 +53,6 @@ export class PasswordGeneratorComponent implements OnInit {
         value: "subaddress",
         desc: i18nService.t("plusAddressedEmailDesc"),
       },
-      // { name: "Forwarded Email", value: "forwarded" },
       {
         name: i18nService.t("catchallEmail"),
         value: "catchall",
