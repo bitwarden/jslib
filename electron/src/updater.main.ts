@@ -107,6 +107,8 @@ export class UpdaterMain {
       });
 
       if (result.response === 0) {
+        // Quit and install have a different window logic, setting `isQuitting` just to be safe.
+        this.windowMain.isQuitting = true;
         autoUpdater.quitAndInstall(false, true);
       }
     });
