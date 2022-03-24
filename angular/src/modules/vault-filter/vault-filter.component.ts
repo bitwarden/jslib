@@ -19,6 +19,8 @@ export class VaultFilterComponent implements OnInit {
   @Input() hideOrganizations = false;
 
   @Output() onFilterChange = new EventEmitter<VaultFilter>();
+  @Output() onAddFolder = new EventEmitter<never>();
+  @Output() onEditFolder = new EventEmitter<FolderView>();
 
   isLoaded = false;
   collapsedFilterNodes: Set<string>;
@@ -70,6 +72,14 @@ export class VaultFilterComponent implements OnInit {
     this.collections = filter.myVaultOnly
       ? null
       : await this.vaultFilterService.buildCollections(filter.selectedOrganizationId);
+  }
+
+  addFolder() {
+    this.onAddFolder.emit();
+  }
+
+  editFolder(folder: FolderView) {
+    this.onEditFolder.emit(folder);
   }
 
   protected fixInvalidFilterSelections(filter: VaultFilter) {
