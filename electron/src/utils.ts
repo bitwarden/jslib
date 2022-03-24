@@ -34,7 +34,7 @@ export function isMac() {
 }
 
 export function isMacAppStore() {
-  return isMac() && (process.mas ?? false);
+  return isMac() && process.mas === true;
 }
 
 export function isWindowsStore() {
