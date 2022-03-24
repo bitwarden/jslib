@@ -11,6 +11,7 @@ export class Utils {
   static isBrowser = true;
   static isMobileBrowser = false;
   static isAppleMobileBrowser = false;
+  static isWorker = false;
   static global: any = null;
   static tldEndingRegex =
     /.*\.(com|net|org|edu|uk|gov|ca|de|jp|fr|au|ru|ch|io|es|us|co|xyz|info|ly|mil)$/;
@@ -31,7 +32,8 @@ export class Utils {
     Utils.isBrowser = typeof window !== "undefined";
     Utils.isMobileBrowser = Utils.isBrowser && this.isMobile(window);
     Utils.isAppleMobileBrowser = Utils.isBrowser && this.isAppleMobile(window);
-    Utils.global = Utils.isNode && !Utils.isBrowser ? global : window;
+    Utils.isWorker = !Utils.isBrowser && (self as any).WorkerGlobalScope != null;
+    Utils.global = Utils.isNode && !Utils.isBrowser ? global : (Utils.isWorker ? self : window);
   }
 
   static fromB64ToArray(str: string): Uint8Array {

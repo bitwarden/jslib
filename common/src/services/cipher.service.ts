@@ -4,10 +4,11 @@ import { CryptoService } from "../abstractions/crypto.service";
 import { FileUploadService } from "../abstractions/fileUpload.service";
 import { I18nService } from "../abstractions/i18n.service";
 import { LogService } from "../abstractions/log.service";
+import { PlatformUtilsService } from '../abstractions/platformUtils.service';
 import { SearchService } from "../abstractions/search.service";
 import { SettingsService } from "../abstractions/settings.service";
 import { StateService } from "../abstractions/state.service";
-import { WebWorkerService } from '../abstractions/webWorker.service';
+import { CryptoWorkerService } from '../abstractions/cryptoWorker.service';
 import { CipherType } from "../enums/cipherType";
 import { FieldType } from "../enums/fieldType";
 import { UriMatchType } from "../enums/uriMatchType";
@@ -49,6 +50,8 @@ const DomainMatchBlacklist = new Map<string, Set<string>>([
   ["google.com", new Set(["script.google.com"])],
 ]);
 
+const workerThreshold = 0; // Testing only, should be 250
+
 export class CipherService implements CipherServiceAbstraction {
   private sortedCiphersCache: SortedCiphersCache = new SortedCiphersCache(
     this.sortCiphersByLastUsed
@@ -63,7 +66,8 @@ export class CipherService implements CipherServiceAbstraction {
     private searchService: () => SearchService,
     private logService: LogService,
     private stateService: StateService,
-    private webWorkerService: WebWorkerService
+    private cryptoWorkerService: CryptoWorkerService,
+    private platformUtilsService: PlatformUtilsService
   ) {}
 
   async getDecryptedCipherCache(): Promise<CipherView[]> {
@@ -326,25 +330,33 @@ export class CipherService implements CipherServiceAbstraction {
 
   @sequentialize(() => "getAllDecrypted")
   async getAllDecrypted(): Promise<CipherView[]> {
-
-    // TEST
-    this.webWorkerService.create('test');
-
-    const userId = await this.stateService.getUserId();
-    if ((await this.getDecryptedCipherCache()) != null) {
-      if (
-        this.searchService != null &&
-        (this.searchService().indexedEntityId ?? userId) !== userId
-      ) {
-        await this.searchService().indexCiphers(userId, await this.getDecryptedCipherCache());
+    // testing only, remove if statement in prod
+    if (false) {
+      const userId = await this.stateService.getUserId();
+      if ((await this.getDecryptedCipherCache()) != null) {
+        if (
+          this.searchService != null &&
+          (this.searchService().indexedEntityId ?? userId) !== userId
+        ) {
+          await this.searchService().indexCiphers(userId, await this.getDecryptedCipherCache());
+        }
+        return await this.getDecryptedCipherCache();
       }
-      return await this.getDecryptedCipherCache();
+
+      const decCiphers: CipherView[] = [];
+      const hasKey = await this.cryptoService.hasKey();
+      if (!hasKey) {
+        throw new Error("No key.");
+      }
     }
 
-    const decCiphers: CipherView[] = [];
-    const hasKey = await this.cryptoService.hasKey();
-    if (!hasKey) {
-      throw new Error("No key.");
+    const cipherData = await this.stateService.getEncryptedCiphers();
+    const supportsWorkers = this.platformUtilsService.supportsWorkers();
+    if (supportsWorkers && Object.values(cipherData).length > workerThreshold) {
+      // Test
+      // this.cryptoWorkerService.create('test');
+      // Do stuff
+      // return this.cryptoWorkerService.
     }
 
     const promises: any[] = [];

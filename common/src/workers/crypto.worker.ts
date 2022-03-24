@@ -9,8 +9,6 @@ import { CryptoService } from '../services/crypto.service';
 import { WebCryptoFunctionService } from '../services/webCryptoFunction.service';
 import { WorkerLogService } from '../services/workerLogService';
 
-import { Utils } from '../misc/utils';
-
 const workerApi: Worker = self as any;
 // const Keys = ConstantsService.cryptoKeys;
 let firstRun = true;
