@@ -1,6 +1,11 @@
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 
+import {
+  SECURE_STORAGE,
+  STATE_FACTORY,
+  STATE_SERVICE_USE_CACHE,
+} from "../abstractions/injectionTokens";
 import { LogService } from "../abstractions/log.service";
 import { StateService as StateServiceAbstraction } from "../abstractions/state.service";
 import { StateMigrationService } from "../abstractions/stateMigration.service";
@@ -34,7 +39,6 @@ import { CollectionView } from "../models/view/collectionView";
 import { FolderView } from "../models/view/folderView";
 import { SendView } from "../models/view/sendView";
 
-import { SECURE_STORAGE, STATE_FACTORY, STATE_SERVICE_USE_CACHE } from "../abstractions/injectionTokens";
 
 const keys = {
   global: "global",
@@ -69,7 +73,7 @@ export class StateService<
 
   constructor(
     protected storageService: StorageService,
-    @Inject(SECURE_STORAGE) protected secureStorageService: StorageService,
+    @Inject(SECURE_STORAGE) protected secureStorageService: StorageService,
     protected logService: LogService,
     protected stateMigrationService: StateMigrationService,
     @Inject(STATE_FACTORY) protected stateFactory: StateFactory<TGlobalState, TAccount>,

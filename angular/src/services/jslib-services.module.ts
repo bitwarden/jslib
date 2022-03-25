@@ -15,7 +15,11 @@ import { ExportService as ExportServiceAbstraction } from "jslib-common/abstract
 import { FileUploadService as FileUploadServiceAbstraction } from "jslib-common/abstractions/fileUpload.service";
 import { FolderService as FolderServiceAbstraction } from "jslib-common/abstractions/folder.service";
 import { I18nService as I18nServiceAbstraction } from "jslib-common/abstractions/i18n.service";
-import { STATE_FACTORY, STATE_SERVICE_USE_CACHE, WINDOW_TOKEN } from 'jslib-common/abstractions/injectionTokens';
+import {
+  STATE_FACTORY,
+  STATE_SERVICE_USE_CACHE,
+  WINDOW_TOKEN,
+} from "jslib-common/abstractions/injectionTokens";
 import { KeyConnectorService as KeyConnectorServiceAbstraction } from "jslib-common/abstractions/keyConnector.service";
 import { LogService } from "jslib-common/abstractions/log.service";
 import { MessagingService as MessagingServiceAbstraction } from "jslib-common/abstractions/messaging.service";
@@ -300,15 +304,15 @@ import { ValidationService } from "./validation.service";
     },
     {
       provide: STATE_FACTORY,
-      useFactory: () => new StateFactory(GlobalState, Account)
+      useFactory: () => new StateFactory(GlobalState, Account),
     },
     {
       provide: StateServiceAbstraction,
-      useClass: StateService
+      useClass: StateService,
     },
     {
       provide: StateMigrationServiceAbstraction,
-      useClass: StateMigrationService
+      useClass: StateMigrationService,
     },
     {
       provide: ExportServiceAbstraction,

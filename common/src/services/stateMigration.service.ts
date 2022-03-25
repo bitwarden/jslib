@@ -1,5 +1,6 @@
-import { Inject, Injectable } from '@angular/core';
-import { SECURE_STORAGE, STATE_FACTORY } from '../abstractions/injectionTokens';
+import { Inject, Injectable } from "@angular/core";
+
+import { SECURE_STORAGE, STATE_FACTORY } from "../abstractions/injectionTokens";
 import { StorageService } from "../abstractions/storage.service";
 import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 import { KdfType } from "../enums/kdfType";

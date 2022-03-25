@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
+
 import { AppIdService as AppIdServiceAbstraction } from "../abstractions/appId.service";
 import { StorageService } from "../abstractions/storage.service";
 import { HtmlStorageLocation } from "../enums/htmlStorageLocation";

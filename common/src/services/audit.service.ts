@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
+
 import { ApiService } from "../abstractions/api.service";
 import { AuditService as AuditServiceAbstraction } from "../abstractions/audit.service";
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";

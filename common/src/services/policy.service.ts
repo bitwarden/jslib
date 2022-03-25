@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 
 import { ApiService } from "../abstractions/api.service";
 import { OrganizationService } from "../abstractions/organization.service";

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 
 import { I18nService } from "../abstractions/i18n.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";

@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-
+import { Injectable } from "@angular/core";
 import * as lunr from "lunr";
 
 import { CipherService } from "../abstractions/cipher.service";

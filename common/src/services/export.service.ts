@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-
+import { Injectable } from "@angular/core";
 import * as papa from "papaparse";
 
 import { ApiService } from "../abstractions/api.service";

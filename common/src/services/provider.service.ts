@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
+
 import { ProviderService as ProviderServiceAbstraction } from "../abstractions/provider.service";
 import { StateService } from "../abstractions/state.service";
 import { ProviderData } from "../models/data/providerData";

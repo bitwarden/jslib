@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-
+import { Injectable } from "@angular/core";
 import * as zxcvbn from "zxcvbn";
 
 import { CryptoService } from "../abstractions/crypto.service";

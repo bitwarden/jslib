@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 
 import { StateService } from "../abstractions/state.service";
 import { TokenService as TokenServiceAbstraction } from "../abstractions/token.service";
