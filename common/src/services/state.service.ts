@@ -1,3 +1,4 @@
+import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject } from "rxjs";
 
 import { LogService } from "../abstractions/log.service";
@@ -33,6 +34,8 @@ import { CollectionView } from "../models/view/collectionView";
 import { FolderView } from "../models/view/folderView";
 import { SendView } from "../models/view/sendView";
 
+import { STATE_FACTORY, STATE_SERVICE_USE_CACHE } from "../abstractions/injectionTokens";
+
 const keys = {
   global: "global",
   authenticatedAccounts: "authenticatedAccounts",
@@ -47,6 +50,7 @@ const partialKeys = {
   masterKey: "_masterkey",
 };
 
+@Injectable()
 export class StateService<
   TGlobalState extends GlobalState = GlobalState,
   TAccount extends Account = Account
@@ -65,11 +69,11 @@ export class StateService<
 
   constructor(
     protected storageService: StorageService,
-    protected secureStorageService: StorageService,
+    @Inject("SECURE_STORAGE") protected secureStorageService: StorageService,
     protected logService: LogService,
     protected stateMigrationService: StateMigrationService,
-    protected stateFactory: StateFactory<TGlobalState, TAccount>,
-    protected useAccountCache: boolean = true
+    @Inject(STATE_FACTORY) protected stateFactory: StateFactory<TGlobalState, TAccount>,
+    @Inject(STATE_SERVICE_USE_CACHE) protected useAccountCache: boolean
   ) {
     this.accountDiskCache = new Map<string, TAccount>();
   }

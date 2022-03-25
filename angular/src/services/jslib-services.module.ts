@@ -1,4 +1,4 @@
-import { Injector, LOCALE_ID, NgModule } from "@angular/core";
+import { InjectionToken, Injector, LOCALE_ID, NgModule } from "@angular/core";
 
 import { ApiService as ApiServiceAbstraction } from "jslib-common/abstractions/api.service";
 import { AppIdService as AppIdServiceAbstraction } from "jslib-common/abstractions/appId.service";
@@ -15,6 +15,7 @@ import { ExportService as ExportServiceAbstraction } from "jslib-common/abstract
 import { FileUploadService as FileUploadServiceAbstraction } from "jslib-common/abstractions/fileUpload.service";
 import { FolderService as FolderServiceAbstraction } from "jslib-common/abstractions/folder.service";
 import { I18nService as I18nServiceAbstraction } from "jslib-common/abstractions/i18n.service";
+import { STATE_FACTORY, STATE_SERVICE_USE_CACHE } from 'jslib-common/abstractions/injectionTokens';
 import { KeyConnectorService as KeyConnectorServiceAbstraction } from "jslib-common/abstractions/keyConnector.service";
 import { LogService } from "jslib-common/abstractions/log.service";
 import { MessagingService as MessagingServiceAbstraction } from "jslib-common/abstractions/messaging.service";
@@ -294,26 +295,16 @@ import { ValidationService } from "./validation.service";
       ],
     },
     {
+      provide: STATE_SERVICE_USE_CACHE,
+      useValue: true,
+    },
+    {
+      provide: STATE_FACTORY,
+      useFactory: () => new StateFactory(GlobalState, Account)
+    },
+    {
       provide: StateServiceAbstraction,
-      useFactory: (
-        storageService: StorageServiceAbstraction,
-        secureStorageService: StorageServiceAbstraction,
-        logService: LogService,
-        stateMigrationService: StateMigrationServiceAbstraction
-      ) =>
-        new StateService(
-          storageService,
-          secureStorageService,
-          logService,
-          stateMigrationService,
-          new StateFactory(GlobalState, Account)
-        ),
-      deps: [
-        StorageServiceAbstraction,
-        "SECURE_STORAGE",
-        LogService,
-        StateMigrationServiceAbstraction,
-      ],
+      useClass: StateService
     },
     {
       provide: StateMigrationServiceAbstraction,
