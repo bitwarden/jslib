@@ -1,13 +1,12 @@
-import { CipherType } from "../enums/cipherType";
-import { SecureNoteType } from "../enums/secureNoteType";
-import { ImportResult } from "../models/domain/importResult";
-import { CardView } from "../models/view/cardView";
-import { CipherView } from "../models/view/cipherView";
-import { IdentityView } from "../models/view/identityView";
-import { SecureNoteView } from "../models/view/secureNoteView";
-
-import { BaseImporter } from "./baseImporter";
-import { Importer } from "./importer";
+import { CipherType } from "../../enums/cipherType";
+import { SecureNoteType } from "../../enums/secureNoteType";
+import { ImportResult } from "../../models/domain/importResult";
+import { CardView } from "../../models/view/cardView";
+import { CipherView } from "../../models/view/cipherView";
+import { IdentityView } from "../../models/view/identityView";
+import { SecureNoteView } from "../../models/view/secureNoteView";
+import { BaseImporter } from "../baseImporter";
+import { Importer } from "../importer";
 
 const HandledResults = new Set([
   "ADDRESS",

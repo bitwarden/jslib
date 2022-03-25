@@ -545,15 +545,8 @@ function testRsaGenerateKeyPair(length: 1024 | 2048 | 4096) {
 function getWebCryptoFunctionService() {
   const platformUtilsMock = Substitute.for<PlatformUtilsService>();
   platformUtilsMock.isEdge().mimicks(() => navigator.userAgent.indexOf(" Edg/") !== -1);
-  platformUtilsMock
-    .isIE()
-    .mimicks(
-      () =>
-        navigator.userAgent.indexOf(" Edg/") === -1 &&
-        navigator.userAgent.indexOf(" Trident/") !== -1
-    );
 
-  return new WebCryptoFunctionService(window, platformUtilsMock);
+  return new WebCryptoFunctionService(window);
 }
 
 function makeStaticByteArray(length: number) {

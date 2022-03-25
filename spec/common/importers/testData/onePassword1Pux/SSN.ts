@@ -22,65 +22,63 @@ export const SSNData: ExportData = {
           },
           items: [
             {
-              item: {
-                uuid: "vi2biozc7sjnhr5sejk74nz26i",
-                favIndex: 1,
-                createdAt: 1619467910,
-                updatedAt: 1619467982,
-                trashed: false,
-                categoryUuid: "108",
-                details: {
-                  loginFields: [],
-                  notesPlain: "My SSN",
-                  sections: [
-                    {
-                      title: "",
-                      fields: [
-                        {
-                          title: "name",
-                          id: "name",
-                          value: {
-                            string: "Jack Judd",
-                          },
-                          indexAtSource: 0,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: false,
-                          inputTraits: {
-                            keyboard: "default",
-                            correction: "default",
-                            capitalization: "words",
-                          },
+              uuid: "vi2biozc7sjnhr5sejk74nz26i",
+              favIndex: 1,
+              createdAt: 1619467910,
+              updatedAt: 1619467982,
+              trashed: false,
+              categoryUuid: "108",
+              details: {
+                loginFields: [],
+                notesPlain: "My SSN",
+                sections: [
+                  {
+                    title: "",
+                    fields: [
+                      {
+                        title: "name",
+                        id: "name",
+                        value: {
+                          string: "Jack Judd",
                         },
-                        {
-                          title: "number",
-                          id: "number",
-                          value: {
-                            concealed: "131-216-1900",
-                          },
-                          indexAtSource: 1,
-                          guarded: false,
-                          multiline: false,
-                          dontGenerate: true,
-                          inputTraits: {
-                            keyboard: "numbersAndPunctuation",
-                            correction: "default",
-                            capitalization: "default",
-                          },
+                        indexAtSource: 0,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: false,
+                        inputTraits: {
+                          keyboard: "default",
+                          correction: "default",
+                          capitalization: "words",
                         },
-                      ],
-                    },
-                  ],
-                  passwordHistory: [],
-                },
-                overview: {
-                  subtitle: "Jack Judd",
-                  title: "SSN",
-                  url: "",
-                  ps: 0,
-                  pbe: 0.0,
-                  pgrng: false,
-                },
+                      },
+                      {
+                        title: "number",
+                        id: "number",
+                        value: {
+                          concealed: "131-216-1900",
+                        },
+                        indexAtSource: 1,
+                        guarded: false,
+                        multiline: false,
+                        dontGenerate: true,
+                        inputTraits: {
+                          keyboard: "numbersAndPunctuation",
+                          correction: "default",
+                          capitalization: "default",
+                        },
+                      },
+                    ],
+                  },
+                ],
+                passwordHistory: [],
+              },
+              overview: {
+                subtitle: "Jack Judd",
+                title: "SSN",
+                url: "",
+                ps: 0,
+                pbe: 0.0,
+                pgrng: false,
               },
             },
           ],

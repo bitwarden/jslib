@@ -16,7 +16,6 @@ export abstract class PlatformUtilsService {
   isOpera: () => boolean;
   isVivaldi: () => boolean;
   isSafari: () => boolean;
-  isIE: () => boolean;
   isMacAppStore: () => boolean;
   isViewOpen: () => Promise<boolean>;
   launchUri: (uri: string, options?: any) => void;
