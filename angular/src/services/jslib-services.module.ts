@@ -15,7 +15,7 @@ import { ExportService as ExportServiceAbstraction } from "jslib-common/abstract
 import { FileUploadService as FileUploadServiceAbstraction } from "jslib-common/abstractions/fileUpload.service";
 import { FolderService as FolderServiceAbstraction } from "jslib-common/abstractions/folder.service";
 import { I18nService as I18nServiceAbstraction } from "jslib-common/abstractions/i18n.service";
-import { STATE_FACTORY, STATE_SERVICE_USE_CACHE } from 'jslib-common/abstractions/injectionTokens';
+import { STATE_FACTORY, STATE_SERVICE_USE_CACHE, WINDOW_TOKEN } from 'jslib-common/abstractions/injectionTokens';
 import { KeyConnectorService as KeyConnectorServiceAbstraction } from "jslib-common/abstractions/keyConnector.service";
 import { LogService } from "jslib-common/abstractions/log.service";
 import { MessagingService as MessagingServiceAbstraction } from "jslib-common/abstractions/messaging.service";
@@ -84,7 +84,7 @@ import { ValidationService } from "./validation.service";
 @NgModule({
   declarations: [],
   providers: [
-    { provide: "WINDOW", useValue: window },
+    { provide: WINDOW_TOKEN, useValue: window },
     {
       provide: LOCALE_ID,
       useFactory: (i18nService: I18nServiceAbstraction) => i18nService.translationLocale,
@@ -354,7 +354,6 @@ import { ValidationService } from "./validation.service";
     {
       provide: CryptoFunctionServiceAbstraction,
       useClass: WebCryptoFunctionService,
-      deps: ["WINDOW"],
     },
     {
       provide: EventServiceAbstraction,
