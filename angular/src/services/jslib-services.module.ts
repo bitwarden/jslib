@@ -308,16 +308,7 @@ import { ValidationService } from "./validation.service";
     },
     {
       provide: StateMigrationServiceAbstraction,
-      useFactory: (
-        storageService: StorageServiceAbstraction,
-        secureStorageService: StorageServiceAbstraction
-      ) =>
-        new StateMigrationService(
-          storageService,
-          secureStorageService,
-          new StateFactory(GlobalState, Account)
-        ),
-      deps: [StorageServiceAbstraction, "SECURE_STORAGE"],
+      useClass: StateMigrationService
     },
     {
       provide: ExportServiceAbstraction,

@@ -1,3 +1,5 @@
+import { Inject, Injectable } from '@angular/core';
+import { SECURE_STORAGE, STATE_FACTORY } from '../abstractions/injectionTokens';
 import { StorageService } from "../abstractions/storage.service";
 import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 import { KdfType } from "../enums/kdfType";
@@ -127,14 +129,15 @@ const partialKeys = {
   masterKey: "_masterkey",
 };
 
+@Injectable()
 export class StateMigrationService<
   TGlobalState extends GlobalState = GlobalState,
   TAccount extends Account = Account
 > {
   constructor(
     protected storageService: StorageService,
-    protected secureStorageService: StorageService,
-    protected stateFactory: StateFactory<TGlobalState, TAccount>
+    @Inject(SECURE_STORAGE) protected secureStorageService: StorageService,
+    @Inject(STATE_FACTORY) protected stateFactory: StateFactory<TGlobalState, TAccount>
   ) {}
 
   async needsMigration(): Promise<boolean> {
