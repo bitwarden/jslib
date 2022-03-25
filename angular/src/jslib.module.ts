@@ -1,4 +1,4 @@
-import { CommonModule } from "@angular/common";
+import { CommonModule, DatePipe } from "@angular/common";
 import { NgModule } from "@angular/core";
 
 import { AvatarComponent } from "./components/avatar.component";
@@ -89,6 +89,6 @@ import { UserNamePipe } from "./pipes/user-name.pipe";
     VerifyMasterPasswordComponent,
     ExportScopeCalloutComponent,
   ],
-  providers: [UserNamePipe, SearchPipe],
+  providers: [DatePipe, UserNamePipe, SearchPipe],
 })
 export class JslibModule {}
