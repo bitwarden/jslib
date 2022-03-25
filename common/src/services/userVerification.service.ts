@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+
 import { ApiService } from "../abstractions/api.service";
 import { CryptoService } from "../abstractions/crypto.service";
 import { I18nService } from "../abstractions/i18n.service";
@@ -7,6 +9,7 @@ import { VerifyOTPRequest } from "../models/request/account/verifyOTPRequest";
 import { SecretVerificationRequest } from "../models/request/secretVerificationRequest";
 import { Verification } from "../types/verification";
 
+@Injectable()
 export class UserVerificationService implements UserVerificationServiceAbstraction {
   constructor(
     private cryptoService: CryptoService,

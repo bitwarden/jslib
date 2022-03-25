@@ -1,8 +1,11 @@
+import { Injectable } from '@angular/core';
+
 import { StateService } from "../abstractions/state.service";
 import { TokenService as TokenServiceAbstraction } from "../abstractions/token.service";
 import { Utils } from "../misc/utils";
 import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
 
+@Injectable()
 export class TokenService implements TokenServiceAbstraction {
   static decodeToken(token: string): Promise<any> {
     if (token == null) {

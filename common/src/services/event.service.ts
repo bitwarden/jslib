@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+
 import { ApiService } from "../abstractions/api.service";
 import { CipherService } from "../abstractions/cipher.service";
 import { EventService as EventServiceAbstraction } from "../abstractions/event.service";
@@ -8,6 +10,7 @@ import { EventType } from "../enums/eventType";
 import { EventData } from "../models/data/eventData";
 import { EventRequest } from "../models/request/eventRequest";
 
+@Injectable()
 export class EventService implements EventServiceAbstraction {
   private inited = false;
 

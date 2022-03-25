@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+
 import * as forge from "node-forge";
 
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
@@ -5,6 +7,7 @@ import { Utils } from "../misc/utils";
 import { DecryptParameters } from "../models/domain/decryptParameters";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 
+@Injectable()
 export class WebCryptoFunctionService implements CryptoFunctionService {
   private crypto: Crypto;
   private subtle: SubtleCrypto;

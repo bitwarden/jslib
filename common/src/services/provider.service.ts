@@ -1,8 +1,10 @@
+import { Injectable } from '@angular/core';
 import { ProviderService as ProviderServiceAbstraction } from "../abstractions/provider.service";
 import { StateService } from "../abstractions/state.service";
 import { ProviderData } from "../models/data/providerData";
 import { Provider } from "../models/domain/provider";
 
+@Injectable()
 export class ProviderService implements ProviderServiceAbstraction {
   constructor(private stateService: StateService) {}
 

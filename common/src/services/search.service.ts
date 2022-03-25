@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+
 import * as lunr from "lunr";
 
 import { CipherService } from "../abstractions/cipher.service";
@@ -10,6 +12,7 @@ import { UriMatchType } from "../enums/uriMatchType";
 import { CipherView } from "../models/view/cipherView";
 import { SendView } from "../models/view/sendView";
 
+@Injectable()
 export class SearchService implements SearchServiceAbstraction {
   indexedEntityId?: string = null;
   private indexing = false;

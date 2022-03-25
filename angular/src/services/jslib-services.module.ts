@@ -97,30 +97,14 @@ import { ValidationService } from "./validation.service";
     {
       provide: AppIdServiceAbstraction,
       useClass: AppIdService,
-      deps: [StorageServiceAbstraction],
     },
     {
       provide: AuditServiceAbstraction,
       useClass: AuditService,
-      deps: [CryptoFunctionServiceAbstraction, ApiServiceAbstraction],
     },
     {
       provide: AuthServiceAbstraction,
       useClass: AuthService,
-      deps: [
-        CryptoServiceAbstraction,
-        ApiServiceAbstraction,
-        TokenServiceAbstraction,
-        AppIdServiceAbstraction,
-        PlatformUtilsServiceAbstraction,
-        MessagingServiceAbstraction,
-        LogService,
-        KeyConnectorServiceAbstraction,
-        EnvironmentServiceAbstraction,
-        StateServiceAbstraction,
-        TwoFactorServiceAbstraction,
-        I18nServiceAbstraction,
-      ],
     },
     {
       provide: CipherServiceAbstraction,
@@ -158,45 +142,28 @@ import { ValidationService } from "./validation.service";
     {
       provide: FolderServiceAbstraction,
       useClass: FolderService,
-      deps: [
-        CryptoServiceAbstraction,
-        ApiServiceAbstraction,
-        I18nServiceAbstraction,
-        CipherServiceAbstraction,
-        StateServiceAbstraction,
-      ],
     },
     { provide: LogService, useFactory: () => new ConsoleLogService(false) },
     {
       provide: CollectionServiceAbstraction,
       useClass: CollectionService,
-      deps: [CryptoServiceAbstraction, I18nServiceAbstraction, StateServiceAbstraction],
     },
     {
       provide: EnvironmentServiceAbstraction,
       useClass: EnvironmentService,
-      deps: [StateServiceAbstraction],
     },
     {
       provide: TotpServiceAbstraction,
       useClass: TotpService,
-      deps: [CryptoFunctionServiceAbstraction, LogService, StateServiceAbstraction],
     },
-    { provide: TokenServiceAbstraction, useClass: TokenService, deps: [StateServiceAbstraction] },
+    { provide: TokenServiceAbstraction, useClass: TokenService },
     {
       provide: CryptoServiceAbstraction,
       useClass: CryptoService,
-      deps: [
-        CryptoFunctionServiceAbstraction,
-        PlatformUtilsServiceAbstraction,
-        LogService,
-        StateServiceAbstraction,
-      ],
     },
     {
       provide: PasswordGenerationServiceAbstraction,
       useClass: PasswordGenerationService,
-      deps: [CryptoServiceAbstraction, PolicyServiceAbstraction, StateServiceAbstraction],
     },
     {
       provide: ApiServiceAbstraction,
@@ -280,7 +247,6 @@ import { ValidationService } from "./validation.service";
     {
       provide: SettingsServiceAbstraction,
       useClass: SettingsService,
-      deps: [StateServiceAbstraction],
     },
     {
       provide: VaultTimeoutServiceAbstraction,
@@ -365,17 +331,10 @@ import { ValidationService } from "./validation.service";
     {
       provide: ExportServiceAbstraction,
       useClass: ExportService,
-      deps: [
-        FolderServiceAbstraction,
-        CipherServiceAbstraction,
-        ApiServiceAbstraction,
-        CryptoServiceAbstraction,
-      ],
     },
     {
       provide: SearchServiceAbstraction,
       useClass: SearchService,
-      deps: [CipherServiceAbstraction, LogService, I18nServiceAbstraction],
     },
     {
       provide: NotificationsServiceAbstraction,
@@ -418,64 +377,35 @@ import { ValidationService } from "./validation.service";
     {
       provide: EventServiceAbstraction,
       useClass: EventService,
-      deps: [
-        ApiServiceAbstraction,
-        CipherServiceAbstraction,
-        StateServiceAbstraction,
-        LogService,
-        OrganizationServiceAbstraction,
-      ],
     },
     {
       provide: PolicyServiceAbstraction,
       useClass: PolicyService,
-      deps: [StateServiceAbstraction, OrganizationServiceAbstraction, ApiServiceAbstraction],
     },
     {
       provide: SendServiceAbstraction,
       useClass: SendService,
-      deps: [
-        CryptoServiceAbstraction,
-        ApiServiceAbstraction,
-        FileUploadServiceAbstraction,
-        I18nServiceAbstraction,
-        CryptoFunctionServiceAbstraction,
-        StateServiceAbstraction,
-      ],
     },
     {
       provide: KeyConnectorServiceAbstraction,
       useClass: KeyConnectorService,
-      deps: [
-        StateServiceAbstraction,
-        CryptoServiceAbstraction,
-        ApiServiceAbstraction,
-        TokenServiceAbstraction,
-        LogService,
-        OrganizationServiceAbstraction,
-        CryptoFunctionServiceAbstraction,
-      ],
     },
     {
       provide: UserVerificationServiceAbstraction,
       useClass: UserVerificationService,
-      deps: [CryptoServiceAbstraction, I18nServiceAbstraction, ApiServiceAbstraction],
     },
     { provide: PasswordRepromptServiceAbstraction, useClass: PasswordRepromptService },
     {
       provide: OrganizationServiceAbstraction,
       useClass: OrganizationService,
-      deps: [StateServiceAbstraction],
     },
     {
       provide: ProviderServiceAbstraction,
       useClass: ProviderService,
-      deps: [StateServiceAbstraction],
     },
     {
       provide: TwoFactorServiceAbstraction,
       useClass: TwoFactorService,
-      deps: [I18nServiceAbstraction, PlatformUtilsServiceAbstraction],
     },
   ],
 })

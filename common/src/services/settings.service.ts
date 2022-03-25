@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+
 import { SettingsService as SettingsServiceAbstraction } from "../abstractions/settings.service";
 import { StateService } from "../abstractions/state.service";
 
@@ -6,6 +8,7 @@ const Keys = {
   equivalentDomains: "equivalentDomains",
 };
 
+@Injectable()
 export class SettingsService implements SettingsServiceAbstraction {
   constructor(private stateService: StateService) {}
 

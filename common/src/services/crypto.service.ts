@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+
 import * as bigInt from "big-integer";
 
 import { CryptoService as CryptoServiceAbstraction } from "../abstractions/crypto.service";
@@ -20,6 +22,7 @@ import { ProfileOrganizationResponse } from "../models/response/profileOrganizat
 import { ProfileProviderOrganizationResponse } from "../models/response/profileProviderOrganizationResponse";
 import { ProfileProviderResponse } from "../models/response/profileProviderResponse";
 
+@Injectable()
 export class CryptoService implements CryptoServiceAbstraction {
   constructor(
     private cryptoFunctionService: CryptoFunctionService,

@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+
 import { ApiService } from "../abstractions/api.service";
 import { CryptoService } from "../abstractions/crypto.service";
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
@@ -14,6 +16,7 @@ import { KeyConnectorUserKeyRequest } from "../models/request/keyConnectorUserKe
 import { KeysRequest } from "../models/request/keysRequest";
 import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
 
+@Injectable()
 export class KeyConnectorService implements KeyConnectorServiceAbstraction {
   constructor(
     private stateService: StateService,

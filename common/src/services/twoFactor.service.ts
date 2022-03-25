@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+
 import { I18nService } from "../abstractions/i18n.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import {
@@ -59,6 +61,7 @@ export const TwoFactorProviders: Partial<Record<TwoFactorProviderType, TwoFactor
     },
   };
 
+@Injectable()
 export class TwoFactorService implements TwoFactorServiceAbstraction {
   private twoFactorProvidersData: Map<TwoFactorProviderType, { [key: string]: string }>;
   private selectedTwoFactorProviderType: TwoFactorProviderType = null;

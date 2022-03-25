@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+
 import { Observable, Subject } from "rxjs";
 
 import {
@@ -7,6 +9,7 @@ import {
 import { StateService } from "../abstractions/state.service";
 import { EnvironmentUrls } from "../models/domain/environmentUrls";
 
+@Injectable()
 export class EnvironmentService implements EnvironmentServiceAbstraction {
   private readonly urlsSubject = new Subject<Urls>();
   urls: Observable<Urls> = this.urlsSubject;

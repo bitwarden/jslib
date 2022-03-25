@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+
 import { ApiService } from "../abstractions/api.service";
 import { OrganizationService } from "../abstractions/organization.service";
 import { PolicyService as PolicyServiceAbstraction } from "../abstractions/policy.service";
@@ -13,6 +15,7 @@ import { ResetPasswordPolicyOptions } from "../models/domain/resetPasswordPolicy
 import { ListResponse } from "../models/response/listResponse";
 import { PolicyResponse } from "../models/response/policyResponse";
 
+@Injectable()
 export class PolicyService implements PolicyServiceAbstraction {
   policyCache: Policy[];
 

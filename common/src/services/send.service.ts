@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+
 import { ApiService } from "../abstractions/api.service";
 import { CryptoService } from "../abstractions/crypto.service";
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
@@ -20,6 +22,7 @@ import { ErrorResponse } from "../models/response/errorResponse";
 import { SendResponse } from "../models/response/sendResponse";
 import { SendView } from "../models/view/sendView";
 
+@Injectable()
 export class SendService implements SendServiceAbstraction {
   constructor(
     private cryptoService: CryptoService,

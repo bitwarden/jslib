@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+
 import { ApiService } from "../abstractions/api.service";
 import { CipherService } from "../abstractions/cipher.service";
 import { CryptoService } from "../abstractions/crypto.service";
@@ -17,6 +19,7 @@ import { FolderView } from "../models/view/folderView";
 
 const NestingDelimiter = "/";
 
+@Injectable()
 export class FolderService implements FolderServiceAbstraction {
   constructor(
     private cryptoService: CryptoService,

@@ -1,3 +1,5 @@
+import { Injectable } from "@angular/core";
+
 import { ApiService } from "../abstractions/api.service";
 import { AppIdService } from "../abstractions/appId.service";
 import { AuthService as AuthServiceAbstraction } from "../abstractions/auth.service";
@@ -29,6 +31,7 @@ import { ErrorResponse } from "../models/response/errorResponse";
 
 const sessionTimeoutLength = 2 * 60 * 1000; // 2 minutes
 
+@Injectable()
 export class AuthService implements AuthServiceAbstraction {
   get email(): string {
     return this.logInStrategy instanceof PasswordLogInStrategy ? this.logInStrategy.email : null;

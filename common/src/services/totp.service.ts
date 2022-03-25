@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
 import { LogService } from "../abstractions/log.service";
 import { StateService } from "../abstractions/state.service";
@@ -7,6 +9,7 @@ import { Utils } from "../misc/utils";
 const B32Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 const SteamChars = "23456789BCDFGHJKMNPQRTVWXY";
 
+@Injectable()
 export class TotpService implements TotpServiceAbstraction {
   constructor(
     private cryptoFunctionService: CryptoFunctionService,

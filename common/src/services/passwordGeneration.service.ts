@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+
 import * as zxcvbn from "zxcvbn";
 
 import { CryptoService } from "../abstractions/crypto.service";
@@ -31,6 +33,7 @@ const DefaultOptions = {
 
 const MaxPasswordsInHistory = 100;
 
+@Injectable()
 export class PasswordGenerationService implements PasswordGenerationServiceAbstraction {
   constructor(
     private cryptoService: CryptoService,

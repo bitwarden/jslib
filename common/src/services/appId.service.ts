@@ -1,8 +1,10 @@
+import { Injectable } from '@angular/core';
 import { AppIdService as AppIdServiceAbstraction } from "../abstractions/appId.service";
 import { StorageService } from "../abstractions/storage.service";
 import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 import { Utils } from "../misc/utils";
 
+@Injectable()
 export class AppIdService implements AppIdServiceAbstraction {
   constructor(private storageService: StorageService) {}
 

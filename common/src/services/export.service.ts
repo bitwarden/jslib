@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+
 import * as papa from "papaparse";
 
 import { ApiService } from "../abstractions/api.service";
@@ -27,6 +29,7 @@ import { CollectionView } from "../models/view/collectionView";
 import { EventView } from "../models/view/eventView";
 import { FolderView } from "../models/view/folderView";
 
+@Injectable()
 export class ExportService implements ExportServiceAbstraction {
   constructor(
     private folderService: FolderService,
