@@ -1,4 +1,4 @@
-import { CommonModule } from "@angular/common";
+import { CommonModule, DatePipe } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
@@ -92,6 +92,6 @@ import { UserNamePipe } from "./pipes/user-name.pipe";
     VerifyMasterPasswordComponent,
     ExportScopeCalloutComponent,
   ],
-  providers: [UserNamePipe, SearchPipe, I18nPipe],
+  providers: [UserNamePipe, SearchPipe, I18nPipe, DatePipe],
 })
 export class JslibModule {}
