@@ -16,7 +16,7 @@ import { CipherView } from "jslib-common/models/view/cipherView";
 import { LoginView } from "jslib-common/models/view/loginView";
 import { ExportService } from "jslib-common/services/export.service";
 
-import { BuildTestObject, GetUniqueString } from "../../utils";
+import { BuildTestObject, GetUniqueString } from "../utils";
 
 const UserCipherViews = [
   generateCipherView(false),
