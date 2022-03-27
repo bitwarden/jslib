@@ -1,9 +1,13 @@
+import { Inject, Injectable } from '@angular/core';
+
+import { RELOAD_CALLBACK } from "../abstractions/injectionTokens";
 import { MessagingService } from "../abstractions/messaging.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import { StateService } from "../abstractions/state.service";
 import { SystemService as SystemServiceAbstraction } from "../abstractions/system.service";
 import { Utils } from "../misc/utils";
 
+@Injectable()
 export class SystemService implements SystemServiceAbstraction {
   private reloadInterval: any = null;
   private clearClipboardTimeout: any = null;
@@ -12,7 +16,7 @@ export class SystemService implements SystemServiceAbstraction {
   constructor(
     private messagingService: MessagingService,
     private platformUtilsService: PlatformUtilsService,
-    private reloadCallback: () => Promise<void> = null,
+    @Inject(RELOAD_CALLBACK) private reloadCallback: () => Promise<void> = null,
     private stateService: StateService
   ) {}
 
