@@ -67,9 +67,6 @@ jobs:
           name: test-coverage
           path: coverage/
 
-      - name: Run Node tests
-        run: npm run test:node
-
   check-failures:
     name: Check for failures
     if: always()
