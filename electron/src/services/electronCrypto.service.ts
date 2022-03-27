@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { CryptoFunctionService } from "jslib-common/abstractions/cryptoFunction.service";
 import { LogService } from "jslib-common/abstractions/log.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
@@ -6,6 +7,7 @@ import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
 import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
 import { CryptoService } from "jslib-common/services/crypto.service";
 
+@Injectable()
 export class ElectronCryptoService extends CryptoService {
   constructor(
     cryptoFunctionService: CryptoFunctionService,
