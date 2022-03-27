@@ -39,7 +39,6 @@ import { CollectionView } from "../models/view/collectionView";
 import { FolderView } from "../models/view/folderView";
 import { SendView } from "../models/view/sendView";
 
-
 const keys = {
   global: "global",
   authenticatedAccounts: "authenticatedAccounts",
@@ -77,7 +76,7 @@ export class StateService<
     protected logService: LogService,
     protected stateMigrationService: StateMigrationService,
     @Inject(STATE_FACTORY) protected stateFactory: StateFactory<TGlobalState, TAccount>,
-    @Inject(STATE_SERVICE_USE_CACHE) protected useAccountCache: boolean
+    @Inject(STATE_SERVICE_USE_CACHE) protected useAccountCache: boolean = true
   ) {
     this.accountDiskCache = new Map<string, TAccount>();
   }
