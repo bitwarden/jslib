@@ -1,8 +1,10 @@
+import { Injectable } from '@angular/core';
 import { ipcRenderer } from "electron";
 
 import { BroadcasterService } from "jslib-common/abstractions/broadcaster.service";
 import { MessagingService } from "jslib-common/abstractions/messaging.service";
 
+@Injectable()
 export class ElectronRendererMessagingService implements MessagingService {
   constructor(private broadcasterService: BroadcasterService) {
     ipcRenderer.on("messagingService", async (event: any, message: any) => {
