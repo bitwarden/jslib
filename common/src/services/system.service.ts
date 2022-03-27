@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable } from "@angular/core";
 
 import { RELOAD_CALLBACK } from "../abstractions/injectionTokens";
 import { MessagingService } from "../abstractions/messaging.service";

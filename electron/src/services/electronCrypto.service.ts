@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
+
 import { CryptoFunctionService } from "jslib-common/abstractions/cryptoFunction.service";
 import { LogService } from "jslib-common/abstractions/log.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";

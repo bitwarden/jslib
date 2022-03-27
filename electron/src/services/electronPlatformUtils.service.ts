@@ -1,7 +1,8 @@
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable } from "@angular/core";
 import { clipboard, ipcRenderer, shell } from "electron";
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
+import { CLIENT_TYPE } from "jslib-common/abstractions/injectionTokens";
 import { MessagingService } from "jslib-common/abstractions/messaging.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
@@ -10,8 +11,6 @@ import { DeviceType } from "jslib-common/enums/deviceType";
 import { ThemeType } from "jslib-common/enums/themeType";
 
 import { isDev, isMacAppStore } from "../utils";
-
-import { CLIENT_TYPE } from "jslib-common/abstractions/injectionTokens";
 
 @Injectable()
 export class ElectronPlatformUtilsService implements PlatformUtilsService {
@@ -22,7 +21,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     private messagingService: MessagingService,
     @Inject(CLIENT_TYPE) private clientType: ClientType.Desktop | ClientType.DirectoryConnector,
     private stateService: StateService
-  ) { }
+  ) {}
 
   getDevice(): DeviceType {
     if (!this.deviceCache) {
