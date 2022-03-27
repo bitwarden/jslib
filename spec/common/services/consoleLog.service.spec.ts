@@ -57,25 +57,25 @@ describe("ConsoleLogService", () => {
 
   it("writes debug/info messages to console.log", () => {
     logService.debug("this is a debug message");
-    expect(caughtMessage).toEqual({
-      log: jasmine.arrayWithExactContents(["this is a debug message"]),
+    expect(caughtMessage).toMatchObject({
+      log: { "0": "this is a debug message" },
     });
 
     logService.info("this is an info message");
-    expect(caughtMessage).toEqual({
-      log: jasmine.arrayWithExactContents(["this is an info message"]),
+    expect(caughtMessage).toMatchObject({
+      log: { "0": "this is an info message" },
     });
   });
   it("writes warning messages to console.warn", () => {
     logService.warning("this is a warning message");
-    expect(caughtMessage).toEqual({
-      warn: jasmine.arrayWithExactContents(["this is a warning message"]),
+    expect(caughtMessage).toMatchObject({
+      warn: { 0: "this is a warning message" },
     });
   });
   it("writes error messages to console.error", () => {
     logService.error("this is an error message");
-    expect(caughtMessage).toEqual({
-      error: jasmine.arrayWithExactContents(["this is an error message"]),
+    expect(caughtMessage).toMatchObject({
+      error: { 0: "this is an error message" },
     });
   });
 
@@ -87,9 +87,9 @@ describe("ConsoleLogService", () => {
     expect(duration[1]).toBeGreaterThan(0);
     expect(duration[1]).toBeLessThan(500 * 10e6);
 
-    expect(caughtMessage).toEqual(jasmine.arrayContaining([]));
+    expect(caughtMessage).toEqual(expect.arrayContaining([]));
     expect(caughtMessage.log.length).toBe(1);
-    expect(caughtMessage.log[0]).toEqual(jasmine.stringMatching(/^default: \d+\.?\d*ms$/));
+    expect(caughtMessage.log[0]).toEqual(expect.stringMatching(/^default: \d+\.?\d*ms$/));
   });
 
   it("filters time output", async () => {

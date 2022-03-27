@@ -65,7 +65,7 @@ describe("ImportService", () => {
       });
 
       it("has the appropriate password", () => {
-        expect(Object.entries(importer)).toEqual(jasmine.arrayContaining([["password", password]]));
+        expect(Object.entries(importer)).toEqual(expect.arrayContaining([["password", password]]));
       });
     });
   });
