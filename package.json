@@ -51,7 +51,7 @@
     "tsconfig-paths": "^3.12.0",
     "ttypescript": "^1.5.12",
     "typemoq": "^2.1.0",
-    "typescript": "^4.5.5",
+    "typescript": "4.3.5",
     "typescript-transform-paths": "^2.2.3",
     "webpack": "^4.46.0"
   },
