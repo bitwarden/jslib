@@ -12,7 +12,7 @@ import { PasswordGeneratorPolicyOptions } from "jslib-common/models/domain/passw
 @Directive()
 export class PasswordGeneratorComponent implements OnInit {
   @Input() showSelect = false;
-  @Input() type = "password";
+  @Input() type: string;
   @Output() onSelected = new EventEmitter<string>();
 
   typeOptions: any[];
@@ -100,12 +100,16 @@ export class PasswordGeneratorComponent implements OnInit {
         this.usernameOptions.website = this.usernameWebsite;
       }
 
-      if (qParams.type === "username" || qParams.type === "password") {
-        this.type = qParams.type;
-      } else {
-        const generatorOptions = await this.stateService.getGeneratorOptions();
-        if (generatorOptions != null && generatorOptions.type != null) {
-          this.type = generatorOptions.type;
+      if (this.type !== "username" && this.type !== "password") {
+        if (qParams.type === "username" || qParams.type === "password") {
+          this.type = qParams.type;
+        } else {
+          const generatorOptions = await this.stateService.getGeneratorOptions();
+          if (generatorOptions != null && generatorOptions.type != null) {
+            this.type = generatorOptions.type;
+          } else {
+            this.type = "password";
+          }
         }
       }
       await this.regenerate();
