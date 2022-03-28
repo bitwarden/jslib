@@ -16,7 +16,7 @@ import { CipherView } from "jslib-common/models/view/cipherView";
 import { LoginView } from "jslib-common/models/view/loginView";
 import { ExportService } from "jslib-common/services/export.service";
 
-import { BuildTestObject, GetUniqueString } from "../../utils";
+import { BuildTestObject, GetUniqueString } from "../utils";
 
 const UserCipherViews = [
   generateCipherView(false),
@@ -154,10 +154,10 @@ describe("ExportService", () => {
         mac = Substitute.for<EncString>();
         data = Substitute.for<EncString>();
 
-        mac.encryptedString = "mac";
-        data.encryptedString = "encData";
+        mac.encryptedString.returns("mac");
+        data.encryptedString.returns("encData");
 
-        spyOn(Utils, "fromBufferToB64").and.returnValue(salt);
+        jest.spyOn(Utils, "fromBufferToB64").mockReturnValue(salt);
         cipherService.getAllDecrypted().resolves(UserCipherViews.slice(0, 1));
 
         exportString = await exportService.getPasswordProtectedExport(password);
@@ -184,13 +184,19 @@ describe("ExportService", () => {
         expect(exportObject.kdfType).toEqual(KdfType.PBKDF2_SHA256);
       });
 
-      it("has a mac property", () => {
+      it("has a mac property", async () => {
         cryptoService.encrypt(Arg.any(), Arg.any()).resolves(mac);
+        exportString = await exportService.getPasswordProtectedExport(password);
+        exportObject = JSON.parse(exportString);
+
         expect(exportObject.encKeyValidation_DO_NOT_EDIT).toEqual(mac.encryptedString);
       });
 
-      it("has data property", () => {
+      it("has data property", async () => {
         cryptoService.encrypt(Arg.any(), Arg.any()).resolves(data);
+        exportString = await exportService.getPasswordProtectedExport(password);
+        exportObject = JSON.parse(exportString);
+
         expect(exportObject.data).toEqual(data.encryptedString);
       });
 
