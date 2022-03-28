@@ -2,13 +2,13 @@ import { Inject, Injectable } from "@angular/core";
 import { clipboard, ipcRenderer, shell } from "electron";
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
-import { CLIENT_TYPE } from "jslib-common/abstractions/injectionTokens";
 import { MessagingService } from "jslib-common/abstractions/messaging.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { ClientType } from "jslib-common/enums/clientType";
 import { DeviceType } from "jslib-common/enums/deviceType";
 import { ThemeType } from "jslib-common/enums/themeType";
+import { CLIENT_TYPE } from "jslib-common/misc/injectionTokens";
 
 import { isDev, isMacAppStore } from "../utils";
 

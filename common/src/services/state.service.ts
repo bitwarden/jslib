@@ -1,11 +1,6 @@
 import { Inject, Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 
-import {
-  SECURE_STORAGE,
-  STATE_FACTORY,
-  STATE_SERVICE_USE_CACHE,
-} from "../abstractions/injectionTokens";
 import { LogService } from "../abstractions/log.service";
 import { StateService as StateServiceAbstraction } from "../abstractions/state.service";
 import { StateMigrationService } from "../abstractions/stateMigration.service";
@@ -16,6 +11,7 @@ import { StorageLocation } from "../enums/storageLocation";
 import { ThemeType } from "../enums/themeType";
 import { UriMatchType } from "../enums/uriMatchType";
 import { StateFactory } from "../factories/stateFactory";
+import { SECURE_STORAGE, STATE_FACTORY, STATE_SERVICE_USE_CACHE } from "../misc/injectionTokens";
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
 import { EventData } from "../models/data/eventData";

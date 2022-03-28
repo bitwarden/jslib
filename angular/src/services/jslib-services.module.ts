@@ -1,4 +1,4 @@
-import { InjectionToken, Injector, LOCALE_ID, NgModule } from "@angular/core";
+import { Injector, LOCALE_ID, NgModule } from "@angular/core";
 
 import { ApiService as ApiServiceAbstraction } from "jslib-common/abstractions/api.service";
 import { AppIdService as AppIdServiceAbstraction } from "jslib-common/abstractions/appId.service";
@@ -15,11 +15,6 @@ import { ExportService as ExportServiceAbstraction } from "jslib-common/abstract
 import { FileUploadService as FileUploadServiceAbstraction } from "jslib-common/abstractions/fileUpload.service";
 import { FolderService as FolderServiceAbstraction } from "jslib-common/abstractions/folder.service";
 import { I18nService as I18nServiceAbstraction } from "jslib-common/abstractions/i18n.service";
-import {
-  STATE_FACTORY,
-  STATE_SERVICE_USE_CACHE,
-  WINDOW_TOKEN,
-} from "jslib-common/abstractions/injectionTokens";
 import { KeyConnectorService as KeyConnectorServiceAbstraction } from "jslib-common/abstractions/keyConnector.service";
 import { LogService } from "jslib-common/abstractions/log.service";
 import { MessagingService as MessagingServiceAbstraction } from "jslib-common/abstractions/messaging.service";
@@ -35,7 +30,6 @@ import { SendService as SendServiceAbstraction } from "jslib-common/abstractions
 import { SettingsService as SettingsServiceAbstraction } from "jslib-common/abstractions/settings.service";
 import { StateService as StateServiceAbstraction } from "jslib-common/abstractions/state.service";
 import { StateMigrationService as StateMigrationServiceAbstraction } from "jslib-common/abstractions/stateMigration.service";
-import { StorageService as StorageServiceAbstraction } from "jslib-common/abstractions/storage.service";
 import { SyncService as SyncServiceAbstraction } from "jslib-common/abstractions/sync.service";
 import { TokenService as TokenServiceAbstraction } from "jslib-common/abstractions/token.service";
 import { TotpService as TotpServiceAbstraction } from "jslib-common/abstractions/totp.service";
@@ -44,6 +38,11 @@ import { UserVerificationService as UserVerificationServiceAbstraction } from "j
 import { UsernameGenerationService as UsernameGenerationServiceAbstraction } from "jslib-common/abstractions/usernameGeneration.service";
 import { VaultTimeoutService as VaultTimeoutServiceAbstraction } from "jslib-common/abstractions/vaultTimeout.service";
 import { StateFactory } from "jslib-common/factories/stateFactory";
+import {
+  STATE_FACTORY,
+  STATE_SERVICE_USE_CACHE,
+  WINDOW_TOKEN,
+} from "jslib-common/misc/injectionTokens";
 import { Account } from "jslib-common/models/domain/account";
 import { GlobalState } from "jslib-common/models/domain/globalState";
 import { ApiService } from "jslib-common/services/api.service";

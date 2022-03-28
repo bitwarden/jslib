@@ -1,10 +1,10 @@
 import { Inject, Injectable } from "@angular/core";
 
-import { RELOAD_CALLBACK } from "../abstractions/injectionTokens";
 import { MessagingService } from "../abstractions/messaging.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import { StateService } from "../abstractions/state.service";
 import { SystemService as SystemServiceAbstraction } from "../abstractions/system.service";
+import { RELOAD_CALLBACK } from "../misc/injectionTokens";
 import { Utils } from "../misc/utils";
 
 @Injectable()

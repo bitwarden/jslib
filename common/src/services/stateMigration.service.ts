@@ -1,12 +1,12 @@
 import { Inject, Injectable } from "@angular/core";
 
-import { SECURE_STORAGE, STATE_FACTORY } from "../abstractions/injectionTokens";
 import { StorageService } from "../abstractions/storage.service";
 import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 import { KdfType } from "../enums/kdfType";
 import { StateVersion } from "../enums/stateVersion";
 import { ThemeType } from "../enums/themeType";
 import { StateFactory } from "../factories/stateFactory";
+import { SECURE_STORAGE, STATE_FACTORY } from "../misc/injectionTokens";
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
 import { EventData } from "../models/data/eventData";

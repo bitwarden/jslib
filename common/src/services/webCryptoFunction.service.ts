@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@angular/core";
 import * as forge from "node-forge";
 
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
-import { WINDOW_TOKEN } from "../abstractions/injectionTokens";
+import { WINDOW_TOKEN } from "../misc/injectionTokens";
 import { Utils } from "../misc/utils";
 import { DecryptParameters } from "../models/domain/decryptParameters";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";

@@ -1,3 +1,8 @@
+/**
+ * Used to stub out Angular DI in CLI clients (cli and bwdc).
+ * Use webpack.NormalModuleReplacementPlugin to replace @angular/core imports with this file.
+ */
+
 function noopDecorator(...args: any) {
   return;
 }
