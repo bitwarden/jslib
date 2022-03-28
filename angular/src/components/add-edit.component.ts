@@ -47,6 +47,7 @@ export class AddEditComponent implements OnInit {
   @Output() onShareCipher = new EventEmitter<CipherView>();
   @Output() onEditCollections = new EventEmitter<CipherView>();
   @Output() onGeneratePassword = new EventEmitter();
+  @Output() onGenerateUsername = new EventEmitter();
 
   editMode = false;
   cipher: CipherView;
@@ -425,12 +426,25 @@ export class AddEditComponent implements OnInit {
     return true;
   }
 
+  async generateUsername(): Promise<boolean> {
+    if (this.cipher.login?.username?.length) {
+      const confirmed = await this.platformUtilsService.showDialog(
+        this.i18nService.t("overwriteUsernameConfirmation"),
+        this.i18nService.t("overwriteUsername"),
+        this.i18nService.t("yes"),
+        this.i18nService.t("no")
+      );
+      if (!confirmed) {
+        return false;
+      }
+    }
+
+    this.onGenerateUsername.emit();
+    return true;
+  }
+
   async generatePassword(): Promise<boolean> {
-    if (
-      this.cipher.login != null &&
-      this.cipher.login.password != null &&
-      this.cipher.login.password.length
-    ) {
+    if (this.cipher.login?.password?.length) {
       const confirmed = await this.platformUtilsService.showDialog(
         this.i18nService.t("overwritePasswordConfirmation"),
         this.i18nService.t("overwritePassword"),
