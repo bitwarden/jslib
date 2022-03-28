@@ -1,4 +1,4 @@
-function noopDecorator(target: any) {
+function noopDecorator(...args: any) {
   return;
 }
 
