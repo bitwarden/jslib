@@ -53,9 +53,6 @@ jobs:
       - name: Run linter
         run: npm run lint
 
-      - name: Build
-        run: npm run build
-
       - name: Run tests
         if: runner.os != 'Linux'
         run: npm run test

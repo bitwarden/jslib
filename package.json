@@ -14,8 +14,6 @@
   "license": "GPL-3.0",
   "scripts": {
     "clean": "rimraf dist/**/*",
-    "build": "npm run clean && ttsc",
-    "build:watch": "npm run clean && ttsc -watch",
     "lint": "eslint . && prettier --check .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --write .",

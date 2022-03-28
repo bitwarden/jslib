@@ -26,6 +26,5 @@
       }
     ]
   },
-  "include": ["spec"],
   "exclude": ["node_modules", "dist"]
 }
