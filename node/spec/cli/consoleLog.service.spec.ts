@@ -1,6 +1,9 @@
-import { ConsoleLogService } from "jslib-node/cli/services/consoleLog.service";
+import {
+  interceptConsole,
+  restoreConsole,
+} from "jslib-common/../spec/services/consolelog.service.spec";
 
-import { interceptConsole, restoreConsole } from "../../common/services/consoleLog.service.spec";
+import { ConsoleLogService } from "jslib-node/cli/services/consoleLog.service";
 
 let caughtMessage: any = {};
 
@@ -20,8 +23,8 @@ describe("CLI Console log service", () => {
     process.env.BW_RESPONSE = "true";
 
     logService.debug("this is a debug message");
-    expect(caughtMessage).toEqual({
-      error: jasmine.arrayWithExactContents(["this is a debug message"]),
+    expect(caughtMessage).toMatchObject({
+      error: { 0: "this is a debug message" },
     });
   });
 
@@ -33,10 +36,10 @@ describe("CLI Console log service", () => {
     logService.warning("warning");
     logService.error("error");
 
-    expect(caughtMessage).toEqual({
-      log: jasmine.arrayWithExactContents(["info"]),
-      warn: jasmine.arrayWithExactContents(["warning"]),
-      error: jasmine.arrayWithExactContents(["error"]),
+    expect(caughtMessage).toMatchObject({
+      log: { 0: "info" },
+      warn: { 0: "warning" },
+      error: { 0: "error" },
     });
   });
 });

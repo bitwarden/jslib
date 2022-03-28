@@ -53,9 +53,6 @@ jobs:
       - name: Run linter
         run: npm run lint
 
-      - name: Build
-        run: npm run build
-
       - name: Run tests
         if: runner.os != 'Linux'
         run: npm run test
@@ -66,9 +63,6 @@ jobs:
         with:
           name: test-coverage
           path: coverage/
-
-      - name: Run Node tests
-        run: npm run test:node
 
   check-failures:
     name: Check for failures

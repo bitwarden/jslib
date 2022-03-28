@@ -30,14 +30,12 @@ import { WirelessRouterData } from "./testData/onePassword1Pux/WirelessRouter";
 function validateCustomField(fields: FieldView[], fieldName: string, expectedValue: any) {
   expect(fields).toBeDefined();
   const customField = fields.find((f) => f.name === fieldName);
-  expect(customField).withContext(`CustomField: ('${fieldName}') was not found`).toBeDefined();
+  expect(customField).toBeDefined();
 
-  expect(customField.value)
-    .withContext(`Customfield: ('${fieldName}'), should be equal to: '${expectedValue}'`)
-    .toEqual(expectedValue);
+  expect(customField.value).toEqual(expectedValue);
 }
 
-describe("1Password 1Pux Importer", async () => {
+describe("1Password 1Pux Importer", () => {
   const OnePuxExampleFileJson = JSON.stringify(OnePuxExampleFile);
   const LoginDataJson = JSON.stringify(LoginData);
   const CreditCardDataJson = JSON.stringify(CreditCardData);
@@ -83,7 +81,7 @@ describe("1Password 1Pux Importer", async () => {
     expect(result != null).toBe(true);
 
     const cipher = result.ciphers.shift();
-    expect(cipher.favorite).toBeTrue();
+    expect(cipher.favorite).toBe(true);
   });
 
   it("should handle custom boolean fields", async () => {
