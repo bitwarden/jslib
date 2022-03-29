@@ -7,7 +7,6 @@ import { CalloutComponent } from "./components/callout.component";
 import { ExportScopeCalloutComponent } from "./components/export-scope-callout.component";
 import { IconComponent } from "./components/icon.component";
 import { BitwardenToastModule } from "./components/toastr.component";
-import { VerifyMasterPasswordComponent } from "./components/verify-master-password.component";
 import { A11yInvalidDirective } from "./directives/a11y-invalid.directive";
 import { A11yTitleDirective } from "./directives/a11y-title.directive";
 import { ApiActionDirective } from "./directives/api-action.directive";
@@ -62,7 +61,6 @@ import { UserNamePipe } from "./pipes/user-name.pipe";
     UserNamePipe,
     CalloutComponent,
     IconComponent,
-    VerifyMasterPasswordComponent,
     ExportScopeCalloutComponent,
   ],
   exports: [
@@ -89,7 +87,6 @@ import { UserNamePipe } from "./pipes/user-name.pipe";
     UserNamePipe,
     CalloutComponent,
     IconComponent,
-    VerifyMasterPasswordComponent,
     ExportScopeCalloutComponent,
   ],
   providers: [UserNamePipe, SearchPipe, I18nPipe, DatePipe],
