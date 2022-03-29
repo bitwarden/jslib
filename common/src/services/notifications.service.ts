@@ -126,7 +126,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
     }
 
     const authStatus = await this.authService.authStatus();
-    const isAuthenticated = authStatus !== AuthenticationStatus.LoggedOut;
+    const isAuthenticated = authStatus > AuthenticationStatus.LoggedOut;
     const payloadUserId = notification.payload.userId || notification.payload.UserId;
     const myUserId = await this.stateService.getUserId();
     if (isAuthenticated && payloadUserId != null && payloadUserId !== myUserId) {
