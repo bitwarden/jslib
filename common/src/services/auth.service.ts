@@ -166,7 +166,7 @@ export class AuthService implements AuthServiceAbstraction {
     }
 
     // Keys aren't stored for a device that is locked or logged out
-    // Must always come after the logged out check to rule out that possibility
+    // Make sure we're logged in before checking this, otherwise we could mix up those states
     const neverLock =
       (await this.cryptoService.hasKeyStored(KeySuffixOptions.Auto, userId)) &&
       !(await this.stateService.getEverBeenUnlocked({ userId: userId }));
