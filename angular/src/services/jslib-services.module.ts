@@ -276,7 +276,7 @@ import { ValidationService } from "./validation.service";
         StateServiceAbstraction,
         OrganizationServiceAbstraction,
         ProviderServiceAbstraction,
-        AuthServiceAbstraction
+        AuthServiceAbstraction,
       ],
     },
     { provide: BroadcasterServiceAbstraction, useClass: BroadcasterService },
@@ -330,7 +330,7 @@ import { ValidationService } from "./validation.service";
         PolicyServiceAbstraction,
         KeyConnectorServiceAbstraction,
         StateServiceAbstraction,
-        AuthServiceAbstraction
+        AuthServiceAbstraction,
       ],
     },
     {
