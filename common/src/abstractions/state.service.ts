@@ -3,6 +3,7 @@ import { BehaviorSubject } from "rxjs";
 import { KdfType } from "../enums/kdfType";
 import { ThemeType } from "../enums/themeType";
 import { UriMatchType } from "../enums/uriMatchType";
+import { EncryptedOrganizationKeyStore } from "../interfaces/encryptedOrganizationKeyStore";
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
 import { EventData } from "../models/data/eventData";
@@ -23,7 +24,6 @@ import { CipherView } from "../models/view/cipherView";
 import { CollectionView } from "../models/view/collectionView";
 import { FolderView } from "../models/view/folderView";
 import { SendView } from "../models/view/sendView";
-
 export abstract class StateService<T extends Account = Account> {
   accounts: BehaviorSubject<{ [userId: string]: T }>;
   activeAccount: BehaviorSubject<string>;
@@ -184,9 +184,11 @@ export abstract class StateService<T extends Account = Account> {
     value: { [id: string]: FolderData },
     options?: StorageOptions
   ) => Promise<void>;
-  getEncryptedOrganizationKeys: (options?: StorageOptions) => Promise<any>;
+  getEncryptedOrganizationKeys: (
+    options?: StorageOptions
+  ) => Promise<{ [orgId: string]: EncryptedOrganizationKeyStore }>;
   setEncryptedOrganizationKeys: (
-    value: Map<string, SymmetricCryptoKey>,
+    value: { [orgId: string]: EncryptedOrganizationKeyStore },
     options?: StorageOptions
   ) => Promise<void>;
   getEncryptedPasswordGenerationHistory: (

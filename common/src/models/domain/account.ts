@@ -1,6 +1,7 @@
 import { AuthenticationStatus } from "../../enums/authenticationStatus";
 import { KdfType } from "../../enums/kdfType";
 import { UriMatchType } from "../../enums/uriMatchType";
+import { EncryptedOrganizationKeyStore } from "../../interfaces/encryptedOrganizationKeyStore";
 import { CipherData } from "../data/cipherData";
 import { CollectionData } from "../data/collectionData";
 import { EventData } from "../data/eventData";
@@ -19,6 +20,7 @@ import { EnvironmentUrls } from "./environmentUrls";
 import { GeneratedPasswordHistory } from "./generatedPasswordHistory";
 import { Policy } from "./policy";
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";
+
 
 export class EncryptionPair<TEncrypted, TDecrypted> {
   encrypted?: TEncrypted;
@@ -65,8 +67,11 @@ export class AccountKeys {
     string,
     SymmetricCryptoKey
   >();
-  organizationKeys?: EncryptionPair<any, Map<string, SymmetricCryptoKey>> = new EncryptionPair<
-    any,
+  organizationKeys?: EncryptionPair<
+    { [orgId: string]: EncryptedOrganizationKeyStore },
+    Map<string, SymmetricCryptoKey>
+  > = new EncryptionPair<
+    { [orgId: string]: EncryptedOrganizationKeyStore },
     Map<string, SymmetricCryptoKey>
   >();
   providerKeys?: EncryptionPair<any, Map<string, SymmetricCryptoKey>> = new EncryptionPair<

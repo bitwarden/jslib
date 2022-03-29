@@ -1,5 +1,7 @@
 import { BehaviorSubject } from "rxjs";
 
+import { EncryptedOrganizationKeyStore } from "jslib-common/interfaces/encryptedOrganizationKeyStore";
+
 import { LogService } from "../abstractions/log.service";
 import { StateService as StateServiceAbstraction } from "../abstractions/state.service";
 import { StateMigrationService } from "../abstractions/stateMigration.service";
@@ -1213,14 +1215,16 @@ export class StateService<
     );
   }
 
-  async getEncryptedOrganizationKeys(options?: StorageOptions): Promise<any> {
+  async getEncryptedOrganizationKeys(
+    options?: StorageOptions
+  ): Promise<{ [orgId: string]: EncryptedOrganizationKeyStore }> {
     return (
       await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
     )?.keys?.organizationKeys.encrypted;
   }
 
   async setEncryptedOrganizationKeys(
-    value: Map<string, SymmetricCryptoKey>,
+    value: { [orgId: string]: EncryptedOrganizationKeyStore },
     options?: StorageOptions
   ): Promise<void> {
     const account = await this.getAccount(

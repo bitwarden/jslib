@@ -1,5 +1,7 @@
 import * as bigInt from "big-integer";
 
+import { EncryptedOrganizationKeyStore } from 'jslib-common/interfaces/encryptedOrganizationKeyStore';
+
 import { CryptoService as CryptoServiceAbstraction } from "../abstractions/crypto.service";
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
 import { LogService } from "../abstractions/log.service";
@@ -59,20 +61,22 @@ export class CryptoService implements CryptoServiceAbstraction {
     orgs: ProfileOrganizationResponse[],
     providerOrgs: ProfileProviderOrganizationResponse[]
   ): Promise<void> {
-    const orgKeys: any = {};
+    const orgKeyStore: { [orgId: string]: EncryptedOrganizationKeyStore } = {};
     orgs.forEach((org) => {
-      orgKeys[org.id] = org.key;
+      orgKeyStore[org.id] = { key: org.key };
     });
 
     for (const providerOrg of providerOrgs) {
-      // Convert provider encrypted keys to user encrypted.
-      const providerKey = await this.getProviderKey(providerOrg.providerId);
-      const decValue = await this.decryptToBytes(new EncString(providerOrg.key), providerKey);
-      orgKeys[providerOrg.id] = (await this.rsaEncrypt(decValue)).encryptedString;
+      // Store providerId with the key later so it can be decrypted using the provider's key
+      // We can't decrypt it yet because we may not have all the required encryption keys available
+      orgKeyStore[providerOrg.id] = {
+        key: providerOrg.key,
+        providerId: providerOrg.providerId,
+      }
     }
 
     await this.stateService.setDecryptedOrganizationKeys(null);
-    return await this.stateService.setEncryptedOrganizationKeys(orgKeys);
+    return await this.stateService.setEncryptedOrganizationKeys(orgKeyStore);
   }
 
   async setProviderKeys(providers: ProfileProviderResponse[]): Promise<void> {
@@ -215,20 +219,35 @@ export class CryptoService implements CryptoServiceAbstraction {
       return decryptedOrganizationKeys;
     }
 
-    const encOrgKeys = await this.stateService.getEncryptedOrganizationKeys();
-    if (encOrgKeys == null) {
+    const encOrgKeyStore = await this.stateService.getEncryptedOrganizationKeys();
+    if (encOrgKeyStore == null) {
       return null;
     }
 
     let setKey = false;
 
-    for (const orgId in encOrgKeys) {
+    for (const orgId in encOrgKeyStore) {
       // eslint-disable-next-line
-      if (!encOrgKeys.hasOwnProperty(orgId)) {
+      if (!encOrgKeyStore.hasOwnProperty(orgId)) {
         continue;
       }
 
-      const decValue = await this.rsaDecrypt(encOrgKeys[orgId]);
+      if (orgKeys.has(orgId)) {
+        continue;
+      }
+
+      const encOrgKey = encOrgKeyStore[orgId].key;
+      const providerId = encOrgKeyStore[orgId].providerId;
+
+      let decValue = null;
+      if (providerId == null) {
+        // User encrypted
+        decValue = await this.rsaDecrypt(encOrgKey);
+      } else {
+        // Provider encrypted
+        const providerKey = await this.getProviderKey(providerId);
+        decValue = await this.decryptToBytes(new EncString(encOrgKey), providerKey);
+      }
       orgKeys.set(orgId, new SymmetricCryptoKey(decValue));
       setKey = true;
     }
