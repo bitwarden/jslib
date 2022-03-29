@@ -89,7 +89,6 @@ import { UserNamePipe } from "./pipes/user-name.pipe";
     UserNamePipe,
     CalloutComponent,
     IconComponent,
-    VerifyMasterPasswordComponent,
     ExportScopeCalloutComponent,
   ],
   providers: [UserNamePipe, SearchPipe, I18nPipe, DatePipe],
