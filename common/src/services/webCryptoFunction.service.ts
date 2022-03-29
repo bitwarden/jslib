@@ -1,7 +1,6 @@
 import * as forge from "node-forge";
 
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
-import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import { Utils } from "../misc/utils";
 import { DecryptParameters } from "../models/domain/decryptParameters";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
@@ -9,18 +8,11 @@ import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 export class WebCryptoFunctionService implements CryptoFunctionService {
   private crypto: Crypto;
   private subtle: SubtleCrypto;
-  private isIE: boolean;
-  private isOldSafari: boolean;
 
-  constructor(private win: Window, private platformUtilsService: PlatformUtilsService) {
+  constructor(win: Window) {
     this.crypto = typeof win.crypto !== "undefined" ? win.crypto : null;
     this.subtle =
       !!this.crypto && typeof win.crypto.subtle !== "undefined" ? win.crypto.subtle : null;
-    this.isIE = platformUtilsService.isIE();
-    const ua = win.navigator.userAgent;
-    this.isOldSafari =
-      platformUtilsService.isSafari() &&
-      (ua.indexOf(" Version/10.") > -1 || ua.indexOf(" Version/9.") > -1);
   }
 
   async pbkdf2(
@@ -29,20 +21,6 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     algorithm: "sha256" | "sha512",
     iterations: number
   ): Promise<ArrayBuffer> {
-    if (this.isIE || this.isOldSafari) {
-      const forgeLen = algorithm === "sha256" ? 32 : 64;
-      const passwordBytes = this.toByteString(password);
-      const saltBytes = this.toByteString(salt);
-      const derivedKeyBytes = (forge as any).pbkdf2(
-        passwordBytes,
-        saltBytes,
-        iterations,
-        forgeLen,
-        algorithm
-      );
-      return Utils.fromByteStringToArray(derivedKeyBytes).buffer;
-    }
-
     const wcLen = algorithm === "sha256" ? 256 : 512;
     const passwordBuf = this.toBuf(password);
     const saltBuf = this.toBuf(salt);
@@ -127,7 +105,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     value: string | ArrayBuffer,
     algorithm: "sha1" | "sha256" | "sha512" | "md5"
   ): Promise<ArrayBuffer> {
-    if ((this.isIE && algorithm === "sha1") || algorithm === "md5") {
+    if (algorithm === "md5") {
       const md = algorithm === "md5" ? forge.md.md5.create() : forge.md.sha1.create();
       const valueBytes = this.toByteString(value);
       md.update(valueBytes, "raw");
@@ -143,15 +121,6 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     key: ArrayBuffer,
     algorithm: "sha1" | "sha256" | "sha512"
   ): Promise<ArrayBuffer> {
-    if (this.isIE && algorithm === "sha512") {
-      const hmac = (forge as any).hmac.create();
-      const keyBytes = this.toByteString(key);
-      const valueBytes = this.toByteString(value);
-      hmac.start(algorithm, keyBytes);
-      hmac.update(valueBytes, "raw");
-      return Utils.fromByteStringToArray(hmac.digest().data).buffer;
-    }
-
     const signingAlgorithm = {
       name: "HMAC",
       hash: { name: this.toWebCryptoAlgorithm(algorithm) },
@@ -190,7 +159,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
   }
 
   hmacFast(value: string, key: string, algorithm: "sha1" | "sha256" | "sha512"): Promise<string> {
-    const hmac = (forge as any).hmac.create();
+    const hmac = forge.hmac.create();
     hmac.start(algorithm, key);
     hmac.update(value);
     const bytes = hmac.digest().getBytes();
@@ -206,7 +175,7 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
     }
     const macKey = buffer.getBytes();
 
-    const hmac = (forge as any).hmac.create();
+    const hmac = forge.hmac.create();
     hmac.start("sha256", macKey);
     hmac.update(a);
     const mac1 = hmac.digest().getBytes();
@@ -266,12 +235,12 @@ export class WebCryptoFunctionService implements CryptoFunctionService {
   }
 
   aesDecryptFast(parameters: DecryptParameters<string>): Promise<string> {
-    const dataBuffer = (forge as any).util.createBuffer(parameters.data);
-    const decipher = (forge as any).cipher.createDecipher("AES-CBC", parameters.encKey);
+    const dataBuffer = forge.util.createBuffer(parameters.data);
+    const decipher = forge.cipher.createDecipher("AES-CBC", parameters.encKey);
     decipher.start({ iv: parameters.iv });
     decipher.update(dataBuffer);
     decipher.finish();
-    const val = decipher.output.toString("utf8");
+    const val = decipher.output.toString();
     return Promise.resolve(val);
   }
 

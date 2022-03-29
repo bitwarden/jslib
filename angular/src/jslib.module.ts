@@ -1,5 +1,6 @@
-import { CommonModule } from "@angular/common";
+import { CommonModule, DatePipe } from "@angular/common";
 import { NgModule } from "@angular/core";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 import { AvatarComponent } from "./components/avatar.component";
 import { CalloutComponent } from "./components/callout.component";
@@ -35,6 +36,8 @@ import { UserNamePipe } from "./pipes/user-name.pipe";
       closeButton: true,
     }),
     CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
   declarations: [
     A11yInvalidDirective,
@@ -89,6 +92,6 @@ import { UserNamePipe } from "./pipes/user-name.pipe";
     VerifyMasterPasswordComponent,
     ExportScopeCalloutComponent,
   ],
-  providers: [UserNamePipe, SearchPipe],
+  providers: [UserNamePipe, SearchPipe, I18nPipe, DatePipe],
 })
 export class JslibModule {}
