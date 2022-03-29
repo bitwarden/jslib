@@ -1225,7 +1225,7 @@ export class CipherService implements CipherServiceAbstraction {
         );
         return;
       default:
-        throw new Error("Unknown cipher type.");
+        return;
     }
   }
 
