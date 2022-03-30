@@ -21,6 +21,7 @@ import { SelectCopyDirective } from "./directives/select-copy.directive";
 import { StopClickDirective } from "./directives/stop-click.directive";
 import { StopPropDirective } from "./directives/stop-prop.directive";
 import { TrueFalseValueDirective } from "./directives/true-false-value.directive";
+import { ColorPasswordCountPipe } from "./pipes/color-password-count.pipe";
 import { ColorPasswordPipe } from "./pipes/color-password.pipe";
 import { I18nPipe } from "./pipes/i18n.pipe";
 import { SearchCiphersPipe } from "./pipes/search-ciphers.pipe";
@@ -46,6 +47,7 @@ import { UserNamePipe } from "./pipes/user-name.pipe";
     AutofocusDirective,
     BlurClickDirective,
     BoxRowDirective,
+    ColorPasswordCountPipe,
     ColorPasswordPipe,
     FallbackSrcDirective,
     I18nPipe,
@@ -72,6 +74,7 @@ import { UserNamePipe } from "./pipes/user-name.pipe";
     BitwardenToastModule,
     BlurClickDirective,
     BoxRowDirective,
+    ColorPasswordCountPipe,
     ColorPasswordPipe,
     FallbackSrcDirective,
     I18nPipe,
