@@ -39,12 +39,12 @@ export class NodeApiService extends ApiService {
     return fetch(request);
   }
 
-  protected async doAuthRefresh(): Promise<void> {
+  protected async doApiTokenRefresh(): Promise<void> {
     const clientId = await this.tokenService.getClientId();
     const clientSecret = await this.tokenService.getClientSecret();
 
     if (Utils.isNullOrWhitespace(clientId) || Utils.isNullOrWhitespace(clientSecret)) {
-      throw new Error("Cannot refresh token, no api key stored");
+      throw new Error("No api key available for token refresh");
     }
 
     const appId = await this.appIdService.getAppId();

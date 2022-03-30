@@ -2318,10 +2318,28 @@ export class ApiService implements ApiServiceAbstraction {
 
   protected async doAuthRefresh(): Promise<void> {
     const refreshToken = await this.tokenService.getRefreshToken();
-    if (refreshToken == null || refreshToken === "") {
-      throw new Error("Cannot refresh token, no refresh token stored");
+    if (refreshToken != null && refreshToken !== "") {
+      return this.doRefreshToken();
     }
 
+    const clientId = await this.tokenService.getClientId();
+    const clientSecret = await this.tokenService.getClientSecret();
+    if (!Utils.isNullOrWhitespace(clientId) && !Utils.isNullOrWhitespace(clientSecret)) {
+      return this.doApiTokenRefresh();
+    }
+
+    throw new Error("Cannot refresh token, no refresh token or api keys are stored");
+  }
+
+  protected async doApiTokenRefresh(): Promise<void> {
+    throw new Error("doApiTokenRefresh not implemented in base class");
+  }
+
+  protected async doRefreshToken(): Promise<void> {
+    const refreshToken = await this.tokenService.getRefreshToken();
+    if (refreshToken == null || refreshToken === "") {
+      throw new Error();
+    }
     const headers = new Headers({
       "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
       Accept: "application/json",
