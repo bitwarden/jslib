@@ -2395,7 +2395,7 @@ export class ApiService implements ApiServiceAbstraction {
 
     const response = await this.postIdentityToken(tokenRequest);
     if (!(response instanceof IdentityTokenResponse)) {
-      throw new Error("Invalid response received when refreshing api key token.");
+      throw new Error("Invalid response received when refreshing api token");
     }
 
     await this.tokenService.setToken(response.accessToken);
