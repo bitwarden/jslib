@@ -174,15 +174,14 @@ import { UserKeyResponse } from "../models/response/userKeyResponse";
 import { SendAccessView } from "../models/view/sendAccessView";
 
 export class ApiService implements ApiServiceAbstraction {
-  protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
   private device: DeviceType;
   private deviceType: string;
   private isWebClient = false;
   private isDesktopClient = false;
 
   constructor(
-    private tokenService: TokenService,
-    private platformUtilsService: PlatformUtilsService,
+    protected tokenService: TokenService,
+    protected platformUtilsService: PlatformUtilsService,
     private environmentService: EnvironmentService,
     private logoutCallback: (expired: boolean) => Promise<void>,
     private customUserAgent: string = null
@@ -2333,17 +2332,7 @@ export class ApiService implements ApiServiceAbstraction {
   }
 
   protected async doApiTokenRefresh(): Promise<void> {
-    const clientId = await this.tokenService.getClientId();
-    const clientSecret = await this.tokenService.getClientSecret();
-    if (
-      Utils.isNullOrWhitespace(clientId) ||
-      Utils.isNullOrWhitespace(clientSecret) ||
-      this.apiKeyRefresh == null
-    ) {
-      throw new Error();
-    }
-
-    await this.apiKeyRefresh(clientId, clientSecret);
+    throw new Error("doApiTokenRefresh not implemented in base class");
   }
 
   protected async doRefreshToken(): Promise<void> {
