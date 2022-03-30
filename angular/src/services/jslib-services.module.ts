@@ -226,7 +226,7 @@ import { ValidationService } from "./validation.service";
         PlatformUtilsServiceAbstraction,
         EnvironmentServiceAbstraction,
         MessagingServiceAbstraction,
-        AppIdServiceAbstraction
+        AppIdServiceAbstraction,
       ],
     },
     {
