@@ -1,9 +1,9 @@
 import { AuthenticationStatus } from "../../enums/authenticationStatus";
 import { KdfType } from "../../enums/kdfType";
 import { UriMatchType } from "../../enums/uriMatchType";
-import { EncryptedOrganizationKeyStore } from "../../interfaces/encryptedOrganizationKeyStore";
 import { CipherData } from "../data/cipherData";
 import { CollectionData } from "../data/collectionData";
+import { EncryptedOrganizationKeyData } from "../data/encryptedOrganizationKeyData";
 import { EventData } from "../data/eventData";
 import { FolderData } from "../data/folderData";
 import { OrganizationData } from "../data/organizationData";
@@ -15,6 +15,7 @@ import { CollectionView } from "../view/collectionView";
 import { FolderView } from "../view/folderView";
 import { SendView } from "../view/sendView";
 
+import { BaseEncryptedOrganizationKey } from "./account/encryptedKey";
 import { EncString } from "./encString";
 import { EnvironmentUrls } from "./environmentUrls";
 import { GeneratedPasswordHistory } from "./generatedPasswordHistory";
@@ -67,10 +68,10 @@ export class AccountKeys {
     SymmetricCryptoKey
   >();
   organizationKeys?: EncryptionPair<
-    { [orgId: string]: EncryptedOrganizationKeyStore },
+    { [orgId: string]: EncryptedOrganizationKeyData },
     Map<string, SymmetricCryptoKey>
   > = new EncryptionPair<
-    { [orgId: string]: EncryptedOrganizationKeyStore },
+    { [orgId: string]: EncryptedOrganizationKeyData },
     Map<string, SymmetricCryptoKey>
   >();
   providerKeys?: EncryptionPair<any, Map<string, SymmetricCryptoKey>> = new EncryptionPair<

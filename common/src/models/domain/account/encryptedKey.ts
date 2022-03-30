@@ -1,18 +1,18 @@
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
+import { EncryptedOrganizationKeyData } from "jslib-common/models/data/encryptedOrganizationKeyData";
 
 import { EncString } from "../encString";
 import { SymmetricCryptoKey } from "../symmetricCryptoKey";
 
 export abstract class BaseEncryptedOrganizationKey {
   decrypt: (cryptoService: CryptoService) => Promise<SymmetricCryptoKey>;
-  toJSON: () => string;
 
-  static fromObj(obj: { key: string; providerId?: string }) {
-    if (obj.providerId != null) {
-      return new ProviderEncryptedOrganizationKey(obj.key, obj.providerId);
+  static fromData(data: EncryptedOrganizationKeyData) {
+    if (data.providerId != null) {
+      return new ProviderEncryptedOrganizationKey(data.key, data.providerId);
     }
 
-    return new EncryptedOrganizationKey(obj.key);
+    return new EncryptedOrganizationKey(data.key);
   }
 }
 
@@ -24,8 +24,8 @@ export class EncryptedOrganizationKey implements BaseEncryptedOrganizationKey {
     return new SymmetricCryptoKey(decValue);
   }
 
-  toJSON() {
-    return JSON.stringify({ key: this.key });
+  toData() {
+    return new EncryptedOrganizationKeyData(this.key);
   }
 }
 
@@ -38,10 +38,7 @@ export class ProviderEncryptedOrganizationKey implements BaseEncryptedOrganizati
     return new SymmetricCryptoKey(decValue);
   }
 
-  toJSON() {
-    return JSON.stringify({
-      key: this.key,
-      providerId: this.providerId,
-    });
+  toData() {
+    return new EncryptedOrganizationKeyData(this.key, this.providerId);
   }
 }

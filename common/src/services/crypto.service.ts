@@ -1,10 +1,7 @@
 import * as bigInt from "big-integer";
 
-import { EncryptedOrganizationKeyStore } from "jslib-common/interfaces/encryptedOrganizationKeyStore";
-import {
-  BaseEncryptedOrganizationKey,
-  EncryptedOrganizationKey,
-} from "jslib-common/models/domain/account/encryptedKey";
+import { EncryptedOrganizationKeyData } from "jslib-common/models/data/encryptedOrganizationKeyData";
+import { BaseEncryptedOrganizationKey } from "jslib-common/models/domain/account/encryptedKey";
 
 import { CryptoService as CryptoServiceAbstraction } from "../abstractions/crypto.service";
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
@@ -65,15 +62,15 @@ export class CryptoService implements CryptoServiceAbstraction {
     orgs: ProfileOrganizationResponse[],
     providerOrgs: ProfileProviderOrganizationResponse[]
   ): Promise<void> {
-    const encOrgKeys: { [orgId: string]: BaseEncryptedOrganizationKey } = {};
+    const encOrgKeyData: { [orgId: string]: EncryptedOrganizationKeyData } = {};
 
     const allOrgs = orgs.concat(providerOrgs);
     allOrgs.forEach((org) => {
-      encOrgKeys[org.id] = BaseEncryptedOrganizationKey.fromObj(org);
+      encOrgKeyData[org.id] = EncryptedOrganizationKeyData.fromObj(org);
     });
 
     await this.stateService.setDecryptedOrganizationKeys(null);
-    return await this.stateService.setEncryptedOrganizationKeys(encOrgKeys);
+    return await this.stateService.setEncryptedOrganizationKeys(encOrgKeyData);
   }
 
   async setProviderKeys(providers: ProfileProviderResponse[]): Promise<void> {
@@ -216,21 +213,22 @@ export class CryptoService implements CryptoServiceAbstraction {
       return decryptedOrganizationKeys;
     }
 
-    const encOrgKeys = await this.stateService.getEncryptedOrganizationKeys();
-    if (encOrgKeys == null) {
+    const encOrgKeyData = await this.stateService.getEncryptedOrganizationKeys();
+    if (encOrgKeyData == null) {
       return null;
     }
 
     let setKey = false;
 
-    for (const orgId in encOrgKeys) {
+    for (const orgId in encOrgKeyData) {
       // eslint-disable-next-line
-      if (!encOrgKeys.hasOwnProperty(orgId) || result.has(orgId)) {
+      if (!encOrgKeyData.hasOwnProperty(orgId) || result.has(orgId)) {
         continue;
       }
 
-      const decryptedKey = await encOrgKeys[orgId].decrypt(this);
-      result.set(orgId, decryptedKey);
+      const encOrgKey = BaseEncryptedOrganizationKey.fromData(encOrgKeyData[orgId]);
+      const decOrgKey = await encOrgKey.decrypt(this);
+      result.set(orgId, decOrgKey);
       setKey = true;
     }
 

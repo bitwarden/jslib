@@ -1,14 +1,10 @@
 import { BehaviorSubject } from "rxjs";
 
-import {
-  BaseEncryptedOrganizationKey,
-  EncryptedOrganizationKey,
-} from "jslib-common/models/domain/account/encryptedKey";
+import { EncryptedOrganizationKeyData } from "jslib-common/models/data/encryptedOrganizationKeyData";
 
 import { KdfType } from "../enums/kdfType";
 import { ThemeType } from "../enums/themeType";
 import { UriMatchType } from "../enums/uriMatchType";
-import { EncryptedOrganizationKeyStore } from "../interfaces/encryptedOrganizationKeyStore";
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
 import { EventData } from "../models/data/eventData";
@@ -29,6 +25,7 @@ import { CipherView } from "../models/view/cipherView";
 import { CollectionView } from "../models/view/collectionView";
 import { FolderView } from "../models/view/folderView";
 import { SendView } from "../models/view/sendView";
+
 export abstract class StateService<T extends Account = Account> {
   accounts: BehaviorSubject<{ [userId: string]: T }>;
   activeAccount: BehaviorSubject<string>;
@@ -191,9 +188,9 @@ export abstract class StateService<T extends Account = Account> {
   ) => Promise<void>;
   getEncryptedOrganizationKeys: (
     options?: StorageOptions
-  ) => Promise<{ [orgId: string]: BaseEncryptedOrganizationKey }>;
+  ) => Promise<{ [orgId: string]: EncryptedOrganizationKeyData }>;
   setEncryptedOrganizationKeys: (
-    value: { [orgId: string]: BaseEncryptedOrganizationKey },
+    value: { [orgId: string]: EncryptedOrganizationKeyData },
     options?: StorageOptions
   ) => Promise<void>;
   getEncryptedPasswordGenerationHistory: (
