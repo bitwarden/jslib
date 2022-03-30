@@ -19,7 +19,7 @@ import { DeviceRequest } from "../../models/request/deviceRequest";
 import { ApiTokenRequest } from "../../models/request/identityToken/apiTokenRequest";
 import { PasswordTokenRequest } from "../../models/request/identityToken/passwordTokenRequest";
 import { SsoTokenRequest } from "../../models/request/identityToken/ssoTokenRequest";
-import { TokenRequestTwoFactor } from "../../models/request/identityToken/tokenRequest";
+import { TokenRequestTwoFactor } from "../../models/request/identityToken/tokenRequestTwoFactor";
 import { KeysRequest } from "../../models/request/keysRequest";
 import { IdentityCaptchaResponse } from "../../models/response/identityCaptchaResponse";
 import { IdentityTokenResponse } from "../../models/response/identityTokenResponse";
@@ -86,18 +86,10 @@ export abstract class LogInStrategy {
 
     const storedTwoFactorToken = await this.tokenService.getTwoFactorToken();
     if (storedTwoFactorToken != null) {
-      return {
-        token: storedTwoFactorToken,
-        provider: TwoFactorProviderType.Remember,
-        remember: false,
-      };
+      return new TokenRequestTwoFactor(TwoFactorProviderType.Remember, storedTwoFactorToken, false);
     }
 
-    return {
-      token: null,
-      provider: null,
-      remember: false,
-    };
+    return new TokenRequestTwoFactor();
   }
 
   protected async saveAccountInformation(tokenResponse: IdentityTokenResponse) {

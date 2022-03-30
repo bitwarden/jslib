@@ -1,6 +1,7 @@
 import { DeviceRequest } from "../deviceRequest";
 
-import { TokenRequest, TokenRequestTwoFactor } from "./tokenRequest";
+import { TokenRequest } from "./tokenRequest";
+import { TokenRequestTwoFactor } from "./tokenRequestTwoFactor";
 
 export class SsoTokenRequest extends TokenRequest {
   constructor(

@@ -9,6 +9,7 @@ import { TokenService } from "jslib-common/abstractions/token.service";
 import { Utils } from "jslib-common/misc/utils";
 import { DeviceRequest } from "jslib-common/models/request/deviceRequest";
 import { ApiTokenRequest } from "jslib-common/models/request/identityToken/apiTokenRequest";
+import { TokenRequestTwoFactor } from "jslib-common/models/request/identityToken/tokenRequestTwoFactor";
 import { IdentityTokenResponse } from "jslib-common/models/response/identityTokenResponse";
 import { ApiService } from "jslib-common/services/api.service";
 
@@ -52,11 +53,7 @@ export class NodeApiService extends ApiService {
     const tokenRequest = new ApiTokenRequest(
       clientId,
       clientSecret,
-      {
-        provider: null,
-        token: null,
-        remember: false,
-      },
+      new TokenRequestTwoFactor(),
       deviceRequest
     );
 
