@@ -1,6 +1,10 @@
 import { BehaviorSubject } from "rxjs";
 
 import { EncryptedOrganizationKeyStore } from "jslib-common/interfaces/encryptedOrganizationKeyStore";
+import {
+  BaseEncryptedOrganizationKey,
+  EncryptedOrganizationKey,
+} from "jslib-common/models/domain/account/encryptedKey";
 
 import { LogService } from "../abstractions/log.service";
 import { StateService as StateServiceAbstraction } from "../abstractions/state.service";
@@ -1217,20 +1221,32 @@ export class StateService<
 
   async getEncryptedOrganizationKeys(
     options?: StorageOptions
-  ): Promise<{ [orgId: string]: EncryptedOrganizationKeyStore }> {
-    return (
+  ): Promise<{ [orgId: string]: BaseEncryptedOrganizationKey }> {
+    const data = (
       await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
     )?.keys?.organizationKeys.encrypted;
+
+    const result: { [orgId: string]: BaseEncryptedOrganizationKey } = {};
+    for (const orgId in data) {
+      result[orgId] = BaseEncryptedOrganizationKey.fromObj(data[orgId]);
+    }
+
+    return result;
   }
 
   async setEncryptedOrganizationKeys(
     value: { [orgId: string]: EncryptedOrganizationKeyStore },
     options?: StorageOptions
   ): Promise<void> {
+    const data: { [orgId: string]: EncryptedOrganizationKey } = {};
+    for (const orgId in value) {
+      data[orgId] = value[orgId].toJSON();
+    }
+
     const account = await this.getAccount(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.keys.organizationKeys.encrypted = value;
+    account.keys.organizationKeys.encrypted = data;
     await this.saveAccount(
       account,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())

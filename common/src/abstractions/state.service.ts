@@ -1,5 +1,10 @@
 import { BehaviorSubject } from "rxjs";
 
+import {
+  BaseEncryptedOrganizationKey,
+  EncryptedOrganizationKey,
+} from "jslib-common/models/domain/account/encryptedKey";
+
 import { KdfType } from "../enums/kdfType";
 import { ThemeType } from "../enums/themeType";
 import { UriMatchType } from "../enums/uriMatchType";
@@ -186,9 +191,9 @@ export abstract class StateService<T extends Account = Account> {
   ) => Promise<void>;
   getEncryptedOrganizationKeys: (
     options?: StorageOptions
-  ) => Promise<{ [orgId: string]: EncryptedOrganizationKeyStore }>;
+  ) => Promise<{ [orgId: string]: BaseEncryptedOrganizationKey }>;
   setEncryptedOrganizationKeys: (
-    value: { [orgId: string]: EncryptedOrganizationKeyStore },
+    value: { [orgId: string]: BaseEncryptedOrganizationKey },
     options?: StorageOptions
   ) => Promise<void>;
   getEncryptedPasswordGenerationHistory: (

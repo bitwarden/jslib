@@ -21,7 +21,6 @@ import { GeneratedPasswordHistory } from "./generatedPasswordHistory";
 import { Policy } from "./policy";
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";
 
-
 export class EncryptionPair<TEncrypted, TDecrypted> {
   encrypted?: TEncrypted;
   decrypted?: TDecrypted;

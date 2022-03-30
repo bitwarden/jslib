@@ -1,6 +1,10 @@
 import * as bigInt from "big-integer";
 
-import { EncryptedOrganizationKeyStore } from 'jslib-common/interfaces/encryptedOrganizationKeyStore';
+import { EncryptedOrganizationKeyStore } from "jslib-common/interfaces/encryptedOrganizationKeyStore";
+import {
+  BaseEncryptedOrganizationKey,
+  EncryptedOrganizationKey,
+} from "jslib-common/models/domain/account/encryptedKey";
 
 import { CryptoService as CryptoServiceAbstraction } from "../abstractions/crypto.service";
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
@@ -61,22 +65,15 @@ export class CryptoService implements CryptoServiceAbstraction {
     orgs: ProfileOrganizationResponse[],
     providerOrgs: ProfileProviderOrganizationResponse[]
   ): Promise<void> {
-    const orgKeyStore: { [orgId: string]: EncryptedOrganizationKeyStore } = {};
-    orgs.forEach((org) => {
-      orgKeyStore[org.id] = { key: org.key };
+    const encOrgKeys: { [orgId: string]: BaseEncryptedOrganizationKey } = {};
+
+    const allOrgs = orgs.concat(providerOrgs);
+    allOrgs.forEach((org) => {
+      encOrgKeys[org.id] = BaseEncryptedOrganizationKey.fromObj(org);
     });
 
-    for (const providerOrg of providerOrgs) {
-      // Store providerId with the key later so it can be decrypted using the provider's key
-      // We can't decrypt it yet because we may not have all the required encryption keys available
-      orgKeyStore[providerOrg.id] = {
-        key: providerOrg.key,
-        providerId: providerOrg.providerId,
-      }
-    }
-
     await this.stateService.setDecryptedOrganizationKeys(null);
-    return await this.stateService.setEncryptedOrganizationKeys(orgKeyStore);
+    return await this.stateService.setEncryptedOrganizationKeys(encOrgKeys);
   }
 
   async setProviderKeys(providers: ProfileProviderResponse[]): Promise<void> {
@@ -219,36 +216,21 @@ export class CryptoService implements CryptoServiceAbstraction {
       return decryptedOrganizationKeys;
     }
 
-    const encOrgKeyStore = await this.stateService.getEncryptedOrganizationKeys();
-    if (encOrgKeyStore == null) {
+    const encOrgKeys = await this.stateService.getEncryptedOrganizationKeys();
+    if (encOrgKeys == null) {
       return null;
     }
 
     let setKey = false;
 
-    for (const orgId in encOrgKeyStore) {
+    for (const orgId in encOrgKeys) {
       // eslint-disable-next-line
-      if (!encOrgKeyStore.hasOwnProperty(orgId)) {
+      if (!encOrgKeys.hasOwnProperty(orgId) || orgKeys.has(orgId)) {
         continue;
       }
 
-      if (orgKeys.has(orgId)) {
-        continue;
-      }
-
-      const encOrgKey = encOrgKeyStore[orgId].key;
-      const providerId = encOrgKeyStore[orgId].providerId;
-
-      let decValue = null;
-      if (providerId == null) {
-        // User encrypted
-        decValue = await this.rsaDecrypt(encOrgKey);
-      } else {
-        // Provider encrypted
-        const providerKey = await this.getProviderKey(providerId);
-        decValue = await this.decryptToBytes(new EncString(encOrgKey), providerKey);
-      }
-      orgKeys.set(orgId, new SymmetricCryptoKey(decValue));
+      const decryptedKey = await encOrgKeys[orgId].decrypt(this);
+      orgKeys.set(orgId, decryptedKey);
       setKey = true;
     }
 
