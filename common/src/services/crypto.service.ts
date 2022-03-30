@@ -210,7 +210,7 @@ export class CryptoService implements CryptoServiceAbstraction {
 
   @sequentialize(() => "getOrgKeys")
   async getOrgKeys(): Promise<Map<string, SymmetricCryptoKey>> {
-    const orgKeys: Map<string, SymmetricCryptoKey> = new Map<string, SymmetricCryptoKey>();
+    const result: Map<string, SymmetricCryptoKey> = new Map<string, SymmetricCryptoKey>();
     const decryptedOrganizationKeys = await this.stateService.getDecryptedOrganizationKeys();
     if (decryptedOrganizationKeys != null && decryptedOrganizationKeys.size > 0) {
       return decryptedOrganizationKeys;
@@ -225,20 +225,20 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     for (const orgId in encOrgKeys) {
       // eslint-disable-next-line
-      if (!encOrgKeys.hasOwnProperty(orgId) || orgKeys.has(orgId)) {
+      if (!encOrgKeys.hasOwnProperty(orgId) || result.has(orgId)) {
         continue;
       }
 
       const decryptedKey = await encOrgKeys[orgId].decrypt(this);
-      orgKeys.set(orgId, decryptedKey);
+      result.set(orgId, decryptedKey);
       setKey = true;
     }
 
     if (setKey) {
-      await this.stateService.setDecryptedOrganizationKeys(orgKeys);
+      await this.stateService.setDecryptedOrganizationKeys(result);
     }
 
-    return orgKeys;
+    return result;
   }
 
   async getOrgKey(orgId: string): Promise<SymmetricCryptoKey> {
