@@ -77,6 +77,7 @@ import { UserNamePipe } from "./pipes/user-name.pipe";
     BlurClickDirective,
     BoxRowDirective,
     ColorPasswordPipe,
+    EllipsisPipe,
     FallbackSrcDirective,
     I18nPipe,
     InputStripSpacesDirective,
