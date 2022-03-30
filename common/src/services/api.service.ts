@@ -1,3 +1,6 @@
+import { BillingHistoryResponse } from "jslib-common/models/response/billingHistoryResponse";
+import { BillingPaymentResponse } from "jslib-common/models/response/billingPaymentResponse";
+
 import { ApiService as ApiServiceAbstraction } from "../abstractions/api.service";
 import { EnvironmentService } from "../abstractions/environment.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";
@@ -279,6 +282,16 @@ export class ApiService implements ApiServiceAbstraction {
   async getUserBilling(): Promise<BillingResponse> {
     const r = await this.send("GET", "/accounts/billing", null, true, true);
     return new BillingResponse(r);
+  }
+
+  async getUserBillingHistory(): Promise<BillingHistoryResponse> {
+    const r = await this.send("GET", "/accounts/billing-history", null, true, true);
+    return new BillingHistoryResponse(r);
+  }
+
+  async getUserBillingPayment(): Promise<BillingPaymentResponse> {
+    const r = await this.send("GET", "/accounts/billing-payment", null, true, true);
+    return new BillingPaymentResponse(r);
   }
 
   async getUserSubscription(): Promise<SubscriptionResponse> {

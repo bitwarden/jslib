@@ -1,3 +1,6 @@
+import { BillingHistoryResponse } from "jslib-common/models/response/billingHistoryResponse";
+import { BillingPaymentResponse } from "jslib-common/models/response/billingPaymentResponse";
+
 import { PolicyType } from "../enums/policyType";
 import { SetKeyConnectorKeyRequest } from "../models/request/account/setKeyConnectorKeyRequest";
 import { VerifyOTPRequest } from "../models/request/account/verifyOTPRequest";
@@ -175,6 +178,8 @@ export abstract class ApiService {
 
   getProfile: () => Promise<ProfileResponse>;
   getUserBilling: () => Promise<BillingResponse>;
+  getUserBillingHistory: () => Promise<BillingHistoryResponse>;
+  getUserBillingPayment: () => Promise<BillingPaymentResponse>;
   getUserSubscription: () => Promise<SubscriptionResponse>;
   getTaxInfo: () => Promise<TaxInfoResponse>;
   putProfile: (request: UpdateProfileRequest) => Promise<ProfileResponse>;
