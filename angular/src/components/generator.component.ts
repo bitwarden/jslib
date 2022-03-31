@@ -10,8 +10,8 @@ import { UsernameGenerationService } from "jslib-common/abstractions/usernameGen
 import { PasswordGeneratorPolicyOptions } from "jslib-common/models/domain/passwordGeneratorPolicyOptions";
 
 @Directive()
-export class PasswordGeneratorComponent implements OnInit {
-  @Input() showSelect = false;
+export class GeneratorComponent implements OnInit {
+  @Input() comingFromAddEdit = false;
   @Input() type: string;
   @Output() onSelected = new EventEmitter<string>();
 
