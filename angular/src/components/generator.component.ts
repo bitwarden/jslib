@@ -27,7 +27,6 @@ export class GeneratorComponent implements OnInit {
   password = "-";
   showOptions = false;
   avoidAmbiguous = false;
-  showWebsiteOption = false;
   enforcedPasswordPolicyOptions: PasswordGeneratorPolicyOptions;
   usernameWebsite: string = null;
 
@@ -78,11 +77,6 @@ export class GeneratorComponent implements OnInit {
       this.passwordOptions.type =
         this.passwordOptions.type === "passphrase" ? "passphrase" : "password";
 
-      if (this.showWebsiteOption) {
-        const websiteOption = { name: this.i18nService.t("websiteName"), value: "website-name" };
-        this.subaddressOptions.push(websiteOption);
-        this.catchallOptions.push(websiteOption);
-      }
       this.usernameOptions = await this.usernameGenerationService.getOptions();
       if (this.usernameOptions.type == null) {
         this.usernameOptions.type = "word";
@@ -93,11 +87,13 @@ export class GeneratorComponent implements OnInit {
       ) {
         this.usernameOptions.subaddressEmail = await this.stateService.getEmail();
       }
-      if (!this.showWebsiteOption) {
+      if (this.usernameWebsite == null) {
         this.usernameOptions.subaddressType = this.usernameOptions.catchallType = "random";
-      }
-      if (this.usernameWebsite != null) {
+      } else {
         this.usernameOptions.website = this.usernameWebsite;
+        const websiteOption = { name: this.i18nService.t("websiteName"), value: "website-name" };
+        this.subaddressOptions.push(websiteOption);
+        this.catchallOptions.push(websiteOption);
       }
 
       if (this.type !== "username" && this.type !== "password") {
