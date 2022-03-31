@@ -1,4 +1,4 @@
-import { any, mock, mockDeep, MockProxy } from "jest-mock-extended";
+import { any, mock, MockProxy } from "jest-mock-extended";
 
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { FileUploadService } from "jslib-common/abstractions/fileUpload.service";
