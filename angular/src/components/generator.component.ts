@@ -10,9 +10,9 @@ import { UsernameGenerationService } from "jslib-common/abstractions/usernameGen
 import { PasswordGeneratorPolicyOptions } from "jslib-common/models/domain/passwordGeneratorPolicyOptions";
 
 @Directive()
-export class PasswordGeneratorComponent implements OnInit {
-  @Input() showSelect = false;
-  @Input() type = "password";
+export class GeneratorComponent implements OnInit {
+  @Input() comingFromAddEdit = false;
+  @Input() type: string;
   @Output() onSelected = new EventEmitter<string>();
 
   typeOptions: any[];
@@ -27,7 +27,6 @@ export class PasswordGeneratorComponent implements OnInit {
   password = "-";
   showOptions = false;
   avoidAmbiguous = false;
-  showWebsiteOption = false;
   enforcedPasswordPolicyOptions: PasswordGeneratorPolicyOptions;
   usernameWebsite: string = null;
 
@@ -78,11 +77,6 @@ export class PasswordGeneratorComponent implements OnInit {
       this.passwordOptions.type =
         this.passwordOptions.type === "passphrase" ? "passphrase" : "password";
 
-      if (this.showWebsiteOption) {
-        const websiteOption = { name: this.i18nService.t("websiteName"), value: "website-name" };
-        this.subaddressOptions.push(websiteOption);
-        this.catchallOptions.push(websiteOption);
-      }
       this.usernameOptions = await this.usernameGenerationService.getOptions();
       if (this.usernameOptions.type == null) {
         this.usernameOptions.type = "word";
@@ -93,19 +87,21 @@ export class PasswordGeneratorComponent implements OnInit {
       ) {
         this.usernameOptions.subaddressEmail = await this.stateService.getEmail();
       }
-      if (!this.showWebsiteOption) {
+      if (this.usernameWebsite == null) {
         this.usernameOptions.subaddressType = this.usernameOptions.catchallType = "random";
-      }
-      if (this.usernameWebsite != null) {
+      } else {
         this.usernameOptions.website = this.usernameWebsite;
+        const websiteOption = { name: this.i18nService.t("websiteName"), value: "website-name" };
+        this.subaddressOptions.push(websiteOption);
+        this.catchallOptions.push(websiteOption);
       }
 
-      if (qParams.type === "username" || qParams.type === "password") {
-        this.type = qParams.type;
-      } else {
-        const generatorOptions = await this.stateService.getGeneratorOptions();
-        if (generatorOptions != null && generatorOptions.type != null) {
-          this.type = generatorOptions.type;
+      if (this.type !== "username" && this.type !== "password") {
+        if (qParams.type === "username" || qParams.type === "password") {
+          this.type = qParams.type;
+        } else {
+          const generatorOptions = await this.stateService.getGeneratorOptions();
+          this.type = generatorOptions?.type ?? "password";
         }
       }
       await this.regenerate();
