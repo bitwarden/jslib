@@ -62,8 +62,8 @@ export class VaultFilterComponent implements OnInit {
   async applyFilter(filter: VaultFilter) {
     if (filter.refreshCollectionsAndFolders) {
       await this.reloadCollectionsAndFolders(filter);
+      filter = this.pruneInvalidatedFilterSelections(filter);
     }
-    this.fixInvalidFilterSelections(filter);
     this.onFilterChange.emit(filter);
   }
 
@@ -82,24 +82,27 @@ export class VaultFilterComponent implements OnInit {
     this.onEditFolder.emit(folder);
   }
 
-  protected fixInvalidFilterSelections(filter: VaultFilter) {
-    this.fixInvalidFolderSelection(filter);
-    this.fixInvalidCollectionSelection(filter);
+  protected pruneInvalidatedFilterSelections(filter: VaultFilter): VaultFilter {
+    filter = this.pruneInvalidFolderSelection(filter);
+    filter = this.pruneInvalidCollectionSelection(filter);
+    return filter;
   }
 
-  protected fixInvalidFolderSelection(filter: VaultFilter) {
+  protected pruneInvalidFolderSelection(filter: VaultFilter): VaultFilter {
     if (filter.selectedFolder && !this.folders.hasId(filter.selectedFolderId)) {
-      this.activeFilter.selectedFolder = false;
-      this.activeFilter.selectedFolderId = null;
+      filter.selectedFolder = false;
+      filter.selectedFolderId = null;
     }
+    return filter;
   }
 
-  protected fixInvalidCollectionSelection(filter: VaultFilter) {
+  protected pruneInvalidCollectionSelection(filter: VaultFilter): VaultFilter {
     if (
       filter.selectedCollectionId != null &&
       !this.collections.hasId(filter.selectedCollectionId)
     ) {
-      this.activeFilter.selectedCollectionId = null;
+      filter.selectedCollectionId = null;
     }
+    return filter;
   }
 }
