@@ -101,11 +101,7 @@ export class GeneratorComponent implements OnInit {
           this.type = qParams.type;
         } else {
           const generatorOptions = await this.stateService.getGeneratorOptions();
-          if (generatorOptions != null && generatorOptions.type != null) {
-            this.type = generatorOptions.type;
-          } else {
-            this.type = "password";
-          }
+          this.type = generatorOptions?.type ?? "password";
         }
       }
       await this.regenerate();
