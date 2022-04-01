@@ -2,11 +2,11 @@ import * as FormData from "form-data";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import * as fe from "node-fetch";
 
-import { ApiService } from "jslib-common/services/api.service";
-
+import { AppIdService } from "jslib-common/abstractions/appId.service";
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { TokenService } from "jslib-common/abstractions/token.service";
+import { ApiService } from "jslib-common/services/api.service";
 
 (global as any).fetch = fe.default;
 (global as any).Request = fe.Request;
@@ -19,12 +19,18 @@ export class NodeApiService extends ApiService {
     tokenService: TokenService,
     platformUtilsService: PlatformUtilsService,
     environmentService: EnvironmentService,
+    appIdService: AppIdService,
     logoutCallback: (expired: boolean) => Promise<void>,
-    customUserAgent: string = null,
-    apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>
+    customUserAgent: string = null
   ) {
-    super(tokenService, platformUtilsService, environmentService, logoutCallback, customUserAgent);
-    this.apiKeyRefresh = apiKeyRefresh;
+    super(
+      tokenService,
+      platformUtilsService,
+      environmentService,
+      appIdService,
+      logoutCallback,
+      customUserAgent
+    );
   }
 
   nativeFetch(request: Request): Promise<Response> {

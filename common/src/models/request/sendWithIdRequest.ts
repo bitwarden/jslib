@@ -1,6 +1,6 @@
-import { SendRequest } from "./sendRequest";
-
 import { Send } from "../domain/send";
+
+import { SendRequest } from "./sendRequest";
 
 export class SendWithIdRequest extends SendRequest {
   id: string;

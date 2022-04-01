@@ -1,5 +1,4 @@
 import { UriMatchType } from "../../enums/uriMatchType";
-
 import { LoginUriApi } from "../api/loginUriApi";
 
 export class LoginUriData {

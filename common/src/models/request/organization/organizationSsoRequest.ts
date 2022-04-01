@@ -1,6 +1,6 @@
 import { SsoConfigApi } from "../../api/ssoConfigApi";
 
 export class OrganizationSsoRequest {
-  enabled: boolean = false;
+  enabled = false;
   data: SsoConfigApi;
 }

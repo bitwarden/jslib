@@ -1,9 +1,9 @@
-import { BaseResponse } from "./baseResponse";
-
 import { OrganizationUserStatusType } from "../../enums/organizationUserStatusType";
 import { OrganizationUserType } from "../../enums/organizationUserType";
 import { ProductType } from "../../enums/productType";
 import { PermissionsApi } from "../api/permissionsApi";
+
+import { BaseResponse } from "./baseResponse";
 
 export class ProfileOrganizationResponse extends BaseResponse {
   id: string;
@@ -80,11 +80,15 @@ export class ProfileOrganizationResponse extends BaseResponse {
     this.planProductType = this.getResponseProperty("PlanProductType");
     this.keyConnectorEnabled = this.getResponseProperty("KeyConnectorEnabled") ?? false;
     this.keyConnectorUrl = this.getResponseProperty("KeyConnectorUrl");
-    const familySponsorshipLastSyncDateString = this.getResponseProperty("FamilySponsorshipLastSyncDate");
+    const familySponsorshipLastSyncDateString = this.getResponseProperty(
+      "FamilySponsorshipLastSyncDate"
+    );
     if (familySponsorshipLastSyncDateString) {
       this.familySponsorshipLastSyncDate = new Date(familySponsorshipLastSyncDateString);
     }
-    const familySponsorshipValidUntilString = this.getResponseProperty("FamilySponsorshipValidUntil");
+    const familySponsorshipValidUntilString = this.getResponseProperty(
+      "FamilySponsorshipValidUntil"
+    );
     if (familySponsorshipValidUntilString) {
       this.familySponsorshipValidUntil = new Date(familySponsorshipValidUntilString);
     }

@@ -1,26 +1,19 @@
-import { FolderData } from "../models/data/folderData";
-
-import { Folder } from "../models/domain/folder";
-import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-import { TreeNode } from "../models/domain/treeNode";
-
-import { FolderRequest } from "../models/request/folderRequest";
-
-import { FolderResponse } from "../models/response/folderResponse";
-
-import { FolderView } from "../models/view/folderView";
-
 import { ApiService } from "../abstractions/api.service";
 import { CipherService } from "../abstractions/cipher.service";
 import { CryptoService } from "../abstractions/crypto.service";
 import { FolderService as FolderServiceAbstraction } from "../abstractions/folder.service";
 import { I18nService } from "../abstractions/i18n.service";
 import { StateService } from "../abstractions/state.service";
-
-import { CipherData } from "../models/data/cipherData";
-
 import { ServiceUtils } from "../misc/serviceUtils";
 import { Utils } from "../misc/utils";
+import { CipherData } from "../models/data/cipherData";
+import { FolderData } from "../models/data/folderData";
+import { Folder } from "../models/domain/folder";
+import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
+import { TreeNode } from "../models/domain/treeNode";
+import { FolderRequest } from "../models/request/folderRequest";
+import { FolderResponse } from "../models/response/folderResponse";
+import { FolderView } from "../models/view/folderView";
 
 const NestingDelimiter = "/";
 
@@ -46,6 +39,7 @@ export class FolderService implements FolderServiceAbstraction {
 
   async get(id: string): Promise<Folder> {
     const folders = await this.stateService.getEncryptedFolders();
+    // eslint-disable-next-line
     if (folders == null || !folders.hasOwnProperty(id)) {
       return null;
     }
@@ -57,6 +51,7 @@ export class FolderService implements FolderServiceAbstraction {
     const folders = await this.stateService.getEncryptedFolders();
     const response: Folder[] = [];
     for (const id in folders) {
+      // eslint-disable-next-line
       if (folders.hasOwnProperty(id)) {
         response.push(new Folder(folders[id]));
       }

@@ -1,6 +1,5 @@
 import { Directive } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-
 import { first } from "rxjs/operators";
 
 import { ApiService } from "jslib-common/abstractions/api.service";
@@ -12,10 +11,9 @@ import { LogService } from "jslib-common/abstractions/log.service";
 import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-
 import { Utils } from "jslib-common/misc/utils";
-
 import { AuthResult } from "jslib-common/models/domain/authResult";
+import { SsoLogInCredentials } from "jslib-common/models/domain/logInCredentials";
 
 @Directive()
 export class SsoComponent {
@@ -171,14 +169,15 @@ export class SsoComponent {
   private async logIn(code: string, codeVerifier: string, orgIdFromState: string) {
     this.loggingIn = true;
     try {
-      this.formPromise = this.authService.logInSso(
+      const credentials = new SsoLogInCredentials(
         code,
         codeVerifier,
         this.redirectUri,
         orgIdFromState
       );
+      this.formPromise = this.authService.logIn(credentials);
       const response = await this.formPromise;
-      if (response.twoFactor) {
+      if (response.requiresTwoFactor) {
         if (this.onSuccessfulLoginTwoFactorNavigate != null) {
           this.onSuccessfulLoginTwoFactorNavigate();
         } else {

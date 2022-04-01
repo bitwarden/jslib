@@ -1,25 +1,18 @@
 import * as papa from "papaparse";
 
 import { LogService } from "../abstractions/log.service";
-
-import { ImportResult } from "../models/domain/importResult";
-
-import { CipherView } from "../models/view/cipherView";
-import { CollectionView } from "../models/view/collectionView";
-import { LoginUriView } from "../models/view/loginUriView";
-
-import { Utils } from "../misc/utils";
-
-import { FieldView } from "../models/view/fieldView";
-import { FolderView } from "../models/view/folderView";
-import { LoginView } from "../models/view/loginView";
-import { SecureNoteView } from "../models/view/secureNoteView";
-
-import { CipherRepromptType } from "../enums/cipherRepromptType";
 import { CipherType } from "../enums/cipherType";
 import { FieldType } from "../enums/fieldType";
 import { SecureNoteType } from "../enums/secureNoteType";
-
+import { Utils } from "../misc/utils";
+import { ImportResult } from "../models/domain/importResult";
+import { CipherView } from "../models/view/cipherView";
+import { CollectionView } from "../models/view/collectionView";
+import { FieldView } from "../models/view/fieldView";
+import { FolderView } from "../models/view/folderView";
+import { LoginUriView } from "../models/view/loginUriView";
+import { LoginView } from "../models/view/loginView";
+import { SecureNoteView } from "../models/view/secureNoteView";
 import { ConsoleLogService } from "../services/consoleLog.service";
 
 export abstract class BaseImporter {
@@ -161,7 +154,6 @@ export abstract class BaseImporter {
     if (result.errors != null && result.errors.length > 0) {
       result.errors.forEach((e) => {
         if (e.row != null) {
-          // tslint:disable-next-line
           this.logService.warning("Error parsing row " + e.row + ": " + e.message);
         }
       });
@@ -452,6 +444,23 @@ export abstract class BaseImporter {
       cipher.type = CipherType.SecureNote;
       cipher.secureNote = new SecureNoteView();
       cipher.secureNote.type = SecureNoteType.Generic;
+    }
+  }
+
+  protected processFullName(cipher: CipherView, fullName: string) {
+    if (this.isNullOrWhitespace(fullName)) {
+      return;
+    }
+
+    const nameParts = fullName.split(" ");
+    if (nameParts.length > 0) {
+      cipher.identity.firstName = this.getValueOrDefault(nameParts[0]);
+    }
+    if (nameParts.length === 2) {
+      cipher.identity.lastName = this.getValueOrDefault(nameParts[1]);
+    } else if (nameParts.length >= 3) {
+      cipher.identity.middleName = this.getValueOrDefault(nameParts[1]);
+      cipher.identity.lastName = nameParts.slice(2, nameParts.length).join(" ");
     }
   }
 }

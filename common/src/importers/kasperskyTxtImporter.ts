@@ -1,7 +1,7 @@
+import { ImportResult } from "../models/domain/importResult";
+
 import { BaseImporter } from "./baseImporter";
 import { Importer } from "./importer";
-
-import { ImportResult } from "../models/domain/importResult";
 
 const NotesHeader = "Notes\n\n";
 const ApplicationsHeader = "Applications\n\n";

@@ -1,7 +1,7 @@
+import { ImportResult } from "../models/domain/importResult";
+
 import { BaseImporter } from "./baseImporter";
 import { Importer } from "./importer";
-
-import { ImportResult } from "../models/domain/importResult";
 
 export class GnomeJsonImporter extends BaseImporter implements Importer {
   parse(data: string): Promise<ImportResult> {
@@ -14,7 +14,7 @@ export class GnomeJsonImporter extends BaseImporter implements Importer {
 
     for (const keyRing in results) {
       if (
-        !results.hasOwnProperty(keyRing) ||
+        !results.hasOwnProperty(keyRing) || // eslint-disable-line
         this.isNullOrWhitespace(keyRing) ||
         results[keyRing].length === 0
       ) {
@@ -45,7 +45,7 @@ export class GnomeJsonImporter extends BaseImporter implements Importer {
               : null;
           for (const attr in value.attributes) {
             if (
-              !value.attributes.hasOwnProperty(attr) ||
+              !value.attributes.hasOwnProperty(attr) || // eslint-disable-line
               attr === "username_value" ||
               attr === "xdg:schema"
             ) {

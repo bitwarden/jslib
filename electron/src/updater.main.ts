@@ -1,10 +1,10 @@
-import { dialog, Menu, MenuItem, shell } from "electron";
+import { dialog, shell } from "electron";
 import log from "electron-log";
 import { autoUpdater } from "electron-updater";
 
-import { isAppImage, isDev, isMacAppStore, isWindowsPortable, isWindowsStore } from "./utils";
-
 import { I18nService } from "jslib-common/abstractions/i18n.service";
+
+import { isAppImage, isDev, isMacAppStore, isWindowsPortable, isWindowsStore } from "./utils";
 import { WindowMain } from "./window.main";
 
 const UpdaterCheckInitalDelay = 5 * 1000; // 5 seconds
@@ -107,7 +107,9 @@ export class UpdaterMain {
       });
 
       if (result.response === 0) {
-        autoUpdater.quitAndInstall(false, true);
+        // Quit and install have a different window logic, setting `isQuitting` just to be safe.
+        this.windowMain.isQuitting = true;
+        autoUpdater.quitAndInstall(true, true);
       }
     });
 
@@ -123,7 +125,7 @@ export class UpdaterMain {
     });
   }
 
-  async checkForUpdate(withFeedback: boolean = false) {
+  async checkForUpdate(withFeedback = false) {
     if (this.doingUpdateCheck || isDev()) {
       return;
     }

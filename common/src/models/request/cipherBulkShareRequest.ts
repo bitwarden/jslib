@@ -1,6 +1,6 @@
-import { CipherWithIdRequest } from "./cipherWithIdRequest";
-
 import { Cipher } from "../domain/cipher";
+
+import { CipherWithIdRequest } from "./cipherWithIdRequest";
 
 export class CipherBulkShareRequest {
   ciphers: CipherWithIdRequest[];

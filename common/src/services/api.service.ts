@@ -1,11 +1,16 @@
-import { DeviceType } from "../enums/deviceType";
-import { PolicyType } from "../enums/policyType";
+import { AppIdService } from "jslib-common/abstractions/appId.service";
+import { DeviceRequest } from "jslib-common/models/request/deviceRequest";
+import { TokenRequestTwoFactor } from "jslib-common/models/request/identityToken/tokenRequestTwoFactor";
 
 import { ApiService as ApiServiceAbstraction } from "../abstractions/api.service";
 import { EnvironmentService } from "../abstractions/environment.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import { TokenService } from "../abstractions/token.service";
-
+import { DeviceType } from "../enums/deviceType";
+import { PolicyType } from "../enums/policyType";
+import { Utils } from "../misc/utils";
+import { SetKeyConnectorKeyRequest } from "../models/request/account/setKeyConnectorKeyRequest";
+import { VerifyOTPRequest } from "../models/request/account/verifyOTPRequest";
 import { AttachmentRequest } from "../models/request/attachmentRequest";
 import { BitPayInvoiceRequest } from "../models/request/bitPayInvoiceRequest";
 import { CipherBulkDeleteRequest } from "../models/request/cipherBulkDeleteRequest";
@@ -28,10 +33,14 @@ import { EventRequest } from "../models/request/eventRequest";
 import { FolderRequest } from "../models/request/folderRequest";
 import { GroupRequest } from "../models/request/groupRequest";
 import { IapCheckRequest } from "../models/request/iapCheckRequest";
+import { ApiTokenRequest } from "../models/request/identityToken/apiTokenRequest";
+import { PasswordTokenRequest } from "../models/request/identityToken/passwordTokenRequest";
+import { SsoTokenRequest } from "../models/request/identityToken/ssoTokenRequest";
 import { ImportCiphersRequest } from "../models/request/importCiphersRequest";
 import { ImportDirectoryRequest } from "../models/request/importDirectoryRequest";
 import { ImportOrganizationCiphersRequest } from "../models/request/importOrganizationCiphersRequest";
 import { KdfRequest } from "../models/request/kdfRequest";
+import { KeyConnectorUserKeyRequest } from "../models/request/keyConnectorUserKeyRequest";
 import { KeysRequest } from "../models/request/keysRequest";
 import { OrganizationSponsorshipCreateRequest } from "../models/request/organization/organizationSponsorshipCreateRequest";
 import { OrganizationSponsorshipRedeemRequest } from "../models/request/organization/organizationSponsorshipRedeemRequest";
@@ -77,7 +86,6 @@ import { SendRequest } from "../models/request/sendRequest";
 import { SetPasswordRequest } from "../models/request/setPasswordRequest";
 import { StorageRequest } from "../models/request/storageRequest";
 import { TaxInfoUpdateRequest } from "../models/request/taxInfoUpdateRequest";
-import { TokenRequest } from "../models/request/tokenRequest";
 import { TwoFactorEmailRequest } from "../models/request/twoFactorEmailRequest";
 import { TwoFactorProviderRequest } from "../models/request/twoFactorProviderRequest";
 import { TwoFactorRecoveryRequest } from "../models/request/twoFactorRecoveryRequest";
@@ -94,9 +102,6 @@ import { UpdateTwoFactorYubioOtpRequest } from "../models/request/updateTwoFacto
 import { VerifyBankRequest } from "../models/request/verifyBankRequest";
 import { VerifyDeleteRecoverRequest } from "../models/request/verifyDeleteRecoverRequest";
 import { VerifyEmailRequest } from "../models/request/verifyEmailRequest";
-
-import { Utils } from "../misc/utils";
-
 import { ApiKeyResponse } from "../models/response/apiKeyResponse";
 import { AttachmentResponse } from "../models/response/attachmentResponse";
 import { AttachmentUploadDataResponse } from "../models/response/attachmentUploadDataResponse";
@@ -121,6 +126,7 @@ import { GroupDetailsResponse, GroupResponse } from "../models/response/groupRes
 import { IdentityCaptchaResponse } from "../models/response/identityCaptchaResponse";
 import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
 import { IdentityTwoFactorResponse } from "../models/response/identityTwoFactorResponse";
+import { KeyConnectorUserKeyResponse } from "../models/response/keyConnectorUserKeyResponse";
 import { ListResponse } from "../models/response/listResponse";
 import { OrganizationSsoResponse } from "../models/response/organization/organizationSsoResponse";
 import { OrganizationApiKeyInformationResponse } from "../models/response/organizationApiKeyInformationResponse";
@@ -166,20 +172,15 @@ import { TwoFactorDuoResponse } from "../models/response/twoFactorDuoResponse";
 import { TwoFactorEmailResponse } from "../models/response/twoFactorEmailResponse";
 import { TwoFactorProviderResponse } from "../models/response/twoFactorProviderResponse";
 import { TwoFactorRecoverResponse } from "../models/response/twoFactorRescoverResponse";
-import { TwoFactorWebAuthnResponse } from "../models/response/twoFactorWebAuthnResponse";
-import { ChallengeResponse } from "../models/response/twoFactorWebAuthnResponse";
+import {
+  TwoFactorWebAuthnResponse,
+  ChallengeResponse,
+} from "../models/response/twoFactorWebAuthnResponse";
 import { TwoFactorYubiKeyResponse } from "../models/response/twoFactorYubiKeyResponse";
 import { UserKeyResponse } from "../models/response/userKeyResponse";
-
-import { SetKeyConnectorKeyRequest } from "../models/request/account/setKeyConnectorKeyRequest";
-import { VerifyOTPRequest } from "../models/request/account/verifyOTPRequest";
-import { KeyConnectorUserKeyRequest } from "../models/request/keyConnectorUserKeyRequest";
-import { KeyConnectorUserKeyResponse } from "../models/response/keyConnectorUserKeyResponse";
 import { SendAccessView } from "../models/view/sendAccessView";
 
-
 export class ApiService implements ApiServiceAbstraction {
-  protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
   private device: DeviceType;
   private deviceType: string;
   private isWebClient = false;
@@ -189,6 +190,7 @@ export class ApiService implements ApiServiceAbstraction {
     private tokenService: TokenService,
     private platformUtilsService: PlatformUtilsService,
     private environmentService: EnvironmentService,
+    private appIdService: AppIdService,
     private logoutCallback: (expired: boolean) => Promise<void>,
     private customUserAgent: string = null
   ) {
@@ -212,7 +214,7 @@ export class ApiService implements ApiServiceAbstraction {
   // Auth APIs
 
   async postIdentityToken(
-    request: TokenRequest
+    request: ApiTokenRequest | PasswordTokenRequest | SsoTokenRequest
   ): Promise<IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse> {
     const headers = new Headers({
       "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
@@ -223,11 +225,15 @@ export class ApiService implements ApiServiceAbstraction {
       headers.set("User-Agent", this.customUserAgent);
     }
     request.alterIdentityTokenHeaders(headers);
+
+    const identityToken =
+      request instanceof ApiTokenRequest
+        ? request.toIdentityToken()
+        : request.toIdentityToken(this.platformUtilsService.getClientType());
+
     const response = await this.fetch(
       new Request(this.environmentService.getIdentityUrl() + "/connect/token", {
-        body: this.qsStringify(
-          request.toIdentityToken(request.clientId ?? this.platformUtilsService.identityClientId)
-        ),
+        body: this.qsStringify(identityToken),
         credentials: this.getCredentials(),
         cache: "no-store",
         headers: headers,
@@ -248,7 +254,7 @@ export class ApiService implements ApiServiceAbstraction {
         responseJson.TwoFactorProviders2 &&
         Object.keys(responseJson.TwoFactorProviders2).length
       ) {
-        await this.tokenService.clearTwoFactorToken(request.email);
+        await this.tokenService.clearTwoFactorToken();
         return new IdentityTwoFactorResponse(responseJson);
       } else if (
         response.status === 400 &&
@@ -302,7 +308,16 @@ export class ApiService implements ApiServiceAbstraction {
   }
 
   async postPrelogin(request: PreloginRequest): Promise<PreloginResponse> {
-    const r = await this.send("POST", "/accounts/prelogin", request, false, true);
+    const r = await this.send(
+      "POST",
+      "/accounts/prelogin",
+      request,
+      false,
+      true,
+      this.platformUtilsService.isDev()
+        ? this.environmentService.getIdentityUrl()
+        : this.environmentService.getApiUrl()
+    );
     return new PreloginResponse(r);
   }
 
@@ -344,7 +359,16 @@ export class ApiService implements ApiServiceAbstraction {
   }
 
   postRegister(request: RegisterRequest): Promise<any> {
-    return this.send("POST", "/accounts/register", request, false, false);
+    return this.send(
+      "POST",
+      "/accounts/register",
+      request,
+      false,
+      false,
+      this.platformUtilsService.isDev()
+        ? this.environmentService.getIdentityUrl()
+        : this.environmentService.getApiUrl()
+    );
   }
 
   async postPremium(data: FormData): Promise<PaymentResponse> {
@@ -1599,7 +1623,7 @@ export class ApiService implements ApiServiceAbstraction {
     id: string,
     request: EmergencyAccessPasswordRequest
   ): Promise<any> {
-    const r = await this.send("POST", "/emergency-access/" + id + "/password", request, true, true);
+    await this.send("POST", "/emergency-access/" + id + "/password", request, true, true);
   }
 
   async postEmergencyAccessView(id: string): Promise<EmergencyAccessViewResponse> {
@@ -1688,7 +1712,13 @@ export class ApiService implements ApiServiceAbstraction {
   async getOrganizationApiKeyInformation(
     id: string
   ): Promise<ListResponse<OrganizationApiKeyInformationResponse>> {
-    const r = await this.send("GET", "/organizations/" + id + "/api-key-information", null, true, true);
+    const r = await this.send(
+      "GET",
+      "/organizations/" + id + "/api-key-information",
+      null,
+      true,
+      true
+    );
     return new ListResponse(r, OrganizationApiKeyInformationResponse);
   }
 
@@ -2192,11 +2222,16 @@ export class ApiService implements ApiServiceAbstraction {
     return accessToken;
   }
 
-  fetch(request: Request): Promise<Response> {
+  async fetch(request: Request): Promise<Response> {
     if (request.method === "GET") {
       request.headers.set("Cache-Control", "no-store");
       request.headers.set("Pragma", "no-cache");
     }
+    request.headers.set("Bitwarden-Client-Name", this.platformUtilsService.getClientType());
+    request.headers.set(
+      "Bitwarden-Client-Version",
+      await this.platformUtilsService.getApplicationVersion()
+    );
     return this.nativeFetch(request);
   }
 
@@ -2330,20 +2365,6 @@ export class ApiService implements ApiServiceAbstraction {
     throw new Error("Cannot refresh token, no refresh token or api keys are stored");
   }
 
-  protected async doApiTokenRefresh(): Promise<void> {
-    const clientId = await this.tokenService.getClientId();
-    const clientSecret = await this.tokenService.getClientSecret();
-    if (
-      Utils.isNullOrWhitespace(clientId) ||
-      Utils.isNullOrWhitespace(clientSecret) ||
-      this.apiKeyRefresh == null
-    ) {
-      throw new Error();
-    }
-
-    await this.apiKeyRefresh(clientId, clientSecret);
-  }
-
   protected async doRefreshToken(): Promise<void> {
     const refreshToken = await this.tokenService.getRefreshToken();
     if (refreshToken == null || refreshToken === "") {
@@ -2385,6 +2406,28 @@ export class ApiService implements ApiServiceAbstraction {
       const error = await this.handleError(response, true, true);
       return Promise.reject(error);
     }
+  }
+
+  protected async doApiTokenRefresh(): Promise<void> {
+    const clientId = await this.tokenService.getClientId();
+    const clientSecret = await this.tokenService.getClientSecret();
+
+    const appId = await this.appIdService.getAppId();
+    const deviceRequest = new DeviceRequest(appId, this.platformUtilsService);
+
+    const tokenRequest = new ApiTokenRequest(
+      clientId,
+      clientSecret,
+      new TokenRequestTwoFactor(),
+      deviceRequest
+    );
+
+    const response = await this.postIdentityToken(tokenRequest);
+    if (!(response instanceof IdentityTokenResponse)) {
+      throw new Error("Invalid response received when refreshing api token");
+    }
+
+    await this.tokenService.setToken(response.accessToken);
   }
 
   private async send(

@@ -1,17 +1,17 @@
 import Domain from "./domainBase";
 
 export class PasswordGeneratorPolicyOptions extends Domain {
-  defaultType: string = "";
-  minLength: number = 0;
-  useUppercase: boolean = false;
-  useLowercase: boolean = false;
-  useNumbers: boolean = false;
-  numberCount: number = 0;
-  useSpecial: boolean = false;
-  specialCount: number = 0;
-  minNumberWords: number = 0;
-  capitalize: boolean = false;
-  includeNumber: boolean = false;
+  defaultType = "";
+  minLength = 0;
+  useUppercase = false;
+  useLowercase = false;
+  useNumbers = false;
+  numberCount = 0;
+  useSpecial = false;
+  specialCount = 0;
+  minNumberWords = 0;
+  capitalize = false;
+  includeNumber = false;
 
   inEffect() {
     return (

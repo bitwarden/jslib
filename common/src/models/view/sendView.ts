@@ -1,6 +1,5 @@
 import { SendType } from "../../enums/sendType";
 import { Utils } from "../../misc/utils";
-
 import { Send } from "../domain/send";
 import { SymmetricCryptoKey } from "../domain/symmetricCryptoKey";
 
@@ -19,13 +18,13 @@ export class SendView implements View {
   text = new SendTextView();
   file = new SendFileView();
   maxAccessCount?: number = null;
-  accessCount: number = 0;
+  accessCount = 0;
   revisionDate: Date = null;
   deletionDate: Date = null;
   expirationDate: Date = null;
   password: string = null;
-  disabled: boolean = false;
-  hideEmail: boolean = false;
+  disabled = false;
+  hideEmail = false;
 
   constructor(s?: Send) {
     if (!s) {

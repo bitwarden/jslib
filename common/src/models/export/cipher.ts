@@ -1,10 +1,8 @@
 import { CipherRepromptType } from "../../enums/cipherRepromptType";
 import { CipherType } from "../../enums/cipherType";
-
-import { CipherView } from "../view/cipherView";
-
 import { Cipher as CipherDomain } from "../domain/cipher";
 import { EncString } from "../domain/encString";
+import { CipherView } from "../view/cipherView";
 
 import { Card } from "./card";
 import { Field } from "./field";

@@ -1,28 +1,33 @@
-import { BaseImporter } from "./baseImporter";
-import { Importer } from "./importer";
-
+import { CryptoService } from "../abstractions/crypto.service";
+import { I18nService } from "../abstractions/i18n.service";
 import { EncString } from "../models/domain/encString";
 import { ImportResult } from "../models/domain/importResult";
-
 import { CipherWithIds } from "../models/export/cipherWithIds";
 import { CollectionWithId } from "../models/export/collectionWithId";
 import { FolderWithId } from "../models/export/folderWithId";
 
-import { CryptoService } from "../abstractions/crypto.service";
-import { I18nService } from "../abstractions/i18n.service";
+import { BaseImporter } from "./baseImporter";
+import { Importer } from "./importer";
 
 export class BitwardenJsonImporter extends BaseImporter implements Importer {
   private results: any;
   private result: ImportResult;
 
-  constructor(private cryptoService: CryptoService, private i18nService: I18nService) {
+  constructor(protected cryptoService: CryptoService, protected i18nService: I18nService) {
     super();
   }
 
   async parse(data: string): Promise<ImportResult> {
     this.result = new ImportResult();
     this.results = JSON.parse(data);
-    if (this.results == null || this.results.items == null || this.results.items.length === 0) {
+    if (this.results == null || this.results.items == null) {
+      if (this.results?.passwordProtected) {
+        this.result.success = false;
+        this.result.missingPassword = true;
+        this.result.errorMessage = this.i18nService.t("importPasswordRequired");
+        return this.result;
+      }
+
       this.result.success = false;
       return this.result;
     }

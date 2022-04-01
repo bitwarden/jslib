@@ -1,3 +1,5 @@
+import { IdentityTokenResponse } from "../models/response/identityTokenResponse";
+
 export abstract class TokenService {
   setTokens: (
     accessToken: string,
@@ -12,10 +14,9 @@ export abstract class TokenService {
   getClientId: () => Promise<string>;
   setClientSecret: (clientSecret: string) => Promise<any>;
   getClientSecret: () => Promise<string>;
-  toggleTokens: () => Promise<any>;
-  setTwoFactorToken: (token: string, email: string) => Promise<any>;
-  getTwoFactorToken: (email: string) => Promise<string>;
-  clearTwoFactorToken: (email: string) => Promise<any>;
+  setTwoFactorToken: (tokenResponse: IdentityTokenResponse) => Promise<any>;
+  getTwoFactorToken: () => Promise<string>;
+  clearTwoFactorToken: () => Promise<any>;
   clearToken: (userId?: string) => Promise<any>;
   decodeToken: (token?: string) => any;
   getTokenExpirationDate: () => Promise<Date>;

@@ -1,11 +1,10 @@
-import { BaseResponse } from "./baseResponse";
-import { SelectionReadOnlyResponse } from "./selectionReadOnlyResponse";
-
-import { PermissionsApi } from "../api/permissionsApi";
-
 import { KdfType } from "../../enums/kdfType";
 import { OrganizationUserStatusType } from "../../enums/organizationUserStatusType";
 import { OrganizationUserType } from "../../enums/organizationUserType";
+import { PermissionsApi } from "../api/permissionsApi";
+
+import { BaseResponse } from "./baseResponse";
+import { SelectionReadOnlyResponse } from "./selectionReadOnlyResponse";
 
 export class OrganizationUserResponse extends BaseResponse {
   id: string;

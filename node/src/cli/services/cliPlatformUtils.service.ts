@@ -1,20 +1,20 @@
 import * as child_process from "child_process";
 
+import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
+import { ClientType } from "jslib-common/enums/clientType";
 import { DeviceType } from "jslib-common/enums/deviceType";
 import { ThemeType } from "jslib-common/enums/themeType";
 
-import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
-
-// tslint:disable-next-line
+// eslint-disable-next-line
 const open = require("open");
 
 export class CliPlatformUtilsService implements PlatformUtilsService {
-  identityClientId: string;
+  clientType: ClientType;
 
   private deviceCache: DeviceType = null;
 
-  constructor(identityClientId: string, private packageJson: any) {
-    this.identityClientId = identityClientId;
+  constructor(clientType: ClientType, private packageJson: any) {
+    this.clientType = clientType;
   }
 
   getDevice(): DeviceType {
@@ -41,6 +41,10 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
     return device.replace("desktop", "");
   }
 
+  getClientType() {
+    return this.clientType;
+  }
+
   isFirefox() {
     return false;
   }
@@ -62,10 +66,6 @@ export class CliPlatformUtilsService implements PlatformUtilsService {
   }
 
   isSafari() {
-    return false;
-  }
-
-  isIE() {
     return false;
   }
 

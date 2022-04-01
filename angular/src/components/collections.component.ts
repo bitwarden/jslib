@@ -5,11 +5,9 @@ import { CollectionService } from "jslib-common/abstractions/collection.service"
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { LogService } from "jslib-common/abstractions/log.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
-
+import { Cipher } from "jslib-common/models/domain/cipher";
 import { CipherView } from "jslib-common/models/view/cipherView";
 import { CollectionView } from "jslib-common/models/view/collectionView";
-
-import { Cipher } from "jslib-common/models/domain/cipher";
 
 @Directive()
 export class CollectionsComponent implements OnInit {

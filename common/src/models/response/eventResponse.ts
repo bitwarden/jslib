@@ -1,7 +1,7 @@
-import { BaseResponse } from "./baseResponse";
-
 import { DeviceType } from "../../enums/deviceType";
 import { EventType } from "../../enums/eventType";
+
+import { BaseResponse } from "./baseResponse";
 
 export class EventResponse extends BaseResponse {
   type: EventType;

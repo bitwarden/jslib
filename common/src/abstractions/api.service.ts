@@ -1,9 +1,7 @@
 import { PolicyType } from "../enums/policyType";
 import { SetKeyConnectorKeyRequest } from "../models/request/account/setKeyConnectorKeyRequest";
 import { VerifyOTPRequest } from "../models/request/account/verifyOTPRequest";
-
 import { AttachmentRequest } from "../models/request/attachmentRequest";
-
 import { BitPayInvoiceRequest } from "../models/request/bitPayInvoiceRequest";
 import { CipherBulkDeleteRequest } from "../models/request/cipherBulkDeleteRequest";
 import { CipherBulkMoveRequest } from "../models/request/cipherBulkMoveRequest";
@@ -26,6 +24,9 @@ import { EventRequest } from "../models/request/eventRequest";
 import { FolderRequest } from "../models/request/folderRequest";
 import { GroupRequest } from "../models/request/groupRequest";
 import { IapCheckRequest } from "../models/request/iapCheckRequest";
+import { ApiTokenRequest } from "../models/request/identityToken/apiTokenRequest";
+import { PasswordTokenRequest } from "../models/request/identityToken/passwordTokenRequest";
+import { SsoTokenRequest } from "../models/request/identityToken/ssoTokenRequest";
 import { ImportCiphersRequest } from "../models/request/importCiphersRequest";
 import { ImportDirectoryRequest } from "../models/request/importDirectoryRequest";
 import { ImportOrganizationCiphersRequest } from "../models/request/importOrganizationCiphersRequest";
@@ -76,7 +77,6 @@ import { SendRequest } from "../models/request/sendRequest";
 import { SetPasswordRequest } from "../models/request/setPasswordRequest";
 import { StorageRequest } from "../models/request/storageRequest";
 import { TaxInfoUpdateRequest } from "../models/request/taxInfoUpdateRequest";
-import { TokenRequest } from "../models/request/tokenRequest";
 import { TwoFactorEmailRequest } from "../models/request/twoFactorEmailRequest";
 import { TwoFactorProviderRequest } from "../models/request/twoFactorProviderRequest";
 import { TwoFactorRecoveryRequest } from "../models/request/twoFactorRecoveryRequest";
@@ -93,8 +93,6 @@ import { UpdateTwoFactorYubioOtpRequest } from "../models/request/updateTwoFacto
 import { VerifyBankRequest } from "../models/request/verifyBankRequest";
 import { VerifyDeleteRecoverRequest } from "../models/request/verifyDeleteRecoverRequest";
 import { VerifyEmailRequest } from "../models/request/verifyEmailRequest";
-import { OrganizationApiKeyInformationResponse } from "../models/response/organizationApiKeyInformationResponse";
-
 import { ApiKeyResponse } from "../models/response/apiKeyResponse";
 import { AttachmentResponse } from "../models/response/attachmentResponse";
 import { AttachmentUploadDataResponse } from "../models/response/attachmentUploadDataResponse";
@@ -121,6 +119,7 @@ import { IdentityTwoFactorResponse } from "../models/response/identityTwoFactorR
 import { KeyConnectorUserKeyResponse } from "../models/response/keyConnectorUserKeyResponse";
 import { ListResponse } from "../models/response/listResponse";
 import { OrganizationSsoResponse } from "../models/response/organization/organizationSsoResponse";
+import { OrganizationApiKeyInformationResponse } from "../models/response/organizationApiKeyInformationResponse";
 import { OrganizationAutoEnrollStatusResponse } from "../models/response/organizationAutoEnrollStatusResponse";
 import { OrganizationKeysResponse } from "../models/response/organizationKeysResponse";
 import { OrganizationResponse } from "../models/response/organizationResponse";
@@ -169,13 +168,11 @@ import {
 } from "../models/response/twoFactorWebAuthnResponse";
 import { TwoFactorYubiKeyResponse } from "../models/response/twoFactorYubiKeyResponse";
 import { UserKeyResponse } from "../models/response/userKeyResponse";
-
-
 import { SendAccessView } from "../models/view/sendAccessView";
 
 export abstract class ApiService {
   postIdentityToken: (
-    request: TokenRequest
+    request: PasswordTokenRequest | SsoTokenRequest | ApiTokenRequest
   ) => Promise<IdentityTokenResponse | IdentityTwoFactorResponse | IdentityCaptchaResponse>;
   refreshIdentityToken: () => Promise<any>;
 
