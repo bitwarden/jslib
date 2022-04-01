@@ -5,7 +5,7 @@ import {
   SsoLogInCredentials,
 } from "../models/domain/logInCredentials";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-import { TokenRequestTwoFactor } from "../models/request/identityToken/tokenRequest";
+import { TokenRequestTwoFactor } from "../models/request/identityToken/tokenRequestTwoFactor";
 
 export abstract class AuthService {
   masterPasswordHash: string;

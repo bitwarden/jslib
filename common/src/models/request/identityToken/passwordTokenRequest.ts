@@ -3,7 +3,8 @@ import { Utils } from "../../../misc/utils";
 import { CaptchaProtectedRequest } from "../captchaProtectedRequest";
 import { DeviceRequest } from "../deviceRequest";
 
-import { TokenRequest, TokenRequestTwoFactor } from "./tokenRequest";
+import { TokenRequest } from "./tokenRequest";
+import { TokenRequestTwoFactor } from "./tokenRequestTwoFactor";
 
 export class PasswordTokenRequest extends TokenRequest implements CaptchaProtectedRequest {
   constructor(

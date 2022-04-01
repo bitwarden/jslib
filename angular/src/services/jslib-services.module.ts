@@ -212,12 +212,14 @@ import { ValidationService } from "./validation.service";
         tokenService: TokenServiceAbstraction,
         platformUtilsService: PlatformUtilsServiceAbstraction,
         environmentService: EnvironmentServiceAbstraction,
-        messagingService: MessagingServiceAbstraction
+        messagingService: MessagingServiceAbstraction,
+        appIdService: AppIdServiceAbstraction
       ) =>
         new ApiService(
           tokenService,
           platformUtilsService,
           environmentService,
+          appIdService,
           async (expired: boolean) => messagingService.send("logout", { expired: expired })
         ),
       deps: [
@@ -225,6 +227,7 @@ import { ValidationService } from "./validation.service";
         PlatformUtilsServiceAbstraction,
         EnvironmentServiceAbstraction,
         MessagingServiceAbstraction,
+        AppIdServiceAbstraction,
       ],
     },
     {

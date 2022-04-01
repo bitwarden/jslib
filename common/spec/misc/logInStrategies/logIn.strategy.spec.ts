@@ -18,6 +18,7 @@ import { AuthResult } from "jslib-common/models/domain/authResult";
 import { EncString } from "jslib-common/models/domain/encString";
 import { PasswordLogInCredentials } from "jslib-common/models/domain/logInCredentials";
 import { PasswordTokenRequest } from "jslib-common/models/request/identityToken/passwordTokenRequest";
+import { TokenRequestTwoFactor } from "jslib-common/models/request/identityToken/tokenRequestTwoFactor";
 import { IdentityCaptchaResponse } from "jslib-common/models/response/identityCaptchaResponse";
 import { IdentityTokenResponse } from "jslib-common/models/response/identityTokenResponse";
 import { IdentityTwoFactorResponse } from "jslib-common/models/response/identityTwoFactorResponse";
@@ -236,11 +237,11 @@ describe("LogInStrategy", () => {
     it("sends 2FA token provided by user to server (single step)", async () => {
       // This occurs if the user enters the 2FA code as an argument in the CLI
       apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
-      credentials.twoFactor = {
-        provider: twoFactorProviderType,
-        token: twoFactorToken,
-        remember: twoFactorRemember,
-      };
+      credentials.twoFactor = new TokenRequestTwoFactor(
+        twoFactorProviderType,
+        twoFactorToken,
+        twoFactorRemember
+      );
 
       await passwordLogInStrategy.logIn(credentials);
 
@@ -268,11 +269,7 @@ describe("LogInStrategy", () => {
       apiService.postIdentityToken(Arg.any()).resolves(identityTokenResponseFactory());
 
       await passwordLogInStrategy.logInTwoFactor(
-        {
-          provider: twoFactorProviderType,
-          token: twoFactorToken,
-          remember: twoFactorRemember,
-        },
+        new TokenRequestTwoFactor(twoFactorProviderType, twoFactorToken, twoFactorRemember),
         null
       );
 
