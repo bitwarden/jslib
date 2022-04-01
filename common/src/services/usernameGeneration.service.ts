@@ -11,6 +11,7 @@ const DefaultOptions = {
   subaddressType: "random",
   catchallType: "random",
   forwardedType: "simplelogin",
+  forwardedAnonAddyDomain: "anonaddy.me",
 };
 
 export class UsernameGenerationService implements BaseUsernameGenerationService {
@@ -237,7 +238,7 @@ export class UsernameGenerationService implements BaseUsernameGenerationService 
     const response = await this.apiService.nativeFetch(request);
     if (response.status === 200 || response.status === 201) {
       const json = await response.json();
-      return json.alias;
+      return json?.data?.email;
     }
     if (response.status === 401) {
       throw "Invalid AnonAddy API token.";
