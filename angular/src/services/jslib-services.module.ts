@@ -203,7 +203,7 @@ import { ValidationService } from "./validation.service";
     {
       provide: UsernameGenerationServiceAbstraction,
       useClass: UsernameGenerationService,
-      deps: [CryptoServiceAbstraction, StateServiceAbstraction, ApiService],
+      deps: [CryptoServiceAbstraction, StateServiceAbstraction, ApiServiceAbstraction],
     },
     {
       provide: ApiServiceAbstraction,
