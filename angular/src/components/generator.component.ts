@@ -15,6 +15,7 @@ export class GeneratorComponent implements OnInit {
   @Input() type: string;
   @Output() onSelected = new EventEmitter<string>();
 
+  usernameGeneratingPromise: Promise<string>;
   typeOptions: any[];
   passTypeOptions: any[];
   usernameTypeOptions: any[];
@@ -110,13 +111,17 @@ export class GeneratorComponent implements OnInit {
           this.type = generatorOptions?.type ?? "password";
         }
       }
-      await this.regenerate();
+      if (this.regenerateWithoutButtonPress()) {
+        await this.regenerate();
+      }
     });
   }
 
   async typeChanged() {
     await this.stateService.setGeneratorOptions({ type: this.type });
-    await this.regenerate();
+    if (this.regenerateWithoutButtonPress()) {
+      await this.regenerate();
+    }
   }
 
   async regenerate() {
@@ -141,14 +146,14 @@ export class GeneratorComponent implements OnInit {
     this.normalizePasswordOptions();
     await this.passwordGenerationService.saveOptions(this.passwordOptions);
 
-    if (regenerate) {
+    if (regenerate && this.regenerateWithoutButtonPress()) {
       await this.regeneratePassword();
     }
   }
 
   async saveUsernameOptions(regenerate = true) {
     await this.usernameGenerationService.saveOptions(this.usernameOptions);
-    if (regenerate) {
+    if (regenerate && this.regenerateWithoutButtonPress()) {
       await this.regenerateUsername();
     }
   }
@@ -163,9 +168,16 @@ export class GeneratorComponent implements OnInit {
   }
 
   async generateUsername() {
-    this.username = await this.usernameGenerationService.generateUsername(this.usernameOptions);
-    if (this.username === "" || this.username === null) {
-      this.username = "-";
+    try {
+      this.usernameGeneratingPromise = this.usernameGenerationService.generateUsername(
+        this.usernameOptions
+      );
+      this.username = await this.usernameGeneratingPromise;
+      if (this.username === "" || this.username === null) {
+        this.username = "-";
+      }
+    } catch (e) {
+      // Error
     }
   }
 
@@ -189,6 +201,10 @@ export class GeneratorComponent implements OnInit {
 
   toggleOptions() {
     this.showOptions = !this.showOptions;
+  }
+
+  regenerateWithoutButtonPress() {
+    return this.type !== "username" || this.usernameOptions.type !== "forwarded";
   }
 
   private normalizePasswordOptions() {
