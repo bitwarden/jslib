@@ -193,7 +193,7 @@ export class UsernameGenerationService implements BaseUsernameGenerationService 
     });
     const request = new Request(url, requestInit);
     const response = await this.apiService.nativeFetch(request);
-    if (response.status === 200) {
+    if (response.status === 200 || response.status === 201) {
       const json = await response.json();
       return json.alias;
     }
@@ -235,7 +235,7 @@ export class UsernameGenerationService implements BaseUsernameGenerationService 
     });
     const request = new Request(url, requestInit);
     const response = await this.apiService.nativeFetch(request);
-    if (response.status === 200) {
+    if (response.status === 200 || response.status === 201) {
       const json = await response.json();
       return json.alias;
     }
