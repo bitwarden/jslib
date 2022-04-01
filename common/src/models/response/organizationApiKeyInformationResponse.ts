@@ -1,4 +1,5 @@
 import { OrganizationApiKeyType } from "../../enums/organizationApiKeyType";
+
 import { BaseResponse } from "./baseResponse";
 
 export class OrganizationApiKeyInformationResponse extends BaseResponse {
