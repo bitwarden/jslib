@@ -153,6 +153,9 @@ export class GeneratorComponent implements OnInit {
 
   async saveUsernameOptions(regenerate = true) {
     await this.usernameGenerationService.saveOptions(this.usernameOptions);
+    if (regenerate) {
+      this.username = "-";
+    }
     if (regenerate && this.regenerateWithoutButtonPress()) {
       await this.regenerateUsername();
     }
