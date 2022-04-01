@@ -36,6 +36,7 @@ import { KeysRequest } from "../models/request/keysRequest";
 import { OrganizationSponsorshipCreateRequest } from "../models/request/organization/organizationSponsorshipCreateRequest";
 import { OrganizationSponsorshipRedeemRequest } from "../models/request/organization/organizationSponsorshipRedeemRequest";
 import { OrganizationSsoRequest } from "../models/request/organization/organizationSsoRequest";
+import { OrganizationApiKeyRequest } from "../models/request/organizationApiKeyRequest";
 import { OrganizationCreateRequest } from "../models/request/organizationCreateRequest";
 import { OrganizationImportRequest } from "../models/request/organizationImportRequest";
 import { OrganizationKeysRequest } from "../models/request/organizationKeysRequest";
@@ -122,9 +123,11 @@ import { IdentityTokenResponse } from "../models/response/identityTokenResponse"
 import { IdentityTwoFactorResponse } from "../models/response/identityTwoFactorResponse";
 import { ListResponse } from "../models/response/listResponse";
 import { OrganizationSsoResponse } from "../models/response/organization/organizationSsoResponse";
+import { OrganizationApiKeyInformationResponse } from "../models/response/organizationApiKeyInformationResponse";
 import { OrganizationAutoEnrollStatusResponse } from "../models/response/organizationAutoEnrollStatusResponse";
 import { OrganizationKeysResponse } from "../models/response/organizationKeysResponse";
 import { OrganizationResponse } from "../models/response/organizationResponse";
+import { OrganizationSponsorshipSyncStatusResponse } from "../models/response/organizationSponsorshipSyncStatusResponse";
 import { OrganizationSubscriptionResponse } from "../models/response/organizationSubscriptionResponse";
 import { OrganizationUserBulkPublicKeyResponse } from "../models/response/organizationUserBulkPublicKeyResponse";
 import { OrganizationUserBulkResponse } from "../models/response/organizationUserBulkResponse";
@@ -173,8 +176,7 @@ import { VerifyOTPRequest } from "../models/request/account/verifyOTPRequest";
 import { KeyConnectorUserKeyRequest } from "../models/request/keyConnectorUserKeyRequest";
 import { KeyConnectorUserKeyResponse } from "../models/response/keyConnectorUserKeyResponse";
 import { SendAccessView } from "../models/view/sendAccessView";
-import { OrganizationApiKeyInformationResponse } from "../models/response/organizationApiKeyInformationResponse";
-import { OrganizationSponsorshipSyncStatusResponse } from "../models/response/organizationSponsorshipSyncStatusResponse";
+
 
 export class ApiService implements ApiServiceAbstraction {
   protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
@@ -1677,7 +1679,7 @@ export class ApiService implements ApiServiceAbstraction {
 
   async postOrganizationApiKey(
     id: string,
-    request: SecretVerificationRequest
+    request: OrganizationApiKeyRequest
   ): Promise<ApiKeyResponse> {
     const r = await this.send("POST", "/organizations/" + id + "/api-key", request, true, true);
     return new ApiKeyResponse(r);
@@ -1692,7 +1694,7 @@ export class ApiService implements ApiServiceAbstraction {
 
   async postOrganizationRotateApiKey(
     id: string,
-    request: SecretVerificationRequest
+    request: OrganizationApiKeyRequest
   ): Promise<ApiKeyResponse> {
     const r = await this.send(
       "POST",

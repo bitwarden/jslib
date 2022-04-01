@@ -35,6 +35,7 @@ import { KeysRequest } from "../models/request/keysRequest";
 import { OrganizationSponsorshipCreateRequest } from "../models/request/organization/organizationSponsorshipCreateRequest";
 import { OrganizationSponsorshipRedeemRequest } from "../models/request/organization/organizationSponsorshipRedeemRequest";
 import { OrganizationSsoRequest } from "../models/request/organization/organizationSsoRequest";
+import { OrganizationApiKeyRequest } from "../models/request/organizationApiKeyRequest";
 import { OrganizationCreateRequest } from "../models/request/organizationCreateRequest";
 import { OrganizationImportRequest } from "../models/request/organizationImportRequest";
 import { OrganizationKeysRequest } from "../models/request/organizationKeysRequest";
@@ -123,6 +124,7 @@ import { OrganizationSsoResponse } from "../models/response/organization/organiz
 import { OrganizationAutoEnrollStatusResponse } from "../models/response/organizationAutoEnrollStatusResponse";
 import { OrganizationKeysResponse } from "../models/response/organizationKeysResponse";
 import { OrganizationResponse } from "../models/response/organizationResponse";
+import { OrganizationSponsorshipSyncStatusResponse } from "../models/response/organizationSponsorshipSyncStatusResponse";
 import { OrganizationSubscriptionResponse } from "../models/response/organizationSubscriptionResponse";
 import { OrganizationUserBulkPublicKeyResponse } from "../models/response/organizationUserBulkPublicKeyResponse";
 import { OrganizationUserBulkResponse } from "../models/response/organizationUserBulkResponse";
@@ -168,8 +170,8 @@ import {
 import { TwoFactorYubiKeyResponse } from "../models/response/twoFactorYubiKeyResponse";
 import { UserKeyResponse } from "../models/response/userKeyResponse";
 
+
 import { SendAccessView } from "../models/view/sendAccessView";
-import { OrganizationSponsorshipSyncStatusResponse } from "../models/response/organizationSponsorshipSyncStatusResponse";
 
 export abstract class ApiService {
   postIdentityToken: (
@@ -524,14 +526,14 @@ export abstract class ApiService {
   postOrganizationLicenseUpdate: (id: string, data: FormData) => Promise<any>;
   postOrganizationApiKey: (
     id: string,
-    request: SecretVerificationRequest
+    request: OrganizationApiKeyRequest
   ) => Promise<ApiKeyResponse>;
   getOrganizationApiKeyInformation: (
     id: string
   ) => Promise<ListResponse<OrganizationApiKeyInformationResponse>>;
   postOrganizationRotateApiKey: (
     id: string,
-    request: SecretVerificationRequest
+    request: OrganizationApiKeyRequest
   ) => Promise<ApiKeyResponse>;
   postOrganizationSso: (
     id: string,
