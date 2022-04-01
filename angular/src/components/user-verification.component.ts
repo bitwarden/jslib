@@ -7,14 +7,20 @@ import { UserVerificationService } from "jslib-common/abstractions/userVerificat
 import { VerificationType } from "jslib-common/enums/verificationType";
 import { Verification } from "jslib-common/types/verification";
 
+/**
+ * Used for general-purpose user verification throughout the app.
+ * Collects the user's master password, or if they are using Key Connector, prompts for an OTP via email.
+ * This is exposed to the parent component via the ControlValueAccessor interface (e.g. bind it to a FormControl).
+ * Use UserVerificationService to verify the user's input.
+ */
 @Component({
-  selector: "app-verify-master-password",
-  templateUrl: "verify-master-password.component.html",
+  selector: "app-user-verification",
+  templateUrl: "user-verification.component.html",
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: VerifyMasterPasswordComponent,
+      useExisting: UserVerificationComponent,
     },
   ],
   animations: [
@@ -23,7 +29,7 @@ import { Verification } from "jslib-common/types/verification";
     ]),
   ],
 })
-export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnInit {
+export class UserVerificationComponent implements ControlValueAccessor, OnInit {
   usesKeyConnector = false;
   disableRequestOTP = false;
   sentCode = false;
@@ -41,7 +47,7 @@ export class VerifyMasterPasswordComponent implements ControlValueAccessor, OnIn
     this.usesKeyConnector = await this.keyConnectorService.getUsesKeyConnector();
     this.processChanges(this.secret.value);
 
-    this.secret.valueChanges.subscribe((secret) => this.processChanges(secret));
+    this.secret.valueChanges.subscribe((secret: string) => this.processChanges(secret));
   }
 
   async requestOTP() {
