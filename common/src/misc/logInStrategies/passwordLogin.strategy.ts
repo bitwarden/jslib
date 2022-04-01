@@ -13,7 +13,7 @@ import { AuthResult } from "../../models/domain/authResult";
 import { PasswordLogInCredentials } from "../../models/domain/logInCredentials";
 import { SymmetricCryptoKey } from "../../models/domain/symmetricCryptoKey";
 import { PasswordTokenRequest } from "../../models/request/identityToken/passwordTokenRequest";
-import { TokenRequestTwoFactor } from "../../models/request/identityToken/tokenRequest";
+import { TokenRequestTwoFactor } from "../../models/request/identityToken/tokenRequestTwoFactor";
 
 import { LogInStrategy } from "./logIn.strategy";
 

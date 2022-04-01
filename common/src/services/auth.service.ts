@@ -23,7 +23,7 @@ import {
   SsoLogInCredentials,
 } from "../models/domain/logInCredentials";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-import { TokenRequestTwoFactor } from "../models/request/identityToken/tokenRequest";
+import { TokenRequestTwoFactor } from "../models/request/identityToken/tokenRequestTwoFactor";
 import { PreloginRequest } from "../models/request/preloginRequest";
 import { ErrorResponse } from "../models/response/errorResponse";
 
