@@ -223,7 +223,7 @@ export class UsernameGenerationService implements BaseUsernameGenerationService 
       cache: "no-store",
       method: "POST",
       headers: new Headers({
-        Authentication: "Bearer " + apiToken,
+        Authorization: "Bearer " + apiToken,
         "Content-Type": "application/json",
       }),
     };
