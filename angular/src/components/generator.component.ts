@@ -58,13 +58,19 @@ export class GeneratorComponent implements OnInit {
         value: "catchall",
         desc: i18nService.t("catchallEmailDesc"),
       },
+      {
+        name: i18nService.t("forwardedEmail"),
+        value: "forwarded",
+        desc: i18nService.t("forwardedEmailDesc"),
+      },
       { name: i18nService.t("randomWord"), value: "word" },
     ];
     this.subaddressOptions = [{ name: i18nService.t("random"), value: "random" }];
     this.catchallOptions = [{ name: i18nService.t("random"), value: "random" }];
     this.forwardOptions = [
       { name: "SimpleLogin", value: "simplelogin" },
-      { name: "FastMail", value: "fastmail" },
+      { name: "AnonAddy", value: "anonaddy" },
+      // { name: "FastMail", value: "fastmail" },
     ];
   }
 

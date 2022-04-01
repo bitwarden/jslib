@@ -103,11 +103,11 @@ export class UsernameGenerationService implements BaseUsernameGenerationService 
   async generateForwarded(options: any): Promise<string> {
     const o = Object.assign({}, DefaultOptions, options);
 
-    if (o.forwardedType == null) {
+    if (o.forwardedService == null) {
       return null;
     }
 
-    if (o.forwardedType === "simplelogin") {
+    if (o.forwardedService === "simplelogin") {
       if (o.forwardedSimpleLoginApiKey == null || o.forwardedSimpleLoginApiKey === "") {
         return null;
       }
@@ -116,7 +116,7 @@ export class UsernameGenerationService implements BaseUsernameGenerationService 
         o.forwardedSimpleLoginHostname,
         o.website
       );
-    } else if (o.forwardedType === "anonaddy") {
+    } else if (o.forwardedService === "anonaddy") {
       if (
         o.forwardedAnonAddyApiToken == null ||
         o.forwardedAnonAddyApiToken === "" ||
