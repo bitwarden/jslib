@@ -152,6 +152,10 @@ export class AddEditComponent implements OnInit {
     await this.init();
   }
 
+  get customType() {
+    return this.cipher.type > CipherType.Identity;
+  }
+
   async init() {
     if (this.ownershipOptions.length) {
       this.ownershipOptions = [];

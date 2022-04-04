@@ -6,31 +6,83 @@ export const ItemTypeSchemas = {
     description: "WirelessNetworkDesc",
     properties: [
       {
+        id: "ssid",
         name: "Network Name/SSID",
         type: "string",
       },
       {
+        id: "wirelessSecurity",
         name: "Wireless Security",
         type: "string",
       },
       {
+        id: "username",
         name: "Username",
         type: "string",
       },
       {
+        id: "password",
         name: "Password",
         type: "string",
       },
       {
+        id: "mode",
         name: "Mode",
         type: "string",
       },
       {
+        id: "ip",
         name: "Server/IP Address",
         type: "string",
       },
     ],
   },
+};
+
+export const ItemTypeForms = {
+  [CipherType.WirelessNetwork]: [
+    {
+      type: "section",
+      title: "General",
+      items: [
+        {
+          id: "ssid",
+          type: "textfield",
+        },
+        {
+          id: "wirelessSecurity",
+          type: "dropdown",
+          options: [
+            "None",
+            "WEP",
+            "WPA",
+            "WPA2/WPA3",
+            "WPA3",
+            "WPA Enterprise",
+            "WPA2 Enterprise",
+            "WPA3 Enterprise",
+          ],
+        },
+        {
+          id: "username",
+          type: "textfield",
+        },
+        {
+          id: "password",
+          type: "password",
+        },
+        {
+          id: "mode",
+          type: "dropdown",
+          options: ["Automatic", "EAP-TLS"],
+        },
+        {
+          id: "ip",
+          type: "textfield",
+        },
+      ],
+    },
+  ],
 };
 
 /*
