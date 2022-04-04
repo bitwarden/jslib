@@ -1,3 +1,6 @@
+import { AppIdService } from "jslib-common/abstractions/appId.service";
+import { DeviceRequest } from "jslib-common/models/request/deviceRequest";
+import { TokenRequestTwoFactor } from "jslib-common/models/request/identityToken/tokenRequestTwoFactor";
 import { BillingHistoryResponse } from "jslib-common/models/response/billingHistoryResponse";
 import { BillingPaymentResponse } from "jslib-common/models/response/billingPaymentResponse";
 
@@ -177,7 +180,6 @@ import { UserKeyResponse } from "../models/response/userKeyResponse";
 import { SendAccessView } from "../models/view/sendAccessView";
 
 export class ApiService implements ApiServiceAbstraction {
-  protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
   private device: DeviceType;
   private deviceType: string;
   private isWebClient = false;
@@ -187,6 +189,7 @@ export class ApiService implements ApiServiceAbstraction {
     private tokenService: TokenService,
     private platformUtilsService: PlatformUtilsService,
     private environmentService: EnvironmentService,
+    private appIdService: AppIdService,
     private logoutCallback: (expired: boolean) => Promise<void>,
     private customUserAgent: string = null
   ) {
@@ -2347,20 +2350,6 @@ export class ApiService implements ApiServiceAbstraction {
     throw new Error("Cannot refresh token, no refresh token or api keys are stored");
   }
 
-  protected async doApiTokenRefresh(): Promise<void> {
-    const clientId = await this.tokenService.getClientId();
-    const clientSecret = await this.tokenService.getClientSecret();
-    if (
-      Utils.isNullOrWhitespace(clientId) ||
-      Utils.isNullOrWhitespace(clientSecret) ||
-      this.apiKeyRefresh == null
-    ) {
-      throw new Error();
-    }
-
-    await this.apiKeyRefresh(clientId, clientSecret);
-  }
-
   protected async doRefreshToken(): Promise<void> {
     const refreshToken = await this.tokenService.getRefreshToken();
     if (refreshToken == null || refreshToken === "") {
@@ -2402,6 +2391,28 @@ export class ApiService implements ApiServiceAbstraction {
       const error = await this.handleError(response, true, true);
       return Promise.reject(error);
     }
+  }
+
+  protected async doApiTokenRefresh(): Promise<void> {
+    const clientId = await this.tokenService.getClientId();
+    const clientSecret = await this.tokenService.getClientSecret();
+
+    const appId = await this.appIdService.getAppId();
+    const deviceRequest = new DeviceRequest(appId, this.platformUtilsService);
+
+    const tokenRequest = new ApiTokenRequest(
+      clientId,
+      clientSecret,
+      new TokenRequestTwoFactor(),
+      deviceRequest
+    );
+
+    const response = await this.postIdentityToken(tokenRequest);
+    if (!(response instanceof IdentityTokenResponse)) {
+      throw new Error("Invalid response received when refreshing api token");
+    }
+
+    await this.tokenService.setToken(response.accessToken);
   }
 
   private async send(

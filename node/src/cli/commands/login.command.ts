@@ -24,7 +24,7 @@ import {
   PasswordLogInCredentials,
   SsoLogInCredentials,
 } from "jslib-common/models/domain/logInCredentials";
-import { TokenRequestTwoFactor } from "jslib-common/models/request/identityToken/tokenRequest";
+import { TokenRequestTwoFactor } from "jslib-common/models/request/identityToken/tokenRequestTwoFactor";
 import { TwoFactorEmailRequest } from "jslib-common/models/request/twoFactorEmailRequest";
 import { UpdateTempPasswordRequest } from "jslib-common/models/request/updateTempPasswordRequest";
 import { ErrorResponse } from "jslib-common/models/response/errorResponse";
@@ -150,11 +150,7 @@ export class LoginCommand {
     const twoFactor =
       twoFactorToken == null
         ? null
-        : {
-            provider: twoFactorMethod,
-            token: twoFactorToken,
-            remember: false,
-          };
+        : new TokenRequestTwoFactor(twoFactorMethod, twoFactorToken, false);
 
     try {
       if (this.validatedParams != null) {
@@ -258,21 +254,13 @@ export class LoginCommand {
         }
 
         response = await this.authService.logInTwoFactor(
-          {
-            provider: selectedProvider.type,
-            token: twoFactorToken,
-            remember: false,
-          },
+          new TokenRequestTwoFactor(selectedProvider.type, twoFactorToken),
           null
         );
       }
 
       if (response.captchaSiteKey) {
-        const twoFactorRequest: TokenRequestTwoFactor = {
-          provider: selectedProvider.type,
-          token: twoFactorToken,
-          remember: false,
-        };
+        const twoFactorRequest = new TokenRequestTwoFactor(selectedProvider.type, twoFactorToken);
         const handledResponse = await this.handleCaptchaRequired(twoFactorRequest);
 
         // Error Response
