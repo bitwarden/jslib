@@ -284,16 +284,6 @@ export class ApiService implements ApiServiceAbstraction {
     return new BillingResponse(r);
   }
 
-  async getUserBillingHistory(): Promise<BillingHistoryResponse> {
-    const r = await this.send("GET", "/accounts/billing-history", null, true, true);
-    return new BillingHistoryResponse(r);
-  }
-
-  async getUserBillingPayment(): Promise<BillingPaymentResponse> {
-    const r = await this.send("GET", "/accounts/billing-payment", null, true, true);
-    return new BillingPaymentResponse(r);
-  }
-
   async getUserSubscription(): Promise<SubscriptionResponse> {
     const r = await this.send("GET", "/accounts/subscription", null, true, true);
     return new SubscriptionResponse(r);
@@ -474,6 +464,18 @@ export class ApiService implements ApiServiceAbstraction {
 
   postConvertToKeyConnector(): Promise<void> {
     return this.send("POST", "/accounts/convert-to-key-connector", null, true, false);
+  }
+
+  // Account Billing APIs
+
+  async getUserBillingHistory(): Promise<BillingHistoryResponse> {
+    const r = await this.send("GET", "/accounts/billing/history", null, true, true);
+    return new BillingHistoryResponse(r);
+  }
+
+  async getUserBillingPayment(): Promise<BillingPaymentResponse> {
+    const r = await this.send("GET", "/accounts/billing/payment-method", null, true, true);
+    return new BillingPaymentResponse(r);
   }
 
   // Folder APIs

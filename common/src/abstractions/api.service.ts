@@ -178,8 +178,6 @@ export abstract class ApiService {
 
   getProfile: () => Promise<ProfileResponse>;
   getUserBilling: () => Promise<BillingResponse>;
-  getUserBillingHistory: () => Promise<BillingHistoryResponse>;
-  getUserBillingPayment: () => Promise<BillingPaymentResponse>;
   getUserSubscription: () => Promise<SubscriptionResponse>;
   getTaxInfo: () => Promise<TaxInfoResponse>;
   putProfile: (request: UpdateProfileRequest) => Promise<ProfileResponse>;
@@ -216,6 +214,9 @@ export abstract class ApiService {
   postAccountRequestOTP: () => Promise<void>;
   postAccountVerifyOTP: (request: VerifyOTPRequest) => Promise<void>;
   postConvertToKeyConnector: () => Promise<void>;
+
+  getUserBillingHistory: () => Promise<BillingHistoryResponse>;
+  getUserBillingPayment: () => Promise<BillingPaymentResponse>;
 
   getFolder: (id: string) => Promise<FolderResponse>;
   postFolder: (request: FolderRequest) => Promise<FolderResponse>;
