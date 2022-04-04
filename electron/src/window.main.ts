@@ -125,6 +125,7 @@ export class WindowMain {
         nodeIntegration: true,
         backgroundThrottling: false,
         contextIsolation: false,
+        zoomFactor: this.windowStates[mainWindowSizeKey].zoomFactor || "1",
       },
     });
 
@@ -229,6 +230,7 @@ export class WindowMain {
         this.windowStates[configKey].y = bounds.y;
         this.windowStates[configKey].width = bounds.width;
         this.windowStates[configKey].height = bounds.height;
+        this.windowStates[configKey].zoomFactor = this.win.webContents.getZoomFactor();
       }
 
       await this.stateService.setWindow(this.windowStates[configKey]);
