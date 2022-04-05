@@ -51,13 +51,13 @@ export class CalloutComponent implements OnInit {
   get headerClass() {
     switch (this.type) {
       case "danger":
-        return "tw-text-danger";
+        return "!tw-text-danger";
       case "info":
-        return "tw-text-info";
+        return "!tw-text-info";
       case "success":
-        return "tw-text-success";
+        return "!tw-text-success";
       case "warning":
-        return "tw-text-warning";
+        return "!tw-text-warning";
     }
   }
 }
