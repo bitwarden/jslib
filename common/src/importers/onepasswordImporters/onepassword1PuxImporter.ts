@@ -312,6 +312,14 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
         }
       }
 
+      if (valueKey === "email") {
+        // fieldValue is an object casted into a string, so access the plain value instead
+        const { email_address, provider } = field.value.email;
+        this.processKvp(cipher, fieldName, email_address, FieldType.Text);
+        this.processKvp(cipher, "provider", provider, FieldType.Text);
+        return;
+      }
+
       // Do not include a password field if it's already in the history
       if (
         field.title === "password" &&

@@ -11,6 +11,7 @@ import { CreditCardData } from "./testData/onePassword1Pux/CreditCard";
 import { DatabaseData } from "./testData/onePassword1Pux/Database";
 import { DriversLicenseData } from "./testData/onePassword1Pux/DriversLicense";
 import { EmailAccountData } from "./testData/onePassword1Pux/EmailAccount";
+import { EmailFieldData } from "./testData/onePassword1Pux/Emailfield";
 import { IdentityData } from "./testData/onePassword1Pux/IdentityData";
 import { LoginData } from "./testData/onePassword1Pux/LoginData";
 import { MedicalRecordData } from "./testData/onePassword1Pux/MedicalRecord";
@@ -100,6 +101,25 @@ describe("1Password 1Pux Importer", () => {
     expect(cipher.fields[1].name).toEqual("policies");
     expect(cipher.fields[1].value).toEqual("true");
     expect(cipher.fields[1].type).toBe(FieldType.Boolean);
+  });
+
+  it("should add fields of type email as custom fields", async () => {
+    const importer = new Importer();
+    const EmailFieldDataJson = JSON.stringify(EmailFieldData);
+    const result = await importer.parse(EmailFieldDataJson);
+    expect(result != null).toBe(true);
+
+    const ciphers = result.ciphers;
+    expect(ciphers.length).toEqual(1);
+    const cipher = ciphers.shift();
+
+    expect(cipher.fields[0].name).toEqual("reg_email");
+    expect(cipher.fields[0].value).toEqual("kriddler@nullvalue.test");
+    expect(cipher.fields[0].type).toBe(FieldType.Text);
+
+    expect(cipher.fields[1].name).toEqual("provider");
+    expect(cipher.fields[1].value).toEqual("myEmailProvider");
+    expect(cipher.fields[1].type).toBe(FieldType.Text);
   });
 
   it('should create concealed field as "hidden" type', async () => {
