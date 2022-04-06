@@ -17,6 +17,7 @@ export class MenuTriggerForDirective implements OnDestroy {
   private defaultMenuConfig: OverlayConfig = {
       hasBackdrop: true,
       backdropClass: 'cdk-overlay-transparent-backdrop',
+      scrollStrategy: this.overlay.scrollStrategies.reposition(),
       positionStrategy: this.overlay
         .position()
         .flexibleConnectedTo(this.elementRef)
@@ -28,6 +29,8 @@ export class MenuTriggerForDirective implements OnDestroy {
             overlayY: 'top',
           }
         ])
+        .withLockedPosition(true)
+        .withFlexibleDimensions(false)
     }
 
   @Input('bitMenuTriggerFor') menu: MenuComponent;
