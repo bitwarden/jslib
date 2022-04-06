@@ -13,7 +13,6 @@ import { TemplatePortal } from '@angular/cdk/portal';
 export class MenuTriggerForDirective implements OnDestroy {
   private isOpen = false;
   private overlayRef: OverlayRef;
-  // private menuClosingActionsSub = null;
   private defaultMenuConfig: OverlayConfig = {
       hasBackdrop: true,
       backdropClass: 'cdk-overlay-transparent-backdrop',
@@ -54,6 +53,7 @@ export class MenuTriggerForDirective implements OnDestroy {
     );
     this.overlayRef.attach(templatePortal);
 
+    // TODO: track and unsubscribe from these
     this.overlayRef.backdropClick().subscribe(() => this.destroyMenu());
     this.menu.closed.subscribe(() => this.destroyMenu());
     this.overlayRef.detachments().subscribe(() => this.destroyMenu());
@@ -65,15 +65,13 @@ export class MenuTriggerForDirective implements OnDestroy {
     }
 
     this.isOpen = false;
-    this.overlayRef.detach();
-  }
 
-  // closeMenuActions(): Observable<MouseEvent | void> {
-  //   return this.menu.closed.pipe(mergeWith(
-  //     this.overlayRef.backdropClick(),
-  //     this.overlayRef.detachments(),
-  //   ))
-  // }
+    this.overlayRef.dispose();
+    // Alternative if we want to hide but not destroy the DOM elements:
+    // this.overlayRef.detach();
+    // But then we need to handle attaching a pre-existing overlayRef instead of creating a new one
+    // Ref: https://github.com/angular/components/blob/master/src/cdk/overlay/overlay-directives.ts#L406
+  }
 
   ngOnDestroy() {
     if (this.overlayRef != null) {
