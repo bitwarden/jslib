@@ -1,5 +1,5 @@
 <ng-template>
-  <div class="tw-flex tw-flex-col tw-bg-background tw-border tw-border-solid tw-border-secondary-500">
+  <div (click)="closed.emit()" class="tw-flex tw-flex-col tw-bg-background tw-border tw-border-solid tw-border-secondary-500">
     <ng-content></ng-content>
   </div>
 </ng-template>
