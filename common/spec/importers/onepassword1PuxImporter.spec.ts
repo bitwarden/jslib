@@ -12,6 +12,8 @@ import { DatabaseData } from "./testData/onePassword1Pux/Database";
 import { DriversLicenseData } from "./testData/onePassword1Pux/DriversLicense";
 import { EmailAccountData } from "./testData/onePassword1Pux/EmailAccount";
 import { EmailFieldData } from "./testData/onePassword1Pux/Emailfield";
+import { EmailFieldOnIdentityData } from "./testData/onePassword1Pux/EmailfieldOnIdentity";
+import { EmailFieldOnIdentityPrefilledData } from "./testData/onePassword1Pux/EmailfieldOnIdentity_Prefilled";
 import { IdentityData } from "./testData/onePassword1Pux/IdentityData";
 import { LoginData } from "./testData/onePassword1Pux/LoginData";
 import { MedicalRecordData } from "./testData/onePassword1Pux/MedicalRecord";
@@ -223,6 +225,46 @@ describe("1Password 1Pux Importer", () => {
     validateCustomField(cipher.fields, "yahoo", "sk8rboi13@yah00.com");
     validateCustomField(cipher.fields, "msn", "msnothankyou@msn&m&m.com");
     validateCustomField(cipher.fields, "forumsig", "super cool guy");
+  });
+
+  it("emails fields on identity types should be added to the identity email field", async () => {
+    const importer = new Importer();
+    const EmailFieldOnIdentityDataJson = JSON.stringify(EmailFieldOnIdentityData);
+    const result = await importer.parse(EmailFieldOnIdentityDataJson);
+    expect(result != null).toBe(true);
+
+    const ciphers = result.ciphers;
+    expect(ciphers.length).toEqual(1);
+    const cipher = ciphers.shift();
+
+    const identity = cipher.identity;
+    expect(identity.email).toEqual("gengels@nullvalue.test");
+
+    expect(cipher.fields[0].name).toEqual("provider");
+    expect(cipher.fields[0].value).toEqual("myEmailProvider");
+    expect(cipher.fields[0].type).toBe(FieldType.Text);
+  });
+
+  it("emails fields on identity types should be added to custom fields if identity.email has been filled", async () => {
+    const importer = new Importer();
+    const EmailFieldOnIdentityPrefilledDataJson = JSON.stringify(EmailFieldOnIdentityPrefilledData);
+    const result = await importer.parse(EmailFieldOnIdentityPrefilledDataJson);
+    expect(result != null).toBe(true);
+
+    const ciphers = result.ciphers;
+    expect(ciphers.length).toEqual(1);
+    const cipher = ciphers.shift();
+
+    const identity = cipher.identity;
+    expect(identity.email).toEqual("gengels@nullvalue.test");
+
+    expect(cipher.fields[0].name).toEqual("2nd_email");
+    expect(cipher.fields[0].value).toEqual("kriddler@nullvalue.test");
+    expect(cipher.fields[0].type).toBe(FieldType.Text);
+
+    expect(cipher.fields[1].name).toEqual("provider");
+    expect(cipher.fields[1].value).toEqual("myEmailProvider");
+    expect(cipher.fields[1].type).toBe(FieldType.Text);
   });
 
   it("should parse category 005 - Password (Legacy)", async () => {
