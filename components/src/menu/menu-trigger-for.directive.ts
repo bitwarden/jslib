@@ -13,7 +13,7 @@ import { TemplatePortal } from '@angular/cdk/portal';
 export class MenuTriggerForDirective implements OnDestroy {
   private isOpen = false;
   private overlayRef: OverlayRef;
-  private menuClosingActionsSub = null;
+  // private menuClosingActionsSub = null;
   private defaultMenuConfig: OverlayConfig = {
       hasBackdrop: true,
       backdropClass: 'cdk-overlay-transparent-backdrop',
@@ -23,18 +23,17 @@ export class MenuTriggerForDirective implements OnDestroy {
         .flexibleConnectedTo(this.elementRef)
         .withPositions([
           {
-            originX: 'end',
+            originX: 'start',
             originY: 'bottom',
-            overlayX: 'end',
+            overlayX: 'start',
             overlayY: 'top',
-            offsetY: 8
           }
         ])
     }
 
   @Input('bitMenuTriggerFor') menu: MenuComponent;
 
-  constructor( private elementRef: ElementRef<HTMLElement>,
+  constructor(private elementRef: ElementRef<HTMLElement>,
     private viewContainerRef: ViewContainerRef,
     private overlay: Overlay
   ) { }
@@ -53,9 +52,9 @@ export class MenuTriggerForDirective implements OnDestroy {
     );
     this.overlayRef.attach(templatePortal);
 
-    // this.menuClosingActionsSub = this.closeMenuActions().subscribe(
-    //   () => this.destroyMenu()
-    // );
+    this.overlayRef.backdropClick().subscribe(() => this.destroyMenu());
+    this.menu.closed.subscribe(() => this.destroyMenu());
+    this.overlayRef.detachments().subscribe(() => this.destroyMenu());
   }
 
   destroyMenu() {

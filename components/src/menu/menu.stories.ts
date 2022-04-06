@@ -23,9 +23,9 @@ const Template: Story<MenuTriggerForDirective> = (args: MenuTriggerForDirective)
   `<button [bitMenuTriggerFor]="myMenu">Test</button>
 
   <bit-menu #myMenu>
-    <button>One</button>
-    <button>Two</button>
-    <button>Three</button>
+    <button bit-menu-item>One</button>
+    <button bit-menu-item>Two</button>
+    <button bit-menu-item>Three</button>
   </bit-menu>`,
 });
 

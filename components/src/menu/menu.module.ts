@@ -4,14 +4,19 @@ import { NgModule } from "@angular/core";
 import { MenuTriggerForDirective } from './menu-trigger-for.directive';
 
 import { MenuComponent } from "./menu.component";
+import { MenuItemComponent } from "./menu-item.component";
 
 @NgModule({
   imports: [CommonModule, OverlayModule],
-  exports: [
-    MenuComponent,
-    MenuTriggerForDirective],
   declarations: [
     MenuComponent,
-    MenuTriggerForDirective],
+    MenuTriggerForDirective,
+    MenuItemComponent
+  ],
+  exports: [
+    MenuComponent,
+    MenuTriggerForDirective,
+    MenuItemComponent,
+  ],
 })
 export class MenuModule {}
