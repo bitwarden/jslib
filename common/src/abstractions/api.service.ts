@@ -177,7 +177,6 @@ export abstract class ApiService {
   refreshIdentityToken: () => Promise<any>;
 
   getProfile: () => Promise<ProfileResponse>;
-  getUserBilling: () => Promise<BillingResponse>;
   getUserSubscription: () => Promise<SubscriptionResponse>;
   getTaxInfo: () => Promise<TaxInfoResponse>;
   putProfile: (request: UpdateProfileRequest) => Promise<ProfileResponse>;

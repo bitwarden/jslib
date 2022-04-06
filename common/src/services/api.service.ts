@@ -282,11 +282,6 @@ export class ApiService implements ApiServiceAbstraction {
     return new ProfileResponse(r);
   }
 
-  async getUserBilling(): Promise<BillingResponse> {
-    const r = await this.send("GET", "/accounts/billing", null, true, true);
-    return new BillingResponse(r);
-  }
-
   async getUserSubscription(): Promise<SubscriptionResponse> {
     const r = await this.send("GET", "/accounts/subscription", null, true, true);
     return new SubscriptionResponse(r);
