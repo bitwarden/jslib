@@ -2,6 +2,9 @@ import { Directive, ElementRef, Input, OnDestroy, ViewContainerRef, EventEmitter
 import { MenuComponent } from './menu.component';
 import { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
+import { ConfigurableFocusTrap, ConfigurableFocusTrapFactory } from "@angular/cdk/a11y";
+
+import { filter } from 'rxjs';
 
 @Directive({
   selector: "[bitMenuTriggerFor]",
@@ -31,12 +34,14 @@ export class MenuTriggerForDirective implements OnDestroy {
         .withLockedPosition(true)
         .withFlexibleDimensions(false)
     }
+  private focusTrap: ConfigurableFocusTrap;
 
   @Input('bitMenuTriggerFor') menu: MenuComponent;
 
   constructor(private elementRef: ElementRef<HTMLElement>,
     private viewContainerRef: ViewContainerRef,
-    private overlay: Overlay
+    private overlay: Overlay,
+    private focusTrapFactory: ConfigurableFocusTrapFactory
   ) { }
 
   toggleMenu() {
@@ -53,10 +58,13 @@ export class MenuTriggerForDirective implements OnDestroy {
     );
     this.overlayRef.attach(templatePortal);
 
+    this.createFocusTrap();
+
     // TODO: track and unsubscribe from these
     this.overlayRef.backdropClick().subscribe(() => this.destroyMenu());
     this.menu.closed.subscribe(() => this.destroyMenu());
     this.overlayRef.detachments().subscribe(() => this.destroyMenu());
+    this.overlayRef.keydownEvents().pipe(filter((event: KeyboardEvent) => event.key === "Escape")).subscribe(() => this.destroyMenu())
   }
 
   destroyMenu() {
@@ -65,6 +73,7 @@ export class MenuTriggerForDirective implements OnDestroy {
     }
 
     this.isOpen = false;
+    this.destroyFocusTrap();
 
     this.overlayRef.dispose();
     // Alternative if we want to hide but not destroy the DOM elements:
@@ -76,6 +85,22 @@ export class MenuTriggerForDirective implements OnDestroy {
   ngOnDestroy() {
     if (this.overlayRef != null) {
       this.overlayRef.dispose();
+    }
+
+    this.destroyFocusTrap();
+  }
+
+  private createFocusTrap() {
+    this.focusTrap = this.focusTrapFactory.create(
+      this.overlayRef.hostElement
+    );
+
+    this.focusTrap.focusFirstTabbableElementWhenReady();
+  }
+
+  private destroyFocusTrap() {
+    if (this.focusTrap != null) {
+      this.focusTrap.destroy();
     }
   }
 }
