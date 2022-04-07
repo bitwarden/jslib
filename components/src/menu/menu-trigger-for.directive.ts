@@ -48,7 +48,15 @@ export class MenuTriggerForDirective implements OnDestroy {
     this.isOpen ? this.destroyMenu() : this.openMenu();
   }
 
-  openMenu() {
+  ngOnDestroy() {
+    if (this.overlayRef != null) {
+      this.overlayRef.dispose();
+    }
+
+    this.destroyFocusTrap();
+  }
+
+  private openMenu() {
     this.isOpen = true;
     this.overlayRef = this.overlay.create(this.defaultMenuConfig);
 
@@ -67,7 +75,7 @@ export class MenuTriggerForDirective implements OnDestroy {
     this.overlayRef.keydownEvents().pipe(filter((event: KeyboardEvent) => event.key === "Escape")).subscribe(() => this.destroyMenu())
   }
 
-  destroyMenu() {
+  private destroyMenu() {
     if (this.overlayRef == null || !this.isOpen) {
       return;
     }
@@ -80,14 +88,6 @@ export class MenuTriggerForDirective implements OnDestroy {
     // this.overlayRef.detach();
     // But then we need to handle attaching a pre-existing overlayRef instead of creating a new one
     // Ref: https://github.com/angular/components/blob/master/src/cdk/overlay/overlay-directives.ts#L406
-  }
-
-  ngOnDestroy() {
-    if (this.overlayRef != null) {
-      this.overlayRef.dispose();
-    }
-
-    this.destroyFocusTrap();
   }
 
   private createFocusTrap() {
