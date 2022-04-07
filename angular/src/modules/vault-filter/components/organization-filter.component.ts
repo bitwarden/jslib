@@ -3,15 +3,9 @@ import { Directive, EventEmitter, Input, Output } from "@angular/core";
 import { Organization } from "jslib-common/models/domain/organization";
 import { ITreeNodeObject } from "jslib-common/models/domain/treeNode";
 
+import { DisplayMode } from "../models/display-mode";
 import { TopLevelTreeNode } from "../models/top-level-tree-node.model";
 import { VaultFilter } from "../models/vault-filter.model";
-
-type DisplayMode =
-  | "noOrganizations"
-  | "organizationMember"
-  | "singleOrganizationPolicy"
-  | "personalOwnershipPolicy"
-  | "singleOrganizationAndPersonalOwnershipPolicies";
 
 @Directive()
 export class OrganizationFilterComponent {
