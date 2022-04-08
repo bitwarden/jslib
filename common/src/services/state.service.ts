@@ -1633,19 +1633,6 @@ export class StateService<
     );
   }
 
-  async getLoginRedirect(options?: StorageOptions): Promise<any> {
-    return (await this.getGlobals(this.reconcileOptions(options, this.defaultInMemoryOptions)))
-      ?.loginRedirect;
-  }
-
-  async setLoginRedirect(value: any, options?: StorageOptions): Promise<void> {
-    const globals = await this.getGlobals(
-      this.reconcileOptions(options, this.defaultInMemoryOptions)
-    );
-    globals.loginRedirect = value;
-    await this.saveGlobals(globals, this.reconcileOptions(options, this.defaultInMemoryOptions));
-  }
-
   async getMainWindowSize(options?: StorageOptions): Promise<number> {
     return (await this.getGlobals(this.reconcileOptions(options, this.defaultInMemoryOptions)))
       ?.mainWindowSize;
