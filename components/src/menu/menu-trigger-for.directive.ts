@@ -1,23 +1,16 @@
 import { ConfigurableFocusTrap, ConfigurableFocusTrapFactory } from "@angular/cdk/a11y";
 import { Overlay, OverlayConfig, OverlayRef } from "@angular/cdk/overlay";
 import { TemplatePortal } from "@angular/cdk/portal";
-import {
-  Directive,
-  ElementRef,
-  Input,
-  OnDestroy,
-  ViewContainerRef,
-} from "@angular/core";
+import { Directive, ElementRef, Input, OnDestroy, ViewContainerRef } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
 import { filter, mergeWith } from "rxjs/operators";
 
 import { MenuComponent } from "./menu.component";
 
-
 @Directive({
   selector: "[bitMenuTriggerFor]",
   host: {
-    "role": "button",
+    role: "button",
     "aria-haspopup": "menu",
     "[attr.aria-expanded]": "isOpen",
     "(click)": "toggleMenu()",
@@ -27,7 +20,7 @@ export class MenuTriggerForDirective implements OnDestroy {
   private isOpen = false;
   private overlayRef: OverlayRef;
   private defaultMenuConfig: OverlayConfig = {
-    panelClass: 'bit-menu-panel',
+    panelClass: "bit-menu-panel",
     hasBackdrop: true,
     backdropClass: "cdk-overlay-transparent-backdrop",
     scrollStrategy: this.overlay.scrollStrategies.reposition(),
@@ -67,7 +60,7 @@ export class MenuTriggerForDirective implements OnDestroy {
 
   private openMenu() {
     if (this.menu == null) {
-      throw new Error('Cannot find bit-menu element');
+      throw new Error("Cannot find bit-menu element");
     }
 
     this.isOpen = true;
