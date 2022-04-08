@@ -27,6 +27,7 @@ export class MenuTriggerForDirective implements OnDestroy {
   private isOpen = false;
   private overlayRef: OverlayRef;
   private defaultMenuConfig: OverlayConfig = {
+    panelClass: 'bit-menu-panel',
     hasBackdrop: true,
     backdropClass: "cdk-overlay-transparent-backdrop",
     scrollStrategy: this.overlay.scrollStrategies.reposition(),
@@ -65,6 +66,10 @@ export class MenuTriggerForDirective implements OnDestroy {
   }
 
   private openMenu() {
+    if (this.menu == null) {
+      throw new Error('Cannot find bit-menu element');
+    }
+
     this.isOpen = true;
     this.overlayRef = this.overlay.create(this.defaultMenuConfig);
 
