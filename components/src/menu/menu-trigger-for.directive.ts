@@ -11,6 +11,7 @@ import { Observable, Subscription } from 'rxjs';
   selector: "[bitMenuTriggerFor]",
   host: {
     'aria-haspopup': 'menu',
+    '[attr.aria-expanded]': 'isOpen',
     '(click)': 'toggleMenu()'
   }
 })
