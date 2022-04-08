@@ -1,0 +1,14 @@
+<div class="tw-py-2.5 tw-px-4 tw-text-contrast tw-flex tw-gap-2" [ngClass]="bannerClass">
+  <div class="tw-block">
+    <i class="bwi {{ icon }} tw-align-middle" *ngIf="icon" aria-hidden="true"></i>
+  </div>
+  <h3 class="tw-inline tw-m-0 tw-text-base tw-shrink-0" *ngIf="title">
+    {{ title }}
+  </h3>
+  <span class="tw-font-semibold tw-text-base tw-grow">
+    <ng-content></ng-content>
+  </span>
+  <button class="tw-border-0 tw-bg-transparent tw-text-contrast tw-p-0" (click)="onClose.emit()">
+    <i class="bwi bwi-close tw-text-sm" *ngIf="icon" aria-hidden="true"></i>
+  </button>
+</div>
