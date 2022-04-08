@@ -88,11 +88,6 @@ export class MenuTriggerForDirective implements OnDestroy {
 
     this.isOpen = false;
     this.disposeAll();
-
-    // Alternative if we want to hide but not destroy the DOM elements:
-    // this.overlayRef.detach();
-    // But then we need to handle attaching a pre-existing overlayRef instead of creating a new one
-    // Ref: https://github.com/angular/components/blob/master/src/cdk/overlay/overlay-directives.ts#L406
   }
 
   private createFocusTrap() {
