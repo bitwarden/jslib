@@ -17,6 +17,7 @@ import { MenuComponent } from "./menu.component";
 @Directive({
   selector: "[bitMenuTriggerFor]",
   host: {
+    "role": "button",
     "aria-haspopup": "menu",
     "[attr.aria-expanded]": "isOpen",
     "(click)": "toggleMenu()",
