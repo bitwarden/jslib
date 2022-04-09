@@ -344,7 +344,10 @@ export const SanitizedExport: ExportData = {
                         title: "",
                         id: "irpvnshg5kjpkmj5jwy4xxkfom",
                         value: {
-                          email: "plexuser@nullvalue.test",
+                          email: {
+                            email_address: "plexuser@nullvalue.test",
+                            provider: null,
+                          },
                         },
                         indexAtSource: 0,
                         guarded: false,
@@ -1434,7 +1437,10 @@ export const SanitizedExport: ExportData = {
                         title: "registered email",
                         id: "reg_email",
                         value: {
-                          email: "kriddler@nullvalue.test",
+                          email: {
+                            email_address: "kriddler@nullvalue.test",
+                            provider: null,
+                          },
                         },
                         indexAtSource: 1,
                         guarded: false,
@@ -1536,7 +1542,10 @@ export const SanitizedExport: ExportData = {
                         title: "support email",
                         id: "support_email",
                         value: {
-                          email: "support@nullvalue.test",
+                          email: {
+                            email_address: "support@nullvalue.test",
+                            provider: null,
+                          },
                         },
                         indexAtSource: 4,
                         guarded: false,
@@ -4014,7 +4023,10 @@ export const SanitizedExport: ExportData = {
                         title: "registered email",
                         id: "reg_email",
                         value: {
-                          email: "",
+                          email: {
+                            email_address: "",
+                            provider: null,
+                          },
                         },
                         indexAtSource: 1,
                         guarded: false,
@@ -4116,7 +4128,10 @@ export const SanitizedExport: ExportData = {
                         title: "support email",
                         id: "support_email",
                         value: {
-                          email: "",
+                          email: {
+                            email_address: "",
+                            provider: null,
+                          },
                         },
                         indexAtSource: 4,
                         guarded: false,

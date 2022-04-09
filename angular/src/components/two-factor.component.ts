@@ -14,6 +14,7 @@ import { TwoFactorService } from "jslib-common/abstractions/twoFactor.service";
 import { TwoFactorProviderType } from "jslib-common/enums/twoFactorProviderType";
 import { WebAuthnIFrame } from "jslib-common/misc/webauthn_iframe";
 import { AuthResult } from "jslib-common/models/domain/authResult";
+import { TokenRequestTwoFactor } from "jslib-common/models/request/identityToken/tokenRequestTwoFactor";
 import { TwoFactorEmailRequest } from "jslib-common/models/request/twoFactorEmailRequest";
 import { TwoFactorProviders } from "jslib-common/services/twoFactor.service";
 
@@ -191,11 +192,7 @@ export class TwoFactorComponent extends CaptchaProtectedComponent implements OnI
 
   async doSubmit() {
     this.formPromise = this.authService.logInTwoFactor(
-      {
-        provider: this.selectedProviderType,
-        token: this.token,
-        remember: this.remember,
-      },
+      new TokenRequestTwoFactor(this.selectedProviderType, this.token, this.remember),
       this.captchaToken
     );
     const response: AuthResult = await this.formPromise;
