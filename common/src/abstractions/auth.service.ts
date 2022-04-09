@@ -23,5 +23,5 @@ export abstract class AuthService {
   authingWithApiKey: () => boolean;
   authingWithSso: () => boolean;
   authingWithPassword: () => boolean;
-  authStatus: (userId?: string) => Promise<AuthenticationStatus>;
+  getAuthStatus: (userId?: string) => Promise<AuthenticationStatus>;
 }

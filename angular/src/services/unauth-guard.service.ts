@@ -10,7 +10,7 @@ export class UnauthGuardService implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
   async canActivate() {
-    const authStatus = await this.authService.authStatus();
+    const authStatus = await this.authService.getAuthStatus();
 
     if (authStatus === AuthenticationStatus.LoggedOut) {
       return true;

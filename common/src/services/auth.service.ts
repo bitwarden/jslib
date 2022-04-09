@@ -159,7 +159,7 @@ export class AuthService implements AuthServiceAbstraction {
     return this.logInStrategy instanceof PasswordLogInStrategy;
   }
 
-  async authStatus(userId?: string): Promise<AuthenticationStatus> {
+  async getAuthStatus(userId?: string): Promise<AuthenticationStatus> {
     const isAuthenticated = await this.stateService.getIsAuthenticated({ userId: userId });
     if (!isAuthenticated) {
       return AuthenticationStatus.LoggedOut;

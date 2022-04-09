@@ -125,7 +125,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
       return;
     }
 
-    const authStatus = await this.authService.authStatus();
+    const authStatus = await this.authService.getAuthStatus();
     const isAuthenticated = authStatus > AuthenticationStatus.LoggedOut;
     const payloadUserId = notification.payload.userId || notification.payload.UserId;
     const myUserId = await this.stateService.getUserId();
@@ -218,7 +218,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
   }
 
   private async isAuthedAndUnlocked() {
-    const authStatus = await this.authService.authStatus();
+    const authStatus = await this.authService.getAuthStatus();
     return authStatus >= AuthenticationStatus.Unlocked;
   }
 

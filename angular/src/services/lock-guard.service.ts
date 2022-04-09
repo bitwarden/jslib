@@ -11,7 +11,7 @@ export class LockGuardService implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
   async canActivate() {
-    const authStatus = await this.authService.authStatus();
+    const authStatus = await this.authService.getAuthStatus();
 
     if (authStatus === AuthenticationStatus.Locked) {
       return true;

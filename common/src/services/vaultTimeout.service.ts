@@ -63,7 +63,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
   }
 
   async lock(allowSoftLock = false, userId?: string): Promise<void> {
-    const authStatus = await this.authService.authStatus(userId);
+    const authStatus = await this.authService.getAuthStatus(userId);
     if (authStatus === AuthenticationStatus.LoggedOut) {
       return;
     }
@@ -176,7 +176,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
   }
 
   private async shouldLock(userId: string): Promise<boolean> {
-    const authStatus = await this.authService.authStatus(userId);
+    const authStatus = await this.authService.getAuthStatus(userId);
     if (
       authStatus === AuthenticationStatus.Locked ||
       authStatus === AuthenticationStatus.LoggedOut

@@ -39,7 +39,7 @@ export class EventService implements EventServiceAbstraction {
     cipherId: string = null,
     uploadImmediately = false
   ): Promise<any> {
-    const authState = await this.authService.authStatus();
+    const authState = await this.authService.getAuthStatus();
     if (authState === AuthenticationStatus.LoggedOut) {
       return;
     }
@@ -73,7 +73,7 @@ export class EventService implements EventServiceAbstraction {
   }
 
   async uploadEvents(userId?: string): Promise<any> {
-    const authState = await this.authService.authStatus(userId);
+    const authState = await this.authService.getAuthStatus(userId);
     if (authState === AuthenticationStatus.LoggedOut) {
       return;
     }

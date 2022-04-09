@@ -401,6 +401,6 @@ export class SyncService implements SyncServiceAbstraction {
   }
 
   private async isAuthenticated() {
-    return (await this.authService.authStatus()) > AuthenticationStatus.LoggedOut;
+    return (await this.authService.getAuthStatus()) > AuthenticationStatus.LoggedOut;
   }
 }
