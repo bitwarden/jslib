@@ -1,5 +1,4 @@
 import { ApiService } from "../abstractions/api.service";
-import { AuthService } from "../abstractions/auth.service";
 import { CipherService } from "../abstractions/cipher.service";
 import { CollectionService } from "../abstractions/collection.service";
 import { CryptoService } from "../abstractions/crypto.service";
@@ -14,7 +13,6 @@ import { SendService } from "../abstractions/send.service";
 import { SettingsService } from "../abstractions/settings.service";
 import { StateService } from "../abstractions/state.service";
 import { SyncService as SyncServiceAbstraction } from "../abstractions/sync.service";
-import { AuthenticationStatus } from "../enums/authenticationStatus";
 import { sequentialize } from "../misc/sequentialize";
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
@@ -54,7 +52,6 @@ export class SyncService implements SyncServiceAbstraction {
     private stateService: StateService,
     private organizationService: OrganizationService,
     private providerService: ProviderService,
-    private authService: AuthService,
     private logoutCallback: (expired: boolean) => Promise<void>
   ) {}
 
@@ -78,7 +75,8 @@ export class SyncService implements SyncServiceAbstraction {
   @sequentialize(() => "fullSync")
   async fullSync(forceSync: boolean, allowThrowOnError = false): Promise<boolean> {
     this.syncStarted();
-    if (!(await this.isAuthenticated())) {
+    const isAuthenticated = await this.stateService.getIsAuthenticated();
+    if (!isAuthenticated) {
       return this.syncCompleted(false);
     }
 
@@ -123,7 +121,7 @@ export class SyncService implements SyncServiceAbstraction {
 
   async syncUpsertFolder(notification: SyncFolderNotification, isEdit: boolean): Promise<boolean> {
     this.syncStarted();
-    if (await this.isAuthenticated()) {
+    if (await this.stateService.getIsAuthenticated()) {
       try {
         const localFolder = await this.folderService.get(notification.id);
         if (
@@ -147,7 +145,7 @@ export class SyncService implements SyncServiceAbstraction {
 
   async syncDeleteFolder(notification: SyncFolderNotification): Promise<boolean> {
     this.syncStarted();
-    if (await this.isAuthenticated()) {
+    if (await this.stateService.getIsAuthenticated()) {
       await this.folderService.delete(notification.id);
       this.messagingService.send("syncedDeletedFolder", { folderId: notification.id });
       this.syncCompleted(true);
@@ -158,7 +156,7 @@ export class SyncService implements SyncServiceAbstraction {
 
   async syncUpsertCipher(notification: SyncCipherNotification, isEdit: boolean): Promise<boolean> {
     this.syncStarted();
-    if (await this.isAuthenticated()) {
+    if (await this.stateService.getIsAuthenticated()) {
       try {
         let shouldUpdate = true;
         const localCipher = await this.cipherService.get(notification.id);
@@ -221,7 +219,7 @@ export class SyncService implements SyncServiceAbstraction {
 
   async syncDeleteCipher(notification: SyncCipherNotification): Promise<boolean> {
     this.syncStarted();
-    if (await this.isAuthenticated()) {
+    if (await this.stateService.getIsAuthenticated()) {
       await this.cipherService.delete(notification.id);
       this.messagingService.send("syncedDeletedCipher", { cipherId: notification.id });
       return this.syncCompleted(true);
@@ -231,7 +229,7 @@ export class SyncService implements SyncServiceAbstraction {
 
   async syncUpsertSend(notification: SyncSendNotification, isEdit: boolean): Promise<boolean> {
     this.syncStarted();
-    if (await this.isAuthenticated()) {
+    if (await this.stateService.getIsAuthenticated()) {
       try {
         const localSend = await this.sendService.get(notification.id);
         if (
@@ -255,7 +253,7 @@ export class SyncService implements SyncServiceAbstraction {
 
   async syncDeleteSend(notification: SyncSendNotification): Promise<boolean> {
     this.syncStarted();
-    if (await this.isAuthenticated()) {
+    if (await this.stateService.getIsAuthenticated()) {
       await this.sendService.delete(notification.id);
       this.messagingService.send("syncedDeletedSend", { sendId: notification.id });
       this.syncCompleted(true);
@@ -398,9 +396,5 @@ export class SyncService implements SyncServiceAbstraction {
       });
     }
     return await this.policyService.replace(policies);
-  }
-
-  private async isAuthenticated() {
-    return (await this.authService.getAuthStatus()) > AuthenticationStatus.LoggedOut;
   }
 }

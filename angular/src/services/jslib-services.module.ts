@@ -247,8 +247,7 @@ import { ValidationService } from "./validation.service";
         keyConnectorService: KeyConnectorServiceAbstraction,
         stateService: StateServiceAbstraction,
         organizationService: OrganizationServiceAbstraction,
-        providerService: ProviderServiceAbstraction,
-        authService: AuthServiceAbstraction
+        providerService: ProviderServiceAbstraction
       ) =>
         new SyncService(
           apiService,
@@ -265,7 +264,6 @@ import { ValidationService } from "./validation.service";
           stateService,
           organizationService,
           providerService,
-          authService,
           async (expired: boolean) => messagingService.send("logout", { expired: expired })
         ),
       deps: [
@@ -283,7 +281,6 @@ import { ValidationService } from "./validation.service";
         StateServiceAbstraction,
         OrganizationServiceAbstraction,
         ProviderServiceAbstraction,
-        AuthServiceAbstraction,
       ],
     },
     { provide: BroadcasterServiceAbstraction, useClass: BroadcasterService },
@@ -437,7 +434,6 @@ import { ValidationService } from "./validation.service";
         StateServiceAbstraction,
         LogService,
         OrganizationServiceAbstraction,
-        AuthServiceAbstraction,
       ],
     },
     {

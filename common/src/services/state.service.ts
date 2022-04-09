@@ -1482,7 +1482,6 @@ export class StateService<
     );
   }
 
-  // Use the higher level AuthService.AuthStatus where possible
   async getIsAuthenticated(options?: StorageOptions): Promise<boolean> {
     return (await this.getAccessToken(options)) != null && (await this.getUserId(options)) != null;
   }
