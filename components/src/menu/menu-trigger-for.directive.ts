@@ -74,7 +74,7 @@ export class MenuTriggerForDirective implements OnDestroy {
       }
       this.destroyMenu()
     });
-    this.keyDownEventsSub = this.overlayRef.keydownEvents().subscribe((event: KeyboardEvent) => this.menu.keyManager.onKeydown(event));
+    this.keyDownEventsSub = this.overlayRef.keydownEvents().subscribe(this.menu.keyManager.onKeydown);
   }
 
   private destroyMenu() {
