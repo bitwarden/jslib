@@ -37,7 +37,8 @@ export class MenuTriggerForDirective implements OnDestroy {
       .withLockedPosition(true)
       .withFlexibleDimensions(false),
   };
-  private closedEventsSub: Subscription = null;
+  private closedEventsSub: Subscription;
+  private keyDownEventsSub: Subscription;
 
   @Input("bitMenuTriggerFor") menu: MenuComponent;
 
@@ -67,7 +68,7 @@ export class MenuTriggerForDirective implements OnDestroy {
     this.overlayRef.attach(templatePortal);
 
     this.closedEventsSub = this.getClosedEvents().subscribe(() => this.destroyMenu());
-    this.overlayRef.keydownEvents().subscribe((event: KeyboardEvent) => this.menu.keyManager.onKeydown(event));
+    this.keyDownEventsSub = this.overlayRef.keydownEvents().subscribe((event: KeyboardEvent) => this.menu.keyManager.onKeydown(event));
   }
 
   private destroyMenu() {
@@ -93,5 +94,6 @@ export class MenuTriggerForDirective implements OnDestroy {
   private disposeAll() {
     this.closedEventsSub?.unsubscribe();
     this.overlayRef?.dispose();
+    this.keyDownEventsSub?.unsubscribe();
   }
 }
