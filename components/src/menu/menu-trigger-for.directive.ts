@@ -1,4 +1,3 @@
-import { ConfigurableFocusTrap, ConfigurableFocusTrapFactory } from "@angular/cdk/a11y";
 import { Overlay, OverlayConfig, OverlayRef } from "@angular/cdk/overlay";
 import { TemplatePortal } from "@angular/cdk/portal";
 import { Directive, ElementRef, Input, OnDestroy, ViewContainerRef } from "@angular/core";
@@ -38,7 +37,6 @@ export class MenuTriggerForDirective implements OnDestroy {
       .withLockedPosition(true)
       .withFlexibleDimensions(false),
   };
-  private focusTrap: ConfigurableFocusTrap;
   private closedEventsSub: Subscription = null;
 
   @Input("bitMenuTriggerFor") menu: MenuComponent;
@@ -47,7 +45,6 @@ export class MenuTriggerForDirective implements OnDestroy {
     private elementRef: ElementRef<HTMLElement>,
     private viewContainerRef: ViewContainerRef,
     private overlay: Overlay,
-    private focusTrapFactory: ConfigurableFocusTrapFactory
   ) {}
 
   toggleMenu() {
@@ -69,9 +66,8 @@ export class MenuTriggerForDirective implements OnDestroy {
     const templatePortal = new TemplatePortal(this.menu.templateRef, this.viewContainerRef);
     this.overlayRef.attach(templatePortal);
 
-    this.createFocusTrap();
-
     this.closedEventsSub = this.getClosedEvents().subscribe(() => this.destroyMenu());
+    this.overlayRef.keydownEvents().subscribe((event: KeyboardEvent) => this.menu.keyManager.onKeydown(event));
   }
 
   private destroyMenu() {
@@ -81,18 +77,6 @@ export class MenuTriggerForDirective implements OnDestroy {
 
     this.isOpen = false;
     this.disposeAll();
-  }
-
-  private createFocusTrap() {
-    this.focusTrap = this.focusTrapFactory.create(this.overlayRef.hostElement);
-
-    this.focusTrap.focusFirstTabbableElementWhenReady();
-  }
-
-  private destroyFocusTrap() {
-    if (this.focusTrap != null) {
-      this.focusTrap.destroy();
-    }
   }
 
   private getClosedEvents(): Observable<any> {
@@ -107,7 +91,6 @@ export class MenuTriggerForDirective implements OnDestroy {
   }
 
   private disposeAll() {
-    this.destroyFocusTrap();
     this.closedEventsSub?.unsubscribe();
     this.overlayRef?.dispose();
   }

@@ -1,4 +1,5 @@
-import { Component } from "@angular/core";
+import { FocusableOption } from '@angular/cdk/a11y';
+import { Component, ElementRef } from "@angular/core";
 
 const styles = [
   "tw-block",
@@ -22,4 +23,10 @@ const styles = [
     role: "menuitem",
   },
 })
-export class MenuItemComponent {}
+export class MenuItemComponent implements FocusableOption {
+  constructor(private elementRef: ElementRef) {}
+
+  focus() {
+    this.elementRef.nativeElement.focus();
+  }
+}
