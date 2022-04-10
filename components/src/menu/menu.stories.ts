@@ -1,5 +1,7 @@
 import { OverlayModule } from "@angular/cdk/overlay";
 import { Meta, moduleMetadata, Story } from "@storybook/angular";
+import { MenuDividerComponent } from './menu-divider.component';
+import { MenuItemComponent } from './menu-item.component';
 
 import { MenuTriggerForDirective } from "./menu-trigger-for.directive";
 import { MenuComponent } from "./menu.component";
@@ -10,7 +12,7 @@ export default {
   component: MenuTriggerForDirective,
   decorators: [
     moduleMetadata({
-      declarations: [MenuTriggerForDirective, MenuComponent],
+      declarations: [MenuTriggerForDirective, MenuComponent, MenuItemComponent, MenuDividerComponent],
       imports: [OverlayModule],
     }),
   ],
@@ -22,9 +24,11 @@ const Template: Story<MenuTriggerForDirective> = (args: MenuTriggerForDirective)
   template: `<button [bitMenuTriggerFor]="myMenu">Test</button>
 
   <bit-menu #myMenu>
-    <button bit-menu-item>One</button>
-    <button bit-menu-item>Two</button>
-    <button bit-menu-item>Three</button>
+    <a href="#" bit-menu-item>Anchor link</a>
+    <a href="#" bit-menu-item>Another link</a>
+    <button type="button" bit-menu-item>Button</button>
+    <bit-menu-divider></bit-menu-divider>
+    <button type="button" bit-menu-item>Button after divider</button>
   </bit-menu>`,
 });
 
