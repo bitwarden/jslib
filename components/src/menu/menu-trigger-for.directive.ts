@@ -35,7 +35,8 @@ export class MenuTriggerForDirective implements OnDestroy {
         },
       ])
       .withLockedPosition(true)
-      .withFlexibleDimensions(false),
+      .withFlexibleDimensions(false)
+      .withPush(false),
   };
   private closedEventsSub: Subscription;
   private keyDownEventsSub: Subscription;
