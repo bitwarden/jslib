@@ -1,8 +1,8 @@
 import { OverlayModule } from "@angular/cdk/overlay";
 import { Meta, moduleMetadata, Story } from "@storybook/angular";
-import { MenuDividerComponent } from './menu-divider.component';
-import { MenuItemComponent } from './menu-item.component';
 
+import { MenuDividerComponent } from "./menu-divider.component";
+import { MenuItemComponent } from "./menu-item.component";
 import { MenuTriggerForDirective } from "./menu-trigger-for.directive";
 import { MenuComponent } from "./menu.component";
 
@@ -12,7 +12,12 @@ export default {
   component: MenuTriggerForDirective,
   decorators: [
     moduleMetadata({
-      declarations: [MenuTriggerForDirective, MenuComponent, MenuItemComponent, MenuDividerComponent],
+      declarations: [
+        MenuTriggerForDirective,
+        MenuComponent,
+        MenuItemComponent,
+        MenuDividerComponent,
+      ],
       imports: [OverlayModule],
     }),
   ],

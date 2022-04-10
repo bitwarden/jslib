@@ -45,7 +45,7 @@ export class MenuTriggerForDirective implements OnDestroy {
   constructor(
     private elementRef: ElementRef<HTMLElement>,
     private viewContainerRef: ViewContainerRef,
-    private overlay: Overlay,
+    private overlay: Overlay
   ) {}
 
   toggleMenu() {
@@ -72,9 +72,11 @@ export class MenuTriggerForDirective implements OnDestroy {
         // Required to ensure tab order resumes correctly
         this.elementRef.nativeElement.focus();
       }
-      this.destroyMenu()
+      this.destroyMenu();
     });
-    this.keyDownEventsSub = this.overlayRef.keydownEvents().subscribe((event: KeyboardEvent) => this.menu.keyManager.onKeydown(event));
+    this.keyDownEventsSub = this.overlayRef
+      .keydownEvents()
+      .subscribe((event: KeyboardEvent) => this.menu.keyManager.onKeydown(event));
   }
 
   private destroyMenu() {
