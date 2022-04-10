@@ -21,6 +21,7 @@ const styles = [
   host: {
     class: styles,
     role: "menuitem",
+    tabIndex: "-1"
   },
 })
 export class MenuItemComponent implements FocusableOption {

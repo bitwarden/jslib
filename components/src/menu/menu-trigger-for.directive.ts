@@ -67,7 +67,13 @@ export class MenuTriggerForDirective implements OnDestroy {
     const templatePortal = new TemplatePortal(this.menu.templateRef, this.viewContainerRef);
     this.overlayRef.attach(templatePortal);
 
-    this.closedEventsSub = this.getClosedEvents().subscribe(() => this.destroyMenu());
+    this.closedEventsSub = this.getClosedEvents().subscribe((event: KeyboardEvent | undefined) => {
+      if (event?.key === "Tab") {
+        // Required to ensure tab order resumes correctly
+        this.elementRef.nativeElement.focus();
+      }
+      this.destroyMenu()
+    });
     this.keyDownEventsSub = this.overlayRef.keydownEvents().subscribe((event: KeyboardEvent) => this.menu.keyManager.onKeydown(event));
   }
 
@@ -84,7 +90,7 @@ export class MenuTriggerForDirective implements OnDestroy {
     const detachments = this.overlayRef.detachments();
     const escKey = this.overlayRef
       .keydownEvents()
-      .pipe(filter((event: KeyboardEvent) => event.key === "Escape"));
+      .pipe(filter((event: KeyboardEvent) => event.key === "Escape" || event.key === "Tab"));
     const backdrop = this.overlayRef.backdropClick();
     const menuClosed = this.menu.closed;
 
