@@ -9,7 +9,7 @@ import { MenuItemComponent } from './menu-item.component';
 export class MenuComponent implements AfterContentInit {
   @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
   @Output() closed = new EventEmitter<void>();
-  @ContentChildren(MenuItemComponent) menuItems: QueryList<MenuItemComponent>;
+  @ContentChildren(MenuItemComponent, {descendants: true}) menuItems: QueryList<MenuItemComponent>;
   keyManager: FocusKeyManager<MenuItemComponent>;
 
   ngAfterContentInit() {
