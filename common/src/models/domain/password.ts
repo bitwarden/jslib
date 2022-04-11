@@ -9,20 +9,15 @@ export class Password extends Domain {
   password: EncString;
   lastUsedDate: Date;
 
-  constructor(obj?: PasswordHistoryData, alreadyEncrypted = false) {
+  constructor(obj?: PasswordHistoryData) {
     super();
     if (obj == null) {
       return;
     }
 
-    this.buildDomainModel(
-      this,
-      obj,
-      {
-        password: null,
-      },
-      alreadyEncrypted
-    );
+    this.buildDomainModel(this, obj, {
+      password: null,
+    });
     this.lastUsedDate = new Date(obj.lastUsedDate);
   }
 

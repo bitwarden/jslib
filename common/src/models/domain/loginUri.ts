@@ -10,7 +10,7 @@ export class LoginUri extends Domain {
   uri: EncString;
   match: UriMatchType;
 
-  constructor(obj?: LoginUriData, alreadyEncrypted = false) {
+  constructor(obj?: LoginUriData) {
     super();
     if (obj == null) {
       return;
@@ -23,7 +23,6 @@ export class LoginUri extends Domain {
       {
         uri: null,
       },
-      alreadyEncrypted,
       []
     );
   }

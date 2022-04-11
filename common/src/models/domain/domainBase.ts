@@ -8,7 +8,6 @@ export default class Domain {
     domain: D,
     dataObj: any,
     map: any,
-    alreadyEncrypted: boolean,
     notEncList: any[] = []
   ) {
     for (const prop in map) {
