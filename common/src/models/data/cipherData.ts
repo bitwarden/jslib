@@ -1,5 +1,7 @@
 import { CipherRepromptType } from "../../enums/cipherRepromptType";
 import { CipherType } from "../../enums/cipherType";
+import { Cipher } from "../domain/cipher";
+import { EncString } from "../domain/encString";
 import { CipherResponse } from "../response/cipherResponse";
 
 import { AttachmentData } from "./attachmentData";
@@ -81,6 +83,67 @@ export class CipherData {
     }
     if (response.passwordHistory != null) {
       this.passwordHistory = response.passwordHistory.map((ph) => new PasswordHistoryData(ph));
+    }
+  }
+
+  private toEncString(val: string) {
+    return val ? new EncString(val) : null;
+  }
+
+  toCipher(localData?: any) {
+    const cipher = new Cipher();
+    cipher.id = this.id;
+    cipher.organizationId = this.organizationId;
+    cipher.folderId = this.folderId;
+    cipher.name = this.toEncString(this.name);
+    cipher.notes = this.toEncString(this.notes);
+
+    cipher.type = this.type;
+    cipher.favorite = this.favorite;
+    cipher.organizationUseTotp = this.organizationUseTotp;
+    cipher.edit = this.edit;
+
+    cipher.viewPassword = this.viewPassword ?? true; // Default for already synced Ciphers without viewPassword
+
+    cipher.revisionDate = this.revisionDate != null ? new Date(this.revisionDate) : null;
+    cipher.collectionIds = this.collectionIds;
+    cipher.localData = localData;
+    cipher.deletedDate = this.deletedDate != null ? new Date(this.deletedDate) : null;
+    cipher.reprompt = this.reprompt;
+
+    switch (this.type) {
+      case CipherType.Login:
+        //cipher.login = new Login(obj.login, alreadyEncrypted);
+        break;
+      case CipherType.SecureNote:
+        //cipher.secureNote = new SecureNote(obj.secureNote);
+        break;
+      case CipherType.Card:
+        //cipher.card = new Card(obj.card, alreadyEncrypted);
+        break;
+      case CipherType.Identity:
+        //cipher.identity = new Identity(obj.identity, alreadyEncrypted);
+        break;
+      default:
+        break;
+    }
+
+    if (this.attachments != null) {
+      //cipher.attachments = this.attachments.map((a) => new Attachment(a, alreadyEncrypted));
+    } else {
+      cipher.attachments = null;
+    }
+
+    if (this.fields != null) {
+      //cipher.fields = this.fields.map((f) => new Field(f, alreadyEncrypted));
+    } else {
+      cipher.fields = null;
+    }
+
+    if (this.passwordHistory != null) {
+      //cipher.passwordHistory = this.passwordHistory.map((ph) => new Password(ph, alreadyEncrypted));
+    } else {
+      cipher.passwordHistory = null;
     }
   }
 }
