@@ -22,12 +22,9 @@ export default {
   ],
 } as Meta;
 
-// This is wrapped in *ngIf to create an Angular template, which scopes the #myMenu template reference variable.
-// Otherwise there are duplicate template reference variables on the page and this causes undefined behaviour.
 const Template: Story<MenuTriggerForDirective> = (args: MenuTriggerForDirective) => ({
   props: args,
   template: `
-  <div *ngIf="true">
     <button [bitMenuTriggerFor]="myMenu">Test</button>
 
     <bit-menu #myMenu>
@@ -36,8 +33,7 @@ const Template: Story<MenuTriggerForDirective> = (args: MenuTriggerForDirective)
       <button type="button" bit-menu-item>Button</button>
       <bit-menu-divider></bit-menu-divider>
       <button type="button" bit-menu-item>Button after divider</button>
-    </bit-menu>
-  </div>`,
+    </bit-menu>`,
 });
 
 export const Primary = Template.bind({});
