@@ -20,6 +20,12 @@ export default {
       imports: [OverlayModule],
     }),
   ],
+  parameters: {
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/file/f32LSg3jaegICkMu7rPARm/Tailwind-Component-Library-Update?node-id=1881%3A17952"
+    }
+  }
 } as Meta;
 
 const Template: Story<MenuTriggerForDirective> = (args: MenuTriggerForDirective) => ({
