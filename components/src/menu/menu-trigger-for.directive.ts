@@ -33,6 +33,12 @@ export class MenuTriggerForDirective implements OnDestroy {
           overlayX: "start",
           overlayY: "top",
         },
+        {
+          originX: "end",
+          originY: "bottom",
+          overlayX: "end",
+          overlayY: "top",
+        },
       ])
       .withLockedPosition(true)
       .withFlexibleDimensions(false)
