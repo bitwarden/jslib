@@ -1,5 +1,6 @@
 import { OverlayModule } from "@angular/cdk/overlay";
 import { Meta, moduleMetadata, Story } from "@storybook/angular";
+import { ButtonModule } from '../button/button.module';
 
 import { MenuDividerComponent } from "./menu-divider.component";
 import { MenuItemComponent } from "./menu-item.component";
@@ -17,7 +18,10 @@ export default {
         MenuItemComponent,
         MenuDividerComponent,
       ],
-      imports: [OverlayModule],
+      imports: [
+        OverlayModule,
+        ButtonModule
+      ],
     }),
   ],
   parameters: {
@@ -31,7 +35,7 @@ export default {
 const Template: Story<MenuTriggerForDirective> = (args: MenuTriggerForDirective) => ({
   props: args,
   template: `
-    <button [bitMenuTriggerFor]="myMenu">Test</button>
+    <button bit-button [buttonType]="secondary" [bitMenuTriggerFor]="myMenu">Test</button>
 
     <bit-menu #myMenu>
       <a href="#" bit-menu-item>Anchor link</a>
