@@ -17,7 +17,7 @@ export default class Domain {
       }
 
       const objProp = dataObj[map[prop] || prop];
-      if (alreadyEncrypted === true || notEncList.indexOf(prop) > -1) {
+      if (notEncList.indexOf(prop) > -1) {
         (domain as any)[prop] = objProp ? objProp : null;
       } else {
         (domain as any)[prop] = objProp ? new EncString(objProp) : null;
