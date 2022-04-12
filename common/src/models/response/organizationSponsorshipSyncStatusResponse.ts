@@ -1,6 +1,5 @@
 import { BaseResponse } from "./baseResponse";
 
-
 export class OrganizationSponsorshipSyncStatusResponse extends BaseResponse {
   lastSyncDate?: Date;
 
