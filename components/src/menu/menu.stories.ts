@@ -35,6 +35,25 @@ export default {
 const Template: Story<MenuTriggerForDirective> = (args: MenuTriggerForDirective) => ({
   props: args,
   template: `
+    <bit-menu #myMenu="menuComponent">
+      <a href="#" bit-menu-item>Anchor link</a>
+      <a href="#" bit-menu-item>Another link</a>
+      <button type="button" bit-menu-item>Button</button>
+      <bit-menu-divider></bit-menu-divider>
+      <button type="button" bit-menu-item>Button after divider</button>
+    </bit-menu>
+
+    <div class="tw-h-40">
+      <div class="cdk-overlay-pane bit-menu-panel">
+        <ng-container *ngTemplateOutlet="myMenu.templateRef"></ng-container>
+      </div>
+    </div>
+    `,
+});
+
+const TemplateWithButton: Story<MenuTriggerForDirective> = (args: MenuTriggerForDirective) => ({
+  props: args,
+  template: `
     <button bit-button [buttonType]="secondary" [bitMenuTriggerFor]="myMenu">Test</button>
 
     <bit-menu #myMenu>
@@ -46,4 +65,5 @@ const Template: Story<MenuTriggerForDirective> = (args: MenuTriggerForDirective)
     </bit-menu>`,
 });
 
-export const Primary = Template.bind({});
+export const OpenMenu = Template.bind({});
+export const ExampleWithButton = TemplateWithButton.bind({});
