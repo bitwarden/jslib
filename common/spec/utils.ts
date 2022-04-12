@@ -1,3 +1,7 @@
+import Substitute, { Arg } from "@fluffy-spoon/substitute";
+
+import { EncString } from "jslib-common/models/domain/encString";
+
 function newGuid() {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
@@ -15,4 +19,11 @@ export function BuildTestObject<T, K extends keyof T = keyof T>(
   constructor?: new () => T
 ): T {
   return Object.assign(constructor === null ? {} : new constructor(), def) as T;
+}
+
+export function mockEnc(s: string): EncString {
+  const mock = Substitute.for<EncString>();
+  mock.decrypt(Arg.any(), Arg.any()).resolves(s);
+
+  return mock;
 }

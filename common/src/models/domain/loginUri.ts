@@ -46,6 +46,7 @@ export class LoginUri extends Domain {
       u,
       {
         uri: null,
+        match: null,
       },
       ["match"]
     );
