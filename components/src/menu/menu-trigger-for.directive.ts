@@ -1,6 +1,14 @@
 import { Overlay, OverlayConfig, OverlayRef } from "@angular/cdk/overlay";
 import { TemplatePortal } from "@angular/cdk/portal";
-import { Directive, ElementRef, Input, OnDestroy, ViewContainerRef } from "@angular/core";
+import {
+  Directive,
+  ElementRef,
+  HostBinding,
+  HostListener,
+  Input,
+  OnDestroy,
+  ViewContainerRef,
+} from "@angular/core";
 import { Observable, Subscription } from "rxjs";
 import { filter, mergeWith } from "rxjs/operators";
 
@@ -8,15 +16,14 @@ import { MenuComponent } from "./menu.component";
 
 @Directive({
   selector: "[bitMenuTriggerFor]",
-  host: {
-    role: "button",
-    "aria-haspopup": "menu",
-    "[attr.aria-expanded]": "isOpen",
-    "(click)": "toggleMenu()",
-  },
 })
 export class MenuTriggerForDirective implements OnDestroy {
-  private isOpen = false;
+  @HostBinding("attr.aria-expanded") isOpen = false;
+  @HostBinding("attr.aria-haspopup") hasPopup = "menu";
+  @HostBinding("attr.role") role = "button";
+
+  @Input("bitMenuTriggerFor") menu: MenuComponent;
+
   private overlayRef: OverlayRef;
   private defaultMenuConfig: OverlayConfig = {
     panelClass: "bit-menu-panel",
@@ -47,15 +54,13 @@ export class MenuTriggerForDirective implements OnDestroy {
   private closedEventsSub: Subscription;
   private keyDownEventsSub: Subscription;
 
-  @Input("bitMenuTriggerFor") menu: MenuComponent;
-
   constructor(
     private elementRef: ElementRef<HTMLElement>,
     private viewContainerRef: ViewContainerRef,
     private overlay: Overlay
   ) {}
 
-  toggleMenu() {
+  @HostListener("click") toggleMenu() {
     this.isOpen ? this.destroyMenu() : this.openMenu();
   }
 
