@@ -5,7 +5,7 @@ import { Component, ElementRef } from "@angular/core";
   selector: "[bit-menu-item]",
   host: {
     class:
-      "tw-block tw-py-1 tw-px-6 !tw-text-main !tw-no-underline hover:tw-bg-secondary-100 focus:tw-bg-secondary-100 focus:tw-z-50 tw-cursor-pointer tw-border-none tw-bg-background tw-text-left",
+      "tw-block tw-py-1 tw-px-6 !tw-text-main !tw-no-underline tw-cursor-pointer tw-border-none tw-bg-background tw-text-left hover:tw-bg-secondary-100 focus:tw-bg-secondary-100 focus:tw-z-50",
     role: "menuitem",
     tabIndex: "-1",
   },
