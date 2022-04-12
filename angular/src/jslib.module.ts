@@ -1,12 +1,12 @@
-import { CommonModule } from "@angular/common";
+import { CommonModule, DatePipe } from "@angular/common";
 import { NgModule } from "@angular/core";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 import { AvatarComponent } from "./components/avatar.component";
 import { CalloutComponent } from "./components/callout.component";
 import { ExportScopeCalloutComponent } from "./components/export-scope-callout.component";
 import { IconComponent } from "./components/icon.component";
 import { BitwardenToastModule } from "./components/toastr.component";
-import { VerifyMasterPasswordComponent } from "./components/verify-master-password.component";
 import { A11yInvalidDirective } from "./directives/a11y-invalid.directive";
 import { A11yTitleDirective } from "./directives/a11y-title.directive";
 import { ApiActionDirective } from "./directives/api-action.directive";
@@ -21,7 +21,9 @@ import { SelectCopyDirective } from "./directives/select-copy.directive";
 import { StopClickDirective } from "./directives/stop-click.directive";
 import { StopPropDirective } from "./directives/stop-prop.directive";
 import { TrueFalseValueDirective } from "./directives/true-false-value.directive";
+import { ColorPasswordCountPipe } from "./pipes/color-password-count.pipe";
 import { ColorPasswordPipe } from "./pipes/color-password.pipe";
+import { EllipsisPipe } from "./pipes/ellipsis.pipe";
 import { I18nPipe } from "./pipes/i18n.pipe";
 import { SearchCiphersPipe } from "./pipes/search-ciphers.pipe";
 import { SearchPipe } from "./pipes/search.pipe";
@@ -35,6 +37,8 @@ import { UserNamePipe } from "./pipes/user-name.pipe";
       closeButton: true,
     }),
     CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
   declarations: [
     A11yInvalidDirective,
@@ -44,7 +48,9 @@ import { UserNamePipe } from "./pipes/user-name.pipe";
     AutofocusDirective,
     BlurClickDirective,
     BoxRowDirective,
+    ColorPasswordCountPipe,
     ColorPasswordPipe,
+    EllipsisPipe,
     FallbackSrcDirective,
     I18nPipe,
     InputStripSpacesDirective,
@@ -59,7 +65,6 @@ import { UserNamePipe } from "./pipes/user-name.pipe";
     UserNamePipe,
     CalloutComponent,
     IconComponent,
-    VerifyMasterPasswordComponent,
     ExportScopeCalloutComponent,
   ],
   exports: [
@@ -71,7 +76,9 @@ import { UserNamePipe } from "./pipes/user-name.pipe";
     BitwardenToastModule,
     BlurClickDirective,
     BoxRowDirective,
+    ColorPasswordCountPipe,
     ColorPasswordPipe,
+    EllipsisPipe,
     FallbackSrcDirective,
     I18nPipe,
     InputStripSpacesDirective,
@@ -86,9 +93,8 @@ import { UserNamePipe } from "./pipes/user-name.pipe";
     UserNamePipe,
     CalloutComponent,
     IconComponent,
-    VerifyMasterPasswordComponent,
     ExportScopeCalloutComponent,
   ],
-  providers: [UserNamePipe, SearchPipe],
+  providers: [UserNamePipe, SearchPipe, I18nPipe, DatePipe],
 })
 export class JslibModule {}

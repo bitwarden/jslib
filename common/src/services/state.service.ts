@@ -1797,6 +1797,40 @@ export class StateService<
     );
   }
 
+  async getUsernameGenerationOptions(options?: StorageOptions): Promise<any> {
+    return (
+      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
+    )?.settings?.usernameGenerationOptions;
+  }
+
+  async setUsernameGenerationOptions(value: any, options?: StorageOptions): Promise<void> {
+    const account = await this.getAccount(
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+    );
+    account.settings.usernameGenerationOptions = value;
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+    );
+  }
+
+  async getGeneratorOptions(options?: StorageOptions): Promise<any> {
+    return (
+      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
+    )?.settings?.generatorOptions;
+  }
+
+  async setGeneratorOptions(value: any, options?: StorageOptions): Promise<void> {
+    const account = await this.getAccount(
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+    );
+    account.settings.generatorOptions = value;
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+    );
+  }
+
   async getProtectedPin(options?: StorageOptions): Promise<string> {
     return (
       await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
@@ -2455,11 +2489,10 @@ export class StateService<
   protected async deAuthenticateAccount(userId: string) {
     await this.setAccessToken(null, { userId: userId });
     await this.setLastActive(null, { userId: userId });
-    const index = this.state.authenticatedAccounts.indexOf(userId);
-    if (index > -1) {
-      this.state.authenticatedAccounts.splice(index, 1);
-      await this.storageService.save(keys.authenticatedAccounts, this.state.authenticatedAccounts);
-    }
+    this.state.authenticatedAccounts = this.state.authenticatedAccounts.filter(
+      (activeUserId) => activeUserId !== userId
+    );
+    await this.storageService.save(keys.authenticatedAccounts, this.state.authenticatedAccounts);
   }
 
   protected async removeAccountFromDisk(userId: string) {

@@ -1,11 +1,6 @@
-import { TwoFactorProviderType } from "../../../enums/twoFactorProviderType";
 import { DeviceRequest } from "../deviceRequest";
 
-export interface TokenRequestTwoFactor {
-  provider: TwoFactorProviderType;
-  token: string;
-  remember: boolean;
-}
+import { TokenRequestTwoFactor } from "./tokenRequestTwoFactor";
 
 export abstract class TokenRequest {
   protected device?: DeviceRequest;
