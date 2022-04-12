@@ -7,7 +7,6 @@ module.exports = {
   displayName: "common jslib tests",
   preset: "ts-jest",
   testEnvironment: "jsdom",
-  roots: ["<rootDir>/spec/"],
   testMatch: ["**/+(*.)+(spec).+(ts)"],
   setupFilesAfterEnv: ["<rootDir>/spec/test.ts"],
   collectCoverage: true,
