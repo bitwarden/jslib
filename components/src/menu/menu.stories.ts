@@ -66,4 +66,4 @@ const TemplateWithButton: Story<MenuTriggerForDirective> = (args: MenuTriggerFor
 });
 
 export const OpenMenu = Template.bind({});
-export const ExampleWithButton = TemplateWithButton.bind({});
+export const ClosedMenu = TemplateWithButton.bind({});
