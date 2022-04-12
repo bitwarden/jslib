@@ -52,7 +52,9 @@ const Template: Story<MenuTriggerForDirective> = (args: MenuTriggerForDirective)
 const TemplateWithButton: Story<MenuTriggerForDirective> = (args: MenuTriggerForDirective) => ({
   props: args,
   template: `
-    <button bit-button [buttonType]="secondary" [bitMenuTriggerFor]="myMenu">Test</button>
+    <div class="tw-h-40">
+      <button bit-button [buttonType]="secondary" [bitMenuTriggerFor]="myMenu">Test</button>
+    </div>
 
     <bit-menu #myMenu>
       <a href="#" bit-menu-item>Anchor link</a>
