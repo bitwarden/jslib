@@ -9,7 +9,7 @@ export class MenuItemComponent implements FocusableOption {
   @HostBinding("class") classList = [
     "tw-block",
     "tw-py-1",
-    "tw-px-6",
+    "tw-px-4",
     "!tw-text-main",
     "!tw-no-underline",
     "tw-cursor-pointer",
