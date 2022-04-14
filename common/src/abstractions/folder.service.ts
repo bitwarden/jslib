@@ -10,7 +10,7 @@ export abstract class FolderService {
   get: (id: string) => Promise<Folder>;
   getAll: () => Promise<Folder[]>;
   getAllDecrypted: () => Promise<FolderView[]>;
-  getAllNested: () => Promise<TreeNode<FolderView>[]>;
+  getAllNested: (folders?: FolderView[]) => Promise<TreeNode<FolderView>[]>;
   getNested: (id: string) => Promise<TreeNode<FolderView>>;
   saveWithServer: (folder: Folder) => Promise<any>;
   upsert: (folder: FolderData | FolderData[]) => Promise<any>;
