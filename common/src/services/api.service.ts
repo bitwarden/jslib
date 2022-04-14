@@ -45,6 +45,7 @@ import { KeysRequest } from "../models/request/keysRequest";
 import { OrganizationSponsorshipCreateRequest } from "../models/request/organization/organizationSponsorshipCreateRequest";
 import { OrganizationSponsorshipRedeemRequest } from "../models/request/organization/organizationSponsorshipRedeemRequest";
 import { OrganizationSsoRequest } from "../models/request/organization/organizationSsoRequest";
+import { OrganizationApiKeyRequest } from "../models/request/organizationApiKeyRequest";
 import { OrganizationCreateRequest } from "../models/request/organizationCreateRequest";
 import { OrganizationImportRequest } from "../models/request/organizationImportRequest";
 import { OrganizationKeysRequest } from "../models/request/organizationKeysRequest";
@@ -128,9 +129,11 @@ import { IdentityTwoFactorResponse } from "../models/response/identityTwoFactorR
 import { KeyConnectorUserKeyResponse } from "../models/response/keyConnectorUserKeyResponse";
 import { ListResponse } from "../models/response/listResponse";
 import { OrganizationSsoResponse } from "../models/response/organization/organizationSsoResponse";
+import { OrganizationApiKeyInformationResponse } from "../models/response/organizationApiKeyInformationResponse";
 import { OrganizationAutoEnrollStatusResponse } from "../models/response/organizationAutoEnrollStatusResponse";
 import { OrganizationKeysResponse } from "../models/response/organizationKeysResponse";
 import { OrganizationResponse } from "../models/response/organizationResponse";
+import { OrganizationSponsorshipSyncStatusResponse } from "../models/response/organizationSponsorshipSyncStatusResponse";
 import { OrganizationSubscriptionResponse } from "../models/response/organizationSubscriptionResponse";
 import { OrganizationUserBulkPublicKeyResponse } from "../models/response/organizationUserBulkPublicKeyResponse";
 import { OrganizationUserBulkResponse } from "../models/response/organizationUserBulkResponse";
@@ -1700,15 +1703,28 @@ export class ApiService implements ApiServiceAbstraction {
 
   async postOrganizationApiKey(
     id: string,
-    request: SecretVerificationRequest
+    request: OrganizationApiKeyRequest
   ): Promise<ApiKeyResponse> {
     const r = await this.send("POST", "/organizations/" + id + "/api-key", request, true, true);
     return new ApiKeyResponse(r);
   }
 
+  async getOrganizationApiKeyInformation(
+    id: string
+  ): Promise<ListResponse<OrganizationApiKeyInformationResponse>> {
+    const r = await this.send(
+      "GET",
+      "/organizations/" + id + "/api-key-information",
+      null,
+      true,
+      true
+    );
+    return new ListResponse(r, OrganizationApiKeyInformationResponse);
+  }
+
   async postOrganizationRotateApiKey(
     id: string,
-    request: SecretVerificationRequest
+    request: OrganizationApiKeyRequest
   ): Promise<ApiKeyResponse> {
     const r = await this.send(
       "POST",
@@ -2264,6 +2280,19 @@ export class ApiService implements ApiServiceAbstraction {
       true,
       false
     );
+  }
+
+  async getSponsorshipSyncStatus(
+    sponsoredOrgId: string
+  ): Promise<OrganizationSponsorshipSyncStatusResponse> {
+    const response = await this.send(
+      "GET",
+      "/organization/sponsorship/" + sponsoredOrgId + "/sync-status",
+      null,
+      true,
+      true
+    );
+    return new OrganizationSponsorshipSyncStatusResponse(response);
   }
 
   async deleteRevokeSponsorship(sponsoringOrganizationId: string): Promise<void> {

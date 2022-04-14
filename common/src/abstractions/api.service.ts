@@ -36,6 +36,7 @@ import { KeysRequest } from "../models/request/keysRequest";
 import { OrganizationSponsorshipCreateRequest } from "../models/request/organization/organizationSponsorshipCreateRequest";
 import { OrganizationSponsorshipRedeemRequest } from "../models/request/organization/organizationSponsorshipRedeemRequest";
 import { OrganizationSsoRequest } from "../models/request/organization/organizationSsoRequest";
+import { OrganizationApiKeyRequest } from "../models/request/organizationApiKeyRequest";
 import { OrganizationCreateRequest } from "../models/request/organizationCreateRequest";
 import { OrganizationImportRequest } from "../models/request/organizationImportRequest";
 import { OrganizationKeysRequest } from "../models/request/organizationKeysRequest";
@@ -118,9 +119,11 @@ import { IdentityTwoFactorResponse } from "../models/response/identityTwoFactorR
 import { KeyConnectorUserKeyResponse } from "../models/response/keyConnectorUserKeyResponse";
 import { ListResponse } from "../models/response/listResponse";
 import { OrganizationSsoResponse } from "../models/response/organization/organizationSsoResponse";
+import { OrganizationApiKeyInformationResponse } from "../models/response/organizationApiKeyInformationResponse";
 import { OrganizationAutoEnrollStatusResponse } from "../models/response/organizationAutoEnrollStatusResponse";
 import { OrganizationKeysResponse } from "../models/response/organizationKeysResponse";
 import { OrganizationResponse } from "../models/response/organizationResponse";
+import { OrganizationSponsorshipSyncStatusResponse } from "../models/response/organizationSponsorshipSyncStatusResponse";
 import { OrganizationSubscriptionResponse } from "../models/response/organizationSubscriptionResponse";
 import { OrganizationUserBulkPublicKeyResponse } from "../models/response/organizationUserBulkPublicKeyResponse";
 import { OrganizationUserBulkResponse } from "../models/response/organizationUserBulkResponse";
@@ -520,11 +523,14 @@ export abstract class ApiService {
   postOrganizationLicenseUpdate: (id: string, data: FormData) => Promise<any>;
   postOrganizationApiKey: (
     id: string,
-    request: SecretVerificationRequest
+    request: OrganizationApiKeyRequest
   ) => Promise<ApiKeyResponse>;
+  getOrganizationApiKeyInformation: (
+    id: string
+  ) => Promise<ListResponse<OrganizationApiKeyInformationResponse>>;
   postOrganizationRotateApiKey: (
     id: string,
-    request: SecretVerificationRequest
+    request: OrganizationApiKeyRequest
   ) => Promise<ApiKeyResponse>;
   postOrganizationSso: (
     id: string,
@@ -661,6 +667,9 @@ export abstract class ApiService {
     sponsorshipOrgId: string,
     request: OrganizationSponsorshipCreateRequest
   ) => Promise<void>;
+  getSponsorshipSyncStatus: (
+    sponsoredOrgId: string
+  ) => Promise<OrganizationSponsorshipSyncStatusResponse>;
   deleteRevokeSponsorship: (sponsoringOrganizationId: string) => Promise<void>;
   deleteRemoveSponsorship: (sponsoringOrgId: string) => Promise<void>;
   postPreValidateSponsorshipToken: (sponsorshipToken: string) => Promise<boolean>;
