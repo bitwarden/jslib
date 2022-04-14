@@ -89,7 +89,10 @@ export class VaultFilterComponent implements OnInit {
   }
 
   protected pruneInvalidFolderSelection(filter: VaultFilter): VaultFilter {
-    if (filter.selectedFolder && !this.folders.hasId(filter.selectedFolderId)) {
+    if (
+      filter.selectedFolder &&
+      (this.folders == null || !this.folders.hasId(filter.selectedFolderId))
+    ) {
       filter.selectedFolder = false;
       filter.selectedFolderId = null;
     }
@@ -99,7 +102,7 @@ export class VaultFilterComponent implements OnInit {
   protected pruneInvalidCollectionSelection(filter: VaultFilter): VaultFilter {
     if (
       filter.selectedCollectionId != null &&
-      !this.collections.hasId(filter.selectedCollectionId)
+      (this.collections == null || !this.collections.hasId(filter.selectedCollectionId))
     ) {
       filter.selectedCollectionId = null;
     }
