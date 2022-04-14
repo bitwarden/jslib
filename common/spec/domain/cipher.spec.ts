@@ -2,6 +2,7 @@ import Substitute, { Arg } from "@fluffy-spoon/substitute";
 
 import { CipherRepromptType } from "jslib-common/enums/cipherRepromptType";
 import { CipherType } from "jslib-common/enums/cipherType";
+import { FieldType } from "jslib-common/enums/fieldType";
 import { SecureNoteType } from "jslib-common/enums/secureNoteType";
 import { UriMatchType } from "jslib-common/enums/uriMatchType";
 import { CipherData } from "jslib-common/models/data/cipherData";
@@ -14,7 +15,6 @@ import { CardView } from "jslib-common/models/view/cardView";
 import { IdentityView } from "jslib-common/models/view/identityView";
 import { LoginView } from "jslib-common/models/view/loginView";
 
-import { SecureNoteData } from "../importers/testData/onePassword1Pux/SecureNote";
 import { mockEnc } from "../utils";
 
 describe("Cipher DTO", () => {
@@ -72,6 +72,41 @@ describe("Cipher DTO", () => {
           totp: "EncryptedString",
           autofillOnPageLoad: false,
         },
+        passwordHistory: [
+          { password: "EncryptedString", lastUsedDate: "2022-01-31T12:00:00.000Z" },
+        ],
+        attachments: [
+          {
+            id: "a1",
+            url: "url",
+            size: "1100",
+            sizeName: "1.1 KB",
+            fileName: "file",
+            key: "EncKey",
+          },
+          {
+            id: "a2",
+            url: "url",
+            size: "1100",
+            sizeName: "1.1 KB",
+            fileName: "file",
+            key: "EncKey",
+          },
+        ],
+        fields: [
+          {
+            name: "EncryptedString",
+            value: "EncryptedString",
+            type: FieldType.Text,
+            linkedId: null,
+          },
+          {
+            name: "EncryptedString",
+            value: "EncryptedString",
+            type: FieldType.Hidden,
+            linkedId: null,
+          },
+        ],
       };
     });
 
@@ -103,9 +138,44 @@ describe("Cipher DTO", () => {
           totp: { encryptedString: "EncryptedString", encryptionType: 0 },
           uris: [{ match: 0, uri: { encryptedString: "EncryptedString", encryptionType: 0 } }],
         },
-        attachments: null,
-        fields: null,
-        passwordHistory: null,
+        attachments: [
+          {
+            fileName: { encryptedString: "file", encryptionType: 0 },
+            id: "a1",
+            key: { encryptedString: "EncKey", encryptionType: 0 },
+            size: "1100",
+            sizeName: "1.1 KB",
+            url: "url",
+          },
+          {
+            fileName: { encryptedString: "file", encryptionType: 0 },
+            id: "a2",
+            key: { encryptedString: "EncKey", encryptionType: 0 },
+            size: "1100",
+            sizeName: "1.1 KB",
+            url: "url",
+          },
+        ],
+        fields: [
+          {
+            linkedId: null,
+            name: { encryptedString: "EncryptedString", encryptionType: 0 },
+            type: 0,
+            value: { encryptedString: "EncryptedString", encryptionType: 0 },
+          },
+          {
+            linkedId: null,
+            name: { encryptedString: "EncryptedString", encryptionType: 0 },
+            type: 1,
+            value: { encryptedString: "EncryptedString", encryptionType: 0 },
+          },
+        ],
+        passwordHistory: [
+          {
+            lastUsedDate: new Date("2022-01-31T12:00:00.000Z"),
+            password: { encryptedString: "EncryptedString", encryptionType: 0 },
+          },
+        ],
       });
     });
 
