@@ -27,3 +27,11 @@ export function mockEnc(s: string): EncString {
 
   return mock;
 }
+
+export function makeStaticByteArray(length: number) {
+  const arr = new Uint8Array(length);
+  for (let i = 0; i < length; i++) {
+    arr[i] = i;
+  }
+  return arr;
+}

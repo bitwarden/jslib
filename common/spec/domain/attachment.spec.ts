@@ -6,15 +6,7 @@ import { Attachment } from "jslib-common/models/domain/attachment";
 import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
 import { ContainerService } from "jslib-common/services/container.service";
 
-import { mockEnc } from "../utils";
-
-function makeStaticByteArray(length: number) {
-  const arr = new Uint8Array(length);
-  for (let i = 0; i < length; i++) {
-    arr[i] = i;
-  }
-  return arr;
-}
+import { makeStaticByteArray, mockEnc } from "../utils";
 
 describe("Attachment", () => {
   let data: AttachmentData;
