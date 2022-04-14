@@ -31,7 +31,7 @@ describe("Password", () => {
     });
   });
 
-  it("topasswordData", () => {
+  it("toPasswordHistoryData", () => {
     const password = new Password(data);
     expect(password.toPasswordHistoryData()).toEqual(data);
   });

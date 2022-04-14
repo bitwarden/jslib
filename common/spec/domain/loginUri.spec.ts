@@ -33,7 +33,7 @@ describe("LoginUri", () => {
     });
   });
 
-  it("tologinUriData", () => {
+  it("toLoginUriData", () => {
     const loginUri = new LoginUri(data);
     expect(loginUri.toLoginUriData()).toEqual(data);
   });
