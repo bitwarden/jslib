@@ -44,7 +44,7 @@ describe("Card", () => {
     });
   });
 
-  it("toAttachmentData", () => {
+  it("toCardData", () => {
     const card = new Card(data);
     expect(card.toCardData()).toEqual(data);
   });

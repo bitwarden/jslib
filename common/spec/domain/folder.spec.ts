@@ -1,6 +1,4 @@
-import { FieldType } from "jslib-common/enums/fieldType";
 import { FolderData } from "jslib-common/models/data/folderData";
-import { Field } from "jslib-common/models/domain/field";
 import { Folder } from "jslib-common/models/domain/folder";
 
 import { mockEnc } from "../utils";
