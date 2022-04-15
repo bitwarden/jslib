@@ -71,6 +71,7 @@ export class GeneratorComponent implements OnInit {
     this.forwardOptions = [
       { name: "SimpleLogin", value: "simplelogin" },
       { name: "AnonAddy", value: "anonaddy" },
+      { name: "Firefox Relay", value: "firefoxrelay" },
       // { name: "FastMail", value: "fastmail" },
     ];
   }
