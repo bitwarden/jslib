@@ -2,9 +2,7 @@ import { AppIdService } from "jslib-common/abstractions/appId.service";
 import { OrganizationConnectionType } from "jslib-common/enums/organizationConnectionType";
 import { DeviceRequest } from "jslib-common/models/request/deviceRequest";
 import { TokenRequestTwoFactor } from "jslib-common/models/request/identityToken/tokenRequestTwoFactor";
-import {
-  OrganizationConnectionRequest,
-} from "jslib-common/models/request/organizationConnectionRequest";
+import { OrganizationConnectionRequest } from "jslib-common/models/request/organizationConnectionRequest";
 import {
   OrganizationConnectionConfigApis,
   OrganizationConnectionResponse,
@@ -1675,7 +1673,7 @@ export class ApiService implements ApiServiceAbstraction {
     configType: { new (response: any): TConfig },
     organizationConnectionId?: string
   ): Promise<OrganizationConnectionResponse<TConfig>> {
-    var r: any;
+    let r: any;
     if (organizationConnectionId == null) {
       r = await this.send("POST", "/organizations/connections/", request, true, true);
     } else {

@@ -1,3 +1,3 @@
-export class BillingSyncConfigRequest  {
-  constructor(private billingSyncKey: string) {  }
+export class BillingSyncConfigRequest {
+  constructor(private billingSyncKey: string) {}
 }
