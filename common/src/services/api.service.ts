@@ -1668,23 +1668,26 @@ export class ApiService implements ApiServiceAbstraction {
     return new OrganizationConnectionResponse(r, configType);
   }
 
-  async upsertOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
+  async createOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
+    request: OrganizationConnectionRequest,
+    configType: { new (response: any): TConfig }
+  ): Promise<OrganizationConnectionResponse<TConfig>> {
+    const r = await this.send("POST", "/organizations/connections/", request, true, true);
+    return new OrganizationConnectionResponse(r, configType);
+  }
+
+  async updateOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
     request: OrganizationConnectionRequest,
     configType: { new (response: any): TConfig },
     organizationConnectionId?: string
   ): Promise<OrganizationConnectionResponse<TConfig>> {
-    let r: any;
-    if (organizationConnectionId == null) {
-      r = await this.send("POST", "/organizations/connections/", request, true, true);
-    } else {
-      r = await this.send(
-        "PUT",
-        "/organizations/connections/" + organizationConnectionId,
-        request,
-        true,
-        true
-      );
-    }
+    const r = await this.send(
+      "PUT",
+      "/organizations/connections/" + organizationConnectionId,
+      request,
+      true,
+      true
+    );
     return new OrganizationConnectionResponse(r, configType);
   }
 

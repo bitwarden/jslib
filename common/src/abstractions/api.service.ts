@@ -519,7 +519,11 @@ export abstract class ApiService {
     type: OrganizationConnectionType,
     configType: { new (response: any): TConfig }
   ): Promise<OrganizationConnectionResponse<TConfig>>;
-  abstract upsertOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
+  abstract createOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
+    request: OrganizationConnectionRequest,
+    configType: { new (response: any): TConfig }
+  ): Promise<OrganizationConnectionResponse<TConfig>>;
+  abstract updateOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
     request: OrganizationConnectionRequest,
     configType: { new (response: any): TConfig },
     organizationConnectionId: string
