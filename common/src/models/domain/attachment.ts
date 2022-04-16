@@ -15,7 +15,7 @@ export class Attachment extends Domain {
   key: EncString;
   fileName: EncString;
 
-  constructor(obj?: AttachmentData, alreadyEncrypted = false) {
+  constructor(obj?: AttachmentData) {
     super();
     if (obj == null) {
       return;
@@ -32,7 +32,6 @@ export class Attachment extends Domain {
         fileName: null,
         key: null,
       },
-      alreadyEncrypted,
       ["id", "url", "sizeName"]
     );
   }

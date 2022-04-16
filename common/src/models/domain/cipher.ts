@@ -38,7 +38,7 @@ export class Cipher extends Domain {
   deletedDate: Date;
   reprompt: CipherRepromptType;
 
-  constructor(obj?: CipherData, alreadyEncrypted = false, localData: any = null) {
+  constructor(obj?: CipherData, localData: any = null) {
     super();
     if (obj == null) {
       return;
@@ -55,7 +55,6 @@ export class Cipher extends Domain {
         name: null,
         notes: null,
       },
-      alreadyEncrypted,
       ["id", "userId", "organizationId", "folderId"]
     );
 
@@ -76,35 +75,35 @@ export class Cipher extends Domain {
 
     switch (this.type) {
       case CipherType.Login:
-        this.login = new Login(obj.login, alreadyEncrypted);
+        this.login = new Login(obj.login);
         break;
       case CipherType.SecureNote:
         this.secureNote = new SecureNote(obj.secureNote);
         break;
       case CipherType.Card:
-        this.card = new Card(obj.card, alreadyEncrypted);
+        this.card = new Card(obj.card);
         break;
       case CipherType.Identity:
-        this.identity = new Identity(obj.identity, alreadyEncrypted);
+        this.identity = new Identity(obj.identity);
         break;
       default:
         break;
     }
 
     if (obj.attachments != null) {
-      this.attachments = obj.attachments.map((a) => new Attachment(a, alreadyEncrypted));
+      this.attachments = obj.attachments.map((a) => new Attachment(a));
     } else {
       this.attachments = null;
     }
 
     if (obj.fields != null) {
-      this.fields = obj.fields.map((f) => new Field(f, alreadyEncrypted));
+      this.fields = obj.fields.map((f) => new Field(f));
     } else {
       this.fields = null;
     }
 
     if (obj.passwordHistory != null) {
-      this.passwordHistory = obj.passwordHistory.map((ph) => new Password(ph, alreadyEncrypted));
+      this.passwordHistory = obj.passwordHistory.map((ph) => new Password(ph));
     } else {
       this.passwordHistory = null;
     }
