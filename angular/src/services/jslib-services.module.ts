@@ -1,4 +1,4 @@
-import { Injector, LOCALE_ID, NgModule } from "@angular/core";
+import { InjectionToken, Injector, LOCALE_ID, NgModule } from "@angular/core";
 
 import { ApiService as ApiServiceAbstraction } from "jslib-common/abstractions/api.service";
 import { AppIdService as AppIdServiceAbstraction } from "jslib-common/abstractions/appId.service";
@@ -82,14 +82,27 @@ import { PasswordRepromptService } from "./passwordReprompt.service";
 import { UnauthGuardService } from "./unauth-guard.service";
 import { ValidationService } from "./validation.service";
 
+const WINDOW = new InjectionToken("WINDOW");
+const SECURE_STORAGE = new InjectionToken("SECURE_STORAGE");
+const STATE_FACTORY = new InjectionToken("STATE_FACTORY");
+const STATE_SERVICE_USE_CACHE = new InjectionToken("STATE_SERVICE_USE_CACHE");
+
 @NgModule({
   declarations: [],
   providers: [
-    { provide: "WINDOW", useValue: window },
+    { provide: WINDOW, useValue: window },
     {
       provide: LOCALE_ID,
       useFactory: (i18nService: I18nServiceAbstraction) => i18nService.translationLocale,
       deps: [I18nServiceAbstraction],
+    },
+    {
+      provide: STATE_FACTORY,
+      useValue: new StateFactory(GlobalState, Account)
+    },
+    {
+      provide: STATE_SERVICE_USE_CACHE,
+      useValue: true
     },
     ValidationService,
     AuthGuardService,
@@ -339,38 +352,20 @@ import { ValidationService } from "./validation.service";
     },
     {
       provide: StateServiceAbstraction,
-      useFactory: (
-        storageService: StorageServiceAbstraction,
-        secureStorageService: StorageServiceAbstraction,
-        logService: LogService,
-        stateMigrationService: StateMigrationServiceAbstraction
-      ) =>
-        new StateService(
-          storageService,
-          secureStorageService,
-          logService,
-          stateMigrationService,
-          new StateFactory(GlobalState, Account)
-        ),
+      useClass: StateService,
       deps: [
         StorageServiceAbstraction,
-        "SECURE_STORAGE",
+        SECURE_STORAGE,
         LogService,
         StateMigrationServiceAbstraction,
+        STATE_FACTORY,
+        STATE_SERVICE_USE_CACHE
       ],
     },
     {
       provide: StateMigrationServiceAbstraction,
-      useFactory: (
-        storageService: StorageServiceAbstraction,
-        secureStorageService: StorageServiceAbstraction
-      ) =>
-        new StateMigrationService(
-          storageService,
-          secureStorageService,
-          new StateFactory(GlobalState, Account)
-        ),
-      deps: [StorageServiceAbstraction, "SECURE_STORAGE"],
+      useClass: StateMigrationService,
+      deps: [StorageServiceAbstraction, SECURE_STORAGE, STATE_FACTORY],
     },
     {
       provide: ExportServiceAbstraction,
@@ -423,7 +418,7 @@ import { ValidationService } from "./validation.service";
     {
       provide: CryptoFunctionServiceAbstraction,
       useClass: WebCryptoFunctionService,
-      deps: ["WINDOW"],
+      deps: [WINDOW],
     },
     {
       provide: EventServiceAbstraction,
