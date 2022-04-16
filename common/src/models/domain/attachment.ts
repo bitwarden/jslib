@@ -11,7 +11,7 @@ export class Attachment extends Domain {
   id: string;
   url: string;
   size: string;
-  sizeName: string;
+  sizeName: string; // Readable size, ex: "4.2 KB" or "1.43 GB"
   key: EncString;
   fileName: EncString;
 

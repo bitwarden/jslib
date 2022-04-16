@@ -21,7 +21,6 @@ export class CipherData {
   favorite: boolean;
   revisionDate: string;
   type: CipherType;
-  sizeName: string;
   name: string;
   notes: string;
   login?: LoginData;
