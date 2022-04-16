@@ -34,7 +34,8 @@ describe("SendText", () => {
 
   it("Decrypt", async () => {
     const secureNote = new SendText();
-    (secureNote.text = mockEnc("text")), (secureNote.hidden = true);
+    secureNote.text = mockEnc("text");
+    secureNote.hidden = true;
 
     const view = await secureNote.decrypt(null);
 
