@@ -98,11 +98,11 @@ export const STATE_SERVICE_USE_CACHE = new InjectionToken("STATE_SERVICE_USE_CAC
     },
     {
       provide: STATE_FACTORY,
-      useValue: new StateFactory(GlobalState, Account)
+      useValue: new StateFactory(GlobalState, Account),
     },
     {
       provide: STATE_SERVICE_USE_CACHE,
-      useValue: true
+      useValue: true,
     },
     ValidationService,
     AuthGuardService,
@@ -359,7 +359,7 @@ export const STATE_SERVICE_USE_CACHE = new InjectionToken("STATE_SERVICE_USE_CAC
         LogService,
         StateMigrationServiceAbstraction,
         STATE_FACTORY,
-        STATE_SERVICE_USE_CACHE
+        STATE_SERVICE_USE_CACHE,
       ],
     },
     {
