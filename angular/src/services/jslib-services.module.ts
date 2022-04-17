@@ -86,10 +86,17 @@ export const WINDOW = new InjectionToken("WINDOW");
 export const SECURE_STORAGE = new InjectionToken("SECURE_STORAGE");
 export const STATE_FACTORY = new InjectionToken("STATE_FACTORY");
 export const STATE_SERVICE_USE_CACHE = new InjectionToken("STATE_SERVICE_USE_CACHE");
+export const LOGOUT_CALLBACK = new InjectionToken("LOGOUT_CALLBACK");
+export const LOCKED_CALLBACK = new InjectionToken("LOCKED_CALLBACK");
 
 @NgModule({
   declarations: [],
   providers: [
+    ValidationService,
+    AuthGuardService,
+    UnauthGuardService,
+    LockGuardService,
+    ModalService,
     { provide: WINDOW, useValue: window },
     {
       provide: LOCALE_ID,
@@ -104,11 +111,17 @@ export const STATE_SERVICE_USE_CACHE = new InjectionToken("STATE_SERVICE_USE_CAC
       provide: STATE_SERVICE_USE_CACHE,
       useValue: true,
     },
-    ValidationService,
-    AuthGuardService,
-    UnauthGuardService,
-    LockGuardService,
-    ModalService,
+    {
+      provide: LOGOUT_CALLBACK,
+      useFactory:
+        (messagingService: MessagingServiceAbstraction) => (expired: boolean, userId?: string) =>
+          messagingService.send("logout", { expired: expired, userId: userId }),
+      deps: [MessagingServiceAbstraction],
+    },
+    {
+      provide: LOCKED_CALLBACK,
+      useValue: null,
+    },
     {
       provide: AppIdServiceAbstraction,
       useClass: AppIdService,
@@ -220,26 +233,13 @@ export const STATE_SERVICE_USE_CACHE = new InjectionToken("STATE_SERVICE_USE_CAC
     },
     {
       provide: ApiServiceAbstraction,
-      useFactory: (
-        tokenService: TokenServiceAbstraction,
-        platformUtilsService: PlatformUtilsServiceAbstraction,
-        environmentService: EnvironmentServiceAbstraction,
-        messagingService: MessagingServiceAbstraction,
-        appIdService: AppIdServiceAbstraction
-      ) =>
-        new ApiService(
-          tokenService,
-          platformUtilsService,
-          environmentService,
-          appIdService,
-          async (expired: boolean) => messagingService.send("logout", { expired: expired })
-        ),
+      useClass: ApiService,
       deps: [
         TokenServiceAbstraction,
         PlatformUtilsServiceAbstraction,
         EnvironmentServiceAbstraction,
-        MessagingServiceAbstraction,
         AppIdServiceAbstraction,
+        LOGOUT_CALLBACK,
       ],
     },
     {
@@ -249,39 +249,7 @@ export const STATE_SERVICE_USE_CACHE = new InjectionToken("STATE_SERVICE_USE_CAC
     },
     {
       provide: SyncServiceAbstraction,
-      useFactory: (
-        apiService: ApiServiceAbstraction,
-        settingsService: SettingsServiceAbstraction,
-        folderService: FolderServiceAbstraction,
-        cipherService: CipherServiceAbstraction,
-        cryptoService: CryptoServiceAbstraction,
-        collectionService: CollectionServiceAbstraction,
-        messagingService: MessagingServiceAbstraction,
-        policyService: PolicyServiceAbstraction,
-        sendService: SendServiceAbstraction,
-        logService: LogService,
-        keyConnectorService: KeyConnectorServiceAbstraction,
-        stateService: StateServiceAbstraction,
-        organizationService: OrganizationServiceAbstraction,
-        providerService: ProviderServiceAbstraction
-      ) =>
-        new SyncService(
-          apiService,
-          settingsService,
-          folderService,
-          cipherService,
-          cryptoService,
-          collectionService,
-          messagingService,
-          policyService,
-          sendService,
-          logService,
-          keyConnectorService,
-          stateService,
-          organizationService,
-          providerService,
-          async (expired: boolean) => messagingService.send("logout", { expired: expired })
-        ),
+      useClass: SyncService,
       deps: [
         ApiServiceAbstraction,
         SettingsServiceAbstraction,
@@ -297,6 +265,7 @@ export const STATE_SERVICE_USE_CACHE = new InjectionToken("STATE_SERVICE_USE_CAC
         StateServiceAbstraction,
         OrganizationServiceAbstraction,
         ProviderServiceAbstraction,
+        LOGOUT_CALLBACK,
       ],
     },
     { provide: BroadcasterServiceAbstraction, useClass: BroadcasterService },
@@ -307,35 +276,7 @@ export const STATE_SERVICE_USE_CACHE = new InjectionToken("STATE_SERVICE_USE_CAC
     },
     {
       provide: VaultTimeoutServiceAbstraction,
-      useFactory: (
-        cipherService: CipherServiceAbstraction,
-        folderService: FolderServiceAbstraction,
-        collectionService: CollectionServiceAbstraction,
-        cryptoService: CryptoServiceAbstraction,
-        platformUtilsService: PlatformUtilsServiceAbstraction,
-        messagingService: MessagingServiceAbstraction,
-        searchService: SearchServiceAbstraction,
-        tokenService: TokenServiceAbstraction,
-        policyService: PolicyServiceAbstraction,
-        keyConnectorService: KeyConnectorServiceAbstraction,
-        stateService: StateServiceAbstraction
-      ) =>
-        new VaultTimeoutService(
-          cipherService,
-          folderService,
-          collectionService,
-          cryptoService,
-          platformUtilsService,
-          messagingService,
-          searchService,
-          tokenService,
-          policyService,
-          keyConnectorService,
-          stateService,
-          null,
-          async (userId?: string) =>
-            messagingService.send("logout", { expired: false, userId: userId })
-        ),
+      useClass: VaultTimeoutService,
       deps: [
         CipherServiceAbstraction,
         FolderServiceAbstraction,
@@ -348,6 +289,8 @@ export const STATE_SERVICE_USE_CACHE = new InjectionToken("STATE_SERVICE_USE_CAC
         PolicyServiceAbstraction,
         KeyConnectorServiceAbstraction,
         StateServiceAbstraction,
+        LOCKED_CALLBACK,
+        LOGOUT_CALLBACK,
       ],
     },
     {
@@ -384,33 +327,14 @@ export const STATE_SERVICE_USE_CACHE = new InjectionToken("STATE_SERVICE_USE_CAC
     },
     {
       provide: NotificationsServiceAbstraction,
-      useFactory: (
-        syncService: SyncServiceAbstraction,
-        appIdService: AppIdServiceAbstraction,
-        apiService: ApiServiceAbstraction,
-        vaultTimeoutService: VaultTimeoutServiceAbstraction,
-        environmentService: EnvironmentServiceAbstraction,
-        messagingService: MessagingServiceAbstraction,
-        logService: LogService,
-        stateService: StateServiceAbstraction
-      ) =>
-        new NotificationsService(
-          syncService,
-          appIdService,
-          apiService,
-          vaultTimeoutService,
-          environmentService,
-          async () => messagingService.send("logout", { expired: true }),
-          logService,
-          stateService
-        ),
+      useClass: NotificationsService,
       deps: [
         SyncServiceAbstraction,
         AppIdServiceAbstraction,
         ApiServiceAbstraction,
         VaultTimeoutServiceAbstraction,
         EnvironmentServiceAbstraction,
-        MessagingServiceAbstraction,
+        LOGOUT_CALLBACK,
         LogService,
         StateServiceAbstraction,
       ],
