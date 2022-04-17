@@ -12,7 +12,7 @@ export class Collection extends Domain {
   readOnly: boolean;
   hidePasswords: boolean;
 
-  constructor(obj?: CollectionData, alreadyEncrypted = false) {
+  constructor(obj?: CollectionData) {
     super();
     if (obj == null) {
       return;
@@ -29,7 +29,6 @@ export class Collection extends Domain {
         readOnly: null,
         hidePasswords: null,
       },
-      alreadyEncrypted,
       ["id", "organizationId", "externalId", "readOnly", "hidePasswords"]
     );
   }

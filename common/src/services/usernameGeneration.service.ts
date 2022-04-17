@@ -97,7 +97,7 @@ export class UsernameGenerationService implements BaseUsernameGenerationService 
   async getOptions(): Promise<any> {
     let options = await this.stateService.getUsernameGenerationOptions();
     if (options == null) {
-      options = DefaultOptions;
+      options = Object.assign({}, DefaultOptions);
     } else {
       options = Object.assign({}, DefaultOptions, options);
     }

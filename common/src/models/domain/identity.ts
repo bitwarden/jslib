@@ -25,7 +25,7 @@ export class Identity extends Domain {
   passportNumber: EncString;
   licenseNumber: EncString;
 
-  constructor(obj?: IdentityData, alreadyEncrypted = false) {
+  constructor(obj?: IdentityData) {
     super();
     if (obj == null) {
       return;
@@ -54,7 +54,6 @@ export class Identity extends Domain {
         passportNumber: null,
         licenseNumber: null,
       },
-      alreadyEncrypted,
       []
     );
   }
