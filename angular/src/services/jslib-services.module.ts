@@ -90,6 +90,7 @@ export const LOGOUT_CALLBACK = new InjectionToken<(expired: boolean, userId?: st
   "LOGOUT_CALLBACK"
 );
 export const LOCKED_CALLBACK = new InjectionToken<() => void>("LOCKED_CALLBACK");
+export const CLIENT_TYPE = new InjectionToken<boolean>("CLIENT_TYPE");
 
 @NgModule({
   declarations: [],
