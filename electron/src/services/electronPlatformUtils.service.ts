@@ -18,7 +18,7 @@ export class ElectronPlatformUtilsService implements PlatformUtilsService {
     private messagingService: MessagingService,
     private clientType: ClientType.Desktop | ClientType.DirectoryConnector,
     private stateService: StateService
-  ) { }
+  ) {}
 
   getDevice(): DeviceType {
     if (!this.deviceCache) {
