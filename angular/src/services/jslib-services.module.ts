@@ -82,12 +82,14 @@ import { PasswordRepromptService } from "./passwordReprompt.service";
 import { UnauthGuardService } from "./unauth-guard.service";
 import { ValidationService } from "./validation.service";
 
-export const WINDOW = new InjectionToken("WINDOW");
-export const SECURE_STORAGE = new InjectionToken("SECURE_STORAGE");
-export const STATE_FACTORY = new InjectionToken("STATE_FACTORY");
-export const STATE_SERVICE_USE_CACHE = new InjectionToken("STATE_SERVICE_USE_CACHE");
-export const LOGOUT_CALLBACK = new InjectionToken("LOGOUT_CALLBACK");
-export const LOCKED_CALLBACK = new InjectionToken("LOCKED_CALLBACK");
+export const WINDOW = new InjectionToken<Window>("WINDOW");
+export const SECURE_STORAGE = new InjectionToken<StorageServiceAbstraction>("SECURE_STORAGE");
+export const STATE_FACTORY = new InjectionToken<StateFactory>("STATE_FACTORY");
+export const STATE_SERVICE_USE_CACHE = new InjectionToken<boolean>("STATE_SERVICE_USE_CACHE");
+export const LOGOUT_CALLBACK = new InjectionToken<(expired: boolean, userId?: string) => void>(
+  "LOGOUT_CALLBACK"
+);
+export const LOCKED_CALLBACK = new InjectionToken<() => void>("LOCKED_CALLBACK");
 
 @NgModule({
   declarations: [],
