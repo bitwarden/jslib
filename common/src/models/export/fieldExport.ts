@@ -4,16 +4,16 @@ import { EncString } from "../domain/encString";
 import { Field as FieldDomain } from "../domain/field";
 import { FieldView } from "../view/fieldView";
 
-export class Field {
-  static template(): Field {
-    const req = new Field();
+export class FieldExport {
+  static template(): FieldExport {
+    const req = new FieldExport();
     req.name = "Field name";
     req.value = "Some value";
     req.type = FieldType.Text;
     return req;
   }
 
-  static toView(req: Field, view = new FieldView()) {
+  static toView(req: FieldExport, view = new FieldView()) {
     view.type = req.type;
     view.value = req.value;
     view.name = req.name;
@@ -21,7 +21,7 @@ export class Field {
     return view;
   }
 
-  static toDomain(req: Field, domain = new FieldDomain()) {
+  static toDomain(req: FieldExport, domain = new FieldDomain()) {
     domain.type = req.type;
     domain.value = req.value != null ? new EncString(req.value) : null;
     domain.name = req.name != null ? new EncString(req.name) : null;
