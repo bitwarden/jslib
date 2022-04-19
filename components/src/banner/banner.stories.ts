@@ -16,6 +16,8 @@ export default {
           provide: I18nService,
           useFactory: () => {
             return new I18nMockService({
+              premium: "Premium",
+              informative: "Informative",
               warning: "Warning",
               error: "Error",
             });
@@ -25,35 +27,33 @@ export default {
     }),
   ],
   args: {
-    type: "warning",
+    bannerType: "warning",
   },
 } as Meta;
 
 const Template: Story<BannerComponent> = (args: BannerComponent) => ({
   props: args,
   template: `
-    <bit-banner [type]="type" [title]="title">Content Really Long Text Lorem Ipsum Ipsum Ipsum</bit-banner>
+    <bit-banner [bannerType]="bannerType" [bannerTitle]="title">Content Really Long Text Lorem Ipsum Ipsum Ipsum</bit-banner>
   `,
 });
 
 export const Premium = Template.bind({});
 Premium.args = {
-  type: "premium",
-  title: "Premium",
+  bannerType: "premium",
 };
 
 export const Info = Template.bind({});
 Info.args = {
-  type: "info",
-  title: "Informative",
+  bannerType: "info",
 };
 
 export const Warning = Template.bind({});
 Warning.args = {
-  type: "warning",
+  bannerType: "warning",
 };
 
 export const Danger = Template.bind({});
 Danger.args = {
-  type: "danger",
+  bannerType: "danger",
 };

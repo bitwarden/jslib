@@ -12,6 +12,8 @@ const defaultIcon: Record<BannerTypes, string> = {
 };
 
 const defaultI18n: Partial<Record<BannerTypes, string>> = {
+  premium: "premium",
+  info: "informative",
   warning: "warning",
   danger: "error",
 };
@@ -21,9 +23,9 @@ const defaultI18n: Partial<Record<BannerTypes, string>> = {
   templateUrl: "./banner.component.html",
 })
 export class BannerComponent implements OnInit {
-  @Input() type: BannerTypes = "info";
+  @Input("bannerType") bannerType: BannerTypes = "info";
   @Input() icon: string;
-  @Input() title: string;
+  @Input("bannerTitle") title: string;
   @Input() useAlertRole = true;
 
   @Output() onClose = new EventEmitter<void>();
@@ -31,14 +33,14 @@ export class BannerComponent implements OnInit {
   constructor(private i18nService: I18nService) {}
 
   ngOnInit(): void {
-    this.icon ??= defaultIcon[this.type];
-    if (this.title == null && defaultI18n[this.type] != null) {
-      this.title = this.i18nService.t(defaultI18n[this.type]);
+    this.icon ??= defaultIcon[this.bannerType];
+    if (this.title == null && defaultI18n[this.bannerType] != null) {
+      this.title = this.i18nService.t(defaultI18n[this.bannerType]);
     }
   }
 
   get bannerClass() {
-    switch (this.type) {
+    switch (this.bannerType) {
       case "danger":
         return "tw-bg-danger-500";
       case "info":
