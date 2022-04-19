@@ -3,6 +3,7 @@ import { ActivatedRoute } from "@angular/router";
 import { first } from "rxjs/operators";
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
+import { LogService } from "jslib-common/abstractions/log.service";
 import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
@@ -37,6 +38,7 @@ export class GeneratorComponent implements OnInit {
     protected platformUtilsService: PlatformUtilsService,
     protected stateService: StateService,
     protected i18nService: I18nService,
+    protected logService: LogService,
     protected route: ActivatedRoute,
     private win: Window
   ) {
@@ -181,7 +183,7 @@ export class GeneratorComponent implements OnInit {
         this.username = "-";
       }
     } catch (e) {
-      // Error
+      this.logService.error(e);
     }
   }
 
