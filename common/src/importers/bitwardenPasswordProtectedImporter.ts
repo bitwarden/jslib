@@ -1,3 +1,5 @@
+import { FolderService } from "jslib-common/abstractions/folder.service";
+
 import { CryptoService } from "../abstractions/crypto.service";
 import { I18nService } from "../abstractions/i18n.service";
 import { KdfType } from "../enums/kdfType";
@@ -21,8 +23,13 @@ interface BitwardenPasswordProtectedFileFormat {
 export class BitwardenPasswordProtectedImporter extends BitwardenJsonImporter implements Importer {
   private key: SymmetricCryptoKey;
 
-  constructor(cryptoService: CryptoService, i18nService: I18nService, private password: string) {
-    super(cryptoService, i18nService);
+  constructor(
+    cryptoService: CryptoService,
+    i18nService: I18nService,
+    folderService: FolderService,
+    private password: string
+  ) {
+    super(cryptoService, i18nService, folderService);
   }
 
   async parse(data: string): Promise<ImportResult> {

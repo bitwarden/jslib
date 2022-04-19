@@ -1,15 +1,24 @@
-import { FolderResponse } from "../response/folderResponse";
+import { EncString } from "../domain/encString";
+import { Folder } from "../domain/folder";
 
 export class FolderData {
   id: string;
-  userId: string;
   name: string;
   revisionDate: string;
 
-  constructor(response: FolderResponse, userId: string) {
-    this.userId = userId;
-    this.name = response.name;
-    this.id = response.id;
-    this.revisionDate = response.revisionDate;
+  constructor(f?: Folder) {
+    if (f) {
+      this.id = f.id;
+      this.name = f.name.encryptedString;
+      this.revisionDate = f.revisionDate.toISOString();
+    }
+  }
+
+  toFolder(): Folder {
+    return {
+      id: this.id,
+      name: new EncString(this.name),
+      revisionDate: new Date(this.revisionDate),
+    };
   }
 }

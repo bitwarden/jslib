@@ -14,7 +14,7 @@ export class Folder {
     return view;
   }
 
-  static toDomain(req: Folder, domain = new FolderDomain()) {
+  static toDomain(req: Folder, domain: FolderDomain = {} as FolderDomain) {
     domain.name = req.name != null ? new EncString(req.name) : null;
     return domain;
   }

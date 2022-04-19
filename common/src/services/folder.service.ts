@@ -31,32 +31,32 @@ export class FolderService implements FolderServiceAbstraction {
   }
 
   async encrypt(model: FolderView, key?: SymmetricCryptoKey): Promise<Folder> {
-    const folder = new Folder();
-    folder.id = model.id;
-    folder.name = await this.cryptoService.encrypt(model.name, key);
-    return folder;
+    return {
+      id: model.id,
+      name: await this.cryptoService.encrypt(model.name, key),
+      revisionDate: null,
+    };
+  }
+
+  async decrypt(model: Folder, orgId?: string, key?: SymmetricCryptoKey): Promise<FolderView> {
+    const view = new FolderView();
+    view.id = model.id;
+    view.name = await model.name.decrypt(orgId, key);
+    view.revisionDate = model.revisionDate;
+
+    return view;
   }
 
   async get(id: string): Promise<Folder> {
     const folders = await this.stateService.getEncryptedFolders();
-    // eslint-disable-next-line
-    if (folders == null || !folders.hasOwnProperty(id)) {
-      return null;
-    }
 
-    return new Folder(folders[id]);
+    return folders?.[id]?.toFolder() ?? null;
   }
 
   async getAll(): Promise<Folder[]> {
-    const folders = await this.stateService.getEncryptedFolders();
-    const response: Folder[] = [];
-    for (const id in folders) {
-      // eslint-disable-next-line
-      if (folders.hasOwnProperty(id)) {
-        response.push(new Folder(folders[id]));
-      }
-    }
-    return response;
+    const folders = (await this.stateService.getEncryptedFolders()) ?? {};
+
+    return Object.values(folders).map((f) => f.toFolder());
   }
 
   async getAllDecrypted(): Promise<FolderView[]> {
@@ -74,7 +74,7 @@ export class FolderService implements FolderServiceAbstraction {
     const promises: Promise<any>[] = [];
     const folders = await this.getAll();
     folders.forEach((folder) => {
-      promises.push(folder.decrypt().then((f) => decFolders.push(f)));
+      promises.push(this.decrypt(folder).then((f) => decFolders.push(f)));
     });
 
     await Promise.all(promises);
@@ -117,25 +117,17 @@ export class FolderService implements FolderServiceAbstraction {
       response = await this.apiService.putFolder(folder.id, request);
     }
 
-    const userId = await this.stateService.getUserId();
-    const data = new FolderData(response, userId);
+    const data = new FolderData(response.toFolder());
     await this.upsert(data);
   }
 
-  async upsert(folder: FolderData | FolderData[]): Promise<any> {
+  async upsert(folder: FolderData): Promise<any> {
     let folders = await this.stateService.getEncryptedFolders();
     if (folders == null) {
       folders = {};
     }
 
-    if (folder instanceof FolderData) {
-      const f = folder as FolderData;
-      folders[f.id] = f;
-    } else {
-      (folder as FolderData[]).forEach((f) => {
-        folders[f.id] = f;
-      });
-    }
+    folders[folder.id] = folder;
 
     await this.stateService.setDecryptedFolders(null);
     await this.stateService.setEncryptedFolders(folders);
@@ -151,22 +143,13 @@ export class FolderService implements FolderServiceAbstraction {
     await this.stateService.setEncryptedFolders(null, { userId: userId });
   }
 
-  async delete(id: string | string[]): Promise<any> {
+  async delete(id: string): Promise<any> {
     const folders = await this.stateService.getEncryptedFolders();
-    if (folders == null) {
+    if (folders?.[id] == null) {
       return;
     }
 
-    if (typeof id === "string") {
-      if (folders[id] == null) {
-        return;
-      }
-      delete folders[id];
-    } else {
-      (id as string[]).forEach((i) => {
-        delete folders[i];
-      });
-    }
+    delete folders[id];
 
     await this.stateService.setDecryptedFolders(null);
     await this.stateService.setEncryptedFolders(folders);
