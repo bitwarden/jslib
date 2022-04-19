@@ -17,7 +17,6 @@ describe("Send", () => {
     data = {
       id: "id",
       accessId: "accessId",
-      userId: "userId",
       type: SendType.Text,
       name: "encName",
       notes: "encNotes",

@@ -104,7 +104,7 @@ export class SyncService implements SyncServiceAbstraction {
       await this.syncFolders(userId, response.folders);
       await this.syncCollections(response.collections);
       await this.syncCiphers(userId, response.ciphers);
-      await this.syncSends(userId, response.sends);
+      await this.syncSends(response.sends);
       await this.syncSettings(response.domains);
       await this.syncPolicies(response.policies);
 
@@ -238,8 +238,7 @@ export class SyncService implements SyncServiceAbstraction {
         ) {
           const remoteSend = await this.apiService.getSend(notification.id);
           if (remoteSend != null) {
-            const userId = await this.stateService.getUserId();
-            await this.sendService.upsert(new SendData(remoteSend, userId));
+            await this.sendService.upsert(new SendData(remoteSend));
             this.messagingService.send("syncedUpsertedSend", { sendId: notification.id });
             return this.syncCompleted(true);
           }
@@ -363,10 +362,10 @@ export class SyncService implements SyncServiceAbstraction {
     return await this.cipherService.replace(ciphers);
   }
 
-  private async syncSends(userId: string, response: SendResponse[]) {
+  private async syncSends(response: SendResponse[]) {
     const sends: { [id: string]: SendData } = {};
     response.forEach((s) => {
-      sends[s.id] = new SendData(s, userId);
+      sends[s.id] = new SendData();
     });
     return await this.sendService.replace(sends);
   }
