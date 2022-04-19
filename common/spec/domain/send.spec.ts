@@ -44,7 +44,6 @@ describe("Send", () => {
     expect(send).toEqual({
       id: null,
       accessId: null,
-      userId: null,
       type: undefined,
       name: null,
       notes: null,
@@ -68,7 +67,6 @@ describe("Send", () => {
     expect(send).toEqual({
       id: "id",
       accessId: "accessId",
-      userId: "userId",
       type: SendType.Text,
       name: { encryptedString: "encName", encryptionType: 0 },
       notes: { encryptedString: "encNotes", encryptionType: 0 },
