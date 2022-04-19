@@ -86,10 +86,10 @@ export class SsoComponent {
 
   async submit(returnUri?: string, includeUserIdentifier?: boolean) {
     this.initiateSsoFormPromise = this.preValidate();
-    if (await this.initiateSsoFormPromise) {
-      const authorizeUrl = await this.buildAuthorizeUrl(returnUri, includeUserIdentifier);
-      this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
-    }
+    const token = await this.initiateSsoFormPromise;
+
+    const authorizeUrl = await this.buildAuthorizeUrl(returnUri, includeUserIdentifier, token);
+    this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
   }
 
   async preValidate(): Promise<boolean> {
@@ -106,7 +106,8 @@ export class SsoComponent {
 
   protected async buildAuthorizeUrl(
     returnUri?: string,
-    includeUserIdentifier?: boolean
+    includeUserIdentifier?: boolean,
+    token?: string
   ): Promise<string> {
     let codeChallenge = this.codeChallenge;
     let state = this.state;
@@ -156,7 +157,8 @@ export class SsoComponent {
       "&" +
       "code_challenge_method=S256&response_mode=query&" +
       "domain_hint=" +
-      encodeURIComponent(this.identifier);
+      encodeURIComponent(this.identifier) +
+      "&ssoToken=" + token;
 
     if (includeUserIdentifier) {
       const userIdentifier = await this.apiService.getSsoUserIdentifier();
