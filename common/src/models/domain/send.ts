@@ -12,7 +12,6 @@ import { SendText } from "./sendText";
 export class Send extends Domain {
   id: string;
   accessId: string;
-  userId: string;
   type: SendType;
   name: EncString;
   notes: EncString;

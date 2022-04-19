@@ -95,7 +95,6 @@ describe("Send", () => {
     const send = new Send();
     send.id = "id";
     send.accessId = "accessId";
-    send.userId = "userId";
     send.type = SendType.Text;
     send.name = mockEnc("name");
     send.notes = mockEnc("notes");
