@@ -95,7 +95,6 @@ export class SyncService implements SyncServiceAbstraction {
       return this.syncCompleted(false);
     }
 
-    const userId = await this.stateService.getUserId();
     try {
       await this.apiService.refreshIdentityToken();
       const response = await this.apiService.getSync();
