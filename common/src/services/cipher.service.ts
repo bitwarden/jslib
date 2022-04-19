@@ -605,11 +605,7 @@ export class CipherService implements CipherServiceAbstraction {
       response = await this.apiService.putCipher(cipher.id, request);
     }
 
-    const data = new CipherData(
-      response,
-      await this.stateService.getUserId(),
-      cipher.collectionIds
-    );
+    const data = new CipherData(response, cipher.collectionIds);
     await this.upsert(data);
   }
 
@@ -635,7 +631,7 @@ export class CipherService implements CipherServiceAbstraction {
     const encCipher = await this.encrypt(cipher);
     const request = new CipherShareRequest(encCipher);
     const response = await this.apiService.putShareCipher(cipher.id, request);
-    const data = new CipherData(response, await this.stateService.getUserId(), collectionIds);
+    const data = new CipherData(response, collectionIds);
     await this.upsert(data);
   }
 
@@ -666,8 +662,7 @@ export class CipherService implements CipherServiceAbstraction {
       }
       throw e;
     }
-    const userId = await this.stateService.getUserId();
-    await this.upsert(encCiphers.map((c) => c.toCipherData(userId)));
+    await this.upsert(encCiphers.map((c) => c.toCipherData()));
   }
 
   saveAttachmentWithServer(cipher: Cipher, unencryptedFile: any, admin = false): Promise<Cipher> {
@@ -741,11 +736,7 @@ export class CipherService implements CipherServiceAbstraction {
       }
     }
 
-    const cData = new CipherData(
-      response,
-      await this.stateService.getUserId(),
-      cipher.collectionIds
-    );
+    const cData = new CipherData(response, cipher.collectionIds);
     if (!admin) {
       await this.upsert(cData);
     }
@@ -801,7 +792,7 @@ export class CipherService implements CipherServiceAbstraction {
   async saveCollectionsWithServer(cipher: Cipher): Promise<any> {
     const request = new CipherCollectionsRequest(cipher.collectionIds);
     await this.apiService.putCipherCollections(cipher.id, request);
-    const data = cipher.toCipherData(await this.stateService.getUserId());
+    const data = cipher.toCipherData();
     await this.upsert(data);
   }
 

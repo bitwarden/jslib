@@ -103,7 +103,7 @@ export class SyncService implements SyncServiceAbstraction {
       await this.syncProfile(response.profile);
       await this.syncFolders(userId, response.folders);
       await this.syncCollections(response.collections);
-      await this.syncCiphers(userId, response.ciphers);
+      await this.syncCiphers(response.ciphers);
       await this.syncSends(response.sends);
       await this.syncSettings(response.domains);
       await this.syncPolicies(response.policies);
@@ -200,8 +200,7 @@ export class SyncService implements SyncServiceAbstraction {
         if (shouldUpdate) {
           const remoteCipher = await this.apiService.getCipher(notification.id);
           if (remoteCipher != null) {
-            const userId = await this.stateService.getUserId();
-            await this.cipherService.upsert(new CipherData(remoteCipher, userId));
+            await this.cipherService.upsert(new CipherData(remoteCipher));
             this.messagingService.send("syncedUpsertedCipher", { cipherId: notification.id });
             return this.syncCompleted(true);
           }
@@ -354,10 +353,10 @@ export class SyncService implements SyncServiceAbstraction {
     return await this.collectionService.replace(collections);
   }
 
-  private async syncCiphers(userId: string, response: CipherResponse[]) {
+  private async syncCiphers(response: CipherResponse[]) {
     const ciphers: { [id: string]: CipherData } = {};
     response.forEach((c) => {
-      ciphers[c.id] = new CipherData(c, userId);
+      ciphers[c.id] = new CipherData(c);
     });
     return await this.cipherService.replace(ciphers);
   }
