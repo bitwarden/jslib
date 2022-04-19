@@ -1,6 +1,6 @@
 import { AbstractControl, AsyncValidatorFn, ValidationErrors } from "@angular/forms";
 
-export function notAllowedValueAsync(valueGetter: () => Promise<string>, caseInsensitive: boolean = false): AsyncValidatorFn {
+export function notAllowedValueAsync(valueGetter: () => Promise<string>, caseInsensitive = false): AsyncValidatorFn {
   return async (control: AbstractControl): Promise<ValidationErrors | null> => {
     let notAllowedValue = await valueGetter();
     let controlValue = control.value;
