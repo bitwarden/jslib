@@ -306,7 +306,7 @@ export class CipherService implements CipherServiceAbstraction {
     }
 
     const localData = await this.stateService.getLocalData();
-    return new Cipher(ciphers[id], false, localData ? localData[id] : null);
+    return new Cipher(ciphers[id], localData ? localData[id] : null);
   }
 
   async getAll(): Promise<Cipher[]> {
@@ -316,7 +316,7 @@ export class CipherService implements CipherServiceAbstraction {
     for (const id in ciphers) {
       // eslint-disable-next-line
       if (ciphers.hasOwnProperty(id)) {
-        response.push(new Cipher(ciphers[id], false, localData ? localData[id] : null));
+        response.push(new Cipher(ciphers[id], localData ? localData[id] : null));
       }
     }
     return response;

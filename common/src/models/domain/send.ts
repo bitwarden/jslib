@@ -28,7 +28,7 @@ export class Send extends Domain {
   disabled: boolean;
   hideEmail: boolean;
 
-  constructor(obj?: SendData, alreadyEncrypted = false) {
+  constructor(obj?: SendData) {
     super();
     if (obj == null) {
       return;
@@ -45,7 +45,6 @@ export class Send extends Domain {
         notes: null,
         key: null,
       },
-      alreadyEncrypted,
       ["id", "accessId", "userId"]
     );
 
@@ -61,10 +60,10 @@ export class Send extends Domain {
 
     switch (this.type) {
       case SendType.Text:
-        this.text = new SendText(obj.text, alreadyEncrypted);
+        this.text = new SendText(obj.text);
         break;
       case SendType.File:
-        this.file = new SendFile(obj.file, alreadyEncrypted);
+        this.file = new SendFile(obj.file);
         break;
       default:
         break;

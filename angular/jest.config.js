@@ -6,7 +6,6 @@ module.exports = {
   name: "angular",
   displayName: "angular tests",
   preset: "jest-preset-angular",
-  roots: ["<rootDir>/spec/"],
   testMatch: ["**/+(*.)+(spec).+(ts)"],
   setupFilesAfterEnv: ["<rootDir>/spec/test.ts"],
   collectCoverage: true,
