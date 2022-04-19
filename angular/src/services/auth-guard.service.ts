@@ -28,16 +28,14 @@ export class AuthGuardService implements CanActivate {
       if (routerState != null) {
         this.messagingService.send("lockedUrl", { url: routerState.url });
       }
-      this.router.navigate(["lock"], { queryParams: { promptBiometric: true } });
-      return false;
+      return this.router.createUrlTree(["lock"], { queryParams: { promptBiometric: true } });
     }
 
     if (
       !routerState.url.includes("remove-password") &&
       (await this.keyConnectorService.getConvertAccountRequired())
     ) {
-      this.router.navigate(["/remove-password"]);
-      return false;
+      return this.router.createUrlTree(["/remove-password"]);
     }
 
     return true;
