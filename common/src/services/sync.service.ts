@@ -101,7 +101,7 @@ export class SyncService implements SyncServiceAbstraction {
       const response = await this.apiService.getSync();
 
       await this.syncProfile(response.profile);
-      await this.syncFolders(userId, response.folders);
+      await this.syncFolders(response.folders);
       await this.syncCollections(response.collections);
       await this.syncCiphers(response.ciphers);
       await this.syncSends(response.sends);
@@ -130,8 +130,7 @@ export class SyncService implements SyncServiceAbstraction {
         ) {
           const remoteFolder = await this.apiService.getFolder(notification.id);
           if (remoteFolder != null) {
-            const userId = await this.stateService.getUserId();
-            await this.folderService.upsert(new FolderData(remoteFolder, userId));
+            await this.folderService.upsert(new FolderData(remoteFolder));
             this.messagingService.send("syncedUpsertedFolder", { folderId: notification.id });
             return this.syncCompleted(true);
           }
@@ -337,10 +336,10 @@ export class SyncService implements SyncServiceAbstraction {
     }
   }
 
-  private async syncFolders(userId: string, response: FolderResponse[]) {
+  private async syncFolders(response: FolderResponse[]) {
     const folders: { [id: string]: FolderData } = {};
     response.forEach((f) => {
-      folders[f.id] = new FolderData(f, userId);
+      folders[f.id] = new FolderData(f);
     });
     return await this.folderService.replace(folders);
   }
