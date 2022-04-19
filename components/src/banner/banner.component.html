@@ -1,6 +1,11 @@
-<div class="tw-py-2.5 tw-px-4 tw-text-contrast tw-flex tw-gap-2" [ngClass]="bannerClass">
+<div
+  class="tw-py-2.5 tw-px-4 tw-text-contrast tw-flex tw-gap-2"
+  [ngClass]="bannerClass"
+  [attr.role]="useAlertRole ? 'status' : null"
+  [attr.aria-live]="useAlertRole ? 'polite' : null"
+>
   <div class="tw-block">
-    <i class="bwi {{ icon }} tw-align-middle" *ngIf="icon" aria-hidden="true"></i>
+    <i class="bwi tw-align-middle" [ngClass]="icon" *ngIf="icon" aria-hidden="true"></i>
   </div>
   <h3 class="tw-inline tw-m-0 tw-text-base tw-shrink-0" *ngIf="title">
     {{ title }}
