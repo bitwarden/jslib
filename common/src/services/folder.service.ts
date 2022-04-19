@@ -38,10 +38,10 @@ export class FolderService implements FolderServiceAbstraction {
     };
   }
 
-  async decrypt(model: Folder, orgId?: string, key?: SymmetricCryptoKey): Promise<FolderView> {
+  async decrypt(model: Folder, key?: SymmetricCryptoKey): Promise<FolderView> {
     const view = new FolderView();
     view.id = model.id;
-    view.name = await model.name.decrypt(orgId, key);
+    view.name = await model.name.decrypt(null, key);
     view.revisionDate = model.revisionDate;
 
     return view;
