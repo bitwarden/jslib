@@ -2,16 +2,16 @@ import { Collection as CollectionDomain } from "../domain/collection";
 import { EncString } from "../domain/encString";
 import { CollectionView } from "../view/collectionView";
 
-export class Collection {
-  static template(): Collection {
-    const req = new Collection();
+export class CollectionExport {
+  static template(): CollectionExport {
+    const req = new CollectionExport();
     req.organizationId = "00000000-0000-0000-0000-000000000000";
     req.name = "Collection name";
     req.externalId = null;
     return req;
   }
 
-  static toView(req: Collection, view = new CollectionView()) {
+  static toView(req: CollectionExport, view = new CollectionView()) {
     view.name = req.name;
     view.externalId = req.externalId;
     if (view.organizationId == null) {
@@ -20,7 +20,7 @@ export class Collection {
     return view;
   }
 
-  static toDomain(req: Collection, domain = new CollectionDomain()) {
+  static toDomain(req: CollectionExport, domain = new CollectionDomain()) {
     domain.name = req.name != null ? new EncString(req.name) : null;
     domain.externalId = req.externalId;
     if (domain.organizationId == null) {

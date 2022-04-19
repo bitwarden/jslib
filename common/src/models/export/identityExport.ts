@@ -2,9 +2,9 @@ import { EncString } from "../domain/encString";
 import { Identity as IdentityDomain } from "../domain/identity";
 import { IdentityView } from "../view/identityView";
 
-export class Identity {
-  static template(): Identity {
-    const req = new Identity();
+export class IdentityExport {
+  static template(): IdentityExport {
+    const req = new IdentityExport();
     req.title = "Mr";
     req.firstName = "John";
     req.middleName = "William";
@@ -26,7 +26,7 @@ export class Identity {
     return req;
   }
 
-  static toView(req: Identity, view = new IdentityView()) {
+  static toView(req: IdentityExport, view = new IdentityView()) {
     view.title = req.title;
     view.firstName = req.firstName;
     view.middleName = req.middleName;
@@ -48,7 +48,7 @@ export class Identity {
     return view;
   }
 
-  static toDomain(req: Identity, domain = new IdentityDomain()) {
+  static toDomain(req: IdentityExport, domain = new IdentityDomain()) {
     domain.title = req.title != null ? new EncString(req.title) : null;
     domain.firstName = req.firstName != null ? new EncString(req.firstName) : null;
     domain.middleName = req.middleName != null ? new EncString(req.middleName) : null;

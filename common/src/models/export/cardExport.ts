@@ -2,9 +2,9 @@ import { Card as CardDomain } from "../domain/card";
 import { EncString } from "../domain/encString";
 import { CardView } from "../view/cardView";
 
-export class Card {
-  static template(): Card {
-    const req = new Card();
+export class CardExport {
+  static template(): CardExport {
+    const req = new CardExport();
     req.cardholderName = "John Doe";
     req.brand = "visa";
     req.number = "4242424242424242";
@@ -14,7 +14,7 @@ export class Card {
     return req;
   }
 
-  static toView(req: Card, view = new CardView()) {
+  static toView(req: CardExport, view = new CardView()) {
     view.cardholderName = req.cardholderName;
     view.brand = req.brand;
     view.number = req.number;
@@ -24,7 +24,7 @@ export class Card {
     return view;
   }
 
-  static toDomain(req: Card, domain = new CardDomain()) {
+  static toDomain(req: CardExport, domain = new CardDomain()) {
     domain.cardholderName = req.cardholderName != null ? new EncString(req.cardholderName) : null;
     domain.brand = req.brand != null ? new EncString(req.brand) : null;
     domain.number = req.number != null ? new EncString(req.number) : null;

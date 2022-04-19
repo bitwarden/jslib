@@ -1,7 +1,7 @@
 import { EventType } from "../../enums/eventType";
 import { EventView } from "../view/eventView";
 
-export class Event {
+export class EventExport {
   message: string;
   appIcon: string;
   appName: string;

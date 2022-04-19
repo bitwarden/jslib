@@ -2,19 +2,19 @@ import { SecureNoteType } from "../../enums/secureNoteType";
 import { SecureNote as SecureNoteDomain } from "../domain/secureNote";
 import { SecureNoteView } from "../view/secureNoteView";
 
-export class SecureNote {
-  static template(): SecureNote {
-    const req = new SecureNote();
+export class SecureNoteExport {
+  static template(): SecureNoteExport {
+    const req = new SecureNoteExport();
     req.type = SecureNoteType.Generic;
     return req;
   }
 
-  static toView(req: SecureNote, view = new SecureNoteView()) {
+  static toView(req: SecureNoteExport, view = new SecureNoteView()) {
     view.type = req.type;
     return view;
   }
 
-  static toDomain(req: SecureNote, view = new SecureNoteDomain()) {
+  static toDomain(req: SecureNoteExport, view = new SecureNoteDomain()) {
     view.type = req.type;
     return view;
   }
