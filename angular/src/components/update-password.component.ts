@@ -61,7 +61,6 @@ export class UpdatePasswordComponent extends BaseChangePasswordComponent {
 
   async cancel() {
     await this.stateService.setOrganizationInvitation(null);
-    await this.stateService.setLoginRedirect(null);
     this.router.navigate(["/vault"]);
   }
 
