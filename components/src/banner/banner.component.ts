@@ -1,7 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter } from "@angular/core";
 
-import { I18nService } from "jslib-common/abstractions/i18n.service";
-
 type BannerTypes = "premium" | "info" | "warning" | "danger";
 
 const defaultIcon: Record<BannerTypes, string> = {
@@ -11,13 +9,6 @@ const defaultIcon: Record<BannerTypes, string> = {
   danger: "bwi-error",
 };
 
-const defaultI18n: Partial<Record<BannerTypes, string>> = {
-  premium: "premium",
-  info: "informative",
-  warning: "warning",
-  danger: "error",
-};
-
 @Component({
   selector: "bit-banner",
   templateUrl: "./banner.component.html",
@@ -25,18 +16,12 @@ const defaultI18n: Partial<Record<BannerTypes, string>> = {
 export class BannerComponent implements OnInit {
   @Input("bannerType") bannerType: BannerTypes = "info";
   @Input() icon: string;
-  @Input("bannerTitle") title: string;
   @Input() useAlertRole = true;
 
   @Output() onClose = new EventEmitter<void>();
 
-  constructor(private i18nService: I18nService) {}
-
   ngOnInit(): void {
     this.icon ??= defaultIcon[this.bannerType];
-    if (this.title == null && defaultI18n[this.bannerType] != null) {
-      this.title = this.i18nService.t(defaultI18n[this.bannerType]);
-    }
   }
 
   get bannerClass() {
