@@ -111,20 +111,4 @@ describe("FolderService", () => {
       expect(folders).toHaveLength(0);
     });
   });
-
-  it("Decrypt", async () => {
-    const folder: Folder = {
-      id: "id",
-      name: mockEnc("encName"),
-      revisionDate: new Date("2022-01-31T12:00:00.000Z"),
-    };
-
-    const view = await folderService.decrypt(folder);
-
-    expect(view).toEqual({
-      id: "id",
-      name: "encName",
-      revisionDate: new Date("2022-01-31T12:00:00.000Z"),
-    });
-  });
 });

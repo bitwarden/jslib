@@ -1,5 +1,6 @@
 import { Directive, EventEmitter, Input, OnInit, Output } from "@angular/core";
 
+import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { FolderService } from "jslib-common/abstractions/folder.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { LogService } from "jslib-common/abstractions/log.service";
@@ -19,10 +20,11 @@ export class FolderAddEditComponent implements OnInit {
   deletePromise: Promise<any>;
 
   constructor(
+    protected cryptoService: CryptoService,
     protected folderService: FolderService,
     protected i18nService: I18nService,
-    protected platformUtilsService: PlatformUtilsService,
-    private logService: LogService
+    protected logService: LogService,
+    protected platformUtilsService: PlatformUtilsService
   ) {}
 
   async ngOnInit() {
@@ -88,7 +90,7 @@ export class FolderAddEditComponent implements OnInit {
       this.editMode = true;
       this.title = this.i18nService.t("editFolder");
       const folder = await this.folderService.get(this.folderId);
-      this.folder = await this.folderService.decrypt(folder);
+      this.folder = await FolderView.fromFolder(this.cryptoService, folder);
     } else {
       this.title = this.i18nService.t("addFolder");
     }

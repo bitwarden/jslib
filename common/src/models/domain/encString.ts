@@ -96,11 +96,10 @@ export class EncString {
     }
   }
 
+  /**
+   * @deprecated As of 2022-04-20, use {@link decryptWithCryptoService} instead
+   */
   async decrypt(orgId: string, key: SymmetricCryptoKey = null): Promise<string> {
-    if (this.decryptedValue != null) {
-      return this.decryptedValue;
-    }
-
     let cryptoService: CryptoService;
     const containerService = (Utils.global as any).bitwardenContainerService;
     if (containerService) {
@@ -109,8 +108,20 @@ export class EncString {
       throw new Error("global bitwardenContainerService not initialized.");
     }
 
+    return this.decryptWithCryptoService(cryptoService, orgId, key);
+  }
+
+  async decryptWithCryptoService(
+    cryptoService: CryptoService,
+    orgId?: string,
+    key: SymmetricCryptoKey = null
+  ): Promise<string> {
+    if (this.decryptedValue != null) {
+      return this.decryptedValue;
+    }
+
     try {
-      if (key == null) {
+      if (orgId != null && key == null) {
         key = await cryptoService.getOrgKey(orgId);
       }
       this.decryptedValue = await cryptoService.decryptToUtf8(this, key);
