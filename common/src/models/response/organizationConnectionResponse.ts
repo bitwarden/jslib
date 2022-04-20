@@ -6,7 +6,7 @@ import { BaseResponse } from "./baseResponse";
 import { NotificationResponse } from "./notificationResponse";
 
 /**API response config types for OrganizationConnectionResponse */
-export type OrganizationConnectionConfigApis = BillingSyncConfigApi | NotificationResponse;
+export type OrganizationConnectionConfigApis = BillingSyncConfigApi;
 
 export class OrganizationConnectionResponse<
   TConfig extends OrganizationConnectionConfigApis
