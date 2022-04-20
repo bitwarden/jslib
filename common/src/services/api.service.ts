@@ -1,6 +1,12 @@
 import { AppIdService } from "jslib-common/abstractions/appId.service";
+import { OrganizationConnectionType } from "jslib-common/enums/organizationConnectionType";
 import { DeviceRequest } from "jslib-common/models/request/deviceRequest";
 import { TokenRequestTwoFactor } from "jslib-common/models/request/identityToken/tokenRequestTwoFactor";
+import { OrganizationConnectionRequest } from "jslib-common/models/request/organizationConnectionRequest";
+import {
+  OrganizationConnectionConfigApis,
+  OrganizationConnectionResponse,
+} from "jslib-common/models/response/organizationConnectionResponse";
 
 import { ApiService as ApiServiceAbstraction } from "../abstractions/api.service";
 import { EnvironmentService } from "../abstractions/environment.service";
@@ -1646,6 +1652,47 @@ export class ApiService implements ApiServiceAbstraction {
   async getOrganizationSubscription(id: string): Promise<OrganizationSubscriptionResponse> {
     const r = await this.send("GET", "/organizations/" + id + "/subscription", null, true, true);
     return new OrganizationSubscriptionResponse(r);
+  }
+
+  async getCloudCommunicationsEnabled(): Promise<boolean> {
+    const r = await this.send("GET", "/organizations/connections/enabled", null, true, true);
+    return r as boolean;
+  }
+
+  async getOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
+    id: string,
+    type: OrganizationConnectionType,
+    configType: { new (response: any): TConfig }
+  ): Promise<OrganizationConnectionResponse<TConfig>> {
+    const r = await this.send("GET", `/organizations/connections/${id}/${type}`, null, true, true);
+    return new OrganizationConnectionResponse(r, configType);
+  }
+
+  async createOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
+    request: OrganizationConnectionRequest,
+    configType: { new (response: any): TConfig }
+  ): Promise<OrganizationConnectionResponse<TConfig>> {
+    const r = await this.send("POST", "/organizations/connections/", request, true, true);
+    return new OrganizationConnectionResponse(r, configType);
+  }
+
+  async updateOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
+    request: OrganizationConnectionRequest,
+    configType: { new (response: any): TConfig },
+    organizationConnectionId?: string
+  ): Promise<OrganizationConnectionResponse<TConfig>> {
+    const r = await this.send(
+      "PUT",
+      "/organizations/connections/" + organizationConnectionId,
+      request,
+      true,
+      true
+    );
+    return new OrganizationConnectionResponse(r, configType);
+  }
+
+  async deleteOrganizationConnection(id: string): Promise<void> {
+    return this.send("DELETE", "/organizations/connections/" + id, null, true, false);
   }
 
   async getOrganizationLicense(id: string, installationId: string): Promise<any> {

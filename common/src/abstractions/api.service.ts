@@ -1,3 +1,10 @@
+import { OrganizationConnectionType } from "jslib-common/enums/organizationConnectionType";
+import { OrganizationConnectionRequest } from "jslib-common/models/request/organizationConnectionRequest";
+import {
+  OrganizationConnectionConfigApis,
+  OrganizationConnectionResponse,
+} from "jslib-common/models/response/organizationConnectionResponse";
+
 import { PolicyType } from "../enums/policyType";
 import { SetKeyConnectorKeyRequest } from "../models/request/account/setKeyConnectorKeyRequest";
 import { VerifyOTPRequest } from "../models/request/account/verifyOTPRequest";
@@ -506,6 +513,22 @@ export abstract class ApiService {
   getOrganization: (id: string) => Promise<OrganizationResponse>;
   getOrganizationBilling: (id: string) => Promise<BillingResponse>;
   getOrganizationSubscription: (id: string) => Promise<OrganizationSubscriptionResponse>;
+  getCloudCommunicationsEnabled: () => Promise<boolean>;
+  abstract getOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
+    id: string,
+    type: OrganizationConnectionType,
+    configType: { new (response: any): TConfig }
+  ): Promise<OrganizationConnectionResponse<TConfig>>;
+  abstract createOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
+    request: OrganizationConnectionRequest,
+    configType: { new (response: any): TConfig }
+  ): Promise<OrganizationConnectionResponse<TConfig>>;
+  abstract updateOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
+    request: OrganizationConnectionRequest,
+    configType: { new (response: any): TConfig },
+    organizationConnectionId: string
+  ): Promise<OrganizationConnectionResponse<TConfig>>;
+  deleteOrganizationConnection: (id: string) => Promise<void>;
   getOrganizationLicense: (id: string, installationId: string) => Promise<any>;
   getOrganizationTaxInfo: (id: string) => Promise<TaxInfoResponse>;
   getOrganizationAutoEnrollStatus: (
