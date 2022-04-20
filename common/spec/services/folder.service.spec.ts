@@ -6,10 +6,7 @@ import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { FolderData } from "jslib-common/models/data/folderData";
-import { Folder } from "jslib-common/models/domain/folder";
 import { FolderService } from "jslib-common/services/folder.service";
-
-import { mockEnc } from "../utils";
 
 describe("FolderService", () => {
   let stateService: SubstituteOf<StateService>;
