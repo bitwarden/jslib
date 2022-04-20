@@ -296,7 +296,7 @@ export class ImportService implements ImportServiceAbstraction {
       }
       if (importResult.folders != null) {
         for (let i = 0; i < importResult.folders.length; i++) {
-          const f = await this.folderService.encrypt(importResult.folders[i]);
+          const f = await importResult.folders[i].encrypt(this.cryptoService);
           request.folders.push(new FolderRequest(f));
         }
       }

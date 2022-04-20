@@ -42,7 +42,7 @@ export class FolderAddEditComponent implements OnInit {
     }
 
     try {
-      const folder = await this.folderService.encrypt(this.folder);
+      const folder = await this.folder.encrypt(this.cryptoService);
       this.formPromise = this.folderService.saveWithServer(folder);
       await this.formPromise;
       this.platformUtilsService.showToast(

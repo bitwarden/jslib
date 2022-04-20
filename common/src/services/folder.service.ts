@@ -30,14 +30,6 @@ export class FolderService implements FolderServiceAbstraction {
     await this.stateService.setDecryptedFolders(null, { userId: userId });
   }
 
-  async encrypt(model: FolderView, key?: SymmetricCryptoKey): Promise<Folder> {
-    return {
-      id: model.id,
-      name: await this.cryptoService.encrypt(model.name, key),
-      revisionDate: null,
-    };
-  }
-
   async decrypt(model: Folder, key?: SymmetricCryptoKey): Promise<FolderView> {
     const view = new FolderView();
     view.id = model.id;
