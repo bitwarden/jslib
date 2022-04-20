@@ -1,4 +1,3 @@
-import { FolderService } from "jslib-common/abstractions/folder.service";
 import { FolderView } from "jslib-common/models/view/folderView";
 
 import { CryptoService } from "../abstractions/crypto.service";
@@ -16,11 +15,7 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
   private results: any;
   private result: ImportResult;
 
-  constructor(
-    protected cryptoService: CryptoService,
-    protected i18nService: I18nService,
-    private folderService: FolderService
-  ) {
+  constructor(protected cryptoService: CryptoService, protected i18nService: I18nService) {
     super();
   }
 

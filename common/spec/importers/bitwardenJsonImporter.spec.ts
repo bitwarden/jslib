@@ -1,7 +1,6 @@
 import { Substitute, SubstituteOf } from "@fluffy-spoon/substitute";
 
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
-import { FolderService } from "jslib-common/abstractions/folder.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { BitwardenJsonImporter } from "jslib-common/importers/bitwardenJsonImporter";
 
@@ -11,14 +10,12 @@ describe("bitwarden json importer", () => {
   let sut: BitwardenJsonImporter;
   let cryptoService: SubstituteOf<CryptoService>;
   let i18nService: SubstituteOf<I18nService>;
-  let folderService: SubstituteOf<FolderService>;
 
   beforeEach(() => {
     cryptoService = Substitute.for<CryptoService>();
     i18nService = Substitute.for<I18nService>();
-    folderService = Substitute.for<FolderService>();
 
-    sut = new BitwardenJsonImporter(cryptoService, i18nService, folderService);
+    sut = new BitwardenJsonImporter(cryptoService, i18nService);
   });
 
   it("should fail if password is needed", async () => {
