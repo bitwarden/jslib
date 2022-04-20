@@ -12,7 +12,6 @@ import { SendText } from "./sendText";
 export class Send extends Domain {
   id: string;
   accessId: string;
-  userId: string;
   type: SendType;
   name: EncString;
   notes: EncString;
@@ -40,12 +39,11 @@ export class Send extends Domain {
       {
         id: null,
         accessId: null,
-        userId: null,
         name: null,
         notes: null,
         key: null,
       },
-      ["id", "accessId", "userId"]
+      ["id", "accessId"]
     );
 
     this.type = obj.type;

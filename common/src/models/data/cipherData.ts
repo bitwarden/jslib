@@ -14,7 +14,6 @@ export class CipherData {
   id: string;
   organizationId: string;
   folderId: string;
-  userId: string;
   edit: boolean;
   viewPassword: boolean;
   organizationUseTotp: boolean;
@@ -34,7 +33,7 @@ export class CipherData {
   deletedDate: string;
   reprompt: CipherRepromptType;
 
-  constructor(response?: CipherResponse, userId?: string, collectionIds?: string[]) {
+  constructor(response?: CipherResponse, collectionIds?: string[]) {
     if (response == null) {
       return;
     }
@@ -42,7 +41,6 @@ export class CipherData {
     this.id = response.id;
     this.organizationId = response.organizationId;
     this.folderId = response.folderId;
-    this.userId = userId;
     this.edit = response.edit;
     this.viewPassword = response.viewPassword;
     this.organizationUseTotp = response.organizationUseTotp;

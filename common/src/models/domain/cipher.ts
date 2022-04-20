@@ -49,13 +49,12 @@ export class Cipher extends Domain {
       obj,
       {
         id: null,
-        userId: null,
         organizationId: null,
         folderId: null,
         name: null,
         notes: null,
       },
-      ["id", "userId", "organizationId", "folderId"]
+      ["id", "organizationId", "folderId"]
     );
 
     this.type = obj.type;
@@ -186,12 +185,11 @@ export class Cipher extends Domain {
     return model;
   }
 
-  toCipherData(userId: string): CipherData {
+  toCipherData(): CipherData {
     const c = new CipherData();
     c.id = this.id;
     c.organizationId = this.organizationId;
     c.folderId = this.folderId;
-    c.userId = this.organizationId != null ? userId : null;
     c.edit = this.edit;
     c.viewPassword = this.viewPassword;
     c.organizationUseTotp = this.organizationUseTotp;
