@@ -3,7 +3,6 @@ import { OrganizationConnectionType } from "jslib-common/enums/organizationConne
 import { BillingSyncConfigApi } from "../api/billingSyncConfigApi";
 
 import { BaseResponse } from "./baseResponse";
-import { NotificationResponse } from "./notificationResponse";
 
 /**API response config types for OrganizationConnectionResponse */
 export type OrganizationConnectionConfigApis = BillingSyncConfigApi;
