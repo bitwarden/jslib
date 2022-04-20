@@ -9,14 +9,10 @@ export class FolderView implements ITreeNodeObject {
   name: string = null;
   revisionDate: Date = null;
 
-  static async fromFolder(
-    cryptoService: CryptoService,
-    folder: Folder,
-    key?: SymmetricCryptoKey
-  ): Promise<FolderView> {
+  static async fromFolder(cryptoService: CryptoService, folder: Folder): Promise<FolderView> {
     const view = new FolderView();
     view.id = folder.id;
-    view.name = await folder.name.decryptWithCryptoService(cryptoService, null, key);
+    view.name = await folder.name.decryptWithCryptoService(cryptoService);
     view.revisionDate = folder.revisionDate;
 
     return view;
