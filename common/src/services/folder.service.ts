@@ -9,7 +9,6 @@ import { Utils } from "../misc/utils";
 import { CipherData } from "../models/data/cipherData";
 import { FolderData } from "../models/data/folderData";
 import { Folder } from "../models/domain/folder";
-import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 import { TreeNode } from "../models/domain/treeNode";
 import { FolderRequest } from "../models/request/folderRequest";
 import { FolderResponse } from "../models/response/folderResponse";
@@ -28,15 +27,6 @@ export class FolderService implements FolderServiceAbstraction {
 
   async clearCache(userId?: string): Promise<void> {
     await this.stateService.setDecryptedFolders(null, { userId: userId });
-  }
-
-  async decrypt(model: Folder, key?: SymmetricCryptoKey): Promise<FolderView> {
-    const view = new FolderView();
-    view.id = model.id;
-    view.name = await model.name.decrypt(null, key);
-    view.revisionDate = model.revisionDate;
-
-    return view;
   }
 
   async get(id: string): Promise<Folder> {
@@ -66,7 +56,9 @@ export class FolderService implements FolderServiceAbstraction {
     const promises: Promise<any>[] = [];
     const folders = await this.getAll();
     folders.forEach((folder) => {
-      promises.push(this.decrypt(folder).then((f) => decFolders.push(f)));
+      promises.push(
+        FolderView.fromFolder(this.cryptoService, folder).then((f) => decFolders.push(f))
+      );
     });
 
     await Promise.all(promises);
