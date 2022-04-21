@@ -25,7 +25,7 @@ import { Cipher } from "jslib-common/models/domain/cipher";
 import { CardView } from "jslib-common/models/view/cardView";
 import { CipherView } from "jslib-common/models/view/cipherView";
 import { CollectionView } from "jslib-common/models/view/collectionView";
-import { FolderView } from "jslib-common/models/view/folderView";
+import { FolderDecrypted } from "jslib-common/models/view/folderDecrypted";
 import { IdentityView } from "jslib-common/models/view/identityView";
 import { LoginUriView } from "jslib-common/models/view/loginUriView";
 import { LoginView } from "jslib-common/models/view/loginView";
@@ -51,7 +51,7 @@ export class AddEditComponent implements OnInit {
 
   editMode = false;
   cipher: CipherView;
-  folders: FolderView[];
+  folders: FolderDecrypted[];
   collections: CollectionView[] = [];
   title: string;
   formPromise: Promise<any>;

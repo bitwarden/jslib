@@ -1,6 +1,6 @@
 import { FieldType } from "../enums/fieldType";
 import { ImportResult } from "../models/domain/importResult";
-import { FolderView } from "../models/view/folderView";
+import { FolderDecrypted } from "../models/view/folderDecrypted";
 
 import { BaseImporter } from "./baseImporter";
 import { Importer } from "./importer";
@@ -42,7 +42,7 @@ export class KeePass2XmlImporter extends BaseImporter implements Importer {
       }
       const nameEl = this.querySelectorDirectChild(node, "Name");
       groupName += nameEl == null ? "-" : nameEl.textContent;
-      const folder = new FolderView();
+      const folder = new FolderDecrypted();
       folder.name = groupName;
       this.result.folders.push(folder);
     }

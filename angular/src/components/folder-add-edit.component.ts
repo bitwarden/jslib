@@ -5,16 +5,16 @@ import { FolderService } from "jslib-common/abstractions/folder.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { LogService } from "jslib-common/abstractions/log.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
-import { FolderView } from "jslib-common/models/view/folderView";
+import { FolderDecrypted } from "jslib-common/models/view/folderDecrypted";
 
 @Directive()
 export class FolderAddEditComponent implements OnInit {
   @Input() folderId: string;
-  @Output() onSavedFolder = new EventEmitter<FolderView>();
-  @Output() onDeletedFolder = new EventEmitter<FolderView>();
+  @Output() onSavedFolder = new EventEmitter<FolderDecrypted>();
+  @Output() onDeletedFolder = new EventEmitter<FolderDecrypted>();
 
   editMode = false;
-  folder: FolderView = new FolderView();
+  folder: FolderDecrypted = new FolderDecrypted();
   title: string;
   formPromise: Promise<any>;
   deletePromise: Promise<any>;
@@ -90,7 +90,7 @@ export class FolderAddEditComponent implements OnInit {
       this.editMode = true;
       this.title = this.i18nService.t("editFolder");
       const folder = await this.folderService.get(this.folderId);
-      this.folder = await FolderView.fromFolder(this.cryptoService, folder);
+      this.folder = await FolderDecrypted.fromFolder(this.cryptoService, folder);
     } else {
       this.title = this.i18nService.t("addFolder");
     }

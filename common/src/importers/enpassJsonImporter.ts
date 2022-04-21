@@ -3,7 +3,7 @@ import { FieldType } from "../enums/fieldType";
 import { ImportResult } from "../models/domain/importResult";
 import { CardView } from "../models/view/cardView";
 import { CipherView } from "../models/view/cipherView";
-import { FolderView } from "../models/view/folderView";
+import { FolderDecrypted } from "../models/view/folderDecrypted";
 
 import { BaseImporter } from "./baseImporter";
 import { Importer } from "./importer";
@@ -23,7 +23,7 @@ export class EnpassJsonImporter extends BaseImporter implements Importer {
     this.flattenFolderTree(null, folderTree, foldersMap);
     foldersMap.forEach((val, key) => {
       foldersIndexMap.set(key, result.folders.length);
-      const f = new FolderView();
+      const f = new FolderDecrypted();
       f.name = val;
       result.folders.push(f);
     });

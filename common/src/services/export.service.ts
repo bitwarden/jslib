@@ -25,7 +25,7 @@ import { CollectionDetailsResponse } from "../models/response/collectionResponse
 import { CipherView } from "../models/view/cipherView";
 import { CollectionView } from "../models/view/collectionView";
 import { EventView } from "../models/view/eventView";
-import { FolderView } from "../models/view/folderView";
+import { FolderDecrypted } from "../models/view/folderDecrypted";
 
 export class ExportService implements ExportServiceAbstraction {
   constructor(
@@ -110,7 +110,7 @@ export class ExportService implements ExportServiceAbstraction {
   }
 
   private async getDecryptedExport(format: "json" | "csv"): Promise<string> {
-    let decFolders: FolderView[] = [];
+    let decFolders: FolderDecrypted[] = [];
     let decCiphers: CipherView[] = [];
     const promises = [];
 
@@ -129,7 +129,7 @@ export class ExportService implements ExportServiceAbstraction {
     await Promise.all(promises);
 
     if (format === "csv") {
-      const foldersMap = new Map<string, FolderView>();
+      const foldersMap = new Map<string, FolderDecrypted>();
       decFolders.forEach((f) => {
         if (f.id != null) {
           foldersMap.set(f.id, f);

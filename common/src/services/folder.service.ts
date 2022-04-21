@@ -12,7 +12,7 @@ import { Folder } from "../models/domain/folder";
 import { TreeNode } from "../models/domain/treeNode";
 import { FolderRequest } from "../models/request/folderRequest";
 import { FolderResponse } from "../models/response/folderResponse";
-import { FolderView } from "../models/view/folderView";
+import { FolderDecrypted } from "../models/view/folderDecrypted";
 
 const NestingDelimiter = "/";
 
@@ -41,7 +41,7 @@ export class FolderService implements FolderServiceAbstraction {
     return Object.values(folders).map((f) => f.toFolder());
   }
 
-  async getAllDecrypted(): Promise<FolderView[]> {
+  async getAllDecrypted(): Promise<FolderDecrypted[]> {
     const decryptedFolders = await this.stateService.getDecryptedFolders();
     if (decryptedFolders != null) {
       return decryptedFolders;
@@ -52,19 +52,19 @@ export class FolderService implements FolderServiceAbstraction {
       throw new Error("No key.");
     }
 
-    const decFolders: FolderView[] = [];
+    const decFolders: FolderDecrypted[] = [];
     const promises: Promise<any>[] = [];
     const folders = await this.getAll();
     folders.forEach((folder) => {
       promises.push(
-        FolderView.fromFolder(this.cryptoService, folder).then((f) => decFolders.push(f))
+        FolderDecrypted.fromFolder(this.cryptoService, folder).then((f) => decFolders.push(f))
       );
     });
 
     await Promise.all(promises);
     decFolders.sort(Utils.getSortFunction(this.i18nService, "name"));
 
-    const noneFolder = new FolderView();
+    const noneFolder = new FolderDecrypted();
     noneFolder.name = this.i18nService.t("noneFolder");
     decFolders.push(noneFolder);
 
@@ -72,11 +72,11 @@ export class FolderService implements FolderServiceAbstraction {
     return decFolders;
   }
 
-  async getAllNested(): Promise<TreeNode<FolderView>[]> {
+  async getAllNested(): Promise<TreeNode<FolderDecrypted>[]> {
     const folders = await this.getAllDecrypted();
-    const nodes: TreeNode<FolderView>[] = [];
+    const nodes: TreeNode<FolderDecrypted>[] = [];
     folders.forEach((f) => {
-      const folderCopy = new FolderView();
+      const folderCopy = new FolderDecrypted();
       folderCopy.id = f.id;
       folderCopy.revisionDate = f.revisionDate;
       const parts = f.name != null ? f.name.replace(/^\/+|\/+$/g, "").split(NestingDelimiter) : [];
@@ -85,9 +85,9 @@ export class FolderService implements FolderServiceAbstraction {
     return nodes;
   }
 
-  async getNested(id: string): Promise<TreeNode<FolderView>> {
+  async getNested(id: string): Promise<TreeNode<FolderDecrypted>> {
     const folders = await this.getAllNested();
-    return ServiceUtils.getTreeNodeObject(folders, id) as TreeNode<FolderView>;
+    return ServiceUtils.getTreeNodeObject(folders, id) as TreeNode<FolderDecrypted>;
   }
 
   async saveWithServer(folder: Folder): Promise<any> {

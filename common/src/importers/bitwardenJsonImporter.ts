@@ -1,4 +1,4 @@
-import { FolderView } from "jslib-common/models/view/folderView";
+import { FolderDecrypted } from "jslib-common/models/view/folderDecrypted";
 
 import { CryptoService } from "../abstractions/crypto.service";
 import { I18nService } from "../abstractions/i18n.service";
@@ -76,7 +76,7 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
         const folder = FolderWithIdExport.toDomain(f);
         if (folder != null) {
           folder.id = null;
-          const view = await FolderView.fromFolder(this.cryptoService, folder);
+          const view = await FolderDecrypted.fromFolder(this.cryptoService, folder);
           groupingsMap.set(f.id, this.result.folders.length);
           this.result.folders.push(view);
         }

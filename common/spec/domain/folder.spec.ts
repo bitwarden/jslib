@@ -3,7 +3,7 @@ import Substitute from "@fluffy-spoon/substitute";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { FolderData } from "jslib-common/models/data/folderData";
 import { Folder } from "jslib-common/models/domain/folder";
-import { FolderView } from "jslib-common/models/view/folderView";
+import { FolderDecrypted } from "jslib-common/models/view/folderDecrypted";
 
 import { mockEnc } from "../utils";
 
@@ -31,7 +31,7 @@ describe("Folder", () => {
     };
 
     const cryptoService = Substitute.for<CryptoService>();
-    const view = await FolderView.fromFolder(cryptoService, folder);
+    const view = await FolderDecrypted.fromFolder(cryptoService, folder);
 
     expect(view).toEqual({
       id: "id",

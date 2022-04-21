@@ -3,7 +3,7 @@ import { SecureNoteType } from "../enums/secureNoteType";
 import { ImportResult } from "../models/domain/importResult";
 import { CardView } from "../models/view/cardView";
 import { CipherView } from "../models/view/cipherView";
-import { FolderView } from "../models/view/folderView";
+import { FolderDecrypted } from "../models/view/folderDecrypted";
 import { IdentityView } from "../models/view/identityView";
 import { LoginView } from "../models/view/loginView";
 import { SecureNoteView } from "../models/view/secureNoteView";
@@ -70,7 +70,7 @@ export class LastPassCsvImporter extends BaseImporter implements Importer {
       result.ciphers.push(cipher);
 
       if (addFolder) {
-        const f = new FolderView();
+        const f = new FolderDecrypted();
         f.name = grouping;
         result.folders.push(f);
       }

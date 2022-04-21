@@ -21,7 +21,7 @@ import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 import { WindowState } from "../models/domain/windowState";
 import { CipherView } from "../models/view/cipherView";
 import { CollectionView } from "../models/view/collectionView";
-import { FolderView } from "../models/view/folderView";
+import { FolderDecrypted } from "../models/view/folderDecrypted";
 import { SendView } from "../models/view/sendView";
 
 export abstract class StateService<T extends Account = Account> {
@@ -84,8 +84,8 @@ export abstract class StateService<T extends Account = Account> {
     value: SymmetricCryptoKey,
     options?: StorageOptions
   ) => Promise<void>;
-  getDecryptedFolders: (options?: StorageOptions) => Promise<FolderView[]>;
-  setDecryptedFolders: (value: FolderView[], options?: StorageOptions) => Promise<void>;
+  getDecryptedFolders: (options?: StorageOptions) => Promise<FolderDecrypted[]>;
+  setDecryptedFolders: (value: FolderDecrypted[], options?: StorageOptions) => Promise<void>;
   getDecryptedOrganizationKeys: (
     options?: StorageOptions
   ) => Promise<Map<string, SymmetricCryptoKey>>;

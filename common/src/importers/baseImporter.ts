@@ -9,7 +9,7 @@ import { ImportResult } from "../models/domain/importResult";
 import { CipherView } from "../models/view/cipherView";
 import { CollectionView } from "../models/view/collectionView";
 import { FieldView } from "../models/view/fieldView";
-import { FolderView } from "../models/view/folderView";
+import { FolderDecrypted } from "../models/view/folderDecrypted";
 import { LoginUriView } from "../models/view/loginUriView";
 import { LoginView } from "../models/view/loginView";
 import { SecureNoteView } from "../models/view/secureNoteView";
@@ -425,7 +425,7 @@ export abstract class BaseImporter {
     }
 
     if (addFolder) {
-      const f = new FolderView();
+      const f = new FolderDecrypted();
       f.name = folderName;
       result.folders.push(f);
     }

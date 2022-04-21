@@ -6,7 +6,7 @@ import { StateService } from "jslib-common/abstractions/state.service";
 import { CipherType } from "jslib-common/enums/cipherType";
 import { TreeNode } from "jslib-common/models/domain/treeNode";
 import { CollectionView } from "jslib-common/models/view/collectionView";
-import { FolderView } from "jslib-common/models/view/folderView";
+import { FolderDecrypted } from "jslib-common/models/view/folderDecrypted";
 
 @Directive()
 export class GroupingsComponent {
@@ -19,13 +19,13 @@ export class GroupingsComponent {
   @Output() onFavoritesClicked = new EventEmitter();
   @Output() onTrashClicked = new EventEmitter();
   @Output() onCipherTypeClicked = new EventEmitter<CipherType>();
-  @Output() onFolderClicked = new EventEmitter<FolderView>();
+  @Output() onFolderClicked = new EventEmitter<FolderDecrypted>();
   @Output() onAddFolder = new EventEmitter();
-  @Output() onEditFolder = new EventEmitter<FolderView>();
+  @Output() onEditFolder = new EventEmitter<FolderDecrypted>();
   @Output() onCollectionClicked = new EventEmitter<CollectionView>();
 
-  folders: FolderView[];
-  nestedFolders: TreeNode<FolderView>[];
+  folders: FolderDecrypted[];
+  nestedFolders: TreeNode<FolderDecrypted>[];
   collections: CollectionView[];
   nestedCollections: TreeNode<CollectionView>[];
   loaded = false;
@@ -107,7 +107,7 @@ export class GroupingsComponent {
     this.onCipherTypeClicked.emit(type);
   }
 
-  selectFolder(folder: FolderView) {
+  selectFolder(folder: FolderDecrypted) {
     this.clearSelections();
     this.selectedFolder = true;
     this.selectedFolderId = folder.id;
@@ -118,7 +118,7 @@ export class GroupingsComponent {
     this.onAddFolder.emit();
   }
 
-  editFolder(folder: FolderView) {
+  editFolder(folder: FolderDecrypted) {
     this.onEditFolder.emit(folder);
   }
 
@@ -138,7 +138,7 @@ export class GroupingsComponent {
     this.selectedCollectionId = null;
   }
 
-  async collapse(grouping: FolderView | CollectionView, idPrefix = "") {
+  async collapse(grouping: FolderDecrypted | CollectionView, idPrefix = "") {
     if (grouping.id == null) {
       return;
     }
@@ -151,7 +151,7 @@ export class GroupingsComponent {
     await this.stateService.setCollapsedGroupings(Array.from(this.collapsedGroupings));
   }
 
-  isCollapsed(grouping: FolderView | CollectionView, idPrefix = "") {
+  isCollapsed(grouping: FolderDecrypted | CollectionView, idPrefix = "") {
     return this.collapsedGroupings.has(idPrefix + grouping.id);
   }
 }

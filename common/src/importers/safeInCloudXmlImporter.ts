@@ -4,7 +4,7 @@ import { SecureNoteType } from "../enums/secureNoteType";
 import { ImportResult } from "../models/domain/importResult";
 import { CipherView } from "../models/view/cipherView";
 import { FieldView } from "../models/view/fieldView";
-import { FolderView } from "../models/view/folderView";
+import { FolderDecrypted } from "../models/view/folderDecrypted";
 import { SecureNoteView } from "../models/view/secureNoteView";
 
 import { BaseImporter } from "./baseImporter";
@@ -33,7 +33,7 @@ export class SafeInCloudXmlImporter extends BaseImporter implements Importer {
       const id = labelEl.getAttribute("id");
       if (!this.isNullOrWhitespace(name) && !this.isNullOrWhitespace(id)) {
         foldersMap.set(id, result.folders.length);
-        const folder = new FolderView();
+        const folder = new FolderDecrypted();
         folder.name = name;
         result.folders.push(folder);
       }

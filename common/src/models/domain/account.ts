@@ -11,7 +11,7 @@ import { ProviderData } from "../data/providerData";
 import { SendData } from "../data/sendData";
 import { CipherView } from "../view/cipherView";
 import { CollectionView } from "../view/collectionView";
-import { FolderView } from "../view/folderView";
+import { FolderDecrypted } from "../view/folderDecrypted";
 import { SendView } from "../view/sendView";
 
 import { EncString } from "./encString";
@@ -35,9 +35,9 @@ export class AccountData {
     CipherData,
     CipherView
   >();
-  folders?: DataEncryptionPair<FolderData, FolderView> = new DataEncryptionPair<
+  folders?: DataEncryptionPair<FolderData, FolderDecrypted> = new DataEncryptionPair<
     FolderData,
-    FolderView
+    FolderDecrypted
   >();
   localData?: any;
   sends?: DataEncryptionPair<SendData, SendView> = new DataEncryptionPair<SendData, SendView>();

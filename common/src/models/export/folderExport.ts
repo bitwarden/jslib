@@ -1,6 +1,6 @@
 import { EncString } from "../domain/encString";
 import { Folder as FolderDomain } from "../domain/folder";
-import { FolderView } from "../view/folderView";
+import { FolderDecrypted } from "../view/folderDecrypted";
 
 export class FolderExport {
   static template(): FolderExport {
@@ -9,7 +9,7 @@ export class FolderExport {
     return req;
   }
 
-  static toView(req: FolderExport, view = new FolderView()) {
+  static toView(req: FolderExport, view = new FolderDecrypted()) {
     view.name = req.name;
     return view;
   }
@@ -22,8 +22,8 @@ export class FolderExport {
   name: string;
 
   // Use build method instead of ctor so that we can control order of JSON stringify for pretty print
-  build(o: FolderView | FolderDomain) {
-    if (o instanceof FolderView) {
+  build(o: FolderDecrypted | FolderDomain) {
+    if (o instanceof FolderDecrypted) {
       this.name = o.name;
     } else {
       this.name = o.name?.encryptedString;

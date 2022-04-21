@@ -1,7 +1,7 @@
 import { CipherType } from "../enums/cipherType";
 import { ImportResult } from "../models/domain/importResult";
 import { CardView } from "../models/view/cardView";
-import { FolderView } from "../models/view/folderView";
+import { FolderDecrypted } from "../models/view/folderDecrypted";
 
 import { BaseImporter } from "./baseImporter";
 import { Importer } from "./importer";
@@ -22,7 +22,7 @@ export class PasswordBossJsonImporter extends BaseImporter implements Importer {
     const foldersIndexMap = new Map<string, number>();
     foldersMap.forEach((val, key) => {
       foldersIndexMap.set(key, result.folders.length);
-      const f = new FolderView();
+      const f = new FolderDecrypted();
       f.name = val;
       result.folders.push(f);
     });
