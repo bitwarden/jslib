@@ -2,9 +2,9 @@ import { CryptoService } from "../abstractions/crypto.service";
 import { I18nService } from "../abstractions/i18n.service";
 import { EncString } from "../models/domain/encString";
 import { ImportResult } from "../models/domain/importResult";
-import { CipherWithIds } from "../models/export/cipherWithIds";
-import { CollectionWithId } from "../models/export/collectionWithId";
-import { FolderWithId } from "../models/export/folderWithId";
+import { CipherWithIdExport } from "../models/export/cipherWithIdsExport";
+import { CollectionWithIdExport } from "../models/export/collectionWithIdExport";
+import { FolderWithIdExport } from "../models/export/folderWithIdExport";
 
 import { BaseImporter } from "./baseImporter";
 import { Importer } from "./importer";
@@ -59,8 +59,8 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
     const groupingsMap = new Map<string, number>();
 
     if (this.organization && this.results.collections != null) {
-      for (const c of this.results.collections as CollectionWithId[]) {
-        const collection = CollectionWithId.toDomain(c);
+      for (const c of this.results.collections as CollectionWithIdExport[]) {
+        const collection = CollectionWithIdExport.toDomain(c);
         if (collection != null) {
           collection.id = null;
           collection.organizationId = this.organizationId;
@@ -70,8 +70,8 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
         }
       }
     } else if (!this.organization && this.results.folders != null) {
-      for (const f of this.results.folders as FolderWithId[]) {
-        const folder = FolderWithId.toDomain(f);
+      for (const f of this.results.folders as FolderWithIdExport[]) {
+        const folder = FolderWithIdExport.toDomain(f);
         if (folder != null) {
           folder.id = null;
           const view = await folder.decrypt();
@@ -81,8 +81,8 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
       }
     }
 
-    for (const c of this.results.items as CipherWithIds[]) {
-      const cipher = CipherWithIds.toDomain(c);
+    for (const c of this.results.items as CipherWithIdExport[]) {
+      const cipher = CipherWithIdExport.toDomain(c);
       // reset ids incase they were set for some reason
       cipher.id = null;
       cipher.folderId = null;
@@ -121,8 +121,8 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
   private parseDecrypted() {
     const groupingsMap = new Map<string, number>();
     if (this.organization && this.results.collections != null) {
-      this.results.collections.forEach((c: CollectionWithId) => {
-        const collection = CollectionWithId.toView(c);
+      this.results.collections.forEach((c: CollectionWithIdExport) => {
+        const collection = CollectionWithIdExport.toView(c);
         if (collection != null) {
           collection.id = null;
           collection.organizationId = null;
@@ -131,8 +131,8 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
         }
       });
     } else if (!this.organization && this.results.folders != null) {
-      this.results.folders.forEach((f: FolderWithId) => {
-        const folder = FolderWithId.toView(f);
+      this.results.folders.forEach((f: FolderWithIdExport) => {
+        const folder = FolderWithIdExport.toView(f);
         if (folder != null) {
           folder.id = null;
           groupingsMap.set(f.id, this.result.folders.length);
@@ -141,8 +141,8 @@ export class BitwardenJsonImporter extends BaseImporter implements Importer {
       });
     }
 
-    this.results.items.forEach((c: CipherWithIds) => {
-      const cipher = CipherWithIds.toView(c);
+    this.results.items.forEach((c: CipherWithIdExport) => {
+      const cipher = CipherWithIdExport.toView(c);
       // reset ids incase they were set for some reason
       cipher.id = null;
       cipher.folderId = null;

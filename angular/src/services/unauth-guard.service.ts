@@ -17,11 +17,9 @@ export class UnauthGuardService implements CanActivate {
     }
 
     if (authStatus === AuthenticationStatus.Locked) {
-      this.router.navigate(["lock"]);
-      return false;
+      return this.router.createUrlTree(["lock"]);
     }
 
-    this.router.navigate([this.homepage]);
-    return false;
+    return this.router.createUrlTree([this.homepage]);
   }
 }

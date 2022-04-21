@@ -11,7 +11,7 @@ export class SendFile extends Domain {
   sizeName: string;
   fileName: EncString;
 
-  constructor(obj?: SendFileData, alreadyEncrypted = false) {
+  constructor(obj?: SendFileData) {
     super();
     if (obj == null) {
       return;
@@ -26,7 +26,6 @@ export class SendFile extends Domain {
         sizeName: null,
         fileName: null,
       },
-      alreadyEncrypted,
       ["id", "sizeName"]
     );
   }

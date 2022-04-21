@@ -17,7 +17,7 @@ export class SendAccess extends Domain {
   expirationDate: Date;
   creatorIdentifier: string;
 
-  constructor(obj?: SendAccessResponse, alreadyEncrypted = false) {
+  constructor(obj?: SendAccessResponse) {
     super();
     if (obj == null) {
       return;
@@ -32,7 +32,6 @@ export class SendAccess extends Domain {
         expirationDate: null,
         creatorIdentifier: null,
       },
-      alreadyEncrypted,
       ["id", "expirationDate", "creatorIdentifier"]
     );
 
@@ -40,10 +39,10 @@ export class SendAccess extends Domain {
 
     switch (this.type) {
       case SendType.Text:
-        this.text = new SendText(obj.text, alreadyEncrypted);
+        this.text = new SendText(obj.text);
         break;
       case SendType.File:
-        this.file = new SendFile(obj.file, alreadyEncrypted);
+        this.file = new SendFile(obj.file);
         break;
       default:
         break;
