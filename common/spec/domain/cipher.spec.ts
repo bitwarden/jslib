@@ -24,7 +24,6 @@ describe("Cipher DTO", () => {
 
     expect(cipher).toEqual({
       id: null,
-      userId: null,
       organizationId: null,
       folderId: null,
       name: null,
@@ -53,7 +52,6 @@ describe("Cipher DTO", () => {
         id: "id",
         organizationId: "orgId",
         folderId: "folderId",
-        userId: "userId",
         edit: true,
         viewPassword: true,
         organizationUseTotp: true,
@@ -115,7 +113,6 @@ describe("Cipher DTO", () => {
 
       expect(cipher).toEqual({
         id: "id",
-        userId: "userId",
         organizationId: "orgId",
         folderId: "folderId",
         name: { encryptedString: "EncryptedString", encryptionType: 0 },
@@ -181,7 +178,7 @@ describe("Cipher DTO", () => {
 
     it("toCipherData", () => {
       const cipher = new Cipher(cipherData);
-      expect(cipher.toCipherData("userId")).toEqual(cipherData);
+      expect(cipher.toCipherData()).toEqual(cipherData);
     });
 
     it("Decrypt", async () => {
@@ -242,7 +239,6 @@ describe("Cipher DTO", () => {
         id: "id",
         organizationId: "orgId",
         folderId: "folderId",
-        userId: "userId",
         edit: true,
         viewPassword: true,
         organizationUseTotp: true,
@@ -264,7 +260,6 @@ describe("Cipher DTO", () => {
 
       expect(cipher).toEqual({
         id: "id",
-        userId: "userId",
         organizationId: "orgId",
         folderId: "folderId",
         name: { encryptedString: "EncryptedString", encryptionType: 0 },
@@ -288,7 +283,7 @@ describe("Cipher DTO", () => {
 
     it("toCipherData", () => {
       const cipher = new Cipher(cipherData);
-      expect(cipher.toCipherData("userId")).toEqual(cipherData);
+      expect(cipher.toCipherData()).toEqual(cipherData);
     });
 
     it("Decrypt", async () => {
@@ -343,7 +338,6 @@ describe("Cipher DTO", () => {
         id: "id",
         organizationId: "orgId",
         folderId: "folderId",
-        userId: "userId",
         edit: true,
         viewPassword: true,
         organizationUseTotp: true,
@@ -370,7 +364,6 @@ describe("Cipher DTO", () => {
 
       expect(cipher).toEqual({
         id: "id",
-        userId: "userId",
         organizationId: "orgId",
         folderId: "folderId",
         name: { encryptedString: "EncryptedString", encryptionType: 0 },
@@ -401,7 +394,7 @@ describe("Cipher DTO", () => {
 
     it("toCipherData", () => {
       const cipher = new Cipher(cipherData);
-      expect(cipher.toCipherData("userId")).toEqual(cipherData);
+      expect(cipher.toCipherData()).toEqual(cipherData);
     });
 
     it("Decrypt", async () => {
@@ -462,7 +455,6 @@ describe("Cipher DTO", () => {
         id: "id",
         organizationId: "orgId",
         folderId: "folderId",
-        userId: "userId",
         edit: true,
         viewPassword: true,
         organizationUseTotp: true,
@@ -501,7 +493,6 @@ describe("Cipher DTO", () => {
 
       expect(cipher).toEqual({
         id: "id",
-        userId: "userId",
         organizationId: "orgId",
         folderId: "folderId",
         name: { encryptedString: "EncryptedString", encryptionType: 0 },
@@ -544,7 +535,7 @@ describe("Cipher DTO", () => {
 
     it("toCipherData", () => {
       const cipher = new Cipher(cipherData);
-      expect(cipher.toCipherData("userId")).toEqual(cipherData);
+      expect(cipher.toCipherData()).toEqual(cipherData);
     });
 
     it("Decrypt", async () => {

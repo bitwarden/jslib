@@ -17,7 +17,6 @@ describe("Send", () => {
     data = {
       id: "id",
       accessId: "accessId",
-      userId: "userId",
       type: SendType.Text,
       name: "encName",
       notes: "encNotes",
@@ -45,7 +44,6 @@ describe("Send", () => {
     expect(send).toEqual({
       id: null,
       accessId: null,
-      userId: null,
       type: undefined,
       name: null,
       notes: null,
@@ -69,7 +67,6 @@ describe("Send", () => {
     expect(send).toEqual({
       id: "id",
       accessId: "accessId",
-      userId: "userId",
       type: SendType.Text,
       name: { encryptedString: "encName", encryptionType: 0 },
       notes: { encryptedString: "encNotes", encryptionType: 0 },
@@ -96,7 +93,6 @@ describe("Send", () => {
     const send = new Send();
     send.id = "id";
     send.accessId = "accessId";
-    send.userId = "userId";
     send.type = SendType.Text;
     send.name = mockEnc("name");
     send.notes = mockEnc("notes");

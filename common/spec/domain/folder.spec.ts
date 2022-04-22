@@ -9,7 +9,6 @@ describe("Folder", () => {
   beforeEach(() => {
     data = {
       id: "id",
-      userId: "userId",
       name: "encName",
       revisionDate: "2022-01-31T12:00:00.000Z",
     };
