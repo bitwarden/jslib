@@ -85,7 +85,7 @@ import { ValidationService } from "./validation.service";
 export const WINDOW = new InjectionToken<Window>("WINDOW");
 export const SECURE_STORAGE = new InjectionToken<StorageServiceAbstraction>("SECURE_STORAGE");
 export const STATE_FACTORY = new InjectionToken<StateFactory>("STATE_FACTORY");
-export const STATE_SERVICE_USE_CACHE = new InjectionToken<boolean>("STATE_SERVICE_USE_CACHE");
+export const USE_DISK_CACHE = new InjectionToken<boolean>("STATE_SERVICE_USE_CACHE");
 export const LOGOUT_CALLBACK = new InjectionToken<(expired: boolean, userId?: string) => void>(
   "LOGOUT_CALLBACK"
 );
@@ -111,7 +111,7 @@ export const CLIENT_TYPE = new InjectionToken<boolean>("CLIENT_TYPE");
       useValue: new StateFactory(GlobalState, Account),
     },
     {
-      provide: STATE_SERVICE_USE_CACHE,
+      provide: USE_DISK_CACHE,
       useValue: true,
     },
     {
@@ -305,7 +305,7 @@ export const CLIENT_TYPE = new InjectionToken<boolean>("CLIENT_TYPE");
         LogService,
         StateMigrationServiceAbstraction,
         STATE_FACTORY,
-        STATE_SERVICE_USE_CACHE,
+        USE_DISK_CACHE,
       ],
     },
     {
