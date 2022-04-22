@@ -1,5 +1,9 @@
 [![Github Workflow build on master](https://github.com/bitwarden/jslib/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/bitwarden/jslib/actions/workflows/build.yml?query=branch:master)
 
+> **Repository Reorganization in Progress**
+>
+> New pull requests created during this transition period may not get addressed —if needed, please create a new PR after reorganization is complete.
+
 # Bitwarden JavaScript Library
 
 Common code referenced across Bitwarden JavaScript projects.
