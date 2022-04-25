@@ -2322,7 +2322,10 @@ export class ApiService implements ApiServiceAbstraction {
   ): Promise<void> {
     return await this.send(
       "POST",
-      "/organization/sponsorship/" + sponsoredOrgId + "/families-for-enterprise",
+      "/organization/sponsorship/" +
+        (this.platformUtilsService.isSelfHost ? "self-hosted/" : "") +
+        sponsoredOrgId +
+        "/families-for-enterprise",
       request,
       true,
       false
@@ -2345,7 +2348,9 @@ export class ApiService implements ApiServiceAbstraction {
   async deleteRevokeSponsorship(sponsoringOrganizationId: string): Promise<void> {
     return await this.send(
       "DELETE",
-      "/organization/sponsorship/" + sponsoringOrganizationId,
+      "/organization/sponsorship/" +
+        (this.platformUtilsService.isSelfHost ? "self-hosted/" : "") +
+        sponsoringOrganizationId,
       null,
       true,
       false
