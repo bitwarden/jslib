@@ -106,7 +106,7 @@ export interface Value {
   date?: number | null;
   string?: string | null;
   concealed?: string | null;
-  email?: string | null;
+  email?: Email | null;
   phone?: string | null;
   menu?: string | null;
   gender?: string | null;
@@ -117,6 +117,12 @@ export interface Value {
   creditCardNumber?: string | null;
   reference?: string | null;
 }
+
+export interface Email {
+  email_address: string;
+  provider: string;
+}
+
 export interface Address {
   street: string;
   city: string;

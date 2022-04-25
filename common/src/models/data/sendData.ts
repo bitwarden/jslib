@@ -7,7 +7,6 @@ import { SendTextData } from "./sendTextData";
 export class SendData {
   id: string;
   accessId: string;
-  userId: string;
   type: SendType;
   name: string;
   notes: string;
@@ -23,14 +22,13 @@ export class SendData {
   disabled: boolean;
   hideEmail: boolean;
 
-  constructor(response?: SendResponse, userId?: string) {
+  constructor(response?: SendResponse) {
     if (response == null) {
       return;
     }
 
     this.id = response.id;
     this.accessId = response.accessId;
-    this.userId = userId;
     this.type = response.type;
     this.name = response.name;
     this.notes = response.notes;

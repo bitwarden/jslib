@@ -4,7 +4,6 @@ const { compilerOptions } = require("./tsconfig");
 
 module.exports = {
   preset: "ts-jest",
-  roots: ["<rootDir>/spec/"],
   testMatch: ["**/+(*.)+(spec).+(ts)"],
   setupFilesAfterEnv: ["<rootDir>/spec/test.ts"],
   collectCoverage: true,

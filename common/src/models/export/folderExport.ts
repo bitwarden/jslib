@@ -2,19 +2,19 @@ import { EncString } from "../domain/encString";
 import { Folder as FolderDomain } from "../domain/folder";
 import { FolderView } from "../view/folderView";
 
-export class Folder {
-  static template(): Folder {
-    const req = new Folder();
+export class FolderExport {
+  static template(): FolderExport {
+    const req = new FolderExport();
     req.name = "Folder name";
     return req;
   }
 
-  static toView(req: Folder, view = new FolderView()) {
+  static toView(req: FolderExport, view = new FolderView()) {
     view.name = req.name;
     return view;
   }
 
-  static toDomain(req: Folder, domain = new FolderDomain()) {
+  static toDomain(req: FolderExport, domain = new FolderDomain()) {
     domain.name = req.name != null ? new EncString(req.name) : null;
     return domain;
   }

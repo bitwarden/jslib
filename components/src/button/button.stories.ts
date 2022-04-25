@@ -2,17 +2,20 @@ import { Meta, Story } from "@storybook/angular";
 
 import { ButtonComponent } from "./button.component";
 
-// More on default export: https://storybook.js.org/docs/angular/writing-stories/introduction#default-export
 export default {
   title: "Jslib/Button",
   component: ButtonComponent,
   args: {
     buttonType: "primary",
   },
-  // More on argTypes: https://storybook.js.org/docs/angular/api/argtypes
+  parameters: {
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/file/f32LSg3jaegICkMu7rPARm/Tailwind-Component-Library-Update?node-id=1881%3A16733",
+    },
+  },
 } as Meta;
 
-// More on component templates: https://storybook.js.org/docs/angular/writing-stories/introduction#using-args
 const Template: Story<ButtonComponent> = (args: ButtonComponent) => ({
   props: args,
   template: `
@@ -22,7 +25,6 @@ const Template: Story<ButtonComponent> = (args: ButtonComponent) => ({
 });
 
 export const Primary = Template.bind({});
-// More on args: https://storybook.js.org/docs/angular/writing-stories/args
 Primary.args = {
   buttonType: "primary",
 };

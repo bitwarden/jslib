@@ -1,5 +1,11 @@
 [![Github Workflow build on master](https://github.com/bitwarden/jslib/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/bitwarden/jslib/actions/workflows/build.yml?query=branch:master)
 
+> **Repository Reorganization in Progress**
+>
+> We are currently migrating some projects over to a mono repository. For existing PR's we will be providing documentation on how to move/migrate them. To minimize the overhead we are actively reviewing open PRs. If possible please ensure any pending comments are resolved as soon as possible.
+>
+> New pull requests created during this transition period may not get addressed —if needed, please create a new PR after the reorganization is complete.
+
 # Bitwarden JavaScript Library
 
 Common code referenced across Bitwarden JavaScript projects.
