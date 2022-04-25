@@ -1,4 +1,5 @@
 import { Injector, LOCALE_ID, NgModule } from "@angular/core";
+import { Store } from "@ngrx/store";
 
 import { ApiService as ApiServiceAbstraction } from "jslib-common/abstractions/api.service";
 import { AppIdService as AppIdServiceAbstraction } from "jslib-common/abstractions/appId.service";
@@ -73,6 +74,7 @@ import { UserVerificationService } from "jslib-common/services/userVerification.
 import { UsernameGenerationService } from "jslib-common/services/usernameGeneration.service";
 import { VaultTimeoutService } from "jslib-common/services/vaultTimeout.service";
 import { WebCryptoFunctionService } from "jslib-common/services/webCryptoFunction.service";
+import { State } from "jslib-common/state";
 
 import { AuthGuardService } from "./auth-guard.service";
 import { BroadcasterService } from "./broadcaster.service";
@@ -250,7 +252,8 @@ import { ValidationService } from "./validation.service";
         keyConnectorService: KeyConnectorServiceAbstraction,
         stateService: StateServiceAbstraction,
         organizationService: OrganizationServiceAbstraction,
-        providerService: ProviderServiceAbstraction
+        providerService: ProviderServiceAbstraction,
+        store: Store
       ) =>
         new SyncService(
           apiService,
@@ -267,6 +270,7 @@ import { ValidationService } from "./validation.service";
           stateService,
           organizationService,
           providerService,
+          store,
           async (expired: boolean) => messagingService.send("logout", { expired: expired })
         ),
       deps: [
@@ -284,6 +288,7 @@ import { ValidationService } from "./validation.service";
         StateServiceAbstraction,
         OrganizationServiceAbstraction,
         ProviderServiceAbstraction,
+        Store,
       ],
     },
     { provide: BroadcasterServiceAbstraction, useClass: BroadcasterService },

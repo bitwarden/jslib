@@ -33,6 +33,8 @@
     "@angular/platform-browser-dynamic": "^12.2.13",
     "@angular/router": "^12.2.13",
     "@bitwarden/jslib-common": "file:../common",
+    "@ngrx/entity": "^12.5.1",
+    "@ngrx/store": "^12.5.1",
     "duo_web_sdk": "git+https://github.com/duosecurity/duo_web_sdk.git",
     "rxjs": "^7.4.0",
     "tldjs": "^2.3.1",

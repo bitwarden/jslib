@@ -1,3 +1,5 @@
+import { Store } from "@ngrx/store";
+
 import { ApiService } from "../abstractions/api.service";
 import { CipherService } from "../abstractions/cipher.service";
 import { CollectionService } from "../abstractions/collection.service";
@@ -33,6 +35,8 @@ import {
 import { PolicyResponse } from "../models/response/policyResponse";
 import { ProfileResponse } from "../models/response/profileResponse";
 import { SendResponse } from "../models/response/sendResponse";
+import * as FoldersActions from "../state/folders.actions";
+
 
 export class SyncService implements SyncServiceAbstraction {
   syncInProgress = false;
@@ -52,6 +56,7 @@ export class SyncService implements SyncServiceAbstraction {
     private stateService: StateService,
     private organizationService: OrganizationService,
     private providerService: ProviderService,
+    private store: Store,
     private logoutCallback: (expired: boolean) => Promise<void>
   ) {}
 
@@ -340,6 +345,12 @@ export class SyncService implements SyncServiceAbstraction {
     response.forEach((f) => {
       folders[f.id] = new FolderData(f.toFolder());
     });
+
+    console.log("hi");
+    this.store.dispatch(
+      FoldersActions.loadBooksSuccess({ folders: response.map((f) => f.toFolder()) })
+    );
+
     return await this.folderService.replace(folders);
   }
 

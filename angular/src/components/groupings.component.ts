@@ -1,12 +1,16 @@
 import { Directive, EventEmitter, Input, Output } from "@angular/core";
+import { Store } from "@ngrx/store";
+import { Observable } from "rxjs";
 
 import { CollectionService } from "jslib-common/abstractions/collection.service";
 import { FolderService } from "jslib-common/abstractions/folder.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { CipherType } from "jslib-common/enums/cipherType";
+import { Folder } from "jslib-common/models/domain/folder";
 import { TreeNode } from "jslib-common/models/domain/treeNode";
 import { CollectionView } from "jslib-common/models/view/collectionView";
 import { FolderDecrypted } from "jslib-common/models/view/folderDecrypted";
+import * as fromFolders from "jslib-common/state";
 
 @Directive()
 export class GroupingsComponent {
@@ -23,6 +27,8 @@ export class GroupingsComponent {
   @Output() onAddFolder = new EventEmitter();
   @Output() onEditFolder = new EventEmitter<FolderDecrypted>();
   @Output() onCollectionClicked = new EventEmitter<CollectionView>();
+
+  folders$: Observable<Folder[]>;
 
   folders: FolderDecrypted[];
   nestedFolders: TreeNode<FolderDecrypted>[];
@@ -43,8 +49,12 @@ export class GroupingsComponent {
   constructor(
     protected collectionService: CollectionService,
     protected folderService: FolderService,
-    protected stateService: StateService
-  ) {}
+    protected stateService: StateService,
+    store: Store
+  ) {
+    this.folders$ = store.select(fromFolders.selectFolderCollection);
+    console.log(this.folders$);
+  }
 
   async load(setLoaded = true) {
     const collapsedGroupings = await this.stateService.getCollapsedGroupings();
