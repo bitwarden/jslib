@@ -182,6 +182,10 @@ export class Organization {
     return this.canManagePolicies;
   }
 
+  get canManageBilling() {
+    return this.isOwner && (this.isProviderUser || !this.hasProvider);
+  }
+
   get hasProvider() {
     return this.providerId != null || this.providerName != null;
   }
