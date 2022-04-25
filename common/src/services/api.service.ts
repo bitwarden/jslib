@@ -2323,7 +2323,7 @@ export class ApiService implements ApiServiceAbstraction {
     return await this.send(
       "POST",
       "/organization/sponsorship/" +
-        (this.platformUtilsService.isSelfHost ? "self-hosted/" : "") +
+        (this.platformUtilsService.isSelfHost() ? "self-hosted/" : "") +
         sponsoredOrgId +
         "/families-for-enterprise",
       request,
@@ -2349,7 +2349,7 @@ export class ApiService implements ApiServiceAbstraction {
     return await this.send(
       "DELETE",
       "/organization/sponsorship/" +
-        (this.platformUtilsService.isSelfHost ? "self-hosted/" : "") +
+        (this.platformUtilsService.isSelfHost() ? "self-hosted/" : "") +
         sponsoringOrganizationId,
       null,
       true,
