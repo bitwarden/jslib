@@ -31,7 +31,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
     private apiService: ApiService,
     private vaultTimeoutService: VaultTimeoutService,
     private environmentService: EnvironmentService,
-    private logoutCallback: () => Promise<void>,
+    private logoutCallback: (expired: boolean) => Promise<void>,
     private logService: LogService,
     private stateService: StateService
   ) {
@@ -169,7 +169,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
         break;
       case NotificationType.LogOut:
         if (isAuthenticated) {
-          this.logoutCallback();
+          this.logoutCallback(true);
         }
         break;
       case NotificationType.SyncSendCreate:

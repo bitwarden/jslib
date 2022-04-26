@@ -18,11 +18,9 @@ export class UnauthGuardService implements CanActivate {
     if (isAuthed) {
       const locked = await this.vaultTimeoutService.isLocked();
       if (locked) {
-        this.router.navigate(["lock"]);
-      } else {
-        this.router.navigate([this.homepage]);
+        return this.router.createUrlTree(["lock"]);
       }
-      return false;
+      return this.router.createUrlTree([this.homepage]);
     }
     return true;
   }

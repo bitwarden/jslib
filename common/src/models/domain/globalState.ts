@@ -7,7 +7,7 @@ import { WindowState } from "./windowState";
 export class GlobalState {
   enableAlwaysOnTop?: boolean;
   installedVersion?: string;
-  locale?: string = "en";
+  locale?: string;
   organizationInvitation?: any;
   ssoCodeVerifier?: string;
   ssoOrganizationIdentifier?: string;

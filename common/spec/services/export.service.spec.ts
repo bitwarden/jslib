@@ -11,7 +11,7 @@ import { Utils } from "jslib-common/misc/utils";
 import { Cipher } from "jslib-common/models/domain/cipher";
 import { EncString } from "jslib-common/models/domain/encString";
 import { Login } from "jslib-common/models/domain/login";
-import { CipherWithIds as CipherExport } from "jslib-common/models/export/cipherWithIds";
+import { CipherWithIdExport as CipherExport } from "jslib-common/models/export/cipherWithIdsExport";
 import { CipherView } from "jslib-common/models/view/cipherView";
 import { LoginView } from "jslib-common/models/view/loginView";
 import { ExportService } from "jslib-common/services/export.service";
