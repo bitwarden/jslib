@@ -4,15 +4,15 @@ import { Cipher as CipherDomain } from "../domain/cipher";
 import { EncString } from "../domain/encString";
 import { CipherView } from "../view/cipherView";
 
-import { Card } from "./card";
-import { Field } from "./field";
-import { Identity } from "./identity";
-import { Login } from "./login";
-import { SecureNote } from "./secureNote";
+import { CardExport } from "./cardExport";
+import { FieldExport } from "./fieldExport";
+import { IdentityExport } from "./identityExport";
+import { LoginExport } from "./loginExport";
+import { SecureNoteExport } from "./secureNoteExport";
 
-export class Cipher {
-  static template(): Cipher {
-    const req = new Cipher();
+export class CipherExport {
+  static template(): CipherExport {
+    const req = new CipherExport();
     req.organizationId = null;
     req.collectionIds = null;
     req.folderId = null;
@@ -29,7 +29,7 @@ export class Cipher {
     return req;
   }
 
-  static toView(req: Cipher, view = new CipherView()) {
+  static toView(req: CipherExport, view = new CipherView()) {
     view.type = req.type;
     view.folderId = req.folderId;
     if (view.organizationId == null) {
@@ -45,28 +45,28 @@ export class Cipher {
     view.reprompt = req.reprompt ?? CipherRepromptType.None;
 
     if (req.fields != null) {
-      view.fields = req.fields.map((f) => Field.toView(f));
+      view.fields = req.fields.map((f) => FieldExport.toView(f));
     }
 
     switch (req.type) {
       case CipherType.Login:
-        view.login = Login.toView(req.login);
+        view.login = LoginExport.toView(req.login);
         break;
       case CipherType.SecureNote:
-        view.secureNote = SecureNote.toView(req.secureNote);
+        view.secureNote = SecureNoteExport.toView(req.secureNote);
         break;
       case CipherType.Card:
-        view.card = Card.toView(req.card);
+        view.card = CardExport.toView(req.card);
         break;
       case CipherType.Identity:
-        view.identity = Identity.toView(req.identity);
+        view.identity = IdentityExport.toView(req.identity);
         break;
     }
 
     return view;
   }
 
-  static toDomain(req: Cipher, domain = new CipherDomain()) {
+  static toDomain(req: CipherExport, domain = new CipherDomain()) {
     domain.type = req.type;
     domain.folderId = req.folderId;
     if (domain.organizationId == null) {
@@ -78,21 +78,21 @@ export class Cipher {
     domain.reprompt = req.reprompt ?? CipherRepromptType.None;
 
     if (req.fields != null) {
-      domain.fields = req.fields.map((f) => Field.toDomain(f));
+      domain.fields = req.fields.map((f) => FieldExport.toDomain(f));
     }
 
     switch (req.type) {
       case CipherType.Login:
-        domain.login = Login.toDomain(req.login);
+        domain.login = LoginExport.toDomain(req.login);
         break;
       case CipherType.SecureNote:
-        domain.secureNote = SecureNote.toDomain(req.secureNote);
+        domain.secureNote = SecureNoteExport.toDomain(req.secureNote);
         break;
       case CipherType.Card:
-        domain.card = Card.toDomain(req.card);
+        domain.card = CardExport.toDomain(req.card);
         break;
       case CipherType.Identity:
-        domain.identity = Identity.toDomain(req.identity);
+        domain.identity = IdentityExport.toDomain(req.identity);
         break;
     }
 
@@ -106,11 +106,11 @@ export class Cipher {
   name: string;
   notes: string;
   favorite: boolean;
-  fields: Field[];
-  login: Login;
-  secureNote: SecureNote;
-  card: Card;
-  identity: Identity;
+  fields: FieldExport[];
+  login: LoginExport;
+  secureNote: SecureNoteExport;
+  card: CardExport;
+  identity: IdentityExport;
   reprompt: CipherRepromptType;
 
   // Use build method instead of ctor so that we can control order of JSON stringify for pretty print
@@ -132,24 +132,24 @@ export class Cipher {
 
     if (o.fields != null) {
       if (o instanceof CipherView) {
-        this.fields = o.fields.map((f) => new Field(f));
+        this.fields = o.fields.map((f) => new FieldExport(f));
       } else {
-        this.fields = o.fields.map((f) => new Field(f));
+        this.fields = o.fields.map((f) => new FieldExport(f));
       }
     }
 
     switch (o.type) {
       case CipherType.Login:
-        this.login = new Login(o.login);
+        this.login = new LoginExport(o.login);
         break;
       case CipherType.SecureNote:
-        this.secureNote = new SecureNote(o.secureNote);
+        this.secureNote = new SecureNoteExport(o.secureNote);
         break;
       case CipherType.Card:
-        this.card = new Card(o.card);
+        this.card = new CardExport(o.card);
         break;
       case CipherType.Identity:
-        this.identity = new Identity(o.identity);
+        this.identity = new IdentityExport(o.identity);
         break;
     }
   }

@@ -180,7 +180,7 @@ export class PasswordGenerationService implements PasswordGenerationServiceAbstr
   async getOptions(): Promise<[any, PasswordGeneratorPolicyOptions]> {
     let options = await this.stateService.getPasswordGenerationOptions();
     if (options == null) {
-      options = DefaultOptions;
+      options = Object.assign({}, DefaultOptions);
     } else {
       options = Object.assign({}, DefaultOptions, options);
     }

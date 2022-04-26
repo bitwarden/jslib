@@ -14,7 +14,7 @@ export class Login extends Domain {
   totp: EncString;
   autofillOnPageLoad: boolean;
 
-  constructor(obj?: LoginData, alreadyEncrypted = false) {
+  constructor(obj?: LoginData) {
     super();
     if (obj == null) {
       return;
@@ -31,14 +31,13 @@ export class Login extends Domain {
         password: null,
         totp: null,
       },
-      alreadyEncrypted,
       []
     );
 
     if (obj.uris) {
       this.uris = [];
       obj.uris.forEach((u) => {
-        this.uris.push(new LoginUri(u, alreadyEncrypted));
+        this.uris.push(new LoginUri(u));
       });
     }
   }

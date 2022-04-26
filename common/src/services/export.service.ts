@@ -17,10 +17,10 @@ import { CollectionData } from "../models/data/collectionData";
 import { Cipher } from "../models/domain/cipher";
 import { Collection } from "../models/domain/collection";
 import { Folder } from "../models/domain/folder";
-import { CipherWithIds as CipherExport } from "../models/export/cipherWithIds";
-import { CollectionWithId as CollectionExport } from "../models/export/collectionWithId";
-import { Event } from "../models/export/event";
-import { FolderWithId as FolderExport } from "../models/export/folderWithId";
+import { CipherWithIdExport as CipherExport } from "../models/export/cipherWithIdsExport";
+import { CollectionWithIdExport as CollectionExport } from "../models/export/collectionWithIdExport";
+import { EventExport } from "../models/export/eventExport";
+import { FolderWithIdExport as FolderExport } from "../models/export/folderWithIdExport";
 import { CollectionDetailsResponse } from "../models/response/collectionResponse";
 import { CipherView } from "../models/view/cipherView";
 import { CollectionView } from "../models/view/collectionView";
@@ -90,7 +90,7 @@ export class ExportService implements ExportServiceAbstraction {
   }
 
   async getEventExport(events: EventView[]): Promise<string> {
-    return papa.unparse(events.map((e) => new Event(e)));
+    return papa.unparse(events.map((e) => new EventExport(e)));
   }
 
   getFileName(prefix: string = null, extension = "csv"): string {
