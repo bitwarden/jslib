@@ -91,6 +91,7 @@ export const LOGOUT_CALLBACK = new InjectionToken<(expired: boolean, userId?: st
 );
 export const LOCKED_CALLBACK = new InjectionToken<() => void>("LOCKED_CALLBACK");
 export const CLIENT_TYPE = new InjectionToken<boolean>("CLIENT_TYPE");
+export const LOCALES_DIRECTORY = new InjectionToken<string>("LOCALES_DIRECTORY");
 
 @NgModule({
   declarations: [],
@@ -105,6 +106,10 @@ export const CLIENT_TYPE = new InjectionToken<boolean>("CLIENT_TYPE");
       provide: LOCALE_ID,
       useFactory: (i18nService: I18nServiceAbstraction) => i18nService.translationLocale,
       deps: [I18nServiceAbstraction],
+    },
+    {
+      provide: LOCALES_DIRECTORY,
+      useValue: "./locales",
     },
     {
       provide: STATE_FACTORY,
