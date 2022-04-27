@@ -3,6 +3,7 @@ import { ActivatedRoute } from "@angular/router";
 import { first } from "rxjs/operators";
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
+import { LogService } from "jslib-common/abstractions/log.service";
 import { PasswordGenerationService } from "jslib-common/abstractions/passwordGeneration.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
@@ -15,6 +16,7 @@ export class GeneratorComponent implements OnInit {
   @Input() type: string;
   @Output() onSelected = new EventEmitter<string>();
 
+  usernameGeneratingPromise: Promise<string>;
   typeOptions: any[];
   passTypeOptions: any[];
   usernameTypeOptions: any[];
@@ -36,6 +38,7 @@ export class GeneratorComponent implements OnInit {
     protected platformUtilsService: PlatformUtilsService,
     protected stateService: StateService,
     protected i18nService: I18nService,
+    protected logService: LogService,
     protected route: ActivatedRoute,
     private win: Window
   ) {
@@ -58,13 +61,20 @@ export class GeneratorComponent implements OnInit {
         value: "catchall",
         desc: i18nService.t("catchallEmailDesc"),
       },
+      {
+        name: i18nService.t("forwardedEmail"),
+        value: "forwarded",
+        desc: i18nService.t("forwardedEmailDesc"),
+      },
       { name: i18nService.t("randomWord"), value: "word" },
     ];
     this.subaddressOptions = [{ name: i18nService.t("random"), value: "random" }];
     this.catchallOptions = [{ name: i18nService.t("random"), value: "random" }];
     this.forwardOptions = [
       { name: "SimpleLogin", value: "simplelogin" },
-      { name: "FastMail", value: "fastmail" },
+      { name: "AnonAddy", value: "anonaddy" },
+      { name: "Firefox Relay", value: "firefoxrelay" },
+      // { name: "FastMail", value: "fastmail" },
     ];
   }
 
@@ -104,13 +114,17 @@ export class GeneratorComponent implements OnInit {
           this.type = generatorOptions?.type ?? "password";
         }
       }
-      await this.regenerate();
+      if (this.regenerateWithoutButtonPress()) {
+        await this.regenerate();
+      }
     });
   }
 
   async typeChanged() {
     await this.stateService.setGeneratorOptions({ type: this.type });
-    await this.regenerate();
+    if (this.regenerateWithoutButtonPress()) {
+      await this.regenerate();
+    }
   }
 
   async regenerate() {
@@ -135,14 +149,17 @@ export class GeneratorComponent implements OnInit {
     this.normalizePasswordOptions();
     await this.passwordGenerationService.saveOptions(this.passwordOptions);
 
-    if (regenerate) {
+    if (regenerate && this.regenerateWithoutButtonPress()) {
       await this.regeneratePassword();
     }
   }
 
   async saveUsernameOptions(regenerate = true) {
     await this.usernameGenerationService.saveOptions(this.usernameOptions);
-    if (regenerate) {
+    if (this.usernameOptions.type === "forwarded") {
+      this.username = "-";
+    }
+    if (regenerate && this.regenerateWithoutButtonPress()) {
       await this.regenerateUsername();
     }
   }
@@ -157,9 +174,16 @@ export class GeneratorComponent implements OnInit {
   }
 
   async generateUsername() {
-    this.username = await this.usernameGenerationService.generateUsername(this.usernameOptions);
-    if (this.username === "" || this.username === null) {
-      this.username = "-";
+    try {
+      this.usernameGeneratingPromise = this.usernameGenerationService.generateUsername(
+        this.usernameOptions
+      );
+      this.username = await this.usernameGeneratingPromise;
+      if (this.username === "" || this.username === null) {
+        this.username = "-";
+      }
+    } catch (e) {
+      this.logService.error(e);
     }
   }
 
@@ -183,6 +207,10 @@ export class GeneratorComponent implements OnInit {
 
   toggleOptions() {
     this.showOptions = !this.showOptions;
+  }
+
+  regenerateWithoutButtonPress() {
+    return this.type !== "username" || this.usernameOptions.type !== "forwarded";
   }
 
   private normalizePasswordOptions() {

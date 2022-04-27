@@ -232,7 +232,7 @@ export const CLIENT_TYPE = new InjectionToken<boolean>("CLIENT_TYPE");
     {
       provide: UsernameGenerationServiceAbstraction,
       useClass: UsernameGenerationService,
-      deps: [CryptoServiceAbstraction, StateServiceAbstraction],
+      deps: [CryptoServiceAbstraction, StateServiceAbstraction, ApiServiceAbstraction],
     },
     {
       provide: ApiServiceAbstraction,
