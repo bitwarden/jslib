@@ -1,0 +1,14 @@
+<div
+  class="tw-py-2.5 tw-px-4 tw-text-contrast tw-flex tw-gap-2 tw-items-center"
+  [ngClass]="bannerClass"
+  [attr.role]="useAlertRole ? 'status' : null"
+  [attr.aria-live]="useAlertRole ? 'polite' : null"
+>
+  <i class="bwi tw-align-middle" [ngClass]="icon" *ngIf="icon" aria-hidden="true"></i>
+  <span class="tw-text-base tw-grow">
+    <ng-content></ng-content>
+  </span>
+  <button class="tw-border-0 tw-bg-transparent tw-text-contrast tw-p-0" (click)="onClose.emit()">
+    <i class="bwi bwi-close tw-text-sm" *ngIf="icon" aria-hidden="true"></i>
+  </button>
+</div>
