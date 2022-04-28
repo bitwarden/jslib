@@ -1,3 +1,5 @@
+import { Injectable } from "@angular/core";
+
 import { CipherService } from "jslib-common/abstractions/cipher.service";
 import { CollectionService } from "jslib-common/abstractions/collection.service";
 import { FolderService } from "jslib-common/abstractions/folder.service";
@@ -11,6 +13,7 @@ import { FolderView } from "jslib-common/models/view/folderView";
 
 import { DynamicTreeNode } from "./models/dynamic-tree-node.model";
 
+@Injectable()
 export class VaultFilterService {
   constructor(
     protected stateService: StateService,
