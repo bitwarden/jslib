@@ -19,6 +19,7 @@ const cardIcons: Record<string, string> = {
   JCB: "card-jcb",
   Maestro: "card-maestro",
   UnionPay: "card-union-pay",
+  RuPay: "card-ru-pay",
 };
 
 @Component({

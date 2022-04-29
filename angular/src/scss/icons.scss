@@ -8,6 +8,7 @@ $card-icons: (
   "maestro": $card-icons-base + "maestro-light.png",
   "mastercard": $card-icons-base + "mastercard-light.png",
   "union-pay": $card-icons-base + "union_pay-light.png",
+  "ru-pay": $card-icons-base + "ru_pay-light.png",
 );
 
 $card-icons-dark: (
@@ -19,6 +20,7 @@ $card-icons-dark: (
   "maestro": $card-icons-base + "maestro-dark.png",
   "mastercard": $card-icons-base + "mastercard-dark.png",
   "union-pay": $card-icons-base + "union_pay-dark.png",
+  "ru-pay": $card-icons-base + "ru_pay-dark.png",
 );
 
 .credit-card-icon {
