@@ -10,8 +10,12 @@ export class BitInput {
     "tw-py-1.5",
     "tw-bg-background-alt",
     "tw-border",
+    "tw-border-solid",
     "tw-border-secondary-500",
     "tw-rounded",
     "tw-text-main",
+    "tw-placeholder-text-muted",
+    "focus:tw-outline-primary-700",
+    "disabled:tw-bg-secondary-100",
   ];
 }
