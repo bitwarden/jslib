@@ -1,9 +1,9 @@
 import { Cipher as CipherDomain } from "../domain/cipher";
 import { CipherView } from "../view/cipherView";
 
-import { Cipher } from "./cipher";
+import { CipherExport } from "./cipherExport";
 
-export class CipherWithIds extends Cipher {
+export class CipherWithIdExport extends CipherExport {
   id: string;
   collectionIds: string[];
 

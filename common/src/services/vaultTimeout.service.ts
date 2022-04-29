@@ -29,7 +29,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     private keyConnectorService: KeyConnectorService,
     private stateService: StateService,
     private lockedCallback: (userId?: string) => Promise<void> = null,
-    private loggedOutCallback: (userId?: string) => Promise<void> = null
+    private loggedOutCallback: (expired: boolean, userId?: string) => Promise<void> = null
   ) {}
 
   init(checkOnInterval: boolean) {
@@ -116,7 +116,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
 
   async logOut(userId?: string): Promise<void> {
     if (this.loggedOutCallback != null) {
-      await this.loggedOutCallback(userId);
+      await this.loggedOutCallback(false, userId);
     }
   }
 

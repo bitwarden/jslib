@@ -6,6 +6,10 @@ import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.se
 
 import { ModalRef } from "./modal/modal.ref";
 
+/**
+ * Used to verify the user's Master Password for the "Master Password Re-prompt" feature only.
+ * See UserVerificationComponent for any other situation where you need to verify the user's identity.
+ */
 @Directive()
 export class PasswordRepromptComponent {
   showPassword = false;

@@ -27,6 +27,12 @@ export default {
   args: {
     type: "warning",
   },
+  parameters: {
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/file/f32LSg3jaegICkMu7rPARm/Tailwind-Component-Library-Update?node-id=1881%3A17484",
+    },
+  },
 } as Meta;
 
 const Template: Story<CalloutComponent> = (args: CalloutComponent) => ({

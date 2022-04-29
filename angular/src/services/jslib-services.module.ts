@@ -1,4 +1,4 @@
-import { Injector, LOCALE_ID, NgModule } from "@angular/core";
+import { InjectionToken, Injector, LOCALE_ID, NgModule } from "@angular/core";
 
 import { ApiService as ApiServiceAbstraction } from "jslib-common/abstractions/api.service";
 import { AppIdService as AppIdServiceAbstraction } from "jslib-common/abstractions/appId.service";
@@ -82,20 +82,60 @@ import { PasswordRepromptService } from "./passwordReprompt.service";
 import { UnauthGuardService } from "./unauth-guard.service";
 import { ValidationService } from "./validation.service";
 
+export const WINDOW = new InjectionToken<Window>("WINDOW");
+export const SECURE_STORAGE = new InjectionToken<StorageServiceAbstraction>("SECURE_STORAGE");
+export const STATE_FACTORY = new InjectionToken<StateFactory>("STATE_FACTORY");
+export const STATE_SERVICE_USE_CACHE = new InjectionToken<boolean>("STATE_SERVICE_USE_CACHE");
+export const LOGOUT_CALLBACK = new InjectionToken<(expired: boolean, userId?: string) => void>(
+  "LOGOUT_CALLBACK"
+);
+export const LOCKED_CALLBACK = new InjectionToken<() => void>("LOCKED_CALLBACK");
+export const CLIENT_TYPE = new InjectionToken<boolean>("CLIENT_TYPE");
+export const LOCALES_DIRECTORY = new InjectionToken<string>("LOCALES_DIRECTORY");
+export const SYSTEM_LANGUAGE = new InjectionToken<string>("SYSTEM_LANGUAGE");
+
 @NgModule({
   declarations: [],
   providers: [
-    { provide: "WINDOW", useValue: window },
-    {
-      provide: LOCALE_ID,
-      useFactory: (i18nService: I18nServiceAbstraction) => i18nService.translationLocale,
-      deps: [I18nServiceAbstraction],
-    },
     ValidationService,
     AuthGuardService,
     UnauthGuardService,
     LockGuardService,
     ModalService,
+    { provide: WINDOW, useValue: window },
+    {
+      provide: LOCALE_ID,
+      useFactory: (i18nService: I18nServiceAbstraction) => i18nService.translationLocale,
+      deps: [I18nServiceAbstraction],
+    },
+    {
+      provide: LOCALES_DIRECTORY,
+      useValue: "./locales",
+    },
+    {
+      provide: SYSTEM_LANGUAGE,
+      useFactory: (window: Window) => window.navigator.language,
+      deps: [WINDOW],
+    },
+    {
+      provide: STATE_FACTORY,
+      useValue: new StateFactory(GlobalState, Account),
+    },
+    {
+      provide: STATE_SERVICE_USE_CACHE,
+      useValue: true,
+    },
+    {
+      provide: LOGOUT_CALLBACK,
+      useFactory:
+        (messagingService: MessagingServiceAbstraction) => (expired: boolean, userId?: string) =>
+          messagingService.send("logout", { expired: expired, userId: userId }),
+      deps: [MessagingServiceAbstraction],
+    },
+    {
+      provide: LOCKED_CALLBACK,
+      useValue: null,
+    },
     {
       provide: AppIdServiceAbstraction,
       useClass: AppIdService,
@@ -203,30 +243,17 @@ import { ValidationService } from "./validation.service";
     {
       provide: UsernameGenerationServiceAbstraction,
       useClass: UsernameGenerationService,
-      deps: [CryptoServiceAbstraction, StateServiceAbstraction],
+      deps: [CryptoServiceAbstraction, StateServiceAbstraction, ApiServiceAbstraction],
     },
     {
       provide: ApiServiceAbstraction,
-      useFactory: (
-        tokenService: TokenServiceAbstraction,
-        platformUtilsService: PlatformUtilsServiceAbstraction,
-        environmentService: EnvironmentServiceAbstraction,
-        messagingService: MessagingServiceAbstraction,
-        appIdService: AppIdServiceAbstraction
-      ) =>
-        new ApiService(
-          tokenService,
-          platformUtilsService,
-          environmentService,
-          appIdService,
-          async (expired: boolean) => messagingService.send("logout", { expired: expired })
-        ),
+      useClass: ApiService,
       deps: [
         TokenServiceAbstraction,
         PlatformUtilsServiceAbstraction,
         EnvironmentServiceAbstraction,
-        MessagingServiceAbstraction,
         AppIdServiceAbstraction,
+        LOGOUT_CALLBACK,
       ],
     },
     {
@@ -236,39 +263,7 @@ import { ValidationService } from "./validation.service";
     },
     {
       provide: SyncServiceAbstraction,
-      useFactory: (
-        apiService: ApiServiceAbstraction,
-        settingsService: SettingsServiceAbstraction,
-        folderService: FolderServiceAbstraction,
-        cipherService: CipherServiceAbstraction,
-        cryptoService: CryptoServiceAbstraction,
-        collectionService: CollectionServiceAbstraction,
-        messagingService: MessagingServiceAbstraction,
-        policyService: PolicyServiceAbstraction,
-        sendService: SendServiceAbstraction,
-        logService: LogService,
-        keyConnectorService: KeyConnectorServiceAbstraction,
-        stateService: StateServiceAbstraction,
-        organizationService: OrganizationServiceAbstraction,
-        providerService: ProviderServiceAbstraction
-      ) =>
-        new SyncService(
-          apiService,
-          settingsService,
-          folderService,
-          cipherService,
-          cryptoService,
-          collectionService,
-          messagingService,
-          policyService,
-          sendService,
-          logService,
-          keyConnectorService,
-          stateService,
-          organizationService,
-          providerService,
-          async (expired: boolean) => messagingService.send("logout", { expired: expired })
-        ),
+      useClass: SyncService,
       deps: [
         ApiServiceAbstraction,
         SettingsServiceAbstraction,
@@ -284,6 +279,7 @@ import { ValidationService } from "./validation.service";
         StateServiceAbstraction,
         OrganizationServiceAbstraction,
         ProviderServiceAbstraction,
+        LOGOUT_CALLBACK,
       ],
     },
     { provide: BroadcasterServiceAbstraction, useClass: BroadcasterService },
@@ -294,35 +290,7 @@ import { ValidationService } from "./validation.service";
     },
     {
       provide: VaultTimeoutServiceAbstraction,
-      useFactory: (
-        cipherService: CipherServiceAbstraction,
-        folderService: FolderServiceAbstraction,
-        collectionService: CollectionServiceAbstraction,
-        cryptoService: CryptoServiceAbstraction,
-        platformUtilsService: PlatformUtilsServiceAbstraction,
-        messagingService: MessagingServiceAbstraction,
-        searchService: SearchServiceAbstraction,
-        tokenService: TokenServiceAbstraction,
-        policyService: PolicyServiceAbstraction,
-        keyConnectorService: KeyConnectorServiceAbstraction,
-        stateService: StateServiceAbstraction
-      ) =>
-        new VaultTimeoutService(
-          cipherService,
-          folderService,
-          collectionService,
-          cryptoService,
-          platformUtilsService,
-          messagingService,
-          searchService,
-          tokenService,
-          policyService,
-          keyConnectorService,
-          stateService,
-          null,
-          async (userId?: string) =>
-            messagingService.send("logout", { expired: false, userId: userId })
-        ),
+      useClass: VaultTimeoutService,
       deps: [
         CipherServiceAbstraction,
         FolderServiceAbstraction,
@@ -335,42 +303,26 @@ import { ValidationService } from "./validation.service";
         PolicyServiceAbstraction,
         KeyConnectorServiceAbstraction,
         StateServiceAbstraction,
+        LOCKED_CALLBACK,
+        LOGOUT_CALLBACK,
       ],
     },
     {
       provide: StateServiceAbstraction,
-      useFactory: (
-        storageService: StorageServiceAbstraction,
-        secureStorageService: StorageServiceAbstraction,
-        logService: LogService,
-        stateMigrationService: StateMigrationServiceAbstraction
-      ) =>
-        new StateService(
-          storageService,
-          secureStorageService,
-          logService,
-          stateMigrationService,
-          new StateFactory(GlobalState, Account)
-        ),
+      useClass: StateService,
       deps: [
         StorageServiceAbstraction,
-        "SECURE_STORAGE",
+        SECURE_STORAGE,
         LogService,
         StateMigrationServiceAbstraction,
+        STATE_FACTORY,
+        STATE_SERVICE_USE_CACHE,
       ],
     },
     {
       provide: StateMigrationServiceAbstraction,
-      useFactory: (
-        storageService: StorageServiceAbstraction,
-        secureStorageService: StorageServiceAbstraction
-      ) =>
-        new StateMigrationService(
-          storageService,
-          secureStorageService,
-          new StateFactory(GlobalState, Account)
-        ),
-      deps: [StorageServiceAbstraction, "SECURE_STORAGE"],
+      useClass: StateMigrationService,
+      deps: [StorageServiceAbstraction, SECURE_STORAGE, STATE_FACTORY],
     },
     {
       provide: ExportServiceAbstraction,
@@ -389,33 +341,14 @@ import { ValidationService } from "./validation.service";
     },
     {
       provide: NotificationsServiceAbstraction,
-      useFactory: (
-        syncService: SyncServiceAbstraction,
-        appIdService: AppIdServiceAbstraction,
-        apiService: ApiServiceAbstraction,
-        vaultTimeoutService: VaultTimeoutServiceAbstraction,
-        environmentService: EnvironmentServiceAbstraction,
-        messagingService: MessagingServiceAbstraction,
-        logService: LogService,
-        stateService: StateServiceAbstraction
-      ) =>
-        new NotificationsService(
-          syncService,
-          appIdService,
-          apiService,
-          vaultTimeoutService,
-          environmentService,
-          async () => messagingService.send("logout", { expired: true }),
-          logService,
-          stateService
-        ),
+      useClass: NotificationsService,
       deps: [
         SyncServiceAbstraction,
         AppIdServiceAbstraction,
         ApiServiceAbstraction,
         VaultTimeoutServiceAbstraction,
         EnvironmentServiceAbstraction,
-        MessagingServiceAbstraction,
+        LOGOUT_CALLBACK,
         LogService,
         StateServiceAbstraction,
       ],
@@ -423,7 +356,7 @@ import { ValidationService } from "./validation.service";
     {
       provide: CryptoFunctionServiceAbstraction,
       useClass: WebCryptoFunctionService,
-      deps: ["WINDOW"],
+      deps: [WINDOW],
     },
     {
       provide: EventServiceAbstraction,

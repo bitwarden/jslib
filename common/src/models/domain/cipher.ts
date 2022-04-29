@@ -38,7 +38,7 @@ export class Cipher extends Domain {
   deletedDate: Date;
   reprompt: CipherRepromptType;
 
-  constructor(obj?: CipherData, alreadyEncrypted = false, localData: any = null) {
+  constructor(obj?: CipherData, localData: any = null) {
     super();
     if (obj == null) {
       return;
@@ -49,14 +49,12 @@ export class Cipher extends Domain {
       obj,
       {
         id: null,
-        userId: null,
         organizationId: null,
         folderId: null,
         name: null,
         notes: null,
       },
-      alreadyEncrypted,
-      ["id", "userId", "organizationId", "folderId"]
+      ["id", "organizationId", "folderId"]
     );
 
     this.type = obj.type;
@@ -76,35 +74,35 @@ export class Cipher extends Domain {
 
     switch (this.type) {
       case CipherType.Login:
-        this.login = new Login(obj.login, alreadyEncrypted);
+        this.login = new Login(obj.login);
         break;
       case CipherType.SecureNote:
         this.secureNote = new SecureNote(obj.secureNote);
         break;
       case CipherType.Card:
-        this.card = new Card(obj.card, alreadyEncrypted);
+        this.card = new Card(obj.card);
         break;
       case CipherType.Identity:
-        this.identity = new Identity(obj.identity, alreadyEncrypted);
+        this.identity = new Identity(obj.identity);
         break;
       default:
         break;
     }
 
     if (obj.attachments != null) {
-      this.attachments = obj.attachments.map((a) => new Attachment(a, alreadyEncrypted));
+      this.attachments = obj.attachments.map((a) => new Attachment(a));
     } else {
       this.attachments = null;
     }
 
     if (obj.fields != null) {
-      this.fields = obj.fields.map((f) => new Field(f, alreadyEncrypted));
+      this.fields = obj.fields.map((f) => new Field(f));
     } else {
       this.fields = null;
     }
 
     if (obj.passwordHistory != null) {
-      this.passwordHistory = obj.passwordHistory.map((ph) => new Password(ph, alreadyEncrypted));
+      this.passwordHistory = obj.passwordHistory.map((ph) => new Password(ph));
     } else {
       this.passwordHistory = null;
     }
@@ -187,12 +185,11 @@ export class Cipher extends Domain {
     return model;
   }
 
-  toCipherData(userId: string): CipherData {
+  toCipherData(): CipherData {
     const c = new CipherData();
     c.id = this.id;
     c.organizationId = this.organizationId;
     c.folderId = this.folderId;
-    c.userId = this.organizationId != null ? userId : null;
     c.edit = this.edit;
     c.viewPassword = this.viewPassword;
     c.organizationUseTotp = this.organizationUseTotp;
