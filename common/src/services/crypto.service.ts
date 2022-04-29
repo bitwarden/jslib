@@ -1,5 +1,7 @@
 import * as bigInt from "big-integer";
 
+import { EncObject } from "jslib-common/models/domain/encObject";
+
 import { CryptoService as CryptoServiceAbstraction } from "../abstractions/crypto.service";
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
 import { LogService } from "../abstractions/log.service";
@@ -520,6 +522,39 @@ export class CryptoService implements CryptoServiceAbstraction {
     const data = Utils.fromBufferToB64(encObj.data);
     const mac = encObj.mac != null ? Utils.fromBufferToB64(encObj.mac) : null;
     return new EncString(encObj.key.encType, data, iv, mac);
+  }
+
+  async encryptObject<T>(obj: T, key?: SymmetricCryptoKey): Promise<EncObject<T>> {
+    if (obj == null) {
+      return null;
+    }
+
+    const json = JSON.stringify(obj);
+    const plainBuf = Utils.fromUtf8ToArray(json).buffer;
+
+    const encObj = await this.aesEncrypt(plainBuf, key);
+    const iv = Utils.fromBufferToB64(encObj.iv);
+    const data = Utils.fromBufferToB64(encObj.data);
+    const mac = encObj.mac != null ? Utils.fromBufferToB64(encObj.mac) : null;
+    return new EncObject(encObj.key.encType, data, iv, mac);
+  }
+
+  async decryptObject<T>(obj: EncObject<T>, key?: SymmetricCryptoKey): Promise<T> {
+    if (obj == null) {
+      return null;
+    }
+
+    const decryptedJson = await this.aesDecryptToUtf8(
+      obj.encryptionType,
+      obj.data,
+      obj.iv,
+      obj.mac,
+      key
+    );
+
+    const decrypted = JSON.parse(decryptedJson);
+
+    return decrypted;
   }
 
   async encryptToBytes(plainValue: ArrayBuffer, key?: SymmetricCryptoKey): Promise<EncArrayBuffer> {

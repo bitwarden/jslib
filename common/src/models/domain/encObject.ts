@@ -12,9 +12,9 @@ export class EncObject<T> {
    * @param mac
    */
   constructor(
-    private encryptionType: EncryptionType,
-    private data: string,
-    private iv: string,
-    private mac: string
+    public encryptionType: EncryptionType,
+    public data: string,
+    public iv: string,
+    public mac: string
   ) {}
 }

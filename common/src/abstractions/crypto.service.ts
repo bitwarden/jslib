@@ -1,3 +1,5 @@
+import { EncObject } from "jslib-common/models/domain/encObject";
+
 import { HashPurpose } from "../enums/hashPurpose";
 import { KdfType } from "../enums/kdfType";
 import { KeySuffixOptions } from "../enums/keySuffixOptions";
@@ -75,12 +77,14 @@ export abstract class CryptoService {
     encKey?: SymmetricCryptoKey
   ) => Promise<[SymmetricCryptoKey, EncString]>;
   encrypt: (plainValue: string | ArrayBuffer, key?: SymmetricCryptoKey) => Promise<EncString>;
+  encryptObject: <T>(plainValue: T, key?: SymmetricCryptoKey) => Promise<EncObject<T>>;
   encryptToBytes: (plainValue: ArrayBuffer, key?: SymmetricCryptoKey) => Promise<EncArrayBuffer>;
   rsaEncrypt: (data: ArrayBuffer, publicKey?: ArrayBuffer) => Promise<EncString>;
   rsaDecrypt: (encValue: string, privateKeyValue?: ArrayBuffer) => Promise<ArrayBuffer>;
   decryptToBytes: (encString: EncString, key?: SymmetricCryptoKey) => Promise<ArrayBuffer>;
   decryptToUtf8: (encString: EncString, key?: SymmetricCryptoKey) => Promise<string>;
   decryptFromBytes: (encBuf: ArrayBuffer, key: SymmetricCryptoKey) => Promise<ArrayBuffer>;
+  decryptObject: <T>(encrypted: EncObject<T>, key?: SymmetricCryptoKey) => Promise<T>;
   randomNumber: (min: number, max: number) => Promise<number>;
   validateKey: (key: SymmetricCryptoKey) => Promise<boolean>;
 }
