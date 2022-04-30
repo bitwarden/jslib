@@ -1,6 +1,7 @@
 <div class="">
-  <label class="tw-block tw-font-semibold tw-mb-1 tw-text-main">
+  <label class="tw-block tw-font-semibold tw-mb-1 tw-text-main" [attr.for]="input.id">
     <ng-content select="bit-label"></ng-content>
+    <span *ngIf="input.required" class="tw-text-xs"> ({{ "required" | i18n }})</span>
   </label>
   <ng-content></ng-content>
 </div>
