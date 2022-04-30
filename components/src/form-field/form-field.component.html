@@ -3,5 +3,13 @@
     <ng-content select="bit-label"></ng-content>
     <span *ngIf="input.required" class="tw-text-xs"> ({{ "required" | i18n }})</span>
   </label>
-  <ng-content></ng-content>
+  <div class="tw-flex">
+    <div *ngIf="prefixChildren.length" class="tw-flex">
+      <ng-content select="[bitPrefix]"></ng-content>
+    </div>
+    <ng-content></ng-content>
+    <div *ngIf="prefixChildren.length" class="tw-flex">
+      <ng-content select="[bitSuffix]"></ng-content>
+    </div>
+  </div>
 </div>
