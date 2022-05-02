@@ -58,8 +58,9 @@ export class ButtonDirective {
       "focus:tw-ring",
       "focus:tw-ring-offset-2",
       "focus:tw-ring-primary-700",
-      this.block ? "tw-w-full tw-block" : "tw-inline-block",
-    ].concat(buttonStyles[this.buttonType ?? "secondary"]);
+    ]
+      .concat(this.block ? ["tw-w-full", "tw-block"] : ["tw-inline-block"])
+      .concat(buttonStyles[this.buttonType ?? "secondary"]);
   }
 
   @Input()
