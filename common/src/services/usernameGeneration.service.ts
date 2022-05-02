@@ -10,7 +10,7 @@ const DefaultOptions = {
   wordIncludeNumber: true,
   subaddressType: "random",
   catchallType: "random",
-  forwardedType: "simplelogin",
+  forwardedService: "simplelogin",
   forwardedAnonAddyDomain: "anonaddy.me",
 };
 
