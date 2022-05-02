@@ -46,7 +46,7 @@ export class CreditCardNumberPipe implements PipeTransform {
 
     const blocks = matchingRule.blocks;
 
-    let chunks: string[] = [];
+    const chunks: string[] = [];
     let total = 0;
 
     blocks.forEach((c) => {
