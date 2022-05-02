@@ -1,8 +1,6 @@
 import { ApiService } from "../abstractions/api.service";
-
-import { EncArrayBuffer } from "../models/domain/encArrayBuffer";
-
 import { Utils } from "../misc/utils";
+import { EncArrayBuffer } from "../models/domain/encArrayBuffer";
 
 export class BitwardenFileUploadService {
   constructor(private apiService: ApiService) {}

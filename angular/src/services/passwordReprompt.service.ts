@@ -4,8 +4,13 @@ import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.serv
 import { PasswordRepromptService as PasswordRepromptServiceAbstraction } from "jslib-common/abstractions/passwordReprompt.service";
 
 import { PasswordRepromptComponent } from "../components/password-reprompt.component";
+
 import { ModalService } from "./modal.service";
 
+/**
+ * Used to verify the user's Master Password for the "Master Password Re-prompt" feature only.
+ * See UserVerificationService for any other situation where you need to verify the user's identity.
+ */
 @Injectable()
 export class PasswordRepromptService implements PasswordRepromptServiceAbstraction {
   protected component = PasswordRepromptComponent;

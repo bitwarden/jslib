@@ -1,25 +1,21 @@
 import * as bigInt from "big-integer";
 
-import { EncryptionType } from "../enums/encryptionType";
-import { HashPurpose } from "../enums/hashPurpose";
-import { KdfType } from "../enums/kdfType";
-import { KeySuffixOptions } from "../enums/keySuffixOptions";
-
-import { EncArrayBuffer } from "../models/domain/encArrayBuffer";
-import { EncryptedObject } from "../models/domain/encryptedObject";
-import { EncString } from "../models/domain/encString";
-import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-
 import { CryptoService as CryptoServiceAbstraction } from "../abstractions/crypto.service";
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
 import { LogService } from "../abstractions/log.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import { StateService } from "../abstractions/state.service";
-
+import { EncryptionType } from "../enums/encryptionType";
+import { HashPurpose } from "../enums/hashPurpose";
+import { KdfType } from "../enums/kdfType";
+import { KeySuffixOptions } from "../enums/keySuffixOptions";
 import { sequentialize } from "../misc/sequentialize";
 import { Utils } from "../misc/utils";
 import { EEFLongWordList } from "../misc/wordlist";
-
+import { EncArrayBuffer } from "../models/domain/encArrayBuffer";
+import { EncString } from "../models/domain/encString";
+import { EncryptedObject } from "../models/domain/encryptedObject";
+import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
 import { ProfileOrganizationResponse } from "../models/response/profileOrganizationResponse";
 import { ProfileProviderOrganizationResponse } from "../models/response/profileProviderOrganizationResponse";
 import { ProfileProviderResponse } from "../models/response/profileProviderResponse";
@@ -158,41 +154,8 @@ export class CryptoService implements CryptoServiceAbstraction {
   }
 
   @sequentialize(() => "getEncKey")
-  async getEncKey(key: SymmetricCryptoKey = null): Promise<SymmetricCryptoKey> {
-    const inMemoryKey = await this.stateService.getDecryptedCryptoSymmetricKey();
-    if (inMemoryKey != null) {
-      return inMemoryKey;
-    }
-
-    const encKey = await this.stateService.getEncryptedCryptoSymmetricKey();
-    if (encKey == null) {
-      return null;
-    }
-
-    if (key == null) {
-      key = await this.getKey();
-    }
-    if (key == null) {
-      return null;
-    }
-
-    let decEncKey: ArrayBuffer;
-    const encKeyCipher = new EncString(encKey);
-    if (encKeyCipher.encryptionType === EncryptionType.AesCbc256_B64) {
-      decEncKey = await this.decryptToBytes(encKeyCipher, key);
-    } else if (encKeyCipher.encryptionType === EncryptionType.AesCbc256_HmacSha256_B64) {
-      const newKey = await this.stretchKey(key);
-      decEncKey = await this.decryptToBytes(encKeyCipher, newKey);
-    } else {
-      throw new Error("Unsupported encKey type.");
-    }
-
-    if (decEncKey == null) {
-      return null;
-    }
-    const symmetricCryptoKey = new SymmetricCryptoKey(decEncKey);
-    await this.stateService.setDecryptedCryptoSymmetricKey(symmetricCryptoKey);
-    return symmetricCryptoKey;
+  getEncKey(key: SymmetricCryptoKey = null): Promise<SymmetricCryptoKey> {
+    return this.getEncKeyHelper(key);
   }
 
   async getPublicKey(): Promise<ArrayBuffer> {
@@ -260,6 +223,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     let setKey = false;
 
     for (const orgId in encOrgKeys) {
+      // eslint-disable-next-line
       if (!encOrgKeys.hasOwnProperty(orgId)) {
         continue;
       }
@@ -305,6 +269,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     let setKey = false;
 
     for (const orgId in encProviderKeys) {
+      // eslint-disable-next-line
       if (!encProviderKeys.hasOwnProperty(orgId)) {
         continue;
       }
@@ -347,19 +312,21 @@ export class CryptoService implements CryptoServiceAbstraction {
   }
 
   async hasKeyStored(keySuffix: KeySuffixOptions, userId?: string): Promise<boolean> {
-    const key =
-      keySuffix === KeySuffixOptions.Auto
-        ? await this.stateService.getCryptoMasterKeyAuto({ userId: userId })
-        : await this.stateService.hasCryptoMasterKeyBiometric({ userId: userId });
-
-    return key != null;
+    switch (keySuffix) {
+      case KeySuffixOptions.Auto:
+        return (await this.stateService.getCryptoMasterKeyAuto({ userId: userId })) != null;
+      case KeySuffixOptions.Biometric:
+        return (await this.stateService.hasCryptoMasterKeyBiometric({ userId: userId })) === true;
+      default:
+        return false;
+    }
   }
 
   async hasEncKey(): Promise<boolean> {
     return (await this.stateService.getEncryptedCryptoSymmetricKey()) != null;
   }
 
-  async clearKey(clearSecretStorage: boolean = true, userId?: string): Promise<any> {
+  async clearKey(clearSecretStorage = true, userId?: string): Promise<any> {
     await this.stateService.setCryptoMasterKey(null, { userId: userId });
     await this.stateService.setLegacyEtmKey(null, { userId: userId });
     if (clearSecretStorage) {
@@ -605,8 +572,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     switch (encType) {
       case EncryptionType.Rsa2048_OaepSha256_B64:
       case EncryptionType.Rsa2048_OaepSha1_B64:
-      // HmacSha256 types are deprecated
-      case EncryptionType.Rsa2048_OaepSha256_HmacSha256_B64:
+      case EncryptionType.Rsa2048_OaepSha256_HmacSha256_B64: // HmacSha256 types are deprecated
       case EncryptionType.Rsa2048_OaepSha1_HmacSha256_B64:
         break;
       default:
@@ -730,7 +696,6 @@ export class CryptoService implements CryptoServiceAbstraction {
     }
 
     // Use & to apply the mask and reduce the number of recursive lookups
-    // tslint:disable-next-line
     rval = rval & mask;
 
     if (rval >= range) {
@@ -745,7 +710,7 @@ export class CryptoService implements CryptoServiceAbstraction {
   async validateKey(key: SymmetricCryptoKey) {
     try {
       const encPrivateKey = await this.stateService.getEncryptedPrivateKey();
-      const encKey = await this.getEncKey(key);
+      const encKey = await this.getEncKeyHelper(key);
       if (encPrivateKey == null || encKey == null) {
         return false;
       }
@@ -925,7 +890,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     return new SymmetricCryptoKey(newKey.buffer);
   }
 
-  private async hashPhrase(hash: ArrayBuffer, minimumEntropy: number = 64) {
+  private async hashPhrase(hash: ArrayBuffer, minimumEntropy = 64) {
     const entropyPerWord = Math.log(EEFLongWordList.length) / Math.log(2);
     let numWords = Math.ceil(minimumEntropy / entropyPerWord);
 
@@ -964,5 +929,41 @@ export class CryptoService implements CryptoServiceAbstraction {
   private async clearSecretKeyStore(userId?: string): Promise<void> {
     await this.stateService.setCryptoMasterKeyAuto(null, { userId: userId });
     await this.stateService.setCryptoMasterKeyBiometric(null, { userId: userId });
+  }
+
+  private async getEncKeyHelper(key: SymmetricCryptoKey = null): Promise<SymmetricCryptoKey> {
+    const inMemoryKey = await this.stateService.getDecryptedCryptoSymmetricKey();
+    if (inMemoryKey != null) {
+      return inMemoryKey;
+    }
+
+    const encKey = await this.stateService.getEncryptedCryptoSymmetricKey();
+    if (encKey == null) {
+      return null;
+    }
+
+    if (key == null) {
+      key = await this.getKey();
+    }
+    if (key == null) {
+      return null;
+    }
+
+    let decEncKey: ArrayBuffer;
+    const encKeyCipher = new EncString(encKey);
+    if (encKeyCipher.encryptionType === EncryptionType.AesCbc256_B64) {
+      decEncKey = await this.decryptToBytes(encKeyCipher, key);
+    } else if (encKeyCipher.encryptionType === EncryptionType.AesCbc256_HmacSha256_B64) {
+      const newKey = await this.stretchKey(key);
+      decEncKey = await this.decryptToBytes(encKeyCipher, newKey);
+    } else {
+      throw new Error("Unsupported encKey type.");
+    }
+    if (decEncKey == null) {
+      return null;
+    }
+    const symmetricCryptoKey = new SymmetricCryptoKey(decEncKey);
+    await this.stateService.setDecryptedCryptoSymmetricKey(symmetricCryptoKey);
+    return symmetricCryptoKey;
   }
 }

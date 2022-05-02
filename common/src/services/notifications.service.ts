@@ -1,17 +1,16 @@
 import * as signalR from "@microsoft/signalr";
 import * as signalRMsgPack from "@microsoft/signalr-protocol-msgpack";
 
-import { NotificationType } from "../enums/notificationType";
-
 import { ApiService } from "../abstractions/api.service";
 import { AppIdService } from "../abstractions/appId.service";
+import { AuthService } from "../abstractions/auth.service";
 import { EnvironmentService } from "../abstractions/environment.service";
 import { LogService } from "../abstractions/log.service";
 import { NotificationsService as NotificationsServiceAbstraction } from "../abstractions/notifications.service";
 import { StateService } from "../abstractions/state.service";
 import { SyncService } from "../abstractions/sync.service";
-import { VaultTimeoutService } from "../abstractions/vaultTimeout.service";
-
+import { AuthenticationStatus } from "../enums/authenticationStatus";
+import { NotificationType } from "../enums/notificationType";
 import {
   NotificationResponse,
   SyncCipherNotification,
@@ -31,11 +30,11 @@ export class NotificationsService implements NotificationsServiceAbstraction {
     private syncService: SyncService,
     private appIdService: AppIdService,
     private apiService: ApiService,
-    private vaultTimeoutService: VaultTimeoutService,
     private environmentService: EnvironmentService,
-    private logoutCallback: () => Promise<void>,
+    private logoutCallback: (expired: boolean) => Promise<void>,
     private logService: LogService,
-    private stateService: StateService
+    private stateService: StateService,
+    private authService: AuthService
   ) {
     this.environmentService.urls.subscribe(() => {
       if (!this.inited) {
@@ -77,6 +76,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
     this.signalrConnection.on("ReceiveMessage", (data: any) =>
       this.processNotification(new NotificationResponse(data))
     );
+    // eslint-disable-next-line
     this.signalrConnection.on("Heartbeat", (data: any) => {
       /*console.log('Heartbeat!');*/
     });
@@ -170,7 +170,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
         break;
       case NotificationType.LogOut:
         if (isAuthenticated) {
-          this.logoutCallback();
+          this.logoutCallback(true);
         }
         break;
       case NotificationType.SyncSendCreate:
@@ -182,6 +182,7 @@ export class NotificationsService implements NotificationsServiceAbstraction {
         break;
       case NotificationType.SyncSendDelete:
         await this.syncService.syncDeleteSend(notification.payload as SyncSendNotification);
+        break;
       default:
         break;
     }
@@ -216,11 +217,8 @@ export class NotificationsService implements NotificationsServiceAbstraction {
   }
 
   private async isAuthedAndUnlocked() {
-    if (await this.stateService.getIsAuthenticated()) {
-      const locked = await this.vaultTimeoutService.isLocked();
-      return !locked;
-    }
-    return false;
+    const authStatus = await this.authService.getAuthStatus();
+    return authStatus >= AuthenticationStatus.Unlocked;
   }
 
   private random(min: number, max: number) {

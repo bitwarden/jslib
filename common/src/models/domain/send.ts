@@ -1,11 +1,7 @@
 import { CryptoService } from "../../abstractions/crypto.service";
-
 import { SendType } from "../../enums/sendType";
-
 import { Utils } from "../../misc/utils";
-
 import { SendData } from "../data/sendData";
-
 import { SendView } from "../view/sendView";
 
 import Domain from "./domainBase";
@@ -16,7 +12,6 @@ import { SendText } from "./sendText";
 export class Send extends Domain {
   id: string;
   accessId: string;
-  userId: string;
   type: SendType;
   name: EncString;
   notes: EncString;
@@ -32,7 +27,7 @@ export class Send extends Domain {
   disabled: boolean;
   hideEmail: boolean;
 
-  constructor(obj?: SendData, alreadyEncrypted: boolean = false) {
+  constructor(obj?: SendData) {
     super();
     if (obj == null) {
       return;
@@ -44,13 +39,11 @@ export class Send extends Domain {
       {
         id: null,
         accessId: null,
-        userId: null,
         name: null,
         notes: null,
         key: null,
       },
-      alreadyEncrypted,
-      ["id", "accessId", "userId"]
+      ["id", "accessId"]
     );
 
     this.type = obj.type;
@@ -65,10 +58,10 @@ export class Send extends Domain {
 
     switch (this.type) {
       case SendType.Text:
-        this.text = new SendText(obj.text, alreadyEncrypted);
+        this.text = new SendText(obj.text);
         break;
       case SendType.File:
-        this.file = new SendFile(obj.file, alreadyEncrypted);
+        this.file = new SendFile(obj.file);
         break;
       default:
         break;

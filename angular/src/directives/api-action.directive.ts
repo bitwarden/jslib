@@ -1,10 +1,16 @@
 import { Directive, ElementRef, Input, OnChanges } from "@angular/core";
-import { LogService } from "jslib-common/abstractions/log.service";
 
+import { LogService } from "jslib-common/abstractions/log.service";
 import { ErrorResponse } from "jslib-common/models/response/errorResponse";
 
 import { ValidationService } from "../services/validation.service";
 
+/**
+ * Provides error handling, in particular for any error returned by the server in an api call.
+ * Attach it to a <form> element and provide the name of the class property that will hold the api call promise.
+ * e.g. <form [appApiAction]="this.formPromise">
+ * Any errors/rejections that occur will be intercepted and displayed as error toasts.
+ */
 @Directive({
   selector: "[appApiAction]",
 })
@@ -31,10 +37,7 @@ export class ApiActionDirective implements OnChanges {
       (e: any) => {
         this.el.nativeElement.loading = false;
 
-        if (
-          (e instanceof ErrorResponse || e.constructor.name === "ErrorResponse") &&
-          (e as ErrorResponse).captchaRequired
-        ) {
+        if ((e as ErrorResponse).captchaRequired) {
           this.logService.error("Captcha required error response: " + e.getSingleMessage());
           return;
         }

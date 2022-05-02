@@ -79,7 +79,7 @@ export abstract class BaseProgram {
       return message.raw;
     }
 
-    let out: string = "";
+    let out = "";
     if (message.title != null) {
       if (message.noColor) {
         out = message.title;

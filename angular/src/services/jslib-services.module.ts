@@ -1,35 +1,4 @@
-import { Injector, LOCALE_ID, NgModule } from "@angular/core";
-
-import { ApiService } from "jslib-common/services/api.service";
-import { AppIdService } from "jslib-common/services/appId.service";
-import { AuditService } from "jslib-common/services/audit.service";
-import { AuthService } from "jslib-common/services/auth.service";
-import { CipherService } from "jslib-common/services/cipher.service";
-import { CollectionService } from "jslib-common/services/collection.service";
-import { ConsoleLogService } from "jslib-common/services/consoleLog.service";
-import { CryptoService } from "jslib-common/services/crypto.service";
-import { EnvironmentService } from "jslib-common/services/environment.service";
-import { EventService } from "jslib-common/services/event.service";
-import { ExportService } from "jslib-common/services/export.service";
-import { FileUploadService } from "jslib-common/services/fileUpload.service";
-import { FolderService } from "jslib-common/services/folder.service";
-import { KeyConnectorService } from "jslib-common/services/keyConnector.service";
-import { NotificationsService } from "jslib-common/services/notifications.service";
-import { OrganizationService } from "jslib-common/services/organization.service";
-import { PasswordGenerationService } from "jslib-common/services/passwordGeneration.service";
-import { PolicyService } from "jslib-common/services/policy.service";
-import { ProviderService } from "jslib-common/services/provider.service";
-import { SearchService } from "jslib-common/services/search.service";
-import { SendService } from "jslib-common/services/send.service";
-import { SettingsService } from "jslib-common/services/settings.service";
-import { StateService } from "jslib-common/services/state.service";
-import { StateMigrationService } from "jslib-common/services/stateMigration.service";
-import { SyncService } from "jslib-common/services/sync.service";
-import { TokenService } from "jslib-common/services/token.service";
-import { TotpService } from "jslib-common/services/totp.service";
-import { UserVerificationService } from "jslib-common/services/userVerification.service";
-import { VaultTimeoutService } from "jslib-common/services/vaultTimeout.service";
-import { WebCryptoFunctionService } from "jslib-common/services/webCryptoFunction.service";
+import { InjectionToken, Injector, LOCALE_ID, NgModule } from "@angular/core";
 
 import { ApiService as ApiServiceAbstraction } from "jslib-common/abstractions/api.service";
 import { AppIdService as AppIdServiceAbstraction } from "jslib-common/abstractions/appId.service";
@@ -65,8 +34,45 @@ import { StorageService as StorageServiceAbstraction } from "jslib-common/abstra
 import { SyncService as SyncServiceAbstraction } from "jslib-common/abstractions/sync.service";
 import { TokenService as TokenServiceAbstraction } from "jslib-common/abstractions/token.service";
 import { TotpService as TotpServiceAbstraction } from "jslib-common/abstractions/totp.service";
+import { TwoFactorService as TwoFactorServiceAbstraction } from "jslib-common/abstractions/twoFactor.service";
 import { UserVerificationService as UserVerificationServiceAbstraction } from "jslib-common/abstractions/userVerification.service";
+import { UsernameGenerationService as UsernameGenerationServiceAbstraction } from "jslib-common/abstractions/usernameGeneration.service";
 import { VaultTimeoutService as VaultTimeoutServiceAbstraction } from "jslib-common/abstractions/vaultTimeout.service";
+import { StateFactory } from "jslib-common/factories/stateFactory";
+import { Account } from "jslib-common/models/domain/account";
+import { GlobalState } from "jslib-common/models/domain/globalState";
+import { ApiService } from "jslib-common/services/api.service";
+import { AppIdService } from "jslib-common/services/appId.service";
+import { AuditService } from "jslib-common/services/audit.service";
+import { AuthService } from "jslib-common/services/auth.service";
+import { CipherService } from "jslib-common/services/cipher.service";
+import { CollectionService } from "jslib-common/services/collection.service";
+import { ConsoleLogService } from "jslib-common/services/consoleLog.service";
+import { CryptoService } from "jslib-common/services/crypto.service";
+import { EnvironmentService } from "jslib-common/services/environment.service";
+import { EventService } from "jslib-common/services/event.service";
+import { ExportService } from "jslib-common/services/export.service";
+import { FileUploadService } from "jslib-common/services/fileUpload.service";
+import { FolderService } from "jslib-common/services/folder.service";
+import { KeyConnectorService } from "jslib-common/services/keyConnector.service";
+import { NotificationsService } from "jslib-common/services/notifications.service";
+import { OrganizationService } from "jslib-common/services/organization.service";
+import { PasswordGenerationService } from "jslib-common/services/passwordGeneration.service";
+import { PolicyService } from "jslib-common/services/policy.service";
+import { ProviderService } from "jslib-common/services/provider.service";
+import { SearchService } from "jslib-common/services/search.service";
+import { SendService } from "jslib-common/services/send.service";
+import { SettingsService } from "jslib-common/services/settings.service";
+import { StateService } from "jslib-common/services/state.service";
+import { StateMigrationService } from "jslib-common/services/stateMigration.service";
+import { SyncService } from "jslib-common/services/sync.service";
+import { TokenService } from "jslib-common/services/token.service";
+import { TotpService } from "jslib-common/services/totp.service";
+import { TwoFactorService } from "jslib-common/services/twoFactor.service";
+import { UserVerificationService } from "jslib-common/services/userVerification.service";
+import { UsernameGenerationService } from "jslib-common/services/usernameGeneration.service";
+import { VaultTimeoutService } from "jslib-common/services/vaultTimeout.service";
+import { WebCryptoFunctionService } from "jslib-common/services/webCryptoFunction.service";
 
 import { AuthGuardService } from "./auth-guard.service";
 import { BroadcasterService } from "./broadcaster.service";
@@ -76,20 +82,60 @@ import { PasswordRepromptService } from "./passwordReprompt.service";
 import { UnauthGuardService } from "./unauth-guard.service";
 import { ValidationService } from "./validation.service";
 
+export const WINDOW = new InjectionToken<Window>("WINDOW");
+export const SECURE_STORAGE = new InjectionToken<StorageServiceAbstraction>("SECURE_STORAGE");
+export const STATE_FACTORY = new InjectionToken<StateFactory>("STATE_FACTORY");
+export const STATE_SERVICE_USE_CACHE = new InjectionToken<boolean>("STATE_SERVICE_USE_CACHE");
+export const LOGOUT_CALLBACK = new InjectionToken<(expired: boolean, userId?: string) => void>(
+  "LOGOUT_CALLBACK"
+);
+export const LOCKED_CALLBACK = new InjectionToken<() => void>("LOCKED_CALLBACK");
+export const CLIENT_TYPE = new InjectionToken<boolean>("CLIENT_TYPE");
+export const LOCALES_DIRECTORY = new InjectionToken<string>("LOCALES_DIRECTORY");
+export const SYSTEM_LANGUAGE = new InjectionToken<string>("SYSTEM_LANGUAGE");
+
 @NgModule({
   declarations: [],
   providers: [
-    { provide: "WINDOW", useValue: window },
-    {
-      provide: LOCALE_ID,
-      useFactory: (i18nService: I18nServiceAbstraction) => i18nService.translationLocale,
-      deps: [I18nServiceAbstraction],
-    },
     ValidationService,
     AuthGuardService,
     UnauthGuardService,
     LockGuardService,
     ModalService,
+    { provide: WINDOW, useValue: window },
+    {
+      provide: LOCALE_ID,
+      useFactory: (i18nService: I18nServiceAbstraction) => i18nService.translationLocale,
+      deps: [I18nServiceAbstraction],
+    },
+    {
+      provide: LOCALES_DIRECTORY,
+      useValue: "./locales",
+    },
+    {
+      provide: SYSTEM_LANGUAGE,
+      useFactory: (window: Window) => window.navigator.language,
+      deps: [WINDOW],
+    },
+    {
+      provide: STATE_FACTORY,
+      useValue: new StateFactory(GlobalState, Account),
+    },
+    {
+      provide: STATE_SERVICE_USE_CACHE,
+      useValue: true,
+    },
+    {
+      provide: LOGOUT_CALLBACK,
+      useFactory:
+        (messagingService: MessagingServiceAbstraction) => (expired: boolean, userId?: string) =>
+          messagingService.send("logout", { expired: expired, userId: userId }),
+      deps: [MessagingServiceAbstraction],
+    },
+    {
+      provide: LOCKED_CALLBACK,
+      useValue: null,
+    },
     {
       provide: AppIdServiceAbstraction,
       useClass: AppIdService,
@@ -108,15 +154,14 @@ import { ValidationService } from "./validation.service";
         ApiServiceAbstraction,
         TokenServiceAbstraction,
         AppIdServiceAbstraction,
-        I18nServiceAbstraction,
         PlatformUtilsServiceAbstraction,
         MessagingServiceAbstraction,
-        VaultTimeoutServiceAbstraction,
         LogService,
-        CryptoFunctionServiceAbstraction,
         KeyConnectorServiceAbstraction,
         EnvironmentServiceAbstraction,
         StateServiceAbstraction,
+        TwoFactorServiceAbstraction,
+        I18nServiceAbstraction,
       ],
     },
     {
@@ -196,24 +241,19 @@ import { ValidationService } from "./validation.service";
       deps: [CryptoServiceAbstraction, PolicyServiceAbstraction, StateServiceAbstraction],
     },
     {
+      provide: UsernameGenerationServiceAbstraction,
+      useClass: UsernameGenerationService,
+      deps: [CryptoServiceAbstraction, StateServiceAbstraction, ApiServiceAbstraction],
+    },
+    {
       provide: ApiServiceAbstraction,
-      useFactory: (
-        tokenService: TokenServiceAbstraction,
-        platformUtilsService: PlatformUtilsServiceAbstraction,
-        environmentService: EnvironmentServiceAbstraction,
-        messagingService: MessagingServiceAbstraction
-      ) =>
-        new ApiService(
-          tokenService,
-          platformUtilsService,
-          environmentService,
-          async (expired: boolean) => messagingService.send("logout", { expired: expired })
-        ),
+      useClass: ApiService,
       deps: [
         TokenServiceAbstraction,
         PlatformUtilsServiceAbstraction,
         EnvironmentServiceAbstraction,
-        MessagingServiceAbstraction,
+        AppIdServiceAbstraction,
+        LOGOUT_CALLBACK,
       ],
     },
     {
@@ -223,39 +263,7 @@ import { ValidationService } from "./validation.service";
     },
     {
       provide: SyncServiceAbstraction,
-      useFactory: (
-        apiService: ApiServiceAbstraction,
-        settingsService: SettingsServiceAbstraction,
-        folderService: FolderServiceAbstraction,
-        cipherService: CipherServiceAbstraction,
-        cryptoService: CryptoServiceAbstraction,
-        collectionService: CollectionServiceAbstraction,
-        messagingService: MessagingServiceAbstraction,
-        policyService: PolicyServiceAbstraction,
-        sendService: SendServiceAbstraction,
-        logService: LogService,
-        keyConnectorService: KeyConnectorServiceAbstraction,
-        stateService: StateServiceAbstraction,
-        organizationService: OrganizationServiceAbstraction,
-        providerService: ProviderServiceAbstraction
-      ) =>
-        new SyncService(
-          apiService,
-          settingsService,
-          folderService,
-          cipherService,
-          cryptoService,
-          collectionService,
-          messagingService,
-          policyService,
-          sendService,
-          logService,
-          keyConnectorService,
-          stateService,
-          organizationService,
-          providerService,
-          async (expired: boolean) => messagingService.send("logout", { expired: expired })
-        ),
+      useClass: SyncService,
       deps: [
         ApiServiceAbstraction,
         SettingsServiceAbstraction,
@@ -271,6 +279,7 @@ import { ValidationService } from "./validation.service";
         StateServiceAbstraction,
         OrganizationServiceAbstraction,
         ProviderServiceAbstraction,
+        LOGOUT_CALLBACK,
       ],
     },
     { provide: BroadcasterServiceAbstraction, useClass: BroadcasterService },
@@ -281,34 +290,7 @@ import { ValidationService } from "./validation.service";
     },
     {
       provide: VaultTimeoutServiceAbstraction,
-      useFactory: (
-        cipherService: CipherServiceAbstraction,
-        folderService: FolderServiceAbstraction,
-        collectionService: CollectionServiceAbstraction,
-        cryptoService: CryptoServiceAbstraction,
-        platformUtilsService: PlatformUtilsServiceAbstraction,
-        messagingService: MessagingServiceAbstraction,
-        searchService: SearchServiceAbstraction,
-        tokenService: TokenServiceAbstraction,
-        policyService: PolicyServiceAbstraction,
-        keyConnectorService: KeyConnectorServiceAbstraction,
-        stateService: StateServiceAbstraction
-      ) =>
-        new VaultTimeoutService(
-          cipherService,
-          folderService,
-          collectionService,
-          cryptoService,
-          platformUtilsService,
-          messagingService,
-          searchService,
-          tokenService,
-          policyService,
-          keyConnectorService,
-          stateService,
-          null,
-          async () => messagingService.send("logout", { expired: false })
-        ),
+      useClass: VaultTimeoutService,
       deps: [
         CipherServiceAbstraction,
         FolderServiceAbstraction,
@@ -321,6 +303,9 @@ import { ValidationService } from "./validation.service";
         PolicyServiceAbstraction,
         KeyConnectorServiceAbstraction,
         StateServiceAbstraction,
+        AuthServiceAbstraction,
+        LOCKED_CALLBACK,
+        LOGOUT_CALLBACK,
       ],
     },
     {
@@ -328,15 +313,17 @@ import { ValidationService } from "./validation.service";
       useClass: StateService,
       deps: [
         StorageServiceAbstraction,
-        "SECURE_STORAGE",
+        SECURE_STORAGE,
         LogService,
         StateMigrationServiceAbstraction,
+        STATE_FACTORY,
+        STATE_SERVICE_USE_CACHE,
       ],
     },
     {
       provide: StateMigrationServiceAbstraction,
       useClass: StateMigrationService,
-      deps: [StorageServiceAbstraction, "SECURE_STORAGE"],
+      deps: [StorageServiceAbstraction, SECURE_STORAGE, STATE_FACTORY],
     },
     {
       provide: ExportServiceAbstraction,
@@ -355,41 +342,22 @@ import { ValidationService } from "./validation.service";
     },
     {
       provide: NotificationsServiceAbstraction,
-      useFactory: (
-        syncService: SyncServiceAbstraction,
-        appIdService: AppIdServiceAbstraction,
-        apiService: ApiServiceAbstraction,
-        vaultTimeoutService: VaultTimeoutServiceAbstraction,
-        environmentService: EnvironmentServiceAbstraction,
-        messagingService: MessagingServiceAbstraction,
-        logService: LogService,
-        stateService: StateServiceAbstraction
-      ) =>
-        new NotificationsService(
-          syncService,
-          appIdService,
-          apiService,
-          vaultTimeoutService,
-          environmentService,
-          async () => messagingService.send("logout", { expired: true }),
-          logService,
-          stateService
-        ),
+      useClass: NotificationsService,
       deps: [
         SyncServiceAbstraction,
         AppIdServiceAbstraction,
         ApiServiceAbstraction,
-        VaultTimeoutServiceAbstraction,
         EnvironmentServiceAbstraction,
-        MessagingServiceAbstraction,
+        LOGOUT_CALLBACK,
         LogService,
         StateServiceAbstraction,
+        AuthServiceAbstraction,
       ],
     },
     {
       provide: CryptoFunctionServiceAbstraction,
       useClass: WebCryptoFunctionService,
-      deps: ["WINDOW", PlatformUtilsServiceAbstraction],
+      deps: [WINDOW],
     },
     {
       provide: EventServiceAbstraction,
@@ -429,6 +397,7 @@ import { ValidationService } from "./validation.service";
         TokenServiceAbstraction,
         LogService,
         OrganizationServiceAbstraction,
+        CryptoFunctionServiceAbstraction,
       ],
     },
     {
@@ -446,6 +415,11 @@ import { ValidationService } from "./validation.service";
       provide: ProviderServiceAbstraction,
       useClass: ProviderService,
       deps: [StateServiceAbstraction],
+    },
+    {
+      provide: TwoFactorServiceAbstraction,
+      useClass: TwoFactorService,
+      deps: [I18nServiceAbstraction, PlatformUtilsServiceAbstraction],
     },
   ],
 })

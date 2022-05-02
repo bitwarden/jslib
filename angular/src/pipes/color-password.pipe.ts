@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
+
 import { Utils } from "jslib-common/misc/utils";
 
 /*
@@ -8,6 +9,16 @@ import { Utils } from "jslib-common/misc/utils";
 @Pipe({ name: "colorPassword" })
 export class ColorPasswordPipe implements PipeTransform {
   transform(password: string) {
+    const template = (character: string, type: string) =>
+      `<span class="password-${type}">${character}</span>`;
+    const colorizedPassword = this.generateTemplate(password, template);
+    return colorizedPassword;
+  }
+
+  protected generateTemplate(
+    password: string,
+    templateGenerator: (chararacter: string, type: string, index?: number) => string
+  ) {
     // Convert to an array to handle cases that stings have special characters, ie: emoji.
     const passwordArray = Array.from(password);
     let colorizedPassword = "";
@@ -43,7 +54,7 @@ export class ColorPasswordPipe implements PipeTransform {
       } else if (character.match(/\d/)) {
         type = "number";
       }
-      colorizedPassword += '<span class="password-' + type + '">' + character + "</span>";
+      colorizedPassword += templateGenerator(character, type, i);
     }
     return colorizedPassword;
   }

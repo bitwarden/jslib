@@ -1,5 +1,6 @@
-import { app, BrowserWindow, Menu, MenuItemConstructorOptions, nativeImage, Tray } from "electron";
 import * as path from "path";
+
+import { app, BrowserWindow, Menu, MenuItemConstructorOptions, nativeImage, Tray } from "electron";
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { StateService } from "jslib-common/abstractions/state.service";
@@ -75,7 +76,7 @@ export class TrayMain {
       }
     });
 
-    win.on("show", async (e: Event) => {
+    win.on("show", async () => {
       const enableTray = await this.stateService.getEnableTray();
       if (!enableTray) {
         setTimeout(() => this.removeTray(false), 100);

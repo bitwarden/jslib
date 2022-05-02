@@ -1,10 +1,9 @@
 import { StorageService } from "../abstractions/storage.service";
-
-import { Account } from "../models/domain/account";
-import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
-import { State } from "../models/domain/state";
-import { StorageOptions } from "../models/domain/storageOptions";
-
+import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
+import { KdfType } from "../enums/kdfType";
+import { StateVersion } from "../enums/stateVersion";
+import { ThemeType } from "../enums/themeType";
+import { StateFactory } from "../factories/stateFactory";
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
 import { EventData } from "../models/data/eventData";
@@ -13,13 +12,17 @@ import { OrganizationData } from "../models/data/organizationData";
 import { PolicyData } from "../models/data/policyData";
 import { ProviderData } from "../models/data/providerData";
 import { SendData } from "../models/data/sendData";
+import { Account, AccountSettings } from "../models/domain/account";
+import { EnvironmentUrls } from "../models/domain/environmentUrls";
+import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
+import { GlobalState } from "../models/domain/globalState";
+import { StorageOptions } from "../models/domain/storageOptions";
 
-import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
-import { KdfType } from "../enums/kdfType";
+import { TokenService } from "./token.service";
 
 // Originally (before January 2022) storage was handled as a flat key/value pair store.
 // With the move to a typed object for state storage these keys should no longer be in use anywhere outside of this migration.
-const v1Keys = {
+const v1Keys: { [key: string]: string } = {
   accessToken: "accessToken",
   alwaysShowDock: "alwaysShowDock",
   autoConfirmFingerprints: "autoConfirmFingerprints",
@@ -29,8 +32,8 @@ const v1Keys = {
   biometricText: "biometricText",
   biometricUnlock: "biometric",
   clearClipboard: "clearClipboardKey",
-  clientId: "clientId",
-  clientSecret: "clientSecret",
+  clientId: "apikey_clientId",
+  clientSecret: "apikey_clientSecret",
   collapsedGroupings: "collapsedGroupings",
   convertAccountToKeyConnector: "convertAccountToKeyConnector",
   defaultUriMatch: "defaultUriMatch",
@@ -97,7 +100,7 @@ const v1Keys = {
   rememberedEmail: "rememberedEmail",
 };
 
-const v1KeyPrefixes = {
+const v1KeyPrefixes: { [key: string]: string } = {
   ciphers: "ciphers_",
   collections: "collections_",
   folders: "folders_",
@@ -110,30 +113,47 @@ const v1KeyPrefixes = {
   settings: "settings_",
 };
 
-export class StateMigrationService {
-  readonly latestVersion: number = 2;
+const keys = {
+  global: "global",
+  authenticatedAccounts: "authenticatedAccounts",
+  activeUserId: "activeUserId",
+  tempAccountSettings: "tempAccountSettings", // used to hold account specific settings (i.e clear clipboard) between initial migration and first account authentication
+  accountActivity: "accountActivity",
+};
 
+const partialKeys = {
+  autoKey: "_masterkey_auto",
+  biometricKey: "_masterkey_biometric",
+  masterKey: "_masterkey",
+};
+
+export class StateMigrationService<
+  TGlobalState extends GlobalState = GlobalState,
+  TAccount extends Account = Account
+> {
   constructor(
     protected storageService: StorageService,
-    protected secureStorageService: StorageService
+    protected secureStorageService: StorageService,
+    protected stateFactory: StateFactory<TGlobalState, TAccount>
   ) {}
 
   async needsMigration(): Promise<boolean> {
-    const currentStateVersion = (
-      await this.storageService.get<State<Account>>("state", {
-        htmlStorageLocation: HtmlStorageLocation.Local,
-      })
-    )?.globals?.stateVersion;
-    return currentStateVersion == null || currentStateVersion < this.latestVersion;
+    const currentStateVersion = await this.getCurrentStateVersion();
+    return currentStateVersion == null || currentStateVersion < StateVersion.Latest;
   }
 
   async migrate(): Promise<void> {
-    let currentStateVersion =
-      (await this.storageService.get<State<Account>>("state"))?.globals?.stateVersion ?? 1;
-    while (currentStateVersion < this.latestVersion) {
+    let currentStateVersion = await this.getCurrentStateVersion();
+    while (currentStateVersion < StateVersion.Latest) {
       switch (currentStateVersion) {
-        case 1:
+        case StateVersion.One:
           await this.migrateStateFrom1To2();
+          break;
+        case StateVersion.Two:
+          await this.migrateStateFrom2To3();
+          break;
+        case StateVersion.Three:
+          await this.migrateStateFrom3To4();
           break;
       }
 
@@ -142,351 +162,270 @@ export class StateMigrationService {
   }
 
   protected async migrateStateFrom1To2(): Promise<void> {
-    const options: StorageOptions = { htmlStorageLocation: HtmlStorageLocation.Local };
-    const userId = await this.storageService.get<string>("userId");
-    const initialState: State<Account> =
-      userId == null
-        ? {
-            globals: {
-              stateVersion: 2,
-            },
-            accounts: {},
-            activeUserId: null,
+    const clearV1Keys = async (clearingUserId?: string) => {
+      for (const key in v1Keys) {
+        if (key == null) {
+          continue;
+        }
+        await this.set(v1Keys[key], null);
+      }
+      if (clearingUserId != null) {
+        for (const keyPrefix in v1KeyPrefixes) {
+          if (keyPrefix == null) {
+            continue;
           }
-        : {
-            activeUserId: userId,
-            globals: {
-              biometricAwaitingAcceptance: await this.storageService.get<boolean>(
-                v1Keys.biometricAwaitingAcceptance,
-                options
-              ),
-              biometricFingerprintValidated: await this.storageService.get<boolean>(
-                v1Keys.biometricFingerprintValidated,
-                options
-              ),
-              biometricText: await this.storageService.get<string>(v1Keys.biometricText, options),
-              disableFavicon: await this.storageService.get<boolean>(
-                v1Keys.disableFavicon,
-                options
-              ),
-              enableAlwaysOnTop: await this.storageService.get<boolean>(
-                v1Keys.enableAlwaysOnTop,
-                options
-              ),
-              enableBiometrics: await this.storageService.get<boolean>(
-                v1Keys.enableBiometric,
-                options
-              ),
-              environmentUrls: await this.storageService.get<any>(v1Keys.environmentUrls, options),
-              installedVersion: await this.storageService.get<string>(
-                v1Keys.installedVersion,
-                options
-              ),
-              lastActive: await this.storageService.get<number>(v1Keys.lastActive, options),
-              locale: await this.storageService.get<string>(v1Keys.locale, options),
-              loginRedirect: null,
-              mainWindowSize: null,
-              noAutoPromptBiometrics: await this.storageService.get<boolean>(
-                v1Keys.disableAutoBiometricsPrompt,
-                options
-              ),
-              noAutoPromptBiometricsText: await this.storageService.get<string>(
-                v1Keys.noAutoPromptBiometricsText,
-                options
-              ),
-              openAtLogin: await this.storageService.get<boolean>(v1Keys.openAtLogin, options),
-              organizationInvitation: await this.storageService.get<string>("", options),
-              ssoCodeVerifier: await this.storageService.get<string>(
-                v1Keys.ssoCodeVerifier,
-                options
-              ),
-              ssoOrganizationIdentifier: await this.storageService.get<string>(
-                v1Keys.ssoIdentifier,
-                options
-              ),
-              ssoState: null,
-              rememberedEmail: await this.storageService.get<string>(
-                v1Keys.rememberedEmail,
-                options
-              ),
-              stateVersion: 2,
-              theme: await this.storageService.get<string>(v1Keys.theme, options),
-              twoFactorToken: await this.storageService.get<string>(
-                v1KeyPrefixes.twoFactorToken + userId,
-                options
-              ),
-              vaultTimeout: await this.storageService.get<number>(v1Keys.vaultTimeout, options),
-              vaultTimeoutAction: await this.storageService.get<string>(
-                v1Keys.vaultTimeoutAction,
-                options
-              ),
-              window: null,
-            },
-            accounts: {
-              [userId]: new Account({
-                data: {
-                  addEditCipherInfo: null,
-                  ciphers: {
-                    decrypted: null,
-                    encrypted: await this.storageService.get<{ [id: string]: CipherData }>(
-                      v1KeyPrefixes.ciphers + userId,
-                      options
-                    ),
-                  },
-                  collapsedGroupings: null,
-                  collections: {
-                    decrypted: null,
-                    encrypted: await this.storageService.get<{ [id: string]: CollectionData }>(
-                      v1KeyPrefixes.collections + userId,
-                      options
-                    ),
-                  },
-                  eventCollection: await this.storageService.get<EventData[]>(
-                    v1Keys.eventCollection,
-                    options
-                  ),
-                  folders: {
-                    decrypted: null,
-                    encrypted: await this.storageService.get<{ [id: string]: FolderData }>(
-                      v1KeyPrefixes.folders + userId,
-                      options
-                    ),
-                  },
-                  localData: null,
-                  organizations: await this.storageService.get<{ [id: string]: OrganizationData }>(
-                    v1KeyPrefixes.organizations + userId
-                  ),
-                  passwordGenerationHistory: {
-                    decrypted: null,
-                    encrypted: await this.storageService.get<GeneratedPasswordHistory[]>(
-                      "TODO",
-                      options
-                    ), // TODO: Whats up here?
-                  },
-                  policies: {
-                    decrypted: null,
-                    encrypted: await this.storageService.get<{ [id: string]: PolicyData }>(
-                      v1KeyPrefixes.policies + userId,
-                      options
-                    ),
-                  },
-                  providers: await this.storageService.get<{ [id: string]: ProviderData }>(
-                    v1KeyPrefixes.providers + userId
-                  ),
-                  sends: {
-                    decrypted: null,
-                    encrypted: await this.storageService.get<{ [id: string]: SendData }>(
-                      v1KeyPrefixes.sends,
-                      options
-                    ),
-                  },
-                },
-                keys: {
-                  apiKeyClientSecret: await this.storageService.get<string>(
-                    v1Keys.clientSecret,
-                    options
-                  ),
-                  cryptoMasterKey: null,
-                  cryptoMasterKeyAuto: null,
-                  cryptoMasterKeyB64: null,
-                  cryptoMasterKeyBiometric: null,
-                  cryptoSymmetricKey: {
-                    encrypted: await this.storageService.get<string>(v1Keys.encKey, options),
-                    decrypted: null,
-                  },
-                  legacyEtmKey: null,
-                  organizationKeys: {
-                    decrypted: null,
-                    encrypted: await this.storageService.get<any>(
-                      v1Keys.encOrgKeys + userId,
-                      options
-                    ),
-                  },
-                  privateKey: {
-                    decrypted: null,
-                    encrypted: await this.storageService.get<string>(v1Keys.encPrivate, options),
-                  },
-                  providerKeys: {
-                    decrypted: null,
-                    encrypted: await this.storageService.get<any>(
-                      v1Keys.encProviderKeys + userId,
-                      options
-                    ),
-                  },
-                  publicKey: null,
-                },
-                profile: {
-                  apiKeyClientId: await this.storageService.get<string>(v1Keys.clientId, options),
-                  authenticationStatus: null,
-                  convertAccountToKeyConnector: await this.storageService.get<boolean>(
-                    v1Keys.convertAccountToKeyConnector,
-                    options
-                  ),
-                  email: await this.storageService.get<string>(v1Keys.userEmail, options),
-                  emailVerified: await this.storageService.get<boolean>(
-                    v1Keys.emailVerified,
-                    options
-                  ),
-                  entityId: null,
-                  entityType: null,
-                  everBeenUnlocked: null,
-                  forcePasswordReset: null,
-                  hasPremiumPersonally: null,
-                  kdfIterations: await this.storageService.get<number>(
-                    v1Keys.kdfIterations,
-                    options
-                  ),
-                  kdfType: await this.storageService.get<KdfType>(v1Keys.kdf, options),
-                  keyHash: await this.storageService.get<string>(v1Keys.keyHash, options),
-                  lastActive: await this.storageService.get<number>(v1Keys.lastActive, options),
-                  lastSync: null,
-                  userId: userId,
-                  usesKeyConnector: null,
-                },
-                settings: {
-                  alwaysShowDock: await this.storageService.get<boolean>(
-                    v1Keys.alwaysShowDock,
-                    options
-                  ),
-                  autoConfirmFingerPrints: await this.storageService.get<boolean>(
-                    v1Keys.autoConfirmFingerprints,
-                    options
-                  ),
-                  autoFillOnPageLoadDefault: await this.storageService.get<boolean>(
-                    v1Keys.autoFillOnPageLoadDefault,
-                    options
-                  ),
-                  biometricLocked: null,
-                  biometricUnlock: await this.storageService.get<boolean>(
-                    v1Keys.biometricUnlock,
-                    options
-                  ),
-                  clearClipboard: await this.storageService.get<number>(
-                    v1Keys.clearClipboard,
-                    options
-                  ),
-                  defaultUriMatch: await this.storageService.get<any>(
-                    v1Keys.defaultUriMatch,
-                    options
-                  ),
-                  disableAddLoginNotification: await this.storageService.get<boolean>(
-                    v1Keys.disableAddLoginNotification,
-                    options
-                  ),
-                  disableAutoBiometricsPrompt: await this.storageService.get<boolean>(
-                    v1Keys.disableAutoBiometricsPrompt,
-                    options
-                  ),
-                  disableAutoTotpCopy: await this.storageService.get<boolean>(
-                    v1Keys.disableAutoTotpCopy,
-                    options
-                  ),
-                  disableBadgeCounter: await this.storageService.get<boolean>(
-                    v1Keys.disableBadgeCounter,
-                    options
-                  ),
-                  disableChangedPasswordNotification: await this.storageService.get<boolean>(
-                    v1Keys.disableChangedPasswordNotification,
-                    options
-                  ),
-                  disableContextMenuItem: await this.storageService.get<boolean>(
-                    v1Keys.disableContextMenuItem,
-                    options
-                  ),
-                  disableGa: await this.storageService.get<boolean>(v1Keys.disableGa, options),
-                  dontShowCardsCurrentTab: await this.storageService.get<boolean>(
-                    v1Keys.dontShowCardsCurrentTab,
-                    options
-                  ),
-                  dontShowIdentitiesCurrentTab: await this.storageService.get<boolean>(
-                    v1Keys.dontShowIdentitiesCurrentTab,
-                    options
-                  ),
-                  enableAlwaysOnTop: await this.storageService.get<boolean>(
-                    v1Keys.enableAlwaysOnTop,
-                    options
-                  ),
-                  enableAutoFillOnPageLoad: await this.storageService.get<boolean>(
-                    v1Keys.enableAutoFillOnPageLoad,
-                    options
-                  ),
-                  enableBiometric: await this.storageService.get<boolean>(
-                    v1Keys.enableBiometric,
-                    options
-                  ),
-                  enableBrowserIntegration: await this.storageService.get<boolean>(
-                    v1Keys.enableBrowserIntegration,
-                    options
-                  ),
-                  enableBrowserIntegrationFingerprint: await this.storageService.get<boolean>(
-                    v1Keys.enableBrowserIntegrationFingerprint,
-                    options
-                  ),
-                  enableCloseToTray: await this.storageService.get<boolean>(
-                    v1Keys.enableCloseToTray,
-                    options
-                  ),
-                  enableFullWidth: await this.storageService.get<boolean>(
-                    v1Keys.enableFullWidth,
-                    options
-                  ),
-                  enableGravitars: await this.storageService.get<boolean>(
-                    v1Keys.enableGravatars,
-                    options
-                  ),
-                  enableMinimizeToTray: await this.storageService.get<boolean>(
-                    v1Keys.enableMinimizeToTray,
-                    options
-                  ),
-                  enableStartToTray: await this.storageService.get<boolean>(
-                    v1Keys.enableStartToTray,
-                    options
-                  ),
-                  enableTray: await this.storageService.get<boolean>(v1Keys.enableTray, options),
-                  equivalentDomains: await this.storageService.get<any>(
-                    v1Keys.equivalentDomains,
-                    options
-                  ),
-                  minimizeOnCopyToClipboard: await this.storageService.get<boolean>(
-                    v1Keys.minimizeOnCopyToClipboard,
-                    options
-                  ),
-                  neverDomains: await this.storageService.get<any>(v1Keys.neverDomains, options),
-                  openAtLogin: await this.storageService.get<boolean>(v1Keys.openAtLogin, options),
-                  passwordGenerationOptions: await this.storageService.get<any>(
-                    v1Keys.passwordGenerationOptions,
-                    options
-                  ),
-                  pinProtected: {
-                    decrypted: null,
-                    encrypted: await this.storageService.get<string>(v1Keys.pinProtected, options),
-                  },
-                  protectedPin: await this.storageService.get<string>(v1Keys.protectedPin, options),
-                  settings: await this.storageService.get<any>(
-                    v1KeyPrefixes.settings + userId,
-                    options
-                  ),
-                  vaultTimeout: await this.storageService.get<number>(v1Keys.vaultTimeout, options),
-                  vaultTimeoutAction: await this.storageService.get<string>(
-                    v1Keys.vaultTimeoutAction,
-                    options
-                  ),
-                },
-                tokens: {
-                  accessToken: await this.storageService.get<string>(v1Keys.accessToken, options),
-                  decodedToken: null,
-                  refreshToken: await this.storageService.get<string>(v1Keys.refreshToken, options),
-                  securityStamp: null,
-                },
-              }),
-            },
-          };
+          await this.set(v1KeyPrefixes[keyPrefix] + userId, null);
+        }
+      }
+    };
 
-    await this.storageService.save("state", initialState, options);
+    // Some processes, like biometrics, may have already defined a value before migrations are run.
+    // We don't want to null out those values if they don't exist in the old storage scheme (like for new installs)
+    // So, the OOO for migration is that we:
+    // 1. Check for an existing storage value from the old storage structure OR
+    // 2. Check for a value already set by processes that run before migration OR
+    // 3. Assign the default value
+    const globals =
+      (await this.get<GlobalState>(keys.global)) ?? this.stateFactory.createGlobal(null);
+    globals.stateVersion = StateVersion.Two;
+    globals.environmentUrls =
+      (await this.get<EnvironmentUrls>(v1Keys.environmentUrls)) ?? globals.environmentUrls;
+    globals.locale = (await this.get<string>(v1Keys.locale)) ?? globals.locale;
+    globals.noAutoPromptBiometrics =
+      (await this.get<boolean>(v1Keys.disableAutoBiometricsPrompt)) ??
+      globals.noAutoPromptBiometrics;
+    globals.noAutoPromptBiometricsText =
+      (await this.get<string>(v1Keys.noAutoPromptBiometricsText)) ??
+      globals.noAutoPromptBiometricsText;
+    globals.ssoCodeVerifier =
+      (await this.get<string>(v1Keys.ssoCodeVerifier)) ?? globals.ssoCodeVerifier;
+    globals.ssoOrganizationIdentifier =
+      (await this.get<string>(v1Keys.ssoIdentifier)) ?? globals.ssoOrganizationIdentifier;
+    globals.ssoState = (await this.get<any>(v1Keys.ssoState)) ?? globals.ssoState;
+    globals.rememberedEmail =
+      (await this.get<string>(v1Keys.rememberedEmail)) ?? globals.rememberedEmail;
+    globals.theme = (await this.get<ThemeType>(v1Keys.theme)) ?? globals.theme;
+    globals.vaultTimeout = (await this.get<number>(v1Keys.vaultTimeout)) ?? globals.vaultTimeout;
+    globals.vaultTimeoutAction =
+      (await this.get<string>(v1Keys.vaultTimeoutAction)) ?? globals.vaultTimeoutAction;
+    globals.window = (await this.get<any>(v1Keys.mainWindowSize)) ?? globals.window;
+    globals.enableTray = (await this.get<boolean>(v1Keys.enableTray)) ?? globals.enableTray;
+    globals.enableMinimizeToTray =
+      (await this.get<boolean>(v1Keys.enableMinimizeToTray)) ?? globals.enableMinimizeToTray;
+    globals.enableCloseToTray =
+      (await this.get<boolean>(v1Keys.enableCloseToTray)) ?? globals.enableCloseToTray;
+    globals.enableStartToTray =
+      (await this.get<boolean>(v1Keys.enableStartToTray)) ?? globals.enableStartToTray;
+    globals.openAtLogin = (await this.get<boolean>(v1Keys.openAtLogin)) ?? globals.openAtLogin;
+    globals.alwaysShowDock =
+      (await this.get<boolean>(v1Keys.alwaysShowDock)) ?? globals.alwaysShowDock;
+    globals.enableBrowserIntegration =
+      (await this.get<boolean>(v1Keys.enableBrowserIntegration)) ??
+      globals.enableBrowserIntegration;
+    globals.enableBrowserIntegrationFingerprint =
+      (await this.get<boolean>(v1Keys.enableBrowserIntegrationFingerprint)) ??
+      globals.enableBrowserIntegrationFingerprint;
+
+    const userId =
+      (await this.get<string>(v1Keys.userId)) ?? (await this.get<string>(v1Keys.entityId));
+
+    const defaultAccount = this.stateFactory.createAccount(null);
+    const accountSettings: AccountSettings = {
+      autoConfirmFingerPrints:
+        (await this.get<boolean>(v1Keys.autoConfirmFingerprints)) ??
+        defaultAccount.settings.autoConfirmFingerPrints,
+      autoFillOnPageLoadDefault:
+        (await this.get<boolean>(v1Keys.autoFillOnPageLoadDefault)) ??
+        defaultAccount.settings.autoFillOnPageLoadDefault,
+      biometricLocked: null,
+      biometricUnlock:
+        (await this.get<boolean>(v1Keys.biometricUnlock)) ??
+        defaultAccount.settings.biometricUnlock,
+      clearClipboard:
+        (await this.get<number>(v1Keys.clearClipboard)) ?? defaultAccount.settings.clearClipboard,
+      defaultUriMatch:
+        (await this.get<any>(v1Keys.defaultUriMatch)) ?? defaultAccount.settings.defaultUriMatch,
+      disableAddLoginNotification:
+        (await this.get<boolean>(v1Keys.disableAddLoginNotification)) ??
+        defaultAccount.settings.disableAddLoginNotification,
+      disableAutoBiometricsPrompt:
+        (await this.get<boolean>(v1Keys.disableAutoBiometricsPrompt)) ??
+        defaultAccount.settings.disableAutoBiometricsPrompt,
+      disableAutoTotpCopy:
+        (await this.get<boolean>(v1Keys.disableAutoTotpCopy)) ??
+        defaultAccount.settings.disableAutoTotpCopy,
+      disableBadgeCounter:
+        (await this.get<boolean>(v1Keys.disableBadgeCounter)) ??
+        defaultAccount.settings.disableBadgeCounter,
+      disableChangedPasswordNotification:
+        (await this.get<boolean>(v1Keys.disableChangedPasswordNotification)) ??
+        defaultAccount.settings.disableChangedPasswordNotification,
+      disableContextMenuItem:
+        (await this.get<boolean>(v1Keys.disableContextMenuItem)) ??
+        defaultAccount.settings.disableContextMenuItem,
+      disableGa: (await this.get<boolean>(v1Keys.disableGa)) ?? defaultAccount.settings.disableGa,
+      dontShowCardsCurrentTab:
+        (await this.get<boolean>(v1Keys.dontShowCardsCurrentTab)) ??
+        defaultAccount.settings.dontShowCardsCurrentTab,
+      dontShowIdentitiesCurrentTab:
+        (await this.get<boolean>(v1Keys.dontShowIdentitiesCurrentTab)) ??
+        defaultAccount.settings.dontShowIdentitiesCurrentTab,
+      enableAlwaysOnTop:
+        (await this.get<boolean>(v1Keys.enableAlwaysOnTop)) ??
+        defaultAccount.settings.enableAlwaysOnTop,
+      enableAutoFillOnPageLoad:
+        (await this.get<boolean>(v1Keys.enableAutoFillOnPageLoad)) ??
+        defaultAccount.settings.enableAutoFillOnPageLoad,
+      enableBiometric:
+        (await this.get<boolean>(v1Keys.enableBiometric)) ??
+        defaultAccount.settings.enableBiometric,
+      enableFullWidth:
+        (await this.get<boolean>(v1Keys.enableFullWidth)) ??
+        defaultAccount.settings.enableFullWidth,
+      enableGravitars:
+        (await this.get<boolean>(v1Keys.enableGravatars)) ??
+        defaultAccount.settings.enableGravitars,
+      environmentUrls: globals.environmentUrls ?? defaultAccount.settings.environmentUrls,
+      equivalentDomains:
+        (await this.get<any>(v1Keys.equivalentDomains)) ??
+        defaultAccount.settings.equivalentDomains,
+      minimizeOnCopyToClipboard:
+        (await this.get<boolean>(v1Keys.minimizeOnCopyToClipboard)) ??
+        defaultAccount.settings.minimizeOnCopyToClipboard,
+      neverDomains:
+        (await this.get<any>(v1Keys.neverDomains)) ?? defaultAccount.settings.neverDomains,
+      passwordGenerationOptions:
+        (await this.get<any>(v1Keys.passwordGenerationOptions)) ??
+        defaultAccount.settings.passwordGenerationOptions,
+      pinProtected: {
+        decrypted: null,
+        encrypted: await this.get<string>(v1Keys.pinProtected),
+      },
+      protectedPin: await this.get<string>(v1Keys.protectedPin),
+      settings: userId == null ? null : await this.get<any>(v1KeyPrefixes.settings + userId),
+      vaultTimeout:
+        (await this.get<number>(v1Keys.vaultTimeout)) ?? defaultAccount.settings.vaultTimeout,
+      vaultTimeoutAction:
+        (await this.get<string>(v1Keys.vaultTimeoutAction)) ??
+        defaultAccount.settings.vaultTimeoutAction,
+    };
+
+    // (userId == null) = no logged in user (so no known userId) and we need to temporarily store account specific settings in state to migrate on first auth
+    // (userId != null) = we have a currently authed user (so known userId) with encrypted data and other key settings we can move, no need to temporarily store account settings
+    if (userId == null) {
+      await this.set(keys.tempAccountSettings, accountSettings);
+      await this.set(keys.global, globals);
+      await this.set(keys.authenticatedAccounts, []);
+      await this.set(keys.activeUserId, null);
+      await clearV1Keys();
+      return;
+    }
+
+    globals.twoFactorToken = await this.get<string>(v1KeyPrefixes.twoFactorToken + userId);
+    await this.set(keys.global, globals);
+    await this.set(userId, {
+      data: {
+        addEditCipherInfo: null,
+        ciphers: {
+          decrypted: null,
+          encrypted: await this.get<{ [id: string]: CipherData }>(v1KeyPrefixes.ciphers + userId),
+        },
+        collapsedGroupings: null,
+        collections: {
+          decrypted: null,
+          encrypted: await this.get<{ [id: string]: CollectionData }>(
+            v1KeyPrefixes.collections + userId
+          ),
+        },
+        eventCollection: await this.get<EventData[]>(v1Keys.eventCollection),
+        folders: {
+          decrypted: null,
+          encrypted: await this.get<{ [id: string]: FolderData }>(v1KeyPrefixes.folders + userId),
+        },
+        localData: null,
+        organizations: await this.get<{ [id: string]: OrganizationData }>(
+          v1KeyPrefixes.organizations + userId
+        ),
+        passwordGenerationHistory: {
+          decrypted: null,
+          encrypted: await this.get<GeneratedPasswordHistory[]>(v1Keys.history),
+        },
+        policies: {
+          decrypted: null,
+          encrypted: await this.get<{ [id: string]: PolicyData }>(v1KeyPrefixes.policies + userId),
+        },
+        providers: await this.get<{ [id: string]: ProviderData }>(v1KeyPrefixes.providers + userId),
+        sends: {
+          decrypted: null,
+          encrypted: await this.get<{ [id: string]: SendData }>(v1KeyPrefixes.sends + userId),
+        },
+      },
+      keys: {
+        apiKeyClientSecret: await this.get<string>(v1Keys.clientSecret),
+        cryptoMasterKey: null,
+        cryptoMasterKeyAuto: null,
+        cryptoMasterKeyB64: null,
+        cryptoMasterKeyBiometric: null,
+        cryptoSymmetricKey: {
+          encrypted: await this.get<string>(v1Keys.encKey),
+          decrypted: null,
+        },
+        legacyEtmKey: null,
+        organizationKeys: {
+          decrypted: null,
+          encrypted: await this.get<any>(v1Keys.encOrgKeys),
+        },
+        privateKey: {
+          decrypted: null,
+          encrypted: await this.get<string>(v1Keys.encPrivate),
+        },
+        providerKeys: {
+          decrypted: null,
+          encrypted: await this.get<any>(v1Keys.encProviderKeys),
+        },
+        publicKey: null,
+      },
+      profile: {
+        apiKeyClientId: await this.get<string>(v1Keys.clientId),
+        authenticationStatus: null,
+        convertAccountToKeyConnector: await this.get<boolean>(v1Keys.convertAccountToKeyConnector),
+        email: await this.get<string>(v1Keys.userEmail),
+        emailVerified: await this.get<boolean>(v1Keys.emailVerified),
+        entityId: null,
+        entityType: null,
+        everBeenUnlocked: null,
+        forcePasswordReset: null,
+        hasPremiumPersonally: null,
+        kdfIterations: await this.get<number>(v1Keys.kdfIterations),
+        kdfType: await this.get<KdfType>(v1Keys.kdf),
+        keyHash: await this.get<string>(v1Keys.keyHash),
+        lastSync: null,
+        userId: userId,
+        usesKeyConnector: null,
+      },
+      settings: accountSettings,
+      tokens: {
+        accessToken: await this.get<string>(v1Keys.accessToken),
+        decodedToken: null,
+        refreshToken: await this.get<string>(v1Keys.refreshToken),
+        securityStamp: null,
+      },
+    });
+
+    await this.set(keys.authenticatedAccounts, [userId]);
+    await this.set(keys.activeUserId, userId);
+
+    const accountActivity: { [userId: string]: number } = {
+      [userId]: await this.get<number>(v1Keys.lastActive),
+    };
+    accountActivity[userId] = await this.get<number>(v1Keys.lastActive);
+    await this.set(keys.accountActivity, accountActivity);
+
+    await clearV1Keys(userId);
 
     if (await this.secureStorageService.has(v1Keys.key, { keySuffix: "biometric" })) {
       await this.secureStorageService.save(
-        `${userId}_masterkey_biometric`,
+        `${userId}${partialKeys.biometricKey}`,
         await this.secureStorageService.get(v1Keys.key, { keySuffix: "biometric" }),
         { keySuffix: "biometric" }
       );
@@ -495,7 +434,7 @@ export class StateMigrationService {
 
     if (await this.secureStorageService.has(v1Keys.key, { keySuffix: "auto" })) {
       await this.secureStorageService.save(
-        `${userId}_masterkey_auto`,
+        `${userId}${partialKeys.autoKey}`,
         await this.secureStorageService.get(v1Keys.key, { keySuffix: "auto" }),
         { keySuffix: "auto" }
       );
@@ -504,10 +443,71 @@ export class StateMigrationService {
 
     if (await this.secureStorageService.has(v1Keys.key)) {
       await this.secureStorageService.save(
-        `${userId}_masterkey`,
+        `${userId}${partialKeys.masterKey}`,
         await this.secureStorageService.get(v1Keys.key)
       );
       await this.secureStorageService.remove(v1Keys.key);
     }
+  }
+
+  protected async migrateStateFrom2To3(): Promise<void> {
+    const authenticatedUserIds = await this.get<string[]>(keys.authenticatedAccounts);
+    await Promise.all(
+      authenticatedUserIds.map(async (userId) => {
+        const account = await this.get<TAccount>(userId);
+        if (
+          account?.profile?.hasPremiumPersonally === null &&
+          account.tokens?.accessToken != null
+        ) {
+          const decodedToken = await TokenService.decodeToken(account.tokens.accessToken);
+          account.profile.hasPremiumPersonally = decodedToken.premium;
+          await this.set(userId, account);
+        }
+      })
+    );
+
+    const globals = await this.getGlobals();
+    globals.stateVersion = StateVersion.Three;
+    await this.set(keys.global, globals);
+  }
+
+  protected async migrateStateFrom3To4(): Promise<void> {
+    const authenticatedUserIds = await this.get<string[]>(keys.authenticatedAccounts);
+    await Promise.all(
+      authenticatedUserIds.map(async (userId) => {
+        const account = await this.get<TAccount>(userId);
+        if (account?.profile?.everBeenUnlocked != null) {
+          delete account.profile.everBeenUnlocked;
+          return this.set(userId, account);
+        }
+      })
+    );
+
+    const globals = await this.getGlobals();
+    globals.stateVersion = StateVersion.Four;
+    await this.set(keys.global, globals);
+  }
+
+  protected get options(): StorageOptions {
+    return { htmlStorageLocation: HtmlStorageLocation.Local };
+  }
+
+  protected get<T>(key: string): Promise<T> {
+    return this.storageService.get<T>(key, this.options);
+  }
+
+  protected set(key: string, value: any): Promise<any> {
+    if (value == null) {
+      return this.storageService.remove(key, this.options);
+    }
+    return this.storageService.save(key, value, this.options);
+  }
+
+  protected async getGlobals(): Promise<TGlobalState> {
+    return await this.get<TGlobalState>(keys.global);
+  }
+
+  protected async getCurrentStateVersion(): Promise<StateVersion> {
+    return (await this.getGlobals())?.stateVersion ?? StateVersion.One;
   }
 }

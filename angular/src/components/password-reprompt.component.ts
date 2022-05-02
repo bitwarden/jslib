@@ -3,8 +3,13 @@ import { Directive } from "@angular/core";
 import { CryptoService } from "jslib-common/abstractions/crypto.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
+
 import { ModalRef } from "./modal/modal.ref";
 
+/**
+ * Used to verify the user's Master Password for the "Master Password Re-prompt" feature only.
+ * See UserVerificationComponent for any other situation where you need to verify the user's identity.
+ */
 @Directive()
 export class PasswordRepromptComponent {
   showPassword = false;

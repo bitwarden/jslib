@@ -1,10 +1,9 @@
 import { IdentityData } from "../data/identityData";
+import { IdentityView } from "../view/identityView";
 
 import Domain from "./domainBase";
 import { EncString } from "./encString";
 import { SymmetricCryptoKey } from "./symmetricCryptoKey";
-
-import { IdentityView } from "../view/identityView";
 
 export class Identity extends Domain {
   title: EncString;
@@ -26,7 +25,7 @@ export class Identity extends Domain {
   passportNumber: EncString;
   licenseNumber: EncString;
 
-  constructor(obj?: IdentityData, alreadyEncrypted: boolean = false) {
+  constructor(obj?: IdentityData) {
     super();
     if (obj == null) {
       return;
@@ -55,14 +54,13 @@ export class Identity extends Domain {
         passportNumber: null,
         licenseNumber: null,
       },
-      alreadyEncrypted,
       []
     );
   }
 
   decrypt(orgId: string, encKey?: SymmetricCryptoKey): Promise<IdentityView> {
     return this.decryptObj(
-      new IdentityView(this),
+      new IdentityView(),
       {
         title: null,
         firstName: null,

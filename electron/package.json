@@ -15,9 +15,7 @@
   "scripts": {
     "clean": "rimraf dist/**/*",
     "build": "npm run clean && tsc",
-    "build:watch": "npm run clean && tsc -watch",
-    "lint": "tslint 'src/**/*.ts' 'spec/**/*.ts'",
-    "lint:fix": "tslint 'src/**/*.ts' 'spec/**/*.ts' --fix"
+    "build:watch": "npm run clean && tsc -watch"
   },
   "devDependencies": {
     "@types/node": "^16.11.12",
@@ -26,12 +24,9 @@
   },
   "dependencies": {
     "@bitwarden/jslib-common": "file:../common",
-    "@nodert-win10-rs4/windows.security.credentials.ui": "^0.4.4",
-    "electron": "16.0.2",
-    "electron-log": "4.4.1",
+    "electron": "16.1.0",
+    "electron-log": "4.4.6",
     "electron-store": "8.0.1",
-    "electron-updater": "4.6.1",
-    "forcefocus": "^1.1.0",
-    "keytar": "7.7.0"
+    "electron-updater": "5.0.0"
   }
 }

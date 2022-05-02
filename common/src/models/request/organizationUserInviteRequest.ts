@@ -1,7 +1,7 @@
-import { SelectionReadOnlyRequest } from "./selectionReadOnlyRequest";
-
 import { OrganizationUserType } from "../../enums/organizationUserType";
 import { PermissionsApi } from "../api/permissionsApi";
+
+import { SelectionReadOnlyRequest } from "./selectionReadOnlyRequest";
 
 export class OrganizationUserInviteRequest {
   emails: string[] = [];

@@ -1,4 +1,5 @@
 import { Utils } from "../../misc/utils";
+
 import { BaseResponse } from "./baseResponse";
 
 export class TwoFactorWebAuthnResponse extends BaseResponse {

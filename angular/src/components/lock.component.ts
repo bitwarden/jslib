@@ -12,32 +12,28 @@ import { MessagingService } from "jslib-common/abstractions/messaging.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { VaultTimeoutService } from "jslib-common/abstractions/vaultTimeout.service";
-
-import { EncString } from "jslib-common/models/domain/encString";
-import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
-
-import { SecretVerificationRequest } from "jslib-common/models/request/secretVerificationRequest";
-
-import { Utils } from "jslib-common/misc/utils";
-
 import { HashPurpose } from "jslib-common/enums/hashPurpose";
 import { KeySuffixOptions } from "jslib-common/enums/keySuffixOptions";
+import { Utils } from "jslib-common/misc/utils";
+import { EncString } from "jslib-common/models/domain/encString";
+import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
+import { SecretVerificationRequest } from "jslib-common/models/request/secretVerificationRequest";
 
 @Directive()
 export class LockComponent implements OnInit {
-  masterPassword: string = "";
-  pin: string = "";
-  showPassword: boolean = false;
+  masterPassword = "";
+  pin = "";
+  showPassword = false;
   email: string;
-  pinLock: boolean = false;
-  webVaultHostname: string = "";
+  pinLock = false;
+  webVaultHostname = "";
   formPromise: Promise<any>;
   supportsBiometric: boolean;
   biometricLock: boolean;
   biometricText: string;
   hideInput: boolean;
 
-  protected successRoute: string = "vault";
+  protected successRoute = "vault";
   protected onSuccessfulSubmit: () => Promise<void>;
 
   private invalidPinAttempts = 0;
@@ -53,13 +49,15 @@ export class LockComponent implements OnInit {
     protected environmentService: EnvironmentService,
     protected stateService: StateService,
     protected apiService: ApiService,
-    private logService: LogService,
+    protected logService: LogService,
     private keyConnectorService: KeyConnectorService,
     protected ngZone: NgZone
   ) {}
 
   async ngOnInit() {
-    this.stateService.activeAccount.subscribe(async (_userId) => {
+    // Load the first and observe updates
+    await this.load();
+    this.stateService.activeAccount.subscribe(async () => {
       await this.load();
     });
   }

@@ -1,9 +1,8 @@
-import { View } from "./view";
-
 import { Collection } from "../domain/collection";
 import { ITreeNodeObject } from "../domain/treeNode";
-
 import { CollectionGroupDetailsResponse } from "../response/collectionResponse";
+
+import { View } from "./view";
 
 export class CollectionView implements View, ITreeNodeObject {
   id: string = null;

@@ -1,10 +1,8 @@
 import { Directive, Input } from "@angular/core";
 
+import { EventService } from "jslib-common/abstractions/event.service";
 import { EventType } from "jslib-common/enums/eventType";
 import { FieldType } from "jslib-common/enums/fieldType";
-
-import { EventService } from "jslib-common/abstractions/event.service";
-
 import { CipherView } from "jslib-common/models/view/cipherView";
 import { FieldView } from "jslib-common/models/view/fieldView";
 
@@ -25,8 +23,17 @@ export class ViewCustomFieldsComponent {
 
     const f = field as any;
     f.showValue = !f.showValue;
+    f.showCount = false;
     if (f.showValue) {
       this.eventService.collect(EventType.Cipher_ClientToggledHiddenFieldVisible, this.cipher.id);
     }
+  }
+
+  async toggleFieldCount(field: FieldView) {
+    if (!field.showValue) {
+      return;
+    }
+
+    field.showCount = !field.showCount;
   }
 }

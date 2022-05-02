@@ -1,5 +1,4 @@
 import { FolderData } from "../data/folderData";
-
 import { FolderView } from "../view/folderView";
 
 import Domain from "./domainBase";
@@ -10,7 +9,7 @@ export class Folder extends Domain {
   name: EncString;
   revisionDate: Date;
 
-  constructor(obj?: FolderData, alreadyEncrypted: boolean = false) {
+  constructor(obj?: FolderData) {
     super();
     if (obj == null) {
       return;
@@ -23,7 +22,6 @@ export class Folder extends Domain {
         id: null,
         name: null,
       },
-      alreadyEncrypted,
       ["id"]
     );
 

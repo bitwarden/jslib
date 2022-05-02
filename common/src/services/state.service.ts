@@ -1,34 +1,15 @@
-import { StateService as StateServiceAbstraction } from "../abstractions/state.service";
-
-import {
-  Account,
-  AccountData,
-  AccountKeys,
-  AccountProfile,
-  AccountTokens,
-} from "../models/domain/account";
+import { BehaviorSubject } from "rxjs";
 
 import { LogService } from "../abstractions/log.service";
+import { StateService as StateServiceAbstraction } from "../abstractions/state.service";
+import { StateMigrationService } from "../abstractions/stateMigration.service";
 import { StorageService } from "../abstractions/storage.service";
-
 import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 import { KdfType } from "../enums/kdfType";
 import { StorageLocation } from "../enums/storageLocation";
+import { ThemeType } from "../enums/themeType";
 import { UriMatchType } from "../enums/uriMatchType";
-
-import { CipherView } from "../models/view/cipherView";
-import { CollectionView } from "../models/view/collectionView";
-import { FolderView } from "../models/view/folderView";
-import { SendView } from "../models/view/sendView";
-
-import { EncString } from "../models/domain/encString";
-import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
-import { GlobalState } from "../models/domain/globalState";
-import { Policy } from "../models/domain/policy";
-import { State } from "../models/domain/state";
-import { StorageOptions } from "../models/domain/storageOptions";
-import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-
+import { StateFactory } from "../factories/stateFactory";
 import { CipherData } from "../models/data/cipherData";
 import { CollectionData } from "../models/data/collectionData";
 import { EventData } from "../models/data/eventData";
@@ -37,104 +18,141 @@ import { OrganizationData } from "../models/data/organizationData";
 import { PolicyData } from "../models/data/policyData";
 import { ProviderData } from "../models/data/providerData";
 import { SendData } from "../models/data/sendData";
+import { Account, AccountData } from "../models/domain/account";
+import { EncString } from "../models/domain/encString";
+import { EnvironmentUrls } from "../models/domain/environmentUrls";
+import { GeneratedPasswordHistory } from "../models/domain/generatedPasswordHistory";
+import { GlobalState } from "../models/domain/globalState";
+import { Policy } from "../models/domain/policy";
+import { State } from "../models/domain/state";
+import { StorageOptions } from "../models/domain/storageOptions";
+import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
+import { WindowState } from "../models/domain/windowState";
+import { CipherView } from "../models/view/cipherView";
+import { CollectionView } from "../models/view/collectionView";
+import { FolderView } from "../models/view/folderView";
+import { SendView } from "../models/view/sendView";
 
-import { BehaviorSubject } from "rxjs";
+const keys = {
+  global: "global",
+  authenticatedAccounts: "authenticatedAccounts",
+  activeUserId: "activeUserId",
+  tempAccountSettings: "tempAccountSettings", // used to hold account specific settings (i.e clear clipboard) between initial migration and first account authentication
+  accountActivity: "accountActivity",
+};
 
-import { StateMigrationService } from "../abstractions/stateMigration.service";
+const partialKeys = {
+  autoKey: "_masterkey_auto",
+  biometricKey: "_masterkey_biometric",
+  masterKey: "_masterkey",
+};
 
-export class StateService<TAccount extends Account = Account>
-  implements StateServiceAbstraction<TAccount>
+export class StateService<
+  TGlobalState extends GlobalState = GlobalState,
+  TAccount extends Account = Account
+> implements StateServiceAbstraction<TAccount>
 {
   accounts = new BehaviorSubject<{ [userId: string]: TAccount }>({});
   activeAccount = new BehaviorSubject<string>(null);
 
-  protected state: State<TAccount> = new State<TAccount>();
+  protected state: State<TGlobalState, TAccount> = new State<TGlobalState, TAccount>(
+    this.createGlobals()
+  );
+
+  private hasBeenInited = false;
+
+  private accountDiskCache: Map<string, TAccount>;
 
   constructor(
     protected storageService: StorageService,
     protected secureStorageService: StorageService,
     protected logService: LogService,
-    protected stateMigrationService: StateMigrationService
-  ) {}
+    protected stateMigrationService: StateMigrationService,
+    protected stateFactory: StateFactory<TGlobalState, TAccount>,
+    protected useAccountCache: boolean = true
+  ) {
+    this.accountDiskCache = new Map<string, TAccount>();
+  }
 
   async init(): Promise<void> {
+    if (this.hasBeenInited) {
+      return;
+    }
+
     if (await this.stateMigrationService.needsMigration()) {
       await this.stateMigrationService.migrate();
     }
-    if (this.state.activeUserId == null) {
-      await this.loadStateFromDisk();
-    }
+
+    await this.initAccountState();
+    this.hasBeenInited = true;
   }
 
-  async loadStateFromDisk() {
-    if ((await this.getActiveUserIdFromStorage()) != null) {
-      const diskState = await this.storageService.get<State<TAccount>>(
-        "state",
-        await this.defaultOnDiskOptions()
-      );
-      this.state = diskState;
-      await this.pruneInMemoryAccounts();
-      await this.saveStateToStorage(this.state, await this.defaultOnDiskMemoryOptions());
-      await this.pushAccounts();
+  async initAccountState() {
+    this.state.authenticatedAccounts =
+      (await this.storageService.get<string[]>(keys.authenticatedAccounts)) ?? [];
+    for (const i in this.state.authenticatedAccounts) {
+      if (i != null) {
+        await this.syncAccountFromDisk(this.state.authenticatedAccounts[i]);
+      }
     }
+    const storedActiveUser = await this.storageService.get<string>(keys.activeUserId);
+    if (storedActiveUser != null) {
+      this.state.activeUserId = storedActiveUser;
+    }
+    await this.pushAccounts();
+    this.activeAccount.next(this.state.activeUserId);
+  }
+
+  async syncAccountFromDisk(userId: string) {
+    if (userId == null) {
+      return;
+    }
+    this.state.accounts[userId] = this.createAccount();
+    const diskAccount = await this.getAccountFromDisk({ userId: userId });
+    this.state.accounts[userId].profile = diskAccount.profile;
   }
 
   async addAccount(account: TAccount) {
+    account = await this.setAccountEnvironmentUrls(account);
+    this.state.authenticatedAccounts.push(account.profile.userId);
+    await this.storageService.save(keys.authenticatedAccounts, this.state.authenticatedAccounts);
     this.state.accounts[account.profile.userId] = account;
     await this.scaffoldNewAccountStorage(account);
+    await this.setLastActive(new Date().getTime(), { userId: account.profile.userId });
     await this.setActiveUser(account.profile.userId);
     this.activeAccount.next(account.profile.userId);
   }
 
   async setActiveUser(userId: string): Promise<void> {
+    this.clearDecryptedDataForActiveUser();
     this.state.activeUserId = userId;
-    const storedState = await this.storageService.get<State<TAccount>>(
-      "state",
-      await this.defaultOnDiskOptions()
-    );
-    storedState.activeUserId = userId;
-    await this.saveStateToStorage(storedState, await this.defaultOnDiskOptions());
-    await this.pushAccounts();
+    await this.storageService.save(keys.activeUserId, userId);
     this.activeAccount.next(this.state.activeUserId);
+    await this.pushAccounts();
   }
 
   async clean(options?: StorageOptions): Promise<void> {
-    // Find and set the next active user if any exists
-    if (options?.userId == null || options.userId === (await this.getUserId())) {
-      for (const userId in this.state.accounts) {
-        if (userId == null) {
-          continue;
-        }
-        if (await this.getIsAuthenticated({ userId: userId })) {
-          await this.setActiveUser(userId);
-          break;
-        }
-        await this.setActiveUser(null);
-      }
+    options = this.reconcileOptions(options, this.defaultInMemoryOptions);
+    await this.deAuthenticateAccount(options.userId);
+    if (options.userId === this.state.activeUserId) {
+      await this.dynamicallySetActiveUser();
     }
 
-    await this.removeAccountFromSessionStorage(options?.userId);
-    await this.removeAccountFromLocalStorage(options?.userId);
-    await this.removeAccountFromSecureStorage(options?.userId);
+    await this.removeAccountFromDisk(options?.userId);
     this.removeAccountFromMemory(options?.userId);
     await this.pushAccounts();
   }
 
   async getAccessToken(options?: StorageOptions): Promise<string> {
-    return (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
-    )?.tokens?.accessToken;
+    options = await this.getTimeoutBasedStorageOptions(options);
+    return (await this.getAccount(options))?.tokens?.accessToken;
   }
 
   async setAccessToken(value: string, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    options = await this.getTimeoutBasedStorageOptions(options);
+    const account = await this.getAccount(options);
     account.tokens.accessToken = value;
-    await this.saveAccount(
-      account,
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    await this.saveAccount(account, options);
   }
 
   async getAddEditCipherInfo(options?: StorageOptions): Promise<any> {
@@ -152,60 +170,50 @@ export class StateService<TAccount extends Account = Account>
 
   async getAlwaysShowDock(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.alwaysShowDock ?? false
+      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
+        ?.alwaysShowDock ?? false
     );
   }
 
   async setAlwaysShowDock(value: boolean, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
+    const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.settings.alwaysShowDock = value;
-    await this.saveAccount(
-      account,
+    globals.alwaysShowDock = value;
+    await this.saveGlobals(
+      globals,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
   }
 
   async getApiKeyClientId(options?: StorageOptions): Promise<string> {
-    return (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
-    )?.profile?.apiKeyClientId;
+    options = await this.getTimeoutBasedStorageOptions(options);
+    return (await this.getAccount(options))?.profile?.apiKeyClientId;
   }
 
   async setApiKeyClientId(value: string, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    options = await this.getTimeoutBasedStorageOptions(options);
+    const account = await this.getAccount(options);
     account.profile.apiKeyClientId = value;
-    await this.saveAccount(
-      account,
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    await this.saveAccount(account, options);
   }
 
   async getApiKeyClientSecret(options?: StorageOptions): Promise<string> {
-    return (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
-    )?.keys?.apiKeyClientSecret;
+    options = await this.getTimeoutBasedStorageOptions(options);
+    return (await this.getAccount(options))?.keys?.apiKeyClientSecret;
   }
 
   async setApiKeyClientSecret(value: string, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    options = await this.getTimeoutBasedStorageOptions(options);
+    const account = await this.getAccount(options);
     account.keys.apiKeyClientSecret = value;
-    await this.saveAccount(
-      account,
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    await this.saveAccount(account, options);
   }
 
   async getAutoConfirmFingerPrints(options?: StorageOptions): Promise<boolean> {
     return (
       (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.autoConfirmFingerPrints ?? true
+        ?.settings?.autoConfirmFingerPrints ?? false
     );
   }
 
@@ -223,7 +231,7 @@ export class StateService<TAccount extends Account = Account>
   async getAutoFillOnPageLoadDefault(options?: StorageOptions): Promise<boolean> {
     return (
       (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.autoFillOnPageLoadDefault ?? false
+        ?.settings?.autoFillOnPageLoadDefault ?? true
     );
   }
 
@@ -353,8 +361,12 @@ export class StateService<TAccount extends Account = Account>
 
   async getClearClipboard(options?: StorageOptions): Promise<number> {
     return (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
-    )?.settings?.clearClipboard;
+      (
+        await this.getAccount(
+          this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
+        )
+      )?.settings?.clearClipboard ?? null
+    );
   }
 
   async setClearClipboard(value: number, options?: StorageOptions): Promise<void> {
@@ -368,17 +380,21 @@ export class StateService<TAccount extends Account = Account>
     );
   }
 
-  async getCollapsedGroupings(options?: StorageOptions): Promise<Set<string>> {
-    return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))
-      ?.data?.collapsedGroupings;
+  async getCollapsedGroupings(options?: StorageOptions): Promise<string[]> {
+    return (
+      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
+    )?.settings?.collapsedGroupings;
   }
 
-  async setCollapsedGroupings(value: Set<string>, options?: StorageOptions): Promise<void> {
+  async setCollapsedGroupings(value: string[], options?: StorageOptions): Promise<void> {
     const account = await this.getAccount(
-      this.reconcileOptions(options, this.defaultInMemoryOptions)
+      this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
     );
-    account.data.collapsedGroupings = value;
-    await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
+    account.settings.collapsedGroupings = value;
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
+    );
   }
 
   async getConvertAccountToKeyConnector(options?: StorageOptions): Promise<boolean> {
@@ -419,7 +435,7 @@ export class StateService<TAccount extends Account = Account>
     if (options?.userId == null) {
       return null;
     }
-    return await this.secureStorageService.get(`${options.userId}_masterkey_auto`, options);
+    return await this.secureStorageService.get(`${options.userId}${partialKeys.autoKey}`, options);
   }
 
   async setCryptoMasterKeyAuto(value: string, options?: StorageOptions): Promise<void> {
@@ -430,7 +446,7 @@ export class StateService<TAccount extends Account = Account>
     if (options?.userId == null) {
       return;
     }
-    await this.secureStorageService.save(`${options.userId}_masterkey_auto`, value, options);
+    await this.saveSecureStorageKey(partialKeys.autoKey, value, options);
   }
 
   async getCryptoMasterKeyB64(options?: StorageOptions): Promise<string> {
@@ -438,7 +454,10 @@ export class StateService<TAccount extends Account = Account>
     if (options?.userId == null) {
       return null;
     }
-    return await this.secureStorageService.get(`${options?.userId}_masterkey`, options);
+    return await this.secureStorageService.get(
+      `${options?.userId}${partialKeys.masterKey}`,
+      options
+    );
   }
 
   async setCryptoMasterKeyB64(value: string, options?: StorageOptions): Promise<void> {
@@ -446,7 +465,7 @@ export class StateService<TAccount extends Account = Account>
     if (options?.userId == null) {
       return;
     }
-    await this.secureStorageService.save(`${options.userId}_masterkey`, value, options);
+    await this.saveSecureStorageKey(partialKeys.masterKey, value, options);
   }
 
   async getCryptoMasterKeyBiometric(options?: StorageOptions): Promise<string> {
@@ -457,7 +476,10 @@ export class StateService<TAccount extends Account = Account>
     if (options?.userId == null) {
       return null;
     }
-    return await this.secureStorageService.get(`${options.userId}_masterkey_biometric`, options);
+    return await this.secureStorageService.get(
+      `${options.userId}${partialKeys.biometricKey}`,
+      options
+    );
   }
 
   async hasCryptoMasterKeyBiometric(options?: StorageOptions): Promise<boolean> {
@@ -468,7 +490,10 @@ export class StateService<TAccount extends Account = Account>
     if (options?.userId == null) {
       return false;
     }
-    return await this.secureStorageService.has(`${options.userId}_masterkey_biometric`, options);
+    return await this.secureStorageService.has(
+      `${options.userId}${partialKeys.biometricKey}`,
+      options
+    );
   }
 
   async setCryptoMasterKeyBiometric(value: string, options?: StorageOptions): Promise<void> {
@@ -479,7 +504,7 @@ export class StateService<TAccount extends Account = Account>
     if (options?.userId == null) {
       return;
     }
-    await this.secureStorageService.save(`${options.userId}_masterkey_biometric`, value, options);
+    await this.saveSecureStorageKey(partialKeys.biometricKey, value, options);
   }
 
   async getDecodedToken(options?: StorageOptions): Promise<any> {
@@ -860,20 +885,16 @@ export class StateService<TAccount extends Account = Account>
   }
 
   async getEmail(options?: StorageOptions): Promise<string> {
-    return (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
-    )?.profile?.email;
+    return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))
+      ?.profile?.email;
   }
 
   async setEmail(value: string, options?: StorageOptions): Promise<void> {
     const account = await this.getAccount(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+      this.reconcileOptions(options, this.defaultInMemoryOptions)
     );
     account.profile.email = value;
-    await this.saveAccount(
-      account,
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
   }
 
   async getEmailVerified(options?: StorageOptions): Promise<boolean> {
@@ -962,26 +983,26 @@ export class StateService<TAccount extends Account = Account>
 
   async getEnableBrowserIntegration(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.enableBrowserIntegration ?? false
+      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
+        ?.enableBrowserIntegration ?? false
     );
   }
 
   async setEnableBrowserIntegration(value: boolean, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
+    const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.settings.enableBrowserIntegration = value;
-    await this.saveAccount(
-      account,
+    globals.enableBrowserIntegration = value;
+    await this.saveGlobals(
+      globals,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
   }
 
   async getEnableBrowserIntegrationFingerprint(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.enableBrowserIntegrationFingerprint ?? false
+      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
+        ?.enableBrowserIntegrationFingerprint ?? false
     );
   }
 
@@ -989,30 +1010,30 @@ export class StateService<TAccount extends Account = Account>
     value: boolean,
     options?: StorageOptions
   ): Promise<void> {
-    const account = await this.getAccount(
+    const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.settings.enableBrowserIntegrationFingerprint = value;
-    await this.saveAccount(
-      account,
+    globals.enableBrowserIntegrationFingerprint = value;
+    await this.saveGlobals(
+      globals,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
   }
 
   async getEnableCloseToTray(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.enableCloseToTray ?? false
+      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
+        ?.enableCloseToTray ?? false
     );
   }
 
   async setEnableCloseToTray(value: boolean, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
+    const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.settings.enableCloseToTray = value;
-    await this.saveAccount(
-      account,
+    globals.enableCloseToTray = value;
+    await this.saveGlobals(
+      globals,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
   }
@@ -1061,54 +1082,54 @@ export class StateService<TAccount extends Account = Account>
 
   async getEnableMinimizeToTray(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.enableMinimizeToTray ?? false
+      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
+        ?.enableMinimizeToTray ?? false
     );
   }
 
   async setEnableMinimizeToTray(value: boolean, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
+    const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.settings.enableMinimizeToTray = value;
-    await this.saveAccount(
-      account,
+    globals.enableMinimizeToTray = value;
+    await this.saveGlobals(
+      globals,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
   }
 
   async getEnableStartToTray(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings.enableStartToTray ?? false
+      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
+        ?.enableStartToTray ?? false
     );
   }
 
   async setEnableStartToTray(value: boolean, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
+    const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.settings.enableStartToTray = value;
-    await this.saveAccount(
-      account,
+    globals.enableStartToTray = value;
+    await this.saveGlobals(
+      globals,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
   }
 
   async getEnableTray(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.settings?.enableTray ?? false
+      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
+        ?.enableTray ?? false
     );
   }
 
   async setEnableTray(value: boolean, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
+    const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
-    account.settings.enableTray = value;
-    await this.saveAccount(
-      account,
+    globals.enableTray = value;
+    await this.saveGlobals(
+      globals,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
   }
@@ -1359,25 +1380,17 @@ export class StateService<TAccount extends Account = Account>
     );
   }
 
-  async getEnvironmentUrls(options?: StorageOptions): Promise<any> {
-    return (
-      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.environmentUrls ?? {
-        base: null,
-        api: null,
-        identity: null,
-        icons: null,
-        notifications: null,
-        events: null,
-        webVault: null,
-        keyConnector: null,
-        // TODO: this is a bug and we should use base instead for the server detail in the account switcher, otherwise self hosted urls will not show correctly
-        server: "bitwarden.com",
-      }
-    );
+  async getEnvironmentUrls(options?: StorageOptions): Promise<EnvironmentUrls> {
+    if (this.state.activeUserId == null) {
+      return await this.getGlobalEnvironmentUrls(options);
+    }
+    options = this.reconcileOptions(options, await this.defaultOnDiskOptions());
+    return (await this.getAccount(options))?.settings?.environmentUrls ?? new EnvironmentUrls();
   }
 
-  async setEnvironmentUrls(value: any, options?: StorageOptions): Promise<void> {
+  async setEnvironmentUrls(value: EnvironmentUrls, options?: StorageOptions): Promise<void> {
+    // Global values are set on each change and the current global settings are passed to any newly authed accounts.
+    // This is to allow setting environement values before an account is active, while still allowing individual accounts to have their own environments.
     const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
@@ -1424,20 +1437,17 @@ export class StateService<TAccount extends Account = Account>
 
   async getEverBeenUnlocked(options?: StorageOptions): Promise<boolean> {
     return (
-      (await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.profile?.everBeenUnlocked ?? false
+      (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))?.profile
+        ?.everBeenUnlocked ?? false
     );
   }
 
   async setEverBeenUnlocked(value: boolean, options?: StorageOptions): Promise<void> {
     const account = await this.getAccount(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+      this.reconcileOptions(options, this.defaultInMemoryOptions)
     );
     account.profile.everBeenUnlocked = value;
-    await this.saveAccount(
-      account,
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
   }
 
   async getForcePasswordReset(options?: StorageOptions): Promise<boolean> {
@@ -1528,36 +1538,32 @@ export class StateService<TAccount extends Account = Account>
   }
 
   async getLastActive(options?: StorageOptions): Promise<number> {
-    const lastActive = (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
-    )?.profile?.lastActive;
-    return (
-      lastActive ??
-      (await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskOptions())))
-        ?.lastActive
+    options = this.reconcileOptions(options, await this.defaultOnDiskOptions());
+
+    const accountActivity = await this.storageService.get<{ [userId: string]: number }>(
+      keys.accountActivity,
+      options
     );
+
+    if (accountActivity == null || Object.keys(accountActivity).length < 1) {
+      return null;
+    }
+
+    return accountActivity[options.userId];
   }
 
   async setLastActive(value: number, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
-    if (account != null) {
-      account.profile.lastActive = value;
-      await this.saveAccount(
-        account,
-        this.reconcileOptions(options, await this.defaultOnDiskOptions())
-      );
+    options = this.reconcileOptions(options, await this.defaultOnDiskOptions());
+    if (options.userId == null) {
+      return;
     }
-
-    const globals = await this.getGlobals(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
-    globals.lastActive = value;
-    await this.saveGlobals(
-      globals,
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    const accountActivity =
+      (await this.storageService.get<{ [userId: string]: number }>(
+        keys.accountActivity,
+        options
+      )) ?? {};
+    accountActivity[options.userId] = value;
+    await this.storageService.save(keys.accountActivity, accountActivity, options);
   }
 
   async getLastSync(options?: StorageOptions): Promise<string> {
@@ -1595,16 +1601,19 @@ export class StateService<TAccount extends Account = Account>
   }
 
   async getLocalData(options?: StorageOptions): Promise<any> {
-    return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))
-      ?.data?.localData;
+    return (
+      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
+    )?.data?.localData;
   }
-
   async setLocalData(value: string, options?: StorageOptions): Promise<void> {
     const account = await this.getAccount(
-      this.reconcileOptions(options, this.defaultInMemoryOptions)
+      this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
     );
     account.data.localData = value;
-    await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
+    );
   }
 
   async getLocale(options?: StorageOptions): Promise<string> {
@@ -1622,19 +1631,6 @@ export class StateService<TAccount extends Account = Account>
       globals,
       this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
     );
-  }
-
-  async getLoginRedirect(options?: StorageOptions): Promise<any> {
-    return (await this.getGlobals(this.reconcileOptions(options, this.defaultInMemoryOptions)))
-      ?.loginRedirect;
-  }
-
-  async setLoginRedirect(value: any, options?: StorageOptions): Promise<void> {
-    const globals = await this.getGlobals(
-      this.reconcileOptions(options, this.defaultInMemoryOptions)
-    );
-    globals.loginRedirect = value;
-    await this.saveGlobals(globals, this.reconcileOptions(options, this.defaultInMemoryOptions));
   }
 
   async getMainWindowSize(options?: StorageOptions): Promise<number> {
@@ -1788,6 +1784,40 @@ export class StateService<TAccount extends Account = Account>
     );
   }
 
+  async getUsernameGenerationOptions(options?: StorageOptions): Promise<any> {
+    return (
+      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
+    )?.settings?.usernameGenerationOptions;
+  }
+
+  async setUsernameGenerationOptions(value: any, options?: StorageOptions): Promise<void> {
+    const account = await this.getAccount(
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+    );
+    account.settings.usernameGenerationOptions = value;
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+    );
+  }
+
+  async getGeneratorOptions(options?: StorageOptions): Promise<any> {
+    return (
+      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
+    )?.settings?.generatorOptions;
+  }
+
+  async setGeneratorOptions(value: any, options?: StorageOptions): Promise<void> {
+    const account = await this.getAccount(
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+    );
+    account.settings.generatorOptions = value;
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+    );
+  }
+
   async getProtectedPin(options?: StorageOptions): Promise<string> {
     return (
       await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
@@ -1806,8 +1836,9 @@ export class StateService<TAccount extends Account = Account>
   }
 
   async getProviders(options?: StorageOptions): Promise<{ [id: string]: ProviderData }> {
-    return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))
-      ?.data?.providers;
+    return (
+      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
+    )?.data?.providers;
   }
 
   async setProviders(
@@ -1815,10 +1846,13 @@ export class StateService<TAccount extends Account = Account>
     options?: StorageOptions
   ): Promise<void> {
     const account = await this.getAccount(
-      this.reconcileOptions(options, this.defaultInMemoryOptions)
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
     account.data.providers = value;
-    await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+    );
   }
 
   async getPublicKey(options?: StorageOptions): Promise<ArrayBuffer> {
@@ -1835,20 +1869,15 @@ export class StateService<TAccount extends Account = Account>
   }
 
   async getRefreshToken(options?: StorageOptions): Promise<string> {
-    return (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
-    )?.tokens?.refreshToken;
+    options = await this.getTimeoutBasedStorageOptions(options);
+    return (await this.getAccount(options))?.tokens?.refreshToken;
   }
 
   async setRefreshToken(value: string, options?: StorageOptions): Promise<void> {
-    const account = await this.getAccount(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    options = await this.getTimeoutBasedStorageOptions(options);
+    const account = await this.getAccount(options);
     account.tokens.refreshToken = value;
-    await this.saveAccount(
-      account,
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    );
+    await this.saveAccount(account, options);
   }
 
   async getRememberedEmail(options?: StorageOptions): Promise<string> {
@@ -1949,13 +1978,13 @@ export class StateService<TAccount extends Account = Account>
     );
   }
 
-  async getTheme(options?: StorageOptions): Promise<string> {
+  async getTheme(options?: StorageOptions): Promise<ThemeType> {
     return (
       await this.getGlobals(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
     )?.theme;
   }
 
-  async setTheme(value: string, options?: StorageOptions): Promise<void> {
+  async setTheme(value: ThemeType, options?: StorageOptions): Promise<void> {
     const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
     );
@@ -1990,16 +2019,20 @@ export class StateService<TAccount extends Account = Account>
   }
 
   async getUsesKeyConnector(options?: StorageOptions): Promise<boolean> {
-    return (await this.getAccount(this.reconcileOptions(options, this.defaultInMemoryOptions)))
-      ?.profile?.usesKeyConnector;
+    return (
+      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
+    )?.profile?.usesKeyConnector;
   }
 
   async setUsesKeyConnector(value: boolean, options?: StorageOptions): Promise<void> {
     const account = await this.getAccount(
-      this.reconcileOptions(options, this.defaultInMemoryOptions)
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
     account.profile.usesKeyConnector = value;
-    await this.saveAccount(account, this.reconcileOptions(options, this.defaultInMemoryOptions));
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+    );
   }
 
   async getVaultTimeout(options?: StorageOptions): Promise<number> {
@@ -2051,14 +2084,14 @@ export class StateService<TAccount extends Account = Account>
     await this.saveGlobals(globals, await this.defaultOnDiskOptions());
   }
 
-  async getWindow(): Promise<Map<string, any>> {
+  async getWindow(): Promise<WindowState> {
     const globals = await this.getGlobals(await this.defaultOnDiskOptions());
     return globals?.window != null && Object.keys(globals.window).length > 0
       ? globals.window
-      : new Map<string, any>();
+      : new WindowState();
   }
 
-  async setWindow(value: Map<string, any>, options?: StorageOptions): Promise<void> {
+  async setWindow(value: WindowState, options?: StorageOptions): Promise<void> {
     const globals = await this.getGlobals(
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
     );
@@ -2069,8 +2102,8 @@ export class StateService<TAccount extends Account = Account>
     );
   }
 
-  protected async getGlobals(options: StorageOptions): Promise<GlobalState> {
-    let globals: GlobalState;
+  protected async getGlobals(options: StorageOptions): Promise<TGlobalState> {
+    let globals: TGlobalState;
     if (this.useMemory(options.storageLocation)) {
       globals = this.getGlobalsFromMemory();
     }
@@ -2079,38 +2112,32 @@ export class StateService<TAccount extends Account = Account>
       globals = await this.getGlobalsFromDisk(options);
     }
 
-    return globals ?? new GlobalState();
+    return globals ?? this.createGlobals();
   }
 
-  protected async saveGlobals(globals: GlobalState, options: StorageOptions) {
+  protected async saveGlobals(globals: TGlobalState, options: StorageOptions) {
     return this.useMemory(options.storageLocation)
       ? this.saveGlobalsToMemory(globals)
       : await this.saveGlobalsToDisk(globals, options);
   }
 
-  protected getGlobalsFromMemory(): GlobalState {
+  protected getGlobalsFromMemory(): TGlobalState {
     return this.state.globals;
   }
 
-  protected async getGlobalsFromDisk(options: StorageOptions): Promise<GlobalState> {
-    return (await this.storageService.get<State<TAccount>>("state", options))?.globals;
+  protected async getGlobalsFromDisk(options: StorageOptions): Promise<TGlobalState> {
+    return await this.storageService.get<TGlobalState>(keys.global, options);
   }
 
-  protected saveGlobalsToMemory(globals: GlobalState): void {
+  protected saveGlobalsToMemory(globals: TGlobalState): void {
     this.state.globals = globals;
   }
 
-  protected async saveGlobalsToDisk(globals: GlobalState, options: StorageOptions): Promise<void> {
+  protected async saveGlobalsToDisk(globals: TGlobalState, options: StorageOptions): Promise<void> {
     if (options.useSecureStorage) {
-      const state =
-        (await this.secureStorageService.get<State<TAccount>>("state", options)) ?? new State();
-      state.globals = globals;
-      await this.secureStorageService.save("state", state, options);
+      await this.secureStorageService.save(keys.global, globals, options);
     } else {
-      const state =
-        (await this.storageService.get<State<TAccount>>("state", options)) ?? new State();
-      state.globals = globals;
-      await this.saveStateToStorage(state, options);
+      await this.storageService.save(keys.global, globals, options);
     }
   }
 
@@ -2149,15 +2176,25 @@ export class StateService<TAccount extends Account = Account>
       return null;
     }
 
-    const state = options?.useSecureStorage
-      ? (await this.secureStorageService.get<State<TAccount>>("state", options)) ??
-        (await this.storageService.get<State<TAccount>>(
-          "state",
+    if (this.useAccountCache) {
+      const cachedAccount = this.accountDiskCache.get(options.userId);
+      if (cachedAccount != null) {
+        return cachedAccount;
+      }
+    }
+
+    const account = options?.useSecureStorage
+      ? (await this.secureStorageService.get<TAccount>(options.userId, options)) ??
+        (await this.storageService.get<TAccount>(
+          options.userId,
           this.reconcileOptions(options, { htmlStorageLocation: HtmlStorageLocation.Local })
         ))
-      : await this.storageService.get<State<TAccount>>("state", options);
+      : await this.storageService.get<TAccount>(options.userId, options);
 
-    return state?.accounts[options?.userId ?? this.state.activeUserId];
+    if (this.useAccountCache) {
+      this.accountDiskCache.set(options.userId, account);
+    }
+    return account;
   }
 
   protected useMemory(storageLocation: StorageLocation) {
@@ -2185,12 +2222,11 @@ export class StateService<TAccount extends Account = Account>
       ? this.secureStorageService
       : this.storageService;
 
-    const state =
-      (await storageLocation.get<State<TAccount>>("state", options)) ?? new State<TAccount>();
-    state.accounts[account.profile.userId] = account;
+    await storageLocation.save(`${options.userId}`, account, options);
 
-    await storageLocation.save("state", state, options);
-    await this.pushAccounts();
+    if (this.useAccountCache) {
+      this.accountDiskCache.delete(options.userId);
+    }
   }
 
   protected async saveAccountToMemory(account: TAccount): Promise<void> {
@@ -2201,52 +2237,90 @@ export class StateService<TAccount extends Account = Account>
   }
 
   protected async scaffoldNewAccountStorage(account: TAccount): Promise<void> {
-    await this.scaffoldNewAccountLocalStorage(account);
-    await this.scaffoldNewAccountSessionStorage(account);
-    await this.scaffoldNewAccountMemoryStorage(account);
+    // We don't want to manipulate the referenced in memory account
+    const deepClone = JSON.parse(JSON.stringify(account));
+    await this.scaffoldNewAccountLocalStorage(deepClone);
+    await this.scaffoldNewAccountSessionStorage(deepClone);
+    await this.scaffoldNewAccountMemoryStorage(deepClone);
   }
 
+  // TODO: There is a tech debt item for splitting up these methods - only Web uses multiple storage locations in its storageService.
+  // For now these methods exist with some redundancy to facilitate this special web requirement.
   protected async scaffoldNewAccountLocalStorage(account: TAccount): Promise<void> {
-    const storedState =
-      (await this.storageService.get<State<TAccount>>(
-        "state",
+    const storedAccount = await this.getAccount(
+      this.reconcileOptions(
+        { userId: account.profile.userId },
         await this.defaultOnDiskLocalOptions()
-      )) ?? new State<TAccount>();
-    const storedAccount = storedState.accounts[account.profile.userId];
-    if (storedAccount != null) {
+      )
+    );
+    // EnvironmentUrls are set before authenticating and should override whatever is stored from any previous session
+    const environmentUrls = account.settings.environmentUrls;
+    if (storedAccount?.settings != null) {
       account.settings = storedAccount.settings;
+    } else if (await this.storageService.has(keys.tempAccountSettings)) {
+      account.settings = await this.storageService.get<any>(keys.tempAccountSettings);
+      await this.storageService.remove(keys.tempAccountSettings);
     }
-    storedState.accounts[account.profile.userId] = account;
-    await this.saveStateToStorage(storedState, await this.defaultOnDiskLocalOptions());
+    account.settings.environmentUrls = environmentUrls;
+    if (account.settings.vaultTimeoutAction === "logOut" && account.settings.vaultTimeout != null) {
+      account.tokens.accessToken = null;
+      account.tokens.refreshToken = null;
+      account.profile.apiKeyClientId = null;
+      account.keys.apiKeyClientSecret = null;
+    }
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(
+        { userId: account.profile.userId },
+        await this.defaultOnDiskLocalOptions()
+      )
+    );
   }
 
   protected async scaffoldNewAccountMemoryStorage(account: TAccount): Promise<void> {
-    const storedState =
-      (await this.storageService.get<State<TAccount>>(
-        "state",
+    const storedAccount = await this.getAccount(
+      this.reconcileOptions(
+        { userId: account.profile.userId },
         await this.defaultOnDiskMemoryOptions()
-      )) ?? new State<TAccount>();
-    const storedAccount = storedState.accounts[account.profile.userId];
-    if (storedAccount != null) {
+      )
+    );
+    if (storedAccount?.settings != null) {
+      storedAccount.settings.environmentUrls = account.settings.environmentUrls;
       account.settings = storedAccount.settings;
     }
-    storedState.accounts[account.profile.userId] = account;
-    await this.saveStateToStorage(storedState, await this.defaultOnDiskMemoryOptions());
+    await this.storageService.save(
+      account.profile.userId,
+      account,
+      await this.defaultOnDiskMemoryOptions()
+    );
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(
+        { userId: account.profile.userId },
+        await this.defaultOnDiskMemoryOptions()
+      )
+    );
   }
 
   protected async scaffoldNewAccountSessionStorage(account: TAccount): Promise<void> {
-    const storedState =
-      (await this.storageService.get<State<TAccount>>(
-        "state",
-        await this.defaultOnDiskOptions()
-      )) ?? new State<TAccount>();
-    const storedAccount = storedState.accounts[account.profile.userId];
-    if (storedAccount != null) {
+    const storedAccount = await this.getAccount(
+      this.reconcileOptions({ userId: account.profile.userId }, await this.defaultOnDiskOptions())
+    );
+    if (storedAccount?.settings != null) {
+      storedAccount.settings.environmentUrls = account.settings.environmentUrls;
       account.settings = storedAccount.settings;
     }
-    storedState.accounts[account.profile.userId] = account;
-    await this.saveStateToStorage(storedState, await this.defaultOnDiskOptions());
+    await this.storageService.save(
+      account.profile.userId,
+      account,
+      await this.defaultOnDiskMemoryOptions()
+    );
+    await this.saveAccount(
+      account,
+      this.reconcileOptions({ userId: account.profile.userId }, await this.defaultOnDiskOptions())
+    );
   }
+  //
 
   protected async pushAccounts(): Promise<void> {
     await this.pruneInMemoryAccounts();
@@ -2284,7 +2358,7 @@ export class StateService<TAccount extends Account = Account>
     return {
       storageLocation: StorageLocation.Disk,
       htmlStorageLocation: HtmlStorageLocation.Session,
-      userId: await this.getActiveUserIdFromStorage(),
+      userId: this.state.activeUserId ?? (await this.getActiveUserIdFromStorage()),
       useSecureStorage: false,
     };
   }
@@ -2293,7 +2367,7 @@ export class StateService<TAccount extends Account = Account>
     return {
       storageLocation: StorageLocation.Disk,
       htmlStorageLocation: HtmlStorageLocation.Local,
-      userId: await this.getActiveUserIdFromStorage(),
+      userId: this.state.activeUserId ?? (await this.getActiveUserIdFromStorage()),
       useSecureStorage: false,
     };
   }
@@ -2302,7 +2376,7 @@ export class StateService<TAccount extends Account = Account>
     return {
       storageLocation: StorageLocation.Disk,
       htmlStorageLocation: HtmlStorageLocation.Memory,
-      userId: await this.getUserId(),
+      userId: this.state.activeUserId ?? (await this.getUserId()),
       useSecureStorage: false,
     };
   }
@@ -2311,39 +2385,36 @@ export class StateService<TAccount extends Account = Account>
     return {
       storageLocation: StorageLocation.Disk,
       useSecureStorage: true,
-      userId: await this.getActiveUserIdFromStorage(),
+      userId: this.state.activeUserId ?? (await this.getActiveUserIdFromStorage()),
     };
   }
 
   protected async getActiveUserIdFromStorage(): Promise<string> {
-    const state = await this.storageService.get<State<TAccount>>("state");
-    return state?.activeUserId;
+    return await this.storageService.get<string>(keys.activeUserId);
   }
 
   protected async removeAccountFromLocalStorage(
     userId: string = this.state.activeUserId
   ): Promise<void> {
-    const state = await this.storageService.get<State<TAccount>>("state", {
-      htmlStorageLocation: HtmlStorageLocation.Local,
-    });
-    if (state?.accounts[userId] == null) {
-      return;
-    }
-    state.accounts[userId] = this.resetAccount(state.accounts[userId]);
-    await this.saveStateToStorage(state, await this.defaultOnDiskLocalOptions());
+    const storedAccount = await this.getAccount(
+      this.reconcileOptions({ userId: userId }, await this.defaultOnDiskLocalOptions())
+    );
+    await this.saveAccount(
+      this.resetAccount(storedAccount),
+      this.reconcileOptions({ userId: userId }, await this.defaultOnDiskLocalOptions())
+    );
   }
 
   protected async removeAccountFromSessionStorage(
     userId: string = this.state.activeUserId
   ): Promise<void> {
-    const state = await this.storageService.get<State<TAccount>>("state", {
-      htmlStorageLocation: HtmlStorageLocation.Session,
-    });
-    if (state?.accounts[userId] == null) {
-      return;
-    }
-    state.accounts[userId] = this.resetAccount(state.accounts[userId]);
-    await this.saveStateToStorage(state, await this.defaultOnDiskOptions());
+    const storedAccount = await this.getAccount(
+      this.reconcileOptions({ userId: userId }, await this.defaultOnDiskOptions())
+    );
+    await this.saveAccount(
+      this.resetAccount(storedAccount),
+      this.reconcileOptions({ userId: userId }, await this.defaultOnDiskOptions())
+    );
   }
 
   protected async removeAccountFromSecureStorage(
@@ -2356,30 +2427,97 @@ export class StateService<TAccount extends Account = Account>
 
   protected removeAccountFromMemory(userId: string = this.state.activeUserId): void {
     delete this.state.accounts[userId];
-  }
-
-  protected async saveStateToStorage(
-    state: State<TAccount>,
-    options: StorageOptions
-  ): Promise<void> {
-    await this.storageService.save("state", state, options);
+    if (this.useAccountCache) {
+      this.accountDiskCache.delete(userId);
+    }
   }
 
   protected async pruneInMemoryAccounts() {
     // We preserve settings for logged out accounts, but we don't want to consider them when thinking about active account state
     for (const userId in this.state.accounts) {
       if (!(await this.getIsAuthenticated({ userId: userId }))) {
-        delete this.state.accounts[userId];
+        this.removeAccountFromMemory(userId);
       }
     }
   }
 
-  // settings persist even on reset
+  // settings persist even on reset, and are not effected by this method
   protected resetAccount(account: TAccount) {
-    account.data = new AccountData();
-    account.keys = new AccountKeys();
-    account.profile = new AccountProfile();
-    account.tokens = new AccountTokens();
+    const persistentAccountInformation = { settings: account.settings };
+    return Object.assign(this.createAccount(), persistentAccountInformation);
+  }
+
+  protected async setAccountEnvironmentUrls(account: TAccount): Promise<TAccount> {
+    account.settings.environmentUrls = await this.getGlobalEnvironmentUrls();
     return account;
+  }
+
+  protected async getGlobalEnvironmentUrls(options?: StorageOptions): Promise<EnvironmentUrls> {
+    options = this.reconcileOptions(options, await this.defaultOnDiskOptions());
+    return (await this.getGlobals(options)).environmentUrls ?? new EnvironmentUrls();
+  }
+
+  protected clearDecryptedDataForActiveUser() {
+    const userId = this.state.activeUserId;
+    if (userId == null || this.state?.accounts[userId]?.data == null) {
+      return;
+    }
+    this.state.accounts[userId].data = new AccountData();
+  }
+
+  protected createAccount(init: Partial<TAccount> = null): TAccount {
+    return this.stateFactory.createAccount(init);
+  }
+
+  protected createGlobals(init: Partial<TGlobalState> = null): TGlobalState {
+    return this.stateFactory.createGlobal(init);
+  }
+
+  protected async deAuthenticateAccount(userId: string) {
+    await this.setAccessToken(null, { userId: userId });
+    await this.setLastActive(null, { userId: userId });
+    this.state.authenticatedAccounts = this.state.authenticatedAccounts.filter(
+      (activeUserId) => activeUserId !== userId
+    );
+    await this.storageService.save(keys.authenticatedAccounts, this.state.authenticatedAccounts);
+  }
+
+  protected async removeAccountFromDisk(userId: string) {
+    await this.removeAccountFromSessionStorage(userId);
+    await this.removeAccountFromLocalStorage(userId);
+    await this.removeAccountFromSecureStorage(userId);
+  }
+
+  protected async dynamicallySetActiveUser() {
+    if (this.state.accounts == null || Object.keys(this.state.accounts).length < 1) {
+      await this.setActiveUser(null);
+      return;
+    }
+    for (const userId in this.state.accounts) {
+      if (userId == null) {
+        continue;
+      }
+      if (await this.getIsAuthenticated({ userId: userId })) {
+        await this.setActiveUser(userId);
+        break;
+      }
+      await this.setActiveUser(null);
+    }
+  }
+
+  private async getTimeoutBasedStorageOptions(options?: StorageOptions): Promise<StorageOptions> {
+    const timeoutAction = await this.getVaultTimeoutAction({ userId: options?.userId });
+    const timeout = await this.getVaultTimeout({ userId: options?.userId });
+    const defaultOptions =
+      timeoutAction === "logOut" && timeout != null
+        ? this.defaultInMemoryOptions
+        : await this.defaultOnDiskOptions();
+    return this.reconcileOptions(options, defaultOptions);
+  }
+
+  private async saveSecureStorageKey(key: string, value: string, options?: StorageOptions) {
+    return value == null
+      ? await this.secureStorageService.remove(`${options.userId}${key}`, options)
+      : await this.secureStorageService.save(`${options.userId}${key}`, value, options);
   }
 }
