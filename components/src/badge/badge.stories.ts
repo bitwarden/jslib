@@ -19,11 +19,11 @@ export default {
 const Template: Story<BadgeDirective> = (args: BadgeDirective) => ({
   props: args,
   template: `
-    <span class="tw-text-main">Span </span><span bit-badge [badgeType]="badgeType">Badge</span>
+    <span class="tw-text-main">Span </span><span bitBadge [badgeType]="badgeType">Badge</span>
     <br><br>
-    <span class="tw-text-main">Link </span><a href="#" bit-badge [badgeType]="badgeType">Badge</a>
+    <span class="tw-text-main">Link </span><a href="#" bitBadge [badgeType]="badgeType">Badge</a>
     <br><br>
-    <span class="tw-text-main">Button </span><button bit-badge [badgeType]="badgeType">Badge</button>
+    <span class="tw-text-main">Button </span><button bitBadge [badgeType]="badgeType">Badge</button>
   `,
 });
 
@@ -37,7 +37,7 @@ Secondary.args = {
 
 export const Success = Template.bind({});
 Success.args = {
-  badgeTypebadgeType: "success",
+  badgeType: "success",
 };
 
 export const Danger = Template.bind({});
