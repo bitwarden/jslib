@@ -67,8 +67,8 @@ describe("Button", () => {
 @Component({
   selector: "test-app",
   template: `
-    <button type="button" bit-button [buttonType]="buttonType" [block]="block">Button</button>
-    <a href="#" bit-button [buttonType]="buttonType" [block]="block"> Link </a>
+    <button type="button" bitButton [buttonType]="buttonType" [block]="block">Button</button>
+    <a href="#" bitButton [buttonType]="buttonType" [block]="block"> Link </a>
   `,
 })
 class TestApp {
