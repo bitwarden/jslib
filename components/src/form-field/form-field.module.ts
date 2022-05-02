@@ -6,6 +6,7 @@ import { I18nService } from "jslib-common/abstractions/i18n.service";
 import { InputModule } from "../input/input.module";
 
 import { BitFormFieldComponent } from "./form-field.component";
+import { BitHintComponent } from "./hint.component";
 import { BitLabel } from "./label";
 import { BitPrefix } from "./prefix";
 import { BitSuffix } from "./suffix";
@@ -26,7 +27,22 @@ export class I18nPipe implements PipeTransform {
 
 @NgModule({
   imports: [CommonModule, InputModule],
-  exports: [BitFormFieldComponent, BitLabel, BitPrefix, BitSuffix],
-  declarations: [I18nPipe, BitFormFieldComponent, BitLabel, BitPrefix, BitSuffix],
+  exports: [
+    //
+    BitFormFieldComponent,
+    BitHintComponent,
+    BitLabel,
+    BitPrefix,
+    BitSuffix,
+  ],
+  declarations: [
+    //
+    BitFormFieldComponent,
+    BitHintComponent,
+    BitLabel,
+    BitPrefix,
+    BitSuffix,
+    I18nPipe,
+  ],
 })
 export class FormFieldModule {}

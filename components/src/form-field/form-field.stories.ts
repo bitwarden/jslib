@@ -51,6 +51,7 @@ const Template: Story<BitFormFieldComponent> = (args: BitFormFieldComponent) => 
     <bit-form-field>
       <bit-label>Label</bit-label>
       <input bitInput [formControl]="formObj.get('test')" placeholder="Placeholder" />
+      <bit-hint>Message</bit-hint>
     </bit-form-field>
   `,
 });
@@ -127,3 +128,32 @@ const ButtonGroupTemplate: Story<BitFormFieldComponent> = (args: BitFormFieldCom
 
 export const ButtonInputGroup = ButtonGroupTemplate.bind({});
 ButtonInputGroup.args = {};
+
+const SelectTemplate: Story<BitFormFieldComponent> = (args: BitFormFieldComponent) => ({
+  props: args,
+  template: `
+    <bit-form-field>
+      <bit-label>Label</bit-label>
+      <select bitInput>
+        <option>Select</option>
+        <option>Other</option>
+      </select>
+    </bit-form-field>
+  `,
+});
+
+export const Select = SelectTemplate.bind({});
+Select.args = {};
+
+const TextareaTemplate: Story<BitFormFieldComponent> = (args: BitFormFieldComponent) => ({
+  props: args,
+  template: `
+    <bit-form-field>
+      <bit-label>Textarea</bit-label>
+      <textarea bitInput rows="4"></textarea>
+    </bit-form-field>
+  `,
+});
+
+export const Textarea = TextareaTemplate.bind({});
+Textarea.args = {};

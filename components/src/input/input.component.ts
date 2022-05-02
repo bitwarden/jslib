@@ -5,7 +5,7 @@ import { NgControl, Validators } from "@angular/forms";
 let nextId = 0;
 
 @Directive({
-  selector: "input[bitInput]",
+  selector: "input[bitInput], select[bitInput], textarea[bitInput]",
   host: {
     "[attr.id]": "id",
     "[required]": "required",
@@ -15,6 +15,7 @@ export class BitInput {
   @HostBinding("class") @Input() get classList() {
     return [
       "tw-block",
+      "tw-w-full",
       "tw-px-3",
       "tw-py-1.5",
       "tw-bg-background-alt",
