@@ -3,6 +3,7 @@ import { NgModule, Pipe, PipeTransform } from "@angular/core";
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 
+import { BitInput } from "../input/input.component";
 import { InputModule } from "../input/input.module";
 
 import { BitFormFieldComponent } from "./form-field.component";
@@ -31,6 +32,7 @@ export class I18nPipe implements PipeTransform {
     //
     BitFormFieldComponent,
     BitHintComponent,
+    BitInput,
     BitLabel,
     BitPrefix,
     BitSuffix,

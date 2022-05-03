@@ -14,6 +14,9 @@ import { BitSuffix } from "./suffix";
 @Component({
   selector: "bit-form-field",
   templateUrl: "./form-field.component.html",
+  host: {
+    class: "tw-mb-6 tw-block",
+  },
 })
 export class BitFormFieldComponent implements AfterContentChecked {
   @ContentChild(BitInput) input: BitInput;
