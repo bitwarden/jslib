@@ -1,9 +1,9 @@
 import { Collection as CollectionDomain } from "../domain/collection";
 import { CollectionView } from "../view/collectionView";
 
-import { Collection } from "./collection";
+import { CollectionExport } from "./collectionExport";
 
-export class CollectionWithId extends Collection {
+export class CollectionWithIdExport extends CollectionExport {
   id: string;
 
   // Use build method instead of ctor so that we can control order of JSON stringify for pretty print

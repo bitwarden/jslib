@@ -2,11 +2,11 @@ import { EncString } from "../domain/encString";
 import { Login as LoginDomain } from "../domain/login";
 import { LoginView } from "../view/loginView";
 
-import { LoginUri } from "./loginUri";
+import { LoginUriExport } from "./loginUriExport";
 
-export class Login {
-  static template(): Login {
-    const req = new Login();
+export class LoginExport {
+  static template(): LoginExport {
+    const req = new LoginExport();
     req.uris = [];
     req.username = "jdoe";
     req.password = "myp@ssword123";
@@ -14,9 +14,9 @@ export class Login {
     return req;
   }
 
-  static toView(req: Login, view = new LoginView()) {
+  static toView(req: LoginExport, view = new LoginView()) {
     if (req.uris != null) {
-      view.uris = req.uris.map((u) => LoginUri.toView(u));
+      view.uris = req.uris.map((u) => LoginUriExport.toView(u));
     }
     view.username = req.username;
     view.password = req.password;
@@ -24,9 +24,9 @@ export class Login {
     return view;
   }
 
-  static toDomain(req: Login, domain = new LoginDomain()) {
+  static toDomain(req: LoginExport, domain = new LoginDomain()) {
     if (req.uris != null) {
-      domain.uris = req.uris.map((u) => LoginUri.toDomain(u));
+      domain.uris = req.uris.map((u) => LoginUriExport.toDomain(u));
     }
     domain.username = req.username != null ? new EncString(req.username) : null;
     domain.password = req.password != null ? new EncString(req.password) : null;
@@ -34,7 +34,7 @@ export class Login {
     return domain;
   }
 
-  uris: LoginUri[];
+  uris: LoginUriExport[];
   username: string;
   password: string;
   totp: string;
@@ -46,9 +46,9 @@ export class Login {
 
     if (o.uris != null) {
       if (o instanceof LoginView) {
-        this.uris = o.uris.map((u) => new LoginUri(u));
+        this.uris = o.uris.map((u) => new LoginUriExport(u));
       } else {
-        this.uris = o.uris.map((u) => new LoginUri(u));
+        this.uris = o.uris.map((u) => new LoginUriExport(u));
       }
     }
 

@@ -13,7 +13,7 @@ export class Field extends Domain {
   type: FieldType;
   linkedId: LinkedIdType;
 
-  constructor(obj?: FieldData, alreadyEncrypted = false) {
+  constructor(obj?: FieldData) {
     super();
     if (obj == null) {
       return;
@@ -28,7 +28,6 @@ export class Field extends Domain {
         name: null,
         value: null,
       },
-      alreadyEncrypted,
       []
     );
   }
