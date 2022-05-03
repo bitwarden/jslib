@@ -10,10 +10,7 @@ import { BaseGuard } from "./base.guard";
 export class LockGuard extends BaseGuard implements CanActivate {
   protected homepage = "vault";
   protected loginpage = "login";
-  constructor(
-    private authService: AuthService,
-    router: Router,
-  ) {
+  constructor(private authService: AuthService, router: Router) {
     super(router);
   }
 

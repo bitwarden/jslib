@@ -9,10 +9,7 @@ import { BaseGuard as BaseGuard } from "./base.guard";
 @Injectable()
 export class UnauthGuard extends BaseGuard implements CanActivate {
   protected homepage = "vault";
-  constructor(
-    private authService: AuthService,
-    router: Router,
-  ) {
+  constructor(private authService: AuthService, router: Router) {
     super(router);
   }
 

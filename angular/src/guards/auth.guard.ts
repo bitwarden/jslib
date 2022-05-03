@@ -14,7 +14,7 @@ export class AuthGuard extends BaseGuard implements CanActivate {
     private authService: AuthService,
     router: Router,
     private messagingService: MessagingService,
-    private keyConnectorService: KeyConnectorService,
+    private keyConnectorService: KeyConnectorService
   ) {
     super(router);
   }
