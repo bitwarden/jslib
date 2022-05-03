@@ -21,9 +21,9 @@ export class UnauthGuard extends BaseGuard implements CanActivate {
     }
 
     if (authStatus === AuthenticationStatus.Locked) {
-      return this.router.createUrlTree(["lock"]);
+      return this.redirect("lock");
     }
 
-    return this.router.createUrlTree([this.homepage]);
+    return this.redirect(this.homepage);
   }
 }

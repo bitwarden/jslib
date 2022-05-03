@@ -31,14 +31,14 @@ export class AuthGuard extends BaseGuard implements CanActivate {
       if (routerState != null) {
         this.messagingService.send("lockedUrl", { url: routerState.url });
       }
-      return this.router.createUrlTree(["lock"], { queryParams: { promptBiometric: true } });
+      return this.redirect("lock", { queryParams: { promptBiometric: true } });
     }
 
     if (
       !routerState.url.includes("remove-password") &&
       (await this.keyConnectorService.getConvertAccountRequired())
     ) {
-      return this.router.createUrlTree(["/remove-password"]);
+      return this.redirect("/remove-password");
     }
 
     return true;
