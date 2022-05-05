@@ -4,15 +4,11 @@ import { CanActivate, Router } from "@angular/router";
 import { AuthService } from "jslib-common/abstractions/auth.service";
 import { AuthenticationStatus } from "jslib-common/enums/authenticationStatus";
 
-import { BaseGuard } from "./base.guard";
-
 @Injectable()
-export class LockGuard extends BaseGuard implements CanActivate {
+export class LockGuard implements CanActivate {
   protected homepage = "vault";
   protected loginpage = "login";
-  constructor(private authService: AuthService, router: Router) {
-    super(router);
-  }
+  constructor(private authService: AuthService, private router: Router) {}
 
   async canActivate() {
     const authStatus = await this.authService.getAuthStatus();
@@ -24,6 +20,6 @@ export class LockGuard extends BaseGuard implements CanActivate {
     const redirectUrl =
       authStatus === AuthenticationStatus.LoggedOut ? [this.loginpage] : [this.homepage];
 
-    return this.redirect(redirectUrl);
+    return this.router.createUrlTree([redirectUrl]);
   }
 }

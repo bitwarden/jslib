@@ -6,18 +6,14 @@ import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.serv
 import { MessagingService } from "jslib-common/abstractions/messaging.service";
 import { AuthenticationStatus } from "jslib-common/enums/authenticationStatus";
 
-import { BaseGuard } from "./base.guard";
-
 @Injectable()
-export class AuthGuard extends BaseGuard implements CanActivate {
+export class AuthGuard implements CanActivate {
   constructor(
     private authService: AuthService,
-    router: Router,
+    private router: Router,
     private messagingService: MessagingService,
     private keyConnectorService: KeyConnectorService
-  ) {
-    super(router);
-  }
+  ) {}
 
   async canActivate(route: ActivatedRouteSnapshot, routerState: RouterStateSnapshot) {
     const authStatus = await this.authService.getAuthStatus();
@@ -31,14 +27,14 @@ export class AuthGuard extends BaseGuard implements CanActivate {
       if (routerState != null) {
         this.messagingService.send("lockedUrl", { url: routerState.url });
       }
-      return this.redirect("lock", { queryParams: { promptBiometric: true } });
+      return this.router.createUrlTree(["lock"], { queryParams: { promptBiometric: true } });
     }
 
     if (
       !routerState.url.includes("remove-password") &&
       (await this.keyConnectorService.getConvertAccountRequired())
     ) {
-      return this.redirect("/remove-password");
+      return this.router.createUrlTree(["/remove-password"]);
     }
 
     return true;
