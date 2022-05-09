@@ -241,6 +241,10 @@ $icons: (
   "android": "\e944",
   "error": "\e981",
   "numbered-list": "\e989",
+  "billing": "\e98a",
+  "family": "\e98b",
+  "provider": "\e98c",
+  "business": "\e98d",
 );
 
 @each $name, $glyph in $icons {
