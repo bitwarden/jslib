@@ -204,4 +204,12 @@ export class Organization {
 
     return specifiedPermissions && (this.enabled || this.isOwner);
   }
+
+  get canManageBilling() {
+    return this.isOwner && (this.isProviderUser || !this.hasProvider);
+  }
+
+  get hasProvider() {
+    return this.providerId != null || this.providerName != null;
+  }
 }
