@@ -11,7 +11,7 @@ export class StatusFilterComponent {
   @Input() activeFilter: VaultFilter;
 
   get show() {
-    return !this.hideFavorites && !this.hideTrash;
+    return !(this.hideFavorites && this.hideTrash);
   }
 
   applyFilter(cipherStatus: CipherStatus) {
