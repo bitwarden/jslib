@@ -206,7 +206,8 @@ export class Organization {
       (permissions.includes(Permissions.ManagePolicies) && this.canManagePolicies) ||
       (permissions.includes(Permissions.ManageUsers) && this.canManageUsers) ||
       (permissions.includes(Permissions.ManageUsersPassword) && this.canManageUsersPassword) ||
-      (permissions.includes(Permissions.ManageSso) && this.canManageSso);
+      (permissions.includes(Permissions.ManageSso) && this.canManageSso) ||
+      (permissions.includes(Permissions.ManageBilling) && this.canManageBilling);
 
     return specifiedPermissions && (this.enabled || this.isOwner);
   }
