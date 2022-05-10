@@ -1,5 +1,6 @@
 import { OrganizationUserStatusType } from "../../enums/organizationUserStatusType";
 import { OrganizationUserType } from "../../enums/organizationUserType";
+import { Permissions } from "../../enums/permissions";
 import { ProductType } from "../../enums/productType";
 import { PermissionsApi } from "../api/permissionsApi";
 import { OrganizationData } from "../data/organizationData";
@@ -180,5 +181,36 @@ export class Organization {
 
   get isExemptFromPolicies() {
     return this.canManagePolicies;
+  }
+
+  hasAnyPermission(permissions: Permissions[]) {
+    const specifiedPermissions =
+      (permissions.includes(Permissions.AccessEventLogs) && this.canAccessEventLogs) ||
+      (permissions.includes(Permissions.AccessImportExport) && this.canAccessImportExport) ||
+      (permissions.includes(Permissions.AccessReports) && this.canAccessReports) ||
+      (permissions.includes(Permissions.CreateNewCollections) && this.canCreateNewCollections) ||
+      (permissions.includes(Permissions.EditAnyCollection) && this.canEditAnyCollection) ||
+      (permissions.includes(Permissions.DeleteAnyCollection) && this.canDeleteAnyCollection) ||
+      (permissions.includes(Permissions.EditAssignedCollections) &&
+        this.canEditAssignedCollections) ||
+      (permissions.includes(Permissions.DeleteAssignedCollections) &&
+        this.canDeleteAssignedCollections) ||
+      (permissions.includes(Permissions.ManageGroups) && this.canManageGroups) ||
+      (permissions.includes(Permissions.ManageOrganization) && this.isOwner) ||
+      (permissions.includes(Permissions.ManagePolicies) && this.canManagePolicies) ||
+      (permissions.includes(Permissions.ManageUsers) && this.canManageUsers) ||
+      (permissions.includes(Permissions.ManageUsersPassword) && this.canManageUsersPassword) ||
+      (permissions.includes(Permissions.ManageSso) && this.canManageSso) ||
+      (permissions.includes(Permissions.ManageBilling) && this.canManageBilling);
+
+    return specifiedPermissions && (this.enabled || this.isOwner);
+  }
+
+  get canManageBilling() {
+    return this.isOwner && (this.isProviderUser || !this.hasProvider);
+  }
+
+  get hasProvider() {
+    return this.providerId != null || this.providerName != null;
   }
 }

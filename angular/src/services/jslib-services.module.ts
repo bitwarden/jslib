@@ -74,12 +74,13 @@ import { UsernameGenerationService } from "jslib-common/services/usernameGenerat
 import { VaultTimeoutService } from "jslib-common/services/vaultTimeout.service";
 import { WebCryptoFunctionService } from "jslib-common/services/webCryptoFunction.service";
 
-import { AuthGuardService } from "./auth-guard.service";
+import { AuthGuard } from "../guards/auth.guard";
+import { LockGuard } from "../guards/lock.guard";
+import { UnauthGuard } from "../guards/unauth.guard";
+
 import { BroadcasterService } from "./broadcaster.service";
-import { LockGuardService } from "./lock-guard.service";
 import { ModalService } from "./modal.service";
 import { PasswordRepromptService } from "./passwordReprompt.service";
-import { UnauthGuardService } from "./unauth-guard.service";
 import { ValidationService } from "./validation.service";
 
 export const WINDOW = new InjectionToken<Window>("WINDOW");
@@ -98,9 +99,9 @@ export const SYSTEM_LANGUAGE = new InjectionToken<string>("SYSTEM_LANGUAGE");
   declarations: [],
   providers: [
     ValidationService,
-    AuthGuardService,
-    UnauthGuardService,
-    LockGuardService,
+    AuthGuard,
+    UnauthGuard,
+    LockGuard,
     ModalService,
     { provide: WINDOW, useValue: window },
     {
@@ -303,6 +304,7 @@ export const SYSTEM_LANGUAGE = new InjectionToken<string>("SYSTEM_LANGUAGE");
         PolicyServiceAbstraction,
         KeyConnectorServiceAbstraction,
         StateServiceAbstraction,
+        AuthServiceAbstraction,
         LOCKED_CALLBACK,
         LOGOUT_CALLBACK,
       ],
@@ -346,11 +348,11 @@ export const SYSTEM_LANGUAGE = new InjectionToken<string>("SYSTEM_LANGUAGE");
         SyncServiceAbstraction,
         AppIdServiceAbstraction,
         ApiServiceAbstraction,
-        VaultTimeoutServiceAbstraction,
         EnvironmentServiceAbstraction,
         LOGOUT_CALLBACK,
         LogService,
         StateServiceAbstraction,
+        AuthServiceAbstraction,
       ],
     },
     {

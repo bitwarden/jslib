@@ -11,8 +11,10 @@ import { PlatformUtilsService } from "../abstractions/platformUtils.service";
 import { StateService } from "../abstractions/state.service";
 import { TokenService } from "../abstractions/token.service";
 import { TwoFactorService } from "../abstractions/twoFactor.service";
+import { AuthenticationStatus } from "../enums/authenticationStatus";
 import { AuthenticationType } from "../enums/authenticationType";
 import { KdfType } from "../enums/kdfType";
+import { KeySuffixOptions } from "../enums/keySuffixOptions";
 import { ApiLogInStrategy } from "../misc/logInStrategies/apiLogin.strategy";
 import { PasswordLogInStrategy } from "../misc/logInStrategies/passwordLogin.strategy";
 import { SsoLogInStrategy } from "../misc/logInStrategies/ssoLogin.strategy";
@@ -155,6 +157,31 @@ export class AuthService implements AuthServiceAbstraction {
 
   authingWithPassword(): boolean {
     return this.logInStrategy instanceof PasswordLogInStrategy;
+  }
+
+  async getAuthStatus(userId?: string): Promise<AuthenticationStatus> {
+    const isAuthenticated = await this.stateService.getIsAuthenticated({ userId: userId });
+    if (!isAuthenticated) {
+      return AuthenticationStatus.LoggedOut;
+    }
+
+    // Keys aren't stored for a device that is locked or logged out
+    // Make sure we're logged in before checking this, otherwise we could mix up those states
+    const neverLock =
+      (await this.cryptoService.hasKeyStored(KeySuffixOptions.Auto, userId)) &&
+      !(await this.stateService.getEverBeenUnlocked({ userId: userId }));
+    if (neverLock) {
+      // TODO: This also _sets_ the key so when we check memory in the next line it finds a key.
+      // We should refactor here.
+      await this.cryptoService.getKey(KeySuffixOptions.Auto, userId);
+    }
+
+    const hasKeyInMemory = await this.cryptoService.hasKeyInMemory(userId);
+    if (!hasKeyInMemory) {
+      return AuthenticationStatus.Locked;
+    }
+
+    return AuthenticationStatus.Unlocked;
   }
 
   async makePreloginKey(masterPassword: string, email: string): Promise<SymmetricCryptoKey> {
