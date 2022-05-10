@@ -1,5 +1,7 @@
 import { OrganizationConnectionType } from "jslib-common/enums/organizationConnectionType";
 import { OrganizationConnectionRequest } from "jslib-common/models/request/organizationConnectionRequest";
+import { BillingHistoryResponse } from "jslib-common/models/response/billingHistoryResponse";
+import { BillingPaymentResponse } from "jslib-common/models/response/billingPaymentResponse";
 import {
   OrganizationConnectionConfigApis,
   OrganizationConnectionResponse,
@@ -184,7 +186,6 @@ export abstract class ApiService {
   refreshIdentityToken: () => Promise<any>;
 
   getProfile: () => Promise<ProfileResponse>;
-  getUserBilling: () => Promise<BillingResponse>;
   getUserSubscription: () => Promise<SubscriptionResponse>;
   getTaxInfo: () => Promise<TaxInfoResponse>;
   putProfile: (request: UpdateProfileRequest) => Promise<ProfileResponse>;
@@ -221,6 +222,9 @@ export abstract class ApiService {
   postAccountRequestOTP: () => Promise<void>;
   postAccountVerifyOTP: (request: VerifyOTPRequest) => Promise<void>;
   postConvertToKeyConnector: () => Promise<void>;
+
+  getUserBillingHistory: () => Promise<BillingHistoryResponse>;
+  getUserBillingPayment: () => Promise<BillingPaymentResponse>;
 
   getFolder: (id: string) => Promise<FolderResponse>;
   postFolder: (request: FolderRequest) => Promise<FolderResponse>;
