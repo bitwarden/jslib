@@ -60,7 +60,7 @@ export class ButtonDirective {
       "focus:tw-ring-primary-700",
     ]
       .concat(this.block ? ["tw-w-full", "tw-block"] : ["tw-inline-block"])
-      .concat(buttonStyles[this.buttonType ?? "secondary"]);
+      .concat(buttonStyles[this.buttonType] ?? []);
   }
 
   @Input()
