@@ -8,6 +8,7 @@ let nextId = 0;
   selector: "input[bitInput], select[bitInput], textarea[bitInput]",
   host: {
     "[attr.id]": "id",
+    "[attr.aria-describedby]": "ariaDescribedBy",
     "[required]": "required",
   },
 })
@@ -49,6 +50,16 @@ export class BitInput {
 
   @Input() hasPrefix = false;
   @Input() hasSuffix = false;
+
+  get hasError() {
+    return this.ngControl?.status === "INVALID";
+  }
+
+  get error() {
+    return Object.keys(this.ngControl.errors)[0];
+  }
+
+  ariaDescribedBy: string;
 
   constructor(@Optional() @Self() private ngControl: NgControl) {}
 }

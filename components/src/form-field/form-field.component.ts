@@ -4,10 +4,12 @@ import {
   ContentChild,
   ContentChildren,
   QueryList,
+  ViewChild,
 } from "@angular/core";
 
 import { BitInput } from "../input/input.component";
 
+import { BitError } from "./error";
 import { BitPrefix } from "./prefix";
 import { BitSuffix } from "./suffix";
 
@@ -20,6 +22,7 @@ import { BitSuffix } from "./suffix";
 })
 export class BitFormFieldComponent implements AfterContentChecked {
   @ContentChild(BitInput) input: BitInput;
+  @ViewChild(BitError) error: BitError;
   @ContentChildren(BitPrefix) prefixChildren: QueryList<BitPrefix>;
   @ContentChildren(BitSuffix) suffixChildren: QueryList<BitSuffix>;
 
@@ -34,5 +37,11 @@ export class BitFormFieldComponent implements AfterContentChecked {
     this.suffixChildren.forEach((suffix) => {
       suffix.last = suffix == this.suffixChildren.last;
     });
+
+    if (this.error) {
+      this.input.ariaDescribedBy = this.error.id;
+    } else {
+      this.input.ariaDescribedBy = undefined;
+    }
   }
 }

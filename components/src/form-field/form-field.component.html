@@ -12,3 +12,4 @@
   </div>
 </div>
 <ng-content select="bit-hint"></ng-content>
+<bit-error *ngIf="input.hasError" [error]="input.error"></bit-error>
