@@ -88,8 +88,8 @@ export class FolderService implements FolderServiceAbstraction {
     return decFolders;
   }
 
-  async getAllNested(): Promise<TreeNode<FolderView>[]> {
-    const folders = await this.getAllDecrypted();
+  async getAllNested(folders?: FolderView[]): Promise<TreeNode<FolderView>[]> {
+    folders = folders ?? (await this.getAllDecrypted());
     const nodes: TreeNode<FolderView>[] = [];
     folders.forEach((f) => {
       const folderCopy = new FolderView();

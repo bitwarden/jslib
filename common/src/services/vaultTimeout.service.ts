@@ -1,3 +1,4 @@
+import { AuthService } from "../abstractions/auth.service";
 import { CipherService } from "../abstractions/cipher.service";
 import { CollectionService } from "../abstractions/collection.service";
 import { CryptoService } from "../abstractions/crypto.service";
@@ -10,7 +11,7 @@ import { SearchService } from "../abstractions/search.service";
 import { StateService } from "../abstractions/state.service";
 import { TokenService } from "../abstractions/token.service";
 import { VaultTimeoutService as VaultTimeoutServiceAbstraction } from "../abstractions/vaultTimeout.service";
-import { KeySuffixOptions } from "../enums/keySuffixOptions";
+import { AuthenticationStatus } from "../enums/authenticationStatus";
 import { PolicyType } from "../enums/policyType";
 
 export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
@@ -28,8 +29,9 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     private policyService: PolicyService,
     private keyConnectorService: KeyConnectorService,
     private stateService: StateService,
+    private authService: AuthService,
     private lockedCallback: (userId?: string) => Promise<void> = null,
-    private loggedOutCallback: (userId?: string) => Promise<void> = null
+    private loggedOutCallback: (expired: boolean, userId?: string) => Promise<void> = null
   ) {}
 
   init(checkOnInterval: boolean) {
@@ -46,20 +48,6 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
   startCheck() {
     this.checkVaultTimeout();
     setInterval(() => this.checkVaultTimeout(), 10 * 1000); // check every 10 seconds
-  }
-
-  // Keys aren't stored for a device that is locked or logged out.
-  async isLocked(userId?: string): Promise<boolean> {
-    const neverLock =
-      (await this.cryptoService.hasKeyStored(KeySuffixOptions.Auto, userId)) &&
-      !(await this.stateService.getEverBeenUnlocked({ userId: userId }));
-    if (neverLock) {
-      // TODO: This also _sets_ the key so when we check memory in the next line it finds a key.
-      // We should refactor here.
-      await this.cryptoService.getKey(KeySuffixOptions.Auto, userId);
-    }
-
-    return !(await this.cryptoService.hasKeyInMemory(userId));
   }
 
   async checkVaultTimeout(): Promise<void> {
@@ -116,7 +104,7 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
 
   async logOut(userId?: string): Promise<void> {
     if (this.loggedOutCallback != null) {
-      await this.loggedOutCallback(userId);
+      await this.loggedOutCallback(false, userId);
     }
   }
 
@@ -187,16 +175,12 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
     await this.stateService.setProtectedPin(null, { userId: userId });
   }
 
-  private async isLoggedOut(userId?: string): Promise<boolean> {
-    return !(await this.stateService.getIsAuthenticated({ userId: userId }));
-  }
-
   private async shouldLock(userId: string): Promise<boolean> {
-    if (await this.isLoggedOut(userId)) {
-      return false;
-    }
-
-    if (await this.isLocked(userId)) {
+    const authStatus = await this.authService.getAuthStatus(userId);
+    if (
+      authStatus === AuthenticationStatus.Locked ||
+      authStatus === AuthenticationStatus.LoggedOut
+    ) {
       return false;
     }
 

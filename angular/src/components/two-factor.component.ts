@@ -4,6 +4,7 @@ import * as DuoWebSDK from "duo_web_sdk";
 import { first } from "rxjs/operators";
 
 import { ApiService } from "jslib-common/abstractions/api.service";
+import { AppIdService } from "jslib-common/abstractions/appId.service";
 import { AuthService } from "jslib-common/abstractions/auth.service";
 import { EnvironmentService } from "jslib-common/abstractions/environment.service";
 import { I18nService } from "jslib-common/abstractions/i18n.service";
@@ -57,7 +58,8 @@ export class TwoFactorComponent extends CaptchaProtectedComponent implements OnI
     protected stateService: StateService,
     protected route: ActivatedRoute,
     protected logService: LogService,
-    protected twoFactorService: TwoFactorService
+    protected twoFactorService: TwoFactorService,
+    protected appIdService: AppIdService
   ) {
     super(environmentService, i18nService, platformUtilsService);
     this.webAuthnSupported = this.platformUtilsService.supportsWebAuthn(win);
@@ -234,6 +236,7 @@ export class TwoFactorComponent extends CaptchaProtectedComponent implements OnI
       const request = new TwoFactorEmailRequest();
       request.email = this.authService.email;
       request.masterPasswordHash = this.authService.masterPasswordHash;
+      request.deviceIdentifier = await this.appIdService.getAppId();
       this.emailPromise = this.apiService.postTwoFactorEmail(request);
       await this.emailPromise;
       if (doToast) {

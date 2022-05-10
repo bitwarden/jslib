@@ -11,17 +11,14 @@ import { ThemeType } from "jslib-common/enums/themeType";
 import { isDev, isMacAppStore } from "../utils";
 
 export class ElectronPlatformUtilsService implements PlatformUtilsService {
-  private clientType: ClientType;
   private deviceCache: DeviceType = null;
 
   constructor(
     protected i18nService: I18nService,
     private messagingService: MessagingService,
-    private isDesktopApp: boolean,
+    private clientType: ClientType.Desktop | ClientType.DirectoryConnector,
     private stateService: StateService
-  ) {
-    this.clientType = isDesktopApp ? ClientType.Desktop : ClientType.DirectoryConnector;
-  }
+  ) {}
 
   getDevice(): DeviceType {
     if (!this.deviceCache) {

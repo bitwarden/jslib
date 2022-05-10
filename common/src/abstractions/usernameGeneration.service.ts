@@ -3,6 +3,7 @@ export abstract class UsernameGenerationService {
   generateWord: (options: any) => Promise<string>;
   generateSubaddress: (options: any) => Promise<string>;
   generateCatchall: (options: any) => Promise<string>;
+  generateForwarded: (options: any) => Promise<string>;
   getOptions: () => Promise<any>;
   saveOptions: (options: any) => Promise<void>;
 }
