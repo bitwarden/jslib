@@ -1,5 +1,11 @@
+import { OrganizationConnectionType } from "jslib-common/enums/organizationConnectionType";
+import { OrganizationConnectionRequest } from "jslib-common/models/request/organizationConnectionRequest";
 import { BillingHistoryResponse } from "jslib-common/models/response/billingHistoryResponse";
 import { BillingPaymentResponse } from "jslib-common/models/response/billingPaymentResponse";
+import {
+  OrganizationConnectionConfigApis,
+  OrganizationConnectionResponse,
+} from "jslib-common/models/response/organizationConnectionResponse";
 
 import { PolicyType } from "../enums/policyType";
 import { SetKeyConnectorKeyRequest } from "../models/request/account/setKeyConnectorKeyRequest";
@@ -39,6 +45,7 @@ import { KeysRequest } from "../models/request/keysRequest";
 import { OrganizationSponsorshipCreateRequest } from "../models/request/organization/organizationSponsorshipCreateRequest";
 import { OrganizationSponsorshipRedeemRequest } from "../models/request/organization/organizationSponsorshipRedeemRequest";
 import { OrganizationSsoRequest } from "../models/request/organization/organizationSsoRequest";
+import { OrganizationApiKeyRequest } from "../models/request/organizationApiKeyRequest";
 import { OrganizationCreateRequest } from "../models/request/organizationCreateRequest";
 import { OrganizationImportRequest } from "../models/request/organizationImportRequest";
 import { OrganizationKeysRequest } from "../models/request/organizationKeysRequest";
@@ -121,9 +128,11 @@ import { IdentityTwoFactorResponse } from "../models/response/identityTwoFactorR
 import { KeyConnectorUserKeyResponse } from "../models/response/keyConnectorUserKeyResponse";
 import { ListResponse } from "../models/response/listResponse";
 import { OrganizationSsoResponse } from "../models/response/organization/organizationSsoResponse";
+import { OrganizationApiKeyInformationResponse } from "../models/response/organizationApiKeyInformationResponse";
 import { OrganizationAutoEnrollStatusResponse } from "../models/response/organizationAutoEnrollStatusResponse";
 import { OrganizationKeysResponse } from "../models/response/organizationKeysResponse";
 import { OrganizationResponse } from "../models/response/organizationResponse";
+import { OrganizationSponsorshipSyncStatusResponse } from "../models/response/organizationSponsorshipSyncStatusResponse";
 import { OrganizationSubscriptionResponse } from "../models/response/organizationSubscriptionResponse";
 import { OrganizationUserBulkPublicKeyResponse } from "../models/response/organizationUserBulkPublicKeyResponse";
 import { OrganizationUserBulkResponse } from "../models/response/organizationUserBulkResponse";
@@ -508,6 +517,22 @@ export abstract class ApiService {
   getOrganization: (id: string) => Promise<OrganizationResponse>;
   getOrganizationBilling: (id: string) => Promise<BillingResponse>;
   getOrganizationSubscription: (id: string) => Promise<OrganizationSubscriptionResponse>;
+  getCloudCommunicationsEnabled: () => Promise<boolean>;
+  abstract getOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
+    id: string,
+    type: OrganizationConnectionType,
+    configType: { new (response: any): TConfig }
+  ): Promise<OrganizationConnectionResponse<TConfig>>;
+  abstract createOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
+    request: OrganizationConnectionRequest,
+    configType: { new (response: any): TConfig }
+  ): Promise<OrganizationConnectionResponse<TConfig>>;
+  abstract updateOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
+    request: OrganizationConnectionRequest,
+    configType: { new (response: any): TConfig },
+    organizationConnectionId: string
+  ): Promise<OrganizationConnectionResponse<TConfig>>;
+  deleteOrganizationConnection: (id: string) => Promise<void>;
   getOrganizationLicense: (id: string, installationId: string) => Promise<any>;
   getOrganizationTaxInfo: (id: string) => Promise<TaxInfoResponse>;
   getOrganizationAutoEnrollStatus: (
@@ -525,11 +550,14 @@ export abstract class ApiService {
   postOrganizationLicenseUpdate: (id: string, data: FormData) => Promise<any>;
   postOrganizationApiKey: (
     id: string,
-    request: SecretVerificationRequest
+    request: OrganizationApiKeyRequest
   ) => Promise<ApiKeyResponse>;
+  getOrganizationApiKeyInformation: (
+    id: string
+  ) => Promise<ListResponse<OrganizationApiKeyInformationResponse>>;
   postOrganizationRotateApiKey: (
     id: string,
-    request: SecretVerificationRequest
+    request: OrganizationApiKeyRequest
   ) => Promise<ApiKeyResponse>;
   postOrganizationSso: (
     id: string,
@@ -666,6 +694,9 @@ export abstract class ApiService {
     sponsorshipOrgId: string,
     request: OrganizationSponsorshipCreateRequest
   ) => Promise<void>;
+  getSponsorshipSyncStatus: (
+    sponsoredOrgId: string
+  ) => Promise<OrganizationSponsorshipSyncStatusResponse>;
   deleteRevokeSponsorship: (sponsoringOrganizationId: string) => Promise<void>;
   deleteRemoveSponsorship: (sponsoringOrgId: string) => Promise<void>;
   postPreValidateSponsorshipToken: (sponsorshipToken: string) => Promise<boolean>;

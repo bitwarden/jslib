@@ -40,6 +40,9 @@ export class Organization {
   planProductType: ProductType;
   keyConnectorEnabled: boolean;
   keyConnectorUrl: string;
+  familySponsorshipLastSyncDate?: Date;
+  familySponsorshipValidUntil?: Date;
+  familySponsorshipToDelete?: boolean;
 
   constructor(obj?: OrganizationData) {
     if (obj == null) {
@@ -80,6 +83,9 @@ export class Organization {
     this.planProductType = obj.planProductType;
     this.keyConnectorEnabled = obj.keyConnectorEnabled;
     this.keyConnectorUrl = obj.keyConnectorUrl;
+    this.familySponsorshipLastSyncDate = obj.familySponsorshipLastSyncDate;
+    this.familySponsorshipValidUntil = obj.familySponsorshipValidUntil;
+    this.familySponsorshipToDelete = obj.familySponsorshipToDelete;
   }
 
   get canAccess() {
