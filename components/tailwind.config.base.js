@@ -41,6 +41,7 @@ module.exports = {
         main: "var(--color-text-main)",
         muted: "var(--color-text-muted)",
         contrast: "var(--color-text-contrast)",
+        alt2: "var(--color-text-alt2)",
       },
       background: {
         DEFAULT: "var(--color-background)",
@@ -52,6 +53,7 @@ module.exports = {
       main: "var(--color-text-main)",
       muted: "var(--color-text-muted)",
       contrast: "var(--color-text-contrast)",
+      alt2: "var(--color-text-alt2)",
       success: "var(--color-success-500)",
       danger: "var(--color-danger-500)",
       warning: "var(--color-warning-500)",

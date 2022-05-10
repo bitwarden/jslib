@@ -1,6 +1,8 @@
 import { AppIdService } from "jslib-common/abstractions/appId.service";
 import { DeviceRequest } from "jslib-common/models/request/deviceRequest";
 import { TokenRequestTwoFactor } from "jslib-common/models/request/identityToken/tokenRequestTwoFactor";
+import { BillingHistoryResponse } from "jslib-common/models/response/billingHistoryResponse";
+import { BillingPaymentResponse } from "jslib-common/models/response/billingPaymentResponse";
 
 import { ApiService as ApiServiceAbstraction } from "../abstractions/api.service";
 import { EnvironmentService } from "../abstractions/environment.service";
@@ -280,11 +282,6 @@ export class ApiService implements ApiServiceAbstraction {
     return new ProfileResponse(r);
   }
 
-  async getUserBilling(): Promise<BillingResponse> {
-    const r = await this.send("GET", "/accounts/billing", null, true, true);
-    return new BillingResponse(r);
-  }
-
   async getUserSubscription(): Promise<SubscriptionResponse> {
     const r = await this.send("GET", "/accounts/subscription", null, true, true);
     return new SubscriptionResponse(r);
@@ -465,6 +462,18 @@ export class ApiService implements ApiServiceAbstraction {
 
   postConvertToKeyConnector(): Promise<void> {
     return this.send("POST", "/accounts/convert-to-key-connector", null, true, false);
+  }
+
+  // Account Billing APIs
+
+  async getUserBillingHistory(): Promise<BillingHistoryResponse> {
+    const r = await this.send("GET", "/accounts/billing/history", null, true, true);
+    return new BillingHistoryResponse(r);
+  }
+
+  async getUserBillingPayment(): Promise<BillingPaymentResponse> {
+    const r = await this.send("GET", "/accounts/billing/payment-method", null, true, true);
+    return new BillingPaymentResponse(r);
   }
 
   // Folder APIs

@@ -32,7 +32,6 @@ export class CiphersComponent {
 
   async reload(filter: (cipher: CipherView) => boolean = null, deleted = false) {
     this.loaded = false;
-    this.ciphers = [];
     await this.load(filter, deleted);
   }
 

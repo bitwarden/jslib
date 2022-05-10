@@ -7,7 +7,7 @@ import { MessagingService } from "jslib-common/abstractions/messaging.service";
 import { AuthenticationStatus } from "jslib-common/enums/authenticationStatus";
 
 @Injectable()
-export class AuthGuardService implements CanActivate {
+export class AuthGuard implements CanActivate {
   constructor(
     private authService: AuthService,
     private router: Router,
