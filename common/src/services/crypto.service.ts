@@ -220,9 +220,8 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     let setKey = false;
 
-    for (const orgId in encOrgKeyData) {
-      // eslint-disable-next-line
-      if (!encOrgKeyData.hasOwnProperty(orgId) || result.has(orgId)) {
+    for (const orgId in Object.keys(encOrgKeyData)) {
+      if (result.has(orgId)) {
         continue;
       }
 
