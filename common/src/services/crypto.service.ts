@@ -1,7 +1,7 @@
 import * as bigInt from "big-integer";
 
 import { EncryptedOrganizationKeyData } from "jslib-common/models/data/encryptedOrganizationKeyData";
-import { BaseEncryptedOrganizationKey } from "jslib-common/models/domain/account/encryptedKey";
+import { BaseEncryptedOrganizationKey } from "jslib-common/models/domain/account/encryptedOrganizationKey";
 
 import { CryptoService as CryptoServiceAbstraction } from "../abstractions/crypto.service";
 import { CryptoFunctionService } from "../abstractions/cryptoFunction.service";
