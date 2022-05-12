@@ -9,6 +9,9 @@ import { StateMigrationService } from "jslib-common/services/stateMigration.serv
 
 const userId = "USER_ID";
 
+// Note: each test calls the private migration method for that migration,
+// so that we don't accidentally run all following migrations as well
+
 describe("State Migration Service", () => {
   let storageService: SubstituteOf<StorageService>;
   let secureStorageService: SubstituteOf<StorageService>;
@@ -66,13 +69,13 @@ describe("State Migration Service", () => {
 
       storageService.get(userId, Arg.any()).resolves(accountVersion3);
 
-      await stateMigrationService.migrate();
+      await (stateMigrationService as any).migrateStateFrom3To4();
 
       storageService.received(1).save(userId, expectedAccountVersion4, Arg.any());
     });
 
     it("updates StateVersion number", async () => {
-      await stateMigrationService.migrate();
+      await (stateMigrationService as any).migrateStateFrom3To4();
 
       storageService.received(1).save(
         "global",
@@ -107,7 +110,7 @@ describe("State Migration Service", () => {
 
       storageService.get(userId, Arg.any()).resolves(accountVersion4);
 
-      await stateMigrationService.migrate();
+      await (stateMigrationService as any).migrateStateFrom4To5();
 
       storageService.received(1).save(
         userId,
@@ -123,7 +126,7 @@ describe("State Migration Service", () => {
     });
 
     it("updates StateVersion number", async () => {
-      await stateMigrationService.migrate();
+      await (stateMigrationService as any).migrateStateFrom4To5();
 
       storageService.received(1).save(
         "global",
