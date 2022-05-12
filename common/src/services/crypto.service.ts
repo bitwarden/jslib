@@ -59,8 +59,8 @@ export class CryptoService implements CryptoServiceAbstraction {
   }
 
   async setOrgKeys(
-    orgs: ProfileOrganizationResponse[],
-    providerOrgs: ProfileProviderOrganizationResponse[]
+    orgs: ProfileOrganizationResponse[] = [],
+    providerOrgs: ProfileProviderOrganizationResponse[] = []
   ): Promise<void> {
     const encOrgKeyData: { [orgId: string]: EncryptedOrganizationKeyData } = {};
 
