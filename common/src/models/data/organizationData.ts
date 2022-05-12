@@ -39,6 +39,9 @@ export class OrganizationData {
   planProductType: ProductType;
   keyConnectorEnabled: boolean;
   keyConnectorUrl: string;
+  familySponsorshipLastSyncDate?: Date;
+  familySponsorshipValidUntil?: Date;
+  familySponsorshipToDelete?: boolean;
 
   constructor(response: ProfileOrganizationResponse) {
     this.id = response.id;
@@ -74,5 +77,8 @@ export class OrganizationData {
     this.planProductType = response.planProductType;
     this.keyConnectorEnabled = response.keyConnectorEnabled;
     this.keyConnectorUrl = response.keyConnectorUrl;
+    this.familySponsorshipLastSyncDate = response.familySponsorshipLastSyncDate;
+    this.familySponsorshipValidUntil = response.familySponsorshipValidUntil;
+    this.familySponsorshipToDelete = response.familySponsorshipToDelete;
   }
 }

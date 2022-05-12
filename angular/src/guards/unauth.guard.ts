@@ -5,7 +5,7 @@ import { AuthService } from "jslib-common/abstractions/auth.service";
 import { AuthenticationStatus } from "jslib-common/enums/authenticationStatus";
 
 @Injectable()
-export class UnauthGuardService implements CanActivate {
+export class UnauthGuard implements CanActivate {
   protected homepage = "vault";
   constructor(private authService: AuthService, private router: Router) {}
 

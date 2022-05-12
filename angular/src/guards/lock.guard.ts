@@ -5,7 +5,7 @@ import { AuthService } from "jslib-common/abstractions/auth.service";
 import { AuthenticationStatus } from "jslib-common/enums/authenticationStatus";
 
 @Injectable()
-export class LockGuardService implements CanActivate {
+export class LockGuard implements CanActivate {
   protected homepage = "vault";
   protected loginpage = "login";
   constructor(private authService: AuthService, private router: Router) {}
@@ -20,7 +20,6 @@ export class LockGuardService implements CanActivate {
     const redirectUrl =
       authStatus === AuthenticationStatus.LoggedOut ? [this.loginpage] : [this.homepage];
 
-    this.router.navigate(redirectUrl);
-    return false;
+    return this.router.createUrlTree([redirectUrl]);
   }
 }
