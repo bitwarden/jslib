@@ -220,7 +220,7 @@ export class CryptoService implements CryptoServiceAbstraction {
 
     let setKey = false;
 
-    for (const orgId in Object.keys(encOrgKeyData)) {
+    for (const orgId of Object.keys(encOrgKeyData)) {
       if (result.has(orgId)) {
         continue;
       }
