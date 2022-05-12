@@ -28,7 +28,7 @@ describe("State Migration Service", () => {
     );
   });
 
-  describe("StateVersion 3 to 4 migration", async () => {
+  describe("StateVersion 3 to 4 migration", () => {
     beforeEach(() => {
       const globalVersion3: Partial<GlobalState> = {
         stateVersion: StateVersion.Three,
@@ -77,6 +77,57 @@ describe("State Migration Service", () => {
       storageService.received(1).save(
         "global",
         Arg.is((globals: GlobalState) => globals.stateVersion === StateVersion.Four),
+        Arg.any()
+      );
+    });
+  });
+
+  describe("StateVersion 4 to 5 migration", () => {
+    beforeEach(() => {
+      const globalVersion4: Partial<GlobalState> = {
+        stateVersion: StateVersion.Four,
+      };
+
+      storageService.get("global", Arg.any()).resolves(globalVersion4);
+      storageService.get("authenticatedAccounts", Arg.any()).resolves([userId]);
+    });
+
+    it("migrates organization keys to new format", async () => {
+      const accountVersion4 = new Account({
+        keys: {
+          organizationKeys: {
+            encrypted: {
+              orgOneId: "orgOneEncKey",
+              orgTwoId: "orgTwoEncKey",
+              orgThreeId: "orgThreeEncKey",
+            },
+          },
+        },
+      } as any);
+
+      storageService.get(userId, Arg.any()).resolves(accountVersion4);
+
+      await stateMigrationService.migrate();
+
+      storageService.received(1).save(
+        userId,
+        Arg.is((account: Account) => {
+          return (
+            account.keys.organizationKeys.encrypted["orgOneId"].key === "orgOneEncKey" &&
+            account.keys.organizationKeys.encrypted["orgTwoId"].key === "orgTwoEncKey" &&
+            account.keys.organizationKeys.encrypted["orgThreeId"].key === "orgThreeEncKey"
+          );
+        }),
+        Arg.any()
+      );
+    });
+
+    it("updates StateVersion number", async () => {
+      await stateMigrationService.migrate();
+
+      storageService.received(1).save(
+        "global",
+        Arg.is((globals: GlobalState) => globals.stateVersion === StateVersion.Five),
         Arg.any()
       );
     });

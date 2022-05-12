@@ -1,3 +1,5 @@
+import { EncryptedOrganizationKeyData } from "jslib-common/models/data/encryptedOrganizationKeyData";
+
 import { StorageService } from "../abstractions/storage.service";
 import { HtmlStorageLocation } from "../enums/htmlStorageLocation";
 import { KdfType } from "../enums/kdfType";
@@ -493,12 +495,18 @@ export class StateMigrationService<
 
   protected async migrateStateFrom4To5(): Promise<void> {
     const authenticatedUserIds = await this.get<string[]>(keys.authenticatedAccounts);
-    for (const userId in authenticatedUserIds) {
+    for (const userId of authenticatedUserIds) {
       const account = await this.get<TAccount>(userId);
       const encryptedOrgKeys = account.keys.organizationKeys?.encrypted;
-      if (encryptedOrgKeys != null) {
-        // TODO, iterate through KVPs and update value
+      if (encryptedOrgKeys == null) {
+        continue;
       }
+
+      for (const [orgId, encKey] of Object.entries(encryptedOrgKeys)) {
+        encryptedOrgKeys[orgId] = new EncryptedOrganizationKeyData(encKey as unknown as string);
+      }
+
+      this.set(userId, account);
     }
 
     await this.setCurrentStateVersion(StateVersion.Five);
