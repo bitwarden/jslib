@@ -258,7 +258,7 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
           }
         }
       } else if (cipher.type === CipherType.Identity) {
-        if (this.fillIdentity(field, fieldValue, cipher)) {
+        if (this.fillIdentity(field, fieldValue, cipher, valueKey)) {
           return;
         }
         if (valueKey === "address") {
@@ -310,6 +310,14 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
           default:
             break;
         }
+      }
+
+      if (valueKey === "email") {
+        // fieldValue is an object casted into a string, so access the plain value instead
+        const { email_address, provider } = field.value.email;
+        this.processKvp(cipher, fieldName, email_address, FieldType.Text);
+        this.processKvp(cipher, "provider", provider, FieldType.Text);
+        return;
       }
 
       // Do not include a password field if it's already in the history
@@ -440,7 +448,12 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
     return false;
   }
 
-  private fillIdentity(field: FieldsEntity, fieldValue: string, cipher: CipherView): boolean {
+  private fillIdentity(
+    field: FieldsEntity,
+    fieldValue: string,
+    cipher: CipherView,
+    valueKey: string
+  ): boolean {
     if (this.isNullOrWhitespace(cipher.identity.firstName) && field.id === "firstname") {
       cipher.identity.firstName = fieldValue;
       return true;
@@ -466,9 +479,18 @@ export class OnePassword1PuxImporter extends BaseImporter implements Importer {
       return true;
     }
 
-    if (this.isNullOrWhitespace(cipher.identity.email) && field.id === "email") {
-      cipher.identity.email = fieldValue;
-      return true;
+    if (this.isNullOrWhitespace(cipher.identity.email)) {
+      if (valueKey === "email") {
+        const { email_address, provider } = field.value.email;
+        cipher.identity.email = this.getValueOrDefault(email_address);
+        this.processKvp(cipher, "provider", provider, FieldType.Text);
+        return true;
+      }
+
+      if (field.id === "email") {
+        cipher.identity.email = fieldValue;
+        return true;
+      }
     }
 
     if (this.isNullOrWhitespace(cipher.identity.username) && field.id === "username") {

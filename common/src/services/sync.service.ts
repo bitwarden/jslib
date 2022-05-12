@@ -95,16 +95,15 @@ export class SyncService implements SyncServiceAbstraction {
       return this.syncCompleted(false);
     }
 
-    const userId = await this.stateService.getUserId();
     try {
       await this.apiService.refreshIdentityToken();
       const response = await this.apiService.getSync();
 
       await this.syncProfile(response.profile);
-      await this.syncFolders(userId, response.folders);
+      await this.syncFolders(response.folders);
       await this.syncCollections(response.collections);
-      await this.syncCiphers(userId, response.ciphers);
-      await this.syncSends(userId, response.sends);
+      await this.syncCiphers(response.ciphers);
+      await this.syncSends(response.sends);
       await this.syncSettings(response.domains);
       await this.syncPolicies(response.policies);
 
@@ -130,8 +129,7 @@ export class SyncService implements SyncServiceAbstraction {
         ) {
           const remoteFolder = await this.apiService.getFolder(notification.id);
           if (remoteFolder != null) {
-            const userId = await this.stateService.getUserId();
-            await this.folderService.upsert(new FolderData(remoteFolder, userId));
+            await this.folderService.upsert(new FolderData(remoteFolder));
             this.messagingService.send("syncedUpsertedFolder", { folderId: notification.id });
             return this.syncCompleted(true);
           }
@@ -200,8 +198,7 @@ export class SyncService implements SyncServiceAbstraction {
         if (shouldUpdate) {
           const remoteCipher = await this.apiService.getCipher(notification.id);
           if (remoteCipher != null) {
-            const userId = await this.stateService.getUserId();
-            await this.cipherService.upsert(new CipherData(remoteCipher, userId));
+            await this.cipherService.upsert(new CipherData(remoteCipher));
             this.messagingService.send("syncedUpsertedCipher", { cipherId: notification.id });
             return this.syncCompleted(true);
           }
@@ -238,8 +235,7 @@ export class SyncService implements SyncServiceAbstraction {
         ) {
           const remoteSend = await this.apiService.getSend(notification.id);
           if (remoteSend != null) {
-            const userId = await this.stateService.getUserId();
-            await this.sendService.upsert(new SendData(remoteSend, userId));
+            await this.sendService.upsert(new SendData(remoteSend));
             this.messagingService.send("syncedUpsertedSend", { sendId: notification.id });
             return this.syncCompleted(true);
           }
@@ -339,10 +335,10 @@ export class SyncService implements SyncServiceAbstraction {
     }
   }
 
-  private async syncFolders(userId: string, response: FolderResponse[]) {
+  private async syncFolders(response: FolderResponse[]) {
     const folders: { [id: string]: FolderData } = {};
     response.forEach((f) => {
-      folders[f.id] = new FolderData(f, userId);
+      folders[f.id] = new FolderData(f);
     });
     return await this.folderService.replace(folders);
   }
@@ -355,18 +351,18 @@ export class SyncService implements SyncServiceAbstraction {
     return await this.collectionService.replace(collections);
   }
 
-  private async syncCiphers(userId: string, response: CipherResponse[]) {
+  private async syncCiphers(response: CipherResponse[]) {
     const ciphers: { [id: string]: CipherData } = {};
     response.forEach((c) => {
-      ciphers[c.id] = new CipherData(c, userId);
+      ciphers[c.id] = new CipherData(c);
     });
     return await this.cipherService.replace(ciphers);
   }
 
-  private async syncSends(userId: string, response: SendResponse[]) {
+  private async syncSends(response: SendResponse[]) {
     const sends: { [id: string]: SendData } = {};
     response.forEach((s) => {
-      sends[s.id] = new SendData(s, userId);
+      sends[s.id] = new SendData(s);
     });
     return await this.sendService.replace(sends);
   }

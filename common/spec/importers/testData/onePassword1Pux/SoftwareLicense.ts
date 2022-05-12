@@ -93,7 +93,10 @@ export const SoftwareLicenseData: ExportData = {
                         title: "registered email",
                         id: "reg_email",
                         value: {
-                          email: "kriddler@nullvalue.test",
+                          email: {
+                            email_address: "kriddler@nullvalue.test",
+                            provider: null,
+                          },
                         },
                         indexAtSource: 1,
                         guarded: false,
@@ -195,7 +198,10 @@ export const SoftwareLicenseData: ExportData = {
                         title: "support email",
                         id: "support_email",
                         value: {
-                          email: "support@nullvalue.test",
+                          email: {
+                            email_address: "support@nullvalue.test",
+                            provider: null,
+                          },
                         },
                         indexAtSource: 4,
                         guarded: false,

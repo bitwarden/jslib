@@ -11,11 +11,11 @@ export class Attachment extends Domain {
   id: string;
   url: string;
   size: string;
-  sizeName: string;
+  sizeName: string; // Readable size, ex: "4.2 KB" or "1.43 GB"
   key: EncString;
   fileName: EncString;
 
-  constructor(obj?: AttachmentData, alreadyEncrypted = false) {
+  constructor(obj?: AttachmentData) {
     super();
     if (obj == null) {
       return;
@@ -32,7 +32,6 @@ export class Attachment extends Domain {
         fileName: null,
         key: null,
       },
-      alreadyEncrypted,
       ["id", "url", "sizeName"]
     );
   }
