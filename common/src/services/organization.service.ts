@@ -1,9 +1,14 @@
+import { BehaviorSubject, Observable } from "rxjs";
+
 import { OrganizationService as OrganizationServiceAbstraction } from "../abstractions/organization.service";
 import { StateService } from "../abstractions/state.service";
 import { OrganizationData } from "../models/data/organizationData";
 import { Organization } from "../models/domain/organization";
 
 export class OrganizationService implements OrganizationServiceAbstraction {
+  private _organizations$ = new BehaviorSubject<Organization[]>([]);
+  organizations$: Observable<Organization[]> = this._organizations$.asObservable();
+
   constructor(private stateService: StateService) {}
 
   async get(id: string): Promise<Organization> {
@@ -38,7 +43,8 @@ export class OrganizationService implements OrganizationServiceAbstraction {
   }
 
   async save(organizations: { [id: string]: OrganizationData }) {
-    return await this.stateService.setOrganizations(organizations);
+    await this.stateService.setOrganizations(organizations);
+    await this._organizations$.next(await this.getAll());
   }
 
   async canManageSponsorships(): Promise<boolean> {
