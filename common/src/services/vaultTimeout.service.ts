@@ -194,8 +194,11 @@ export class VaultTimeoutService implements VaultTimeoutServiceAbstraction {
       return false;
     }
 
-    const vaultTimeoutSeconds = vaultTimeout * 60;
+     //setting custom vault timeout to 0H:0M(immediately) and then compared with the diffSeconds always returns a true 
+    //Adding 8 seconds ensures the user is not locked or logged out almost immeditely due to inactivity
+    const vaultTimeoutSeconds = (vaultTimeout * 60) === 0 ? 8 : (vaultTimeout * 60);
     const diffSeconds = (new Date().getTime() - lastActive) / 1000;
+    
     return diffSeconds >= vaultTimeoutSeconds;
   }
 
