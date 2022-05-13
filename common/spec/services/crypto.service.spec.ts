@@ -4,8 +4,6 @@ import { CryptoFunctionService } from "jslib-common/abstractions/cryptoFunction.
 import { LogService } from "jslib-common/abstractions/log.service";
 import { PlatformUtilsService } from "jslib-common/abstractions/platformUtils.service";
 import { StateService } from "jslib-common/abstractions/state.service";
-import { Utils } from "jslib-common/misc/utils";
-import { EncArrayBuffer } from "jslib-common/models/domain/encArrayBuffer";
 import { SymmetricCryptoKey } from "jslib-common/models/domain/symmetricCryptoKey";
 import { CryptoService } from "jslib-common/services/crypto.service";
 import { WebCryptoFunctionService } from "jslib-common/services/webCryptoFunction.service";

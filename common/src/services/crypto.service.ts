@@ -524,7 +524,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     return new EncString(encObj.key.encType, data, iv, mac);
   }
 
-  async encryptObject<T>(obj: T, key?: SymmetricCryptoKey): Promise<EncObject<T>> {
+  async encryptObject<T>(obj: T, key?: SymmetricCryptoKey): Promise<EncObject> {
     if (obj == null) {
       return null;
     }
@@ -539,7 +539,7 @@ export class CryptoService implements CryptoServiceAbstraction {
     return new EncObject(encObj.key.encType, data, iv, mac);
   }
 
-  async decryptObject<T>(obj: EncObject<T>, key?: SymmetricCryptoKey): Promise<T> {
+  async decryptObject<T>(obj: EncObject, key?: SymmetricCryptoKey): Promise<T> {
     if (obj == null) {
       return null;
     }
