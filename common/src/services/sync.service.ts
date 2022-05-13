@@ -362,7 +362,7 @@ export class SyncService implements SyncServiceAbstraction {
   private async syncSends(response: SendResponse[]) {
     const sends: { [id: string]: SendData } = {};
     response.forEach((s) => {
-      sends[s.id] = new SendData();
+      sends[s.id] = new SendData(s);
     });
     return await this.sendService.replace(sends);
   }

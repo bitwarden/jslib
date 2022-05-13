@@ -17,10 +17,6 @@
 
 - **file.ext:** Description of what was changed and why
 
-## Testing requirements
-
-<!--What functionality requires testing by QA? This includes testing new behavior and regression testing-->
-
 ## Before you submit
 
 - [ ] I have checked for **linting** errors (`npm run lint`) (required)

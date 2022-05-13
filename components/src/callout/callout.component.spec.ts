@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { I18nMockService } from "src/utils/i18n-mock.service";
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
+
+import { I18nMockService } from "../utils/i18n-mock.service";
 
 import { CalloutComponent } from ".";
 
