@@ -51,7 +51,10 @@ export class SearchService implements SearchServiceAbstraction {
     const builder = new lunr.Builder();
     builder.ref("id");
     builder.field("shortid", { boost: 100, extractor: (c: CipherView) => c.id.substr(0, 8) });
-    builder.field("name", { boost: 10 });
+    builder.field("name", {
+      boost: 10,
+      extractor: (c: CipherView) => c.name.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+    });
     builder.field("subtitle", {
       boost: 5,
       extractor: (c: CipherView) => {
