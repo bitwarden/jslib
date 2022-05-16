@@ -10,6 +10,11 @@ import { WebCryptoFunctionService } from "jslib-common/services/webCryptoFunctio
 
 import { makeStaticByteArray } from "../utils";
 
+// Importing the wordlist crashes jest, mock it.
+jest.mock("jslib-common/misc/wordlist", () => ({
+  EEFLongWordList: [],
+}));
+
 describe("Crypto Service", () => {
   let cryptoFunctionService: CryptoFunctionService;
   let platformUtilsService: SubstituteOf<PlatformUtilsService>;
