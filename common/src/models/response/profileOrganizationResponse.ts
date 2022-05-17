@@ -40,6 +40,9 @@ export class ProfileOrganizationResponse extends BaseResponse {
   planProductType: ProductType;
   keyConnectorEnabled: boolean;
   keyConnectorUrl: string;
+  familySponsorshipLastSyncDate?: Date;
+  familySponsorshipValidUntil?: Date;
+  familySponsorshipToDelete?: boolean;
 
   constructor(response: any) {
     super(response);
@@ -77,5 +80,18 @@ export class ProfileOrganizationResponse extends BaseResponse {
     this.planProductType = this.getResponseProperty("PlanProductType");
     this.keyConnectorEnabled = this.getResponseProperty("KeyConnectorEnabled") ?? false;
     this.keyConnectorUrl = this.getResponseProperty("KeyConnectorUrl");
+    const familySponsorshipLastSyncDateString = this.getResponseProperty(
+      "FamilySponsorshipLastSyncDate"
+    );
+    if (familySponsorshipLastSyncDateString) {
+      this.familySponsorshipLastSyncDate = new Date(familySponsorshipLastSyncDateString);
+    }
+    const familySponsorshipValidUntilString = this.getResponseProperty(
+      "FamilySponsorshipValidUntil"
+    );
+    if (familySponsorshipValidUntilString) {
+      this.familySponsorshipValidUntil = new Date(familySponsorshipValidUntilString);
+    }
+    this.familySponsorshipToDelete = this.getResponseProperty("FamilySponsorshipToDelete");
   }
 }
