@@ -58,16 +58,22 @@ export class SearchService implements SearchServiceAbstraction {
     builder.field("subtitle", {
       boost: 5,
       extractor: (c: CipherView) => {
-        if (c.subTitle != null && c.type === CipherType.Card) {
-          return c.subTitle.replace(/\*/g, "");
+        const subtitle =
+          c.subTitle != null ? c.subTitle.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : null;
+        if (subtitle != null && c.type === CipherType.Card) {
+          return subtitle.replace(/\*/g, "");
         }
-        return c.subTitle;
+        return subtitle;
       },
     });
-    builder.field("notes");
+    builder.field("notes", {
+      extractor: (c: CipherView) => c.notes?.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+    });
     builder.field("login.username", {
       extractor: (c: CipherView) =>
-        c.type === CipherType.Login && c.login != null ? c.login.username : null,
+        c.type === CipherType.Login && c.login != null
+          ? c.login.username?.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+          : null,
     });
     builder.field("login.uris", { boost: 2, extractor: (c: CipherView) => this.uriExtractor(c) });
     builder.field("fields", { extractor: (c: CipherView) => this.fieldExtractor(c, false) });
