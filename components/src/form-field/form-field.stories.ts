@@ -22,6 +22,8 @@ export default {
           useFactory: () => {
             return new I18nMockService({
               required: "required",
+              inputRequired: "Input is required.",
+              inputEmail: "Input is not an email-address.",
             });
           },
         },
@@ -42,17 +44,35 @@ const formObj = fb.group({
   required: ["", [Validators.required]],
 });
 
+const defaultFormObj = fb.group({
+  name: ["", [Validators.required]],
+  email: ["", [Validators.required, Validators.email]],
+});
+
+function submit() {
+  defaultFormObj.markAllAsTouched();
+}
+
 const Template: Story<BitFormFieldComponent> = (args: BitFormFieldComponent) => ({
   props: {
-    formObj: formObj,
+    formObj: defaultFormObj,
+    submit: submit,
     ...args,
   },
   template: `
-    <bit-form-field>
-      <bit-label>Label</bit-label>
-      <input bitInput [formControl]="formObj.get('test')" placeholder="Placeholder" />
-      <bit-hint>Message</bit-hint>
-    </bit-form-field>
+    <form [formGroup]="formObj" (ngSubmit)="submit()">
+      <bit-form-field>
+        <bit-label>Name</bit-label>
+        <input bitInput formControlName="name" />
+      </bit-form-field>
+
+      <bit-form-field>
+        <bit-label>Email</bit-label>
+        <input bitInput formControlName="email" />
+      </bit-form-field>
+
+      <button type="submit" bit-button buttonType="primary">Submit</button>
+    </form>
   `,
 });
 
