@@ -52,7 +52,7 @@ export class BitInput {
   @Input() hasSuffix = false;
 
   get hasError() {
-    return this.ngControl?.status === "INVALID";
+    return this.ngControl?.status === "INVALID" && this.ngControl?.touched;
   }
 
   get error() {
