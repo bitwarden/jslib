@@ -15,6 +15,8 @@ import { DynamicTreeNode } from "./models/dynamic-tree-node.model";
 
 @Injectable()
 export class VaultFilterService {
+  getAllCollectionsFromServer = false;
+
   constructor(
     protected stateService: StateService,
     protected organizationService: OrganizationService,
@@ -58,18 +60,22 @@ export class VaultFilterService {
   }
 
   async buildCollections(organizationId?: string): Promise<DynamicTreeNode<CollectionView>> {
-    const storedCollections = await this.collectionService.getAllDecrypted();
-    let collections: CollectionView[];
-    if (organizationId != null) {
-      collections = storedCollections.filter((c) => c.organizationId === organizationId);
-    } else {
-      collections = storedCollections;
-    }
+    const collections = this.getAllCollectionsFromServer
+      ? await this.collectionService.getOrgCollectionsFromServer(organizationId)
+      : await this.getUserCollections(organizationId);
+
     const nestedCollections = await this.collectionService.getAllNested(collections);
     return new DynamicTreeNode<CollectionView>({
       fullList: collections,
       nestedList: nestedCollections,
     });
+  }
+
+  private async getUserCollections(organizationId?: string): Promise<CollectionView[]> {
+    const storedCollections = await this.collectionService.getAllDecrypted();
+    return organizationId != null
+      ? storedCollections.filter((c) => c.organizationId === organizationId)
+      : storedCollections;
   }
 
   async checkForSingleOrganizationPolicy(): Promise<boolean> {

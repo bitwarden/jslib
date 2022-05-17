@@ -213,7 +213,12 @@ export const SYSTEM_LANGUAGE = new InjectionToken<string>("SYSTEM_LANGUAGE");
     {
       provide: CollectionServiceAbstraction,
       useClass: CollectionService,
-      deps: [CryptoServiceAbstraction, I18nServiceAbstraction, StateServiceAbstraction],
+      deps: [
+        CryptoServiceAbstraction,
+        I18nServiceAbstraction,
+        StateServiceAbstraction,
+        ApiServiceAbstraction,
+      ],
     },
     {
       provide: EnvironmentServiceAbstraction,
