@@ -1,6 +1,3 @@
-import { ApiService } from "jslib-common/abstractions/api.service";
-import { CollectionDetailsResponse } from "jslib-common/models/response/collectionResponse";
-
 import { CollectionService as CollectionServiceAbstraction } from "../abstractions/collection.service";
 import { CryptoService } from "../abstractions/crypto.service";
 import { I18nService } from "../abstractions/i18n.service";
@@ -18,8 +15,7 @@ export class CollectionService implements CollectionServiceAbstraction {
   constructor(
     private cryptoService: CryptoService,
     private i18nService: I18nService,
-    private stateService: StateService,
-    private apiService: ApiService
+    private stateService: StateService
   ) {}
 
   async clearCache(userId?: string): Promise<void> {
@@ -157,19 +153,5 @@ export class CollectionService implements CollectionServiceAbstraction {
     }
 
     await this.replace(collections);
-  }
-
-  async getOrgCollectionsFromServer(organizationId: string) {
-    let result: CollectionView[] = [];
-
-    const collectionResponse = await this.apiService.getCollections(organizationId);
-    if (collectionResponse?.data != null && collectionResponse.data.length) {
-      const collectionDomains = collectionResponse.data.map(
-        (r) => new Collection(new CollectionData(r as CollectionDetailsResponse))
-      );
-      result = await this.decryptMany(collectionDomains);
-    }
-
-    return result;
   }
 }

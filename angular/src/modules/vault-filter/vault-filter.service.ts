@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 
+import { ApiService } from "jslib-common/abstractions/api.service";
 import { CipherService } from "jslib-common/abstractions/cipher.service";
 import { CollectionService } from "jslib-common/abstractions/collection.service";
 import { FolderService } from "jslib-common/abstractions/folder.service";
@@ -7,7 +8,10 @@ import { OrganizationService } from "jslib-common/abstractions/organization.serv
 import { PolicyService } from "jslib-common/abstractions/policy.service";
 import { StateService } from "jslib-common/abstractions/state.service";
 import { PolicyType } from "jslib-common/enums/policyType";
+import { CollectionData } from "jslib-common/models/data/collectionData";
+import { Collection } from "jslib-common/models/domain/collection";
 import { Organization } from "jslib-common/models/domain/organization";
+import { CollectionDetailsResponse } from "jslib-common/models/response/collectionResponse";
 import { CollectionView } from "jslib-common/models/view/collectionView";
 import { FolderView } from "jslib-common/models/view/folderView";
 
@@ -23,7 +27,8 @@ export class VaultFilterService {
     protected folderService: FolderService,
     protected cipherService: CipherService,
     protected collectionService: CollectionService,
-    protected policyService: PolicyService
+    protected policyService: PolicyService,
+    protected apiService: ApiService
   ) {}
 
   async storeCollapsedFilterNodes(collapsedFilterNodes: Set<string>): Promise<void> {
@@ -61,7 +66,7 @@ export class VaultFilterService {
 
   async buildCollections(organizationId?: string): Promise<DynamicTreeNode<CollectionView>> {
     const collections = this.getAllCollectionsFromServer
-      ? await this.collectionService.getOrgCollectionsFromServer(organizationId)
+      ? await this.getAdminCollections(organizationId)
       : await this.getUserCollections(organizationId);
 
     const nestedCollections = await this.collectionService.getAllNested(collections);
@@ -69,6 +74,20 @@ export class VaultFilterService {
       fullList: collections,
       nestedList: nestedCollections,
     });
+  }
+
+  private async getAdminCollections(organizationId: string) {
+    let result: CollectionView[] = [];
+
+    const collectionResponse = await this.apiService.getCollections(organizationId);
+    if (collectionResponse?.data != null && collectionResponse.data.length) {
+      const collectionDomains = collectionResponse.data.map(
+        (r: CollectionDetailsResponse) => new Collection(new CollectionData(r))
+      );
+      result = await this.collectionService.decryptMany(collectionDomains);
+    }
+
+    return result;
   }
 
   private async getUserCollections(organizationId?: string): Promise<CollectionView[]> {
