@@ -55,8 +55,9 @@ export class BitInput {
     return this.ngControl?.status === "INVALID" && this.ngControl?.touched;
   }
 
-  get error() {
-    return Object.keys(this.ngControl.errors)[0];
+  get error(): [string, any] {
+    const key = Object.keys(this.ngControl.errors)[0];
+    return [key, this.ngControl.errors[key]];
   }
 
   ariaDescribedBy: string;
