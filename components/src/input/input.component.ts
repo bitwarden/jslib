@@ -22,7 +22,6 @@ export class BitInput {
       "tw-bg-background-alt",
       "tw-border",
       "tw-border-solid",
-      "tw-border-secondary-500",
       "tw-rounded",
       "tw-text-main",
       "tw-placeholder-text-muted",
@@ -34,6 +33,7 @@ export class BitInput {
       "disabled:tw-bg-secondary-100",
       this.hasPrefix ? "tw-rounded-l-none" : "",
       this.hasSuffix ? "tw-rounded-r-none" : "",
+      this.hasError ? "tw-border-danger-500" : "tw-border-secondary-500",
     ].filter((s) => s != "");
   }
 
