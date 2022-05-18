@@ -25,7 +25,7 @@ export class SearchService implements SearchServiceAbstraction {
       this.searchableMinLength = 1;
     }
     //register lunr piprlinr function
-    lunr.Pipeline.registerFunction(this.normalizeAccentsPipelineFunction, 'normalizeAccents');
+    lunr.Pipeline.registerFunction(this.normalizeAccentsPipelineFunction, "normalizeAccents");
   }
 
   clearIndex(): void {
@@ -55,7 +55,7 @@ export class SearchService implements SearchServiceAbstraction {
     builder.ref("id");
     builder.field("shortid", { boost: 100, extractor: (c: CipherView) => c.id.substr(0, 8) });
     builder.field("name", {
-      boost: 10
+      boost: 10,
     });
     builder.field("subtitle", {
       boost: 5,
@@ -69,9 +69,7 @@ export class SearchService implements SearchServiceAbstraction {
     builder.field("notes");
     builder.field("login.username", {
       extractor: (c: CipherView) =>
-        c.type === CipherType.Login && c.login != null
-          ? c.login.username
-          : null,
+        c.type === CipherType.Login && c.login != null ? c.login.username : null,
     });
     builder.field("login.uris", { boost: 2, extractor: (c: CipherView) => this.uriExtractor(c) });
     builder.field("fields", { extractor: (c: CipherView) => this.fieldExtractor(c, false) });
@@ -290,15 +288,15 @@ export class SearchService implements SearchServiceAbstraction {
   }
 
   private normalizeAccentsPipelineFunction(token: lunr.Token): any {
-    const searchableFields = ['name', 'login.username', 'subtitle', 'notes'];
+    const searchableFields = ["name", "login.username", "subtitle", "notes"];
     const fields = (token as any).metadata["fields"];
     const checkFields = fields.every((i: any) => searchableFields.includes(i));
 
     if (checkFields) {
       return token
-          .toString()
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '');
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
     }
 
     return token;
