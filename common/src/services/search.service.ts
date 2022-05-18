@@ -24,7 +24,7 @@ export class SearchService implements SearchServiceAbstraction {
     if (["zh-CN", "zh-TW"].indexOf(i18nService.locale) !== -1) {
       this.searchableMinLength = 1;
     }
-    //register lunr piprlinr function
+    //register lunr pipeline function
     lunr.Pipeline.registerFunction(this.normalizeAccentsPipelineFunction, "normalizeAccents");
   }
 
