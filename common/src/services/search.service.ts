@@ -193,7 +193,7 @@ export class SearchService implements SearchServiceAbstraction {
       if (s.name != null && s.name.toLowerCase().indexOf(query) > -1) {
         sendsMatched.push(s);
       }
-      if (
+      else if (
         query.length >= 8 &&
         (s.id.startsWith(query) ||
           s.accessId.toLocaleLowerCase().startsWith(query) ||
@@ -201,13 +201,13 @@ export class SearchService implements SearchServiceAbstraction {
       ) {
         lowPriorityMatched.push(s);
       }
-      if (s.notes != null && s.notes.toLowerCase().indexOf(query) > -1) {
+      else if (s.notes != null && s.notes.toLowerCase().indexOf(query) > -1) {
         lowPriorityMatched.push(s);
       }
-      if (s.text?.text != null && s.text.text.toLowerCase().indexOf(query) > -1) {
+      else if (s.text?.text != null && s.text.text.toLowerCase().indexOf(query) > -1) {
         lowPriorityMatched.push(s);
       }
-      if (s.file?.fileName != null && s.file.fileName.toLowerCase().indexOf(query) > -1) {
+      else if (s.file?.fileName != null && s.file.fileName.toLowerCase().indexOf(query) > -1) {
         lowPriorityMatched.push(s);
       }
     });
