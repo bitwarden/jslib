@@ -187,8 +187,8 @@ export class SearchService implements SearchServiceAbstraction {
     {
       return sends;
     }
-    let sendsMatched: SendView[] = [];
-    let lowPriorityMatched: SendView[] = [];
+    const sendsMatched: SendView[] = [];
+    const lowPriorityMatched: SendView[] = [];
     sends.forEach(s => {
       if (s.name != null && s.name.toLowerCase().indexOf(query) > -1) {
         sendsMatched.push(s);
