@@ -24,6 +24,8 @@ export class SearchService implements SearchServiceAbstraction {
     if (["zh-CN", "zh-TW"].indexOf(i18nService.locale) !== -1) {
       this.searchableMinLength = 1;
     }
+    //register lunr piprlinr function
+    lunr.Pipeline.registerFunction(this.normalizeAccentsPipelineFunction, 'normalizeAccents');
   }
 
   clearIndex(): void {
@@ -49,30 +51,26 @@ export class SearchService implements SearchServiceAbstraction {
     this.indexedEntityId = indexedEntityId;
     this.index = null;
     const builder = new lunr.Builder();
+    builder.pipeline.add(this.normalizeAccentsPipelineFunction);
     builder.ref("id");
     builder.field("shortid", { boost: 100, extractor: (c: CipherView) => c.id.substr(0, 8) });
     builder.field("name", {
-      boost: 10,
-      extractor: (c: CipherView) => c.name.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+      boost: 10
     });
     builder.field("subtitle", {
       boost: 5,
       extractor: (c: CipherView) => {
-        const subtitle =
-          c.subTitle != null ? c.subTitle.normalize("NFD").replace(/[\u0300-\u036f]/g, "") : null;
-        if (subtitle != null && c.type === CipherType.Card) {
-          return subtitle.replace(/\*/g, "");
+        if (c.subTitle != null && c.type === CipherType.Card) {
+          return c.subTitle.replace(/\*/g, "");
         }
-        return subtitle;
+        return c.subTitle;
       },
     });
-    builder.field("notes", {
-      extractor: (c: CipherView) => c.notes?.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
-    });
+    builder.field("notes");
     builder.field("login.username", {
       extractor: (c: CipherView) =>
         c.type === CipherType.Login && c.login != null
-          ? c.login.username?.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+          ? c.login.username
           : null,
     });
     builder.field("login.uris", { boost: 2, extractor: (c: CipherView) => this.uriExtractor(c) });
@@ -289,5 +287,20 @@ export class SearchService implements SearchServiceAbstraction {
       uris.push(uri);
     });
     return uris.length > 0 ? uris : null;
+  }
+
+  private normalizeAccentsPipelineFunction(token: lunr.Token): any {
+    const searchableFields = ['name', 'login.username', 'subtitle', 'notes'];
+    const fields = (token as any).metadata["fields"];
+    const checkFields = fields.every((i: any) => searchableFields.includes(i));
+
+    if (checkFields) {
+      return token
+          .toString()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
+    }
+
+    return token;
   }
 }
