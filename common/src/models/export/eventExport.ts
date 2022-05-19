@@ -11,6 +11,7 @@ export class EventExport {
   date: string;
   ip: string;
   type: string;
+  installationId: string;
 
   constructor(event: EventView) {
     this.message = event.humanReadableMessage;
@@ -22,5 +23,6 @@ export class EventExport {
     this.date = event.date;
     this.ip = event.ip;
     this.type = EventType[event.type];
+    this.installationId = event.installationId;
   }
 }

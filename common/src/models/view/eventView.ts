@@ -11,6 +11,7 @@ export class EventView {
   date: string;
   ip: string;
   type: EventType;
+  installationId: string;
 
   constructor(data: Required<EventView>) {
     this.message = data.message;
@@ -23,5 +24,6 @@ export class EventView {
     this.date = data.date;
     this.ip = data.ip;
     this.type = data.type;
+    this.installationId = data.installationId;
   }
 }
