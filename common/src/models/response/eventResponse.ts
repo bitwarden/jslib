@@ -19,7 +19,6 @@ export class EventResponse extends BaseResponse {
   date: string;
   deviceType: DeviceType;
   ipAddress: string;
-  installationId: string;
 
   constructor(response: any) {
     super(response);
@@ -38,6 +37,5 @@ export class EventResponse extends BaseResponse {
     this.date = this.getResponseProperty("Date");
     this.deviceType = this.getResponseProperty("DeviceType");
     this.ipAddress = this.getResponseProperty("IpAddress");
-    this.installationId = this.getResponseProperty("InstallationId");
   }
 }
