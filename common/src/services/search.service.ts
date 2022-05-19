@@ -24,6 +24,8 @@ export class SearchService implements SearchServiceAbstraction {
     if (["zh-CN", "zh-TW"].indexOf(i18nService.locale) !== -1) {
       this.searchableMinLength = 1;
     }
+    //register lunr pipeline function
+    lunr.Pipeline.registerFunction(this.normalizeAccentsPipelineFunction, "normalizeAccents");
   }
 
   clearIndex(): void {
@@ -49,9 +51,12 @@ export class SearchService implements SearchServiceAbstraction {
     this.indexedEntityId = indexedEntityId;
     this.index = null;
     const builder = new lunr.Builder();
+    builder.pipeline.add(this.normalizeAccentsPipelineFunction);
     builder.ref("id");
     builder.field("shortid", { boost: 100, extractor: (c: CipherView) => c.id.substr(0, 8) });
-    builder.field("name", { boost: 10 });
+    builder.field("name", {
+      boost: 10,
+    });
     builder.field("subtitle", {
       boost: 5,
       extractor: (c: CipherView) => {
@@ -280,5 +285,20 @@ export class SearchService implements SearchServiceAbstraction {
       uris.push(uri);
     });
     return uris.length > 0 ? uris : null;
+  }
+
+  private normalizeAccentsPipelineFunction(token: lunr.Token): any {
+    const searchableFields = ["name", "login.username", "subtitle", "notes"];
+    const fields = (token as any).metadata["fields"];
+    const checkFields = fields.every((i: any) => searchableFields.includes(i));
+
+    if (checkFields) {
+      return token
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    return token;
   }
 }
