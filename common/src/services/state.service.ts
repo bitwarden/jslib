@@ -1,4 +1,4 @@
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 
 import { LogService } from "../abstractions/log.service";
 import { StateService as StateServiceAbstraction } from "../abstractions/state.service";
@@ -53,7 +53,10 @@ export class StateService<
 > implements StateServiceAbstraction<TAccount>
 {
   accounts = new BehaviorSubject<{ [userId: string]: TAccount }>({});
-  activeAccount = new BehaviorSubject<string>(null);
+  protected innerActiveAccount = new BehaviorSubject<string>(null);
+  get activeAccount(): Observable<string> {
+    return this.innerActiveAccount.asObservable();
+  }
 
   protected state: State<TGlobalState, TAccount> = new State<TGlobalState, TAccount>(
     this.createGlobals()
@@ -100,7 +103,7 @@ export class StateService<
       this.state.activeUserId = storedActiveUser;
     }
     await this.pushAccounts();
-    this.activeAccount.next(this.state.activeUserId);
+    this.innerActiveAccount.next(this.state.activeUserId);
   }
 
   async syncAccountFromDisk(userId: string) {
@@ -120,14 +123,14 @@ export class StateService<
     await this.scaffoldNewAccountStorage(account);
     await this.setLastActive(new Date().getTime(), { userId: account.profile.userId });
     await this.setActiveUser(account.profile.userId);
-    this.activeAccount.next(account.profile.userId);
+    this.innerActiveAccount.next(account.profile.userId);
   }
 
   async setActiveUser(userId: string): Promise<void> {
     this.clearDecryptedDataForActiveUser();
     this.state.activeUserId = userId;
     await this.storageService.save(keys.activeUserId, userId);
-    this.activeAccount.next(this.state.activeUserId);
+    this.innerActiveAccount.next(this.state.activeUserId);
     await this.pushAccounts();
   }
 
