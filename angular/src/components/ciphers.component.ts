@@ -77,14 +77,19 @@ export class CiphersComponent {
   }
 
   isSearching() {
-    return !this.searchPending && this.searchService.isSearchable(this.searchText);
+    return (
+      !this.searchPending &&
+      this.searchService.isSearchable(
+        this.searchText?.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      )
+    );
   }
 
   protected deletedFilter: (cipher: CipherView) => boolean = (c) => c.isDeleted === this.deleted;
 
   protected async doSearch(indexedCiphers?: CipherView[]) {
     this.ciphers = await this.searchService.searchCiphers(
-      this.searchText,
+      this.searchText?.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
       [this.filter, this.deletedFilter],
       indexedCiphers
     );
