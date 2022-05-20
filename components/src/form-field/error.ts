@@ -11,6 +11,7 @@ let nextId = 0;
   host: {
     "[attr.id]": "id",
     class: "tw-block tw-mt-1 tw-text-danger",
+    "aria-live": "assertive",
   },
 })
 export class BitError {
