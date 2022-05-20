@@ -63,11 +63,11 @@ export class VaultFilterService {
     });
   }
 
-  async buildCollections(vaultFilter: VaultFilter): Promise<DynamicTreeNode<CollectionView>> {
+  async buildCollections(vaultFilter?: VaultFilter): Promise<DynamicTreeNode<CollectionView>> {
     const collections =
-      vaultFilter.useAdminCollections && vaultFilter.selectedOrganizationId != null
+      vaultFilter?.selectedOrganizationId != null && vaultFilter.useAdminCollections
         ? await this.getAdminCollections(vaultFilter.selectedOrganizationId)
-        : await this.getUserCollections(vaultFilter.selectedOrganizationId);
+        : await this.getUserCollections(vaultFilter?.selectedOrganizationId);
 
     const nestedCollections = await this.collectionService.getAllNested(collections);
     return new DynamicTreeNode<CollectionView>({
