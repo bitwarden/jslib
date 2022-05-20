@@ -72,7 +72,7 @@ export class VaultFilterComponent implements OnInit {
     this.folders = await this.vaultFilterService.buildFolders(filter.selectedOrganizationId);
     this.collections = filter.myVaultOnly
       ? null
-      : await this.vaultFilterService.buildCollections(filter.selectedOrganizationId);
+      : await this.vaultFilterService.buildCollections(filter);
   }
 
   async reloadOrganizations() {

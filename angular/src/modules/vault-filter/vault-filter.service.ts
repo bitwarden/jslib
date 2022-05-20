@@ -16,11 +16,10 @@ import { CollectionView } from "jslib-common/models/view/collectionView";
 import { FolderView } from "jslib-common/models/view/folderView";
 
 import { DynamicTreeNode } from "./models/dynamic-tree-node.model";
+import { VaultFilter } from "./models/vault-filter.model";
 
 @Injectable()
 export class VaultFilterService {
-  getAllCollectionsFromServer = false;
-
   constructor(
     protected stateService: StateService,
     protected organizationService: OrganizationService,
@@ -64,10 +63,10 @@ export class VaultFilterService {
     });
   }
 
-  async buildCollections(organizationId?: string): Promise<DynamicTreeNode<CollectionView>> {
-    const collections = this.getAllCollectionsFromServer
-      ? await this.getAdminCollections(organizationId)
-      : await this.getUserCollections(organizationId);
+  async buildCollections(vaultFilter: VaultFilter): Promise<DynamicTreeNode<CollectionView>> {
+    const collections = vaultFilter.useAdminCollections
+      ? await this.getAdminCollections(vaultFilter.selectedOrganizationId)
+      : await this.getUserCollections(vaultFilter.selectedOrganizationId);
 
     const nestedCollections = await this.collectionService.getAllNested(collections);
     return new DynamicTreeNode<CollectionView>({

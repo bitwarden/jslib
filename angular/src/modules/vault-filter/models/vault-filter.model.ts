@@ -11,6 +11,7 @@ export class VaultFilter {
   selectedOrganizationId?: string;
   myVaultOnly = false;
   refreshCollectionsAndFolders = false;
+  useAdminCollections = false;
 
   constructor(init?: Partial<VaultFilter>) {
     Object.assign(this, init);
