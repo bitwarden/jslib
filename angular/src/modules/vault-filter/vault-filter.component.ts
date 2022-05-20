@@ -45,14 +45,10 @@ export class VaultFilterComponent implements OnInit {
       this.activeSingleOrganizationPolicy =
         await this.vaultFilterService.checkForSingleOrganizationPolicy();
     }
-    this.folders = await this.vaultFilterService.buildFolders();
-    this.collections = await this.initCollections();
-    this.isLoaded = true;
-  }
 
-  // overwritten in web for organization vaults
-  async initCollections() {
-    return await this.vaultFilterService.buildCollections();
+    // The VaultComponents call reloadCollectionsAndFolders during their initialization,
+    // no need to initialize collections and folders here
+    this.isLoaded = true;
   }
 
   async toggleFilterNodeCollapseState(node: ITreeNodeObject) {
