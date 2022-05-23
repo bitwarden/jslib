@@ -188,30 +188,31 @@ export class SearchService implements SearchServiceAbstraction {
   }
 
   searchSends(sends: SendView[], query: string) {
-    query = this.normalizeSearchQuery(query.trim().toLocaleLowerCase());
-
-    return sends.filter((s) => {
+    query = query.trim().toLocaleLowerCase();
+    if (query === null) {
+      return sends;
+    }
+    const sendsMatched: SendView[] = [];
+    const lowPriorityMatched: SendView[] = [];
+    sends.forEach((s) => {
       if (s.name != null && s.name.toLowerCase().indexOf(query) > -1) {
-        return true;
-      }
-      if (
+        sendsMatched.push(s);
+      } else if (
         query.length >= 8 &&
         (s.id.startsWith(query) ||
           s.accessId.toLocaleLowerCase().startsWith(query) ||
           (s.file?.id != null && s.file.id.startsWith(query)))
       ) {
-        return true;
-      }
-      if (s.notes != null && s.notes.toLowerCase().indexOf(query) > -1) {
-        return true;
-      }
-      if (s.text?.text != null && s.text.text.toLowerCase().indexOf(query) > -1) {
-        return true;
-      }
-      if (s.file?.fileName != null && s.file.fileName.toLowerCase().indexOf(query) > -1) {
-        return true;
+        lowPriorityMatched.push(s);
+      } else if (s.notes != null && s.notes.toLowerCase().indexOf(query) > -1) {
+        lowPriorityMatched.push(s);
+      } else if (s.text?.text != null && s.text.text.toLowerCase().indexOf(query) > -1) {
+        lowPriorityMatched.push(s);
+      } else if (s.file?.fileName != null && s.file.fileName.toLowerCase().indexOf(query) > -1) {
+        lowPriorityMatched.push(s);
       }
     });
+    return sendsMatched.concat(lowPriorityMatched);
   }
 
   getIndexForSearch(): lunr.Index {
