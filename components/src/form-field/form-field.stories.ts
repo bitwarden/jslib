@@ -100,6 +100,23 @@ const RequiredTemplate: Story<BitFormFieldComponent> = (args: BitFormFieldCompon
 export const Required = RequiredTemplate.bind({});
 Required.props = {};
 
+const HintTemplate: Story<BitFormFieldComponent> = (args: BitFormFieldComponent) => ({
+  props: {
+    formObj: formObj,
+    ...args,
+  },
+  template: `
+    <bit-form-field [formGroup]="formObj">
+      <bit-label>FormControl</bit-label>
+      <input bitInput formControlName="required" placeholder="Placeholder" />
+      <bit-hint>Long hint text</bit-hint>
+    </bit-form-field>
+  `,
+});
+
+export const Hint = HintTemplate.bind({});
+Required.props = {};
+
 const DisabledTemplate: Story<BitFormFieldComponent> = (args: BitFormFieldComponent) => ({
   props: args,
   template: `

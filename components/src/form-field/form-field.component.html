@@ -11,5 +11,7 @@
     <ng-content select="[bitSuffix]"></ng-content>
   </div>
 </div>
-<ng-content select="bit-hint"></ng-content>
-<bit-error *ngIf="input.hasError" [error]="input.error"></bit-error>
+<ng-container [ngSwitch]="input.hasError">
+  <ng-content select="bit-hint" *ngSwitchCase="false"></ng-content>
+  <bit-error [error]="input.error" *ngSwitchCase="true"></bit-error>
+</ng-container>
