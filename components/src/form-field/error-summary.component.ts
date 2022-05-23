@@ -7,7 +7,7 @@ import { FormGroup } from "@angular/forms";
     <i class="bwi bwi-error"></i> {{ "fieldsNeedAttention" | i18n: errorString }}
   </ng-container>`,
   host: {
-    class: "tw-block tw-mt-1 tw-text-danger tw-mb-1",
+    class: "tw-block tw-text-danger tw-mb-2",
     "aria-live": "assertive",
   },
 })
