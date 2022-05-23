@@ -46,8 +46,13 @@ export class VaultFilterComponent implements OnInit {
         await this.vaultFilterService.checkForSingleOrganizationPolicy();
     }
     this.folders = await this.vaultFilterService.buildFolders();
-    this.collections = await this.vaultFilterService.buildCollections();
+    this.collections = await this.initCollections();
     this.isLoaded = true;
+  }
+
+  // overwritten in web for organization vaults
+  async initCollections() {
+    return await this.vaultFilterService.buildCollections();
   }
 
   async toggleFilterNodeCollapseState(node: ITreeNodeObject) {
@@ -72,6 +77,14 @@ export class VaultFilterComponent implements OnInit {
     this.collections = filter.myVaultOnly
       ? null
       : await this.vaultFilterService.buildCollections(filter.selectedOrganizationId);
+  }
+
+  async reloadOrganizations() {
+    this.organizations = await this.vaultFilterService.buildOrganizations();
+    this.activePersonalOwnershipPolicy =
+      await this.vaultFilterService.checkForPersonalOwnershipPolicy();
+    this.activeSingleOrganizationPolicy =
+      await this.vaultFilterService.checkForSingleOrganizationPolicy();
   }
 
   addFolder() {

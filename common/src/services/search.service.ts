@@ -24,6 +24,8 @@ export class SearchService implements SearchServiceAbstraction {
     if (["zh-CN", "zh-TW"].indexOf(i18nService.locale) !== -1) {
       this.searchableMinLength = 1;
     }
+    //register lunr pipeline function
+    lunr.Pipeline.registerFunction(this.normalizeAccentsPipelineFunction, "normalizeAccents");
   }
 
   clearIndex(): void {
@@ -49,9 +51,12 @@ export class SearchService implements SearchServiceAbstraction {
     this.indexedEntityId = indexedEntityId;
     this.index = null;
     const builder = new lunr.Builder();
+    builder.pipeline.add(this.normalizeAccentsPipelineFunction);
     builder.ref("id");
     builder.field("shortid", { boost: 100, extractor: (c: CipherView) => c.id.substr(0, 8) });
-    builder.field("name", { boost: 10 });
+    builder.field("name", {
+      boost: 10,
+    });
     builder.field("subtitle", {
       boost: 5,
       extractor: (c: CipherView) => {
@@ -183,29 +188,30 @@ export class SearchService implements SearchServiceAbstraction {
 
   searchSends(sends: SendView[], query: string) {
     query = query.trim().toLocaleLowerCase();
-
-    return sends.filter((s) => {
+    if (query === null) {
+      return sends;
+    }
+    const sendsMatched: SendView[] = [];
+    const lowPriorityMatched: SendView[] = [];
+    sends.forEach((s) => {
       if (s.name != null && s.name.toLowerCase().indexOf(query) > -1) {
-        return true;
-      }
-      if (
+        sendsMatched.push(s);
+      } else if (
         query.length >= 8 &&
         (s.id.startsWith(query) ||
           s.accessId.toLocaleLowerCase().startsWith(query) ||
           (s.file?.id != null && s.file.id.startsWith(query)))
       ) {
-        return true;
-      }
-      if (s.notes != null && s.notes.toLowerCase().indexOf(query) > -1) {
-        return true;
-      }
-      if (s.text?.text != null && s.text.text.toLowerCase().indexOf(query) > -1) {
-        return true;
-      }
-      if (s.file?.fileName != null && s.file.fileName.toLowerCase().indexOf(query) > -1) {
-        return true;
+        lowPriorityMatched.push(s);
+      } else if (s.notes != null && s.notes.toLowerCase().indexOf(query) > -1) {
+        lowPriorityMatched.push(s);
+      } else if (s.text?.text != null && s.text.text.toLowerCase().indexOf(query) > -1) {
+        lowPriorityMatched.push(s);
+      } else if (s.file?.fileName != null && s.file.fileName.toLowerCase().indexOf(query) > -1) {
+        lowPriorityMatched.push(s);
       }
     });
+    return sendsMatched.concat(lowPriorityMatched);
   }
 
   getIndexForSearch(): lunr.Index {
@@ -280,5 +286,20 @@ export class SearchService implements SearchServiceAbstraction {
       uris.push(uri);
     });
     return uris.length > 0 ? uris : null;
+  }
+
+  private normalizeAccentsPipelineFunction(token: lunr.Token): any {
+    const searchableFields = ["name", "login.username", "subtitle", "notes"];
+    const fields = (token as any).metadata["fields"];
+    const checkFields = fields.every((i: any) => searchableFields.includes(i));
+
+    if (checkFields) {
+      return token
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    return token;
   }
 }
