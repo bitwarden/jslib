@@ -188,7 +188,7 @@ export class SearchService implements SearchServiceAbstraction {
   }
 
   searchSends(sends: SendView[], query: string) {
-    query = query.trim().toLocaleLowerCase();
+    query = this.normalizeSearchQuery(query.trim().toLocaleLowerCase());
     if (query === null) {
       return sends;
     }
