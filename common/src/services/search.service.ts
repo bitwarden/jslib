@@ -34,6 +34,7 @@ export class SearchService implements SearchServiceAbstraction {
   }
 
   isSearchable(query: string): boolean {
+    query = this.normalizeSearchQuery(query);
     const notSearchable =
       query == null ||
       (this.index == null && query.length < this.searchableMinLength) ||
@@ -97,7 +98,7 @@ export class SearchService implements SearchServiceAbstraction {
   ): Promise<CipherView[]> {
     const results: CipherView[] = [];
     if (query != null) {
-      query = query.trim().toLowerCase();
+      query = this.normalizeSearchQuery(query.trim().toLowerCase());
     }
     if (query === "") {
       query = null;
@@ -165,7 +166,7 @@ export class SearchService implements SearchServiceAbstraction {
   }
 
   searchCiphersBasic(ciphers: CipherView[], query: string, deleted = false) {
-    query = query.trim().toLowerCase();
+    query = this.normalizeSearchQuery(query.trim().toLowerCase());
     return ciphers.filter((c) => {
       if (deleted !== c.isDeleted) {
         return false;
@@ -187,7 +188,7 @@ export class SearchService implements SearchServiceAbstraction {
   }
 
   searchSends(sends: SendView[], query: string) {
-    query = query.trim().toLocaleLowerCase();
+    query = this.normalizeSearchQuery(query.trim().toLocaleLowerCase());
 
     return sends.filter((s) => {
       if (s.name != null && s.name.toLowerCase().indexOf(query) > -1) {
@@ -293,12 +294,13 @@ export class SearchService implements SearchServiceAbstraction {
     const checkFields = fields.every((i: any) => searchableFields.includes(i));
 
     if (checkFields) {
-      return token
-        .toString()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
+      return this.normalizeSearchQuery(token.toString());
     }
 
     return token;
+  }
+
+  private normalizeSearchQuery(query: string): string {
+    return query?.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
 }
