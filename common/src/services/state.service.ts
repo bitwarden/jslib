@@ -365,9 +365,9 @@ export class StateService<
     );
     account.profile.hasPremiumPersonally = value;
     await this.saveAccount(
-      account, 
+      account,
       this.reconcileOptions(options, await this.defaultOnDiskOptions())
-    )
+    );
   }
 
   async getClearClipboard(options?: StorageOptions): Promise<number> {
