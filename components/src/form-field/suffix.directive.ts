@@ -1,6 +1,6 @@
 import { Directive, HostBinding, Input } from "@angular/core";
 
-import { PrefixClasses } from "./prefix";
+import { PrefixClasses } from "./prefix.directive";
 
 @Directive({
   selector: "[bitSuffix]",

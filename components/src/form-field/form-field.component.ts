@@ -9,9 +9,9 @@ import {
 
 import { BitInput } from "../input/input.component";
 
-import { BitError } from "./error";
-import { BitPrefix } from "./prefix";
-import { BitSuffix } from "./suffix";
+import { BitError } from "./error.component";
+import { BitPrefix } from "./prefix.directive";
+import { BitSuffix } from "./suffix.directive";
 
 @Component({
   selector: "bit-form-field",
