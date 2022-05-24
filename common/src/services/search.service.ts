@@ -301,6 +301,7 @@ export class SearchService implements SearchServiceAbstraction {
     return token;
   }
 
+  //Normalize diacritics characters from text
   private normalizeSearchQuery(query: string): string {
     return query?.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
