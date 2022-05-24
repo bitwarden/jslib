@@ -14,7 +14,7 @@ describe("Menu", () => {
   };
 
   // The overlay is created outside the root debugElement, so we need to query its parent
-  const getBitMenuPanel = () => fixture.debugElement.parent.query(By.css(".bit-menu-panel"));
+  const getBitMenuPanel = () => document.querySelector(".bit-menu-panel");
 
   beforeEach(
     waitForAsync(() => {
@@ -30,7 +30,7 @@ describe("Menu", () => {
     })
   );
 
-  it("should open when the trigger is clicked", () => {
+  it("should open when the trigger is clicked", async () => {
     const buttonDebugElement = fixture.debugElement.query(By.directive(MenuTriggerForDirective));
     (buttonDebugElement.nativeElement as HTMLButtonElement).click();
 
@@ -49,7 +49,7 @@ describe("Menu", () => {
   it("should close when a menu item is clicked", () => {
     getMenuTriggerDirective().toggleMenu();
 
-    fixture.debugElement.parent.query(By.css("#item1")).nativeElement.click();
+    (document.querySelector("#item1") as HTMLAnchorElement).click();
 
     expect(getBitMenuPanel()).toBeFalsy();
   });
@@ -57,7 +57,7 @@ describe("Menu", () => {
   it("should close when the backdrop is clicked", () => {
     getMenuTriggerDirective().toggleMenu();
 
-    fixture.debugElement.parent.query(By.css(".cdk-overlay-backdrop")).nativeElement.click();
+    (document.querySelector(".cdk-overlay-backdrop") as HTMLAnchorElement).click();
 
     expect(getBitMenuPanel()).toBeFalsy();
   });

@@ -17,7 +17,7 @@ describe("BannerComponent", () => {
   });
 
   it("should create with alert", () => {
-    expect(component.useAlertRole).toBeTrue();
+    expect(component.useAlertRole).toBe(true);
     const el = fixture.nativeElement.children[0];
     expect(el.getAttribute("role")).toEqual("status");
     expect(el.getAttribute("aria-live")).toEqual("polite");
@@ -27,7 +27,7 @@ describe("BannerComponent", () => {
     component.useAlertRole = false;
     fixture.autoDetectChanges();
 
-    expect(component.useAlertRole).toBeFalse();
+    expect(component.useAlertRole).toBe(false);
     const el = fixture.nativeElement.children[0];
     expect(el.getAttribute("role")).toBeNull();
     expect(el.getAttribute("aria-live")).toBeNull();
