@@ -301,7 +301,7 @@ export class SearchService implements SearchServiceAbstraction {
     return token;
   }
 
-  //Normalize diacritics characters from text
+  // Remove accents/diacritics characters from text. This regex is equivalent to the Diacritic unicode property escape, i.e. it will match all diacritic characters.
   private normalizeSearchQuery(query: string): string {
     return query?.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
