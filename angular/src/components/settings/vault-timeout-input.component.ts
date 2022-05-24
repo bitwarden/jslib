@@ -80,10 +80,9 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
       });
     });
 
-    // 
+    //Check minimum allowed custom minutes
     this.form.get("custom.minutes")?.valueChanges.subscribe((value) => {
-      if (value < VaultTimeoutInputComponent.MIN_CUSTOM_MINUTES)
-        this.validMinutes = false;
+      this.validMinutes = value < VaultTimeoutInputComponent.MIN_CUSTOM_MINUTES ? false : true;
     });
   }
 
