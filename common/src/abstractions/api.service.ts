@@ -496,7 +496,9 @@ export abstract class ApiService {
   postTwoFactorEmailSetup: (request: TwoFactorEmailRequest) => Promise<any>;
   postTwoFactorEmail: (request: TwoFactorEmailRequest) => Promise<any>;
   getDeviceVerificationSettings: () => Promise<DeviceVerificationResponse>;
-  putDeviceVerificationSettings: (request: DeviceVerificationRequest) => Promise<DeviceVerificationResponse>;
+  putDeviceVerificationSettings: (
+    request: DeviceVerificationRequest
+  ) => Promise<DeviceVerificationResponse>;
 
   getEmergencyAccessTrusted: () => Promise<ListResponse<EmergencyAccessGranteeDetailsResponse>>;
   getEmergencyAccessGranted: () => Promise<ListResponse<EmergencyAccessGrantorDetailsResponse>>;

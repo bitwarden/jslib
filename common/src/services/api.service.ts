@@ -1574,12 +1574,26 @@ export class ApiService implements ApiServiceAbstraction {
   }
 
   async getDeviceVerificationSettings(): Promise<DeviceVerificationResponse> {
-    const r = await this.send("GET", "/two-factor/get-device-verification-settings", null, true, true);
+    const r = await this.send(
+      "GET",
+      "/two-factor/get-device-verification-settings",
+      null,
+      true,
+      true
+    );
     return new DeviceVerificationResponse(r);
   }
 
-  async putDeviceVerificationSettings(request: DeviceVerificationRequest): Promise<DeviceVerificationResponse> {
-    const r = await this.send("PUT", "/two-factor/device-verification-settings", request, true, true);
+  async putDeviceVerificationSettings(
+    request: DeviceVerificationRequest
+  ): Promise<DeviceVerificationResponse> {
+    const r = await this.send(
+      "PUT",
+      "/two-factor/device-verification-settings",
+      request,
+      true,
+      true
+    );
     return new DeviceVerificationResponse(r);
   }
 

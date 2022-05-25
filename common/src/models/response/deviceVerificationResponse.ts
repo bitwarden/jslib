@@ -6,7 +6,11 @@ export class DeviceVerificationResponse extends BaseResponse {
 
   constructor(response: any) {
     super(response);
-    this.isDeviceVerificationSectionEnabled = this.getResponseProperty("IsDeviceVerificationSectionEnabled");
-    this.unknownDeviceVerificationEnabled = this.getResponseProperty("UnknownDeviceVerificationEnabled");
+    this.isDeviceVerificationSectionEnabled = this.getResponseProperty(
+      "IsDeviceVerificationSectionEnabled"
+    );
+    this.unknownDeviceVerificationEnabled = this.getResponseProperty(
+      "UnknownDeviceVerificationEnabled"
+    );
   }
 }
