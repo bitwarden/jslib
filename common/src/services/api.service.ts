@@ -187,6 +187,8 @@ import {
 import { TwoFactorYubiKeyResponse } from "../models/response/twoFactorYubiKeyResponse";
 import { UserKeyResponse } from "../models/response/userKeyResponse";
 import { SendAccessView } from "../models/view/sendAccessView";
+import { DeviceVerificationResponse } from "../models/response/deviceVerificationResponse";
+import { DeviceVerificationRequest } from "../models/request/DeviceVerificationRequest";
 
 export class ApiService implements ApiServiceAbstraction {
   private device: DeviceType;
@@ -1569,6 +1571,16 @@ export class ApiService implements ApiServiceAbstraction {
 
   postTwoFactorEmail(request: TwoFactorEmailRequest): Promise<any> {
     return this.send("POST", "/two-factor/send-email-login", request, false, false);
+  }
+
+  async getDeviceVerificationSettings(): Promise<DeviceVerificationResponse> {
+    const r = await this.send("GET", "/two-factor/get-device-verification-settings", null, true, true);
+    return new DeviceVerificationResponse(r);
+  }
+
+  async putDeviceVerificationSettings(request: DeviceVerificationRequest): Promise<DeviceVerificationResponse> {
+    const r = await this.send("PUT", "/two-factor/device-verification-settings", request, true, true);
+    return new DeviceVerificationResponse(r);
   }
 
   // Emergency Access APIs
