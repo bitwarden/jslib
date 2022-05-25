@@ -79,11 +79,6 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
         },
       });
     });
-
-    //Check minimum allowed custom minutes
-    this.form.get("custom.minutes")?.valueChanges.subscribe((value) => {
-      this.validMinutes = value < VaultTimeoutInputComponent.MIN_CUSTOM_MINUTES ? false : true;
-    });
   }
 
   ngOnChanges() {
@@ -138,6 +133,10 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
     if (this.vaultTimeoutPolicy && this.vaultTimeoutPolicy?.data?.minutes < control.value) {
       return { policyError: true };
     }
+
+    //Check minimum allowed custom minutes
+    this.validMinutes =
+      control.value < VaultTimeoutInputComponent.MIN_CUSTOM_MINUTES ? false : true;
 
     return null;
   }
