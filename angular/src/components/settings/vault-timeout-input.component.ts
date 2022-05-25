@@ -20,7 +20,7 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
 
   static CUSTOM_VALUE = -100;
   static MIN_CUSTOM_MINUTES = 1;
-  validMinutes: boolean = true;
+  validMinutes = true;
 
   form = this.formBuilder.group({
     vaultTimeout: [null],
