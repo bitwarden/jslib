@@ -137,6 +137,6 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
     if (this.logoutCallback != null) {
       this.logoutCallback(false);
     }
-    throw new Error('Key Connector error');
+    throw new Error("Key Connector error");
   }
 }
