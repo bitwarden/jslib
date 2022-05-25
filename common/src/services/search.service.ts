@@ -296,7 +296,10 @@ export class SearchService implements SearchServiceAbstraction {
 
     if (checkFields) {
       //can't use private normalizeSearchQuery method here because the lunr library doesn't have access to the scope of SearchService class
-      return token.toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return token
+        .toString()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
     }
 
     return token;
