@@ -18,7 +18,7 @@ export class LockGuard implements CanActivate {
     }
 
     const redirectUrl =
-      authStatus === AuthenticationStatus.LoggedOut ? [this.loginpage] : [this.homepage];
+      authStatus === AuthenticationStatus.LoggedOut ? this.loginpage : this.homepage;
 
     return this.router.createUrlTree([redirectUrl]);
   }
