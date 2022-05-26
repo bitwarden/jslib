@@ -218,11 +218,13 @@ export class SsoComponent {
       }
     } catch (e) {
       this.logService.error(e);
-      if (e.message === "Unable to reach key connector") {
+
+      // TODO: Key Connector Service should pass this error message to the logout callback instead of displaying here
+      if (e.message === "Key Connector error") {
         this.platformUtilsService.showToast(
           "error",
           null,
-          this.i18nService.t("ssoKeyConnectorUnavailable")
+          this.i18nService.t("ssoKeyConnectorError")
         );
       }
     }
