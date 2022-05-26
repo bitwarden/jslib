@@ -144,9 +144,11 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
   }
 
   getValidMinutesInput(): boolean {
-    if (this.form.value.vaultTimeout === VaultTimeoutInputComponent.CUSTOM_VALUE && 
-      this.form.get("custom.minutes")?.value > 0) {
-        return true;
+    if (
+      this.form.value.vaultTimeout === VaultTimeoutInputComponent.CUSTOM_VALUE &&
+      this.form.get("custom.minutes")?.value > 0
+    ) {
+      return true;
     }
 
     return false;
