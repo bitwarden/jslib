@@ -19,7 +19,6 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
   }
 
   static CUSTOM_VALUE = -100;
-  static MIN_CUSTOM_MINUTES = 1;
 
   form = this.formBuilder.group({
     vaultTimeout: [null],
@@ -133,7 +132,7 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
       return { policyError: true };
     }
 
-    if (control.value < VaultTimeoutInputComponent.MIN_CUSTOM_MINUTES) {
+    if (this.getValidMinutesInput()) {
       return { minTimeoutError: true };
     }
 
@@ -142,5 +141,14 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
 
   registerOnValidatorChange(fn: () => void): void {
     this.validatorChange = fn;
+  }
+
+  getValidMinutesInput(): boolean {
+    if (this.form.value.vaultTimeout === VaultTimeoutInputComponent.CUSTOM_VALUE && 
+      this.form.get("custom.minutes")?.value > 0) {
+        return true;
+    }
+
+    return false;
   }
 }
