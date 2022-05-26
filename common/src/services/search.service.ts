@@ -7,6 +7,7 @@ import { SearchService as SearchServiceAbstraction } from "../abstractions/searc
 import { CipherType } from "../enums/cipherType";
 import { FieldType } from "../enums/fieldType";
 import { UriMatchType } from "../enums/uriMatchType";
+import { Utils } from "../misc/utils";
 import { CipherView } from "../models/view/cipherView";
 import { SendView } from "../models/view/sendView";
 
@@ -34,7 +35,7 @@ export class SearchService implements SearchServiceAbstraction {
   }
 
   isSearchable(query: string): boolean {
-    query = this.normalizeSearchQuery(query);
+    query = Utils.normalizeSearchQuery(query);
     const notSearchable =
       query == null ||
       (this.index == null && query.length < this.searchableMinLength) ||
@@ -98,7 +99,7 @@ export class SearchService implements SearchServiceAbstraction {
   ): Promise<CipherView[]> {
     const results: CipherView[] = [];
     if (query != null) {
-      query = this.normalizeSearchQuery(query.trim().toLowerCase());
+      query = Utils.normalizeSearchQuery(query.trim().toLowerCase());
     }
     if (query === "") {
       query = null;
@@ -166,7 +167,7 @@ export class SearchService implements SearchServiceAbstraction {
   }
 
   searchCiphersBasic(ciphers: CipherView[], query: string, deleted = false) {
-    query = this.normalizeSearchQuery(query.trim().toLowerCase());
+    query = Utils.normalizeSearchQuery(query.trim().toLowerCase());
     return ciphers.filter((c) => {
       if (deleted !== c.isDeleted) {
         return false;
@@ -188,7 +189,7 @@ export class SearchService implements SearchServiceAbstraction {
   }
 
   searchSends(sends: SendView[], query: string) {
-    query = this.normalizeSearchQuery(query.trim().toLocaleLowerCase());
+    query = Utils.normalizeSearchQuery(query.trim().toLocaleLowerCase());
     if (query === null) {
       return sends;
     }
@@ -295,18 +296,9 @@ export class SearchService implements SearchServiceAbstraction {
     const checkFields = fields.every((i: any) => searchableFields.includes(i));
 
     if (checkFields) {
-      //can't use private normalizeSearchQuery method here because the lunr library doesn't have access to the scope of SearchService class
-      return token
-        .toString()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
+      return Utils.normalizeSearchQuery(token.toString());
     }
 
     return token;
-  }
-
-  // Remove accents/diacritics characters from text. This regex is equivalent to the Diacritic unicode property escape, i.e. it will match all diacritic characters.
-  private normalizeSearchQuery(query: string): string {
-    return query?.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
 }

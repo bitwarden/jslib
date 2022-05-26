@@ -348,6 +348,11 @@ export class Utils {
     return s.charAt(0).toUpperCase() + s.slice(1);
   }
 
+  // Remove accents/diacritics characters from text. This regex is equivalent to the Diacritic unicode property escape, i.e. it will match all diacritic characters.
+  static normalizeSearchQuery(query: string): string {
+    return query?.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
   private static validIpAddress(ipString: string): boolean {
     const ipRegex =
       /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
