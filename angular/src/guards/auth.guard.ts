@@ -1,5 +1,11 @@
 import { Injectable } from "@angular/core";
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from "@angular/router";
+import {
+  ActivatedRoute,
+  ActivatedRouteSnapshot,
+  CanActivate,
+  Router,
+  RouterStateSnapshot,
+} from "@angular/router";
 
 import { AuthService } from "jslib-common/abstractions/auth.service";
 import { KeyConnectorService } from "jslib-common/abstractions/keyConnector.service";
@@ -12,7 +18,8 @@ export class AuthGuard implements CanActivate {
     private authService: AuthService,
     private router: Router,
     private messagingService: MessagingService,
-    private keyConnectorService: KeyConnectorService
+    private keyConnectorService: KeyConnectorService,
+    private activatedRoute: ActivatedRoute
   ) {}
 
   async canActivate(route: ActivatedRouteSnapshot, routerState: RouterStateSnapshot) {
@@ -27,14 +34,19 @@ export class AuthGuard implements CanActivate {
       if (routerState != null) {
         this.messagingService.send("lockedUrl", { url: routerState.url });
       }
-      return this.router.createUrlTree(["lock"], { queryParams: { promptBiometric: true } });
+      return this.router.createUrlTree(["lock"], {
+        queryParams: { promptBiometric: true },
+        relativeTo: this.activatedRoute.root,
+      });
     }
 
     if (
       !routerState.url.includes("remove-password") &&
       (await this.keyConnectorService.getConvertAccountRequired())
     ) {
-      return this.router.createUrlTree(["/remove-password"]);
+      return this.router.createUrlTree(["/remove-password"], {
+        relativeTo: this.activatedRoute.root,
+      });
     }
 
     return true;

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { CanActivate, Router } from "@angular/router";
+import { ActivatedRoute, CanActivate, Router } from "@angular/router";
 
 import { AuthService } from "jslib-common/abstractions/auth.service";
 import { AuthenticationStatus } from "jslib-common/enums/authenticationStatus";
@@ -7,7 +7,11 @@ import { AuthenticationStatus } from "jslib-common/enums/authenticationStatus";
 @Injectable()
 export class UnauthGuard implements CanActivate {
   protected homepage = "vault";
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute
+  ) {}
 
   async canActivate() {
     const authStatus = await this.authService.getAuthStatus();
@@ -17,9 +21,9 @@ export class UnauthGuard implements CanActivate {
     }
 
     if (authStatus === AuthenticationStatus.Locked) {
-      return this.router.createUrlTree(["lock"]);
+      return this.router.createUrlTree(["lock"], { relativeTo: this.activatedRoute.root });
     }
 
-    return this.router.createUrlTree([this.homepage]);
+    return this.router.createUrlTree([this.homepage], { relativeTo: this.activatedRoute.root });
   }
 }
