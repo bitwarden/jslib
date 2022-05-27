@@ -34,7 +34,7 @@ export class SearchService implements SearchServiceAbstraction {
   }
 
   isSearchable(query: string): boolean {
-    query = this.normalizeSearchQuery(query);
+    query = SearchService.normalizeSearchQuery(query);
     const notSearchable =
       query == null ||
       (this.index == null && query.length < this.searchableMinLength) ||
@@ -98,7 +98,7 @@ export class SearchService implements SearchServiceAbstraction {
   ): Promise<CipherView[]> {
     const results: CipherView[] = [];
     if (query != null) {
-      query = this.normalizeSearchQuery(query.trim().toLowerCase());
+      query = SearchService.normalizeSearchQuery(query.trim().toLowerCase());
     }
     if (query === "") {
       query = null;
@@ -166,7 +166,7 @@ export class SearchService implements SearchServiceAbstraction {
   }
 
   searchCiphersBasic(ciphers: CipherView[], query: string, deleted = false) {
-    query = this.normalizeSearchQuery(query.trim().toLowerCase());
+    query = SearchService.normalizeSearchQuery(query.trim().toLowerCase());
     return ciphers.filter((c) => {
       if (deleted !== c.isDeleted) {
         return false;
@@ -188,7 +188,7 @@ export class SearchService implements SearchServiceAbstraction {
   }
 
   searchSends(sends: SendView[], query: string) {
-    query = this.normalizeSearchQuery(query.trim().toLocaleLowerCase());
+    query = SearchService.normalizeSearchQuery(query.trim().toLocaleLowerCase());
     if (query === null) {
       return sends;
     }
@@ -295,14 +295,14 @@ export class SearchService implements SearchServiceAbstraction {
     const checkFields = fields.every((i: any) => searchableFields.includes(i));
 
     if (checkFields) {
-      return this.normalizeSearchQuery(token.toString());
+      return SearchService.normalizeSearchQuery(token.toString());
     }
 
     return token;
   }
 
   // Remove accents/diacritics characters from text. This regex is equivalent to the Diacritic unicode property escape, i.e. it will match all diacritic characters.
-  private normalizeSearchQuery(query: string): string {
+  static normalizeSearchQuery(query: string): string {
     return query?.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
 }
