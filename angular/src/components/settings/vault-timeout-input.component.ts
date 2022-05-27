@@ -23,7 +23,9 @@ export class VaultTimeoutInputComponent implements ControlValueAccessor, Validat
   }
 
   get exceedsMinimumTimout(): boolean {
-    return !this.showCustom || this.customTimeInMinutes > VaultTimeoutInputComponent.MIN_CUSTOM_MINUTES;
+    return (
+      !this.showCustom || this.customTimeInMinutes > VaultTimeoutInputComponent.MIN_CUSTOM_MINUTES
+    );
   }
 
   static CUSTOM_VALUE = -100;
