@@ -7,7 +7,6 @@ import { SearchService as SearchServiceAbstraction } from "../abstractions/searc
 import { CipherType } from "../enums/cipherType";
 import { FieldType } from "../enums/fieldType";
 import { UriMatchType } from "../enums/uriMatchType";
-import { Utils } from "../misc/utils";
 import { CipherView } from "../models/view/cipherView";
 import { SendView } from "../models/view/sendView";
 
