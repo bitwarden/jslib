@@ -6,10 +6,6 @@ let nextId = 0;
 
 @Directive({
   selector: "input[bitInput], select[bitInput], textarea[bitInput]",
-  host: {
-    "[attr.aria-describedby]": "ariaDescribedBy",
-    "[required]": "required",
-  },
 })
 export class BitInputDirective {
   @HostBinding("class") @Input() get classList() {
@@ -38,6 +34,9 @@ export class BitInputDirective {
 
   @HostBinding() id = `bit-input-${nextId++}`;
 
+  @HostBinding("attr.aria-describedby") ariaDescribedBy: string;
+
+  @HostBinding()
   @Input()
   get required() {
     return this._required ?? this.ngControl?.control?.hasValidator(Validators.required) ?? false;
@@ -58,8 +57,5 @@ export class BitInputDirective {
     const key = Object.keys(this.ngControl.errors)[0];
     return [key, this.ngControl.errors[key]];
   }
-
-  ariaDescribedBy: string;
-
   constructor(@Optional() @Self() private ngControl: NgControl) {}
 }
