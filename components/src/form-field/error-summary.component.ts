@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import { FormGroup } from "@angular/forms";
+import { AbstractControl, FormGroup } from "@angular/forms";
 
 @Component({
   selector: "bit-error-summary",
@@ -16,12 +16,24 @@ export class BitErrorSummary {
   formGroup: FormGroup;
 
   get errorCount(): number {
-    const errors = Object.values(this.formGroup.controls).filter((e) => e.touched && !e.valid);
-
-    return errors.length;
+    return this.getErrorCount(this.formGroup);
   }
 
   get errorString() {
     return this.errorCount.toString();
+  }
+
+  private getErrorCount(form: FormGroup): number {
+    return Object.values(form.controls).reduce((acc: number, control: AbstractControl) => {
+      if (control instanceof FormGroup) {
+        return acc + this.getErrorCount(control);
+      }
+
+      if (control.errors == null) {
+        return acc;
+      }
+
+      return acc + Object.keys(control.errors).length;
+    }, 0);
   }
 }
