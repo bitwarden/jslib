@@ -1,4 +1,12 @@
-import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
+import {
+  AbstractControl,
+  FormBuilder,
+  FormsModule,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from "@angular/forms";
 import { Meta, moduleMetadata, Story } from "@storybook/angular";
 import { InputModule } from "src/input/input.module";
 import { I18nMockService } from "src/utils/i18n-mock.service";
@@ -46,8 +54,16 @@ const formObj = fb.group({
 
 const defaultFormObj = fb.group({
   name: ["", [Validators.required]],
-  email: ["", [Validators.required, Validators.email]],
+  email: ["", [Validators.required, Validators.email, forbiddenNameValidator(/bit/i)]],
 });
+
+// Custom error message, `message` is shown as the error message
+function forbiddenNameValidator(nameRe: RegExp): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const forbidden = nameRe.test(control.value);
+    return forbidden ? { forbiddenName: { message: "forbiddenName" } } : null;
+  };
+}
 
 function submit() {
   defaultFormObj.markAllAsTouched();
