@@ -24,7 +24,7 @@ export default {
               required: "required",
               inputRequired: "Input is required.",
               inputEmail: "Input is not an email-address.",
-              fieldsNeedAttention: "$COUNT$ fields above need your attention.",
+              fieldsNeedAttention: "$COUNT$ field(s) above need your attention.",
             });
           },
         },
