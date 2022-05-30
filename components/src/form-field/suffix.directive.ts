@@ -5,7 +5,7 @@ import { PrefixClasses } from "./prefix.directive";
 @Directive({
   selector: "[bitSuffix]",
 })
-export class BitSuffix {
+export class BitSuffixDirective {
   @HostBinding("class") @Input() get classList() {
     return PrefixClasses.concat([
       "tw-rounded-l-none",

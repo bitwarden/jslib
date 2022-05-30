@@ -3,16 +3,16 @@ import { NgModule, Pipe, PipeTransform } from "@angular/core";
 
 import { I18nService } from "jslib-common/abstractions/i18n.service";
 
-import { BitInput } from "../input/input.component";
+import { BitInputDirective } from "../input/input.directive";
 import { InputModule } from "../input/input.module";
 
 import { BitErrorSummary } from "./error-summary.component";
-import { BitError } from "./error.component";
+import { BitErrorComponent } from "./error.component";
 import { BitFormFieldComponent } from "./form-field.component";
 import { BitHintComponent } from "./hint.component";
 import { BitLabel } from "./label.directive";
-import { BitPrefix } from "./prefix.directive";
-import { BitSuffix } from "./suffix.directive";
+import { BitPrefixDirective } from "./prefix.directive";
+import { BitSuffixDirective } from "./suffix.directive";
 
 /**
  * Temporarily duplicate this pipe
@@ -31,23 +31,23 @@ export class I18nPipe implements PipeTransform {
 @NgModule({
   imports: [CommonModule, InputModule],
   exports: [
-    BitError,
+    BitErrorComponent,
     BitErrorSummary,
     BitFormFieldComponent,
     BitHintComponent,
-    BitInput,
+    BitInputDirective,
     BitLabel,
-    BitPrefix,
-    BitSuffix,
+    BitPrefixDirective,
+    BitSuffixDirective,
   ],
   declarations: [
-    BitError,
+    BitErrorComponent,
     BitErrorSummary,
     BitFormFieldComponent,
     BitHintComponent,
     BitLabel,
-    BitPrefix,
-    BitSuffix,
+    BitPrefixDirective,
+    BitSuffixDirective,
     I18nPipe,
   ],
 })

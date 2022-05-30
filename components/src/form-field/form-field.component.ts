@@ -7,11 +7,12 @@ import {
   ViewChild,
 } from "@angular/core";
 
-import { BitInput } from "../input/input.component";
+import { BitInputDirective } from "../input/input.directive";
 
-import { BitError } from "./error.component";
-import { BitPrefix } from "./prefix.directive";
-import { BitSuffix } from "./suffix.directive";
+import { BitErrorComponent } from "./error.component";
+import { BitHintComponent } from "./hint.component";
+import { BitPrefixDirective } from "./prefix.directive";
+import { BitSuffixDirective } from "./suffix.directive";
 
 @Component({
   selector: "bit-form-field",
@@ -21,10 +22,13 @@ import { BitSuffix } from "./suffix.directive";
   },
 })
 export class BitFormFieldComponent implements AfterContentChecked {
-  @ContentChild(BitInput) input: BitInput;
-  @ViewChild(BitError) error: BitError;
-  @ContentChildren(BitPrefix) prefixChildren: QueryList<BitPrefix>;
-  @ContentChildren(BitSuffix) suffixChildren: QueryList<BitSuffix>;
+  @ContentChild(BitInputDirective) input: BitInputDirective;
+  @ContentChild(BitHintComponent) hint: BitHintComponent;
+
+  @ViewChild(BitErrorComponent) error: BitErrorComponent;
+
+  @ContentChildren(BitPrefixDirective) prefixChildren: QueryList<BitPrefixDirective>;
+  @ContentChildren(BitSuffixDirective) suffixChildren: QueryList<BitSuffixDirective>;
 
   ngAfterContentChecked(): void {
     this.input.hasPrefix = this.prefixChildren.length > 0;
@@ -40,6 +44,8 @@ export class BitFormFieldComponent implements AfterContentChecked {
 
     if (this.error) {
       this.input.ariaDescribedBy = this.error.id;
+    } else if (this.hint) {
+      this.input.ariaDescribedBy = this.hint.id;
     } else {
       this.input.ariaDescribedBy = undefined;
     }

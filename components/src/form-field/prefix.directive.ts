@@ -15,7 +15,7 @@ export const PrefixClasses = [
 @Directive({
   selector: "[bitPrefix]",
 })
-export class BitPrefix {
+export class BitPrefixDirective {
   @HostBinding("class") @Input() get classList() {
     return PrefixClasses.concat([
       "tw-border-r-0",

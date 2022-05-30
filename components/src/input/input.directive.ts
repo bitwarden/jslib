@@ -1,18 +1,17 @@
 import { Directive, HostBinding, Input, Optional, Self } from "@angular/core";
 import { NgControl, Validators } from "@angular/forms";
 
-// Increments for each instance of the input component
+// Increments for each instance of this component
 let nextId = 0;
 
 @Directive({
   selector: "input[bitInput], select[bitInput], textarea[bitInput]",
   host: {
-    "[attr.id]": "id",
     "[attr.aria-describedby]": "ariaDescribedBy",
     "[required]": "required",
   },
 })
-export class BitInput {
+export class BitInputDirective {
   @HostBinding("class") @Input() get classList() {
     return [
       "tw-block",
@@ -37,7 +36,7 @@ export class BitInput {
     ].filter((s) => s != "");
   }
 
-  id = `bit-input-${nextId++}`;
+  @HostBinding() id = `bit-input-${nextId++}`;
 
   @Input()
   get required() {
