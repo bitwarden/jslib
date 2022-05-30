@@ -36,6 +36,10 @@ export class BitInputDirective {
 
   @HostBinding("attr.aria-describedby") ariaDescribedBy: string;
 
+  @HostBinding("attr.aria-invalid") get ariaInvalid() {
+    return this.hasError ? true : undefined;
+  }
+
   @HostBinding()
   @Input()
   get required() {
