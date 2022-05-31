@@ -15,6 +15,7 @@ export class TabItemComponent {
       "tw-px-4",
       "tw-leading-5", // Necessary? - sets line height
       "tw-text-left",
+      "tw-font-semibold",
       "tw-bg-transparent",
       "tw-transition",
       "tw-rounded-t",
@@ -23,11 +24,10 @@ export class TabItemComponent {
       "tw-border-t-transparent",
       "tw-border-b",
       "tw-border-b-secondary-300",
-      "tw-border-b-solid",
+      "tw-border-solid",
       "tw-cursor-pointer",
       "tw-box-border", // Necessary? - compounds final width/height of tab to include borders
-      "!tw-text-main",
-      "hover:tw-border-t-solid",
+      "tw-text-main",
       "hover:tw-border-t-4",
       "hover:tw-border-t-secondary-700",
       "hover:tw-no-underline",
@@ -36,21 +36,19 @@ export class TabItemComponent {
       "focus:tw-ring-2",
       "focus:tw-ring-primary-700",
       "disabled:tw-bg-secondary-100",
-      "!disabled:tw-text-muted",
+      "disabled:tw-text-muted",
       "disabled:tw-border-t-transparent",
       "disabled:tw-cursor-not-allowed",
-      "disabled:tw--z-50",
     ].join(" ");
   }
 
   get activeClassList(): string {
     return [
       "tw-border-x",
-      "tw-border-x-secondary-500",
-      "tw-border-x-solid",
+      "tw-border-x-secondary-300",
       "tw-border-t-primary-500",
       "tw-border-b-transparent",
-      "!tw-text-primary-500",
+      "tw-text-primary-500",
     ].join(" ");
   }
 }
