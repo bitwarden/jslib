@@ -1,11 +1,10 @@
 import { FocusableOption } from "@angular/cdk/a11y";
-import { Component, ElementRef, HostBinding } from "@angular/core";
+import { Directive, ElementRef, HostBinding } from "@angular/core";
 
-@Component({
-  selector: "[bit-menu-item]",
-  template: `<ng-content></ng-content>`,
+@Directive({
+  selector: "[bitMenuItem]",
 })
-export class MenuItemComponent implements FocusableOption {
+export class MenuItemDirective implements FocusableOption {
   @HostBinding("class") classList = [
     "tw-block",
     "tw-py-1",
@@ -25,7 +24,7 @@ export class MenuItemComponent implements FocusableOption {
     "focus:tw-ring-primary-700",
     "active:!tw-ring-0",
     "active:!tw-ring-offset-0",
-  ].join(" ");
+  ];
   @HostBinding("attr.role") role = "menuitem";
   @HostBinding("tabIndex") tabIndex = "-1";
 
