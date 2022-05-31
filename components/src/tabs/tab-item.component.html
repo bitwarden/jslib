@@ -1,0 +1,12 @@
+<button
+  type="button"
+  role="tab"
+  [class]="baseClassList"
+  [routerLink]="route"
+  [routerLinkActive]="activeClassList"
+  #rla="routerLinkActive"
+  [attr.aria-selected]="rla.isActive"
+  [disabled]="disabled"
+>
+  <ng-content></ng-content>
+</button>
