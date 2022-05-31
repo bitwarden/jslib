@@ -22,6 +22,9 @@ export class ExportComponent implements OnInit {
   exportForm = this.formBuilder.group({
     format: ["json"],
     secret: [""],
+    passwordProtected: [false],
+    filePassword: [""],
+    confirmFilePassword: [""],
   });
 
   formatOptions = [

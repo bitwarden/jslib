@@ -1,0 +1,18 @@
+<div class="tw-mb-3.5">
+  <label [attr.for]="input.id" class="tw-inline-block tw-text-main tw-font-semibold">
+    <ng-content select="bit-label"></ng-content>
+    <small
+      class="tw-block tw-text-muted"
+      aria-hidden="true"
+      *ngIf="input.required && !input.disabled"
+      >(required)</small
+    >
+  </label>
+  <div class="tw-flex">
+    <ng-content></ng-content>
+    <div *ngSwitch="displayedMessage">
+      <small class="" *ngSwitchCase="'desc'"></small>
+      <small *ngSwitchCase="'error'"></small>
+    </div>
+  </div>
+</div>
