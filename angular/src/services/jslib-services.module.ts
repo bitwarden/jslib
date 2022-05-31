@@ -399,6 +399,7 @@ export const SYSTEM_LANGUAGE = new InjectionToken<string>("SYSTEM_LANGUAGE");
         LogService,
         OrganizationServiceAbstraction,
         CryptoFunctionServiceAbstraction,
+        LOGOUT_CALLBACK,
       ],
     },
     {
