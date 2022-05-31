@@ -61,6 +61,7 @@ module.exports = {
       primary: {
         300: "var(--color-primary-300)",
         500: "var(--color-primary-500)",
+        700: "var(--color-primary-700)",
       },
     },
     ringOffsetColor: ({ theme }) => ({

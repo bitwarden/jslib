@@ -28,15 +28,14 @@ export class TabItemComponent {
       "tw-cursor-pointer",
       "tw-box-border", // Necessary? - compounds final width/height of tab to include borders
       "tw-text-main",
-      "hover:tw-border-t-4",
-      "hover:tw-border-t-secondary-700",
-      "hover:tw-no-underline",
-      "focus:tw-border-t-secondary-700",
+      "hover:tw-underline",
+      "focus:tw-underline",
       "focus:tw-outline-none",
       "focus:tw-ring-2",
       "focus:tw-ring-primary-700",
       "disabled:tw-bg-secondary-100",
       "disabled:tw-text-muted",
+      "disabled:tw-no-underline",
       "disabled:tw-border-t-transparent",
       "disabled:tw-cursor-not-allowed",
     ].join(" ");
@@ -49,6 +48,11 @@ export class TabItemComponent {
       "tw-border-t-primary-500",
       "tw-border-b-transparent",
       "tw-text-primary-500",
+      "hover:tw-border-t-primary-700",
+      "hover:tw-text-primary-700",
+      "focus:tw-border-t-primary-700",
+      "focus:tw-text-primary-700",
+      "focus:tw-underline",
     ].join(" ");
   }
 }
