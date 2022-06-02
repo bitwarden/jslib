@@ -22,7 +22,8 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
     private tokenService: TokenService,
     private logService: LogService,
     private organizationService: OrganizationService,
-    private cryptoFunctionService: CryptoFunctionService
+    private cryptoFunctionService: CryptoFunctionService,
+    private logoutCallback: (expired: boolean, userId?: string) => void
   ) {}
 
   setUsesKeyConnector(usesKeyConnector: boolean) {
@@ -52,7 +53,7 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
         keyConnectorRequest
       );
     } catch (e) {
-      throw new Error("Unable to reach key connector");
+      this.handleKeyConnectorError(e);
     }
 
     await this.apiService.postConvertToKeyConnector();
@@ -65,8 +66,7 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
       const k = new SymmetricCryptoKey(keyArr);
       await this.cryptoService.setKey(k);
     } catch (e) {
-      this.logService.error(e);
-      throw new Error("Unable to reach key connector");
+      this.handleKeyConnectorError(e);
     }
   }
 
@@ -102,7 +102,7 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
     try {
       await this.apiService.postUserKeyToKeyConnector(keyConnectorUrl, keyConnectorRequest);
     } catch (e) {
-      throw new Error("Unable to reach key connector");
+      this.handleKeyConnectorError(e);
     }
 
     const keys = new KeysRequest(pubKey, privKey.encryptedString);
@@ -130,5 +130,13 @@ export class KeyConnectorService implements KeyConnectorServiceAbstraction {
 
   async clear() {
     await this.removeConvertAccountRequired();
+  }
+
+  private handleKeyConnectorError(e: any) {
+    this.logService.error(e);
+    if (this.logoutCallback != null) {
+      this.logoutCallback(false);
+    }
+    throw new Error("Key Connector error");
   }
 }

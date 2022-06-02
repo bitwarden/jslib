@@ -34,6 +34,7 @@ export class SearchService implements SearchServiceAbstraction {
   }
 
   isSearchable(query: string): boolean {
+    query = SearchService.normalizeSearchQuery(query);
     const notSearchable =
       query == null ||
       (this.index == null && query.length < this.searchableMinLength) ||
@@ -97,7 +98,7 @@ export class SearchService implements SearchServiceAbstraction {
   ): Promise<CipherView[]> {
     const results: CipherView[] = [];
     if (query != null) {
-      query = query.trim().toLowerCase();
+      query = SearchService.normalizeSearchQuery(query.trim().toLowerCase());
     }
     if (query === "") {
       query = null;
@@ -165,7 +166,7 @@ export class SearchService implements SearchServiceAbstraction {
   }
 
   searchCiphersBasic(ciphers: CipherView[], query: string, deleted = false) {
-    query = query.trim().toLowerCase();
+    query = SearchService.normalizeSearchQuery(query.trim().toLowerCase());
     return ciphers.filter((c) => {
       if (deleted !== c.isDeleted) {
         return false;
@@ -187,30 +188,31 @@ export class SearchService implements SearchServiceAbstraction {
   }
 
   searchSends(sends: SendView[], query: string) {
-    query = query.trim().toLocaleLowerCase();
-
-    return sends.filter((s) => {
+    query = SearchService.normalizeSearchQuery(query.trim().toLocaleLowerCase());
+    if (query === null) {
+      return sends;
+    }
+    const sendsMatched: SendView[] = [];
+    const lowPriorityMatched: SendView[] = [];
+    sends.forEach((s) => {
       if (s.name != null && s.name.toLowerCase().indexOf(query) > -1) {
-        return true;
-      }
-      if (
+        sendsMatched.push(s);
+      } else if (
         query.length >= 8 &&
         (s.id.startsWith(query) ||
           s.accessId.toLocaleLowerCase().startsWith(query) ||
           (s.file?.id != null && s.file.id.startsWith(query)))
       ) {
-        return true;
-      }
-      if (s.notes != null && s.notes.toLowerCase().indexOf(query) > -1) {
-        return true;
-      }
-      if (s.text?.text != null && s.text.text.toLowerCase().indexOf(query) > -1) {
-        return true;
-      }
-      if (s.file?.fileName != null && s.file.fileName.toLowerCase().indexOf(query) > -1) {
-        return true;
+        lowPriorityMatched.push(s);
+      } else if (s.notes != null && s.notes.toLowerCase().indexOf(query) > -1) {
+        lowPriorityMatched.push(s);
+      } else if (s.text?.text != null && s.text.text.toLowerCase().indexOf(query) > -1) {
+        lowPriorityMatched.push(s);
+      } else if (s.file?.fileName != null && s.file.fileName.toLowerCase().indexOf(query) > -1) {
+        lowPriorityMatched.push(s);
       }
     });
+    return sendsMatched.concat(lowPriorityMatched);
   }
 
   getIndexForSearch(): lunr.Index {
@@ -293,12 +295,14 @@ export class SearchService implements SearchServiceAbstraction {
     const checkFields = fields.every((i: any) => searchableFields.includes(i));
 
     if (checkFields) {
-      return token
-        .toString()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
+      return SearchService.normalizeSearchQuery(token.toString());
     }
 
     return token;
+  }
+
+  // Remove accents/diacritics characters from text. This regex is equivalent to the Diacritic unicode property escape, i.e. it will match all diacritic characters.
+  static normalizeSearchQuery(query: string): string {
+    return query?.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
 }

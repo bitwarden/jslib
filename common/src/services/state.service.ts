@@ -359,6 +359,17 @@ export class StateService<
     return false;
   }
 
+  async setCanAccessPremium(value: boolean, options?: StorageOptions): Promise<void> {
+    const account = await this.getAccount(
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+    );
+    account.profile.hasPremiumPersonally = value;
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+    );
+  }
+
   async getClearClipboard(options?: StorageOptions): Promise<number> {
     return (
       (

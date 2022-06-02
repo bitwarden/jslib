@@ -9,6 +9,7 @@ import {
   OrganizationConnectionConfigApis,
   OrganizationConnectionResponse,
 } from "jslib-common/models/response/organizationConnectionResponse";
+import { SsoPreValidateResponse } from "jslib-common/models/response/ssoPreValidateResponse";
 
 import { ApiService as ApiServiceAbstraction } from "../abstractions/api.service";
 import { EnvironmentService } from "../abstractions/environment.service";
@@ -2295,7 +2296,7 @@ export class ApiService implements ApiServiceAbstraction {
     return fetch(request);
   }
 
-  async preValidateSso(identifier: string): Promise<boolean> {
+  async preValidateSso(identifier: string): Promise<SsoPreValidateResponse> {
     if (identifier == null || identifier === "") {
       throw new Error("Organization Identifier was not provided.");
     }
@@ -2318,7 +2319,8 @@ export class ApiService implements ApiServiceAbstraction {
     );
 
     if (response.status === 200) {
-      return true;
+      const body = await response.json();
+      return new SsoPreValidateResponse(body);
     } else {
       const error = await this.handleError(response, false, true);
       return Promise.reject(error);

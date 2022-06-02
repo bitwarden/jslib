@@ -304,6 +304,7 @@ export class SyncService implements SyncServiceAbstraction {
     await this.cryptoService.setOrgKeys(response.organizations, response.providerOrganizations);
     await this.stateService.setSecurityStamp(response.securityStamp);
     await this.stateService.setEmailVerified(response.emailVerified);
+    await this.stateService.setCanAccessPremium(response.premium);
     await this.stateService.setForcePasswordReset(response.forcePasswordReset);
     await this.keyConnectorService.setUsesKeyConnector(response.usesKeyConnector);
 
