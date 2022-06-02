@@ -76,5 +76,5 @@ export function cleanUserAgent(userAgent: string): string {
 }
 
 export async function getCookie(url: string, name: string): Promise<Electron.Cookie[]> {
-  return await ipcRenderer.invoke("getCookie", {url: url, name: name});
+  return await ipcRenderer.invoke("getCookie", { url: url, name: name });
 }
