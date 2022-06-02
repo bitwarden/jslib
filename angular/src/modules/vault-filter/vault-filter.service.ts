@@ -12,9 +12,10 @@ import { CollectionView } from "jslib-common/models/view/collectionView";
 import { FolderView } from "jslib-common/models/view/folderView";
 
 import { DynamicTreeNode } from "./models/dynamic-tree-node.model";
+import { VaultFilterServiceInterface } from "./vault-filter.service.interface";
 
 @Injectable()
-export class VaultFilterService {
+export class VaultFilterService implements VaultFilterServiceInterface {
   constructor(
     protected stateService: StateService,
     protected organizationService: OrganizationService,

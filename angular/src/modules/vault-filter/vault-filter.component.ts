@@ -7,7 +7,7 @@ import { FolderView } from "jslib-common/models/view/folderView";
 
 import { DynamicTreeNode } from "./models/dynamic-tree-node.model";
 import { VaultFilter } from "./models/vault-filter.model";
-import { VaultFilterService } from "./vault-filter.service";
+import { VaultFilterServiceInterface } from "./vault-filter.service.interface";
 
 @Directive()
 export class VaultFilterComponent implements OnInit {
@@ -30,7 +30,7 @@ export class VaultFilterComponent implements OnInit {
   collections: DynamicTreeNode<CollectionView>;
   folders: DynamicTreeNode<FolderView>;
 
-  constructor(protected vaultFilterService: VaultFilterService) {}
+  constructor(protected vaultFilterService: VaultFilterServiceInterface) {}
 
   get displayCollections() {
     return this.collections?.fullList != null && this.collections.fullList.length > 0;
