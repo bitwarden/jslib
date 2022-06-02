@@ -1,12 +1,12 @@
 import { Meta, Story } from "@storybook/angular";
 
-import { BadgeComponent } from "./badge.component";
+import { BadgeDirective } from "./badge.directive";
 
 export default {
   title: "Jslib/Badge",
-  component: BadgeComponent,
+  component: BadgeDirective,
   args: {
-    type: "primary",
+    badgeType: "primary",
   },
   parameters: {
     design: {
@@ -16,14 +16,14 @@ export default {
   },
 } as Meta;
 
-const Template: Story<BadgeComponent> = (args: BadgeComponent) => ({
+const Template: Story<BadgeDirective> = (args: BadgeDirective) => ({
   props: args,
   template: `
-    <span class="tw-text-main">Span </span><span bit-badge [badgeType]="type">Badge</span>
+    <span class="tw-text-main">Span </span><span bitBadge [badgeType]="badgeType">Badge</span>
     <br><br>
-    <span class="tw-text-main">Link </span><a href="#" bit-badge [badgeType]="type">Badge</a>
+    <span class="tw-text-main">Link </span><a href="#" bitBadge [badgeType]="badgeType">Badge</a>
     <br><br>
-    <span class="tw-text-main">Button </span><button bit-badge [badgeType]="type">Badge</button>
+    <span class="tw-text-main">Button </span><button bitBadge [badgeType]="badgeType">Badge</button>
   `,
 });
 
@@ -32,25 +32,25 @@ Primary.args = {};
 
 export const Secondary = Template.bind({});
 Secondary.args = {
-  type: "secondary",
+  badgeType: "secondary",
 };
 
 export const Success = Template.bind({});
 Success.args = {
-  type: "success",
+  badgeType: "success",
 };
 
 export const Danger = Template.bind({});
 Danger.args = {
-  type: "danger",
+  badgeType: "danger",
 };
 
 export const Warning = Template.bind({});
 Warning.args = {
-  type: "warning",
+  badgeType: "warning",
 };
 
 export const Info = Template.bind({});
 Info.args = {
-  type: "info",
+  badgeType: "info",
 };

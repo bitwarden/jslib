@@ -69,8 +69,8 @@ describe("Menu", () => {
     <button type="button" [bitMenuTriggerFor]="testMenu" class="testclass">Open menu</button>
 
     <bit-menu #testMenu>
-      <a id="item1" bit-menu-item>Item 1</a>
-      <a id="item2" bit-menu-item>Item 2</a>
+      <a id="item1" bitMenuItem>Item 1</a>
+      <a id="item2" bitMenuItem>Item 2</a>
     </bit-menu>
   `,
 })
