@@ -1,4 +1,4 @@
-import { app, dialog, ipcMain, Menu, MenuItem, nativeTheme } from "electron";
+import { app, dialog, ipcMain, Menu, MenuItem, nativeTheme, session } from "electron";
 
 import { MessagingService } from "jslib-common/abstractions/messaging.service";
 import { ThemeType } from "jslib-common/enums/themeType";
@@ -45,6 +45,10 @@ export class ElectronMainMessagingService implements MessagingService {
 
     ipcMain.handle("windowVisible", () => {
       return windowMain.win?.isVisible();
+    });
+
+    ipcMain.handle("getCookie", async (event, options) => {
+      return await session.defaultSession.cookies.get(options);
     });
 
     nativeTheme.on("updated", () => {

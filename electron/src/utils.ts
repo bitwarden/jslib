@@ -74,3 +74,7 @@ export function cleanUserAgent(userAgent: string): string {
     .replace(userAgentItem("Bitwarden", " "), "")
     .replace(userAgentItem("Electron", " "), "");
 }
+
+export async function getCookie(url: string, name: string): Promise<Electron.Cookie[]> {
+  return await ipcRenderer.invoke("getCookie", { url: url, name: name });
+}
