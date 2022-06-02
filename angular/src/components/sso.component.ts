@@ -14,6 +14,7 @@ import { StateService } from "jslib-common/abstractions/state.service";
 import { Utils } from "jslib-common/misc/utils";
 import { AuthResult } from "jslib-common/models/domain/authResult";
 import { SsoLogInCredentials } from "jslib-common/models/domain/logInCredentials";
+import { SsoPreValidateResponse } from "jslib-common/models/response/ssoPreValidateResponse";
 
 @Directive()
 export class SsoComponent {
@@ -21,7 +22,7 @@ export class SsoComponent {
   loggingIn = false;
 
   formPromise: Promise<AuthResult>;
-  initiateSsoFormPromise: Promise<any>;
+  initiateSsoFormPromise: Promise<SsoPreValidateResponse>;
   onSuccessfulLogin: () => Promise<any>;
   onSuccessfulLoginNavigate: () => Promise<any>;
   onSuccessfulLoginTwoFactorNavigate: () => Promise<any>;
@@ -85,28 +86,30 @@ export class SsoComponent {
   }
 
   async submit(returnUri?: string, includeUserIdentifier?: boolean) {
-    this.initiateSsoFormPromise = this.preValidate();
-    if (await this.initiateSsoFormPromise) {
-      const authorizeUrl = await this.buildAuthorizeUrl(returnUri, includeUserIdentifier);
-      this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
-    }
-  }
-
-  async preValidate(): Promise<boolean> {
     if (this.identifier == null || this.identifier === "") {
       this.platformUtilsService.showToast(
         "error",
         this.i18nService.t("ssoValidationFailed"),
         this.i18nService.t("ssoIdentifierRequired")
       );
-      return false;
+      return;
     }
-    return await this.apiService.preValidateSso(this.identifier);
+
+    this.initiateSsoFormPromise = this.apiService.preValidateSso(this.identifier);
+    const response = await this.initiateSsoFormPromise;
+
+    const authorizeUrl = await this.buildAuthorizeUrl(
+      returnUri,
+      includeUserIdentifier,
+      response.token
+    );
+    this.platformUtilsService.launchUri(authorizeUrl, { sameWindow: true });
   }
 
   protected async buildAuthorizeUrl(
     returnUri?: string,
-    includeUserIdentifier?: boolean
+    includeUserIdentifier?: boolean,
+    token?: string
   ): Promise<string> {
     let codeChallenge = this.codeChallenge;
     let state = this.state;
@@ -156,7 +159,9 @@ export class SsoComponent {
       "&" +
       "code_challenge_method=S256&response_mode=query&" +
       "domain_hint=" +
-      encodeURIComponent(this.identifier);
+      encodeURIComponent(this.identifier) +
+      "&ssoToken=" +
+      encodeURIComponent(token);
 
     if (includeUserIdentifier) {
       const userIdentifier = await this.apiService.getSsoUserIdentifier();
@@ -218,11 +223,13 @@ export class SsoComponent {
       }
     } catch (e) {
       this.logService.error(e);
-      if (e.message === "Unable to reach key connector") {
+
+      // TODO: Key Connector Service should pass this error message to the logout callback instead of displaying here
+      if (e.message === "Key Connector error") {
         this.platformUtilsService.showToast(
           "error",
           null,
-          this.i18nService.t("ssoKeyConnectorUnavailable")
+          this.i18nService.t("ssoKeyConnectorError")
         );
       }
     }

@@ -1,28 +1,30 @@
 import { Meta, Story } from "@storybook/angular";
 
-import { ButtonComponent } from "./button.component";
+import { ButtonDirective } from "./button.directive";
 
-// More on default export: https://storybook.js.org/docs/angular/writing-stories/introduction#default-export
 export default {
   title: "Jslib/Button",
-  component: ButtonComponent,
+  component: ButtonDirective,
   args: {
     buttonType: "primary",
   },
-  // More on argTypes: https://storybook.js.org/docs/angular/api/argtypes
+  parameters: {
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/file/f32LSg3jaegICkMu7rPARm/Tailwind-Component-Library-Update?node-id=1881%3A16733",
+    },
+  },
 } as Meta;
 
-// More on component templates: https://storybook.js.org/docs/angular/writing-stories/introduction#using-args
-const Template: Story<ButtonComponent> = (args: ButtonComponent) => ({
+const Template: Story<ButtonDirective> = (args: ButtonDirective) => ({
   props: args,
   template: `
-    <button bit-button [buttonType]="buttonType" [block]="block">Button</button>
-    <a bit-button [buttonType]="buttonType" [block]="block" href="#" class="tw-ml-2">Link</a>
+    <button bitButton [buttonType]="buttonType" [block]="block">Button</button>
+    <a bitButton [buttonType]="buttonType" [block]="block" href="#" class="tw-ml-2">Link</a>
   `,
 });
 
 export const Primary = Template.bind({});
-// More on args: https://storybook.js.org/docs/angular/writing-stories/args
 Primary.args = {
   buttonType: "primary",
 };
@@ -40,9 +42,9 @@ Danger.args = {
 const DisabledTemplate: Story = (args) => ({
   props: args,
   template: `
-    <button bit-button disabled buttonType="primary" class="tw-mr-2">Primary</button>
-    <button bit-button disabled buttonType="secondary" class="tw-mr-2">Secondary</button>
-    <button bit-button disabled buttonType="danger" class="tw-mr-2">Danger</button>
+    <button bitButton disabled buttonType="primary" class="tw-mr-2">Primary</button>
+    <button bitButton disabled buttonType="secondary" class="tw-mr-2">Secondary</button>
+    <button bitButton disabled buttonType="danger" class="tw-mr-2">Danger</button>
   `,
 });
 

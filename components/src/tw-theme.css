@@ -27,6 +27,7 @@
   --color-text-main: #212529;
   --color-text-muted: #6d757e;
   --color-text-contrast: #ffffff;
+  --color-text-alt2: #ffffff;
 
   --tw-ring-offset-color: #fff;
 }
@@ -64,6 +65,7 @@
   --color-text-main: #ffffff;
   --color-text-muted: #bac0ce;
   --color-text-contrast: #191e26;
+  --color-text-alt2: #ffffff;
 
   --tw-ring-offset-color: #1f242e;
 }

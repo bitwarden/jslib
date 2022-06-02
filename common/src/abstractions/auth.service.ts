@@ -1,3 +1,4 @@
+import { AuthenticationStatus } from "../enums/authenticationStatus";
 import { AuthResult } from "../models/domain/authResult";
 import {
   ApiLogInCredentials,
@@ -5,7 +6,7 @@ import {
   SsoLogInCredentials,
 } from "../models/domain/logInCredentials";
 import { SymmetricCryptoKey } from "../models/domain/symmetricCryptoKey";
-import { TokenRequestTwoFactor } from "../models/request/identityToken/tokenRequest";
+import { TokenRequestTwoFactor } from "../models/request/identityToken/tokenRequestTwoFactor";
 
 export abstract class AuthService {
   masterPasswordHash: string;
@@ -22,4 +23,5 @@ export abstract class AuthService {
   authingWithApiKey: () => boolean;
   authingWithSso: () => boolean;
   authingWithPassword: () => boolean;
+  getAuthStatus: (userId?: string) => Promise<AuthenticationStatus>;
 }

@@ -359,6 +359,17 @@ export class StateService<
     return false;
   }
 
+  async setCanAccessPremium(value: boolean, options?: StorageOptions): Promise<void> {
+    const account = await this.getAccount(
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+    );
+    account.profile.hasPremiumPersonally = value;
+    await this.saveAccount(
+      account,
+      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+    );
+  }
+
   async getClearClipboard(options?: StorageOptions): Promise<number> {
     return (
       (
@@ -1633,19 +1644,6 @@ export class StateService<
     );
   }
 
-  async getLoginRedirect(options?: StorageOptions): Promise<any> {
-    return (await this.getGlobals(this.reconcileOptions(options, this.defaultInMemoryOptions)))
-      ?.loginRedirect;
-  }
-
-  async setLoginRedirect(value: any, options?: StorageOptions): Promise<void> {
-    const globals = await this.getGlobals(
-      this.reconcileOptions(options, this.defaultInMemoryOptions)
-    );
-    globals.loginRedirect = value;
-    await this.saveGlobals(globals, this.reconcileOptions(options, this.defaultInMemoryOptions));
-  }
-
   async getMainWindowSize(options?: StorageOptions): Promise<number> {
     return (await this.getGlobals(this.reconcileOptions(options, this.defaultInMemoryOptions)))
       ?.mainWindowSize;
@@ -2489,11 +2487,10 @@ export class StateService<
   protected async deAuthenticateAccount(userId: string) {
     await this.setAccessToken(null, { userId: userId });
     await this.setLastActive(null, { userId: userId });
-    const index = this.state.authenticatedAccounts.indexOf(userId);
-    if (index > -1) {
-      this.state.authenticatedAccounts.splice(index, 1);
-      await this.storageService.save(keys.authenticatedAccounts, this.state.authenticatedAccounts);
-    }
+    this.state.authenticatedAccounts = this.state.authenticatedAccounts.filter(
+      (activeUserId) => activeUserId !== userId
+    );
+    await this.storageService.save(keys.authenticatedAccounts, this.state.authenticatedAccounts);
   }
 
   protected async removeAccountFromDisk(userId: string) {

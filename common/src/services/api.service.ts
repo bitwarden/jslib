@@ -1,3 +1,16 @@
+import { AppIdService } from "jslib-common/abstractions/appId.service";
+import { OrganizationConnectionType } from "jslib-common/enums/organizationConnectionType";
+import { DeviceRequest } from "jslib-common/models/request/deviceRequest";
+import { TokenRequestTwoFactor } from "jslib-common/models/request/identityToken/tokenRequestTwoFactor";
+import { OrganizationConnectionRequest } from "jslib-common/models/request/organizationConnectionRequest";
+import { BillingHistoryResponse } from "jslib-common/models/response/billingHistoryResponse";
+import { BillingPaymentResponse } from "jslib-common/models/response/billingPaymentResponse";
+import {
+  OrganizationConnectionConfigApis,
+  OrganizationConnectionResponse,
+} from "jslib-common/models/response/organizationConnectionResponse";
+import { SsoPreValidateResponse } from "jslib-common/models/response/ssoPreValidateResponse";
+
 import { ApiService as ApiServiceAbstraction } from "../abstractions/api.service";
 import { EnvironmentService } from "../abstractions/environment.service";
 import { PlatformUtilsService } from "../abstractions/platformUtils.service";
@@ -41,6 +54,7 @@ import { KeysRequest } from "../models/request/keysRequest";
 import { OrganizationSponsorshipCreateRequest } from "../models/request/organization/organizationSponsorshipCreateRequest";
 import { OrganizationSponsorshipRedeemRequest } from "../models/request/organization/organizationSponsorshipRedeemRequest";
 import { OrganizationSsoRequest } from "../models/request/organization/organizationSsoRequest";
+import { OrganizationApiKeyRequest } from "../models/request/organizationApiKeyRequest";
 import { OrganizationCreateRequest } from "../models/request/organizationCreateRequest";
 import { OrganizationImportRequest } from "../models/request/organizationImportRequest";
 import { OrganizationKeysRequest } from "../models/request/organizationKeysRequest";
@@ -124,9 +138,11 @@ import { IdentityTwoFactorResponse } from "../models/response/identityTwoFactorR
 import { KeyConnectorUserKeyResponse } from "../models/response/keyConnectorUserKeyResponse";
 import { ListResponse } from "../models/response/listResponse";
 import { OrganizationSsoResponse } from "../models/response/organization/organizationSsoResponse";
+import { OrganizationApiKeyInformationResponse } from "../models/response/organizationApiKeyInformationResponse";
 import { OrganizationAutoEnrollStatusResponse } from "../models/response/organizationAutoEnrollStatusResponse";
 import { OrganizationKeysResponse } from "../models/response/organizationKeysResponse";
 import { OrganizationResponse } from "../models/response/organizationResponse";
+import { OrganizationSponsorshipSyncStatusResponse } from "../models/response/organizationSponsorshipSyncStatusResponse";
 import { OrganizationSubscriptionResponse } from "../models/response/organizationSubscriptionResponse";
 import { OrganizationUserBulkPublicKeyResponse } from "../models/response/organizationUserBulkPublicKeyResponse";
 import { OrganizationUserBulkResponse } from "../models/response/organizationUserBulkResponse";
@@ -174,7 +190,6 @@ import { UserKeyResponse } from "../models/response/userKeyResponse";
 import { SendAccessView } from "../models/view/sendAccessView";
 
 export class ApiService implements ApiServiceAbstraction {
-  protected apiKeyRefresh: (clientId: string, clientSecret: string) => Promise<any>;
   private device: DeviceType;
   private deviceType: string;
   private isWebClient = false;
@@ -184,6 +199,7 @@ export class ApiService implements ApiServiceAbstraction {
     private tokenService: TokenService,
     private platformUtilsService: PlatformUtilsService,
     private environmentService: EnvironmentService,
+    private appIdService: AppIdService,
     private logoutCallback: (expired: boolean) => Promise<void>,
     private customUserAgent: string = null
   ) {
@@ -274,11 +290,6 @@ export class ApiService implements ApiServiceAbstraction {
   async getProfile(): Promise<ProfileResponse> {
     const r = await this.send("GET", "/accounts/profile", null, true, true);
     return new ProfileResponse(r);
-  }
-
-  async getUserBilling(): Promise<BillingResponse> {
-    const r = await this.send("GET", "/accounts/billing", null, true, true);
-    return new BillingResponse(r);
   }
 
   async getUserSubscription(): Promise<SubscriptionResponse> {
@@ -461,6 +472,18 @@ export class ApiService implements ApiServiceAbstraction {
 
   postConvertToKeyConnector(): Promise<void> {
     return this.send("POST", "/accounts/convert-to-key-connector", null, true, false);
+  }
+
+  // Account Billing APIs
+
+  async getUserBillingHistory(): Promise<BillingHistoryResponse> {
+    const r = await this.send("GET", "/accounts/billing/history", null, true, true);
+    return new BillingHistoryResponse(r);
+  }
+
+  async getUserBillingPayment(): Promise<BillingPaymentResponse> {
+    const r = await this.send("GET", "/accounts/billing/payment-method", null, true, true);
+    return new BillingPaymentResponse(r);
   }
 
   // Folder APIs
@@ -1641,6 +1664,47 @@ export class ApiService implements ApiServiceAbstraction {
     return new OrganizationSubscriptionResponse(r);
   }
 
+  async getCloudCommunicationsEnabled(): Promise<boolean> {
+    const r = await this.send("GET", "/organizations/connections/enabled", null, true, true);
+    return r as boolean;
+  }
+
+  async getOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
+    id: string,
+    type: OrganizationConnectionType,
+    configType: { new (response: any): TConfig }
+  ): Promise<OrganizationConnectionResponse<TConfig>> {
+    const r = await this.send("GET", `/organizations/connections/${id}/${type}`, null, true, true);
+    return new OrganizationConnectionResponse(r, configType);
+  }
+
+  async createOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
+    request: OrganizationConnectionRequest,
+    configType: { new (response: any): TConfig }
+  ): Promise<OrganizationConnectionResponse<TConfig>> {
+    const r = await this.send("POST", "/organizations/connections/", request, true, true);
+    return new OrganizationConnectionResponse(r, configType);
+  }
+
+  async updateOrganizationConnection<TConfig extends OrganizationConnectionConfigApis>(
+    request: OrganizationConnectionRequest,
+    configType: { new (response: any): TConfig },
+    organizationConnectionId?: string
+  ): Promise<OrganizationConnectionResponse<TConfig>> {
+    const r = await this.send(
+      "PUT",
+      "/organizations/connections/" + organizationConnectionId,
+      request,
+      true,
+      true
+    );
+    return new OrganizationConnectionResponse(r, configType);
+  }
+
+  async deleteOrganizationConnection(id: string): Promise<void> {
+    return this.send("DELETE", "/organizations/connections/" + id, null, true, false);
+  }
+
   async getOrganizationLicense(id: string, installationId: string): Promise<any> {
     return this.send(
       "GET",
@@ -1696,15 +1760,28 @@ export class ApiService implements ApiServiceAbstraction {
 
   async postOrganizationApiKey(
     id: string,
-    request: SecretVerificationRequest
+    request: OrganizationApiKeyRequest
   ): Promise<ApiKeyResponse> {
     const r = await this.send("POST", "/organizations/" + id + "/api-key", request, true, true);
     return new ApiKeyResponse(r);
   }
 
+  async getOrganizationApiKeyInformation(
+    id: string
+  ): Promise<ListResponse<OrganizationApiKeyInformationResponse>> {
+    const r = await this.send(
+      "GET",
+      "/organizations/" + id + "/api-key-information",
+      null,
+      true,
+      true
+    );
+    return new ListResponse(r, OrganizationApiKeyInformationResponse);
+  }
+
   async postOrganizationRotateApiKey(
     id: string,
-    request: SecretVerificationRequest
+    request: OrganizationApiKeyRequest
   ): Promise<ApiKeyResponse> {
     const r = await this.send(
       "POST",
@@ -2219,7 +2296,7 @@ export class ApiService implements ApiServiceAbstraction {
     return fetch(request);
   }
 
-  async preValidateSso(identifier: string): Promise<boolean> {
+  async preValidateSso(identifier: string): Promise<SsoPreValidateResponse> {
     if (identifier == null || identifier === "") {
       throw new Error("Organization Identifier was not provided.");
     }
@@ -2242,7 +2319,8 @@ export class ApiService implements ApiServiceAbstraction {
     );
 
     if (response.status === 200) {
-      return true;
+      const body = await response.json();
+      return new SsoPreValidateResponse(body);
     } else {
       const error = await this.handleError(response, false, true);
       return Promise.reject(error);
@@ -2255,17 +2333,35 @@ export class ApiService implements ApiServiceAbstraction {
   ): Promise<void> {
     return await this.send(
       "POST",
-      "/organization/sponsorship/" + sponsoredOrgId + "/families-for-enterprise",
+      "/organization/sponsorship/" +
+        (this.platformUtilsService.isSelfHost() ? "self-hosted/" : "") +
+        sponsoredOrgId +
+        "/families-for-enterprise",
       request,
       true,
       false
     );
   }
 
+  async getSponsorshipSyncStatus(
+    sponsoredOrgId: string
+  ): Promise<OrganizationSponsorshipSyncStatusResponse> {
+    const response = await this.send(
+      "GET",
+      "/organization/sponsorship/" + sponsoredOrgId + "/sync-status",
+      null,
+      true,
+      true
+    );
+    return new OrganizationSponsorshipSyncStatusResponse(response);
+  }
+
   async deleteRevokeSponsorship(sponsoringOrganizationId: string): Promise<void> {
     return await this.send(
       "DELETE",
-      "/organization/sponsorship/" + sponsoringOrganizationId,
+      "/organization/sponsorship/" +
+        (this.platformUtilsService.isSelfHost() ? "self-hosted/" : "") +
+        sponsoringOrganizationId,
       null,
       true,
       false
@@ -2332,20 +2428,6 @@ export class ApiService implements ApiServiceAbstraction {
     throw new Error("Cannot refresh token, no refresh token or api keys are stored");
   }
 
-  protected async doApiTokenRefresh(): Promise<void> {
-    const clientId = await this.tokenService.getClientId();
-    const clientSecret = await this.tokenService.getClientSecret();
-    if (
-      Utils.isNullOrWhitespace(clientId) ||
-      Utils.isNullOrWhitespace(clientSecret) ||
-      this.apiKeyRefresh == null
-    ) {
-      throw new Error();
-    }
-
-    await this.apiKeyRefresh(clientId, clientSecret);
-  }
-
   protected async doRefreshToken(): Promise<void> {
     const refreshToken = await this.tokenService.getRefreshToken();
     if (refreshToken == null || refreshToken === "") {
@@ -2387,6 +2469,28 @@ export class ApiService implements ApiServiceAbstraction {
       const error = await this.handleError(response, true, true);
       return Promise.reject(error);
     }
+  }
+
+  protected async doApiTokenRefresh(): Promise<void> {
+    const clientId = await this.tokenService.getClientId();
+    const clientSecret = await this.tokenService.getClientSecret();
+
+    const appId = await this.appIdService.getAppId();
+    const deviceRequest = new DeviceRequest(appId, this.platformUtilsService);
+
+    const tokenRequest = new ApiTokenRequest(
+      clientId,
+      clientSecret,
+      new TokenRequestTwoFactor(),
+      deviceRequest
+    );
+
+    const response = await this.postIdentityToken(tokenRequest);
+    if (!(response instanceof IdentityTokenResponse)) {
+      throw new Error("Invalid response received when refreshing api token");
+    }
+
+    await this.tokenService.setToken(response.accessToken);
   }
 
   private async send(
