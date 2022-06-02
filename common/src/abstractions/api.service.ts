@@ -6,6 +6,7 @@ import {
   OrganizationConnectionConfigApis,
   OrganizationConnectionResponse,
 } from "jslib-common/models/response/organizationConnectionResponse";
+import { SsoPreValidateResponse } from "jslib-common/models/response/ssoPreValidateResponse";
 
 import { PolicyType } from "../enums/policyType";
 import { SetKeyConnectorKeyRequest } from "../models/request/account/setKeyConnectorKeyRequest";
@@ -688,7 +689,7 @@ export abstract class ApiService {
   fetch: (request: Request) => Promise<Response>;
   nativeFetch: (request: Request) => Promise<Response>;
 
-  preValidateSso: (identifier: string) => Promise<boolean>;
+  preValidateSso: (identifier: string) => Promise<SsoPreValidateResponse>;
 
   postCreateSponsorship: (
     sponsorshipOrgId: string,
