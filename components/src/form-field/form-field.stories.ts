@@ -87,7 +87,7 @@ const Template: Story<BitFormFieldComponent> = (args: BitFormFieldComponent) => 
         <input bitInput formControlName="email" />
       </bit-form-field>
 
-      <button type="submit" bit-button buttonType="primary">Submit</button>
+      <button type="submit" bitButton buttonType="primary">Submit</button>
     </form>
   `,
 });
@@ -167,12 +167,12 @@ const ButtonGroupTemplate: Story<BitFormFieldComponent> = (args: BitFormFieldCom
     <bit-form-field>
       <bit-label>Label</bit-label>
       <input bitInput placeholder="Placeholder" />
-      <button bitPrefix bit-button>Button</button>
-      <button bitPrefix bit-button>Button</button>
-      <button bitSuffix bit-button>
+      <button bitPrefix bitButton>Button</button>
+      <button bitPrefix bitButton>Button</button>
+      <button bitSuffix bitButton>
         <i aria-hidden="true" class="bwi bwi-lg bwi-eye"></i>
       </button>
-      <button bitSuffix bit-button>
+      <button bitSuffix bitButton>
         <i aria-hidden="true" class="bwi bwi-lg bwi-clone"></i>
       </button>
     </bit-form-field>

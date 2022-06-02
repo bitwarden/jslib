@@ -68,7 +68,7 @@ const Template: Story<BitFormFieldComponent> = (args: BitFormFieldComponent) => 
         <input bitInput formControlName="email" />
       </bit-form-field>
 
-      <button type="submit" bit-button buttonType="primary">Submit</button>
+      <button type="submit" bitButton buttonType="primary">Submit</button>
       <bit-error-summary [formGroup]="formObj"></bit-error-summary>
     </form>
   `,
