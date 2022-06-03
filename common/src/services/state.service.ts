@@ -1780,52 +1780,52 @@ export class StateService<
 
   async getPasswordGenerationOptions(options?: StorageOptions): Promise<any> {
     return (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
+      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
     )?.settings?.passwordGenerationOptions;
   }
 
   async setPasswordGenerationOptions(value: any, options?: StorageOptions): Promise<void> {
     const account = await this.getAccount(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+      this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
     );
     account.settings.passwordGenerationOptions = value;
     await this.saveAccount(
       account,
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+      this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
     );
   }
 
   async getUsernameGenerationOptions(options?: StorageOptions): Promise<any> {
     return (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
+      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
     )?.settings?.usernameGenerationOptions;
   }
 
   async setUsernameGenerationOptions(value: any, options?: StorageOptions): Promise<void> {
     const account = await this.getAccount(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+      this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
     );
     account.settings.usernameGenerationOptions = value;
     await this.saveAccount(
       account,
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+      this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
     );
   }
 
   async getGeneratorOptions(options?: StorageOptions): Promise<any> {
     return (
-      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskOptions()))
+      await this.getAccount(this.reconcileOptions(options, await this.defaultOnDiskLocalOptions()))
     )?.settings?.generatorOptions;
   }
 
   async setGeneratorOptions(value: any, options?: StorageOptions): Promise<void> {
     const account = await this.getAccount(
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+      this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
     );
     account.settings.generatorOptions = value;
     await this.saveAccount(
       account,
-      this.reconcileOptions(options, await this.defaultOnDiskOptions())
+      this.reconcileOptions(options, await this.defaultOnDiskLocalOptions())
     );
   }
 
