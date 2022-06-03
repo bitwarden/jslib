@@ -4,7 +4,7 @@ import { Meta, moduleMetadata, Story } from "@storybook/angular";
 import { ButtonModule } from "../button/button.module";
 
 import { MenuDividerComponent } from "./menu-divider.component";
-import { MenuItemComponent } from "./menu-item.component";
+import { MenuItemDirective } from "./menu-item.directive";
 import { MenuTriggerForDirective } from "./menu-trigger-for.directive";
 import { MenuComponent } from "./menu.component";
 
@@ -16,7 +16,7 @@ export default {
       declarations: [
         MenuTriggerForDirective,
         MenuComponent,
-        MenuItemComponent,
+        MenuItemDirective,
         MenuDividerComponent,
       ],
       imports: [OverlayModule, ButtonModule],
@@ -34,11 +34,11 @@ const Template: Story<MenuTriggerForDirective> = (args: MenuTriggerForDirective)
   props: args,
   template: `
     <bit-menu #myMenu="menuComponent">
-      <a href="#" bit-menu-item>Anchor link</a>
-      <a href="#" bit-menu-item>Another link</a>
-      <button type="button" bit-menu-item>Button</button>
+      <a href="#" bitMenuItem>Anchor link</a>
+      <a href="#" bitMenuItem>Another link</a>
+      <button type="button" bitMenuItem>Button</button>
       <bit-menu-divider></bit-menu-divider>
-      <button type="button" bit-menu-item>Button after divider</button>
+      <button type="button" bitMenuItem>Button after divider</button>
     </bit-menu>
 
     <div class="tw-h-40">
@@ -53,15 +53,15 @@ const TemplateWithButton: Story<MenuTriggerForDirective> = (args: MenuTriggerFor
   props: args,
   template: `
     <div class="tw-h-40">
-      <button bit-button [buttonType]="secondary" [bitMenuTriggerFor]="myMenu">Open menu</button>
+      <button bitButton buttonType="secondary" [bitMenuTriggerFor]="myMenu">Open menu</button>
     </div>
 
     <bit-menu #myMenu>
-      <a href="#" bit-menu-item>Anchor link</a>
-      <a href="#" bit-menu-item>Another link</a>
-      <button type="button" bit-menu-item>Button</button>
+      <a href="#" bitMenuItem>Anchor link</a>
+      <a href="#" bitMenuItem>Another link</a>
+      <button type="button" bitMenuItem>Button</button>
       <bit-menu-divider></bit-menu-divider>
-      <button type="button" bit-menu-item>Button after divider</button>
+      <button type="button" bitMenuItem>Button after divider</button>
     </bit-menu>`,
 });
 

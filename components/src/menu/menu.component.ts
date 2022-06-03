@@ -10,7 +10,7 @@ import {
   AfterContentInit,
 } from "@angular/core";
 
-import { MenuItemComponent } from "./menu-item.component";
+import { MenuItemDirective } from "./menu-item.directive";
 
 @Component({
   selector: "bit-menu",
@@ -20,9 +20,9 @@ import { MenuItemComponent } from "./menu-item.component";
 export class MenuComponent implements AfterContentInit {
   @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
   @Output() closed = new EventEmitter<void>();
-  @ContentChildren(MenuItemComponent, { descendants: true })
-  menuItems: QueryList<MenuItemComponent>;
-  keyManager: FocusKeyManager<MenuItemComponent>;
+  @ContentChildren(MenuItemDirective, { descendants: true })
+  menuItems: QueryList<MenuItemDirective>;
+  keyManager: FocusKeyManager<MenuItemDirective>;
 
   ngAfterContentInit() {
     this.keyManager = new FocusKeyManager(this.menuItems).withWrap();

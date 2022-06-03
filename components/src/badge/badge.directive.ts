@@ -1,4 +1,4 @@
-import { Directive, ElementRef, HostBinding, Input, OnChanges, OnInit } from "@angular/core";
+import { Directive, ElementRef, HostBinding, Input } from "@angular/core";
 
 type BadgeTypes = "primary" | "secondary" | "success" | "danger" | "warning" | "info";
 
@@ -21,28 +21,10 @@ const hoverStyles: Record<BadgeTypes, string[]> = {
 };
 
 @Directive({
-  selector: "span[bit-badge], a[bit-badge], button[bit-badge]",
+  selector: "span[bitBadge], a[bitBadge], button[bitBadge]",
 })
-export class BadgeComponent implements OnInit, OnChanges {
-  @HostBinding("class") @Input("class") classList = "";
-
-  @Input() badgeType: BadgeTypes = "primary";
-
-  private isSpan = false;
-
-  constructor(private el: ElementRef<Element>) {
-    this.isSpan = el?.nativeElement?.nodeName == "SPAN";
-  }
-
-  ngOnInit(): void {
-    this.classList = this.classes.join(" ");
-  }
-
-  ngOnChanges() {
-    this.ngOnInit();
-  }
-
-  get classes() {
+export class BadgeDirective {
+  @HostBinding("class") get classList() {
     return [
       "tw-inline-block",
       "tw-py-1",
@@ -63,6 +45,14 @@ export class BadgeComponent implements OnInit, OnChanges {
       "focus:tw-ring-primary-700",
     ]
       .concat(styles[this.badgeType])
-      .concat(this.isSpan ? [] : hoverStyles[this.badgeType]);
+      .concat(this.hasHoverEffects ? hoverStyles[this.badgeType] : []);
+  }
+
+  @Input() badgeType: BadgeTypes = "primary";
+
+  private hasHoverEffects = false;
+
+  constructor(el: ElementRef<Element>) {
+    this.hasHoverEffects = el?.nativeElement?.nodeName != "SPAN";
   }
 }

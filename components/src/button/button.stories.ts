@@ -1,10 +1,10 @@
 import { Meta, Story } from "@storybook/angular";
 
-import { ButtonComponent } from "./button.component";
+import { ButtonDirective } from "./button.directive";
 
 export default {
   title: "Jslib/Button",
-  component: ButtonComponent,
+  component: ButtonDirective,
   args: {
     buttonType: "primary",
   },
@@ -16,11 +16,11 @@ export default {
   },
 } as Meta;
 
-const Template: Story<ButtonComponent> = (args: ButtonComponent) => ({
+const Template: Story<ButtonDirective> = (args: ButtonDirective) => ({
   props: args,
   template: `
-    <button bit-button [buttonType]="buttonType" [block]="block">Button</button>
-    <a bit-button [buttonType]="buttonType" [block]="block" href="#" class="tw-ml-2">Link</a>
+    <button bitButton [buttonType]="buttonType" [block]="block">Button</button>
+    <a bitButton [buttonType]="buttonType" [block]="block" href="#" class="tw-ml-2">Link</a>
   `,
 });
 
@@ -42,9 +42,9 @@ Danger.args = {
 const DisabledTemplate: Story = (args) => ({
   props: args,
   template: `
-    <button bit-button disabled buttonType="primary" class="tw-mr-2">Primary</button>
-    <button bit-button disabled buttonType="secondary" class="tw-mr-2">Secondary</button>
-    <button bit-button disabled buttonType="danger" class="tw-mr-2">Danger</button>
+    <button bitButton disabled buttonType="primary" class="tw-mr-2">Primary</button>
+    <button bitButton disabled buttonType="secondary" class="tw-mr-2">Secondary</button>
+    <button bitButton disabled buttonType="danger" class="tw-mr-2">Danger</button>
   `,
 });
 

@@ -1,8 +1,8 @@
-import { Input, HostBinding, OnChanges, Directive, OnInit } from "@angular/core";
+import { Input, HostBinding, Directive } from "@angular/core";
 
 export type ButtonTypes = "primary" | "secondary" | "danger";
 
-const buttonStyles: Record<ButtonTypes, string> = {
+const buttonStyles: Record<ButtonTypes, string[]> = {
   primary: [
     "tw-border-primary-500",
     "tw-bg-primary-500",
@@ -11,7 +11,7 @@ const buttonStyles: Record<ButtonTypes, string> = {
     "hover:tw-border-primary-700",
     "focus:tw-bg-primary-700",
     "focus:tw-border-primary-700",
-  ].join(" "),
+  ],
   secondary: [
     "tw-bg-transparent",
     "tw-border-text-muted",
@@ -22,7 +22,7 @@ const buttonStyles: Record<ButtonTypes, string> = {
     "focus:tw-bg-secondary-500",
     "focus:tw-border-secondary-500",
     "focus:!tw-text-contrast",
-  ].join(" "),
+  ],
   danger: [
     "tw-bg-transparent",
     "tw-border-danger-500",
@@ -33,30 +33,14 @@ const buttonStyles: Record<ButtonTypes, string> = {
     "focus:tw-bg-danger-500",
     "focus:tw-border-danger-500",
     "focus:!tw-text-contrast",
-  ].join(" "),
+  ],
 };
 
 @Directive({
-  selector: "button[bit-button], a[bit-button]",
+  selector: "button[bitButton], a[bitButton]",
 })
-export class ButtonComponent implements OnInit, OnChanges {
-  @HostBinding("class") @Input() classList = "";
-
-  @Input()
-  buttonType: ButtonTypes = "secondary";
-
-  @Input()
-  block = false;
-
-  ngOnInit(): void {
-    this.classList = this.classes.join(" ");
-  }
-
-  ngOnChanges() {
-    this.ngOnInit();
-  }
-
-  get classes(): string[] {
+export class ButtonDirective {
+  @HostBinding("class") get classList() {
     return [
       "tw-font-semibold",
       "tw-py-1.5",
@@ -74,8 +58,15 @@ export class ButtonComponent implements OnInit, OnChanges {
       "focus:tw-ring",
       "focus:tw-ring-offset-2",
       "focus:tw-ring-primary-700",
-      this.block ? "tw-w-full tw-block" : "tw-inline-block",
-      buttonStyles[this.buttonType ?? "secondary"],
-    ];
+      "focus:tw-z-10",
+    ]
+      .concat(this.block ? ["tw-w-full", "tw-block"] : ["tw-inline-block"])
+      .concat(buttonStyles[this.buttonType] ?? []);
   }
+
+  @Input()
+  buttonType: ButtonTypes = "secondary";
+
+  @Input()
+  block = false;
 }

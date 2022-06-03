@@ -1,0 +1,17 @@
+<label class="tw-block tw-font-semibold tw-mb-1 tw-text-main" [attr.for]="input.id">
+  <ng-content select="bit-label"></ng-content>
+  <span *ngIf="input.required" class="tw-text-xs tw-font-normal"> ({{ "required" | i18n }})</span>
+</label>
+<div class="tw-flex">
+  <div *ngIf="prefixChildren.length" class="tw-flex">
+    <ng-content select="[bitPrefix]"></ng-content>
+  </div>
+  <ng-content></ng-content>
+  <div *ngIf="prefixChildren.length" class="tw-flex">
+    <ng-content select="[bitSuffix]"></ng-content>
+  </div>
+</div>
+<ng-container [ngSwitch]="input.hasError">
+  <ng-content select="bit-hint" *ngSwitchCase="false"></ng-content>
+  <bit-error [error]="input.error" *ngSwitchCase="true"></bit-error>
+</ng-container>
